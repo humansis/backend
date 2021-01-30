@@ -3,6 +3,7 @@
 namespace VoucherBundle\Repository;
 
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\ProductFilterInputType;
 use NewApiBundle\InputType\ProductOrderInputType;
 use NewApiBundle\Request\Pagination;
 use VoucherBundle\Entity\Product;
@@ -31,18 +32,31 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * @param string                     $countryIso3
-     * @param ProductOrderInputType|null $orderBy
-     * @param Pagination|null            $pagination
+     * @param string                      $countryIso3
+     * @param ProductFilterInputType|null $filter
+     * @param ProductOrderInputType|null  $orderBy
+     * @param Pagination|null             $pagination
      *
      * @return Paginator|Product[]
      */
-    public function findByCountry(string $countryIso3, ?ProductOrderInputType $orderBy = null, ?Pagination $pagination = null): Paginator
+    public function findByCountry(
+        string $countryIso3,
+        ?ProductFilterInputType $filter = null,
+        ?ProductOrderInputType $orderBy = null,
+        ?Pagination $pagination = null
+    ): Paginator
     {
         $qb = $this->createQueryBuilder('p')
             ->andWhere('p.archived = 0')
             ->andWhere('p.countryISO3 = :countryIso3')
             ->setParameter('countryIso3', $countryIso3);
+
+        if ($filter) {
+            if ($filter->hasFulltext()) {
+                $qb->andWhere('p.id LIKE :fulltext OR p.name LIKE :fulltext OR p.unit LIKE :fulltext')
+                    ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+            }
+        }
 
         if ($pagination) {
             $qb->setMaxResults($pagination->getLimit());

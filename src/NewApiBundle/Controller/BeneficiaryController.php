@@ -7,7 +7,9 @@ use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\InputType\AddBeneficiaryToAssistanceInputType;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\InputType\CampAddressFilterInputType;
@@ -17,6 +19,7 @@ use NewApiBundle\InputType\ResidenceAddressFilterInputType;
 use NewApiBundle\InputType\TemporarySettlementAddressFilterInputType;
 use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class BeneficiaryController extends AbstractController
 {
@@ -44,6 +47,28 @@ class BeneficiaryController extends AbstractController
         $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByAssistance($assistance, $filter, $orderBy, $pagination);
 
         return $this->json($beneficiaries);
+    }
+
+    /**
+     * @Rest\Put("/assistances/{id}/beneficiaries")
+     *
+     * @param Assistance                          $assistance
+     * @param AddBeneficiaryToAssistanceInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function addBeneficiaryToAssistance(Assistance $assistance, AddBeneficiaryToAssistanceInputType $inputType): JsonResponse
+    {
+        $data = ['beneficiaries' => [], 'justification' => $inputType->getJustification()];
+        foreach ($inputType->getBeneficiaryIds() as $id) {
+            $data['beneficiaries'][] = ['id' => $id];
+        }
+
+        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
+        $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
+        $assistanceBeneficiaryService->addBeneficiaries($assistance, $data);
+
+        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
     /**

@@ -70,6 +70,25 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
+    public function testGetSupportReceivedTypes()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('GET', '/api/basic/households/support-received-types');
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $this->assertJsonFragment('{
+            "totalCount": '.count(Household::SUPPORT_RECIEVED_TYPES).',
+            "data": "*"
+        }', $this->client->getResponse()->getContent());
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testGetShelterStatuses()
     {
         // Log a user in order to go through the security firewall

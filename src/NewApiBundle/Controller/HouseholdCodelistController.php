@@ -46,6 +46,18 @@ class HouseholdCodelistController extends AbstractController
     }
 
     /**
+     * @Rest\Get("/households/support-received-types")
+     *
+     * @return JsonResponse
+     */
+    public function supportReceivedTypes(): JsonResponse
+    {
+        $data = CodeLists::mapArray(Household::SUPPORT_RECIEVED_TYPES);
+
+        return $this->json(new Paginator($data));
+    }
+
+    /**
      * @Rest\Get("/households/shelter-statuses")
      *
      * @return JsonResponse

@@ -1,16 +1,28 @@
 <?php
+
 declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
+use DateTimeInterface;
+use InvalidArgumentException;
 use NewApiBundle\Serializer\MapperInterface;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Entity\ProjectSector;
+use ProjectBundle\Utils\ProjectService;
 
 class ProjectMapper implements MapperInterface
 {
     /** @var Project */
     private $object;
+
+    /** @var ProjectService */
+    private $projectService;
+
+    public function __construct(ProjectService $projectService)
+    {
+        $this->projectService = $projectService;
+    }
 
     /**
      * {@inheritdoc}
@@ -31,7 +43,7 @@ class ProjectMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Project::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of '.Project::class.', '.get_class($object).' given.');
     }
 
     public function getId(): int
@@ -64,12 +76,12 @@ class ProjectMapper implements MapperInterface
         return (int) $this->object->getTarget();
     }
 
-    public function getStartDate(): \DateTimeInterface
+    public function getStartDate(): DateTimeInterface
     {
         return $this->object->getStartDate();
     }
 
-    public function getEndDate(): \DateTimeInterface
+    public function getEndDate(): DateTimeInterface
     {
         return $this->object->getEndDate();
     }
@@ -91,5 +103,10 @@ class ProjectMapper implements MapperInterface
     public function getNumberOfHouseholds(): int
     {
         return $this->object->getNumberOfHouseholds();
+    }
+
+    public function getDeletable(): bool
+    {
+        return $this->projectService->isDeletable($this->object);
     }
 }

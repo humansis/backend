@@ -5,6 +5,7 @@ namespace BeneficiaryBundle\Repository;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\CountrySpecificFilterInputType;
 use NewApiBundle\InputType\CountrySpecificOrderInputType;
 use NewApiBundle\Request\Pagination;
 
@@ -23,11 +24,23 @@ class CountrySpecificRepository extends EntityRepository
         return $this->findBy(['countryIso3' => $countryISO3]);
     }
 
-    public function findByParams(string $countryIso3, ?CountrySpecificOrderInputType $orderBy = null, ?Pagination $pagination = null): Paginator
+    public function findByParams(
+        string $countryIso3,
+        ?CountrySpecificFilterInputType $filter,
+        ?CountrySpecificOrderInputType $orderBy = null,
+        ?Pagination $pagination = null
+    ): Paginator
     {
         $qb = $this->createQueryBuilder('cs')
             ->andWhere('cs.countryIso3 = :iso3')
             ->setParameter('iso3', $countryIso3);
+
+        if ($filter) {
+            if ($filter->hasFulltext()) {
+                $qb->andWhere('cs.id LIKE :fulltext OR cs.fieldString LIKE :fulltext OR cs.type LIKE :fulltext')
+                    ->setParameter('fulltext', $filter->getFulltext());
+            }
+        }
 
         if ($pagination) {
             $qb->setMaxResults($pagination->getLimit());

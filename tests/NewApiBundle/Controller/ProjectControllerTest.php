@@ -60,6 +60,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('sectors', $result);
         $this->assertArrayHasKey('donorIds', $result);
         $this->assertArrayHasKey('numberOfHouseholds', $result);
+        $this->assertArrayHasKey('deletable', $result);
         $this->assertContains(SectorEnum::FOOD_SECURITY, $result['sectors']);
         $this->assertSame([], $result['donorIds']);
 
@@ -134,6 +135,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('sectors', $result);
         $this->assertArrayHasKey('donorIds', $result);
         $this->assertArrayHasKey('numberOfHouseholds', $result);
+        $this->assertArrayHasKey('deletable', $result);
         $this->assertContains(SectorEnum::EARLY_RECOVERY, $result['sectors']);
         $this->assertContains(SectorEnum::CAMP_MANAGEMENT, $result['sectors']);
         $this->assertNotContains(SectorEnum::FOOD_SECURITY, $result['sectors']);
@@ -171,6 +173,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('sectors', $result);
         $this->assertArrayHasKey('donorIds', $result);
         $this->assertArrayHasKey('numberOfHouseholds', $result);
+        $this->assertArrayHasKey('deletable', $result);
 
         return $id;
     }

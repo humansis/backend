@@ -7,6 +7,7 @@ namespace NewApiBundle\Controller;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\CountrySpecificCreateInputType;
+use NewApiBundle\InputType\CountrySpecificFilterInputType;
 use NewApiBundle\InputType\CountrySpecificOrderInputType;
 use NewApiBundle\InputType\CountrySpecificUpdateInputType;
 use NewApiBundle\Request\Pagination;
@@ -32,20 +33,26 @@ class CountrySpecificController extends AbstractController
     /**
      * @Rest\Get("/country-specifics")
      *
-     * @param Request                       $request
-     * @param Pagination                    $pagination
-     * @param CountrySpecificOrderInputType $orderBy
+     * @param Request                        $request
+     * @param CountrySpecificFilterInputType $filter
+     * @param Pagination                     $pagination
+     * @param CountrySpecificOrderInputType  $orderBy
      *
      * @return JsonResponse
      */
-    public function list(Request $request, Pagination $pagination, CountrySpecificOrderInputType $orderBy): JsonResponse
+    public function list(
+        Request $request,
+        CountrySpecificFilterInputType $filter,
+        Pagination $pagination,
+        CountrySpecificOrderInputType $orderBy
+    ): JsonResponse
     {
         if (!$request->headers->has('country')) {
             throw new BadRequestHttpException('Missing country header');
         }
 
         $countrySpecifics = $this->getDoctrine()->getRepository(CountrySpecific::class)
-            ->findByParams($request->headers->get('country'), $orderBy, $pagination);
+            ->findByParams($request->headers->get('country'), $filter, $orderBy, $pagination);
 
         return $this->json($countrySpecifics);
     }
