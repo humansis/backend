@@ -9,11 +9,13 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Institution;
+use CommonBundle\Utils\ExportService;
 use DateTime;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -41,6 +43,9 @@ class AssistanceBeneficiaryService
     /** @var AssistanceService */
     private $assistanceService;
 
+    /** @var ExportService */
+    private $exportCSVService;
+
     /**
      * AssistanceBeneficiaryService constructor.
      *
@@ -49,15 +54,19 @@ class AssistanceBeneficiaryService
      * @param ValidatorInterface     $validator
      * @param ContainerInterface     $container
      * @param AssistanceService      $assistanceService
+     * @param ExportService          $exportCSVService
      */
     public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator, ContainerInterface $container,
-                                AssistanceService $assistanceService)
+                                AssistanceService $assistanceService,
+                                ExportService $exportCSVService
+    )
     {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->container = $container;
         $this->assistanceService = $assistanceService;
+        $this->exportCSVService = $exportCSVService;
     }
 
     /**
@@ -134,7 +143,7 @@ class AssistanceBeneficiaryService
      * @param array      $beneficiariesData
      *
      * @return AssistanceBeneficiary[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function addBeneficiaries(Assistance $assistance, array $beneficiariesData): array
     {
@@ -146,14 +155,14 @@ class AssistanceBeneficiaryService
         }
 
         if (!isset($beneficiariesData['justification']) || empty($beneficiariesData['justification'])) {
-            throw new \Exception('Justification missing.');
+            throw new Exception('Justification missing.');
         }
 
         // id validation
         foreach ($beneficiariesArray as $beneficiaryArray) {
 
             if (!isset($beneficiaryArray["id"])) {
-                throw new \Exception("Beneficiary ID missing.");
+                throw new Exception("Beneficiary ID missing.");
             }
 
             // everything else is duplicity crap
@@ -164,30 +173,30 @@ class AssistanceBeneficiaryService
                     $householdMember = $this->em->getRepository(Beneficiary::class)->find($bnfId);
                     $household = $householdMember->getHousehold();
                     if (!$household instanceof Household) {
-                        throw new \Exception("Household {$bnfId} was not found.");
+                        throw new Exception("Household {$bnfId} was not found.");
                     }
                     $beneficiary = $this->em->getRepository(Beneficiary::class)->getHeadOfHousehold($household);
                     break;
                 case AssistanceTargetType::INDIVIDUAL:
                     $beneficiary = $this->em->getRepository(Beneficiary::class)->find($bnfId);
                     if (!$beneficiary instanceof Beneficiary) {
-                        throw new \Exception("Beneficiary {$bnfId} was not found.");
+                        throw new Exception("Beneficiary {$bnfId} was not found.");
                     }
                     break;
                 case AssistanceTargetType::COMMUNITY:
                     $beneficiary = $this->em->getRepository(Community::class)->find($bnfId);
                     if (!$beneficiary instanceof Community) {
-                        throw new \Exception("Community {$bnfId} was not found.");
+                        throw new Exception("Community {$bnfId} was not found.");
                     }
                     break;
                 case AssistanceTargetType::INSTITUTION:
                     $beneficiary = $this->em->getRepository(Institution::class)->find($bnfId);
                     if (!$beneficiary instanceof Institution) {
-                        throw new \Exception("Institution {$bnfId} was not found.");
+                        throw new Exception("Institution {$bnfId} was not found.");
                     }
                     break;
                 default:
-                    throw new \Exception("The type of the distribution is undefined.");
+                    throw new Exception("The type of the distribution is undefined.");
             }
             $validBNFs[] = $beneficiary;
         }
@@ -202,7 +211,7 @@ class AssistanceBeneficiaryService
 
             // $beneficiariesArray contains at least the country so a unique beneficiary would be a size of 2
             if ($sameAssistanceBeneficiary && sizeof($validBNFs) <= 2 && !$sameAssistanceBeneficiary->getRemoved()) {
-                throw new \Exception("Beneficiary/household {$beneficiary->getId()} is already part of the distribution", Response::HTTP_BAD_REQUEST);
+                throw new Exception("Beneficiary/household {$beneficiary->getId()} is already part of the distribution", Response::HTTP_BAD_REQUEST);
             } elseif ($sameAssistanceBeneficiary && sizeof($validBNFs) <= 2 && $sameAssistanceBeneficiary->getRemoved()) {
                 $sameAssistanceBeneficiary->setRemoved(0)
                     ->setJustification($beneficiariesData['justification']);
@@ -222,7 +231,7 @@ class AssistanceBeneficiaryService
                 $assistanceBeneficiaries);
         }
 
-        $assistance->setUpdatedOn(new \DateTime());
+        $assistance->setUpdatedOn(new DateTime());
         $this->em->persist($assistance);
 
         $this->em->flush();
@@ -277,7 +286,7 @@ class AssistanceBeneficiaryService
                 "Date of birth" => $value['date_of_birth']
             ]);
         }
-        return $this->container->get('export_csv_service')->export($beneficiaries, 'distributions', $type);
+        return $this->exportCSVService->export($beneficiaries, 'distributions', $type);
     }
 
     /**

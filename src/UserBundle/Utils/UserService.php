@@ -3,8 +3,13 @@
 namespace UserBundle\Utils;
 
 use CommonBundle\Entity\Logs;
+use CommonBundle\Utils\ExportService;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use Google_Client;
 use ProjectBundle\Entity\Project;
+use Swift_Attachment;
+use Swift_Message;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Length;
@@ -62,13 +67,21 @@ class UserService
     /** @var ContainerInterface $container */
     private $container;
 
+    /** @var ExportService */
+    private $exportCSVService;
+
     /**
      * UserService constructor.
+     *
+     * @param string $googleClient
+     * @param string $humanitarianSecret
      * @param EntityManagerInterface $entityManager
      * @param ValidatorInterface $validator
      * @param ContainerInterface $container
+     * @param ExportService $exportCSVService
      */
-    public function __construct(string $googleClient, string $humanitarianSecret, EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
+    public function __construct(string $googleClient, string $humanitarianSecret, EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container,
+                                ExportService $exportCSVService)
     {
         $this->googleClient = $googleClient;
         $this->humanitarianSecret = $humanitarianSecret;
@@ -76,6 +89,7 @@ class UserService
         $this->validator = $validator;
         $this->container = $container;
         $this->email = $this->container->getParameter('email');
+        $this->exportCSVService = $exportCSVService;
     }
 
     /**
@@ -170,13 +184,13 @@ class UserService
     /**
      * @param string $username
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function initialize(string $username)
     {
         $user = $this->em->getRepository(User::class)->findOneByUsername($username);
         if ($user instanceof User) {
-            throw new \Exception("Username already used.", Response::HTTP_BAD_REQUEST);
+            throw new Exception("Username already used.", Response::HTTP_BAD_REQUEST);
         }
         $salt = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
         $user = new User();
@@ -202,7 +216,7 @@ class UserService
     /**
      * @param string $username
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function getSalt(string $username)
     {
@@ -218,13 +232,13 @@ class UserService
             foreach ($violations as $violation) {
                 $errors[] = $violation->getMessage();
             }
-            throw new \Exception(json_encode($errors), Response::HTTP_BAD_REQUEST);
+            throw new Exception(json_encode($errors), Response::HTTP_BAD_REQUEST);
         }
 
         $user = $this->em->getRepository(User::class)->findOneByUsername($username);
 
         if (!$user instanceof User) {
-            throw new \Exception("This username doesn't exist", Response::HTTP_BAD_REQUEST);
+            throw new Exception("This username doesn't exist", Response::HTTP_BAD_REQUEST);
         }
 
         return ["user_id" => $user->getId(), "salt" => $user->getSalt()];
@@ -234,7 +248,7 @@ class UserService
      * @param string $username
      * @param string $saltedPassword
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function login(string $username, string $saltedPassword)
     {
@@ -247,7 +261,7 @@ class UserService
         ]);
 
         if (!$user instanceof User) {
-            throw new \Exception('Wrong password', Response::HTTP_BAD_REQUEST);
+            throw new Exception('Wrong password', Response::HTTP_BAD_REQUEST);
         }
 
         return $user;
@@ -256,23 +270,23 @@ class UserService
     /**
      * @param array $userData
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function create(array $userData)
     {
         $roles = $userData['roles'];
 
         if (!isset($roles) || empty($roles)) {
-            throw new \Exception("Rights can not be empty");
+            throw new Exception("Rights can not be empty");
         }
 
         $user = $this->em->getRepository(User::class)->findOneByUsername($userData['username']);
 
         if (!$user instanceof User) {
-            throw new \Exception("The user with username " . $userData['username'] . " has been not preconfigured. You need to ask 
+            throw new Exception("The user with username " . $userData['username'] . " has been not preconfigured. You need to ask 
             the salt for this username beforehand.");
         } elseif ($user->isEnabled()) {
-            throw new \Exception("The user with username " . $userData['username'] . " has already been added");
+            throw new Exception("The user with username " . $userData['username'] . " has already been added");
         }
 
         $user->setSalt($userData['salt'])
@@ -334,12 +348,12 @@ class UserService
      * @param $oldPassword
      * @param $newPassword
      * @return User
-     * @throws \Exception
+     * @throws Exception
      */
     public function updatePassword(User $user, $oldPassword, $newPassword)
     {
         if ($user->getPassword() !== $oldPassword) {
-            throw new \Exception("The old password doesn't match.");
+            throw new Exception("The old password doesn't match.");
         }
 
         $user->setPassword($newPassword)
@@ -378,7 +392,7 @@ class UserService
             try {
                 $this->em->remove($user);
                 $this->em->flush();
-            } catch (\Exception $exception) {
+            } catch (Exception $exception) {
                 return false;
             }
         }
@@ -412,7 +426,7 @@ class UserService
         try {
             $this->em->remove($user);
             $this->em->flush();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return false;
         }
 
@@ -428,7 +442,7 @@ class UserService
     {
         $exportableTable = $this->em->getRepository(User::class)->findAll();
 
-        return $this->container->get('export_csv_service')->export($exportableTable, 'users', $type);
+        return $this->exportCSVService->export($exportableTable, 'users', $type);
     }
 
     public function getLog(User $user, User $emailConnected)
@@ -450,7 +464,7 @@ class UserService
 
 
         if (is_file($file_record) && file_get_contents($file_record)) {
-            $message = (new \Swift_Message('Logs of ' . $user->getUsername()))
+            $message = (new Swift_Message('Logs of ' . $user->getUsername()))
                 ->setFrom($this->email)
                 ->setTo($emailConnected->getEmail())
                 ->setBody(
@@ -463,9 +477,9 @@ class UserService
                     ),
                     'text/html'
                 );
-            $message->attach(\Swift_Attachment::fromPath($dir_root . '/../var/data/record_log-' . $user->getId() . '.csv')->setFilename('logs-'. $user->getEmail() .'.csv'));
+            $message->attach(Swift_Attachment::fromPath($dir_root . '/../var/data/record_log-' . $user->getId() . '.csv')->setFilename('logs-'. $user->getEmail() .'.csv'));
         } else {
-            $message = (new \Swift_Message('Logs of ' . $user->getUsername()))
+            $message = (new Swift_Message('Logs of ' . $user->getUsername()))
                 ->setFrom($this->email)
                 ->setTo($emailConnected->getEmail())
                 ->setBody(
@@ -548,14 +562,14 @@ class UserService
      */
     public function loginGoogle(string $token)
     {
-        $client = new \Google_Client(['client_id' => $this->googleClient]);
+        $client = new Google_Client(['client_id' => $this->googleClient]);
 
         $payload = $client->verifyIdToken($token);
         if ($payload) {
             $email = $payload['email'];
             return $this->loginSSO($email);
         } else {
-            throw new \Exception('The token could not be verified');
+            throw new Exception('The token could not be verified');
         }
     }
 
@@ -587,7 +601,7 @@ class UserService
         if ($statusCode === 200) {
             $content = $response->toArray();
         } else {
-            throw new \Exception("There was a problem with the LinkedIn request: could not get token"); 
+            throw new Exception("There was a problem with the LinkedIn request: could not get token");
         }
     }
 
@@ -604,7 +618,7 @@ class UserService
             $email = $this->getHIDEmail($token, $parameters);
             return $this->loginSSO($email);
             
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
     }
@@ -648,7 +662,7 @@ class UserService
             $content = $response->toArray();
             return $content['access_token'];
         } else {
-            throw new \Exception("There was a problem with the HID request: could not get token"); 
+            throw new Exception("There was a problem with the HID request: could not get token");
         }
     }
 
@@ -661,7 +675,7 @@ class UserService
             $content = $response->toArray();
             return $content['email'];
         }  else {
-            throw new \Exception("There was a problem with the HID request: could not get user email"); 
+            throw new Exception("There was a problem with the HID request: could not get user email");
         }
     }
 

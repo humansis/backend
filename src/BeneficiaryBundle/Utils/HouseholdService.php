@@ -18,9 +18,13 @@ use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use CommonBundle\Controller\ExportController;
 use CommonBundle\Entity\Location;
+use CommonBundle\Utils\ExportService;
 use CommonBundle\Utils\LocationService;
+use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
+use Exception;
 use NewApiBundle\InputType\HouseholdCreateInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -63,16 +67,20 @@ class HouseholdService
     /** @var ContainerInterface $container */
     private $container;
 
+    /** @var ExportService */
+    private $exportCSVService;
 
     /**
      * HouseholdService constructor.
+     *
      * @param EntityManagerInterface $entityManager
-     * @param Serializer $serializer
-     * @param BeneficiaryService $beneficiaryService
-     * @param RequestValidator $requestValidator
-     * @param LocationService $locationService
-     * @param ValidatorInterface $validator
-     * @param ContainerInterface $container
+     * @param Serializer             $serializer
+     * @param BeneficiaryService     $beneficiaryService
+     * @param RequestValidator       $requestValidator
+     * @param LocationService        $locationService
+     * @param ValidatorInterface     $validator
+     * @param ContainerInterface     $container
+     * @param ExportService          $exportCSVService
      */
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -81,7 +89,8 @@ class HouseholdService
         RequestValidator $requestValidator,
         LocationService $locationService,
         ValidatorInterface $validator,
-        ContainerInterface $container
+        ContainerInterface $container,
+        ExportService $exportCSVService
     )
     {
         $this->em = $entityManager;
@@ -91,7 +100,7 @@ class HouseholdService
         $this->locationService = $locationService;
         $this->validator = $validator;
         $this->container = $container;
-    }
+        $this->exportCSVService = $exportCSVService;}
 
     /**
      * @param string $iso3
@@ -134,7 +143,7 @@ class HouseholdService
      * @param bool $flush
      * @return Household
      * @throws ValidationException
-     * @throws \Exception
+     * @throws Exception
      * @deprecated
      */
     public function createOrEdit(array $householdArray, array $projectsArray, $household = null, bool $flush = true)
@@ -176,7 +185,7 @@ class HouseholdService
                 if (!$camp instanceof Camp) {
                     $location = $this->locationService->getLocation($householdArray['__country'], $householdLocation['camp_address']['camp']['location']);
                     if (null === $location) {
-                        throw new \Exception("Location was not found.");
+                        throw new Exception("Location was not found.");
                     }
                     $camp = new Camp();
                     $camp->setName($householdLocation['camp_address']['camp']['name']);
@@ -189,7 +198,7 @@ class HouseholdService
             } else {
                 $location = $this->locationService->getLocation($householdArray['__country'], $householdLocation['address']["location"]);
                 if (null === $location) {
-                    throw new \Exception("Location was not found.");
+                    throw new Exception("Location was not found.");
                 }
                 $newHouseholdLocation->setAddress(Address::create(
                     $householdLocation['address']['street'] ?? null,
@@ -222,13 +231,13 @@ class HouseholdService
         $dateReceived = null;
         if (isset($householdArray["support_date_received"]) && $householdArray["support_date_received"]) {
             if (is_string($householdArray['support_date_received'])) {
-                $dateReceived = \DateTime::createFromFormat('d-m-Y', $householdArray['support_date_received']);
+                $dateReceived = DateTime::createFromFormat('d-m-Y', $householdArray['support_date_received']);
             } else {
                 $dateReceived = $householdArray['support_date_received'];
             }
 
-            if (!$dateReceived instanceof \DateTimeInterface) {
-                throw new \Exception("Value of support_date_received is invalid");
+            if (!$dateReceived instanceof DateTimeInterface) {
+                throw new Exception("Value of support_date_received is invalid");
             }
         }
         $household->setSupportDateReceived($dateReceived);
@@ -254,7 +263,7 @@ class HouseholdService
         // Add projects
         foreach ($projectsArray as $project) {
             if (!$project instanceof Project) {
-                throw new \Exception("The project could not be found.");
+                throw new Exception("The project could not be found.");
             }
             if ($actualAction !== 'update' || !$household->getProjects()->contains($project)) {
                 $household->addProject($project);
@@ -282,12 +291,12 @@ class HouseholdService
                         $household->addBeneficiary($beneficiary);
                     }
                     $beneficiariesPersisted[] = $beneficiary;
-                } catch (\Exception $exception) {
+                } catch (Exception $exception) {
                     throw $exception;
                 }
                 if ($beneficiary->isHead()) {
                     if ($hasHead) {
-                        throw new \Exception("You have defined more than 1 head of household.");
+                        throw new Exception("You have defined more than 1 head of household.");
                     }
                     $hasHead = true;
                 }
@@ -370,7 +379,7 @@ class HouseholdService
      * @param Household $household
      * @param array $countrySpecificAnswerArray
      * @return array|CountrySpecificAnswer
-     * @throws \Exception
+     * @throws Exception
      */
     public function addOrUpdateCountrySpecific(Household $household, array $countrySpecificAnswerArray, bool $flush)
     {
@@ -384,7 +393,7 @@ class HouseholdService
             ->find($countrySpecificAnswerArray["country_specific"]["id"]);
 
         if (!$countrySpecific instanceof CountrySpecific) {
-            throw new \Exception("This country specific is unknown");
+            throw new Exception("This country specific is unknown");
         }
 
         $countrySpecificAnswer = $this->em->getRepository(CountrySpecificAnswer::class)
@@ -443,7 +452,7 @@ class HouseholdService
     public function exportAllToCsv()
     {
         $exportableTable = $this->em->getRepository(Household::class)->findAll();
-        return $this->container->get('export_csv_service')->export($exportableTable);
+        return $this->exportCSVService->export($exportableTable);
     }
 
     /**
@@ -485,7 +494,7 @@ class HouseholdService
             throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit is ".ExportController::EXPORT_LIMIT);
         }
 
-        return $this->container->get('export_csv_service')->export($exportableTable, 'beneficiaryhousehoulds', $type);
+        return $this->exportCSVService->export($exportableTable, 'beneficiaryhousehoulds', $type);
     }
 
     /**

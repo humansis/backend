@@ -4,6 +4,7 @@ namespace VoucherBundle\Utils;
 
 use CommonBundle\Entity\Location;
 use CommonBundle\Entity\Logs;
+use CommonBundle\Utils\ExportService;
 use CommonBundle\Utils\LocationService;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -47,6 +48,9 @@ class VendorService
     /** @var UserService */
     private $userService;
 
+    /** @var ExportService */
+    private $exportCSVService;
+
     /**
      * UserService constructor.
      *
@@ -55,19 +59,23 @@ class VendorService
      * @param LocationService        $locationService
      * @param ContainerInterface     $container
      * @param UserService            $userService
+     * @param ExportService          $exportCSVService
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
         LocationService $locationService,
         ContainerInterface $container,
-        UserService $userService
+        UserService $userService,
+        ExportService $exportCSVService
     ) {
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
         $this->locationService = $locationService;
-        $this->userService = $userService;}
+        $this->userService = $userService;
+        $this->exportCSVService = $exportCSVService;
+    }
 
     /**
      * Creates a new Vendor entity
@@ -398,6 +406,6 @@ class VendorService
     {
         $exportableTable = $this->em->getRepository(Vendor::class)->findByCountry($countryISO3);
 
-        return $this->container->get('export_csv_service')->export($exportableTable, 'vendors', $type);
+        return $this->exportCSVService->export($exportableTable, 'vendors', $type);
     }
 }

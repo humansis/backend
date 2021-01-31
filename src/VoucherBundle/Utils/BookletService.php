@@ -3,6 +3,7 @@
 namespace VoucherBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use CommonBundle\Utils\ExportService;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
@@ -35,6 +36,9 @@ class BookletService
     /** @var VoucherService */
     private $voucherService;
 
+    /** @var ExportService */
+    private $exportCSVService;
+
     /**
      * UserService constructor.
      *
@@ -43,14 +47,16 @@ class BookletService
      * @param ContainerInterface       $container
      * @param EventDispatcherInterface $eventDispatcher
      * @param VoucherService           $voucherService
+     * @param ExportService            $exportService
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container, EventDispatcherInterface $eventDispatcher, VoucherService $voucherService)
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container, EventDispatcherInterface $eventDispatcher, VoucherService $voucherService, ExportService $exportService)
     {
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
         $this->eventDispatcher = $eventDispatcher;
         $this->voucherService = $voucherService;
+        $this->exportCSVService = $exportService;
     }
 
     /**
@@ -718,7 +724,7 @@ class BookletService
             );
         }
 
-        return $this->container->get('export_csv_service')->export($exportableTable, 'qrVouchers', $type);
+        return $this->exportCSVService->export($exportableTable, 'qrVouchers', $type);
     }
 
     /**

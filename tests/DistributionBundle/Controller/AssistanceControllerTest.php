@@ -5,11 +5,18 @@ declare(strict_types=1);
 namespace Tests\DistributionBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\Institution;
+use BeneficiaryBundle\Repository\CommunityRepository;
+use BeneficiaryBundle\Repository\InstitutionRepository;
+use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm4;
 use CommonBundle\Entity\Location;
+use CommonBundle\Utils\ExportService;
+use DateTime;
 use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Entity\AssistanceBeneficiary;
@@ -21,6 +28,12 @@ use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use DistributionBundle\Utils\DistributionCSVService;
 use DistributionBundle\Utils\AssistanceService;
+use Doctrine\Common\Persistence\Mapping\MappingException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
+use Exception;
+use ProjectBundle\DBAL\SectorEnum;
+use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -40,7 +53,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     private $distributionCSVService;
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function setUp()
     {
@@ -54,14 +67,14 @@ class AssistanceControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testCreateDistribution()
     {
 //        $this->removeHousehold($this->namefullnameHousehold);
         $this->createHousehold();
 
-        $adm2 = $this->getContainer()->get('doctrine')->getRepository(\CommonBundle\Entity\Adm2::class)->findOneBy([]);
+        $adm2 = $this->getContainer()->get('doctrine')->getRepository(Adm2::class)->findOneBy([]);
 
         $criteria = array(
             "id" => null,
@@ -122,8 +135,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 ]
             ],
             "threshold"=> 1,
-            'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
-            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_DISTRIBUTIONS,
+            'sector' => SectorEnum::FOOD_SECURITY,
+            'subsector' => SubSectorEnum::FOOD_DISTRIBUTIONS,
         );
 
 
@@ -157,8 +170,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreateDistribution
      * @param $distribution
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function testGetRandomBeneficiaries($distribution)
     {
@@ -182,8 +195,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreateDistribution
      * @param $distribution
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function testValidate($distribution)
     {
@@ -220,8 +233,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreateDistribution
      * @param $distribution
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function testAddBeneficiary($distribution)
     {
@@ -233,8 +246,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreateDistribution
      * @param $distribution
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function testRemoveOneBeneficiary($distribution)
     {
@@ -243,8 +256,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function testGetAll()
     {
@@ -278,8 +291,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreateDistribution
      * @param $distribution
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function testGetOne($distribution)
     {
@@ -311,8 +324,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function testHouseholdSummary()
     {
@@ -348,8 +361,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreateDistribution
      * @param $distribution
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function testGetDistributionBeneficiaries($distribution)
     {
@@ -383,7 +396,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
             $this->getContainer()->get('validator'),
             $this->getContainer(),
             $this->getContainer()->get('event_dispatcher'),
-            $this->getContainer()->get(VoucherService::class)
+            $this->getContainer()->get(VoucherService::class),
+            $this->getContainer()->get(ExportService::class)
         );
         $purchaseService = new PurchaseService($this->em);
 
@@ -417,7 +431,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $vendor = $this->em->getRepository(Vendor::class)->findOneBy([]);
 
         $purchase = new VoucherPurchase();
-        $purchase->setCreatedAt(new \DateTime());
+        $purchase->setCreatedAt(new DateTime());
         $purchase->setProducts([]);
         $purchase->setVendorId($vendor->getId());
         $purchase->setVouchers($bookletBig->getVouchers()->toArray());
@@ -469,8 +483,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreateDistribution
      * @param $distribution
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function testUpdate($distribution)
     {
@@ -522,8 +536,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreateDistribution
      * @param $distribution
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function testArchived($distribution)
     {
@@ -545,8 +559,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreateDistribution
      * @param $d
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function testGetDistributionsForFrontend($d)
     {
@@ -586,8 +600,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreateDistribution
      * @param $d
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function testGetDistributionsForOldMobile($d)
     {
@@ -629,8 +643,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreateDistribution
      * @param $distribution
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function testImport($distribution)
     {
@@ -681,8 +695,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreateDistribution
      * @param $distribution
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function testGetBeneficiariesInProject($distribution)
     {
@@ -720,8 +734,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
      * @depends testCreateDistribution
      * @param $distribution
      * @return void
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function testPostTransaction($distribution)
     {
@@ -753,8 +767,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
      * @depends testCreateDistribution
      * @param $distribution
      * @return void
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function testUpdateTransactionStatus($distribution)
     {
@@ -776,9 +790,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreateDistribution
      * @param $distribution
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws MappingException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function removeDistribution($distribution)
     {
@@ -870,8 +884,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 ],
             ],
             'threshold' => 1,
-            'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
-            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_DISTRIBUTIONS,
+            'sector' => SectorEnum::FOOD_SECURITY,
+            'subsector' => SubSectorEnum::FOOD_DISTRIBUTIONS,
         ];
 
         $user = $this->getTestUser(self::USER_TESTER);
@@ -889,8 +903,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     /**
      * @depends testCreateDistributionToBeDeleted
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function testDeleteUnvalidatedDistribution($id)
     {
@@ -924,8 +938,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     public function testCreateDistributionForCommunity()
     {
-        /** @var \BeneficiaryBundle\Repository\CommunityRepository $communityRepo */
-        $communityRepo = $this->getContainer()->get('doctrine')->getRepository(\BeneficiaryBundle\Entity\Community::class);
+        /** @var CommunityRepository $communityRepo */
+        $communityRepo = $this->getContainer()->get('doctrine')->getRepository(Community::class);
         $community = $communityRepo->findBy([])[0];
 
         $body = [
@@ -977,8 +991,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'communities' => [$community->getId()],
             'households_targeted' => 3,
             'individuals_targeted' => 5,
-            'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
-            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_DISTRIBUTIONS,
+            'sector' => SectorEnum::FOOD_SECURITY,
+            'subsector' => SubSectorEnum::FOOD_DISTRIBUTIONS,
         ];
 
         $user = $this->getTestUser(self::USER_TESTER);
@@ -996,8 +1010,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     public function testCreateDistributionForInstitution()
     {
-        /** @var \BeneficiaryBundle\Repository\InstitutionRepository $institutionRepo */
-        $institutionRepo = $this->getContainer()->get('doctrine')->getRepository(\BeneficiaryBundle\Entity\Institution::class);
+        /** @var InstitutionRepository $institutionRepo */
+        $institutionRepo = $this->getContainer()->get('doctrine')->getRepository(Institution::class);
         $institution = $institutionRepo->findBy([])[0];
 
         $body = [
@@ -1035,8 +1049,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 'sectors_name' => [],
             ],
             'institutions' => [$institution->getId()],
-            'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
-            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_DISTRIBUTIONS,
+            'sector' => SectorEnum::FOOD_SECURITY,
+            'subsector' => SubSectorEnum::FOOD_DISTRIBUTIONS,
         ];
 
         $user = $this->getTestUser(self::USER_TESTER);
@@ -1056,8 +1070,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreateDistributionForCommunity
      * @param $distributionId
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function testGetDistributionCommunities($distributionId)
     {
@@ -1083,8 +1097,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreateDistributionForInstitution
      * @param $distributionId
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function testGetDistributionInstitutions($distributionId)
     {

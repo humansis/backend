@@ -4,7 +4,9 @@
 namespace BeneficiaryBundle\Utils;
 
 use BeneficiaryBundle\Entity\CountrySpecific;
+use CommonBundle\Utils\ExportService;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class CountrySpecificService
@@ -12,16 +14,19 @@ class CountrySpecificService
     /** @var EntityManagerInterface $em */
     private $em;
 
-
     /** @var ContainerInterface $container */
     private $container;
 
+    /** @var ExportService */
+    private $exportCSVService;
 
-
-    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
+    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container,
+                                ExportService $exportCSVService
+    )
     {
         $this->em = $entityManager;
         $this->container = $container;
+        $this->exportCSVService = $exportCSVService;
     }
 
     /**
@@ -73,7 +78,7 @@ class CountrySpecificService
         try {
             $this->em->remove($countrySpecific);
             $this->em->flush();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return false;
         }
 
@@ -89,6 +94,6 @@ class CountrySpecificService
     public function exportToCsv(string $type, string $countryIso3)
     {
         $exportableTable = $this->em->getRepository(CountrySpecific::class)->findByCountryIso3($countryIso3);
-        return $this->container->get('export_csv_service')->export($exportableTable, 'country', $type);
+        return $this->exportCSVService->export($exportableTable, 'country', $type);
     }
 }

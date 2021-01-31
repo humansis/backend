@@ -4,12 +4,16 @@ namespace ProjectBundle\Utils;
 
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\ProjectBeneficiary;
+use CommonBundle\Utils\ExportService;
 use dateTime;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use Exception;
 use NewApiBundle\InputType\ProjectCreateInputType;
 use NewApiBundle\InputType\ProjectUpdateInputType;
+use RuntimeException;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\Entity\Donor;
 use ProjectBundle\Entity\Project;
@@ -41,20 +45,26 @@ class ProjectService
     /** @var ContainerInterface $container */
     private $container;
 
+    /** @var ExportService */
+    private $exportCSVService;
+
     /**
      * ProjectService constructor.
+     *
      * @param EntityManagerInterface $entityManager
-     * @param Serializer $serializer
-     * @param ValidatorInterface $validator
-     * @param ContainerInterface $container
+     * @param Serializer             $serializer
+     * @param ValidatorInterface     $validator
+     * @param ContainerInterface     $container
+     * @param ExportService          $exportCSVService
      */
-    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator, ContainerInterface $container)
+    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator, ContainerInterface $container,
+                                ExportService $exportCSVService)
     {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->container = $container;
-    }
+        $this->exportCSVService = $exportCSVService;}
 
     /**
      * Get all projects
@@ -104,7 +114,7 @@ class ProjectService
      * @param array $projectArray
      * @param User $user
      * @return Project
-     * @throws \Exception
+     * @throws Exception
      */
     public function createFromArray($countryISO3, array $projectArray, User $user)
     {
@@ -114,7 +124,7 @@ class ProjectService
         $endDate = DateTime::createFromFormat('d-m-Y', $projectArray["end_date"]);
 
         if ($startDate > $endDate) {
-            throw new \Exception('The end date must be after the start date', Response::HTTP_BAD_REQUEST);
+            throw new Exception('The end date must be after the start date', Response::HTTP_BAD_REQUEST);
         }
 
         $project = new Project();
@@ -145,7 +155,7 @@ class ProjectService
             foreach ($errors as $error) {
                 $errorsArray[] = $error->getMessage();
             }
-            throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
+            throw new Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
         $sectorsId = $projectArray["sectors"];
@@ -194,7 +204,7 @@ class ProjectService
         ]);
 
         if (!empty($existingProjects)) {
-            throw new \RuntimeException('Project with the name '.$inputType->getName().' already exists');
+            throw new RuntimeException('Project with the name '.$inputType->getName().' already exists');
         }
 
         $project = (new Project())
@@ -228,7 +238,7 @@ class ProjectService
      * @param Project $project
      * @param array $projectArray
      * @return array|bool|Project
-     * @throws \Exception
+     * @throws Exception
      */
     public function edit(Project $project, array $projectArray)
     {
@@ -236,7 +246,7 @@ class ProjectService
         $endDate = DateTime::createFromFormat('d-m-Y', $projectArray["end_date"]);
 
         if ($startDate > $endDate) {
-            throw new \Exception('The end date must be after the start date', Response::HTTP_BAD_REQUEST);
+            throw new Exception('The end date must be after the start date', Response::HTTP_BAD_REQUEST);
         }
     
         /** @var Project $editedProject */
@@ -273,13 +283,13 @@ class ProjectService
                 foreach ($errors as $error) {
                     $errorsArray[] = $error->getMessage();
                 }
-                throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
+                throw new Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
             }
 
             $this->em->persist($project);
             try {
                 $this->em->flush();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 return false;
             }
 
@@ -304,7 +314,7 @@ class ProjectService
         ]);
 
         if (!empty($existingProjects) && $existingProjects[0]->getId() !== $project->getId()) {
-            throw new \RuntimeException('Project with the name '.$project->getName().' already exists');
+            throw new RuntimeException('Project with the name '.$project->getName().' already exists');
         }
 
         $project
@@ -392,7 +402,7 @@ class ProjectService
      */
     public function delete(Project $project)
     {
-        /** @var \Doctrine\ORM\Tools\Pagination\Paginator $assistance */
+        /** @var Paginator $assistance */
         $assistance = $this->em->getRepository(Assistance::class)->findByParams($project);
 
         if (0 === $assistance->count()) {
@@ -401,8 +411,8 @@ class ProjectService
                     $this->em->remove($projectSector);
                 }
                 $this->em->remove($project);
-            } catch (\Exception $error) {
-                throw new \Exception("Error deleting project");
+            } catch (Exception $error) {
+                throw new Exception("Error deleting project");
             }
         } else {
             if (!$this->checkIfAllDistributionClosed($assistance)) {
@@ -415,8 +425,8 @@ class ProjectService
 
                     $project->setArchived(true);
                     $this->em->persist($project);
-                } catch (\Exception $error) {
-                    throw new \Exception("Error archiving project");
+                } catch (Exception $error) {
+                    throw new Exception("Error archiving project");
                 }
             }
         }
@@ -447,6 +457,6 @@ class ProjectService
     public function exportToCsv($countryIso3, string $type)
     {
         $exportableTable = $this->em->getRepository(Project::class)->getAllOfCountry($countryIso3);
-        return $this->container->get('export_csv_service')->export($exportableTable, 'projects', $type);
+        return $this->exportCSVService->export($exportableTable, 'projects', $type);
     }
 }

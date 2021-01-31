@@ -2,6 +2,7 @@
 
 namespace ReportingBundle\Utils;
 
+use CommonBundle\Utils\ExportService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
 use ReportingBundle\Entity\ReportingIndicator;
@@ -15,10 +16,14 @@ class ReportingService
     /** @var ContainerInterface $container */
     private $container;
 
-    public function __construct(EntityManagerInterface $em, ContainerInterface $container)
+    /** @var ExportService */
+    private $exportCSVService;
+
+    public function __construct(EntityManagerInterface $em, ContainerInterface $container, ExportService $exportCSVService)
     {
         $this->em = $em;
         $this->container = $container;
+        $this->exportCSVService = $exportCSVService;
     }
 
 
@@ -115,7 +120,7 @@ class ReportingService
             $indicatorTable = array_merge([[$indicator->getReference()]], [$periodRow], $values_rows, [['']]);
             $indicatorsTable = array_merge($indicatorsTable, $indicatorTable);
         }
-        return $this->container->get('export_csv_service')->exportRaw($indicatorsTable, 'reporting', $type);
+        return $this->exportCSVService->exportRaw($indicatorsTable, 'reporting', $type);
     }
 
     private function formatFiltersIfEmpty($emptyStringOrArrayFilters) {

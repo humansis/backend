@@ -17,7 +17,13 @@ services:
 #######################################################################################
 
     UserBundle\Utils\UserService:
-        arguments: ['%google_client%', '%humanitarian_secret%', '@doctrine.orm.entity_manager', '@validator', '@service_container', '@security.encoder_factory']
+        arguments:
+            - '%google_client%'
+            - '%humanitarian_secret%'
+            - '@doctrine.orm.entity_manager'
+            - '@validator'
+            - '@service_container'
+            - '@CommonBundle\Utils\ExportService'
         public: true
 
 

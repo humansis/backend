@@ -12,7 +12,11 @@ use BeneficiaryBundle\Entity\Referral;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use CommonBundle\Controller\ExportController;
+use CommonBundle\Utils\ExportService;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use PhpOption\Tests\PhpOptionRepo;
@@ -48,6 +52,8 @@ class BeneficiaryService
     /** @var AssistanceBeneficiaryService $dbs */
     private $dbs;
 
+    /** @var ExportService */
+    private $exportCSVService;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -55,7 +61,8 @@ class BeneficiaryService
         RequestValidator $requestValidator,
         ValidatorInterface $validator,
         ContainerInterface $container,
-        AssistanceBeneficiaryService $assistanceBeneficiary
+        AssistanceBeneficiaryService $assistanceBeneficiary,
+        ExportService $exportCSVService
     ) {
         $this->em = $entityManager;
         $this->serializer = $serializer;
@@ -64,6 +71,7 @@ class BeneficiaryService
         $this->container = $container;
         $this->beneficiary = new Beneficiary();
         $this->dbs = $assistanceBeneficiary;
+        $this->exportCSVService = $exportCSVService;
     }
 
 
@@ -81,8 +89,8 @@ class BeneficiaryService
      * @param array $beneficiaryArray
      * @param $flush
      * @return Beneficiary|null|object
-     * @throws \Exception
-     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
+     * @throws Exception
+     * @throws ValidationException
      */
     public function updateOrCreate(Household $household, array $beneficiaryArray, $flush)
     {
@@ -126,10 +134,10 @@ class BeneficiaryService
         if (array_key_exists("id", $beneficiaryArray) && $beneficiaryArray['id'] !== null) {
             $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
             if (!$beneficiary instanceof Beneficiary) {
-                throw new \Exception("Beneficiary was not found.");
+                throw new Exception("Beneficiary was not found.");
             }
             if ($beneficiary->getHousehold() !== $household) {
-                throw new \Exception("You are trying to update a beneficiary in the wrong household.");
+                throw new Exception("You are trying to update a beneficiary in the wrong household.");
             }
             
             // Clear vulnerability criteria, phones and national id
@@ -152,14 +160,14 @@ class BeneficiaryService
         }
 
         $beneficiary->setGender($beneficiaryArray["gender"])
-            ->setDateOfBirth(\DateTime::createFromFormat('d-m-Y', $beneficiaryArray["date_of_birth"]))
+            ->setDateOfBirth(DateTime::createFromFormat('d-m-Y', $beneficiaryArray["date_of_birth"]))
             ->setEnFamilyName($beneficiaryArray["en_family_name"])
             ->setEnGivenName($beneficiaryArray["en_given_name"])
             ->setLocalFamilyName($beneficiaryArray["local_family_name"])
             ->setLocalGivenName($beneficiaryArray["local_given_name"])
             ->setStatus($beneficiaryArray["status"])
             ->setResidencyStatus($beneficiaryArray["residency_status"])
-            ->setUpdatedOn(new \DateTime());
+            ->setUpdatedOn(new DateTime());
 
         $beneficiary->getPerson()
             ->setLocalParentsName($beneficiaryArray['local_parents_name'] ?? null)
@@ -175,7 +183,7 @@ class BeneficiaryService
                 }
                 $errorsMessage .= $error->getMessage();
             }
-            throw new \Exception($errorsMessage);
+            throw new Exception($errorsMessage);
         }
 
 
@@ -210,7 +218,7 @@ class BeneficiaryService
     /**
      * @param $vulnerabilityCriterionId
      * @return VulnerabilityCriterion
-     * @throws \Exception
+     * @throws Exception
      */
     public function getVulnerabilityCriterion($vulnerabilityCriterionId)
     {
@@ -218,7 +226,7 @@ class BeneficiaryService
         $vulnerabilityCriterion = $this->em->getRepository(VulnerabilityCriterion::class)->find($vulnerabilityCriterionId);
 
         if (!$vulnerabilityCriterion instanceof VulnerabilityCriterion) {
-            throw new \Exception("This vulnerability doesn't exist.");
+            throw new Exception("This vulnerability doesn't exist.");
         }
         return $vulnerabilityCriterion;
     }
@@ -228,7 +236,7 @@ class BeneficiaryService
      * @param array $phoneArray
      * @param $flush
      * @return Phone|null|object
-     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
+     * @throws ValidationException
      */
     public function getOrSavePhone(Beneficiary $beneficiary, array $phoneArray, $flush)
     {
@@ -270,7 +278,7 @@ class BeneficiaryService
      * @param array $nationalIdArray
      * @param $flush
      * @return NationalId|null|object
-     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
+     * @throws ValidationException
      */
     public function getOrSaveNationalId(Beneficiary $beneficiary, array $nationalIdArray, $flush)
     {
@@ -298,7 +306,7 @@ class BeneficiaryService
      * @param array $profileArray
      * @param $flush
      * @return Profile|null|object
-     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
+     * @throws ValidationException
      */
     public function getOrSaveProfile(Beneficiary $beneficiary, array $profileArray, $flush)
     {
@@ -385,7 +393,7 @@ class BeneficiaryService
     public function exportToCsvBeneficiariesInDistribution(Assistance $assistance, string $type)
     {
         $beneficiaries = $this->em->getRepository(Beneficiary::class)->getNotRemovedofDistribution($assistance);
-        return $this->container->get('export_csv_service')->export($beneficiaries, 'beneficiaryInDistribution', $type);
+        return $this->exportCSVService->export($beneficiaries, 'beneficiaryInDistribution', $type);
     }
 
     /**
@@ -394,15 +402,15 @@ class BeneficiaryService
      * @param Beneficiary $beneficiary
      * @param array $beneficiaryData
      * @return Beneficiary
-     * @throws \Exception
+     * @throws Exception
      */
     public function update(Beneficiary $beneficiary, array $beneficiaryData)
     {
         try {
             $this->updateReferral($beneficiary, $beneficiaryData);
             $this->em->persist($beneficiary);
-        } catch (\Exception $e) {
-            throw new \Exception('Error updating Beneficiary');
+        } catch (Exception $e) {
+            throw new Exception('Error updating Beneficiary');
         }
         return $beneficiary;
     }

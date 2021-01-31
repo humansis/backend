@@ -4,9 +4,15 @@ namespace TransactionBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
+use CommonBundle\Utils\ExportService;
+use DateTime;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use Psr\SimpleCache\InvalidArgumentException;
+use Swift_Attachment;
+use Swift_Message;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use TransactionBundle\Entity\Transaction;
@@ -31,31 +37,37 @@ class TransactionService
     /** @var DefaultFinancialProvider $financialProvider */
     private $financialProvider;
 
+    /** @var ExportService */
+    private $exportCSVService;
+
     /**
      * TransactionService constructor.
+     *
      * @param EntityManagerInterface $entityManager
-     * @param ContainerInterface $container
+     * @param ContainerInterface     $container
+     * @param ExportService          $exportCSVService
      */
-    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
+    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container,
+                                ExportService $exportCSVService)
     {
         $this->em = $entityManager;
         $this->container = $container;
         $this->email = $this->container->getParameter('email');
-    }
+        $this->exportCSVService = $exportCSVService;}
 
     /**
      * Send money to distribution beneficiaries
      * @param  string $countryISO3
      * @param  Assistance $assistance
      * @return object
-     * @throws \Exception
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function sendMoney(string $countryISO3, Assistance $assistance, User $user)
     {
         try {
             $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         
@@ -63,14 +75,14 @@ class TransactionService
             $amountToSend = $assistance->getCommodities()[0]->getValue();
             $currencyToSend = $assistance->getCommodities()[0]->getUnit();
         } else {
-            throw new \Exception("The commodity of the distribution does not allow this operation.");
+            throw new Exception("The commodity of the distribution does not allow this operation.");
         }
         
         $from = $user->getId();
         
         try {
             return $this->financialProvider->sendMoneyToAll($assistance, $amountToSend, $currencyToSend, $from);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
     }
@@ -79,18 +91,18 @@ class TransactionService
      * Get the financial provider corresponding to the current country
      * @param  string $countryISO3 iso3 code of the country
      * @return object|Class|DefaultFinancialProvider
-     * @throws \Exception
+     * @throws Exception
      */
     private function getFinancialProviderForCountry(string $countryISO3)
     {
         try {
             $provider = $this->container->get('transaction.' . strtolower($countryISO3) . '_financial_provider');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $provider = null;
         }
         
         if (! ($provider instanceof DefaultFinancialProvider)) {
-            throw new \Exception("The financial provider for " . $countryISO3 . " is not properly defined");
+            throw new Exception("The financial provider for " . $countryISO3 . " is not properly defined");
         }
         return $provider;
     }
@@ -100,7 +112,7 @@ class TransactionService
      * @param  User $user
      * @param  Assistance $assistance
      * @return void
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function sendVerifyEmail(User $user, Assistance $assistance)
     {
@@ -114,7 +126,7 @@ class TransactionService
         $numberOfBeneficiaries = count($assistance->getDistributionBeneficiaries());
         $amountToSend = $numberOfBeneficiaries * $commodity->getValue();
 
-        $message = (new \Swift_Message('Confirm transaction for distribution ' . $assistance->getName()))
+        $message = (new Swift_Message('Confirm transaction for distribution ' . $assistance->getName()))
             ->setFrom($this->email)
             ->setTo($user->getEmail())
             ->setBody(
@@ -124,7 +136,7 @@ class TransactionService
                         'distribution' => $assistance->getName(),
                         'amount' => $amountToSend . ' ' . $commodity->getUnit(),
                         'number' => $numberOfBeneficiaries,
-                        'date' => new \DateTime(),
+                        'date' => new DateTime(),
                         'email' => $user->getEmail(),
                         'code' => $code
                     )
@@ -150,7 +162,7 @@ class TransactionService
         $file_record = $dir_var . '/record_' . $assistance->getId() . '.csv';
 
         if (is_file($file_record) && file_get_contents($file_record)) {
-            $message = (new \Swift_Message('Transaction logs for ' . $assistance->getName()))
+            $message = (new Swift_Message('Transaction logs for ' . $assistance->getName()))
                 ->setFrom($this->email)
                 ->setTo($user->getEmail())
                 ->setBody(
@@ -163,9 +175,9 @@ class TransactionService
                     ),
                     'text/html'
                 );
-            $message->attach(\Swift_Attachment::fromPath($dir_root . '/../var/data/record_' . $assistance->getId() . '.csv')->setFilename('logsTransaction.csv'));
+            $message->attach(Swift_Attachment::fromPath($dir_root . '/../var/data/record_' . $assistance->getId() . '.csv')->setFilename('logsTransaction.csv'));
         } else {
-            $message = (new \Swift_Message('Transaction logs for ' . $assistance->getName()))
+            $message = (new Swift_Message('Transaction logs for ' . $assistance->getName()))
                 ->setFrom($this->email)
                 ->setTo($user->getEmail())
                 ->setBody(
@@ -189,7 +201,7 @@ class TransactionService
      * @param User $user
      * @param Assistance $assistance
      * @return boolean
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function verifyCode(int $code, User $user, Assistance $assistance)
     {
@@ -214,19 +226,19 @@ class TransactionService
      * @param $countryISO3
      * @param  Assistance $assistance
      * @return AssistanceBeneficiary[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function updateTransactionStatus(string $countryISO3, Assistance $assistance): array
     {
         try {
             $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         
         try {
             return $this->financialProvider->updateStatusDistribution($assistance);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
     }
@@ -236,19 +248,19 @@ class TransactionService
      * @param  string $countryISO3
      * @param  Assistance $assistance
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function testConnection(string $countryISO3, Assistance $assistance)
     {
         try {
             $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         
         try {
             return $this->financialProvider->getToken($assistance);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
     }
@@ -258,7 +270,7 @@ class TransactionService
      * @param User $user
      * @param  Assistance $assistance
      * @return string
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function checkProgression(User $user, Assistance $assistance)
     {
@@ -348,6 +360,6 @@ class TransactionService
             );
         }
 
-        return $this->container->get('export_csv_service')->export($exportableTable, 'transaction', $type);
+        return $this->exportCSVService->export($exportableTable, 'transaction', $type);
     }
 }

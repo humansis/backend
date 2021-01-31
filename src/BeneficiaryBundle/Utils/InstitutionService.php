@@ -9,10 +9,12 @@ use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Form\InstitutionConstraints;
+use CommonBundle\Utils\ExportService;
 use CommonBundle\Entity\Location;
 use CommonBundle\Utils\LocationService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use InvalidArgumentException;
 use NewApiBundle\InputType\InstitutionCreateInputType;
 use NewApiBundle\InputType\InstitutionUpdateInputType;
 use ProjectBundle\Entity\Project;
@@ -51,16 +53,20 @@ class InstitutionService
     /** @var ContainerInterface $container */
     private $container;
 
+    /** @var ExportService */
+    private $exportCSVService;
 
     /**
      * InstitutionService constructor.
+     *
      * @param EntityManagerInterface $entityManager
-     * @param Serializer $serializer
-     * @param BeneficiaryService $beneficiaryService
-     * @param RequestValidator $requestValidator
-     * @param LocationService $locationService
-     * @param ValidatorInterface $validator
-     * @param ContainerInterface $container
+     * @param Serializer             $serializer
+     * @param BeneficiaryService     $beneficiaryService
+     * @param RequestValidator       $requestValidator
+     * @param LocationService        $locationService
+     * @param ValidatorInterface     $validator
+     * @param ContainerInterface     $container
+     * @param ExportService          $exportCSVService
      */
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -69,7 +75,8 @@ class InstitutionService
         RequestValidator $requestValidator,
         LocationService $locationService,
         ValidatorInterface $validator,
-        ContainerInterface $container
+        ContainerInterface $container,
+        ExportService $exportCSVService
     ) {
         $this->em = $entityManager;
         $this->serializer = $serializer;
@@ -78,6 +85,7 @@ class InstitutionService
         $this->locationService = $locationService;
         $this->validator = $validator;
         $this->container= $container;
+        $this->exportCSVService = $exportCSVService;
     }
 
     /**
@@ -195,7 +203,7 @@ class InstitutionService
         foreach ($institutionType->getProjects() as $projectId) {
             $project = $this->em->getRepository(Project::class)->find($projectId);
             if (null === $project) {
-                throw new \InvalidArgumentException("Project $projectId doesn't exist");
+                throw new InvalidArgumentException("Project $projectId doesn't exist");
             }
             $institution->addProject($project);
         }
@@ -230,7 +238,7 @@ class InstitutionService
     public function exportToCsv()
     {
         $exportableTable = $this->em->getRepository(Institution::class)->findAll();
-        return  $this->container->get('export_csv_service')->export($exportableTable);
+        return  $this->exportCSVService->export($exportableTable);
     }
 
     /**
@@ -387,7 +395,7 @@ class InstitutionService
         foreach ($institutionType->getProjects() as $projectId) {
             $project = $this->em->getRepository(Project::class)->find($projectId);
             if (null === $project) {
-                throw new \InvalidArgumentException("Project $projectId doesn't exist");
+                throw new InvalidArgumentException("Project $projectId doesn't exist");
             }
             $institution->addProject($project);
         }

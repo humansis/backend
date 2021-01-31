@@ -53,11 +53,12 @@ class HouseholdCSVService
 
     /**
      * HouseholdCSVService constructor.
+     *
      * @param EntityManagerInterface $entityManager
-     * @param HouseholdService $householdService
-     * @param BeneficiaryService $beneficiaryService
-     * @param CSVToArrayMapper $CSVToArrayMapper
-     * @param ContainerInterface $container
+     * @param HouseholdService       $householdService
+     * @param BeneficiaryService     $beneficiaryService
+     * @param CSVToArrayMapper       $CSVToArrayMapper
+     * @param ContainerInterface     $container
      */
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -94,7 +95,7 @@ class HouseholdCSVService
         }
         $uploadedFile->move($dir_var);
 
-        $headers = $this->container->get('beneficiary.household_export_csv_service')->getHeaders($countryIso3);
+        $headers = $this->getHeaders($countryIso3);
         $header = reset($headers);
         $header = array_keys($header);
         $header = array_filter($header, 'trim');    // some header cells are empty (due to help messages). We need to strip them.
@@ -154,7 +155,7 @@ class HouseholdCSVService
      */
     protected function transformAndAnalyze($countryIso3, Project $project, array $sheetArray, $mappingCSV, string $email)
     {
-        $headers = $this->container->get('beneficiary.household_export_csv_service')->getHeaders($countryIso3);
+        $headers = $this->getHeaders($countryIso3);
         $rowHeader = $sheetArray[1];
         $sheetArray = array_slice($sheetArray, count($headers) + 1);
 

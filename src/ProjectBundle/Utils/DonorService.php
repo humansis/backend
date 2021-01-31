@@ -2,7 +2,10 @@
 
 namespace ProjectBundle\Utils;
 
+use CommonBundle\Utils\ExportService;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use NewApiBundle\InputType\DonorCreateInputType;
 use NewApiBundle\InputType\DonorUpdateInputType;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
@@ -30,20 +33,26 @@ class DonorService
     /** @var ContainerInterface $container */
     private $container;
 
+    /** @var ExportService */
+    private $exportCSVService;
+
     /**
      * DonorService constructor.
+     *
      * @param EntityManagerInterface $entityManager
-     * @param Serializer $serializer
-     * @param ValidatorInterface $validator
-     * @param ContainerInterface $container
+     * @param Serializer             $serializer
+     * @param ValidatorInterface     $validator
+     * @param ContainerInterface     $container
+     * @param ExportService          $exportCSVService
      */
-    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator, ContainerInterface $container)
+    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator, ContainerInterface $container,
+                                ExportService $exportCSVService)
     {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->container = $container;
-    }
+        $this->exportCSVService = $exportCSVService;}
 
 
     /**
@@ -61,7 +70,7 @@ class DonorService
      *
      * @param array $donorArray
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      * @deprecated
      */
     public function createFromArray(array $donorArray)
@@ -73,7 +82,7 @@ class DonorService
             ->setNotes($donorArray["notes"])
             ->setLogo($donorArray["logo"]);
 
-        $donor->setDateAdded(new \DateTime());
+        $donor->setDateAdded(new DateTime());
 
         $errors = $this->validator->validate($donor);
         if (count($errors) > 0) {
@@ -81,7 +90,7 @@ class DonorService
             foreach ($errors as $error) {
                 $errorsArray[] = $error->getMessage();
             }
-            throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
+            throw new Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
         $this->em->persist($donor);
@@ -97,7 +106,7 @@ class DonorService
             ->setShortname($inputType->getShortname())
             ->setNotes($inputType->getNotes())
             ->setLogo($inputType->getLogo())
-            ->setDateAdded(new \DateTime());
+            ->setDateAdded(new DateTime());
 
         $this->em->persist($donor);
         $this->em->flush();
@@ -121,7 +130,7 @@ class DonorService
      * @param Donor $donor
      * @param array $donorArray
      * @return Donor
-     * @throws \Exception
+     * @throws Exception
      * @deprecated
      */
     public function edit(Donor $donor, array $donorArray)
@@ -140,7 +149,7 @@ class DonorService
             foreach ($errors as $error) {
                 $errorsArray[] = $error->getMessage();
             }
-            throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
+            throw new Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
         $this->em->persist($donor);
@@ -158,7 +167,7 @@ class DonorService
         try {
             $this->em->remove($donor);
             $this->em->flush();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return false;
         }
 
@@ -174,6 +183,6 @@ class DonorService
     {
         $exportableTable = $this->em->getRepository(Donor::class)->findAll();
 
-        return $this->container->get('export_csv_service')->export($exportableTable, 'donors', $type);
+        return $this->exportCSVService->export($exportableTable, 'donors', $type);
     }
 }

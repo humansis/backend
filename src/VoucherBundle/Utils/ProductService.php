@@ -4,8 +4,10 @@ namespace VoucherBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Logs;
+use CommonBundle\Utils\ExportService;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use NewApiBundle\InputType\ProductCreateInputType;
 use NewApiBundle\InputType\ProductUpdateInputType;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,18 +31,24 @@ class ProductService
     /** @var ContainerInterface $container */
     private $container;
 
+    /** @var ExportService */
+    private $exportCSVService;
+
     /**
      * UserService constructor.
+     *
      * @param EntityManagerInterface $entityManager
-     * @param ValidatorInterface $validator
-     * @param ContainerInterface $container
+     * @param ValidatorInterface     $validator
+     * @param ContainerInterface     $container
+     * @param ExportService          $exportCSVService
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container,
+                                ExportService $exportCSVService)
     {
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
-    }
+        $this->exportCSVService = $exportCSVService;}
 
 
     /**
@@ -49,7 +57,7 @@ class ProductService
      * @deprecated Use ProductService::create instead
      * @param array $productData
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function createFromArray($productData)
     {
@@ -64,8 +72,8 @@ class ProductService
 
             $this->em->persist($product);
             $this->em->flush();
-        } catch (\Exception $e) {
-            throw new \Exception('Error while creating a product' . $e->getMessage());
+        } catch (Exception $e) {
+            throw new Exception('Error while creating a product' . $e->getMessage());
         }
 
         return $product;
@@ -168,6 +176,6 @@ class ProductService
     {
         $exportableTable = $this->em->getRepository(Product::class)->findBy(['archived' => false, 'countryISO3' => $countryIso3]);
 
-        return $this->container->get('export_csv_service')->export($exportableTable, 'products', $type);
+        return $this->exportCSVService->export($exportableTable, 'products', $type);
     }
 }

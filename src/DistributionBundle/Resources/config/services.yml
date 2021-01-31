@@ -31,7 +31,7 @@ services:
             - '@DistributionBundle\Mapper\AssistanceBeneficiaryMapper'
             - '@DistributionBundle\Mapper\AssistanceCommunityMapper'
             - '@DistributionBundle\Mapper\AssistanceInstitutionMapper'
-            - '@DistributionBundle\Utils\DistributionCSVService'
+            - '@distribution.distribution_csv_service'
             - '@BeneficiaryBundle\Mapper\AssistanceMapper'
 
     distribution.assistance_service:
@@ -88,7 +88,11 @@ services:
         public: true
 
     DistributionBundle\Export\SmartcardExport:
-        arguments: [ '@export_csv_service', '@doctrine.orm.entity_manager', '@templating' , '@pdf_service' ]
+        arguments:
+            - '@CommonBundle\Utils\ExportService'
+            - '@doctrine.orm.entity_manager'
+            - '@templating'
+            - '@pdf_service'
 
     distribution.export.smartcard:
         alias: DistributionBundle\Export\SmartcardExport

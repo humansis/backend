@@ -6,9 +6,12 @@ use CommonBundle\Controller\ExportController;
 use CommonBundle\InputType\Country;
 use CommonBundle\InputType\DataTableType;
 use CommonBundle\InputType\RequestConverter;
+use CommonBundle\Utils\ExportService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
+use Exception;
+use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -34,18 +37,25 @@ class VoucherService
     /** @var ContainerInterface $container */
     private $container;
 
+    /** @var ExportService */
+    private $exportCSVService;
+
     /**
      * UserService constructor.
      *
      * @param EntityManagerInterface $entityManager
      * @param ValidatorInterface     $validator
      * @param ContainerInterface     $container
+     * @param ExportService          $exportCSVService
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container,
+                                ExportService $exportCSVService
+    )
     {
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
+        $this->exportCSVService = $exportCSVService;
     }
 
     /**
@@ -53,7 +63,7 @@ class VoucherService
      *
      * @param array $vouchersData
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function create(array $vouchersData, $flush = true)
     {
@@ -77,7 +87,7 @@ class VoucherService
                     $this->em->flush();
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
         return $voucher;
@@ -182,8 +192,7 @@ class VoucherService
         $check = $this->checkBatch($batch);
 
         if ($check->hasInvalidVouchers()) {
-            var_dump($check->jsonSerialize());
-            throw new \InvalidArgumentException("Invalid voucher batch");
+            throw new InvalidArgumentException("Invalid voucher batch");
         }
 
         $repository = $this->em->getRepository(Voucher::class);
@@ -208,7 +217,7 @@ class VoucherService
      * @param Voucher $voucher
      * @param bool $removeVoucher
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function deleteOneFromDatabase(Voucher $voucher, bool $removeVoucher = true)
     {
@@ -216,7 +225,7 @@ class VoucherService
             $this->em->remove($voucher);
             $this->em->flush();
         } else {
-            throw new \Exception('$voucher has been used, unable to delete');
+            throw new Exception('$voucher has been used, unable to delete');
         }
         return true;
     }
@@ -227,7 +236,7 @@ class VoucherService
      *
      * @param Booklet $booklet
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function deleteBatchVouchers(Booklet $booklet)
     {
@@ -235,7 +244,8 @@ class VoucherService
         $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $bookletId]);
         foreach ($vouchers as $value) {
             $this->deleteOneFromDatabase($value);
-        };
+        }
+
         return true;
     }
 
@@ -281,10 +291,10 @@ class VoucherService
         $total = $ids ? $this->em->getRepository(Voucher::class)->countByBookletsIds($ids) : $this->em->getRepository(Voucher::class)->countByBooklets($booklets);
         if ($total > ExportController::EXPORT_LIMIT) {
             $totalBooklets = $ids ? count($ids) : count($booklets);
-            throw new \Exception("Too much vouchers for the export ($total vouchers in $totalBooklets). ".
+            throw new Exception("Too much vouchers for the export ($total vouchers in $totalBooklets). ".
             "Export the data in batches of ".ExportController::EXPORT_LIMIT." vouchers or less");
         }
-        return $this->container->get('export_csv_service')->export($exportableTable->getResult(), 'bookletCodes', $type);
+        return $this->exportCSVService->export($exportableTable->getResult(), 'bookletCodes', $type);
     }
 
     /**
@@ -323,8 +333,8 @@ class VoucherService
 
             $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'bookletCodes');
             return $response;
-        } catch (\Exception $e) {
-            throw new \Exception($e);
+        } catch (Exception $e) {
+            throw new Exception($e);
         }
     }
 

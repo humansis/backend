@@ -26,10 +26,6 @@ services:
 ##                                       CRUD                                        ##
 #######################################################################################
 
-    export_csv_service:
-        alias: CommonBundle\Utils\ExportService
-        public: true
-
     pdf_service:
         alias: CommonBundle\Utils\PdfService
         public: true
@@ -118,21 +114,21 @@ services:
     CommonBundle\DataFixtures\BeneficiaryTestFixtures:
         arguments:
             - "@kernel"
-            - BeneficiaryBundle\Utils\HouseholdService
+            - '@BeneficiaryBundle\Utils\HouseholdService'
         tags:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\Beneficiaries\InstitutionFixture:
         arguments:
             - "@=service('kernel').getEnvironment()"
-            - BeneficiaryBundle\Utils\InstitutionService
+            - '@BeneficiaryBundle\Utils\InstitutionService'
         tags:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\Beneficiaries\CommunityFixture:
         arguments:
             - "@=service('kernel').getEnvironment()"
-            - BeneficiaryBundle\Utils\CommunityService
+            - '@BeneficiaryBundle\Utils\CommunityService'
         tags:
             - { name: doctrine.fixture.orm }
 
