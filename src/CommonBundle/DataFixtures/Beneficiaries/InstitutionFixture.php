@@ -130,7 +130,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
         foreach (self::INSTITUTIONS as $institutionTypeData) {
             $institutionType = RequestConverter::normalizeInputType($institutionTypeData, NewInstitutionType::class);
             foreach (self::COUNTRIES as $COUNTRY) {
-                $institution = $this->institutionService->create(new Country($COUNTRY), $institutionType);
+                $institution = $this->institutionService->createDeprecated(new Country($COUNTRY), $institutionType);
                 $manager->persist($institution);
 
                 $manager->flush();
