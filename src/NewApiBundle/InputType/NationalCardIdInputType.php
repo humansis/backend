@@ -12,44 +12,44 @@ class NationalCardIdInputType implements InputTypeInterface
      * @Assert\Length(max="255")
      * @Assert\NotNull
      */
-    private $idNumber;
+    private $number;
 
     /**
      * @Assert\Type("string")
      * @Assert\Length(max="45")
      * @Assert\NotNull
      */
-    private $idType;
+    private $type;
 
     /**
      * @return string
      */
-    public function getIdNumber()
+    public function getNumber()
     {
-        return $this->idNumber;
+        return $this->number;
     }
 
     /**
-     * @param string $idNumber
+     * @param string $number
      */
-    public function setIdNumber($idNumber)
+    public function setNumber($number)
     {
-        $this->idNumber = $idNumber;
+        $this->number = $number;
     }
 
     /**
      * @return string
      */
-    public function getIdType()
+    public function getType()
     {
-        return $this->idType;
+        return $this->type;
     }
 
     /**
-     * @param string $idType
+     * @param string $type
      */
-    public function setIdType($idType)
+    public function setType($type)
     {
-        $this->idType = $idType;
+        $this->type = $type;
     }
 }

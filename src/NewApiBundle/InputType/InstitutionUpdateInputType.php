@@ -49,7 +49,6 @@ class InstitutionUpdateInputType implements InputTypeInterface
      * @var AddressInputType
      *
      * @Assert\Valid
-     * @Assert\NotNull
      */
     private $address;
 
@@ -57,14 +56,13 @@ class InstitutionUpdateInputType implements InputTypeInterface
      * @var NationalCardIdInputType
      *
      * @Assert\Valid
-     * @Assert\NotNull
      */
     private $nationalIdCard;
 
     /**
      * @var PhoneInputType
      *
-     * @Assert\Valid()
+     * @Assert\Valid
      */
     private $phone;
 
@@ -175,7 +173,7 @@ class InstitutionUpdateInputType implements InputTypeInterface
     /**
      * @param AddressInputType $address
      */
-    public function setAddress($address)
+    public function setAddress(AddressInputType $address)
     {
         $this->address = $address;
     }
@@ -191,7 +189,7 @@ class InstitutionUpdateInputType implements InputTypeInterface
     /**
      * @param NationalCardIdInputType $nationalIdCard
      */
-    public function setNationalIdCard($nationalIdCard)
+    public function setNationalIdCard(NationalCardIdInputType $nationalIdCard)
     {
         $this->nationalIdCard = $nationalIdCard;
     }

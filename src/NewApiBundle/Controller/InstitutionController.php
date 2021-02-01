@@ -7,9 +7,11 @@ use BeneficiaryBundle\Repository\InstitutionRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\InstitutionCreateInputType;
 use NewApiBundle\InputType\InstitutionOrderInputType;
+use NewApiBundle\InputType\InstitutionUpdateInputType;
 use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class InstitutionController extends AbstractController
 {
@@ -60,6 +62,37 @@ class InstitutionController extends AbstractController
      */
     public function create(InstitutionCreateInputType $inputType): JsonResponse
     {
-        return $this->json([]);
+        $institution = $this->get('beneficiary.institution_service')->create($inputType);
+
+        return $this->json($institution);
+    }
+
+    /**
+     * @Rest\Put("/institutions/{id}")
+     *
+     * @param Institution                $institution
+     * @param InstitutionUpdateInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function update(Institution $institution, InstitutionUpdateInputType $inputType): JsonResponse
+    {
+        $institution = $this->get('beneficiary.institution_service')->update($institution, $inputType);
+
+        return $this->json($institution);
+    }
+
+    /**
+     * @Rest\Delete("/institutions/{id}")
+     *
+     * @param Institution $institution
+     *
+     * @return JsonResponse
+     */
+    public function delete(Institution $institution)
+    {
+        $this->get('beneficiary.institution_service')->remove($institution);
+
+        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 }
