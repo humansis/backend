@@ -382,7 +382,7 @@ class ProjectService
         /** @var \Doctrine\ORM\Tools\Pagination\Paginator $assistance */
         $assistances = $this->em->getRepository(Assistance::class)->findByParams($project);
 
-        return 0 === count($assistances) || $this->checkIfAllDistributionClosed($assistance);
+        return 0 === count($assistances) || $this->checkIfAllDistributionClosed($assistances);
     }
 
     /**
