@@ -60,11 +60,11 @@ class InstitutionControllerTest extends BMSServiceTestCase
             ],
             'nationalIdCard' => [
                 'number' => '022-33-1547',
-                'type' => 'national_id',
+                'type' => 'Passport',
             ],
             'phone' => [
-                'prefix' => 420,
-                'number' => 123456789,
+                'prefix' => '420',
+                'number' => '123456789',
                 'type' => 'Landline',
                 'proxy' => true,
             ],
@@ -126,11 +126,11 @@ class InstitutionControllerTest extends BMSServiceTestCase
             ],
             'nationalIdCard' => [
                 'number' => '022-33-1547',
-                'type' => 'national_id',
+                'type' => 'Passport',
             ],
             'phone' => [
-                'prefix' => 420,
-                'number' => 123456789,
+                'prefix' => '420',
+                'number' => '123456789',
                 'type' => 'Landline',
                 'proxy' => true,
             ],

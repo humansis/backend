@@ -2,6 +2,8 @@
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\InputType\Household\NationalIdCardInputType;
+use NewApiBundle\InputType\Household\PhoneInputType;
 use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -187,9 +189,9 @@ class InstitutionUpdateInputType implements InputTypeInterface
     }
 
     /**
-     * @param NationalCardIdInputType $nationalIdCard
+     * @param NationalIdCardInputType $nationalIdCard
      */
-    public function setNationalIdCard(NationalCardIdInputType $nationalIdCard)
+    public function setNationalIdCard(NationalIdCardInputType $nationalIdCard)
     {
         $this->nationalIdCard = $nationalIdCard;
     }
