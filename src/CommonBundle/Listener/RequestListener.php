@@ -5,6 +5,7 @@ namespace CommonBundle\Listener;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,10 +21,14 @@ class RequestListener
     /** @var ContainerInterface $container */
     private $container;
 
-    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
+    /** @var LoggerInterface */
+    private $logger;
+
+    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container, LoggerInterface $logger)
     {
         $this->em = $entityManager;
         $this->container = $container;
+        $this->logger = $logger;
     }
 
     /**
