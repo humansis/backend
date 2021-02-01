@@ -7,6 +7,7 @@ use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\InputType;
+use CommonBundle\Entity\Location;
 use CommonBundle\InputType as GeneralInputType;
 use CommonBundle\InputType\DataTableType;
 use CommonBundle\Mapper\LocationMapper;
@@ -15,6 +16,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use NewApiBundle\InputType\CommunityCreateInputType;
+use NewApiBundle\InputType\CommunityUpdateInputType;
 use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -113,7 +115,7 @@ class CommunityService
      *
      * @throws InvalidArgumentException
      */
-    public function create(GeneralInputType\Country $country, InputType\NewCommunityType $communityType): Community
+    public function createDeprecated(GeneralInputType\Country $country, InputType\NewCommunityType $communityType): Community
     {
         $community = new Community();
         $community->setLongitude($communityType->getLongitude() ?? '');
@@ -191,8 +193,10 @@ class CommunityService
      * @return Community
      *
      * @throws InvalidArgumentException
+     *
+     * @deprecated
      */
-    public function update(GeneralInputType\Country $country, Community $community, InputType\UpdateCommunityType $communityType): Community
+    public function updateDeprecated(GeneralInputType\Country $country, Community $community, InputType\UpdateCommunityType $communityType): Community
     {
         if (null !== $newValue = $communityType->getLongitude()) {
             $community->setLongitude($newValue);
@@ -274,25 +278,26 @@ class CommunityService
      *
      * @return Community
      */
-    public function createCommunity(CommunityCreateInputType $inputType): Community
+    public function create(CommunityCreateInputType $inputType): Community
     {
         $community = new Community();
         $community->setName($inputType->getContactFamilyName());
-        $community->setLongitude($inputType->getLongtitude());
-        $community->setLatitude($inputType->getLongtitude());
+        $community->setLongitude($inputType->getLongitude());
+        $community->setLatitude($inputType->getLongitude());
 
         if (!is_null($inputType->getAddress())) {
+            $addressType = $inputType->getAddress();
 
-            $location = $this->locationService->getLocationByAddressInputType($inputType->getAddress());
+            /** @var Location|null $location */
+            $location = $this->em->getRepository(Location::class)
+                ->find($addressType->getLocationId());
 
-            $address = Address::create(
-                $inputType->getAddress()->getStreet(),
-                $inputType->getAddress()->getNumber(),
-                $inputType->getAddress()->getPostcode(),
+            $community->setAddress(Address::create(
+                $addressType->getStreet(),
+                $addressType->getNumber(),
+                $addressType->getPostcode(),
                 $location
-            );
-
-            $community->setAddress($address);
+            ));
         }
 
         if (!is_null($inputType->getNationalIdCard())) {
@@ -315,8 +320,71 @@ class CommunityService
             $community->setPhone($phone);
         }
 
-
         $this->em->persist($community);
+        $this->em->flush();
+
+        return $community;
+    }
+
+    public function update(Community $community, CommunityUpdateInputType $inputType)
+    {
+        $community->setName($inputType->getContactFamilyName());
+        $community->setLongitude($inputType->getLongitude());
+        $community->setLatitude($inputType->getLatitude());
+        $community->setContactName($inputType->getContactGivenName());
+        $community->setContactFamilyName($inputType->getContactFamilyName());
+
+        $addressType = $inputType->getAddress();
+
+        if (null === $addressType) {
+            $community->setAddress(null);
+        } else {
+            $communityAddress = $community->getAddress();
+            if (null === $community->getAddress()) {
+                $communityAddress = new Address();
+                $community->setAddress($communityAddress);
+            }
+
+            /** @var Location|null $location */
+            $location = $this->em->getRepository(Location::class)
+                ->find($addressType->getLocationId());
+
+            $communityAddress->setLocation($location);
+            $communityAddress->setNumber($addressType->getNumber());
+            $communityAddress->setPostcode($addressType->getPostcode());
+            $communityAddress->setStreet($addressType->getStreet());
+        }
+
+        $nationalIdCardType = $inputType->getNationalIdCard();
+        if (null === $nationalIdCardType) {
+            $community->setNationalId(null);
+        } else {
+            $communityNationalIdCard = $community->getNationalId();
+            if (null === $communityNationalIdCard) {
+                $communityNationalIdCard = new NationalId();
+                $community->setNationalId($communityNationalIdCard);
+            }
+
+            $communityNationalIdCard->setIdNumber($nationalIdCardType->getNumber());
+            $communityNationalIdCard->setIdType($nationalIdCardType->getType());
+        }
+
+        $phoneType = $inputType->getPhone();
+        if (null === $phoneType) {
+            $community->setPhone(null);
+        } else {
+            $communityPhone = $community->getPhone();
+            if (null === $communityPhone) {
+                $communityPhone = new Phone();
+                $community->setPhone($communityPhone);
+            }
+
+            $communityPhone->setPrefix($phoneType->getPrefix());
+            $communityPhone->setNumber($phoneType->getNumber());
+            $communityPhone->setType($phoneType->getType());
+            $communityPhone->setProxy($phoneType->getProxy());
+        }
+
         $this->em->flush();
 
         return $community;

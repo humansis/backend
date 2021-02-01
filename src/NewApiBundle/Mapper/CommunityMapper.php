@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Mapper;
 
 use BeneficiaryBundle\Entity\Community;
-use NewApiBundle\Mapper\Attributes\TIdOutputAttribute;
+use InvalidArgumentException;
 use NewApiBundle\Serializer\MapperInterface;
 
 /**
@@ -38,7 +38,7 @@ class CommunityMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '. Community::class . ', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of '. Community::class . ', '.get_class($object).' given.');
     }
 
     /**
@@ -52,7 +52,7 @@ class CommunityMapper implements MapperInterface
     /**
      * @return string|null
      */
-    public function getLongtitude(): ?string
+    public function getLongitude(): ?string
     {
         return $this->object->getLongitude();
     }

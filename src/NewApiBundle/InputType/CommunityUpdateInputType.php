@@ -22,12 +22,12 @@ class CommunityUpdateInputType extends AbstractSortInputType implements InputTyp
 	const SORT_CONTACT_FAMILY_NAME = 'contactFamilyName';
 
     /**
-     * @var string|null $longtitude
+     * @var string|null $longitude
      *
      * @Assert\Length(max="45")
      * @Assert\Type("string")
      */
-    private $longtitude;
+    private $longitude;
 
     /**
      * @var string|null $latitude
@@ -60,7 +60,7 @@ class CommunityUpdateInputType extends AbstractSortInputType implements InputTyp
 
 
     /**
-     * @var AddressCreateInputType $address
+     * @var AddressInputType $address
      *
      * @Assert\Valid()
      */
@@ -83,17 +83,17 @@ class CommunityUpdateInputType extends AbstractSortInputType implements InputTyp
     /**
      * @return string|null
      */
-    public function getLongtitude()
+    public function getLongitude()
     {
-        return $this->longtitude;
+        return $this->longitude;
     }
 
     /**
-     * @param string|null $longtitude
+     * @param string|null $longitude
      */
-    public function setLongtitude($longtitude)
+    public function setLongitude($longitude)
     {
-        $this->longtitude = $longtitude;
+        $this->longitude = $longitude;
     }
 
     /**
@@ -145,7 +145,7 @@ class CommunityUpdateInputType extends AbstractSortInputType implements InputTyp
     }
 
     /**
-     * @return AddressCreateInputType
+     * @return AddressInputType
      */
     public function getAddress()
     {
@@ -153,9 +153,9 @@ class CommunityUpdateInputType extends AbstractSortInputType implements InputTyp
     }
 
     /**
-     * @param AddressCreateInputType $address
+     * @param AddressInputType $address
      */
-    public function setAddress(AddressCreateInputType $address)
+    public function setAddress(AddressInputType $address)
     {
         $this->address = $address;
     }
