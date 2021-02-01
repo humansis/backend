@@ -181,7 +181,7 @@ class BookletService
                     ->setCode($bookletCode)
                     ->setPassword($inputType->getPassword());
 
-                $values = $inputType->getIndividualValues();
+                $values = $inputType->getValues();
                 for ($j = 0; $j < $booklet->getNumberVouchers(); ++$j) {
                     $value = $values[$j] ?? $values[count($values) - 1];
                     $voucher = new Voucher($tempCode.'_'.$i.'_'.$j, $value, $booklet);

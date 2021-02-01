@@ -63,6 +63,16 @@ class BookletMapper implements MapperInterface
         return $this->object->getProject() ? $this->object->getProject()->getId() : null;
     }
 
+    public function getBeneficiaryId(): ?int
+    {
+        return $this->object->getAssistanceBeneficiary() ? $this->object->getAssistanceBeneficiary()->getBeneficiary()->getId() : null;
+    }
+
+    public function getAssistanceId(): ?int
+    {
+        return $this->object->getAssistanceBeneficiary() ? $this->object->getAssistanceBeneficiary()->getAssistance()->getId() : null;
+    }
+
     public function getDeletable(): bool
     {
         return 0 === count($this->object->getVouchers());
