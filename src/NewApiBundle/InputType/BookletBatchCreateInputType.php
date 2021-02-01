@@ -48,7 +48,7 @@ class BookletBatchCreateInputType implements InputTypeInterface
      * )
      * @Assert\Callback({"NewApiBundle\InputType\BookletBatchCreateInputType", "validateIndividualValues"}, groups={"SecondaryValidation"}),
      */
-    private $individualValues;
+    private $values;
 
     /**
      * @Assert\Type("int")
@@ -122,14 +122,14 @@ class BookletBatchCreateInputType implements InputTypeInterface
     /**
      * @return array|int[]
      */
-    public function getIndividualValues()
+    public function getValues()
     {
-        return $this->individualValues;
+        return $this->values;
     }
 
-    public function setIndividualValues($individualValues)
+    public function setValues($values)
     {
-        $this->individualValues = $individualValues;
+        $this->values = $values;
     }
 
     /**
