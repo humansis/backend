@@ -69,7 +69,7 @@ class InstitutionMapper implements MapperInterface
 
     public function getType(): string
     {
-        return $this->object->getName();
+        return $this->object->getType();
     }
 
     public function getAddressId(): ?int
