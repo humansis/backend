@@ -20,16 +20,15 @@ class CommunityFilterType extends AbstractFilterInputType
     protected $fulltext;
 
     /**
-     * @var string[]
-     * @Assert\Type("string")
+     * @Assert\Type("array")
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Type("integer", groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
      */
-    protected $projectName;
-
-    /**
-     * @var string[]
-     * @Assert\Type("string")
-     */
-    protected $name;
+    protected $projects;
 
     /**
      * @return string
@@ -47,35 +46,13 @@ class CommunityFilterType extends AbstractFilterInputType
         return $this->has('fulltext');
     }
 
-    /**
-     * @return string[]
-     */
-    public function getProjectName(): array
+    public function hasProjects(): bool
     {
-        return $this->projectName;
+        return $this->has('projects');
     }
 
-    /**
-     * @return bool
-     */
-    public function hasProjectName(): bool
+    public function getProjects()
     {
-        return $this->has('projectName');
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getName(): array
-    {
-        return $this->name;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasName(): bool
-    {
-        return $this->has('name');
+        return $this->projects;
     }
 }

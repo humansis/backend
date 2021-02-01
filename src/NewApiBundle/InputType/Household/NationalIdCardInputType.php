@@ -12,15 +12,15 @@ class NationalIdCardInputType implements InputTypeInterface
     /**
      * @Assert\Type("string")
      * @Assert\Length(max="255")
-     * @Assert\NotBlank()
-     * @Assert\NotNull()
+     * @Assert\NotBlank
+     * @Assert\NotNull
      */
     private $number;
 
     /**
      * @Assert\Choice(callback={"BeneficiaryBundle\Entity\NationalId","types"})
-     * @Assert\NotNull()
-     * @Assert\NotBlank()
+     * @Assert\NotNull
+     * @Assert\NotBlank
      */
     private $type;
 

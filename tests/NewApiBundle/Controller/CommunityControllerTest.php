@@ -205,7 +205,7 @@ class CommunityControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('GET', '/api/basic/communities?sort[]=id.asc');
+        $this->request('GET', '/api/basic/communities?sort[]=id.asc&filter[fulltext]=test');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

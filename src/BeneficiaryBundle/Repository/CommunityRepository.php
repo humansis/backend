@@ -259,30 +259,29 @@ class CommunityRepository extends EntityRepository
 
         $this->whereCommunityInCountry($q, $countryIso3);
 
-        $filterIndex = 0;
-
         if (!is_null($filter)) {
             if ($filter->hasFulltext()) {
-                // TODO
+                $qb->leftJoin('comm.contact', 'per');
+
+                $qb->andWhere('comm.name LIKE :fulltext OR
+                                comm.latitude LIKE :fulltext OR
+                                comm.longitude LIKE :fulltext OR
+                                per.localGivenName LIKE :fulltext OR 
+                                per.localFamilyName LIKE :fulltext OR
+                                per.localParentsName LIKE :fulltext OR
+                                per.enGivenName LIKE :fulltext OR
+                                per.enFamilyName LIKE :fulltext OR
+                                per.enParentsName LIKE :fulltext OR
+                                per.enParentsName LIKE :fulltext')
+                    ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
             }
-            // filter per names in array
-            if ($filter->hasName()) {
-                foreach ($filter->getName() as $value) {
-                    $q->andWhere('comm.name LIKE :name'.$filterIndex);
-                    $q->setParameter('name'.$filterIndex, $value);
-                    ++$filterIndex;
-                }
-            }
-            // filter per project names in array
-            if ($filter->hasProjectName()) {
-                $projectAlias = "project$filterIndex";
-                $q->join('comm.projects', $projectAlias);
-                foreach ($filter->getProjectName() as $value) {
-                    $q->orWhere("$projectAlias.name LIKE :projectName$filterIndex");
-                    $q->setParameter('projectName'.$filterIndex, $value);
-                    ++$filterIndex;
-                }
-            }
+        }
+
+        if ($filter->hasProjects()) {
+            $qb->leftJoin('comm.projects', 'p');
+
+            $qb->andWhere('p.id IN (:projects)')
+                ->setParameter('projects', $filter->getProjects());
         }
 
         if ($pagination) {

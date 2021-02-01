@@ -7,20 +7,14 @@ namespace NewApiBundle\InputType;
 use NewApiBundle\InputType\Household\NationalIdCardInputType;
 use NewApiBundle\InputType\Household\PhoneInputType;
 use NewApiBundle\Request\InputTypeInterface;
-use NewApiBundle\Request\OrderInputType\AbstractSortInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class CommunityUpdateInputType
  * @package NewApiBundle\InputType
  */
-class CommunityUpdateInputType extends AbstractSortInputType implements InputTypeInterface
+class CommunityUpdateInputType implements InputTypeInterface
 {
-
-	const SORT_ID = 'id';
-	const SORT_CONTACT_GIVEN_NAME = 'contactGivenName';
-	const SORT_CONTACT_FAMILY_NAME = 'contactFamilyName';
-
     /**
      * @var string|null $longitude
      *
@@ -43,8 +37,8 @@ class CommunityUpdateInputType extends AbstractSortInputType implements InputTyp
      *
      * @Assert\Length(max="255")
      * @Assert\Type("string")
-     * @Assert\NotBlank()
-     * @Assert\NotNull()
+     * @Assert\NotBlank
+     * @Assert\NotNull
      */
     private $contactGivenName;
 
@@ -53,8 +47,8 @@ class CommunityUpdateInputType extends AbstractSortInputType implements InputTyp
      *
      * @Assert\Length(max="255")
      * @Assert\Type("string")
-     * @Assert\NotBlank()
-     * @Assert\NotNull()
+     * @Assert\NotBlank
+     * @Assert\NotNull
      */
     private $contactFamilyName;
 
@@ -62,21 +56,21 @@ class CommunityUpdateInputType extends AbstractSortInputType implements InputTyp
     /**
      * @var AddressInputType $address
      *
-     * @Assert\Valid()
+     * @Assert\Valid
      */
     private $address;
 
     /**
      * @var NationalIdCardInputType $nationalIdCard
      *
-     * @Assert\Valid()
+     * @Assert\Valid
      */
     private $nationalIdCard;
 
     /**
      * @var PhoneInputType $phone
      *
-     * @Assert\Valid()
+     * @Assert\Valid
      */
     private $phone;
 
@@ -191,16 +185,4 @@ class CommunityUpdateInputType extends AbstractSortInputType implements InputTyp
     {
         $this->phone = $phone;
     }
-
-    /**
-	 * @inheritDoc
-	 */
-	protected function getValidNames(): array
-	{
-		return [
-			self::SORT_ID,
-			self::SORT_CONTACT_GIVEN_NAME,
-			self::SORT_CONTACT_FAMILY_NAME,
-		];
-	}
 }

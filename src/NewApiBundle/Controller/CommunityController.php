@@ -51,6 +51,10 @@ class CommunityController extends AbstractController
      */
     public function list(Request $request, CommunityOrderInputType $communityOrderInputType, CommunityFilterType $communityFilterType, Pagination $pagination): JsonResponse
     {
+        if (!$request->headers->has('country')) {
+            throw $this->createNotFoundException('Missing header attribute country');
+        }
+
         /** @var CommunityRepository $communityRepository */
         $communityRepository = $this->getDoctrine()->getRepository(Community::class);
 
