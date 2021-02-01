@@ -14,6 +14,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use ProjectBundle\Entity\Project;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class InstitutionFixture extends Fixture implements DependentFixtureInterface
 {
@@ -111,12 +112,13 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
 
     /**
      * InstitutionFixture constructor.
-     * @param string $environment
+     *
+     * @param KernelInterface    $kernel
      * @param InstitutionService $institutionService
      */
-    public function __construct(string $environment, InstitutionService $institutionService)
+    public function __construct(KernelInterface $kernel, InstitutionService $institutionService)
     {
-        $this->environment = $environment;
+        $this->environment = $kernel->getEnvironment();
         $this->institutionService = $institutionService;
     }
 

@@ -6,8 +6,9 @@ use CommonBundle\Entity\Organization;
 use CommonBundle\Entity\OrganizationServices;
 use CommonBundle\Entity\Service;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 use FOS\UserBundle\Doctrine\UserManager;
+use Symfony\Component\Security\Core\Encoder\EncoderFactory;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class ServiceFixtures extends Fixture
@@ -19,7 +20,7 @@ class ServiceFixtures extends Fixture
     /** @var EncoderFactoryInterface $encoderFactory */
     private $encoderFactory;
 
-    public function __construct(UserManager $manager, EncoderFactoryInterface $encoderFactory)
+    public function __construct(UserManager $manager, EncoderFactory $encoderFactory)
     {
         $this->manager = $manager;
         $this->encoderFactory = $encoderFactory;

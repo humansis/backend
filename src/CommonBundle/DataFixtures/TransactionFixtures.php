@@ -6,6 +6,7 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\HttpKernel\KernelInterface;
 use TransactionBundle\Entity\Transaction;
 use TransactionBundle\Utils\Provider\KHMFinancialProvider;
 
@@ -18,12 +19,12 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
     private $KHMFinancialProvider;
 
     /**
-     * @param string               $environment
+     * @param KernelInterface      $kernel
      * @param KHMFinancialProvider $KHMFinancialProvider
      */
-    public function __construct(string $environment, KHMFinancialProvider $KHMFinancialProvider)
+    public function __construct(KernelInterface $kernel, KHMFinancialProvider $KHMFinancialProvider)
     {
-        $this->environment = $environment;
+        $this->environment = $kernel->getEnvironment();
         $this->KHMFinancialProvider = $KHMFinancialProvider;
     }
 

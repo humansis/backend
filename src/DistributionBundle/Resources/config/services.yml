@@ -34,10 +34,6 @@ services:
             - '@distribution.distribution_csv_service'
             - '@BeneficiaryBundle\Mapper\AssistanceMapper'
 
-    distribution.assistance_service:
-        alias: DistributionBundle\Utils\AssistanceService
-        public: true
-
     DistributionBundle\Utils\AssistanceService:
         public: true
         arguments:

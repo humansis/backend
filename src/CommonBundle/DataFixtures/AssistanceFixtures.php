@@ -19,6 +19,7 @@ use Doctrine\Persistence\ObjectManager;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class AssistanceFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
@@ -81,7 +82,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
 
     private $kernel;
 
-    public function __construct(Kernel $kernel, AssistanceService $distributionService)
+    public function __construct(KernelInterface $kernel, AssistanceService $distributionService)
     {
         $this->distributionService = $distributionService;
         $this->kernel = $kernel;

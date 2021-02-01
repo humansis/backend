@@ -19,6 +19,7 @@ use Doctrine\Persistence\ObjectManager;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Enum\Livelihood;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
 {
@@ -80,7 +81,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
 
     private $kernel;
 
-    public function __construct(Kernel $kernel, HouseholdService $householdService)
+    public function __construct(KernelInterface $kernel, HouseholdService $householdService)
     {
         $this->householdService = $householdService;
         $this->kernel = $kernel;

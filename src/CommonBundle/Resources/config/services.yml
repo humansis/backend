@@ -12,6 +12,10 @@ services:
     CommonBundle\Utils\:
         resource: '../../Utils'
 
+    CommonBundle\DataFixtures\:
+        resource: '../../DataFixtures'
+        tags: [ 'doctrine.fixture.orm' ]
+
     CommonBundle\Command\ClearCacheImportCommand:
         public: true
         tags:
@@ -56,156 +60,22 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
-
 #######################################################################################
 ##                                      FIXTURE                                      ##
 #######################################################################################
 
-    CommonBundle\DataFixtures\CountrySpecificFixtures:
-        tags:
-            - { name: doctrine.fixture.orm }
-
-    CommonBundle\DataFixtures\LocationFixtures:
-        tags:
-            - { name: doctrine.fixture.orm }
-
-    CommonBundle\DataFixtures\LocationTestFixtures:
+    CommonBundle\DataFixtures\ServiceFixtures:
         arguments:
-            - "@kernel"
-        tags:
-            - { name: doctrine.fixture.orm }
-
-    CommonBundle\DataFixtures\ModalityFixtures:
-        tags:
-            - { name: doctrine.fixture.orm }
-
-    CommonBundle\DataFixtures\ProjectFixtures:
-        arguments:
-            - "@kernel"
-        tags:
-            - { name: doctrine.fixture.orm }
+            - "@fos_user.user_manager.default"
+            - "@security.encoder_factory"
+        tags: [ 'doctrine.fixture.orm' ]
 
     CommonBundle\DataFixtures\UserFixtures:
         arguments:
-            - "@fos_user.user_manager"
+            - "@fos_user.user_manager.default"
             - "@security.encoder_factory"
             - "@kernel"
-        tags:
-            - { name: doctrine.fixture.orm }
-
-    CommonBundle\DataFixtures\VulnerabilityCriterionFixtures:
-        tags:
-            - { name: doctrine.fixture.orm }
-
-    CommonBundle\DataFixtures\BookletFixtures:
-        arguments:
-            - "@kernel"
-            - "@voucher.booklet_service"
-        tags:
-            - { name: doctrine.fixture.orm }
-
-    CommonBundle\DataFixtures\Beneficiaries\BeneficiaryBookletFixtures:
-        arguments:
-            - "@kernel"
-            - "@voucher.booklet_service"
-        tags:
-            - { name: doctrine.fixture.orm }
-
-    CommonBundle\DataFixtures\BeneficiaryTestFixtures:
-        arguments:
-            - "@kernel"
-            - '@BeneficiaryBundle\Utils\HouseholdService'
-        tags:
-            - { name: doctrine.fixture.orm }
-
-    CommonBundle\DataFixtures\Beneficiaries\InstitutionFixture:
-        arguments:
-            - "@=service('kernel').getEnvironment()"
-            - '@BeneficiaryBundle\Utils\InstitutionService'
-        tags:
-            - { name: doctrine.fixture.orm }
-
-    CommonBundle\DataFixtures\Beneficiaries\CommunityFixture:
-        arguments:
-            - "@=service('kernel').getEnvironment()"
-            - '@BeneficiaryBundle\Utils\CommunityService'
-        tags:
-            - { name: doctrine.fixture.orm }
-
-    CommonBundle\DataFixtures\AssistanceFixtures:
-        arguments:
-            - "@kernel"
-            - "@distribution.assistance_service"
-        tags:
-            - { name: doctrine.fixture.orm }
-
-    CommonBundle\DataFixtures\AssistanceValidationFixtures:
-        arguments:
-            - "@kernel"
-            - "@distribution.assistance_service"
-        tags:
-            - { name: doctrine.fixture.orm }
-
-    CommonBundle\DataFixtures\Beneficiaries\AssistanceBeneficiaryFixtures:
-        arguments:
-            - "@kernel"
-            - "@distribution.assistance_service"
-        tags:
-            - { name: doctrine.fixture.orm }
-
-    CommonBundle\DataFixtures\VoucherPurchaseFixtures:
-        arguments:
-            - "@=service('kernel').getEnvironment()"
-            - "@voucher.purchase_service"
-        tags:
-            - { name: doctrine.fixture.orm }
-
-    CommonBundle\DataFixtures\VoucherRedemptionFixtures:
-        arguments:
-            - "@=service('kernel').getEnvironment()"
-            - "@voucher.voucher_service"
-        tags:
-            - { name: doctrine.fixture.orm }
-    
-    CommonBundle\DataFixtures\OrganizationFixtures:
-        arguments:
-            - "@kernel"
-        tags:
-            - { name: doctrine.fixture.orm }
-
-    CommonBundle\DataFixtures\ServiceFixtures:
-        arguments:
-        - "@fos_user.user_manager"
-        - "@security.encoder_factory"
-        tags:
-        - { name: doctrine.fixture.orm }
-
-    CommonBundle\DataFixtures\SmartcardFixtures:
-        arguments:
-            - "@=service('kernel').getEnvironment()"
-        tags:
-            - { name: doctrine.fixture.orm }
-
-    CommonBundle\DataFixtures\TransactionFixtures:
-        arguments:
-            - "@=service('kernel').getEnvironment()"
-            - "@transaction.khm_financial_provider"
-        tags:
-            - { name: doctrine.fixture.orm }
-
-    CommonBundle\DataFixtures\ProductFixtures:
-        arguments:
-            - "@kernel"
-        tags:
-            - { name: doctrine.fixture.orm }
-
-    CommonBundle\DataFixtures\VendorFixtures:
-        arguments:
-            - "@kernel"
-        tags:
-            - { name: doctrine.fixture.orm }
-
-
+        tags: [ 'doctrine.fixture.orm' ]
 
 #######################################################################################
 ##                                       VOTER                                       ##

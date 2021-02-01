@@ -4,12 +4,14 @@
 namespace CommonBundle\DataFixtures\Beneficiaries;
 
 use BeneficiaryBundle\Utils\HouseholdService;
+use CommonBundle\DataFixtures\VulnerabilityCriterionFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use Doctrine\Persistence\ObjectManager;
 use ProjectBundle\Entity\Project;
-use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\KernelInterface;
 
-class BeneficiaryFixtures extends Fixture
+class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
 {
     private $householdArray = [
         [
@@ -268,7 +270,7 @@ class BeneficiaryFixtures extends Fixture
     
     private $kernel;
 
-    public function __construct(Kernel $kernel, HouseholdService $householdService)
+    public function __construct(KernelInterface $kernel, HouseholdService $householdService)
     {
         $this->householdService = $householdService;
         $this->kernel = $kernel;
@@ -288,5 +290,12 @@ class BeneficiaryFixtures extends Fixture
                 $this->householdService->createOrEdit($household, $projects);
             }
         }
+    }
+
+    public function getDependencies(): array
+    {
+        return [
+            VulnerabilityCriterionFixtures::class,
+        ];
     }
 }

@@ -11,6 +11,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class LocationTestFixtures extends Fixture implements FixtureGroupInterface
 {
@@ -28,10 +29,15 @@ class LocationTestFixtures extends Fixture implements FixtureGroupInterface
     const ADM4_1 = 'ADM4Fst';
     const ADM4_2 = 'ADM4Snd';
 
-    /** @var Kernel $kernel */
+    /** @var KernelInterface $kernel */
     private $kernel;
 
-    public function __construct(Kernel $kernel)
+    /**
+     * LocationTestFixtures constructor.
+     *
+     * @param KernelInterface $kernel
+     */
+    public function __construct(KernelInterface $kernel)
     {
         $this->kernel = $kernel;
     }

@@ -2,13 +2,12 @@
 
 namespace CommonBundle\DataFixtures;
 
-use BeneficiaryBundle\Entity\Beneficiary;
 use DateTimeImmutable;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\HttpKernel\KernelInterface;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Smartcard;
@@ -26,11 +25,11 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
     private $assistanceBeneficiary;
 
     /**
-     * @param string $environment
+     * @param KernelInterface $kernel
      */
-    public function __construct(string $environment)
+    public function __construct(KernelInterface $kernel)
     {
-        $this->environment = $environment;
+        $this->environment = $kernel->getEnvironment();
     }
 
     /**

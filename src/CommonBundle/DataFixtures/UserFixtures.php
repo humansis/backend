@@ -7,6 +7,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use FOS\UserBundle\Doctrine\UserManager;
 use ProjectBundle\Entity\Project;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\HttpKernel\Kernel;
 use Tests\BMSServiceTestCase;
@@ -24,7 +25,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     const REF_VENDOR_SYR = 'vendor.syr@example.org';
 
 
-    /** @var Kernel $kernel */
+    /** @var KernelInterface $kernel */
     private $kernel;
     
     /** @var UserManager $manager */
@@ -33,7 +34,14 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     /** @var EncoderFactoryInterface $encoderFactory */
     private $encoderFactory;
 
-    public function __construct(UserManager $manager, EncoderFactoryInterface $encoderFactory, Kernel $kernel)
+    /**
+     * UserFixtures constructor.
+     *
+     * @param UserManager             $manager
+     * @param EncoderFactoryInterface $encoderFactory
+     * @param KernelInterface         $kernel
+     */
+    public function __construct(UserManager $manager, EncoderFactoryInterface $encoderFactory, KernelInterface $kernel)
     {
         $this->manager = $manager;
         $this->encoderFactory = $encoderFactory;

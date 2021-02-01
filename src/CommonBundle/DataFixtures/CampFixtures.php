@@ -6,9 +6,23 @@ use BeneficiaryBundle\Entity\Camp;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class CampFixtures extends Fixture implements DependentFixtureInterface
 {
+    /** @var KernelInterface */
+    private $kernel;
+
+    /**
+     * CampFixtures constructor.
+     *
+     * @param KernelInterface $kernel
+     */
+    public function __construct(KernelInterface $kernel)
+    {
+        $this->kernel = $kernel;
+    }
+
     /**
      * @param ObjectManager $manager
      */

@@ -9,6 +9,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\KernelInterface;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Vendor;
 
@@ -20,10 +21,10 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
 
     const VENDOR_COUNT_PER_COUNTRY = 3;
 
-    /** @var Kernel */
+    /** @var KernelInterface */
     private $kernel;
 
-    public function __construct(Kernel $kernel)
+    public function __construct(KernelInterface $kernel)
     {
         $this->kernel = $kernel;
     }

@@ -9,6 +9,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class ProjectFixtures extends Fixture implements FixtureGroupInterface
 {
@@ -33,10 +34,15 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
         'ARM' => 'Armenian',
     ];
 
+    /** @var KernelInterface */
     private $kernel;
 
-
-    public function __construct(Kernel $kernel)
+    /**
+     * ProjectFixtures constructor.
+     *
+     * @param KernelInterface $kernel
+     */
+    public function __construct(KernelInterface $kernel)
     {
         $this->kernel = $kernel;
     }

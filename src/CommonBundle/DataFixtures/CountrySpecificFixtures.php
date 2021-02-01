@@ -4,9 +4,10 @@
 namespace CommonBundle\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 
 use BeneficiaryBundle\Entity\CountrySpecific;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class CountrySpecificFixtures extends Fixture
 {
@@ -14,6 +15,19 @@ class CountrySpecificFixtures extends Fixture
         ['IDPoor', 'number', 'KHM'],
         ['equityCardNo', 'text', 'KHM']
     ];
+
+    /** @var KernelInterface */
+    private $kernel;
+
+    /**
+     * CampFixtures constructor.
+     *
+     * @param KernelInterface $kernel
+     */
+    public function __construct(KernelInterface $kernel)
+    {
+        $this->kernel = $kernel;
+    }
 
     /**
      * Load data fixtures with the passed EntityManagerInterface
