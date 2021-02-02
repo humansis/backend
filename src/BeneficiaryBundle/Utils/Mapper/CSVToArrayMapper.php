@@ -74,13 +74,13 @@ class CSVToArrayMapper
         'member_f-0-2' => 'AR',
         'member_f-2-5' => 'AS',
         'member_f-6-17' => 'AT',
-        'member_f-18-64' => 'AU',
-        'member_f-65-99' => 'AV',
+        'member_f-18-59' => 'AU',
+        'member_f-60-99' => 'AV',
         'member_m-0-2' => 'AW',
         'member_m-2-5' => 'AX',
         'member_m-6-17' => 'AY',
-        'member_m-18-64' => 'AZ',
-        'member_m-65-99' => 'BA',
+        'member_m-18-59' => 'AZ',
+        'member_m-60-99' => 'BA',
     ];
 
     private $countrySpecificIds = [];
@@ -383,10 +383,10 @@ class CSVToArrayMapper
                     $expectedStaticField = 'member_'.($beneficiary['gender']?'m':'f').'-2-5';
                 } elseif ($age < 18) {
                     $expectedStaticField = 'member_'.($beneficiary['gender']?'m':'f').'-6-17';
-                } elseif ($age < 65) {
-                    $expectedStaticField = 'member_'.($beneficiary['gender']?'m':'f').'-18-64';
+                } elseif ($age < 60) {
+                    $expectedStaticField = 'member_'.($beneficiary['gender']?'m':'f').'-18-59';
                 } else {
-                    $expectedStaticField = 'member_'.($beneficiary['gender']?'m':'f').'-65-99';
+                    $expectedStaticField = 'member_'.($beneficiary['gender']?'m':'f').'-60-99';
                 }
 
                 if (array_key_exists($expectedStaticField, $householdArray) && null !== $householdArray[$expectedStaticField]) {
@@ -396,8 +396,8 @@ class CSVToArrayMapper
         }
 
         $staticFields = [
-            'f-0-2', 'f-2-5', 'f-6-17', 'f-18-64', 'f-65-99',
-            'm-0-2', 'm-2-5', 'm-6-17', 'm-18-64', 'm-65-99',
+            'f-0-2', 'f-2-5', 'f-6-17', 'f-18-59', 'f-60-99',
+            'm-0-2', 'm-2-5', 'm-6-17', 'm-18-59', 'm-60-99',
         ];
         foreach ($staticFields as $staticField) {
             $field = 'member_' . $staticField;
