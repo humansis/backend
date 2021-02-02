@@ -136,7 +136,7 @@ class CommunityController extends Controller
         /** @var CommunityMapper $communityMapper */
         $communityMapper = $this->get(CommunityMapper::class);
         try {
-            $community = $communityService->create($country, $communityType);
+            $community = $communityService->createDeprecated($country, $communityType);
             $this->getDoctrine()->getManager()->persist($community);
             $this->getDoctrine()->getManager()->flush();
         } catch (\InvalidArgumentException $exception) {
@@ -196,7 +196,7 @@ class CommunityController extends Controller
         /** @var CommunityMapper $communityMapper */
         $communityMapper = $this->get(CommunityMapper::class);
         try {
-            $community = $communityService->update($country, $community, $communityType);
+            $community = $communityService->updateDeprecated($country, $community, $communityType);
             $this->getDoctrine()->getManager()->persist($community);
             $this->getDoctrine()->getManager()->flush();
         } catch (\InvalidArgumentException $exception) {

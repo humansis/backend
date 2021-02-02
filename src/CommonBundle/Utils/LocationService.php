@@ -3,10 +3,8 @@
 
 namespace CommonBundle\Utils;
 
-use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use BeneficiaryBundle\InputType\LocationType;
-use BeneficiaryBundle\Utils\HouseholdService;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
@@ -16,10 +14,8 @@ use BeneficiaryBundle\Entity\Camp;
 use CommonBundle\InputType\Country;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ObjectManager;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
-use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 /**
  * Class LocationService
@@ -94,6 +90,8 @@ class LocationService
     }
 
     /**
+     * @deprecated Use getLocationByAddressInputType()
+     *
      * @param Country $country
      * @param LocationType|null $locationType
      * @return Location|null
@@ -290,5 +288,4 @@ class LocationService
 
         return $response;
     }
-
 }

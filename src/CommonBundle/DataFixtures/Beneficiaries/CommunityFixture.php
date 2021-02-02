@@ -129,7 +129,7 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
             /** @var NewCommunityType $communityType */
             $communityType = RequestConverter::normalizeInputType($communityArray, NewCommunityType::class);
             foreach (self::COUNTRIES as $COUNTRY) {
-                $institution = $this->communityService->create(new Country($COUNTRY), $communityType);
+                $institution = $this->communityService->createDeprecated(new Country($COUNTRY), $communityType);
                 $manager->persist($institution);
 
                 $manager->flush();
