@@ -44,7 +44,6 @@ class User extends BaseUser implements ExportableInterface
     
     /**
      * @var string
-     * @SymfonyGroups({"FullUser", "FullVendor"})
      */
     protected $password;
 
