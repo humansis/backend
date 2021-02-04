@@ -1,14 +1,10 @@
 <?php
 namespace CommonBundle\DataFixtures\Beneficiaries;
 
-use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\InputType\LocationType;
 use BeneficiaryBundle\InputType\NewCommunityType;
-use BeneficiaryBundle\InputType\NewInstitutionType;
-use BeneficiaryBundle\InputType\UpdateCommunityType;
 use BeneficiaryBundle\Utils\CommunityService;
-use BeneficiaryBundle\Utils\InstitutionService;
+use CommonBundle\Controller\CountryController;
 use CommonBundle\DataFixtures\LocationFixtures;
 use CommonBundle\DataFixtures\ProjectFixtures;
 use CommonBundle\InputType\Country;
@@ -20,7 +16,6 @@ use ProjectBundle\Entity\Project;
 
 class CommunityFixture extends Fixture implements DependentFixtureInterface
 {
-    const COUNTRIES = ['KHM', 'SYR', 'UKR', 'ETH', 'MNG', 'ARM'];
     const COMMUNITIES = [
         [
             'projects' => [1],
@@ -125,14 +120,17 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
             echo "Cannot run on production environment";
             return;
         }
-        foreach (self::COMMUNITIES as $communityArray) {
-            /** @var NewCommunityType $communityType */
-            $communityType = RequestConverter::normalizeInputType($communityArray, NewCommunityType::class);
-            foreach (self::COUNTRIES as $COUNTRY) {
-                $institution = $this->communityService->createDeprecated(new Country($COUNTRY), $communityType);
-                $manager->persist($institution);
+        foreach (CountryController::COUNTRIES as $COUNTRY) {
+            $projects = $manager->getRepository(Project::class)->findBy(['iso3' => $COUNTRY['iso3']]);
+            $projectIds = array_map(function (Project $project) {
+                return $project->getId();
+            }, $projects);
+            foreach (self::COMMUNITIES as $communityTypeData) {
+                $communityTypeData['projects'] = $projectIds;
+                $communityType = RequestConverter::normalizeInputType($communityTypeData, NewCommunityType::class);
 
-                $manager->flush();
+                $institution = $this->communityService->createDeprecated(new Country($COUNTRY['iso3']), $communityType);
+                $manager->persist($institution);
             }
         }
         $manager->flush();

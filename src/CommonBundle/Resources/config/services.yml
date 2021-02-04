@@ -112,6 +112,20 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
+    CommonBundle\DataFixtures\BookletFixtures:
+        arguments:
+            - "@kernel"
+            - "@voucher.booklet_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\Beneficiaries\BeneficiaryBookletFixtures:
+        arguments:
+            - "@kernel"
+            - "@voucher.booklet_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
     CommonBundle\DataFixtures\BeneficiaryTestFixtures:
         arguments:
             - "@kernel"
@@ -137,6 +151,34 @@ services:
         arguments:
             - "@kernel"
             - "@distribution.assistance_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\AssistanceValidationFixtures:
+        arguments:
+            - "@kernel"
+            - "@distribution.assistance_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\Beneficiaries\AssistanceBeneficiaryFixtures:
+        arguments:
+            - "@kernel"
+            - "@distribution.assistance_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\VoucherPurchaseFixtures:
+        arguments:
+            - "@=service('kernel').getEnvironment()"
+            - "@voucher.purchase_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\VoucherRedemptionFixtures:
+        arguments:
+            - "@=service('kernel').getEnvironment()"
+            - "@voucher.voucher_service"
         tags:
             - { name: doctrine.fixture.orm }
     

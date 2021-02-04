@@ -134,7 +134,7 @@ class Project implements ExportableInterface
     private $reportingProject;
 
     /**
-     * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\Household", mappedBy="projects")
+     * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\AbstractBeneficiary", mappedBy="projects")
      */
     private $households;
 

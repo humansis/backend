@@ -46,6 +46,7 @@ class LocationTestFixtures extends Fixture implements FixtureGroupInterface
             echo "Can't run on production environment.";
             return;
         }
+        return; //omit test until it will be differentiated between test and preview for testing envs
         foreach ($this->countries as $country) {
             $this->loadSimplyData($manager, $country);
         }

@@ -72,6 +72,17 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $q->getQuery()->getResult();
     }
 
+    public function getUnarchivedByProject(Project $project): iterable
+    {
+        $qb = $this->createQueryBuilder("bnf");
+        $q = $qb->leftJoin("bnf.projects", "p")
+            ->where("p = :project")
+            ->setParameter("project", $project)
+            ->andWhere("bnf.archived = 0");
+
+        return $q->getQuery()->getResult();
+    }
+
     public function findByName(string $givenName, ?string $parentsName, string $familyName)
     {
         return $this->createQueryBuilder('b')

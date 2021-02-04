@@ -2,8 +2,12 @@
 
 namespace CommonBundle\DataFixtures;
 
-use DistributionBundle\DBAL\AssistanceTypeEnum;
-use DistributionBundle\Entity\Assistance;
+use BeneficiaryBundle\Entity\Community;
+use BeneficiaryBundle\Entity\Institution;
+use CommonBundle\Controller\CountryController;
+use CommonBundle\Entity\Location;
+use CommonBundle\Mapper\LocationMapper;
+use DistributionBundle\Entity\Modality;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Entity\ModalityType;
@@ -46,7 +50,6 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             'country_iso3' => 'KHM',
         ],
         'location_name' => '',
-        'name' => 'Battambang-9/13/2018',
         'project' => [
             'donors' => [],
             'donors_name' => [],
@@ -97,18 +100,25 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             return;
         }
 
+        srand(42);
+
         $projects = $manager->getRepository(Project::class)->findAll();
         foreach ($projects as $project) {
+            echo $project->getName()." ";
             $this->loadCommonIndividualAssistance($manager, $project);
             $this->loadCommonHouseholdAssistance($manager, $project);
+            $this->loadCommonInstitutionAssistance($manager, $project);
+            $this->loadCommonCommunityAssistance($manager, $project);
             $this->loadSmartcardAssistance($manager, $project);
+            echo "\n";
         }
     }
 
-    public function getDependencies()
+    public function getDependencies(): array
     {
         return [
             ProjectFixtures::class,
+            ModalityFixtures::class,
         ];
     }
 
@@ -122,8 +132,16 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data = $this->assistanceArray;
         $data['project']['id'] = $project->getId();
         $data['target_type'] = AssistanceTargetType::INDIVIDUAL;
+        $data['location'] = $this->randomLocation($manager, $project->getIso3());
+        $data['date_distribution'] = $this->randomDate();
+        $data['selection_criteria'] = [];
 
-        $this->distributionService->create($project->getIso3(), $data, 1);
+        $country = CountryController::COUNTRIES[$project->getIso3()];
+        foreach ($this->getCommodities($manager, $country) as $commodityArray) {
+            $data['commodities'] = [0 => $commodityArray];
+            $receivers = $this->distributionService->create($project->getIso3(), $data)['data'];
+            echo "Bx".count($receivers);
+        }
     }
 
     private function loadCommonHouseholdAssistance(ObjectManager $manager, Project $project)
@@ -131,8 +149,66 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data = $this->assistanceArray;
         $data['project']['id'] = $project->getId();
         $data['target_type'] = AssistanceTargetType::HOUSEHOLD;
+        $data['location'] = $this->randomLocation($manager, $project->getIso3());
+        $data['date_distribution'] = $this->randomDate();
+        $data['selection_criteria'] = [];
 
-        $this->distributionService->create($project->getIso3(), $data, 1);
+        $country = CountryController::COUNTRIES[$project->getIso3()];
+        foreach ($this->getCommodities($manager, $country) as $commodityArray) {
+            $data['commodities'] = [0 => $commodityArray];
+            $receivers = $this->distributionService->create($project->getIso3(), $data)['data'];
+            echo "Hx".count($receivers);
+        }
+    }
+
+    private function loadCommonInstitutionAssistance(ObjectManager $manager, Project $project)
+    {
+        $data = $this->assistanceArray;
+        $data['project']['id'] = $project->getId();
+        $data['target_type'] = AssistanceTargetType::INSTITUTION;
+        $data['location'] = $this->randomLocation($manager, $project->getIso3());
+        $data['date_distribution'] = $this->randomDate();
+        unset($data['selection_criteria']);
+
+        $data['institutions'] = [];
+        $institutions = $manager->getRepository(Institution::class)->getUnarchivedByProject($project);
+        if (empty($institutions)) {
+            echo '(no I)';
+            return;
+        }
+        $data['institutions'] = array_map(function (Institution $institution) { return $institution->getId(); }, $institutions);
+
+        $country = CountryController::COUNTRIES[$project->getIso3()];
+        foreach ($this->getCommodities($manager, $country) as $commodityArray) {
+            $data['commodities'] = [0 => $commodityArray];
+            $receivers = $this->distributionService->create($project->getIso3(), $data)['data'];
+            echo "Ix".count($receivers);
+        }
+    }
+
+    private function loadCommonCommunityAssistance(ObjectManager $manager, Project $project)
+    {
+        $data = $this->assistanceArray;
+        $data['project']['id'] = $project->getId();
+        $data['target_type'] = AssistanceTargetType::COMMUNITY;
+        $data['location'] = $this->randomLocation($manager, $project->getIso3());
+        $data['date_distribution'] = $this->randomDate();
+        unset($data['selection_criteria']);
+
+        $data['communities'] = [];
+        $communities = $manager->getRepository(Community::class)->getUnarchivedByProject($project)->getQuery()->getResult();
+        if (empty($communities)) {
+            echo '(no C)';
+            return;
+        }
+        $data['communities'] = array_map(function (Community $community) { return $community->getId(); }, $communities);
+
+        $country = CountryController::COUNTRIES[$project->getIso3()];
+        foreach ($this->getCommodities($manager, $country) as $commodityArray) {
+            $data['commodities'] = [0 => $commodityArray];
+            $receivers = $this->distributionService->create($project->getIso3(), $data)['data'];
+            echo "Cx".count($receivers);
+        }
     }
 
     private function loadSmartcardAssistance(ObjectManager $manager, Project $project)
@@ -170,5 +246,50 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $result = $this->distributionService->create($project->getIso3(), $data, 1);
 
         $this->setReference(self::REF_SMARTCARD_ASSISTANCE, $result['distribution']);
+    }
+
+    private function getCommodities(ObjectManager $manager, array $country): array
+    {
+        $modalities = $manager->getRepository(Modality::class)->findAll();
+        $commodities = [];
+        foreach ($modalities as $modality) {
+            $modalityType = $modality->getModalityTypes()[0];
+            $commodities[] = [
+                'modality' => $modalityType->getModality()->getName(),
+                'modality_type' => [
+                    'id' => $modalityType->getId(),
+                ],
+                'type' => $modalityType->getModality()->getId(),
+                'unit' => $country['currency'],
+                'value' => 42,
+                'description' => 'autogenerated by fixtures',
+            ];
+        }
+
+
+        return $commodities;
+    }
+
+    private function randomLocation(ObjectManager $manager, string $countryIso3): array
+    {
+        $mapper = new LocationMapper();
+        $locationArray = ['country_iso3' => $countryIso3];
+
+        $entities = $manager->getRepository(Location::class)->getByCountry($countryIso3);
+        if (0 === count($entities)) {
+            return $locationArray;
+        }
+
+        $i = rand(0, count($entities) - 1);
+
+        return array_merge($mapper->toFlatArray($entities[$i]), $locationArray);
+    }
+
+    private function randomDate(): string
+    {
+        $date = new \DateTime();
+        $date->modify('+100 days');
+        $date->modify('-'.rand(1, 200).' days');
+        return $date->format('d-m-Y');
     }
 }

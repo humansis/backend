@@ -114,7 +114,7 @@ class AssistanceBeneficiary
      *
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      */
-    private $removed;
+    private $removed = 0;
 
     /**
      * Get id.

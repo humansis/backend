@@ -29,7 +29,6 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         'father with kids' => ['M-20', 'F-1', 'F-5', 'M-15'],
         'old couple' => ['M-60', 'F-55'],
         'grandparents with kids' => ['M-60', 'F-55', 'F-2', 'F-10'],
-        'big family' => ['M-20', 'F-18', 'F-1', 'F-5', 'M-15', 'M-60', 'F-55'],
     ];
 
     private $beneficiaryTemplate = [
@@ -100,20 +99,17 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
             return;
         }
 
+        srand(42);
+
         $projects = $manager->getRepository(Project::class)->findAll();
         foreach ($projects as $project) {
-            echo "Project {$project->getName()}/{$project->getIso3()}";
-            $locationIndex = 0;
-            foreach ($this->getTestingLocations($manager, $project->getIso3()) as $location) {
-                $this->createHousehold($manager, $location, $project);
-                if (0 == (++$locationIndex % 5)) {
-                    $manager->flush();
-                    break;
-                }
-            }
+            echo "Project {$project->getId()}# {$project->getName()}/{$project->getIso3()}";
+            $location = $this->randomLocation($manager, $project->getIso3());
+            $this->createHouseholds($manager, $location, $project);
+            $this->createIndividuals($manager, $location, $project);
+
             echo "\n";
             $manager->flush();
-            $manager->clear();
         }
     }
 
@@ -149,6 +145,18 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         }
     }
 
+    private function randomLocation(ObjectManager $manager, string $countryIso3): ?Location
+    {
+        $entities = $manager->getRepository(Location::class)->getByCountry($countryIso3);
+        if (0 === count($entities)) {
+            return null;
+        }
+
+        $i = rand(0, count($entities) - 1);
+
+        return $entities[$i];
+    }
+
     /**
      * @param ObjectManager $manager
      * @param Location      $location
@@ -156,58 +164,77 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
      *
      * @throws \Exception
      */
-    private function createHousehold(ObjectManager $manager, Location $location, Project $project)
+    private function createHouseholds(ObjectManager $manager, Location $location, Project $project)
     {
         foreach ($this->householdTypes as $typeName => $members) {
-            $household = new Household();
-
-            $household->setLongitude($this->householdTemplate['longitude']);
-            $household->setLatitude($this->householdTemplate['latitude']);
-            $household->setCopingStrategiesIndex($this->householdTemplate['coping_strategies_index']);
-            $household->setDebtLevel($this->householdTemplate['debt_level']);
-            $household->setFoodConsumptionScore($this->householdTemplate['food_consumption_score']);
-            $household->setIncomeLevel($this->householdTemplate['income_level']);
-
-            foreach ($members as $member) {
-                [$gender, $age] = explode('-', $member);
-                $bnfData = $this->replacePlaceholders($this->beneficiaryTemplate, [
-                    '{age}' => $age,
-                    '{project}' => $project->getName(),
-                    '{gender}' => 'F' === $gender ? 'Female' : 'Male',
-                    '{householdType}' => $typeName,
-                    '{country}' => $project->getIso3(),
-                ]);
-
-                $bnf = new Beneficiary();
-                $bnf->setHousehold($household);
-                $birthDate = new \DateTime();
-                $birthDate->modify("-$age year");
-                $bnf->setDateOfBirth($birthDate);
-                $bnf->setEnFamilyName($bnfData['en_family_name']);
-                $bnf->setEnGivenName($bnfData['en_given_name']);
-                $bnf->setLocalFamilyName($bnfData['local_family_name']);
-                $bnf->setLocalGivenName($bnfData['local_given_name']);
-                $bnf->setGender('F' === $gender ? 0 : 1);
-                $bnf->setStatus(0 == $household->getBeneficiaries()->count());
-                $bnf->setResidencyStatus($bnfData['residency_status']);
-
-                $household->addBeneficiary($bnf);
-                $manager->persist($bnf);
-            }
-
-            $householdLocation = $this->getHouseholdLocation($location);
-            $householdLocation->setHousehold($household);
-            $manager->persist($householdLocation);
-            $household->addHouseholdLocation($householdLocation);
-
-            $project->addHousehold($household);
-            $household->addProject($project);
-
-            $manager->persist($household);
-            echo '.';
+            $this->createHousehold($manager, $location, $project, $typeName, $members);
+            $manager->flush();
         }
-        $manager->persist($project);
     }
+
+
+    private function createIndividuals(ObjectManager $manager, Location $location, Project $project)
+    {
+        $singles = [
+            $this->householdTypes['single male family'],
+            $this->householdTypes['single female family'],
+        ];
+        foreach ($singles as $singleFamily) {
+            $this->createHousehold($manager, $location, $project, "Individual", $singleFamily);
+        }
+        $manager->flush();
+    }
+
+    private function createHousehold(ObjectManager $manager, Location $location, Project $project, string $typeName, array $members)
+    {
+        $household = new Household();
+
+        $household->setLongitude($this->householdTemplate['longitude']);
+        $household->setLatitude($this->householdTemplate['latitude']);
+        $household->setCopingStrategiesIndex($this->householdTemplate['coping_strategies_index']);
+        $household->setDebtLevel($this->householdTemplate['debt_level']);
+        $household->setFoodConsumptionScore($this->householdTemplate['food_consumption_score']);
+        $household->setIncomeLevel($this->householdTemplate['income_level']);
+
+        foreach ($members as $member) {
+            [$gender, $age] = explode('-', $member);
+            $bnfData = $this->replacePlaceholders($this->beneficiaryTemplate, [
+                '{age}' => $age,
+                '{project}' => $project->getName(),
+                '{gender}' => 'F' === $gender ? 'Female' : 'Male',
+                '{householdType}' => $typeName,
+                '{country}' => $project->getIso3(),
+            ]);
+
+            $bnf = new Beneficiary();
+            $bnf->setHousehold($household);
+            $birthDate = new \DateTime();
+            $birthDate->modify("-$age year");
+            $bnf->setDateOfBirth($birthDate);
+            $bnf->setEnFamilyName($bnfData['en_family_name']);
+            $bnf->setEnGivenName($bnfData['en_given_name']);
+            $bnf->setLocalFamilyName($bnfData['local_family_name']);
+            $bnf->setLocalGivenName($bnfData['local_given_name']);
+            $bnf->setGender('F' === $gender ? 0 : 1);
+            $bnf->setStatus(0 == $household->getBeneficiaries()->count());
+            $bnf->setResidencyStatus($bnfData['residency_status']);
+
+            $household->addBeneficiary($bnf);
+            $bnf->addProject($project);
+            $manager->persist($bnf);
+        }
+
+        $householdLocation = $this->getHouseholdLocation($location);
+        $householdLocation->setHousehold($household);
+        $manager->persist($householdLocation);
+        $household->addHouseholdLocation($householdLocation);
+
+        $household->addProject($project);
+
+        $manager->persist($household);
+        echo '.';
+    }
+
 
     private function replacePlaceholders(array $data, array $replaces)
     {

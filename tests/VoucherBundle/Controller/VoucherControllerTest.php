@@ -131,7 +131,7 @@ class VoucherControllerTest extends BMSServiceTestCase
      */
     public function testUseVoucher($newVoucher)
     {
-        $vendorName = 'vendor';
+        $vendorName = 'Vendor from Syria';
         $vendor = $this->em->getRepository(Vendor::class)->findOneByName($vendorName);
         if (null === $vendor) {
             $this->markTestIncomplete("Expected vendor user account '$vendorName' missing.");
@@ -163,38 +163,6 @@ class VoucherControllerTest extends BMSServiceTestCase
         return $newVoucherReceived;
     }
 
-    /**
-     * @depends testValidBatchRedemption
-     *
-     * @param array $newBatchRedemption
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
-    public function testGetRedeemedBatches(array $newBatchRedemption): void
-    {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        $vendorId = $newBatchRedemption['vendor'];
-
-        $crawler = $this->request('GET', '/api/wsse/vouchers/purchases/redeemed-batches/' . $vendorId);
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
-        $batches = json_decode($this->client->getResponse()->getContent(), true);
-
-        $this->assertIsArray($batches);
-        foreach ($batches as $batch) {
-            $this->assertIsArray($batch);
-            $this->assertArrayHasKey('date', $batch);
-            $this->assertArrayHasKey('count', $batch);
-            $this->assertArrayHasKey('value', $batch);
-
-            $this->assertRegExp('/\d\d-\d\d-\d\d\d\d \d\d:\d\d/', $batch['date'], "Wrong datetime format");
-            $this->assertIsNumeric($batch['count']);
-            $this->assertIsNumeric($batch['value']);
-        }
-    }
 
     public function testCheckBatchRedemption(): void
     {
@@ -239,30 +207,9 @@ class VoucherControllerTest extends BMSServiceTestCase
 
         $vendor = $this->em->getRepository(Vendor::class)->findOneBy([], ['id'=>'asc']);
         $vendorId = $vendor->getId();
-        $booklets = $this->em->getRepository(Booklet::class)->findBy([
-            'status' => Booklet::DISTRIBUTED,
-        ]);
-        $vouchers = $this->em->getRepository(Voucher::class)->findBy([
-            'redemptionBatch' => null,
-            'voucherPurchase' => null,
-            'booklet' => $booklets,
-        ]);
-        $purchaseService = $this->container->get('voucher.purchase_service');
-        $anyProduct = $this->em->getRepository(Product::class)->findOneBy([], ['id'=>'asc']);
-        foreach ($vouchers as $voucher) {
-            $purchaseInput = new \VoucherBundle\InputType\VoucherPurchase();
-            $purchaseInput->setCreatedAt(new \DateTime());
-            $purchaseInput->setVouchers([$voucher]);
-            $purchaseInput->setVendorId($vendorId);
-            $purchaseInput->setProducts([[
-                'id' => $anyProduct->getId(),
-                'quantity' => 5.9,
-                'value' => 1000.05,
-            ]]);
-            $purchaseService->purchase($purchaseInput);
-        }
+        $usedButUnredeemedByVendor = $this->em->getRepository(Voucher::class)->findUsedButUnredeemedByVendor($vendor);
         $batchToRedeem = [
-            "vouchers" => array_map(function (Voucher $voucher) { return $voucher->getId(); }, $vouchers),
+            "vouchers" => array_map(function (Voucher $voucher) { return $voucher->getId(); }, $usedButUnredeemedByVendor),
         ];
 
         $crawler = $this->request('POST', '/api/wsse/vouchers/purchases/redeem-batch/' . $vendorId, $batchToRedeem);
@@ -283,6 +230,39 @@ class VoucherControllerTest extends BMSServiceTestCase
         $this->assertIsArray($result['voucherIds']);
 
         return $result;
+    }
+
+    /**
+     * @depends testValidBatchRedemption
+     *
+     * @param array $newBatchRedemption
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function testGetRedeemedBatches(array $newBatchRedemption): void
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $vendorId = $newBatchRedemption['vendor'];
+
+        $crawler = $this->request('GET', '/api/wsse/vouchers/purchases/redeemed-batches/' . $vendorId);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $batches = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertIsArray($batches);
+        foreach ($batches as $batch) {
+            $this->assertIsArray($batch);
+            $this->assertArrayHasKey('date', $batch);
+            $this->assertArrayHasKey('count', $batch);
+            $this->assertArrayHasKey('value', $batch);
+
+            $this->assertRegExp('/\d\d-\d\d-\d\d\d\d \d\d:\d\d/', $batch['date'], "Wrong datetime format");
+            $this->assertIsNumeric($batch['count']);
+            $this->assertIsNumeric($batch['value']);
+        }
     }
 
     /**
