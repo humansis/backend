@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace NewApiBundle\InputType\Household\Address;
+namespace NewApiBundle\InputType\Beneficiary\Address;
 
 use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class ResidenceAddressInputType implements InputTypeInterface
+class TemporarySettlementAddressInputType implements InputTypeInterface
 {
     /**
      * @Assert\Type("string")

@@ -1,40 +1,32 @@
 <?php
 
-declare(strict_types=1);
-
-namespace NewApiBundle\InputType\Household\Address;
+namespace NewApiBundle\InputType\Beneficiary;
 
 use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class TemporarySettlementAddressInputType implements InputTypeInterface
+class AddressInputType implements InputTypeInterface
 {
     /**
      * @Assert\Type("string")
      * @Assert\Length(max="45")
-     * @Assert\NotBlank
      */
     private $number;
 
     /**
      * @Assert\Type("string")
      * @Assert\Length(max="255")
-     * @Assert\NotBlank
      */
     private $street;
 
     /**
      * @Assert\Type("string")
      * @Assert\Length(max="45")
-     * @Assert\NotBlank
      */
     private $postcode;
 
     /**
      * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
-     * @Assert\NotBlank
-     * @Assert\NotNull
      */
     private $locationId;
 
@@ -49,7 +41,7 @@ class TemporarySettlementAddressInputType implements InputTypeInterface
     /**
      * @param string|null $number
      */
-    public function setNumber($number): void
+    public function setNumber($number)
     {
         $this->number = $number;
     }
@@ -65,7 +57,7 @@ class TemporarySettlementAddressInputType implements InputTypeInterface
     /**
      * @param string|null $street
      */
-    public function setStreet($street): void
+    public function setStreet($street)
     {
         $this->street = $street;
     }
@@ -81,13 +73,13 @@ class TemporarySettlementAddressInputType implements InputTypeInterface
     /**
      * @param string|null $postcode
      */
-    public function setPostcode($postcode): void
+    public function setPostcode($postcode)
     {
         $this->postcode = $postcode;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getLocationId()
     {
@@ -95,9 +87,9 @@ class TemporarySettlementAddressInputType implements InputTypeInterface
     }
 
     /**
-     * @param int $locationId
+     * @param int|null $locationId
      */
-    public function setLocationId($locationId): void
+    public function setLocationId($locationId)
     {
         $this->locationId = $locationId;
     }
