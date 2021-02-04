@@ -5,15 +5,80 @@ namespace CommonBundle\DataFixtures\Beneficiaries;
 
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 use ProjectBundle\Entity\Project;
+use ProjectBundle\Enum\Livelihood;
 use Symfony\Component\HttpKernel\Kernel;
 
 class BeneficiaryFixtures extends Fixture
 {
     private $householdArray = [
         [
-          "livelihood" => "1",
+            "livelihood" => Livelihood::GOVERNMENT,
+            "income_level" => 3,
+            "notes" => null,
+            "latitude" => null,
+            "longitude" => null,
+            "coping_strategies_index" => "2",
+            "food_consumption_score" => "3",
+            "household_locations" => array(
+                [
+                    "location_group" => "current",
+                    "type" => "residence",
+                    "address" =>  [
+                        "street" => "azerrt",
+                        "number" => "1",
+                        "postcode" => "12345",
+                        "location" => [
+                            "adm1" => 1,
+                            "adm2" => 1,
+                            "adm3" => 1,
+                            "adm4" => null,
+                            "country_iso3" => "KHM",
+                        ],
+                    ]
+                ]
+            ),
+            "country_specific_answers" => [
+                [
+                    "answer" => "2",
+                    "country_specific" => [
+                        "id" => 1
+                    ],
+                ],
+                [
+                    "answer" => null,
+                    "country_specific" => [
+                        "id" => 2
+                    ],
+                ]
+            ],
+            "beneficiaries" => [
+                [
+                    "en_given_name" => "Test",
+                    "en_family_name" => "Tester",
+                    "local_given_name" => "Test",
+                    "local_family_name" => "Tester",
+                    "gender" => \BeneficiaryBundle\Entity\Person::GENDER_FEMALE,
+                    "status" => "1",
+                    "residency_status" => "resident",
+                    "date_of_birth" => "10-10-1996",
+                    "vulnerability_criteria" => [
+                        [
+                            "id" => 3
+                        ]
+                    ],
+                    "phones" => [],
+                    "national_ids" => [],
+                    "profile" => [
+                        "photo" => ""
+                    ],
+                ],
+            ],
+            "__country" => "KHM"
+        ],
+        [
+          "livelihood" => Livelihood::DAILY_LABOUR,
           "income_level" => 3,
           "notes" => null,
           "latitude" => null,
@@ -138,7 +203,7 @@ class BeneficiaryFixtures extends Fixture
           "__country" => "KHM"
         ],
         [
-            "livelihood" => "1",
+            "livelihood" => Livelihood::FARMING_LIVESTOCK,
             "income_level" => 4,
             "notes" => null,
             "latitude" => null,
