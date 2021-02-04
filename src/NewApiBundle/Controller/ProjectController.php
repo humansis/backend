@@ -78,11 +78,9 @@ class ProjectController extends AbstractController
      */
     public function list(Request $request, ProjectFilterInputType $filter, ProjectOrderInputType $orderBy, Pagination $pagination): JsonResponse
     {
-        $countryIso3 = null;
-
-        $user = $this->getUser();
-        if (!$user->hasRole('ROLE_COUNTRY_MANAGER') && !$user->hasRole('ROLE_REGIONAL_MANAGER') && !$user->hasRole('ROLE_ADMIN')) {
-            $countryIso3 = $request->headers->get('country');
+        $countryIso3 = $request->headers->get('country', false);
+        if (!$countryIso3) {
+            throw new BadRequestHttpException('Missing country header');
         }
 
         $projects = $this->getDoctrine()->getRepository(Project::class)->findByParams($countryIso3, $filter, $orderBy, $pagination);
