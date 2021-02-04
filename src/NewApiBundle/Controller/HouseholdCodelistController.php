@@ -11,8 +11,12 @@ use CommonBundle\Pagination\Paginator;
 use NewApiBundle\Utils\CodeLists;
 use ProjectBundle\Enum\Livelihood;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+/**
+ * @Cache(expires="+5 days", public=true)
+ */
 class HouseholdCodelistController extends AbstractController
 {
     /**

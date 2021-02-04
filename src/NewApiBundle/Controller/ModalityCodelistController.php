@@ -8,9 +8,12 @@ use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Modality;
 use DistributionBundle\Entity\ModalityType;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use ProjectBundle\Utils\SectorService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+/**
+ * @Cache(expires="+5 days", public=true)
+ */
 class ModalityCodelistController extends AbstractController
 {
     /**

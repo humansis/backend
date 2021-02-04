@@ -12,8 +12,12 @@ use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Enum\PhoneTypes;
 use NewApiBundle\Utils\CodeLists;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+/**
+ * @Cache(expires="+5 days", public=true)
+ */
 class BeneficiaryCodelistController extends AbstractController
 {
     /**
