@@ -224,10 +224,7 @@ class CommunityController extends Controller
      */
     public function deleteAction(Community $community)
     {
-        /** @var CommunityService $communityService */
-        $communityService = $this->get("beneficiary.community_service");
-
-        $community = $communityService->remove($community);
+        $community = $this->communityService->remove($community);
         return $this->json($this->communityMapper->toFullArray($community));
     }
 }

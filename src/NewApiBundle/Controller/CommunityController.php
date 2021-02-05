@@ -23,6 +23,19 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class CommunityController extends AbstractController
 {
+    /** @var CommunityService */
+    private $communityService;
+
+    /**
+     * CommunityController constructor.
+     *
+     * @param CommunityService $communityService
+     */
+    public function __construct(CommunityService $communityService)
+    {
+        $this->communityService = $communityService;
+    }
+
     /**
      * @Rest\Get("/communities/{id}")
      *
@@ -72,10 +85,7 @@ class CommunityController extends AbstractController
      */
     public function create(CommunityCreateInputType $inputType): JsonResponse
     {
-        /** @var CommunityService $object */
-        $object = $this->get('beneficiary.community_service');
-
-        $community = $object->create($inputType);
+        $community = $this->communityService->create($inputType);
 
         return $this->json($community);
     }
@@ -90,7 +100,7 @@ class CommunityController extends AbstractController
      */
     public function update(Community $community, CommunityUpdateInputType $inputType): JsonResponse
     {
-        $object = $this->get('beneficiary.community_service')->update($community, $inputType);
+        $object = $this->communityService->update($community, $inputType);
 
         return $this->json($object);
     }
@@ -104,7 +114,7 @@ class CommunityController extends AbstractController
      */
     public function delete(Community $project): JsonResponse
     {
-        $this->get('beneficiary.community_service')->remove($project);
+        $this->communityService->remove($project);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

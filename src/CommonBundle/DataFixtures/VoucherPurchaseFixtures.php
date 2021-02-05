@@ -7,6 +7,7 @@ use DistributionBundle\Entity\Assistance;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\HttpKernel\KernelInterface;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Vendor;
@@ -24,12 +25,12 @@ class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterfa
     private $purchaseService;
 
     /**
-     * @param string          $environment
+     * @param KernelInterface $kernel
      * @param PurchaseService $purchaseService
      */
-    public function __construct(string $environment, PurchaseService $purchaseService)
+    public function __construct(KernelInterface $kernel, PurchaseService $purchaseService)
     {
-        $this->environment = $environment;
+        $this->environment = $kernel->getEnvironment();
         $this->purchaseService = $purchaseService;
     }
 

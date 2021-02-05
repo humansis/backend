@@ -54,7 +54,6 @@ services:
         tags: [ 'app.mapper' ]
 
     NewApiBundle\Mapper\ProjectMapper:
-        arguments: [ '@project.project_service' ]
         tags: [ 'app.mapper' ]
 
     NewApiBundle\Controller\AssistanceController:

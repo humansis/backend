@@ -20,7 +20,7 @@ class CommunityControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = $this->getContainer()->get('test.client');
     }
 
 
@@ -38,7 +38,7 @@ class CommunityControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         /** @var Location|null $location */
-        $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $location = $this->getContainer()->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
         if (null === $location) {
             $this->markTestSkipped('There needs to be at least one location in system to complete this test');
@@ -104,7 +104,7 @@ class CommunityControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         /** @var Location|null $location */
-        $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $location = $this->getContainer()->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
         $data = [
             'longitude' => 'test CHANGED',

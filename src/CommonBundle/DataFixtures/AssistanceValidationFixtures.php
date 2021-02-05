@@ -15,14 +15,16 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class AssistanceValidationFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
+    /** @var AssistanceService */
     private $assistanceService;
-
+    /** @var KernelInterface */
     private $kernel;
 
-    public function __construct(Kernel $kernel, AssistanceService $assistanceService)
+    public function __construct(KernelInterface $kernel, AssistanceService $assistanceService)
     {
         $this->assistanceService = $assistanceService;
         $this->kernel = $kernel;

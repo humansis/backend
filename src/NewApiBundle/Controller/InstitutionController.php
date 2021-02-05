@@ -4,6 +4,7 @@ namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Repository\InstitutionRepository;
+use BeneficiaryBundle\Utils\InstitutionService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\InstitutionCreateInputType;
 use NewApiBundle\InputType\InstitutionOrderInputType;
@@ -15,6 +16,19 @@ use Symfony\Component\HttpFoundation\Response;
 
 class InstitutionController extends AbstractController
 {
+    /** @var InstitutionService */
+    private $institutionService;
+
+    /**
+     * InstitutionController constructor.
+     *
+     * @param InstitutionService $institutionService
+     */
+    public function __construct(InstitutionService $institutionService)
+    {
+        $this->institutionService = $institutionService;
+    }
+
     /**
      * @Rest\Get("/institutions/{id}")
      *
@@ -62,7 +76,7 @@ class InstitutionController extends AbstractController
      */
     public function create(InstitutionCreateInputType $inputType): JsonResponse
     {
-        $institution = $this->get('beneficiary.institution_service')->create($inputType);
+        $institution = $this->institutionService->create($inputType);
 
         return $this->json($institution);
     }
@@ -77,7 +91,7 @@ class InstitutionController extends AbstractController
      */
     public function update(Institution $institution, InstitutionUpdateInputType $inputType): JsonResponse
     {
-        $institution = $this->get('beneficiary.institution_service')->update($institution, $inputType);
+        $institution = $this->institutionService->update($institution, $inputType);
 
         return $this->json($institution);
     }
@@ -91,7 +105,7 @@ class InstitutionController extends AbstractController
      */
     public function delete(Institution $institution)
     {
-        $this->get('beneficiary.institution_service')->remove($institution);
+        $this->institutionService->remove($institution);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

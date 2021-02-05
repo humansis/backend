@@ -19,18 +19,20 @@ use Doctrine\Persistence\ObjectManager;
 use Exception;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\KernelInterface;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Utils\BookletService;
 
 class BeneficiaryBookletFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
 {
+    /** @var KernelInterface */
     private $kernel;
 
     /** @var BookletService */
     private $bookletService;
 
 
-    public function __construct(Kernel $kernel, BookletService $bookletService)
+    public function __construct(KernelInterface $kernel, BookletService $bookletService)
     {
         $this->kernel = $kernel;
         $this->bookletService = $bookletService;

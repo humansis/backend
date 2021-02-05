@@ -12,6 +12,7 @@ use CommonBundle\InputType\RequestConverter;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class CommunityFixture extends Fixture implements DependentFixtureInterface

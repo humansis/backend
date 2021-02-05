@@ -23,6 +23,19 @@ use Symfony\Component\HttpFoundation\Response;
 
 class BeneficiaryController extends AbstractController
 {
+    /** @var AssistanceBeneficiaryService */
+    private $assistanceBeneficiaryService;
+
+    /**
+     * BeneficiaryController constructor.
+     *
+     * @param AssistanceBeneficiaryService $assistanceBeneficiaryService
+     */
+    public function __construct(AssistanceBeneficiaryService $assistanceBeneficiaryService)
+    {
+        $this->assistanceBeneficiaryService = $assistanceBeneficiaryService;
+    }
+
     /**
      * @Rest\Get("/assistances/{id}/beneficiaries")
      *
@@ -64,9 +77,7 @@ class BeneficiaryController extends AbstractController
             $data['beneficiaries'][] = ['id' => $id];
         }
 
-        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
-        $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
-        $assistanceBeneficiaryService->addBeneficiaries($assistance, $data);
+        $this->assistanceBeneficiaryService->addBeneficiaries($assistance, $data);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

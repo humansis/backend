@@ -18,14 +18,16 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class AssistanceBeneficiaryFixtures extends Fixture implements DependentFixtureInterface//, FixtureGroupInterface
 {
+    /** @var AssistanceService */
     private $distributionService;
-
+    /** @var KernelInterface */
     private $kernel;
 
-    public function __construct(Kernel $kernel, AssistanceService $distributionService)
+    public function __construct(KernelInterface $kernel, AssistanceService $distributionService)
     {
         $this->distributionService = $distributionService;
         $this->kernel = $kernel;

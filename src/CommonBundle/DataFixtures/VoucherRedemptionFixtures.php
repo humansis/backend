@@ -5,6 +5,7 @@ namespace CommonBundle\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\HttpKernel\KernelInterface;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Voucher;
@@ -20,12 +21,12 @@ class VoucherRedemptionFixtures extends Fixture implements DependentFixtureInter
     private $voucherService;
 
     /**
-     * @param string         $environment
-     * @param VoucherService $voucherService
+     * @param KernelInterface $kernel
+     * @param VoucherService  $voucherService
      */
-    public function __construct(string $environment, VoucherService $voucherService)
+    public function __construct(KernelInterface $kernel, VoucherService $voucherService)
     {
-        $this->environment = $environment;
+        $this->environment = $kernel->getEnvironment();
         $this->voucherService = $voucherService;
     }
 

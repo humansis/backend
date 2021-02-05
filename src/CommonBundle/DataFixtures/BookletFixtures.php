@@ -13,6 +13,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Exception;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\KernelInterface;
 use VoucherBundle\Utils\BookletService;
 
 class BookletFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
@@ -23,13 +24,14 @@ class BookletFixtures extends Fixture implements FixtureGroupInterface, Dependen
         "number_vouchers" => 3,
     ];
 
+    /** @var KernelInterface */
     private $kernel;
 
     /** @var BookletService */
     private $bookletService;
 
 
-    public function __construct(Kernel $kernel, BookletService $bookletService)
+    public function __construct(KernelInterface $kernel, BookletService $bookletService)
     {
         $this->kernel = $kernel;
         $this->bookletService = $bookletService;

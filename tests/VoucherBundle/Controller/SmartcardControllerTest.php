@@ -4,6 +4,7 @@ namespace VoucherBundle\Tests\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
@@ -28,9 +29,13 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC');
+        $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy([
+            'assistance' => $this->someSmartcardAssistance(),
+            'removed' => false,
+        ]);
         if (!$smartcard) {
             $smartcard = new Smartcard('1234ABC', new \DateTime('now'));
-            $smartcard->setBeneficiary($this->someSmartcardAssistance()->getDistributionBeneficiaries()->get(0)->getBeneficiary());
+            $smartcard->setBeneficiary($assistanceBeneficiary->getBeneficiary());
             $smartcard->setState(Smartcard::STATE_ACTIVE);
             $this->em->persist($smartcard);
             $this->em->flush();
