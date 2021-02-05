@@ -77,6 +77,10 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
+    CommonBundle\DataFixtures\DonorFixtures:
+        tags:
+            - { name: doctrine.fixture.orm }
+
     CommonBundle\DataFixtures\LocationFixtures:
         arguments:
             - "@kernel"
