@@ -5,6 +5,7 @@ namespace CommonBundle\DataFixtures;
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Institution;
 use CommonBundle\Controller\CountryController;
+use CommonBundle\DataFixtures\Beneficiaries\BeneficiaryFixtures;
 use CommonBundle\Entity\Location;
 use CommonBundle\Mapper\LocationMapper;
 use DistributionBundle\Entity\Modality;
@@ -133,6 +134,8 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
     {
         return [
             ProjectFixtures::class,
+            BeneficiaryFixtures::class,
+            BeneficiaryTestFixtures::class,
             ModalityFixtures::class,
         ];
     }
