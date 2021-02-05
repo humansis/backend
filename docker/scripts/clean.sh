@@ -6,7 +6,7 @@ rm -rf var/cache/*
 echo "** Creating database **"
 php bin/console d:d:c
 php bin/console d:m:m -n
-php bin/console d:f:l -n
+php bin/console doctrine:fixtures:load -n --append
 php bin/console r:c:c
 php bin/console reporting:code-indicator:add
 rm -rf var/cache/*
