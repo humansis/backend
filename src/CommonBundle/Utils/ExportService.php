@@ -44,7 +44,7 @@ class ExportService
             $writer = IOFactory::createWriter($spreadsheet, 'Ods');
             $filename = $name.'.ods';
         } else {
-            return 'An error occured with the type file';
+            return 'An error occured with the type file: '.$type;
         }
 
         $writer->save($filename);
