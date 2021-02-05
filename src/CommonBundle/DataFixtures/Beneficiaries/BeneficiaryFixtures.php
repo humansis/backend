@@ -4,6 +4,7 @@
 namespace CommonBundle\DataFixtures\Beneficiaries;
 
 use BeneficiaryBundle\Utils\HouseholdService;
+use CommonBundle\DataFixtures\ProjectFixtures;
 use CommonBundle\DataFixtures\VulnerabilityCriterionFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -361,6 +362,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             VulnerabilityCriterionFixtures::class,
+            ProjectFixtures::class,
         ];
     }
 }
