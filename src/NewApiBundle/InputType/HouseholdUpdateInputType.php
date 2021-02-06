@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class HouseholdUpdateInputType implements InputTypeInterface
 {
     /**
-     * @Assert\Choice({"KHM", "SYR", "UKR", "ETH"})
+     * @Assert\Choice({"KHM", "SYR", "UKR", "ETH", "MNG", "ARM"})
      * @Assert\NotBlank
      * @Assert\NotNull
      */

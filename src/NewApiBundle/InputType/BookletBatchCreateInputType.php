@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 class BookletBatchCreateInputType implements InputTypeInterface
 {
     /**
-     * @Assert\Choice({"KHM", "SYR", "UKR", "ETH"})
+     * @Assert\Choice({"KHM", "SYR", "UKR", "ETH", "MNG", "ARM"})
      * @Assert\NotBlank
      * @Assert\NotNull
      */
