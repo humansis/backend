@@ -9,6 +9,7 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
+use Doctrine\ORM\EntityManagerInterface;
 
 class AssistanceMapper
 {
@@ -28,15 +29,15 @@ class AssistanceMapper
     /**
      * AssistanceMapper constructor.
      *
-     * @param BeneficiaryMapper                 $beneficiaryMapper
-     * @param AssistanceBeneficiaryRepository $distributionBNFRepo
+     * @param BeneficiaryMapper      $beneficiaryMapper
+     * @param EntityManagerInterface $entityManager
      */
     public function __construct(
         BeneficiaryMapper $beneficiaryMapper,
-        AssistanceBeneficiaryRepository $distributionBNFRepo
+        EntityManagerInterface $entityManager
     ) {
         $this->beneficiaryMapper = $beneficiaryMapper;
-        $this->distributionBNFRepo = $distributionBNFRepo;
+        $this->distributionBNFRepo = $entityManager->getRepository(AssistanceBeneficiary::class);
     }
 
     public function toMinimalArray(?Assistance $assistance): ?array
