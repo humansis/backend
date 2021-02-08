@@ -11,6 +11,7 @@ use DistributionBundle\Export\SmartcardExport;
 use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use DistributionBundle\Utils\AssistanceService;
 use ProjectBundle\Utils\DonorService;
+use ProjectBundle\Utils\ProjectService;
 use ReportingBundle\Utils\ReportingService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -61,7 +62,7 @@ class ExportController extends Controller
     private $bookletService;
     /** @var ProductService */
     private $productService;
-    /** @var ProductService */
+    /** @var ProjectService */
     private $projectService;
     /** @var CountrySpecificService */
     private $countrySpecificService;
@@ -102,7 +103,7 @@ class ExportController extends Controller
         DonorService $donorService,
         BookletService $bookletService,
         ProductService $productService,
-        ProductService $projectService,
+        ProjectService $projectService,
         CountrySpecificService $countrySpecificService,
         AssistanceBeneficiaryService $assistanceBeneficiaryService,
         HouseholdExportCSVService $householdExportCSVService,
