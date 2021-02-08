@@ -10,8 +10,10 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Export\SmartcardExport;
 use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use DistributionBundle\Utils\AssistanceService;
+use Exception;
 use ProjectBundle\Utils\DonorService;
 use ProjectBundle\Utils\ProjectService;
+use Punic\Misc;
 use ReportingBundle\Utils\ReportingService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -26,6 +28,7 @@ use TransactionBundle\Utils\TransactionService;
 use UserBundle\Utils\UserService;
 use VoucherBundle\Utils\BookletService;
 use VoucherBundle\Utils\ProductService;
+use VoucherBundle\Utils\VendorService;
 use VoucherBundle\Utils\VoucherService;
 
 /**
@@ -44,6 +47,8 @@ class ExportController extends Controller
     /** @var int maximum count of exported entities */
     const EXPORT_LIMIT = 10000;
 
+    /** @var VendorService */
+    private $vendorService;
     /** @var VoucherService */
     private $voucherService;
     /** @var AssistanceService */
@@ -87,11 +92,13 @@ class ExportController extends Controller
      * @param DonorService                 $donorService
      * @param BookletService               $bookletService
      * @param ProductService               $productService
-     * @param ProductService               $projectService
+     * @param ProjectService               $projectService
      * @param CountrySpecificService       $countrySpecificService
      * @param AssistanceBeneficiaryService $assistanceBeneficiaryService
      * @param HouseholdExportCSVService    $householdExportCSVService
      * @param ReportingService             $reportingService
+     * @param VendorService                $vendorService
+     * @param HouseholdService             $householdService
      */
     public function __construct(
         VoucherService $voucherService,
@@ -107,7 +114,9 @@ class ExportController extends Controller
         CountrySpecificService $countrySpecificService,
         AssistanceBeneficiaryService $assistanceBeneficiaryService,
         HouseholdExportCSVService $householdExportCSVService,
-        ReportingService $reportingService
+        ReportingService $reportingService,
+        VendorService $vendorService,
+        HouseholdService $householdService
     ) {
         $this->voucherService = $voucherService;
         $this->assistanceService = $assistanceService;
@@ -123,6 +132,8 @@ class ExportController extends Controller
         $this->assistanceBeneficiaryService = $assistanceBeneficiaryService;
         $this->householdExportCSVService = $householdExportCSVService;
         $this->reportingService = $reportingService;
+        $this->vendorService = $vendorService;
+        $this->householdService = $householdService;
     }
 
     /**
@@ -240,7 +251,7 @@ class ExportController extends Controller
                 $filename = $this->productService->exportToCsv($type, $countryIso3);
             } elseif ($request->query->get('vendors')) {
                 $countryIso3 = $request->request->get("__country");
-                $filename = $this->voucherService->exportToCsv($type, $countryIso3);
+                $filename = $this->vendorService->exportToCsv($type, $countryIso3);
             }
 
             // Create binary file to send
@@ -256,7 +267,7 @@ class ExportController extends Controller
             $response->deleteFileAfterSend(true);
 
             return $response;
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
     }
@@ -320,8 +331,8 @@ class ExportController extends Controller
         $locale = $request->query->get('locale', 'en');
         $this->get('translator')->setLocale($locale);
 
-        $direction = ('left-to-right' === \Punic\Misc::getCharacterOrder($locale)) ? 'ltr' : 'rtl';
-        $template = ('left-to-right' === \Punic\Misc::getCharacterOrder($locale)) ? '@Distribution/Pdf/distributionTable.html.twig' : '@Distribution/Pdf/distributionTable.rtl.html.twig';
+        $direction = ('left-to-right' === Misc::getCharacterOrder($locale)) ? 'ltr' : 'rtl';
+        $template = ('left-to-right' === Misc::getCharacterOrder($locale)) ? '@Distribution/Pdf/distributionTable.html.twig' : '@Distribution/Pdf/distributionTable.rtl.html.twig';
 
         $html = $this->get('templating')->render($template, [
             'direction' => $direction,
