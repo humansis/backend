@@ -12,6 +12,7 @@ use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Exception;
+use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
 use VoucherBundle\Utils\BookletService;
 
@@ -50,6 +51,7 @@ class BookletFixtures extends Fixture implements FixtureGroupInterface, Dependen
 
         foreach (CountryController::COUNTRIES as $country) {
             $recipientCount = $manager->getRepository(Beneficiary::class)->countAllInCountry($country['iso3']);
+            $project = $manager->getRepository(Project::class)->findOneBy(['iso3' => $country['iso3']]);
             $voucherAssistanceCount = count($manager->getRepository(Assistance::class)->getActiveByCountry($country['iso3']));
 
             $count = 200;
@@ -58,6 +60,7 @@ class BookletFixtures extends Fixture implements FixtureGroupInterface, Dependen
             $data['__country'] = $country['iso3'];
             $data['currency'] = $country['currency'];
             $data['number_booklets'] = $count;
+            $data['project_id'] = $project->getId();
             if ($recipientCount < 1) {
                 echo "omitted\n";
                 continue;

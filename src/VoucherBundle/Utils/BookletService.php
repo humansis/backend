@@ -86,7 +86,7 @@ class BookletService
         $inputType->setQuantityOfBooklets($bookletData['number_booklets']);
         $inputType->setQuantityOfVouchers($bookletData['number_vouchers']);
         $inputType->setProjectId($bookletData['project_id']);
-        $inputType->setIndividualValues($bookletData['individual_values']);
+        $inputType->setValues($bookletData['individual_values']);
         $inputType->setCurrency($bookletData['currency']);
         $inputType->setPassword($bookletData['password'] ?? null);
         $inputType->setIso3($countryISO3);
@@ -105,7 +105,7 @@ class BookletService
 
         $this->generator->generate(
             $project, $inputType->getIso3(), $inputType->getQuantityOfBooklets(), $inputType->getQuantityOfVouchers(), $inputType->getCurrency(),
-            $inputType->getIndividualValues(), $inputType->getPassword()
+            $inputType->getValues(), $inputType->getPassword()
         );
     }
 
