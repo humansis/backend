@@ -368,10 +368,10 @@ implementation of the project.'|trans }}
             </tr>
             <tr class="header">
                 <td class="label signature" rowspan="2">{{ 'SIGNATURE'|trans }}</td>
-                <td class="label member">65+</td>
-                <td class="label member">65+</td>
-                <td class="label member">18-64</td>
-                <td class="label member">18-64</td>
+                <td class="label member">60+</td>
+                <td class="label member">60+</td>
+                <td class="label member">18-59</td>
+                <td class="label member">18-59</td>
                 <td class="label member">5-17</td>
                 <td class="label member">5-17</td>
                 <td class="label member">2-4</td>
@@ -403,10 +403,10 @@ implementation of the project.'|trans }}
             {% for assistanceBeneficiary in distribution.distributionBeneficiaries %}
                 <tr>
                     <td class="signature"></td>
-                    <td>{{ _self.calcBeneficiaries(assistanceBeneficiary.beneficiary.houseHold.beneficiaries, 65, 1000, 1) }}</td>
-                    <td>{{ _self.calcBeneficiaries(assistanceBeneficiary.beneficiary.houseHold.beneficiaries, 65, 1000, 0) }}</td>
-                    <td>{{ _self.calcBeneficiaries(assistanceBeneficiary.beneficiary.houseHold.beneficiaries, 18, 64, 1) }}</td>
-                    <td>{{ _self.calcBeneficiaries(assistanceBeneficiary.beneficiary.houseHold.beneficiaries, 18, 64, 0) }}</td>
+                    <td>{{ _self.calcBeneficiaries(assistanceBeneficiary.beneficiary.houseHold.beneficiaries, 60, 1000, 1) }}</td>
+                    <td>{{ _self.calcBeneficiaries(assistanceBeneficiary.beneficiary.houseHold.beneficiaries, 60, 1000, 0) }}</td>
+                    <td>{{ _self.calcBeneficiaries(assistanceBeneficiary.beneficiary.houseHold.beneficiaries, 18, 59, 1) }}</td>
+                    <td>{{ _self.calcBeneficiaries(assistanceBeneficiary.beneficiary.houseHold.beneficiaries, 18, 59, 0) }}</td>
                     <td>{{ _self.calcBeneficiaries(assistanceBeneficiary.beneficiary.houseHold.beneficiaries, 5, 17, 1) }}</td>
                     <td>{{ _self.calcBeneficiaries(assistanceBeneficiary.beneficiary.houseHold.beneficiaries, 5, 17, 0) }}</td>
                     <td>{{ _self.calcBeneficiaries(assistanceBeneficiary.beneficiary.houseHold.beneficiaries, 2, 4, 1) }}</td>
