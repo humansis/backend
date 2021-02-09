@@ -90,5 +90,13 @@ services:
         arguments:
             - [ '@generator.beneficiary', '@generator.household', '@generator.household_head' ]
 
+    transformer.selection_criterion_field:
+        class: NewApiBundle\Component\SelectionCriteria\FieldDbTransformer
+        arguments:
+            - "@=service('doctrine.orm.entity_manager').getRepository('BeneficiaryBundle:CountrySpecific')"
+            - "@=service('doctrine.orm.entity_manager').getRepository('BeneficiaryBundle:VulnerabilityCriterion')"
+            - "@=service('doctrine.orm.entity_manager').getRepository('CommonBundle:Location')"
+
     NewApiBundle\Validator\Constraints\SelectionCriterionFieldValidator:
         arguments: [ '@service.selection_criterion' ]
+

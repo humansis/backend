@@ -220,7 +220,7 @@ class AssistanceController extends Controller
 
         try {
             $listReceivers = $this->get('distribution.assistance_service')
-                ->create($distributionArray['__country'], $distributionArray);
+                ->createFromArray($distributionArray['__country'], $distributionArray);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

@@ -25,8 +25,6 @@ class CommodityInputType implements InputTypeInterface
     private $unit;
 
     /**
-     * @Assert\Type("double")
-     * @Assert\GreaterThan("0")
      * @Assert\NotBlank
      * @Assert\NotNull
      */

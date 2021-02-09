@@ -6,7 +6,7 @@ namespace NewApiBundle\Validator\Constraints;
 use NewApiBundle\Component\SelectionCriteria\SelectionCriterionService;
 use NewApiBundle\Component\SelectionCriteria\Structure\Field;
 use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
-use NewApiBundle\InputType\AssistanceUpdateInputType;
+use NewApiBundle\InputType\AssistanceCreateInputType;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -34,7 +34,7 @@ class SelectionCriterionFieldValidator extends ConstraintValidator
             throw new \UnexpectedValueException(self::class.' supports only '.SelectionCriterionInputType::class);
         }
 
-        /** @var AssistanceUpdateInputType $root */
+        /** @var AssistanceCreateInputType $root */
         $root = $this->context->getRoot();
         $countryIso3 = $root->getIso3();
 
@@ -79,7 +79,7 @@ class SelectionCriterionFieldValidator extends ConstraintValidator
         $this->context->buildViolation($constraint->errorValueMessage)
             ->setParameter('{{ field }}', $value->getField())
             ->setParameter('{{ value }}', $value->getValue())
-            ->setCode(SelectionCriterionField::INVALID_CONDITION_ERROR)
+            ->setCode(SelectionCriterionField::INVALID_VALUE_ERROR)
             ->atPath('value')
             ->addViolation();
     }
