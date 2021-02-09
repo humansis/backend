@@ -89,6 +89,16 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     }
 
     /**
+     * Get HHId.
+     * @SymfonyGroups({"FullReceivers", "ValidatedAssistance", "FullBooklet", "FullBeneficiary"})
+     * @return int
+     */
+    public function getHouseholdId(): int
+    {
+        return $this->getHousehold()->getId();
+    }
+
+    /**
      * @return Person
      */
     public function getPerson(): Person
