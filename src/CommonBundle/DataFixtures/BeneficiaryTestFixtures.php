@@ -27,8 +27,6 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         'single male family' => ['M-25'],
         'single female family' => ['F-25'],
         'mother with kids' => ['F-20', 'F-1', 'F-5', 'M-15'],
-        'father with kids' => ['M-20', 'F-1', 'F-5', 'M-15'],
-        'old couple' => ['M-60', 'F-55'],
         'grandparents with kids' => ['M-60', 'F-55', 'F-2', 'F-10'],
     ];
 

@@ -2,19 +2,13 @@
 
 namespace CommonBundle\DataFixtures;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Community;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\Institution;
-use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\AssistanceBeneficiary;
+use CommonBundle\Controller\CountryController;
 use DistributionBundle\Utils\AssistanceService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use ProjectBundle\Entity\Project;
-use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class AssistanceValidationFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
@@ -43,20 +37,19 @@ class AssistanceValidationFixtures extends Fixture implements DependentFixtureIn
             return;
         }
 
-        $assistances = $manager->getRepository(Assistance::class)->findBy([
-        ]);
+        foreach (CountryController::COUNTRIES as $iso3 => $details) {
+            $project = $manager->getRepository(Project::class)->findOneBy([], ['id' => 'desc']);
 
-        foreach ($assistances as $assistance) {
-            if ($assistance->getId() % 2 === 0) {
+            foreach ($project->getDistributions() as $assistance) {
                 $this->assistanceService->validateDistribution($assistance);
-                echo 'v';
-            } else {
+                $manager->persist($assistance);
                 echo ".";
             }
-            $manager->persist($assistance);
+            echo "\n";
+            $manager->flush();
         }
-        echo "\n";
-        $manager->flush();
+
+
     }
 
     public function getDependencies(): array

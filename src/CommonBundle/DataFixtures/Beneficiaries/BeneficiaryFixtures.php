@@ -15,8 +15,10 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
 {
-    private $householdArray = [
-        [
+    private function getHouseholdData(): array
+    {
+        return [
+            [
             "livelihood" => Livelihood::GOVERNMENT,
             "income_level" => 3,
             "notes" => null,
@@ -68,7 +70,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                     "date_of_birth" => "10-10-1996",
                     "vulnerability_criteria" => [
                         [
-                            "id" => 3
+                            "id" => $this->getReference('vulnerability_disabled')->getId(),
                         ]
                     ],
                     "phones" => [],
@@ -80,257 +82,258 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
             ],
             "__country" => "KHM"
         ],
-        [
-          "livelihood" => Livelihood::DAILY_LABOUR,
-          "income_level" => 3,
-          "notes" => null,
-          "latitude" => null,
-          "longitude" => null,
-          "coping_strategies_index" => "2",
-          "food_consumption_score" => "3",
-          "household_locations" => array(
-              [
-                "location_group" => "current",
-                "type" => "residence",
-                "address" =>  [
-                    "street" => "azerrt",
-                    "number" => "1",
-                    "postcode" => "12345",
-                    "location" => [
-                        "adm1" => 1,
-                        "adm2" => 1,
-                        "adm3" => 1,
-                        "adm4" => null,
-                        "country_iso3" => "KHM",
-                    ],
-                ]
-              ]
-            ),
-          "country_specific_answers" => [
-              [
-                "answer" => "2",
-                "country_specific" => [
-                    "id" => 1
-                ],
-              ],
-              [
-                  "answer" => null,
-                  "country_specific" => [
-                      "id" => 2
-                  ],
-              ]
-          ],
-          "beneficiaries" => [
-              [
-                  "en_given_name" => "Test",
-                  "en_family_name" => "Tester",
-                  "local_given_name" => "Test",
-                  "local_family_name" => "Tester",
-                  "gender" => \BeneficiaryBundle\Entity\Person::GENDER_FEMALE,
-                  "status" => "1",
-                  "residency_status" => "resident",
-                  "date_of_birth" => "10-10-1996",
-                  "vulnerability_criteria" => [
-                      [
-                          "id" => 3
-                      ]
-                  ],
-                  "phones" => [],
-                  "national_ids" => [],
-                  "profile" => [
-                      "photo" => ""
-                  ],
-              ],
-              [
-                  "en_given_name" => "Test2",
-                  "en_family_name" => "Tester",
-                  "local_given_name" => "Test2",
-                  "local_family_name" => "Tester",
-                  "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
-                  "status" => "0",
-                  "residency_status" => "IDP",
-                  "date_of_birth" => "10-11-1996",
-                  "vulnerability_criteria" => [
-                      [
-                          "id" => 1
-                      ]
-                  ],
-                  "phones" => [],
-                  "national_ids" => [],
-                  "profile" => [
-                      "photo" => ""
-                  ],
-              ],
-              [
-                  "en_given_name" => "Test4",
-                  "en_family_name" => "Tester",
-                  "local_given_name" => "Test4",
-                  "local_family_name" => "Tester",
-                  "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
-                  "status" => "0",
-                  "residency_status" => "refugee",
-                  "date_of_birth" => "10-12-1995",
-                  "vulnerability_criteria" => [
-                      [
-                          "id" => 1
-                      ]
-                  ],
-                  "phones" => [],
-                  "national_ids" => [],
-                  "profile" => [
-                      "photo" => ""
-                  ],
-              ],
-              [
-                  "en_given_name" => "Test5",
-                  "en_family_name" => "Tester",
-                  "local_given_name" => "Test5",
-                  "local_family_name" => "Tester",
-                  "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
-                  "status" => "0",
-                  "residency_status" => "resident",
-                  "date_of_birth" => "14-10-2000",
-                  "vulnerability_criteria" => [
-                      [
-                          "id" => 3
-                      ]
-                  ],
-                  "phones" => [],
-                  "national_ids" => [],
-                  "profile" => [
-                      "photo" => ""
-                  ],
-              ],
-
-          ],
-          "__country" => "KHM"
-        ],
-        [
-            "livelihood" => Livelihood::FARMING_LIVESTOCK,
-            "income_level" => 4,
-            "notes" => null,
-            "latitude" => null,
-            "longitude" => null,
-            "coping_strategies_index" => "4",
-            "food_consumption_score" => "5",
-            "household_locations" => array(
-                [
-                  "location_group" => "current",
-                  "type" => "residence",
-                  "address" =>  [
-                      "street" => "azerrt",
-                      "number" => "2",
-                      "postcode" => "12346",
-                      "location" => [
-                          "adm1" => 1,
-                          "adm2" => 1,
-                          "adm3" => 1,
-                          "adm4" => null,
-                          "country_iso3" => "KHM",
-                      ],
+            [
+              "livelihood" => Livelihood::DAILY_LABOUR,
+              "income_level" => 3,
+              "notes" => null,
+              "latitude" => null,
+              "longitude" => null,
+              "coping_strategies_index" => "2",
+              "food_consumption_score" => "3",
+              "household_locations" => array(
+                  [
+                    "location_group" => "current",
+                    "type" => "residence",
+                    "address" =>  [
+                        "street" => "azerrt",
+                        "number" => "1",
+                        "postcode" => "12345",
+                        "location" => [
+                            "adm1" => 1,
+                            "adm2" => 1,
+                            "adm3" => 1,
+                            "adm4" => null,
+                            "country_iso3" => "KHM",
+                        ],
+                    ]
                   ]
-                ]
-              ),
-            "country_specific_answers" => [
-                [
-                    "answer" => "3",
+                ),
+              "country_specific_answers" => [
+                  [
+                    "answer" => "2",
                     "country_specific" => [
                         "id" => 1
                     ],
-                ],
-                [
-                    "answer" => null,
-                    "country_specific" => [
-                        "id" => 2
-                    ],
-                ]
-            ],
-            "beneficiaries" => [
-                [
-                    "en_given_name" => "Test6",
-                    "en_family_name" => "Bis",
-                    "local_given_name" => "Test6",
-                    "local_family_name" => "Bis",
-                    "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
-                    "status" => "1",
-                    "residency_status" => "resident",
-                    "date_of_birth" => "14-10-1995",
-                    "vulnerability_criteria" => [
-                        [
-                            "id" => 1
-                        ]
-                    ],
-                    "phones" => [],
-                    "national_ids" => [],
-                    "profile" => [
-                        "photo" => ""
-                    ],
-                ],
-                [
-                    "en_given_name" => "Test7",
-                    "en_family_name" => "Bis",
-                    "local_given_name" => "Test7",
-                    "local_family_name" => "Bis",
-                    "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
-                    "status" => "0",
-                    "residency_status" => "resident",
-                    "date_of_birth" => "15-10-1989",
-                    "vulnerability_criteria" => [
-                        [
-                            "id" => 3
-                        ]
-                    ],
-                    "phones" => [],
-                    "national_ids" => [],
-                    "profile" => [
-                        "photo" => ""
-                    ],
-                ],
-                [
-                    "en_given_name" => "Test8",
-                    "en_family_name" => "Bis",
-                    "local_given_name" => "Test8",
-                    "local_family_name" => "Bis",
-                    "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
-                    "status" => "0",
-                    "residency_status" => "resident",
-                    "date_of_birth" => "15-10-1990",
-                    "vulnerability_criteria" => [
-                        [
-                            "id" => 1
-                        ]
-                    ],
-                    "phones" => [],
-                    "national_ids" => [],
-                    "profile" => [
-                        "photo" => ""
-                    ],
-                ],
-                [
-                    "en_given_name" => "Test9",
-                    "en_family_name" => "Bis",
-                    "local_given_name" => "Test9",
-                    "local_family_name" => "Bis",
-                    "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
-                    "status" => "0",
-                    "residency_status" => "resident",
-                    "date_of_birth" => "15-08-1989",
-                    "vulnerability_criteria" => [
-                        [
-                            "id" => 1
-                        ]
-                    ],
-                    "phones" => [],
-                    "national_ids" => [],
-                    "profile" => [
-                        "photo" => ""
-                    ],
-                ],
+                  ],
+                  [
+                      "answer" => null,
+                      "country_specific" => [
+                          "id" => 2
+                      ],
+                  ]
+              ],
+              "beneficiaries" => [
+                  [
+                      "en_given_name" => "Test",
+                      "en_family_name" => "Tester",
+                      "local_given_name" => "Test",
+                      "local_family_name" => "Tester",
+                      "gender" => \BeneficiaryBundle\Entity\Person::GENDER_FEMALE,
+                      "status" => "1",
+                      "residency_status" => "resident",
+                      "date_of_birth" => "10-10-1996",
+                      "vulnerability_criteria" => [
+                          [
+                              "id" => $this->getReference('vulnerability_disabled')->getId(),
+                          ]
+                      ],
+                      "phones" => [],
+                      "national_ids" => [],
+                      "profile" => [
+                          "photo" => ""
+                      ],
+                  ],
+                  [
+                      "en_given_name" => "Test2",
+                      "en_family_name" => "Tester",
+                      "local_given_name" => "Test2",
+                      "local_family_name" => "Tester",
+                      "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
+                      "status" => "0",
+                      "residency_status" => "IDP",
+                      "date_of_birth" => "10-11-1996",
+                      "vulnerability_criteria" => [
+                          [
+                              "id" => $this->getReference('vulnerability_chronicallyIll')->getId(),
+                          ]
+                      ],
+                      "phones" => [],
+                      "national_ids" => [],
+                      "profile" => [
+                          "photo" => ""
+                      ],
+                  ],
+                  [
+                      "en_given_name" => "Test4",
+                      "en_family_name" => "Tester",
+                      "local_given_name" => "Test4",
+                      "local_family_name" => "Tester",
+                      "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
+                      "status" => "0",
+                      "residency_status" => "refugee",
+                      "date_of_birth" => "10-12-1995",
+                      "vulnerability_criteria" => [
+                          [
+                              "id" => $this->getReference('vulnerability_chronicallyIll')->getId(),
+                          ]
+                      ],
+                      "phones" => [],
+                      "national_ids" => [],
+                      "profile" => [
+                          "photo" => ""
+                      ],
+                  ],
+                  [
+                      "en_given_name" => "Test5",
+                      "en_family_name" => "Tester",
+                      "local_given_name" => "Test5",
+                      "local_family_name" => "Tester",
+                      "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
+                      "status" => "0",
+                      "residency_status" => "resident",
+                      "date_of_birth" => "14-10-2000",
+                      "vulnerability_criteria" => [
+                          [
+                              "id" => $this->getReference('vulnerability_chronicallyIll')->getId(),
+                          ]
+                      ],
+                      "phones" => [],
+                      "national_ids" => [],
+                      "profile" => [
+                          "photo" => ""
+                      ],
+                  ],
 
+              ],
+              "__country" => "KHM"
             ],
-            "__country" => "KHM"
-        ],
-    ];
+            [
+                "livelihood" => Livelihood::FARMING_LIVESTOCK,
+                "income_level" => 4,
+                "notes" => null,
+                "latitude" => null,
+                "longitude" => null,
+                "coping_strategies_index" => "4",
+                "food_consumption_score" => "5",
+                "household_locations" => array(
+                    [
+                      "location_group" => "current",
+                      "type" => "residence",
+                      "address" =>  [
+                          "street" => "azerrt",
+                          "number" => "2",
+                          "postcode" => "12346",
+                          "location" => [
+                              "adm1" => 1,
+                              "adm2" => 1,
+                              "adm3" => 1,
+                              "adm4" => null,
+                              "country_iso3" => "KHM",
+                          ],
+                      ]
+                    ]
+                  ),
+                "country_specific_answers" => [
+                    [
+                        "answer" => "3",
+                        "country_specific" => [
+                            "id" => 1
+                        ],
+                    ],
+                    [
+                        "answer" => null,
+                        "country_specific" => [
+                            "id" => 2
+                        ],
+                    ]
+                ],
+                "beneficiaries" => [
+                    [
+                        "en_given_name" => "Test6",
+                        "en_family_name" => "Bis",
+                        "local_given_name" => "Test6",
+                        "local_family_name" => "Bis",
+                        "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
+                        "status" => "1",
+                        "residency_status" => "resident",
+                        "date_of_birth" => "14-10-1995",
+                        "vulnerability_criteria" => [
+                            [
+                                "id" => $this->getReference('vulnerability_lactating')->getId(),
+                            ]
+                        ],
+                        "phones" => [],
+                        "national_ids" => [],
+                        "profile" => [
+                            "photo" => ""
+                        ],
+                    ],
+                    [
+                        "en_given_name" => "Test7",
+                        "en_family_name" => "Bis",
+                        "local_given_name" => "Test7",
+                        "local_family_name" => "Bis",
+                        "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
+                        "status" => "0",
+                        "residency_status" => "resident",
+                        "date_of_birth" => "15-10-1989",
+                        "vulnerability_criteria" => [
+                            [
+                                "id" => $this->getReference('vulnerability_lactating')->getId(),
+                            ]
+                        ],
+                        "phones" => [],
+                        "national_ids" => [],
+                        "profile" => [
+                            "photo" => ""
+                        ],
+                    ],
+                    [
+                        "en_given_name" => "Test8",
+                        "en_family_name" => "Bis",
+                        "local_given_name" => "Test8",
+                        "local_family_name" => "Bis",
+                        "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
+                        "status" => "0",
+                        "residency_status" => "resident",
+                        "date_of_birth" => "15-10-1990",
+                        "vulnerability_criteria" => [
+                            [
+                                "id" => $this->getReference('vulnerability_disabled')->getId(),
+                            ]
+                        ],
+                        "phones" => [],
+                        "national_ids" => [],
+                        "profile" => [
+                            "photo" => ""
+                        ],
+                    ],
+                    [
+                        "en_given_name" => "Test9",
+                        "en_family_name" => "Bis",
+                        "local_given_name" => "Test9",
+                        "local_family_name" => "Bis",
+                        "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
+                        "status" => "0",
+                        "residency_status" => "resident",
+                        "date_of_birth" => "15-08-1989",
+                        "vulnerability_criteria" => [
+                            [
+                                "id" => $this->getReference('vulnerability_chronicallyIll')->getId(),
+                            ]
+                        ],
+                        "phones" => [],
+                        "national_ids" => [],
+                        "profile" => [
+                            "photo" => ""
+                        ],
+                    ],
+
+                ],
+                "__country" => "KHM"
+            ],
+        ];
+    }
 
     private $householdService;
     
@@ -352,7 +355,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
     {
         if ($this->kernel->getEnvironment() !== "prod") {
             $projects = $manager->getRepository(Project::class)->findAll();
-            foreach ($this->householdArray as $household) {
+            foreach ($this->getHouseholdData() as $household) {
                 $this->householdService->createOrEdit($household, $projects);
             }
         }
