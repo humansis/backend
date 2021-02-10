@@ -25,23 +25,28 @@ class CommonController extends AbstractController
     private $assistanceService;
     /** @var TranslatorInterface */
     private $translator;
+    /** @var array */
+    private $iconGroups;
 
     /**
      * CommonController constructor.
      *
-     * @param BeneficiaryService $beneficiaryService
-     * @param ProjectService     $projectService
-     * @param AssistanceService  $assistanceService
-     * @param TranslatorInterface         $translator
+     * @param BeneficiaryService  $beneficiaryService
+     * @param ProjectService      $projectService
+     * @param AssistanceService   $assistanceService
+     * @param TranslatorInterface $translator
+     * @param array               $iconGroups
      */
     public function __construct(BeneficiaryService $beneficiaryService, ProjectService $projectService, AssistanceService $assistanceService,
-                                TranslatorInterface $translator
+                                TranslatorInterface $translator,
+                                array $iconGroups
     )
     {
         $this->beneficiaryService = $beneficiaryService;
         $this->projectService = $projectService;
         $this->assistanceService = $assistanceService;
         $this->translator = $translator;
+        $this->iconGroups = $iconGroups;
     }
 
     /**
@@ -93,12 +98,10 @@ class CommonController extends AbstractController
     {
         $data = [];
 
-        foreach ($this->getParameter('icons_modality_types') as $key => $svg) {
-            $data[] = ['key' => $key, 'svg' => $svg];
-        }
-
-        foreach ($this->getParameter('icons_sectors') as $key => $svg) {
-            $data[] = ['key' => $key, 'svg' => $svg];
+        foreach ($this->iconGroups as $iconGroup) {
+            foreach ($iconGroup as $key => $svg) {
+                $data[] = ['key' => $key, 'svg' => $svg];
+            }
         }
 
         return $this->json($data);

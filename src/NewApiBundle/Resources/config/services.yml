@@ -40,6 +40,10 @@ services:
         autowire: true
         autoconfigure: true
         public: false
+        bind:
+            $iconGroups:
+                - '%icons_sectors%'
+                - '%icons_modality_types%'
 
     NewApiBundle\Controller\:
         resource: '../../Controller'
