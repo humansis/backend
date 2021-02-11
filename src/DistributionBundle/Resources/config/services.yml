@@ -21,18 +21,18 @@ services:
 ##                                       CRUD                                        ##
 #######################################################################################
 
-    DistributionBundle\Controller\AssistanceController:
-        autowire: true
-        public: true
-        arguments:
-            - '@serializer'
-            - '@DistributionBundle\Utils\AssistanceBeneficiaryService'
-            - '@DistributionBundle\Utils\AssistanceService'
-            - '@DistributionBundle\Mapper\AssistanceBeneficiaryMapper'
-            - '@DistributionBundle\Mapper\AssistanceCommunityMapper'
-            - '@DistributionBundle\Mapper\AssistanceInstitutionMapper'
-            - '@distribution.distribution_csv_service'
-            - '@BeneficiaryBundle\Mapper\AssistanceMapper'
+#    DistributionBundle\Controller\AssistanceController:
+#        autowire: true
+#        public: true
+#        arguments:
+#            - '@serializer'
+#            - '@DistributionBundle\Utils\AssistanceBeneficiaryService'
+#            - '@DistributionBundle\Utils\AssistanceService'
+#            - '@DistributionBundle\Mapper\AssistanceBeneficiaryMapper'
+#            - '@DistributionBundle\Mapper\AssistanceCommunityMapper'
+#            - '@DistributionBundle\Mapper\AssistanceInstitutionMapper'
+#            - '@distribution.distribution_csv_service'
+#            - '@BeneficiaryBundle\Mapper\AssistanceMapper'
 
     DistributionBundle\Utils\AssistanceService:
         public: true

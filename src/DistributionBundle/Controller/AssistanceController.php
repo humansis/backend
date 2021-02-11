@@ -14,6 +14,7 @@ use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use DistributionBundle\Utils\AssistanceService;
 use DistributionBundle\Utils\DistributionCsvService;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -58,6 +59,8 @@ class AssistanceController extends Controller
     private $assistanceCsvService;
     /** @var AssistanceMapper */
     private $assistanceMapper;
+    /** @var LoggerInterface */
+    private $logger;
 
     /**
      * AssistanceController constructor.
@@ -70,6 +73,7 @@ class AssistanceController extends Controller
      * @param AssistanceInstitutionMapper  $assistanceInstitutionMapper
      * @param DistributionCsvService       $distributionCsvService
      * @param AssistanceMapper             $assistanceMapper
+     * @param LoggerInterface              $logger
      */
     public function __construct(
         SerializerInterface $serializer,
@@ -79,7 +83,8 @@ class AssistanceController extends Controller
         AssistanceCommunityMapper $assistanceCommunityMapper,
         AssistanceInstitutionMapper $assistanceInstitutionMapper,
         DistributionCsvService $distributionCsvService,
-        AssistanceMapper $assistanceMapper
+        AssistanceMapper $assistanceMapper,
+        LoggerInterface $logger
     ) {
         $this->serializer = $serializer;
         $this->assistanceBeneficiaryService = $assistanceBeneficiaryService;
@@ -89,6 +94,7 @@ class AssistanceController extends Controller
         $this->assistanceInstitutionMapper = $assistanceInstitutionMapper;
         $this->assistanceCsvService = $distributionCsvService;
         $this->assistanceMapper = $assistanceMapper;
+        $this->logger = $logger;
     }
 
     /**
