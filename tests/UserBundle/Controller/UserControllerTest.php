@@ -119,6 +119,7 @@ class UserControllerTest extends BMSServiceTestCase
         $this->assertTrue(gettype($success) == 'array');
         $this->assertArrayHasKey('id', $success);
         $this->assertArrayHasKey('username', $success);
+        $this->assertArrayHasKey('password', $success);
         $this->assertArrayHasKey('roles', $success);
         $this->assertArrayHasKey('email', $success);
     }
