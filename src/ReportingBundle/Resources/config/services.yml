@@ -12,10 +12,6 @@ services:
     ReportingBundle\Utils\:
         resource: '../../Utils'
 
-    reporting.reporting_service:
-        alias: ReportingBundle\Utils\ReportingService
-        public: true
-
     reporting.code_indicator_command:
         class: ReportingBundle\Command\ReportingCodeIndicatorAddCommand
         public: true

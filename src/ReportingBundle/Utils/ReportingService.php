@@ -6,6 +6,7 @@ use CommonBundle\Utils\ExportService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
 use ReportingBundle\Entity\ReportingIndicator;
+use ReportingBundle\Utils\Finders\Finder;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 class ReportingService
@@ -19,11 +20,17 @@ class ReportingService
     /** @var ExportService */
     private $exportCSVService;
 
-    public function __construct(EntityManagerInterface $em, ContainerInterface $container, ExportService $exportCSVService)
+    /** @var Finder */
+    private $reportingFinder;
+
+    public function __construct(EntityManagerInterface $em, ContainerInterface $container, ExportService $exportCSVService,
+                                Finders\Finder $reportingFinder
+    )
     {
         $this->em = $em;
         $this->container = $container;
         $this->exportCSVService = $exportCSVService;
+        $this->reportingFinder = $reportingFinder;
     }
 
 
@@ -33,7 +40,7 @@ class ReportingService
         $filters = $this->formatFiltersIfEmpty($filters);
         $filters = $this->formatReportType($filters);
 
-        $allIndicators = $this->container->get('reporting.finder')->getIndicatorsByType($filters['report']);
+        $allIndicators = $this->reportingFinder->getIndicatorsByType($filters['report']);
         $filteredGraphs = [];
 
         foreach ($allIndicators as $indicator) {
@@ -64,7 +71,7 @@ class ReportingService
 
 
         /** @var ReportingIndicator[] $indicators */
-        $indicators = $this->container->get('reporting.finder')->getIndicatorsByType($filters['report']);
+        $indicators = $this->reportingFinder->getIndicatorsByType($filters['report']);
 
         $indicatorsTable = [];
 

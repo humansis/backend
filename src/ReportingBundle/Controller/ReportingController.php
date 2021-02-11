@@ -5,7 +5,9 @@ namespace ReportingBundle\Controller;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Utils\ExportService;
 use phpDocumentor\Reflection\TypeResolver;
+use ReportingBundle\Utils\Finders\Finder;
 use ReportingBundle\Utils\Formatters\Formatter;
+use ReportingBundle\Utils\ReportingService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 
 
@@ -28,6 +30,20 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
  */
 class ReportingController extends Controller
 {
+    /** @var ReportingService */
+    private $reportingService;
+    /** @var Finder */
+    private $reportingFinder;
+
+    /**
+     * ReportingController constructor.
+     *
+     * @param ReportingService $reportingService
+     */
+    public function __construct(ReportingService $reportingService)
+    {
+        $this->reportingService = $reportingService;
+    }
 
     /**
      * Send formatted data
@@ -41,7 +57,7 @@ class ReportingController extends Controller
         $filters = $request->query->all();
 
         try {
-            $filteredGraphs = $this->get('reporting.reporting_service')->getFilteredData($filters);
+            $filteredGraphs = $this->reportingService->getFilteredData($filters);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), $e->getCode() > 200 ? $e->getCode() : Response::HTTP_BAD_REQUEST);
         }
@@ -69,7 +85,7 @@ class ReportingController extends Controller
      */
     public function getAction()
     {
-        $indicatorFound = $this->get('reporting.finder')->generateIndicatorsData();
+        $indicatorFound = $this->reportingFinder->generateIndicatorsData();
         $json = json_encode($indicatorFound);
         return new Response($json, Response::HTTP_OK);
     }
