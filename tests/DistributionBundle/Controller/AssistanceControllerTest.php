@@ -63,7 +63,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         // Get a Client instance for simulate a browser
         $this->client = $this->getContainer()->get('test.client');
-        $this->distributionCSVService = $this->getContainer()->get('distribution.distribution_csv_service');
+        $this->distributionCSVService = $this->getContainer()->get(DistributionCSVService::class);
     }
 
     /**
@@ -653,7 +653,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $distributionCSVService = $this->getContainer()->get('distribution.distribution_csv_service');
+        $distributionCSVService = $this->getContainer()->get(DistributionCSVService::class);
 
         $countryIso3 = 'KHM';
 

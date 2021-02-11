@@ -12,7 +12,7 @@ use DistributionBundle\Mapper\AssistanceCommunityMapper;
 use DistributionBundle\Mapper\AssistanceInstitutionMapper;
 use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use DistributionBundle\Utils\AssistanceService;
-use DistributionBundle\Utils\DistributionCsvService;
+use DistributionBundle\Utils\DistributionCSVService;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
@@ -27,7 +27,6 @@ use Swagger\Annotations as SWG;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
@@ -55,7 +54,7 @@ class AssistanceController extends Controller
     private $assistanceCommunityMapper;
     /** @var AssistanceInstitutionMapper */
     private $assistanceInstitutionMapper;
-    /** @var DistributionCsvService */
+    /** @var DistributionCSVService */
     private $assistanceCsvService;
     /** @var AssistanceMapper */
     private $assistanceMapper;
@@ -71,7 +70,7 @@ class AssistanceController extends Controller
      * @param AssistanceBeneficiaryMapper  $assistanceBeneficiaryMapper
      * @param AssistanceCommunityMapper    $assistanceCommunityMapper
      * @param AssistanceInstitutionMapper  $assistanceInstitutionMapper
-     * @param DistributionCsvService       $distributionCsvService
+     * @param DistributionCSVService       $distributionCsvService
      * @param AssistanceMapper             $assistanceMapper
      * @param LoggerInterface              $logger
      */
@@ -82,7 +81,7 @@ class AssistanceController extends Controller
         AssistanceBeneficiaryMapper $assistanceBeneficiaryMapper,
         AssistanceCommunityMapper $assistanceCommunityMapper,
         AssistanceInstitutionMapper $assistanceInstitutionMapper,
-        DistributionCsvService $distributionCsvService,
+        DistributionCSVService $distributionCsvService,
         AssistanceMapper $assistanceMapper,
         LoggerInterface $logger
     ) {
@@ -949,7 +948,7 @@ class AssistanceController extends Controller
 
         $countryIso3 =  $request->request->get('__country');
 
-        /** @var DistributionCsvService $distributionCsvService */
+        /** @var DistributionCSVService $distributionCsvService */
         $distributionCsvService = $this->assistanceCsvService;
 
         if ($request->query->get('step')) {

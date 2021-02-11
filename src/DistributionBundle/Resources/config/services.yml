@@ -17,22 +17,13 @@ services:
         tags:
             - { name: twig.extension }
 
+    DistributionBundle\Mapper\:
+        resource: '../../Mapper'
+        public: true
+
 #######################################################################################
 ##                                       CRUD                                        ##
 #######################################################################################
-
-#    DistributionBundle\Controller\AssistanceController:
-#        autowire: true
-#        public: true
-#        arguments:
-#            - '@serializer'
-#            - '@DistributionBundle\Utils\AssistanceBeneficiaryService'
-#            - '@DistributionBundle\Utils\AssistanceService'
-#            - '@DistributionBundle\Mapper\AssistanceBeneficiaryMapper'
-#            - '@DistributionBundle\Mapper\AssistanceCommunityMapper'
-#            - '@DistributionBundle\Mapper\AssistanceInstitutionMapper'
-#            - '@distribution.distribution_csv_service'
-#            - '@BeneficiaryBundle\Mapper\AssistanceMapper'
 
     DistributionBundle\Utils\AssistanceService:
         public: true
@@ -60,28 +51,9 @@ services:
         alias: DistributionBundle\Utils\CommodityService
         public: true
 
-    DistributionBundle\Mapper\AssistanceBeneficiaryMapper:
-        public: true
-
-    DistributionBundle\Mapper\AssistanceCommunityMapper:
-        public: true
-
-    DistributionBundle\Mapper\AssistanceInstitutionMapper:
-        public: true
-
-    DistributionBundle\Mapper\CampMapper:
-        public: true
-
-    DistributionBundle\Mapper\GeneralReliefItemMapper:
-        public: true
-
 #######################################################################################
 ##                                       CSV                                         ##
 #######################################################################################
-
-    distribution.distribution_csv_service:
-        alias: DistributionBundle\Utils\DistributionCSVService
-        public: true
 
     DistributionBundle\Export\SmartcardExport:
         arguments:
