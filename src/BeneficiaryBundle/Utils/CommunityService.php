@@ -284,6 +284,8 @@ class CommunityService
         $community->setName($inputType->getContactFamilyName());
         $community->setLongitude($inputType->getLongitude());
         $community->setLatitude($inputType->getLongitude());
+        $community->setContactFamilyName($inputType->getContactFamilyName());
+        $community->setContactName($inputType->getContactGivenName());
 
         if (!is_null($inputType->getAddress())) {
             $addressType = $inputType->getAddress();
