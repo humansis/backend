@@ -131,7 +131,7 @@ class BookletGenerator
         $sqlSnippet = '';
         for ($i = 0; $i < count($values); ++$i) {
             if (0 === $i) {
-                $sqlSnippet .= ' SELECT 1 AS level, ? AS val';
+                $sqlSnippet .= ' SELECT 1 AS level, CAST(? AS UNSIGNED) AS val';
                 if (1 === count($values)) {
                     $sqlSnippet .= ' UNION ALL SELECT level + 1 AS level, val FROM sequence WHERE sequence.level <= '.$numberOfVouchers;
                 }
