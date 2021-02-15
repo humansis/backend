@@ -55,7 +55,7 @@ class User extends BaseUser implements ExportableInterface
     private $countries;
 
     /**
-     * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserProject", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserProject", mappedBy="user", cascade={"remove"})
      * @SymfonyGroups({"FullUser"})
      */
     private $projects;

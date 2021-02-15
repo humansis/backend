@@ -1,0 +1,275 @@
+<?php
+
+namespace Tests\NewApiBundle\Controller;
+
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
+use Exception;
+use ProjectBundle\Entity\Project;
+use Tests\BMSServiceTestCase;
+
+class UserControllerTest extends BMSServiceTestCase
+{
+    /** @var string */
+    private $username;
+
+    /** @var string */
+    private $email;
+
+    public function __construct($name = null, array $data = [], $dataName = '')
+    {
+        parent::__construct($name, $data, $dataName);
+
+        $this->username = 'test-username'.time();
+        $this->email = time().'test@example.org';
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function setUp()
+    {
+        // Configuration of BMSServiceTest
+        $this->setDefaultSerializerName('serializer');
+        parent::setUpFunctionnal();
+
+        // Get a Client instance for simulate a browser
+        $this->client = $this->container->get('test.client');
+    }
+
+    /**
+     * @return int
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws Exception
+     */
+    public function testCreate()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        /** @var Project|null $project */
+        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+
+        if (null === $project) {
+            $this->markTestSkipped('There needs to be at least one project in system to complete this test');
+        }
+
+        $this->request('POST', '/api/basic/users', [
+            'username' => $this->username,
+            'email' => $this->email,
+            'password' => 'password',
+            'phonePrefix' => '+420',
+            'phoneNumber' => '123456789',
+            'countries' => [
+                'KHM',
+                'SYR',
+            ],
+            'language' => 'english',
+            'roles' => [
+                'ROLE_FIELD_OFFICER',
+                'ROLE_PROJECT_OFFICER',
+            ],
+            'projectIds' => [
+                $project->getId(),
+            ],
+            'changePassword' => false,
+        ]);
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('id', $result);
+        $this->assertArrayHasKey('username', $result);
+        $this->assertArrayHasKey('email', $result);
+        $this->assertArrayHasKey('phonePrefix', $result);
+        $this->assertArrayHasKey('phoneNumber', $result);
+        $this->assertArrayHasKey('countries', $result);
+        $this->assertArrayHasKey('language', $result);
+        $this->assertArrayHasKey('roles', $result);
+        $this->assertArrayHasKey('projectIds', $result);
+
+        return $result['id'];
+    }
+
+    /**
+     * @depends testCreate
+     *
+     * @param int $id
+     *
+     * @return int
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function testUpdate(int $id)
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        /** @var Project|null $project */
+        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+
+        if (null === $project) {
+            $this->markTestSkipped('There needs to be at least one project in system to complete this test');
+        }
+
+        $data = [
+            'username' => $this->username,
+            'email' => $this->email,
+            'phonePrefix' => '+420',
+            'phoneNumber' => '999999999',
+            'countries' => [
+                'KHM',
+                'SYR',
+            ],
+            'language' => 'english',
+            'roles' => [
+                'ROLE_FIELD_OFFICER',
+                'ROLE_PROJECT_OFFICER',
+            ],
+            'projectIds' => [
+                $project->getId(),
+            ],
+            'changePassword' => false,
+        ];
+
+        $this->request('PUT', '/api/basic/users/'.$id, $data);
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('id', $result);
+        $this->assertArrayHasKey('username', $result);
+        $this->assertArrayHasKey('email', $result);
+        $this->assertArrayHasKey('phonePrefix', $result);
+        $this->assertArrayHasKey('phoneNumber', $result);
+        $this->assertArrayHasKey('countries', $result);
+        $this->assertArrayHasKey('language', $result);
+        $this->assertArrayHasKey('roles', $result);
+        $this->assertArrayHasKey('projectIds', $result);
+
+        $this->assertEquals($data['phoneNumber'], $result['phoneNumber']);
+
+        return $result['id'];
+    }
+
+    /**
+     * @depends testUpdate
+     *
+     * @param int $id
+     *
+     * @return int
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function testGet(int $id)
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('GET', '/api/basic/users/'.$id);
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('id', $result);
+        $this->assertArrayHasKey('username', $result);
+        $this->assertArrayHasKey('email', $result);
+        $this->assertArrayHasKey('phonePrefix', $result);
+        $this->assertArrayHasKey('phoneNumber', $result);
+        $this->assertArrayHasKey('countries', $result);
+        $this->assertArrayHasKey('language', $result);
+        $this->assertArrayHasKey('roles', $result);
+        $this->assertArrayHasKey('projectIds', $result);
+
+        return $id;
+    }
+
+    /**
+     * @depends testUpdate
+     *
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function testList()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('GET', '/api/basic/users?sort[]=id.desc&filter[fulltext]=test');
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertArrayHasKey('data', $result);
+    }
+
+    /**
+     * @depends testGet
+     *
+     * @param int $id
+     *
+     * @return int
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function testDelete(int $id)
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('DELETE', '/api/basic/users/'.$id);
+
+        $this->assertTrue($this->client->getResponse()->isEmpty());
+
+        return $id;
+    }
+
+    /**
+     * @depends testDelete
+     *
+     * @param int $id
+     *
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function testGetNotexists(int $id)
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('GET', '/api/basic/users/'.$id);
+
+        $this->assertTrue($this->client->getResponse()->isNotFound());
+    }
+}

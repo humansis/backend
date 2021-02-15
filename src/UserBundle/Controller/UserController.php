@@ -379,7 +379,7 @@ class UserController extends Controller
         $userData = $request->request->all();
 
         try {
-            $return = $this->get('user.user_service')->create($userData);
+            $return = $this->get('user.user_service')->createFromArray($userData);
 
             $userJson = $serializer->serialize(
                 $return,
@@ -558,7 +558,7 @@ class UserController extends Controller
     public function updateAction(Request $request, User $user)
     {
         $userData = $request->request->all();
-        $userNew = $this->get('user.user_service')->update($user, $userData);
+        $userNew = $this->get('user.user_service')->updateFromArray($user, $userData);
         $json = $this->get('serializer')->serialize($userNew, 'json', ['groups' => ['FullUser']]);
         return new Response($json);
     }

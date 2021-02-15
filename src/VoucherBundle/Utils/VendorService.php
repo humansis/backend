@@ -75,7 +75,7 @@ class VendorService
         $vendorSaved = $userSaved instanceof User ? $this->em->getRepository(Vendor::class)->getVendorByUser($userSaved) : null;
 
         if (!($vendorSaved instanceof Vendor)) {
-            $user = $this->container->get('user.user_service')->create(
+            $user = $this->container->get('user.user_service')->createFromArray(
                 [
                     'username' => $username,
                     'email' => $username,
@@ -126,7 +126,7 @@ class VendorService
             throw new RuntimeException('Vendor with username '.$inputType->getUsername().' already exists');
         }
 
-        $user = $this->container->get('user.user_service')->create(
+        $user = $this->container->get('user.user_service')->createFromArray(
             [
                 'username' => $inputType->getUsername(),
                 'email' => $inputType->getUsername(),

@@ -4,9 +4,13 @@ namespace UserBundle\Utils;
 
 use CommonBundle\Entity\Logs;
 use Doctrine\ORM\EntityManagerInterface;
+use InvalidArgumentException;
+use NewApiBundle\InputType\UserCreateInputType;
+use NewApiBundle\InputType\UserEditInputType;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validation;
@@ -15,6 +19,7 @@ use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
 use UserBundle\Entity\UserProject;
 use Symfony\Component\HttpClient\HttpClient;
+use UserBundle\Repository\UserRepository;
 
 /**
  * Class UserService
@@ -106,11 +111,13 @@ class UserService
     }
 
     /**
+     * @deprecated Remove in 3.0
+     *
      * @param User $user
      * @param array $userData
      * @return User
      */
-    public function update(User $user, array $userData)
+    public function updateFromArray(User $user, array $userData)
     {
         $roles = $userData['roles'];
         if (!empty($roles)) {
@@ -254,11 +261,13 @@ class UserService
     }
 
     /**
+     * @deprecated Remove in 3.0
+     *
      * @param array $userData
      * @return mixed
      * @throws \Exception
      */
-    public function create(array $userData)
+    public function createFromArray(array $userData)
     {
         $roles = $userData['roles'];
 
@@ -351,6 +360,8 @@ class UserService
     }
 
     /**
+     * @deprecated Remove in 3.0
+     *
      * Delete an user and its links in the api
      *
      * @param User $user
@@ -387,6 +398,8 @@ class UserService
     }
 
     /**
+     * @deprecated Remove in 3.0
+     *
      * Delete an user and its links in the api
      *
      * @param string $username
@@ -682,5 +695,157 @@ class UserService
         }
 
         return array_keys($countries);
+    }
+
+    public function create(UserCreateInputType $inputType): User
+    {
+        $user = new User();
+
+        /** @var UserRepository $userRepository */
+        $userRepository = $this->em->getRepository(User::class);
+
+        if ($userRepository->findOneBy(['username' => $inputType->getUsername()]) instanceof User) {
+            throw new InvalidArgumentException('The user with username '.$inputType->getUsername().' has already been added');
+        }
+
+        if ($userRepository->findOneBy(['email' => $inputType->getEmail()]) instanceof User) {
+            throw new InvalidArgumentException('The user with email '.$inputType->getEmail().' has already been added');
+        }
+
+        $passwordSalt = $this->generateSalt();
+
+        $user->setSalt($passwordSalt)
+            ->setEmail($inputType->getEmail())
+            ->setEmailCanonical($inputType->getEmail())
+            ->setUsername($inputType->getUsername())
+            ->setUsernameCanonical($inputType->getUsername())
+            ->setEnabled(true)
+            ->setRoles($inputType->getRoles())
+            ->setChangePassword($inputType->isChangePassword())
+            ->setPhonePrefix($inputType->getPhonePrefix())
+            ->setPhoneNumber((int) $inputType->getPhoneNumber())
+            ->setPassword($this->hashPassword($inputType->getPassword(), $passwordSalt));
+
+        if (!empty($inputType->getProjectIds())) {
+            foreach ($inputType->getProjectIds() as $projectId) {
+                $project = $this->em->getRepository(Project::class)->find($projectId);
+
+                if (!$project instanceof Project) {
+                    throw new NotFoundHttpException("Project with id $projectId not found");
+                }
+
+                $userProject = new UserProject();
+                $userProject->setRights($inputType->getRoles()[0])//TODO edit after decision about roles and authorization will be made
+                ->setUser($user)
+                    ->setProject($project);
+
+                $this->em->persist($userProject);
+            }
+        }
+
+        if (!empty($inputType->getCountries())) {
+            foreach ($inputType->getCountries() as $country) {
+                $userCountry = new UserCountry();
+                $userCountry->setUser($user)
+                    ->setIso3($country)
+                    ->setRights($inputType->getRoles()[0]);//TODO edit after decision about roles and authorization will be made
+
+                $this->em->persist($userCountry);
+            }
+        }
+
+        $this->em->persist($user);
+        $this->em->flush();
+
+        return $user;
+    }
+
+    public function update(User $user, UserEditInputType $inputType): User
+    {
+        $user->setEmail($inputType->getEmail())
+            ->setEmailCanonical($inputType->getEmail())
+            ->setUsername($inputType->getUsername())
+            ->setUsernameCanonical($inputType->getUsername())
+            ->setEnabled(true)
+            ->setRoles($inputType->getRoles())
+            ->setPhonePrefix($inputType->getPhonePrefix())
+            ->setPhoneNumber((int) $inputType->getPhoneNumber());
+
+        if (null !== $inputType->getPassword()) {
+            $user->setPassword($this->hashPassword($inputType->getPassword(), $user->getSalt()));
+        }
+
+        /** @var UserProject $userProject */
+        foreach ($user->getProjects() as $userProject) {
+            $this->em->remove($userProject);
+        }
+        $user->getProjects()->clear();
+
+        if (!empty($inputType->getProjectIds())) {
+            foreach ($inputType->getProjectIds() as $projectId) {
+                $project = $this->em->getRepository(Project::class)->find($projectId);
+
+                if (!$project instanceof Project) {
+                    throw new NotFoundHttpException("Project with id $projectId not found");
+                }
+
+                $userProject = new UserProject();
+                $userProject->setRights($inputType->getRoles()[0])//TODO edit after decision about roles and authorization will be made
+                ->setUser($user)
+                    ->setProject($project);
+
+                $this->em->persist($userProject);
+            }
+        }
+
+        /** @var UserCountry $userCountry */
+        foreach ($user->getCountries() as $userCountry) {
+            $this->em->remove($userCountry);
+        }
+        $user->getCountries()->clear();
+
+        if (!empty($inputType->getCountries())) {
+            foreach ($inputType->getCountries() as $country) {
+                $userCountry = new UserCountry();
+                $userCountry->setUser($user)
+                    ->setIso3($country)
+                    ->setRights($inputType->getRoles()[0]);//TODO edit after decision about roles and authorization will be made
+
+                $this->em->persist($userCountry);
+            }
+        }
+
+        $this->em->flush();
+
+        return $user;
+    }
+
+    public function remove(User $user): void
+    {
+        $this->em->remove($user);
+        $this->em->flush();
+    }
+
+    /**
+     * @return string
+     * @throws \Exception
+     */
+    private function generateSalt()
+    {
+        return rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
+    }
+
+    public function hashPassword(string $password, string $salt): string
+    {
+        $saltedPassword = $password.'{'.$salt.'}';
+
+        $digest = hash('sha512', $saltedPassword);
+
+        for ($i = 1; $i < 5000; $i++) {
+            $newInput = hex2bin($digest).$saltedPassword;
+            $digest = hash('sha512', $newInput);
+        }
+
+        return base64_encode(hex2bin($digest));
     }
 }
