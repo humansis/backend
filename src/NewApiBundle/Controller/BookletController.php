@@ -62,13 +62,7 @@ class BookletController extends AbstractController
      */
     public function create(BookletBatchCreateInputType $inputType): JsonResponse
     {
-        $this->get('event_dispatcher')->addListener(KernelEvents::TERMINATE, function ($event) use ($inputType) {
-            try {
-                $this->get('voucher.booklet_service')->createBooklets($inputType);
-            } catch (\Exception $e) {
-                $this->container->get('logger')->error($e);
-            }
-        });
+        $this->get('voucher.booklet_service')->createBooklets($inputType);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
