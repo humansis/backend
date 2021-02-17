@@ -2,6 +2,10 @@
 
 namespace CommonBundle\Repository;
 
+use CommonBundle\Entity\Organization;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\Request\Pagination;
+
 /**
  * OrganizationServicesRepository
  *
@@ -23,5 +27,19 @@ class OrganizationServicesRepository extends \Doctrine\ORM\EntityRepository
                     ->setParameter('name', $serviceName);
         
         return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    public function findByOrganization(Organization $organization, ?Pagination $pagination = null): Paginator
+    {
+        $qb = $this->createQueryBuilder('os')
+            ->where('os.organization = :organization')
+            ->setParameter('organization', $organization);
+
+        if ($pagination) {
+            $qb->setMaxResults($pagination->getLimit());
+            $qb->setFirstResult($pagination->getOffset());
+        }
+
+        return new Paginator($qb);
     }
 }
