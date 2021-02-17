@@ -2,8 +2,9 @@
 
 namespace NewApiBundle\InputType;
 
-use NewApiBundle\InputType\Household\NationalIdCardInputType;
-use NewApiBundle\InputType\Household\PhoneInputType;
+use NewApiBundle\InputType\Beneficiary\AddressInputType;
+use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
+use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -55,7 +56,7 @@ class InstitutionUpdateInputType implements InputTypeInterface
     private $address;
 
     /**
-     * @var NationalCardIdInputType
+     * @var NationalIdCardInputType
      *
      * @Assert\Valid
      */
@@ -181,7 +182,7 @@ class InstitutionUpdateInputType implements InputTypeInterface
     }
 
     /**
-     * @return NationalCardIdInputType
+     * @return NationalIdCardInputType
      */
     public function getNationalIdCard()
     {

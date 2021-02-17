@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace NewApiBundle\InputType;
 
 use BeneficiaryBundle\Entity\Household;
-use NewApiBundle\InputType\Household\Address\CampAddressInputType;
-use NewApiBundle\InputType\Household\Address\ResidenceAddressInputType;
-use NewApiBundle\InputType\Household\Address\TemporarySettlementAddressInputType;
-use NewApiBundle\InputType\Household\BeneficiaryInputType;
-use NewApiBundle\InputType\Household\CountrySpecificsAnswerInputType;
+use NewApiBundle\InputType\Beneficiary\Address\CampAddressInputType;
+use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
+use NewApiBundle\InputType\Beneficiary\Address\TemporarySettlementAddressInputType;
+use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
+use NewApiBundle\InputType\Beneficiary\CountrySpecificsAnswerInputType;
 use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class HouseholdUpdateInputType implements InputTypeInterface
 {
     /**
-     * @Assert\Choice({"KHM", "SYR", "UKR", "ETH"})
+     * @Assert\Choice({"KHM", "SYR", "UKR", "ETH", "MNG", "ARM"})
      * @Assert\NotBlank
      * @Assert\NotNull
      */

@@ -54,7 +54,7 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         /** @var Assistance $assistance */
-        $assistance = $this->container->get('doctrine')->getRepository(Assistance::class)->findBy([])[0];
+        $assistance = $this->container->get('doctrine')->getRepository(Assistance::class)->findBy(['archived' => false])[0];
 
         $this->request('GET', '/api/basic/assistances/statistics?filter[id][]='.$assistance->getId(), ['country' => 'KHM']);
 

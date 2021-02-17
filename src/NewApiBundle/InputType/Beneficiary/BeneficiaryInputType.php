@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace NewApiBundle\InputType\Household;
+namespace NewApiBundle\InputType\Beneficiary;
 
 use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Entity\Referral;

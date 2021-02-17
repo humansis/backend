@@ -19,6 +19,9 @@ use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Utils\Retriever\AbstractRetriever;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityNotFoundException;
+use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
+use NewApiBundle\InputType\AssistanceCreateInputType;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\Entity\Project;
@@ -62,6 +65,9 @@ class AssistanceService
     /** @var ContainerInterface $container */
     private $container;
 
+    /** @var FieldDbTransformer */
+    private $fieldDbTransformer;
+
     /**
      * AssistanceService constructor.
      * @param EntityManagerInterface $entityManager
@@ -71,6 +77,7 @@ class AssistanceService
      * @param CommodityService $commodityService
      * @param ConfigurationLoader $configurationLoader
      * @param CriteriaAssistanceService $criteriaAssistanceService
+     * @param FieldDbTransformer $fieldDbTransformer
      * @param string $classRetrieverString
      * @param ContainerInterface $container
      * @throws \Exception
@@ -83,6 +90,7 @@ class AssistanceService
         CommodityService $commodityService,
         ConfigurationLoader $configurationLoader,
         CriteriaAssistanceService $criteriaAssistanceService,
+        FieldDbTransformer $fieldDbTransformer,
         string $classRetrieverString,
         ContainerInterface $container
     ) {
@@ -93,6 +101,7 @@ class AssistanceService
         $this->commodityService = $commodityService;
         $this->configurationLoader = $configurationLoader;
         $this->criteriaAssistanceService = $criteriaAssistanceService;
+        $this->fieldDbTransformer = $fieldDbTransformer;
         $this->container = $container;
         try {
             $class = new \ReflectionClass($classRetrieverString);
@@ -142,6 +151,15 @@ class AssistanceService
         return $assistance;
     }
 
+    public function create(AssistanceCreateInputType $inputType)
+    {
+        $distributionArray = $this->mapping($inputType);
+
+        $result = $this->createFromArray($inputType->getIso3(), $distributionArray);
+
+        return $result['distribution'];
+    }
+
     /**
      * Create a distribution
      *
@@ -150,7 +168,7 @@ class AssistanceService
      * @return array
      * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
-    public function create($countryISO3, array $distributionArray)
+    public function createFromArray($countryISO3, array $distributionArray)
     {
         $location = $distributionArray['location'];
         unset($distributionArray['location']);
@@ -854,5 +872,52 @@ class AssistanceService
         } else {
             return $adm.'-'.date('d-m-Y');
         }
+    }
+
+    public function mapping(AssistanceCreateInputType $inputType): array
+    {
+        /** @var \CommonBundle\Entity\Location $location */
+        $location = $this->em->getRepository(\CommonBundle\Entity\Location::class)->find($inputType->getLocationId());
+
+        $distributionArray = [
+            'countryIso3' => $inputType->getIso3(),
+            'assistance_type' => $inputType->getType(),
+            'target_type' => $inputType->getTarget(),
+            'date_distribution' => $inputType->getDateDistribution(),
+            'project' => ['id' => $inputType->getProjectId()],
+            'location' => [
+                'adm1' => $location->getAdm1() ? $location->getAdm1()->getId() : null,
+                'adm2' => $location->getAdm2() ? $location->getAdm2()->getId() : null,
+                'adm3' => $location->getAdm3() ? $location->getAdm3()->getId() : null,
+                'adm4' => $location->getAdm4() ? $location->getAdm4()->getId() : null,
+                'country_iso3' => $inputType->getIso3(),
+            ],
+            'sector' => $inputType->getSector(),
+            'subsector' => $inputType->getSubsector(),
+            'threshold' => $inputType->getThreshold(),
+            'institutions' => $inputType->getInstitutions(),
+            'communities' => $inputType->getCommunities(),
+            'households_targeted' => $inputType->getHouseholdsTargeted(),
+            'individuals_targeted' => $inputType->getIndividualsTargeted(),
+        ];
+
+        foreach ($inputType->getCommodities() as $commodity) {
+            $modalityType = $this->em->getRepository(ModalityType::class)->findOneBy(['name' => $commodity->getModalityType()]);
+            if (!$modalityType) {
+                throw new EntityNotFoundException(sprintf('ModalityType %s does not exists', $commodity->getModalityType()));
+            }
+            $distributionArray['commodities'][] = [
+                'value' => $commodity->getValue(),
+                'unit' => $commodity->getUnit(),
+                'description' => $commodity->getDescription(),
+                'modality_type' => ['id' => $modalityType->getId()],
+            ];
+        }
+
+        foreach ($inputType->getSelectionCriteria() as $criterion) {
+            $distributionArray['selection_criteria'][$criterion->getGroup()][] = $this->fieldDbTransformer->toArray($criterion);
+        }
+
+        return $distributionArray;
     }
 }
