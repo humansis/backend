@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
+use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Repository\AssistanceRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Entity\AssistanceStatistics;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\AssistanceFilterInputType;
 use NewApiBundle\InputType\AssistanceOrderInputType;
+use NewApiBundle\InputType\AssistanceStatisticsFilterInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +23,41 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class AssistanceController extends AbstractController
 {
+    /**
+     * @Rest\Get("/assistances/statistics")
+     *
+     * @param Request                             $request
+     * @param AssistanceStatisticsFilterInputType $filter
+     *
+     * @return JsonResponse
+     */
+    public function statistics(Request $request, AssistanceStatisticsFilterInputType $filter): JsonResponse
+    {
+        $countryIso3 = $request->headers->get('country', false);
+        if (!$countryIso3) {
+            throw new BadRequestHttpException('Missing country header');
+        }
+
+        $statistics = $this->getDoctrine()->getRepository(AssistanceStatistics::class)->findByParams($countryIso3, $filter);
+
+        return $this->json(new Paginator($statistics));
+    }
+
+    /**
+     * @Rest\Get("/assistances/{id}/statistics")
+     * @ParamConverter("assistance", options={"mapping": {"id": "id"}})
+     *
+     * @param Assistance $assistance
+     *
+     * @return JsonResponse
+     */
+    public function assistanceStatistics(Assistance $assistance): JsonResponse
+    {
+        $statistics = $this->getDoctrine()->getRepository(AssistanceStatistics::class)->findByAssistance($assistance);
+
+        return $this->json($statistics);
+    }
+
     /**
      * @Rest\Get("/assistances")
      *
