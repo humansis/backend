@@ -11,16 +11,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 class UserCreateInputType implements InputTypeInterface
 {
     /**
-     * @var string $username
-     *
-     * @Assert\Length(min="2", max="45")
-     * @Assert\Type("string")
-     * @Assert\NotNull
-     * @Assert\NotBlank
-     */
-    private $username;
-
-    /**
      * @var string $email
      *
      * @Assert\Length(max="180")
@@ -49,7 +39,7 @@ class UserCreateInputType implements InputTypeInterface
     private $phonePrefix;
 
     /**
-     * @var int|null $username
+     * @var int|null $phoneNumber
      *
      * @Assert\Length(min="2", max="45")
      * @Assert\Type("string")
@@ -115,22 +105,6 @@ class UserCreateInputType implements InputTypeInterface
      * @Assert\NotNull
      */
     private $changePassword;
-
-    /**
-     * @return string
-     */
-    public function getUsername()
-    {
-        return $this->username;
-    }
-
-    /**
-     * @param string $username
-     */
-    public function setUsername($username)
-    {
-        $this->username = $username;
-    }
 
     /**
      * @return string

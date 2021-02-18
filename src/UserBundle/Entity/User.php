@@ -117,7 +117,7 @@ class User extends BaseUser implements ExportableInterface
      * @ORM\Column(name="changePassword", type="boolean", options={"default" : 0})
      * @SymfonyGroups({"FullUser"})
      */
-    protected $changePassword;
+    protected $changePassword = false;
 
     /**
      * @var boolean

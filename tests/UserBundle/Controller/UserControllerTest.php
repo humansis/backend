@@ -51,7 +51,7 @@ class UserControllerTest extends BMSServiceTestCase
     {
         // First step
         // Get salt for a new user => save the username with the salt in database (user disabled for now)
-        $return = $this->container->get('user.user_service')->getSalt($this->username);
+        $return = $this->container->get('user.user_service')->getSaltOld($this->username);
         // Check if the first step has been done correctly
         $this->assertArrayHasKey('user_id', $return);
         $this->assertArrayHasKey('salt', $return);

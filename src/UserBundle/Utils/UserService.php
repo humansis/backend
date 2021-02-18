@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use NewApiBundle\InputType\UserCreateInputType;
 use NewApiBundle\InputType\UserEditInputType;
+use NewApiBundle\InputType\UserInitializeInputType;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -175,11 +176,45 @@ class UserService
     }
 
     /**
+     * @param UserInitializeInputType $inputType
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function initialize(UserInitializeInputType $inputType): array
+    {
+        $user = $this->em->getRepository(User::class)
+            ->findBy(['email' => $inputType->getUsername()]);
+
+        if ($user instanceof User) {
+            throw new \InvalidArgumentException('User with username '. $inputType->getUsername());
+        }
+
+        $salt = $this->generateSalt();
+
+        $user = new User();
+        $user->setUsername($inputType->getUsername())
+            ->setUsernameCanonical($inputType->getUsername())
+            ->setEmail($inputType->getUsername())
+            ->setEmailCanonical($inputType->getUsername())
+            ->setEnabled(false)
+            ->setSalt($salt)
+            ->setPassword('');
+
+        $this->em->persist($user);
+        $this->em->flush();
+
+        return ['userId' => $user->getId(), 'salt' => $user->getSalt()];
+    }
+
+    /**
+     * @deprecated Remove in 3.0
+     *
      * @param string $username
      * @return array
      * @throws \Exception
      */
-    public function initialize(string $username)
+    public function initializeOld(string $username)
     {
         $user = $this->em->getRepository(User::class)->findOneByUsername($username);
         if ($user instanceof User) {
@@ -208,10 +243,28 @@ class UserService
 
     /**
      * @param string $username
+     *
+     * @return array
+     */
+    public function getSalt(string $username): array
+    {
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
+
+        if (!$user instanceof User) {
+            throw new \InvalidArgumentException("User with username $username does not exists.");
+        }
+
+        return ["userId" => $user->getId(), "salt" => $user->getSalt()];
+    }
+
+    /**
+     * @deprecated Remove in 3.0
+     *
+     * @param string $username
      * @return array
      * @throws \Exception
      */
-    public function getSalt(string $username)
+    public function getSaltOld(string $username)
     {
         $validator = Validation::createValidator();
         $violations = $validator->validate($username, array(
@@ -697,34 +750,23 @@ class UserService
         return array_keys($countries);
     }
 
-    public function create(UserCreateInputType $inputType): User
+    public function create(User $initializedUser, UserCreateInputType $inputType): User
     {
-        $user = new User();
-
         /** @var UserRepository $userRepository */
         $userRepository = $this->em->getRepository(User::class);
-
-        if ($userRepository->findOneBy(['username' => $inputType->getUsername()]) instanceof User) {
-            throw new InvalidArgumentException('The user with username '.$inputType->getUsername().' has already been added');
-        }
 
         if ($userRepository->findOneBy(['email' => $inputType->getEmail()]) instanceof User) {
             throw new InvalidArgumentException('The user with email '.$inputType->getEmail().' has already been added');
         }
 
-        $passwordSalt = $this->generateSalt();
-
-        $user->setSalt($passwordSalt)
-            ->setEmail($inputType->getEmail())
+        $initializedUser->setEmail($inputType->getEmail())
             ->setEmailCanonical($inputType->getEmail())
-            ->setUsername($inputType->getUsername())
-            ->setUsernameCanonical($inputType->getUsername())
             ->setEnabled(true)
             ->setRoles($inputType->getRoles())
             ->setChangePassword($inputType->isChangePassword())
             ->setPhonePrefix($inputType->getPhonePrefix())
             ->setPhoneNumber((int) $inputType->getPhoneNumber())
-            ->setPassword($this->hashPassword($inputType->getPassword(), $passwordSalt));
+            ->setPassword($inputType->getPassword());
 
         if (!empty($inputType->getProjectIds())) {
             foreach ($inputType->getProjectIds() as $projectId) {
@@ -736,7 +778,7 @@ class UserService
 
                 $userProject = new UserProject();
                 $userProject->setRights($inputType->getRoles()[0])//TODO edit after decision about roles and authorization will be made
-                ->setUser($user)
+                ->setUser($initializedUser)
                     ->setProject($project);
 
                 $this->em->persist($userProject);
@@ -746,7 +788,7 @@ class UserService
         if (!empty($inputType->getCountries())) {
             foreach ($inputType->getCountries() as $country) {
                 $userCountry = new UserCountry();
-                $userCountry->setUser($user)
+                $userCountry->setUser($initializedUser)
                     ->setIso3($country)
                     ->setRights($inputType->getRoles()[0]);//TODO edit after decision about roles and authorization will be made
 
@@ -754,14 +796,27 @@ class UserService
             }
         }
 
-        $this->em->persist($user);
+        $this->em->persist($initializedUser);
         $this->em->flush();
 
-        return $user;
+        return $initializedUser;
     }
 
     public function update(User $user, UserEditInputType $inputType): User
     {
+        /** @var UserRepository $userRepository */
+        $userRepository = $this->em->getRepository(User::class);
+
+        $existingUser = $userRepository->findOneBy(['email' => $inputType->getEmail()]);
+        if ($existingUser instanceof User && $existingUser->getId() !== $user->getId()) {
+            throw new InvalidArgumentException('The user with email '.$inputType->getEmail().' already exists');
+        }
+
+        $existingUser = $userRepository->findOneBy(['username' => $inputType->getUsername()]);
+        if ($existingUser instanceof User && $existingUser->getId() !== $user->getId()) {
+            throw new InvalidArgumentException('The user with username '.$inputType->getUsername().' already exists');
+        }
+
         $user->setEmail($inputType->getEmail())
             ->setEmailCanonical($inputType->getEmail())
             ->setUsername($inputType->getUsername())

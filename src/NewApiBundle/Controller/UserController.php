@@ -9,6 +9,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\UserCreateInputType;
 use NewApiBundle\InputType\UserEditInputType;
 use NewApiBundle\InputType\UserFilterInputType;
+use NewApiBundle\InputType\UserInitializeInputType;
 use NewApiBundle\InputType\UserOrderInputType;
 use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -51,19 +52,34 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/users")
+     * @Rest\Post("/users/initialize")
      *
-     * @param UserCreateInputType $inputType
+     * @param UserInitializeInputType $inputType
      *
      * @return JsonResponse
      * @throws Exception
      */
-    public function create(UserCreateInputType $inputType): JsonResponse
+    public function initialize(UserInitializeInputType $inputType): JsonResponse
+    {
+        $initializedUser = $this->get('user.user_service')->initialize($inputType);
+
+        return $this->json($initializedUser);
+    }
+
+    /**
+     * @Rest\Post("/users/{id}")
+     *
+     * @param User                $user
+     * @param UserCreateInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function create(User $user, UserCreateInputType $inputType): JsonResponse
     {
         /** @var UserService $userService */
         $userService = $this->get('user.user_service');
 
-        $user = $userService->create($inputType);
+        $user = $userService->create($user, $inputType);
 
         return $this->json($user);
     }
@@ -98,5 +114,19 @@ class UserController extends AbstractController
         $this->get('user.user_service')->remove($user);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Rest\Get("/users/salt/{username}")
+     *
+     * @param string $username
+     *
+     * @return JsonResponse
+     */
+    public function getSalt(string $username): JsonResponse
+    {
+        $salt = $this->get('user.user_service')->getSalt($username);
+
+        return $this->json($salt);
     }
 }

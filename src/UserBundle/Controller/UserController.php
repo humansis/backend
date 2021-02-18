@@ -211,7 +211,7 @@ class UserController extends Controller
     public function getSaltAction($username)
     {
         try {
-            $salt = $this->get('user.user_service')->getSalt($username);
+            $salt = $this->get('user.user_service')->getSaltOld($username);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
@@ -334,7 +334,7 @@ class UserController extends Controller
     public function initializeAction($username)
     {
         try {
-            $salt = $this->get('user.user_service')->initialize($username);
+            $salt = $this->get('user.user_service')->initializeOld($username);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }

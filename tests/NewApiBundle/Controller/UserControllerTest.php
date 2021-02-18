@@ -38,12 +38,45 @@ class UserControllerTest extends BMSServiceTestCase
     }
 
     /**
+     * @return array
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function testInitialize()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('POST', '/api/basic/users/initialize', [
+            'username' => $this->username,
+        ]);
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('userId', $result);
+        $this->assertArrayHasKey('salt', $result);
+
+        return $result['userId'];
+    }
+
+    /**
+     * @depends testInitialize
+     *
+     * @param int $userId
+     *
      * @return int
      * @throws ORMException
      * @throws OptimisticLockException
-     * @throws Exception
      */
-    public function testCreate()
+    public function testCreate(int $userId)
     {
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
@@ -57,8 +90,7 @@ class UserControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There needs to be at least one project in system to complete this test');
         }
 
-        $this->request('POST', '/api/basic/users', [
-            'username' => $this->username,
+        $this->request('POST', '/api/basic/users/'.$userId, [
             'email' => $this->email,
             'password' => 'password',
             'phonePrefix' => '+420',
@@ -95,19 +127,47 @@ class UserControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('roles', $result);
         $this->assertArrayHasKey('projectIds', $result);
 
-        return $result['id'];
+        return $result;
     }
 
     /**
      * @depends testCreate
      *
-     * @param int $id
+     * @param array $result
+     *
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function testGetSalt(array $result)
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('GET', '/api/basic/users/salt/'.$result['username']);
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('userId', $result);
+        $this->assertArrayHasKey('salt', $result);
+    }
+
+    /**
+     * @depends testCreate
+     *
+     * @param array $result
      *
      * @return int
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function testUpdate(int $id)
+    public function testUpdate(array $result)
     {
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
@@ -141,7 +201,7 @@ class UserControllerTest extends BMSServiceTestCase
             'changePassword' => false,
         ];
 
-        $this->request('PUT', '/api/basic/users/'.$id, $data);
+        $this->request('PUT', '/api/basic/users/'.$result['id'], $data);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
