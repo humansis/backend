@@ -393,7 +393,7 @@ class AssistanceController extends Controller
     {
         /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
         $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
-        $distributionBeneficiaries = $assistanceBeneficiaryService->getDistributionBeneficiaries($assistance);
+        $distributionBeneficiaries = $assistanceBeneficiaryService->getAssistanceBeneficiaries($assistance);
 
         $json = $this->get('serializer')
             ->serialize(
@@ -436,7 +436,7 @@ class AssistanceController extends Controller
 
         /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
         $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
-        $assistanceCommunities = $assistanceBeneficiaryService->getDistributionBeneficiaries($assistance);
+        $assistanceCommunities = $assistanceBeneficiaryService->getAssistanceBeneficiaries($assistance);
 
         $mapper = $this->get(AssistanceCommunityMapper::class);
         return $this->json($mapper->toFullArrays($assistanceCommunities));
@@ -470,7 +470,7 @@ class AssistanceController extends Controller
 
         /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
         $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
-        $assistanceInstitutions = $assistanceBeneficiaryService->getDistributionBeneficiaries($assistance);
+        $assistanceInstitutions = $assistanceBeneficiaryService->getAssistanceBeneficiaries($assistance);
 
         $mapper = $this->get(AssistanceInstitutionMapper::class);
         return $this->json($mapper->toFullArrays($assistanceInstitutions));
@@ -499,7 +499,21 @@ class AssistanceController extends Controller
      */
     public function offlineGetDistributionBeneficiariesAction(Assistance $assistance)
     {
-        return $this->getDistributionBeneficiariesAction($assistance);
+        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
+        $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
+        $distributionBeneficiaries = $assistanceBeneficiaryService->getActiveAssistanceBeneficiaries($assistance);
+
+        $json = $this->get('serializer')
+            ->serialize(
+                $distributionBeneficiaries,
+                'json',
+                [
+                    'groups' => ["ValidatedAssistance"],
+                    'datetime_format' => 'd-m-Y H:i',
+                ]
+            );
+
+        return new Response($json);
     }
 
     /**
