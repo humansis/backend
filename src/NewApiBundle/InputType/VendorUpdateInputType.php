@@ -23,19 +23,6 @@ class VendorUpdateInputType implements InputTypeInterface
     /**
      * @Assert\Type("string")
      * @Assert\Length(max=255)
-     * @Assert\NotNull
-     */
-    private $salt;
-
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max=255)
-     */
-    private $password;
-
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max=255)
      */
     private $addressStreet;
 
@@ -56,6 +43,12 @@ class VendorUpdateInputType implements InputTypeInterface
      * @Assert\NotNull
      */
     private $locationId;
+
+    /**
+     * @Assert\Type("integer")
+     * @Assert\NotNull
+     */
+    private $userId;
 
     /**
      * @return string|null
@@ -87,38 +80,6 @@ class VendorUpdateInputType implements InputTypeInterface
     public function setName($name)
     {
         $this->name = $name;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSalt()
-    {
-        return $this->salt;
-    }
-
-    /**
-     * @param string $salt
-     */
-    public function setSalt($salt)
-    {
-        $this->salt = $salt;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-    /**
-     * @param string|null $password
-     */
-    public function setPassword($password)
-    {
-        $this->password = $password;
     }
 
     /**
@@ -183,5 +144,21 @@ class VendorUpdateInputType implements InputTypeInterface
     public function setLocationId($locationId)
     {
         $this->locationId = $locationId;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUserId()
+    {
+        return $this->userId;
+    }
+
+    /**
+     * @param int $userId
+     */
+    public function setUserId($userId)
+    {
+        $this->userId = $userId;
     }
 }

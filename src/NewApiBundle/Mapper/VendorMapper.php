@@ -42,16 +42,6 @@ class VendorMapper implements MapperInterface
         return $this->object->getName();
     }
 
-    public function getUsername(): string
-    {
-        return $this->object->getUser()->getUsername();
-    }
-
-    public function getSalt(): ?string
-    {
-        return $this->object->getUser()->getSalt();
-    }
-
     public function getAddressStreet(): ?string
     {
         return $this->object->getAddressStreet();
@@ -90,5 +80,10 @@ class VendorMapper implements MapperInterface
     public function getAdm4Id(): ?int
     {
         return $this->object->getLocation()->getAdm4Id() ?: null;
+    }
+
+    public function getUserId(): int
+    {
+        return $this->object->getUser()->getId();
     }
 }

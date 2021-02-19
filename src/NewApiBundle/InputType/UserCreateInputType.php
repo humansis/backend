@@ -88,7 +88,6 @@ class UserCreateInputType implements InputTypeInterface
      * @var array|null $projectIds
      *
      * @Assert\Type("array")
-     * @Assert\NotBlank
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("int", groups={"Strict"})
