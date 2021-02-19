@@ -75,9 +75,19 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
             $qb->setParameter('iso3', $iso3);
         }
 
-        if ($filter && $filter->hasIds()) {
-            $qb->andWhere('p.id IN (:ids)');
-            $qb->setParameter('ids', $filter->getIds());
+        if ($filter) {
+            if ($filter->hasIds()) {
+                $qb->andWhere('p.id IN (:ids)');
+                $qb->setParameter('ids', $filter->getIds());
+            }
+
+            if ($filter->hasFulltext()) {
+                $qb->andWhere('(p.iso3 LIKE :fulltext OR
+                               p.name LIKE :fulltext OR
+                               p.internalId LIKE :fulltext OR
+                               p.notes LIKE :fulltext)')
+                    ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+            }
         }
 
         if ($pagination) {
