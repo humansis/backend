@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+    <file source-language="en" target-language="en" datatype="plaintext" original="file_invoice.ext">
+        <body>
+            <trans-unit id="temporary_invoice_no"><source>temporary_invoice_no</source><target>Temporary Invoice No.</target></trans-unit>
+            <trans-unit id="invoice_no"><source>invoice_no</source><target>Invoice No.</target></trans-unit>
+            <trans-unit id="invoice"><source>invoice</source><target>Invoice</target></trans-unit>
+            <trans-unit id="customer"><source>customer</source><target>Customer</target></trans-unit>
+            <trans-unit id="supplier_name"><source>supplier_name</source><target>Supplier</target></trans-unit>
+            <trans-unit id="invoice_date"><source>invoice_date</source><target>Invoice Date</target></trans-unit>
+            <trans-unit id="supplier_navi"><source>supplier_navi</source><target>Supplier Navi No.</target></trans-unit>
+            <trans-unit id="contract_no"><source>contract_no</source><target>Contract No.</target></trans-unit>
+            <trans-unit id="payment_method"><source>payment_method</source><target>Payment Method</target></trans-unit>
+            <trans-unit id="cash"><source>cash</source><target>Cash</target></trans-unit>
+            <trans-unit id="cheque"><source>cheque</source><target>Cheque</target></trans-unit>
+            <trans-unit id="bank"><source>bank</source><target>Bank</target></trans-unit>
+            <trans-unit id="description"><source>description</source><target>Description</target></trans-unit>
+            <trans-unit id="qty"><source>qty</source><target>Quantity</target></trans-unit>
+            <trans-unit id="unit"><source>unit</source><target>Unit</target></trans-unit>
+            <trans-unit id="unit_price"><source>unit_price</source><target>Unit Price</target></trans-unit>
+            <trans-unit id="amount"><source>amount</source><target>Amount</target></trans-unit>
+            <trans-unit id="currency"><source>currency</source><target>Currency</target></trans-unit>
+            <trans-unit id="redemption_payment"><source>redemption_payment</source><target>Smartcard Redemption Payment</target></trans-unit>
+            <trans-unit id="total_to_pay"><source>total_to_pay</source><target>Total Amount to be Paid</target></trans-unit>
+            <trans-unit id="signature_recipient"><source>signature_recipient</source><target>Recipient´s Signature</target></trans-unit>
+            <trans-unit id="signature_organization"><source>signature_organization</source><target>{organization} Signature</target></trans-unit>
+        </body>
+    </file>
+</xliff>
