@@ -75,13 +75,14 @@ class SmartcardInvoiceExport
         $worksheet->getStyle('B2:B3')->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-        $worksheet->setCellValue('H2', 'Invoice No.');
-        $worksheet->mergeCells('H2:J2');
-        $worksheet->mergeCells('H3:J3');
-        $worksheet->getStyle('H2:J3')->getBorders()
+        // Invoice No. box
+        $worksheet->setCellValue('F2', 'Invoice No.');
+        $worksheet->mergeCells('F2:H2');
+        $worksheet->mergeCells('F3:H3');
+        $worksheet->getStyle('F2:H3')->getBorders()
             ->getAllBorders()
             ->setBorderStyle(Border::BORDER_THIN);
-        $worksheet->getStyle('H2:J3')->getAlignment()
+        $worksheet->getStyle('F2:H3')->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         $worksheet->mergeCells('B5:J5');
