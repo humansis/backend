@@ -41,7 +41,7 @@ class SmartcardInvoiceExport
         self::formatCells($worksheet);
 
         $lastRow = self::buildHeader($worksheet, $this->translator, $lang, $organization, $batch);
-        $lastRow = self::buildBody($worksheet, $this->translator, $lang, $batch, ++$lastRow);
+        $lastRow = self::buildBody($worksheet, $this->translator, $lang, $batch, $lastRow + 1);
         $lastRow = self::buildFooter($worksheet, $this->translator, $lang, $organization, $batch, $lastRow + 3);
         $lastRow = self::buildFooter($worksheet, $this->translator, $lang, $organization, $batch, $lastRow + 3);
 
@@ -77,14 +77,8 @@ class SmartcardInvoiceExport
 
     private static function buildHeader(Worksheet $worksheet, TranslatorInterface $translator, string $lang, Organization $organization, SmartcardRedemptionBatch $batch): int
     {
-        $worksheet->getRowDimension('2')->setRowHeight(24.02);
-        $worksheet->getRowDimension('3')->setRowHeight(19.70);
-        $worksheet->getRowDimension('5')->setRowHeight(26.80);
-        $worksheet->getRowDimension('7')->setRowHeight(23.84);
-        $worksheet->getRowDimension('8')->setRowHeight(17.36);
-        $worksheet->getRowDimension('13')->setRowHeight(23.84);
-
         self::buildHeaderFirstLineBoxes($worksheet, $translator, $lang, $organization, $batch);
+
         self::buildHeaderSecondLine($worksheet, $translator, $lang, $organization, $batch);
         self::buildHeaderThirdLine($worksheet, $translator, $lang, $organization, $batch);
         self::buildHeaderFourthLine($worksheet, $translator, $lang, $organization, $batch);
@@ -109,6 +103,10 @@ class SmartcardInvoiceExport
      */
     private static function buildHeaderFirstLineBoxes(Worksheet $worksheet, TranslatorInterface $translator, string $lang, Organization $organization, SmartcardRedemptionBatch $batch): void
     {
+        $worksheet->getRowDimension('2')->setRowHeight(24.02);
+        $worksheet->getRowDimension('3')->setRowHeight(19.70);
+        $worksheet->getRowDimension('5')->setRowHeight(26.80);
+
         // Temporary Invoice No. box
         $worksheet->setCellValue('B2', $translator->trans('temporary_invoice_no', [], 'invoice', $lang));
         self::setSmallHeadline($worksheet, 'B2:B3');
@@ -116,7 +114,9 @@ class SmartcardInvoiceExport
 
         // vendor username box
         $worksheet->mergeCells('D2:E2');
+        $worksheet->mergeCells('D3:E3');
         $worksheet->setCellValue('D2', 'Humansis Vendor Username');
+        $worksheet->setCellValue('D3', $batch->getVendor()->getUser()->getUsername());
         self::setSmallHeadline($worksheet, 'D2:E3');
         self::setSmallBorder($worksheet, 'D2:E3');
 
@@ -166,6 +166,7 @@ class SmartcardInvoiceExport
         $worksheet->setCellValue('I7', $batch->getRedeemedAt()->format('j-n-y'));
         $worksheet->setCellValue('H7', $translator->trans('invoice_date', [], 'invoice', $lang));
         // style
+        $worksheet->getRowDimension('7')->setRowHeight(50);
         self::setSmallHeadline($worksheet, 'B7');
         self::setImportantFilledInfo($worksheet, 'C7:D7');
         self::setImportantFilledInfo($worksheet, 'E7:G7');
@@ -183,6 +184,7 @@ class SmartcardInvoiceExport
         $worksheet->setCellValue('C8', $batch->getVendor()->getName());
         $worksheet->setCellValue('H8', $translator->trans('supplier_no', [], 'invoice', $lang));
         // style
+        $worksheet->getRowDimension('8')->setRowHeight(25);
         self::setSmallHeadline($worksheet, 'B8');
         self::setImportantFilledInfo($worksheet, 'C8');
         self::setSmallHeadline($worksheet, 'H8');
@@ -203,9 +205,11 @@ class SmartcardInvoiceExport
         $worksheet->setCellValue('I9', $translator->trans('cheque', [], 'invoice', $lang));
         $worksheet->setCellValue('J9', $translator->trans('bank', [], 'invoice', $lang));
         $worksheet->setCellValue('H10', 'x');
-        $worksheet->setCellValue('I10', 'x');
-        $worksheet->setCellValue('J10', 'x');
+        $worksheet->setCellValue('I10', '');
+        $worksheet->setCellValue('J10', '');
         // style
+        $worksheet->getRowDimension('9')->setRowHeight(25);
+        $worksheet->getRowDimension('10')->setRowHeight(25);
         self::setSmallHeadline($worksheet, 'B9');
         self::setSmallHeadline($worksheet, 'D9');
         self::setSmallHeadline($worksheet, 'E9');
@@ -224,14 +228,6 @@ class SmartcardInvoiceExport
         $worksheet->mergeCells('B13:G13');
         $worksheet->mergeCells('H13:I13');
 
-        $worksheet->mergeCells('B14:G14');
-        $worksheet->mergeCells('H14:I14');
-
-        $worksheet->mergeCells('B15:G15');
-        $worksheet->mergeCells('H15:I15');
-
-        $worksheet->mergeCells('B17:G17');
-        $worksheet->mergeCells('H17:I17');
         // data
         $worksheet->setCellValue('B13', $translator->trans('description', [], 'invoice', $lang));
         $worksheet->setCellValue('H13', $translator->trans('amount', [], 'invoice', $lang));
@@ -242,11 +238,9 @@ class SmartcardInvoiceExport
         $worksheet->setCellValue('G13', $translator->trans('unit_price', [], 'invoice', $lang));
 
         // style
-        $worksheet->getStyle('B13:J13')->getBorders()
-            ->getAllBorders()
-            ->setBorderStyle(Border::BORDER_THIN);
-        $worksheet->getStyle('B13:J13')->getAlignment()
-            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $worksheet->getRowDimension('13')->setRowHeight(30);
+        self::setSmallHeadline($worksheet,'B13:J13');
+        self::setSmallBorder($worksheet,'B13:J13');
     }
 
     private static function buildBody(Worksheet $worksheet, TranslatorInterface $translator, string $lang, SmartcardRedemptionBatch $batch, int $lineStart)
