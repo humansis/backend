@@ -84,87 +84,14 @@ class SmartcardInvoiceExport
         $worksheet->getRowDimension('8')->setRowHeight(17.36);
         $worksheet->getRowDimension('13')->setRowHeight(23.84);
 
-        // Temporary Invoice No. box
-        $worksheet->setCellValue('B2', $translator->trans('temporary_invoice_no', [], 'invoice', $lang));
-        $worksheet->getStyle('B2:B3')->getBorders()
-            ->getAllBorders()
-            ->setBorderStyle(Border::BORDER_THIN);
-        $worksheet->getStyle('B2:B3')->getAlignment()
-            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        self::buildHeaderFirstLineBoxes($worksheet, $translator, $lang, $organization, $batch);
+        self::buildHeaderSecondLine($worksheet, $translator, $lang, $organization, $batch);
+        self::buildHeaderThirdLine($worksheet, $translator, $lang, $organization, $batch);
+        self::buildHeaderFourthLine($worksheet, $translator, $lang, $organization, $batch);
 
-        // Invoice No. box
-        $worksheet->setCellValue('F2', $translator->trans('invoice_no', [], 'invoice', $lang));
-        $worksheet->mergeCells('F2:H2');
-        $worksheet->mergeCells('F3:H3');
-        $worksheet->getStyle('F2:H3')->getBorders()
-            ->getAllBorders()
-            ->setBorderStyle(Border::BORDER_THIN);
-        $worksheet->getStyle('F2:H3')->getAlignment()
-            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        self::setSmallBorder($worksheet, 'B7:J10');
 
-        // wide header "Invoice"
-        $worksheet->mergeCells('B5:J5');
-        $worksheet->setCellValue('B5', $translator->trans('invoice', [], 'invoice', $lang));
-        $worksheet->getStyle('B5')->getFont()
-            ->setBold(true)
-            ->setSize(22)
-            ->setName('Arial');
-        $worksheet->getStyle('B5')->getAlignment()
-            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
-
-        $worksheet->mergeCells('C7:D7');
-        $worksheet->mergeCells('E7:G7');
-        $worksheet->mergeCells('I7:J7');
-        $worksheet->mergeCells('C8:G8');
-        $worksheet->mergeCells('I8:J8');
-        $worksheet->mergeCells('B9:B10');
-        $worksheet->mergeCells('C9:E10');
-        $worksheet->mergeCells('F9:G10');
-        $worksheet->setCellValue('B7', $translator->trans('customer', [], 'invoice', $lang));
-        $worksheet->setCellValue('C7', $organization->getName());
-        $worksheet->setCellValue('B8', $translator->trans('supplier_name', [], 'invoice', $lang));
-        $worksheet->setCellValue('C8', $batch->getVendor()->getName());
-        $worksheet->setCellValue('H7', $translator->trans('invoice_date', [], 'invoice', $lang));
-        $worksheet->setCellValue('I7', $batch->getRedeemedAt()->format('j.n.Y'));
-        $worksheet->setCellValue('H8', $translator->trans('supplier_navi', [], 'invoice', $lang));
-        $worksheet->setCellValue('B9', $translator->trans('contract_no', [], 'invoice', $lang));
-        $worksheet->setCellValue('F9', $translator->trans('payment_method', [], 'invoice', $lang));
-        $worksheet->setCellValue('H9', $translator->trans('cash', [], 'invoice', $lang));
-        $worksheet->setCellValue('I9', $translator->trans('cheque', [], 'invoice', $lang));
-        $worksheet->setCellValue('J9', $translator->trans('bank', [], 'invoice', $lang));
-        $worksheet->getStyle('B7:B8')->getAlignment()
-            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $worksheet->getStyle('B7:J10')->getBorders()
-            ->getAllBorders()
-            ->setBorderStyle(Border::BORDER_THIN);
-        $worksheet->getStyle('C7:E7')->getFill()
-            ->setFillType(Fill::FILL_SOLID)
-            ->setStartColor(new Color('C5E0B4'));
-        $worksheet->getStyle('C7:E7')->getFont()
-            ->setBold(true)
-            ->setSize(15)
-            ->setName('Arial');
-        $worksheet->getStyle('C8:C9')->getFill()
-            ->setFillType(Fill::FILL_SOLID)
-            ->setStartColor(new Color('C5E0B4'));
-        $worksheet->getStyle('C8:C9')->getFont()
-            ->setBold(true)
-            ->setSize(14)
-            ->setName('Arial');
-        $worksheet->getStyle('I7:I8')->getFill()
-            ->setFillType(Fill::FILL_SOLID)
-            ->setStartColor(new Color('C5E0B4'));
-        $worksheet->getStyle('I7')->getFont()
-            ->setBold(true)
-            ->setSize(12)
-            ->setName('Arial');
-        $worksheet->getStyle('H7:J10')->getAlignment()
-            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $worksheet->getStyle('H10:J10')->getFill()
-            ->setFillType(Fill::FILL_SOLID)
-            ->setStartColor(new Color('C5E0B4'));
-        $worksheet->getStyle('B9:J10')->getAlignment()
-            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        self::buildRedemptionDescriptions($worksheet, $translator, $lang, $organization, $batch);
 
         $worksheet->mergeCells('B13:C13');
         $worksheet->mergeCells('H13:I13');
@@ -193,13 +120,121 @@ class SmartcardInvoiceExport
         }
     }
 
+    /**
+     * Line with Boxes with invoice No. and logos
+     *
+     * @param Worksheet                $worksheet
+     * @param TranslatorInterface      $translator
+     * @param string                   $lang
+     * @param Organization             $organization
+     * @param SmartcardRedemptionBatch $batch
+     *
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     */
+    private static function buildHeaderFirstLineBoxes(Worksheet $worksheet, TranslatorInterface $translator, string $lang, Organization $organization, SmartcardRedemptionBatch $batch): void
+    {
+        // Temporary Invoice No. box
+        $worksheet->setCellValue('B2', $translator->trans('temporary_invoice_no', [], 'invoice', $lang));
+        self::setSmallHeadline($worksheet, 'B2:B3');
+        self::setSmallBorder($worksheet, 'B2:B3');
+
+        // vendor username box
+        $worksheet->mergeCells('D2:D3');
+        $worksheet->setCellValue('D2', 'Humansis Vendor Username');
+        self::setSmallHeadline($worksheet, 'D2:D3');
+        self::setSmallBorder($worksheet, 'D2:D3');
+
+        // Invoice No. box
+        $worksheet->mergeCells('F2:H2');
+        $worksheet->mergeCells('F3:H3');
+        $worksheet->setCellValue('F2', $translator->trans('invoice_no', [], 'invoice', $lang));
+        self::setSmallHeadline($worksheet, 'F2:H3');
+        self::setSmallBorder($worksheet, 'F2:H3');
+
+        // logo
+        $worksheet->setCellValue('I2', 'donor logo');
+        $worksheet->setCellValue('J2', 'org. logo');
+
+        // wide header "Invoice"
+        $worksheet->mergeCells('B5:J5');
+        $worksheet->setCellValue('B5', $translator->trans('invoice', [], 'invoice', $lang));
+        $worksheet->getStyle('B5')->getFont()
+            ->setBold(true)
+            ->setSize(22)
+            ->setName('Arial');
+        $worksheet->getStyle('B5')->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+    }
+
+    private static function buildHeaderSecondLine(Worksheet $worksheet, TranslatorInterface $translator, string $lang, Organization $organization, SmartcardRedemptionBatch $batch): void
+    {
+        // structure
+        $worksheet->mergeCells('C7:D7');
+        $worksheet->mergeCells('E7:G7');
+        $worksheet->mergeCells('I7:J7');
+        // data
+        $worksheet->setCellValue('B7', $translator->trans('customer', [], 'invoice', $lang));
+        $worksheet->setCellValue('C7', $organization->getName());
+        $worksheet->setCellValue('I7', $batch->getRedeemedAt()->format('j-n-y'));
+        $worksheet->setCellValue('H7', $translator->trans('invoice_date', [], 'invoice', $lang));
+        // style
+        self::setSmallHeadline($worksheet, 'B7');
+        self::setImportantFilledInfo($worksheet, 'C7:D7');
+        self::setImportantFilledInfo($worksheet, 'E7:G7');
+        self::setSmallHeadline($worksheet, 'H7');
+        self::setImportantFilledInfo($worksheet, 'I7:J7');
+    }
+
+    private static function buildHeaderThirdLine(Worksheet $worksheet, TranslatorInterface $translator, string $lang, Organization $organization, SmartcardRedemptionBatch $batch): void
+    {
+        // structure
+        $worksheet->mergeCells('C8:G8');
+        $worksheet->mergeCells('I8:J8');
+        // data
+        $worksheet->setCellValue('B8', $translator->trans('supplier_name', [], 'invoice', $lang));
+        $worksheet->setCellValue('C8', $batch->getVendor()->getName());
+        $worksheet->setCellValue('H8', $translator->trans('supplier_no', [], 'invoice', $lang));
+        // style
+        self::setSmallHeadline($worksheet, 'B8');
+        self::setImportantFilledInfo($worksheet, 'C8');
+        self::setSmallHeadline($worksheet, 'H8');
+    }
+
+    private static function buildHeaderFourthLine(Worksheet $worksheet, TranslatorInterface $translator, string $lang, Organization $organization, SmartcardRedemptionBatch $batch): void
+    {
+        // structure
+        $worksheet->mergeCells('B9:B10');
+        $worksheet->mergeCells('C9:C10');
+        $worksheet->mergeCells('F9:G10');
+        // data
+        $worksheet->setCellValue('B9', $translator->trans('contract_no', [], 'invoice', $lang));
+        $worksheet->setCellValue('DF9', $translator->trans('period_start', [], 'invoice', $lang));
+        $worksheet->setCellValue('E9', $translator->trans('period_end', [], 'invoice', $lang));
+        $worksheet->setCellValue('F9', $translator->trans('payment_method', [], 'invoice', $lang));
+        $worksheet->setCellValue('H9', $translator->trans('cash', [], 'invoice', $lang));
+        $worksheet->setCellValue('I9', $translator->trans('cheque', [], 'invoice', $lang));
+        $worksheet->setCellValue('J9', $translator->trans('bank', [], 'invoice', $lang));
+        $worksheet->setCellValue('H10', 'x');
+        $worksheet->setCellValue('I10', 'x');
+        $worksheet->setCellValue('J10', 'x');
+        // style
+        self::setSmallHeadline($worksheet, 'B9');
+        self::setSmallHeadline($worksheet, 'D9');
+        self::setSmallHeadline($worksheet, 'E9');
+        self::setSmallHeadline($worksheet, 'F9');
+        self::setSmallHeadline($worksheet, 'H9');
+        self::setSmallHeadline($worksheet, 'I9');
+        self::setSmallHeadline($worksheet, 'J9');
+        self::setImportantFilledInfo($worksheet, 'H10');
+        self::setImportantFilledInfo($worksheet, 'I10');
+        self::setImportantFilledInfo($worksheet, 'J10');
+    }
+
     private static function buildBody(Worksheet $worksheet, TranslatorInterface $translator, string $lang, SmartcardRedemptionBatch $batch)
     {
         $worksheet->mergeCells('B14:C14');
         $worksheet->mergeCells('H14:I14');
-        $worksheet->getStyle('B14:J14')->getFill()
-            ->setFillType(Fill::FILL_SOLID)
-            ->setStartColor(new Color('C5E0B4'));
+        self::setSpecialBackground($worksheet, 'B14:J14');
         $worksheet->getStyle('B14:J14')->getBorders()
             ->getAllBorders()
             ->setBorderStyle(Border::BORDER_THIN);
@@ -238,9 +273,7 @@ class SmartcardInvoiceExport
         $worksheet->mergeCells('H'.$nextRow.':I'.$nextRow);
         $worksheet->getStyle('B'.$nextRow.':G'.$nextRow)->getFont()
             ->setSize(15);
-        $worksheet->getStyle('H'.$nextRow.':J'.$nextRow)->getFill()
-            ->setFillType(Fill::FILL_SOLID)
-            ->setStartColor(new Color('C5E0B4'));
+        self::setSpecialBackground($worksheet, 'H'.$nextRow.':J'.$nextRow);
         $worksheet->getStyle('H'.$nextRow.':J'.$nextRow)->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $worksheet->getStyle('B'.$nextRow.':J'.$nextRow)->getBorders()
@@ -282,5 +315,32 @@ class SmartcardInvoiceExport
         $worksheet->getStyle('B'.$nextRow.':J'.$nextRow)->getBorders()
             ->getBottom()
             ->setBorderStyle(Border::BORDER_DOUBLE);
+    }
+
+    private static function setSpecialBackground(Worksheet $worksheet, string $cellCoordination) {
+        $worksheet->getStyle($cellCoordination)->getFill()
+            ->setFillType(Fill::FILL_SOLID)
+            ->setStartColor(new Color('C5E0B4'));
+    }
+
+    private static function setSmallHeadline(Worksheet $worksheet, string $cellCoordination) {
+        $worksheet->getStyle($cellCoordination)->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+    }
+
+    private static function setImportantFilledInfo(Worksheet $worksheet, string $cellCoordination) {
+        self::setSpecialBackground($worksheet, $cellCoordination);
+        $worksheet->getStyle($cellCoordination)->getFont()
+            ->setBold(true)
+            ->setSize(15)
+            ->setName('Arial');
+        $worksheet->getStyle($cellCoordination)->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+    }
+
+    private static function setSmallBorder(Worksheet $worksheet, string $cellCoordination) {
+        $worksheet->getStyle($cellCoordination)->getBorders()
+            ->getAllBorders()
+            ->setBorderStyle(Border::BORDER_THIN);
     }
 }
