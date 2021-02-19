@@ -85,8 +85,9 @@ class SmartcardInvoiceExport
         $worksheet->getStyle('F2:H3')->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
+        // wide header "Invoice"
         $worksheet->mergeCells('B5:J5');
-        $worksheet->setCellValue('B5', $organization->getName());
+        $worksheet->setCellValue('B5', 'Invoice');
         $worksheet->getStyle('B5')->getFont()
             ->setBold(true)
             ->setSize(22)
