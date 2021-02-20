@@ -55,7 +55,7 @@ class User extends BaseUser implements ExportableInterface
     private $countries;
 
     /**
-     * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserProject", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserProject", mappedBy="user", cascade={"remove"})
      * @SymfonyGroups({"FullUser"})
      */
     private $projects;
@@ -117,7 +117,7 @@ class User extends BaseUser implements ExportableInterface
      * @ORM\Column(name="changePassword", type="boolean", options={"default" : 0})
      * @SymfonyGroups({"FullUser"})
      */
-    protected $changePassword;
+    protected $changePassword = false;
 
     /**
      * @var boolean
