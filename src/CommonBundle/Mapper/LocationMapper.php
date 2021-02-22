@@ -53,7 +53,7 @@ class LocationMapper
         ];
     }
 
-    public function toName(Location $location): string
+    public static function toName(Location $location): string
     {
         $delimiter = ', ';
         if ($location->getAdm4()) {
