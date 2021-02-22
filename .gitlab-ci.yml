@@ -147,6 +147,8 @@ report starting:
   stage: report_starting
   extends: .slack_starting_deploy_report
   rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
     - if: '$CI_COMMIT_REF_NAME =~ /^release\/.*$/'
       when: always
     - if: '$CI_COMMIT_TAG =~ /^v.*$/'
@@ -199,6 +201,8 @@ report success:
   stage: report_finished
   extends: .slack_successful_deploy_report
   rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
     - if: '$CI_COMMIT_REF_NAME =~ /^release\/.*$/'
       when: on_success
     - if: '$CI_COMMIT_TAG =~ /^v.*$/'
@@ -209,6 +213,8 @@ report failure:
   stage: report_finished
   extends: .slack_failed_deploy_report
   rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
     - if: '$CI_COMMIT_REF_NAME =~ /^release\/.*$/'
       when: on_failure
     - if: '$CI_COMMIT_TAG =~ /^v.*$/'
