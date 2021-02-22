@@ -765,7 +765,7 @@ class UserService
             ->setRoles($inputType->getRoles())
             ->setChangePassword($inputType->isChangePassword())
             ->setPhonePrefix($inputType->getPhonePrefix())
-            ->setPhoneNumber((int) $inputType->getPhoneNumber())
+            ->setPhoneNumber($inputType->getPhoneNumber() ? (int) $inputType->getPhoneNumber() : null)
             ->setPassword($inputType->getPassword());
 
         if (!empty($inputType->getProjectIds())) {
@@ -824,7 +824,7 @@ class UserService
             ->setEnabled(true)
             ->setRoles($inputType->getRoles())
             ->setPhonePrefix($inputType->getPhonePrefix())
-            ->setPhoneNumber((int) $inputType->getPhoneNumber());
+            ->setPhoneNumber($inputType->getPhoneNumber() ? (int) $inputType->getPhoneNumber() : null);
 
         if (null !== $inputType->getPassword()) {
             $user->setPassword($this->hashPassword($inputType->getPassword(), $user->getSalt()));

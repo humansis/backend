@@ -32,7 +32,7 @@ class VendorMapper implements MapperInterface
         return $this->object->getId();
     }
 
-    public function getShop(): string
+    public function getShop(): ?string
     {
         return $this->object->getShop();
     }

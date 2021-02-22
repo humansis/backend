@@ -105,7 +105,7 @@ class User extends BaseUser implements ExportableInterface
     protected $phonePrefix;
 
     /**
-     * @var int
+     * @var int|null
      *
      * @ORM\Column(name="phoneNumber", type="integer", nullable=true)
      * @SymfonyGroups({"FullUser"})
@@ -338,7 +338,7 @@ class User extends BaseUser implements ExportableInterface
     /**
      * Set phoneNumber.
      *
-     * @param int $phoneNumber
+     * @param int|null $phoneNumber
      *
      * @return User
      */
@@ -352,7 +352,7 @@ class User extends BaseUser implements ExportableInterface
     /**
      * Get phoneNumber.
      *
-     * @return int
+     * @return int|null
      */
     public function getPhoneNumber()
     {
