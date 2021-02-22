@@ -114,8 +114,7 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
                         $qb->orderBy('p.endDate', $direction);
                         break;
                     case ProjectOrderInputType::SORT_BY_NUMBER_OF_HOUSEHOLDS:
-                        $qb->select(['p', 'hhCount' => 'SIZE(p.households)']);
-                        $qb->orderBy('hhCount', $direction);
+                        $qb->orderBy('SIZE(p.households)', $direction);
                         break;
                     default:
                         throw new \InvalidArgumentException('Invalid order by directive '.$name);

@@ -114,7 +114,18 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
                         $qb->orderBy('v.addressPostcode', $direction);
                         break;
                     case VendorOrderInputType::SORT_BY_LOCATION:
-                        $qb->orderBy('v.location', $direction);
+                        $qb->addSelect('
+                            CASE WHEN adm4.id IS NOT NULL THEN adm4.name ELSE 
+                                CASE WHEN adm3.id IS NOT NULL THEN adm3.name ELSE
+                                    CASE WHEN adm2.id IS NOT NULL THEN adm2.name ELSE
+                                        CASE WHEN adm1.id IS NOT NULL THEN adm1.name ELSE 0 END
+                                    END
+                                END   
+                            END
+                         as HIDDEN admName');
+
+                        $qb->addOrderBy('admName', $direction);
+
                         break;
                     default:
                         throw new \InvalidArgumentException('Invalid order by directive '.$name);
