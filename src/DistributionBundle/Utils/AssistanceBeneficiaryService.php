@@ -72,9 +72,21 @@ class AssistanceBeneficiaryService
      * @param Assistance $assistance
      * @return array
      */
-    public function getDistributionBeneficiaries(Assistance $assistance)
+    public function getAssistanceBeneficiaries(Assistance $assistance)
     {
         $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findByAssistance($assistance);
+        return $distributionBeneficiaries;
+    }
+
+    /**
+     * Get all distribution beneficiaries from a distribution
+     *
+     * @param Assistance $assistance
+     * @return array
+     */
+    public function getActiveAssistanceBeneficiaries(Assistance $assistance)
+    {
+        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findActiveByAssistance($assistance);
         return $distributionBeneficiaries;
     }
 
