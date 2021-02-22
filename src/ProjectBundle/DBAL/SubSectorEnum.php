@@ -16,6 +16,7 @@ class SubSectorEnum extends AbstractEnum
 
         self::SKILLS_TRAINING,
         self::TECHNICAL_SUPPORT,
+        self::PROVISION_OF_INPUTS,
         self::DISTRIBUTION_OF_INPUTS,
         self::BUSINESS_GRANTS,
         self::AGRICULTURAL_VOUCHERS,
@@ -78,6 +79,7 @@ class SubSectorEnum extends AbstractEnum
 
     const SKILLS_TRAINING = 'skills_training';
     const TECHNICAL_SUPPORT = 'technical_support';
+    const PROVISION_OF_INPUTS = 'provision_of_inputs';
     const DISTRIBUTION_OF_INPUTS = 'distribution_of_inputs';
     const BUSINESS_GRANTS = 'business_grants';
     const AGRICULTURAL_VOUCHERS = 'agricultural_vouchers';
