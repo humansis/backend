@@ -50,7 +50,7 @@ test:
     DB: db_test
     MYSQL_ROOT_PASSWORD: "root"
   before_script:
-    - composer self-update --1
+    - sudo composer self-update --1
     - cp app/config/parameters.yml.test app/config/parameters.yml
     - composer install
     - php bin/console doctrine:database:create --env=test || true
