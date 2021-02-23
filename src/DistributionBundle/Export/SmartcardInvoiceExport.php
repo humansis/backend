@@ -278,16 +278,16 @@ class SmartcardInvoiceExport
         // data
         $worksheet->setCellValue('B'.$lineStart, self::makeCommentedImportantInfo(
             $translator->trans('redemption_payment_cash', [], 'invoice', $lang),
-            $translator->trans('redemption_payment_cash_description', [], 'invoice', $lang)
+            $translator->trans('redemption_payment_cash_description', [], 'invoice', $lang),
+            'C0C0C0'
         ));
         $worksheet->setCellValue('H'.$lineStart, '');
         $worksheet->setCellValue('J'.$lineStart, '');
 
         // style
-        $worksheet->getRowDimension($lineStart)->setRowHeight(50);
+        $worksheet->getRowDimension($lineStart)->setRowHeight(40);
         self::setImportantInfo($worksheet, 'B'.$lineStart.':J'.$lineStart);
-        self::setSmallBorder($worksheet, 'B'.$lineStart.':G'.$lineStart);
-        $worksheet->getStyle('B'.$lineStart.':J'.$lineStart)->getFont()->setColor(new Color('FFC0C0C0'));
+        self::setSmallBorder($worksheet, 'B'.$lineStart.':J'.$lineStart);
 
         // ----------------------- Total
         $lineStart += 2;
@@ -332,6 +332,7 @@ class SmartcardInvoiceExport
         $worksheet->getRowDimension($lineStart)->setRowHeight(50);
         self::setSmallHeadline($worksheet, 'B'.$lineStart.':J'.$lineStart);
         self::setSmallBorder($worksheet, 'B'.$lineStart.':J'.$lineStart);
+        self::setSoftBackground($worksheet, 'B'.$lineStart.':J'.$lineStart);
         $worksheet->getStyle('B'.$lineStart.':J'.$lineStart)->getAlignment()->setWrapText(true);
 
         // table with purchases
@@ -396,6 +397,7 @@ class SmartcardInvoiceExport
         ++$nextRow;
         $worksheet->setCellValue('E'.$nextRow, $translator->trans('signature_organization', ['organization'=>$organization->getName()], 'invoice', $lang));
         $worksheet->mergeCells('E'.$nextRow.':J'.$nextRow);
+        $worksheet->getRowDimension($nextRow)->setRowHeight(40);
         $worksheet->getStyle('E'.$nextRow.':J'.$nextRow)->getFont()
             ->setItalic(true)
             ->setSize(9);
@@ -424,6 +426,12 @@ class SmartcardInvoiceExport
             ->setStartColor(new Color('C5E0B4'));
     }
 
+    private static function setSoftBackground(Worksheet $worksheet, string $cellCoordination) {
+        $worksheet->getStyle($cellCoordination)->getFill()
+            ->setFillType(Fill::FILL_SOLID)
+            ->setStartColor(new Color('C0C0C0'));
+    }
+
     private static function setSmallHeadline(Worksheet $worksheet, string $cellCoordination) {
         $worksheet->getStyle($cellCoordination)->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_CENTER);
@@ -448,7 +456,7 @@ class SmartcardInvoiceExport
             ->setHorizontal(Alignment::HORIZONTAL_CENTER);
     }
 
-    private static function makeCommentedImportantInfo(string $importantInfo, string $commentInfo): RichText
+    private static function makeCommentedImportantInfo(string $importantInfo, string $commentInfo, ?string $color = null): RichText
     {
         $richText = new RichText();
         $importantText = $richText->createTextRun($importantInfo."\n");
@@ -461,6 +469,10 @@ class SmartcardInvoiceExport
             ->setBold(true)
             ->setSize(10)
             ->setName('Arial');
+        if ($color) {
+            $comment->getFont()->getColor()->setRGB($color);
+            $importantText->getFont()->getColor()->setRGB($color);
+        }
         return $richText;
     }
 
