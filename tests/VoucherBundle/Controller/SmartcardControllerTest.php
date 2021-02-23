@@ -224,6 +224,35 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->assertTrue($smartcard->isSuspicious(), 'Smartcard registered by purchase must be suspected');
     }
 
+    public function testPurchaseShouldBeAllowedForNonexistentSmartcardV2()
+    {
+        $nonexistentSmarcard = '0123456789';
+
+        $headers = ['HTTP_COUNTRY' => 'KHM'];
+        $content = json_encode([
+            'products' => [
+                [
+                    'id' => 1, // @todo replace for fixture
+                    'value' => 400,
+                    'quantity' => 1.2,
+                    'currency' => 'CZK',
+                ],
+            ],
+            'vendorId' => 1,
+            'createdAt' => '2020-02-02T12:00:00Z',
+        ]);
+
+        $this->client->request('PATCH', '/api/wsse/vendor-app/v2/smartcards/'.$nonexistentSmarcard.'/purchase', [], [], $headers, $content);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+
+        /** @var Smartcard $smartcard */
+        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($nonexistentSmarcard);
+
+        $this->assertNotNull($smartcard, 'Smartcard must be registered to system');
+        $this->assertTrue($smartcard->isSuspicious(), 'Smartcard registered by purchase must be suspected');
+    }
+
     public function testChangeStateToInactive()
     {
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC');
@@ -308,6 +337,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'id' => 1,
             'quantity' => 5.9,
             'value' => 1000.05,
+            'currency' => 'CZK',
         ]]);
         $purchase->setVendorId($vendorId);
         $purchase->setCreatedAt(new \DateTime());

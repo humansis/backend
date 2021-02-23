@@ -4,7 +4,7 @@ namespace VoucherBundle\Tests\Controller;
 use Tests\BMSServiceTestCase;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\Vendor;
-use VoucherBundle\InputType\SmartcardPurchase;
+use VoucherBundle\InputType\SmartcardPurchaseDeprecated;
 
 class VendorControllerTest extends BMSServiceTestCase
 {

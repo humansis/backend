@@ -4,7 +4,7 @@ namespace VoucherBundle\InputType;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class SmartcardPurchase
+class SmartcardPurchaseDeprecated
 {
     /**
      * @var array
@@ -15,8 +15,7 @@ class SmartcardPurchase
      *      @Assert\Collection(fields={
      *          "id" = @Assert\Type("int"),
      *          "quantity" = @Assert\Type("numeric"),
-     *          "value" = @Assert\Type("numeric"),
-     *          "currency" = @Assert\Type("string"),
+     *          "value" = @Assert\Type("numeric")
      *      })
      * })
      */

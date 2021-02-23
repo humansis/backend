@@ -70,7 +70,7 @@ class PurchaseService
 
         foreach ($input->getProducts() as $item) {
             $product = $this->getProduct($item['id']);
-            $purchase->addRecord($product, $item['quantity'], $item['value']);
+            $purchase->addRecord($product, $item['quantity'], $item['value'], $item['currency']);
         }
 
         $smartcard->addPurchase($purchase);

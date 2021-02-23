@@ -27,6 +27,7 @@ use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\SmartcardRedemptionBatch;
 use VoucherBundle\Entity\Vendor;
+use VoucherBundle\InputType\SmartcardPurchaseDeprecated as SmartcardPurchaseDeprecatedInput;
 use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
 use VoucherBundle\InputType\SmartcardRedemtionBatch as RedemptionBatchInput;
 use VoucherBundle\Mapper\SmartcardMapper;
@@ -411,6 +412,67 @@ class SmartcardController extends Controller
      *     in="body",
      *     required=true,
      *     type="object",
+     *     @Model(type=SmartcardPurchaseDeprecatedInput::class)
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Smartcard succesfully registered to system",
+     *     @Model(type=Smartcard::class, groups={"SmartcardOverview"})
+     * )
+     *
+     * @SWG\Response(response=400, description="Product does not exists.")
+     *
+     * @param Request $request
+     *
+     * @return Response
+     *
+     * @throws EntityNotFoundException
+     *
+     * @deprecated
+     */
+    public function purchaseDeprecated(Request $request): Response
+    {
+        $this->container->get('logger')->error('headers', $request->headers->all());
+        $this->container->get('logger')->error('content', [$request->getContent()]);
+
+        /** @var SmartcardPurchaseDeprecatedInput $data */
+        $data = $this->get('serializer')->deserialize($request->getContent(), SmartcardPurchaseDeprecatedInput::class, 'json');
+
+        $errors = $this->get('validator')->validate($data);
+        if (count($errors) > 0) {
+            $this->container->get('logger')->error('validation errors: '.((string) $errors));
+            throw new \RuntimeException((string) $errors);
+        }
+
+        $purchase = $this->get('smartcard_service')->purchase($request->get('serialNumber'), $data);
+
+        $json = $this->get('serializer')->serialize($purchase->getSmartcard(), 'json', ['groups' => ['SmartcardOverview']]);
+
+        return new Response($json);
+    }
+
+    /**
+     * Purchase goods from smartcard. If smartcard does not exists, it will be created.
+     *
+     * @Rest\Patch("/vendor-app/v2/smartcards/{serialNumber}/purchase")
+     * @Security("is_granted('ROLE_VENDOR')")
+     *
+     * @SWG\Tag(name="Smartcards")
+     * @SWG\Tag(name="Vendor App")
+     *
+     * @SWG\Parameter(
+     *     name="serialNumber",
+     *     in="path",
+     *     type="string",
+     *     required=true,
+     *     description="Serial number (GUID) of smartcard"
+     * )
+     *
+     * @SWG\Parameter(name="purchase from smartcard",
+     *     in="body",
+     *     required=true,
+     *     type="object",
      *     @Model(type=SmartcardPurchaseInput::class)
      * )
      *
@@ -442,21 +504,9 @@ class SmartcardController extends Controller
             throw new \RuntimeException((string) $errors);
         }
 
-        $serialNumber = $request->get('serialNumber');
+        $purchase = $this->get('smartcard_service')->purchase($request->get('serialNumber'), $data);
 
-        $smartcard = $this->getDoctrine()->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
-        if (!$smartcard) {
-            $smartcard = new Smartcard($serialNumber, \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
-            $smartcard->setState(Smartcard::STATE_ACTIVE);
-            $smartcard->setSuspicious(true, 'Smartcard does not exists in database');
-
-            $this->getDoctrine()->getManager()->persist($smartcard);
-            $this->getDoctrine()->getManager()->flush();
-        }
-
-        $this->get('voucher.purchase_service')->purchaseSmartcard($smartcard, $data);
-
-        $json = $this->get('serializer')->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
+        $json = $this->get('serializer')->serialize($purchase->getSmartcard(), 'json', ['groups' => ['SmartcardOverview']]);
 
         return new Response($json);
     }
