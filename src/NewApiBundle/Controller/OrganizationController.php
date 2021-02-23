@@ -11,6 +11,7 @@ use CommonBundle\Repository\OrganizationServicesRepository;
 use CommonBundle\Utils\OrganizationService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\OrganizationServicesInputType;
+use NewApiBundle\InputType\OrganizationUpdateInputType;
 use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -25,6 +26,21 @@ class OrganizationController extends AbstractController
      */
     public function item(Organization $organization): JsonResponse
     {
+        return $this->json($organization);
+    }
+
+    /**
+     * @Rest\Put("/organizations/{id}")
+     *
+     * @param Organization                $organization
+     * @param OrganizationUpdateInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function update(Organization $organization, OrganizationUpdateInputType $inputType): JsonResponse
+    {
+        $this->get('organization_service')->update($organization, $inputType);
+
         return $this->json($organization);
     }
 
@@ -80,6 +96,5 @@ class OrganizationController extends AbstractController
 
         return $this->json($updatedOrganizationServices);
     }
-
 
 }
