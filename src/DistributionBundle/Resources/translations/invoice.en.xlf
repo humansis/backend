@@ -25,6 +25,8 @@
             <trans-unit id="redemption_payment_cash"><source>redemption_payment_cash</source><target>SmartCards redemption payment - Cash</target></trans-unit>
             <trans-unit id="redemption_payment_cash_description"><source>redemption_payment_cash_description</source><target>Itemized breakdown available from internal system under internal HUM Nr.</target></trans-unit>
             <trans-unit id="total_to_pay"><source>total_to_pay</source><target>Total Amount to be Paid</target></trans-unit>
+            <trans-unit id="signature_underline_individual"><source>signature_underline_individual</source><target>Signature/Name</target></trans-unit>
+            <trans-unit id="signature_underline_organization"><source>signature_underline_organization</source><target>Signature/Name/Position</target></trans-unit>
             <trans-unit id="signature_recipient"><source>signature_recipient</source><target>Supplier's Signature</target></trans-unit>
             <trans-unit id="signature_organization"><source>signature_organization</source><target>organization Signature</target></trans-unit>
             <trans-unit id="period_start"><source>period_start</source><target>Period Start</target></trans-unit>
