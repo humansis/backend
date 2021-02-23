@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class VendorFilterInputType extends AbstractFilterInputType
 {
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      */
     protected $fulltext;
 
