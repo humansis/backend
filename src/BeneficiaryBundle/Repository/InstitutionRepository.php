@@ -10,6 +10,7 @@ use CommonBundle\InputType\DataTableFilterType;
 use CommonBundle\InputType\DataTableSorterType;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\InstitutionFilterInputType;
 use NewApiBundle\InputType\InstitutionOrderInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
@@ -114,7 +115,7 @@ class InstitutionRepository extends \Doctrine\ORM\EntityRepository
         return $q->getQuery()->getResult();
     }
 
-    public function findByParams(?string $iso3, ?InstitutionOrderInputType $orderBy = null, ?Pagination $pagination = null)
+    public function findByParams(?string $iso3, ?InstitutionFilterInputType $filter = null, ?InstitutionOrderInputType $orderBy = null, ?Pagination $pagination = null)
     {
         $qb = $this->createQueryBuilder('i')
             ->andWhere('i.archived = 0');
@@ -125,6 +126,17 @@ class InstitutionRepository extends \Doctrine\ORM\EntityRepository
 
             $locationRepository = $this->getEntityManager()->getRepository(Location::class);
             $locationRepository->whereCountry($qb, $iso3);
+        }
+
+        if ($filter && $filter->hasFulltext()) {
+            $exactText = (string) $filter->getFulltext();
+            $likeCaseInsensitive = '%'.strtoupper($exactText).'%';
+            $likeCaseSensitive = '%'.$exactText.'%';
+
+            $fulltextQuery = $qb->expr()->orX();
+            $fulltextQuery->add($qb->expr()->like($qb->expr()->upper('i.name'), $qb->expr()->literal($likeCaseInsensitive)));
+            $fulltextQuery->add($qb->expr()->eq('i.id', $qb->expr()->literal($exactText)));
+            $qb->andWhere($fulltextQuery);
         }
 
         if ($pagination) {
