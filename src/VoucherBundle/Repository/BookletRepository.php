@@ -263,21 +263,22 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
                 ->from(Beneficiary::class, 'bnf1')
                 ->leftJoin('bnf1.person', 'p')
                 ->andWhere('p.id = IDENTITY(db.beneficiary)')
-                ->andWhere('(p.localGivenName LIKE :fulltext OR
-                                p.localFamilyName LIKE :fulltext OR
-                                p.enGivenName LIKE :fulltext OR
-                                p.enFamilyName LIKE :fulltext
+                ->andWhere('(p.localGivenName LIKE :fulltextLike OR
+                                p.localFamilyName LIKE :fulltextLike OR
+                                p.enGivenName LIKE :fulltextLike OR
+                                p.enFamilyName LIKE :fulltextLike
                             )')
-                ->setParameter('fulltext', '%'.$filter->getFulltext().'%')
+                ->setParameter('fulltextLike', '%'.$filter->getFulltext().'%')
                 ->getDQL();
 
-            $qb->andWhere("CONCAT(
-                             COALESCE(b.code, ''),
-                             COALESCE(b.currency, ''),
-                             COALESCE(b.status, ''),
-                             COALESCE(d.name, '')
-                         ) LIKE :fulltext OR EXISTS ($subQueryForName)")
-                ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+            $qb->andWhere("b.id = :fulltextExact OR
+                                b.code LIKE :fulltextLike OR
+                                b.currency LIKE :fulltextExact OR
+                                b.status LIKE :fulltextExact OR
+                                d.name LIKE :fulltextLike OR
+                                EXISTS ($subQueryForName)")
+                ->setParameter('fulltextExact', $filter->getFulltext())
+                ->setParameter('fulltextLike', '%'.$filter->getFulltext().'%');
         }
 
         if ($filter->hasCurrencies()) {
