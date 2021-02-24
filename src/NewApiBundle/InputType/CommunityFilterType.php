@@ -14,8 +14,8 @@ use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 class CommunityFilterType extends AbstractFilterInputType
 {
     /**
-     * @var string
-     * @Assert\Type("string")
+     * @var string|int|float
+     * @Assert\Type("scalar")
      */
     protected $fulltext;
 
@@ -33,9 +33,9 @@ class CommunityFilterType extends AbstractFilterInputType
     /**
      * @return string
      */
-    public function getFulltext(): string
+    public function getFulltext()
     {
-        return $this->fulltext;
+        return (string) $this->fulltext;
     }
 
     /**

@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use InvalidArgumentException;
+use NewApiBundle\InputType\CommunityFilterInputType;
 use NewApiBundle\InputType\CommunityFilterType;
 use NewApiBundle\InputType\CommunityOrderInputType;
 use NewApiBundle\Request\Pagination;
@@ -263,17 +264,19 @@ class CommunityRepository extends EntityRepository
             if ($filter->hasFulltext()) {
                 $qb->leftJoin('comm.contact', 'per');
 
-                $qb->andWhere('comm.name LIKE :fulltext OR
-                                comm.latitude LIKE :fulltext OR
-                                comm.longitude LIKE :fulltext OR
-                                per.localGivenName LIKE :fulltext OR 
-                                per.localFamilyName LIKE :fulltext OR
-                                per.localParentsName LIKE :fulltext OR
-                                per.enGivenName LIKE :fulltext OR
-                                per.enFamilyName LIKE :fulltext OR
-                                per.enParentsName LIKE :fulltext OR
-                                per.enParentsName LIKE :fulltext')
-                    ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+                $qb->andWhere('comm.id = :fulltextExact OR
+                                comm.name LIKE :fulltextLike OR
+                                comm.latitude LIKE :fulltextLike OR
+                                comm.longitude LIKE :fulltextLike OR
+                                per.localGivenName LIKE :fulltextLike OR 
+                                per.localFamilyName LIKE :fulltextLike OR
+                                per.localParentsName LIKE :fulltextLike OR
+                                per.enGivenName LIKE :fulltextLike OR
+                                per.enFamilyName LIKE :fulltextLike OR
+                                per.enParentsName LIKE :fulltextLike OR
+                                per.enParentsName LIKE :fulltextLike')
+                    ->setParameter('fulltextExact', $filter->getFulltext())
+                    ->setParameter('fulltextLike', '%'.$filter->getFulltext().'%');
             }
         }
 

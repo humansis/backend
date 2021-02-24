@@ -8,6 +8,7 @@ use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Repository\CommunityRepository;
 use BeneficiaryBundle\Utils\CommunityService;
 use NewApiBundle\InputType\CommunityCreateInputType;
+use NewApiBundle\InputType\CommunityFilterInputType;
 use NewApiBundle\InputType\CommunityFilterType;
 use NewApiBundle\InputType\CommunityOrderInputType;
 use NewApiBundle\InputType\CommunityUpdateInputType;
@@ -42,14 +43,14 @@ class CommunityController extends AbstractController
     /**
      * @Rest\Get("/communities")
      *
-     * @param Request $request
+     * @param Request                 $request
+     * @param CommunityFilterType     $communityFilterType
      * @param CommunityOrderInputType $communityOrderInputType
-     * @param CommunityFilterType $communityFilterType
-     * @param Pagination $pagination
+     * @param Pagination              $pagination
      *
      * @return JsonResponse
      */
-    public function list(Request $request, CommunityOrderInputType $communityOrderInputType, CommunityFilterType $communityFilterType, Pagination $pagination): JsonResponse
+    public function list(Request $request, CommunityFilterType $communityFilterType, CommunityOrderInputType $communityOrderInputType, Pagination $pagination): JsonResponse
     {
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
