@@ -24,6 +24,11 @@ class AssistanceFilterInputType extends AbstractFilterInputType
      */
     protected $upcoming;
 
+    /**
+     * @Assert\Type("scalar")
+     */
+    protected $fulltext;
+
     public function hasIds(): bool
     {
         return $this->has('id');
@@ -42,5 +47,15 @@ class AssistanceFilterInputType extends AbstractFilterInputType
     public function getUpcomingOnly(): bool
     {
         return $this->upcoming;
+    }
+
+    public function hasFulltext(): bool
+    {
+        return $this->has('fulltext');
+    }
+
+    public function getFulltext()
+    {
+        return $this->fulltext;
     }
 }

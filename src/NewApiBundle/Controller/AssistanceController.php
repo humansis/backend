@@ -166,18 +166,24 @@ class AssistanceController extends AbstractController
     /**
      * @Rest\Get("/projects/{id}/assistances")
      *
-     * @param Project                  $project
-     * @param Pagination               $pagination
-     * @param AssistanceOrderInputType $orderBy
+     * @param Project                   $project
+     * @param AssistanceFilterInputType $filter
+     * @param Pagination                $pagination
+     * @param AssistanceOrderInputType  $orderBy
      *
      * @return JsonResponse
      */
-    public function getProjectAssistances(Project $project, Pagination $pagination, AssistanceOrderInputType $orderBy): JsonResponse
+    public function getProjectAssistances(
+        Project $project,
+        AssistanceFilterInputType $filter,
+        Pagination $pagination,
+        AssistanceOrderInputType $orderBy
+    ): JsonResponse
     {
         /** @var AssistanceRepository $repository */
         $repository = $this->getDoctrine()->getRepository(Assistance::class);
 
-        $assistances = $repository->findByParams($project, null, null, $orderBy, $pagination);
+        $assistances = $repository->findByParams($project, null, $filter, $orderBy, $pagination);
 
         return $this->json($assistances);
     }

@@ -257,6 +257,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
         ?Pagination $pagination = null
     ): Paginator {
         $qb = $this->createQueryBuilder('dd')
+            ->leftJoin('dd.project', 'p')
             ->andWhere('dd.archived = 0');
 
         if ($project) {
@@ -265,8 +266,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
         }
 
         if ($iso3) {
-            $qb->leftJoin('dd.project', 'p')
-                ->andWhere('p.iso3 = :iso3')
+            $qb->andWhere('p.iso3 = :iso3')
                 ->setParameter('iso3', $iso3);
         }
 
@@ -278,6 +278,14 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
             if ($filter->hasUpcomingOnly() && $filter->getUpcomingOnly()) {
                 $qb->andWhere('p.startDate > :now')
                     ->setParameter('now', new DateTime('now'));
+            }
+            if ($filter->hasFulltext()) {
+                $qb->andWhere("dd.id = :fulltextExact OR
+                                dd.name LIKE :fulltextLike OR
+                                p.iso3 = :fulltextExact OR
+                                p.name LIKE :fulltextLike")
+                    ->setParameter('fulltextExact', $filter->getFulltext())
+                    ->setParameter('fulltextLike', '%'.$filter->getFulltext().'%');
             }
         }
 
