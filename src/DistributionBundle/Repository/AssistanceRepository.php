@@ -306,8 +306,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                         $qb->orderBy('dd.targetType', $direction);
                         break;
                     case AssistanceOrderInputType::SORT_BY_NUMBER_OF_BENEFICIARIES:
-                        $qb->select(['dd', 'bnfCount' => 'SIZE(dd.distributionBeneficiaries)']);
-                        $qb->orderBy('bnfCount', $direction);
+                        $qb->orderBy('SIZE(dd.distributionBeneficiaries)', $direction);
                         break;
                     default:
                         throw new \InvalidArgumentException('Invalid order by directive '.$name);

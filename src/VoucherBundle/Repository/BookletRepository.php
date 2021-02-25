@@ -111,7 +111,7 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
             }
             // If the field is the individual value, we sort it by the direction sent
             elseif ($value == "value") {
-                $q->addGroupBy("v")->addOrderBy("v.value", $direction);
+                $qb->addOrderBy('SUM(v.value)');
             }
             // If the field is the currency, we sort it by the direction sent
             elseif ($value == "currency") {
@@ -310,7 +310,7 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
                         $qb->addGroupBy('b.numberVouchers')->addOrderBy('b.numberVouchers', $direction);
                         break;
                     case BookletOrderInputType::SORT_BY_VALUE:
-                        $qb->addGroupBy('v')->addOrderBy('v.value', $direction);
+                        $qb->addOrderBy('SUM(v.value)', $direction);
                         break;
                     case BookletOrderInputType::SORT_BY_CURRENCY:
                         $qb->addGroupBy('b.currency')->addOrderBy('b.currency', $direction);

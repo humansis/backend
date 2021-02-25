@@ -50,7 +50,9 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
 
     public function findByParams(?UserOrderInputType $orderBy, ?UserFilterInputType $filter, ?Pagination $pagination): Paginator
     {
-        $qb = $this->createQueryBuilder("u");
+        $qb = $this->createQueryBuilder("u")
+            ->where('u.enabled = :userEnabled')
+            ->setParameter('userEnabled', true);
 
         if (null !== $filter) {
             if ($filter->hasFulltext()) {

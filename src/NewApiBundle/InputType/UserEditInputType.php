@@ -73,7 +73,6 @@ class UserEditInputType implements InputTypeInterface
      *
      * @Assert\Length(max="255")
      * @Assert\Type("string")
-     * @Assert\NotBlank
      */
     private $language;
 

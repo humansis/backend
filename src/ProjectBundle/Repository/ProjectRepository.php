@@ -75,9 +75,19 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
             $qb->setParameter('iso3', $iso3);
         }
 
-        if ($filter && $filter->hasIds()) {
-            $qb->andWhere('p.id IN (:ids)');
-            $qb->setParameter('ids', $filter->getIds());
+        if ($filter) {
+            if ($filter->hasIds()) {
+                $qb->andWhere('p.id IN (:ids)');
+                $qb->setParameter('ids', $filter->getIds());
+            }
+
+            if ($filter->hasFulltext()) {
+                $qb->andWhere('(p.iso3 LIKE :fulltext OR
+                               p.name LIKE :fulltext OR
+                               p.internalId LIKE :fulltext OR
+                               p.notes LIKE :fulltext)')
+                    ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+            }
         }
 
         if ($pagination) {
@@ -104,8 +114,7 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
                         $qb->orderBy('p.endDate', $direction);
                         break;
                     case ProjectOrderInputType::SORT_BY_NUMBER_OF_HOUSEHOLDS:
-                        $qb->select(['p', 'hhCount' => 'SIZE(p.households)']);
-                        $qb->orderBy('hhCount', $direction);
+                        $qb->orderBy('SIZE(p.households)', $direction);
                         break;
                     default:
                         throw new \InvalidArgumentException('Invalid order by directive '.$name);
