@@ -81,9 +81,9 @@
         <source>PHONE NUMBER</source>
         <target>НОМЕР ТЕЛЕФОНА</target>
       </trans-unit>
-      <trans-unit id="PCHfRb3" resname="STATUS (Resident, IDP or Refugee">
-        <source>STATUS (Resident, IDP or Refugee</source>
-        <target>СТАТУС (резидент, ВПЛ или беженец)</target>
+      <trans-unit id="PCHfRb3" resname="STATUS (Resident, IDP, Refugee or Returnee)">
+        <source>STATUS (Resident, IDP, Refugee or Returnee)</source>
+        <target>СТАТУС (местный житель, переселенец, беженец или вернувшийся)</target>
       </trans-unit>
       <trans-unit id="pZ3Qho_" resname="Gender (M/F)">
         <source>Gender (M/F)</source>
@@ -3683,6 +3683,10 @@
       <trans-unit id="907" resname="vulnerability_solo_parent">
         <source>vulnerability_solo_parent</source>
         <target>одинокий родитель</target>
+      </trans-unit>
+      <trans-unit id="908" resname="returnee">
+        <source>returnee</source>
+        <target>Вернувшийся</target>
       </trans-unit>
     </body>
   </file>
