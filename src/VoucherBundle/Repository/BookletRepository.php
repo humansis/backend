@@ -287,8 +287,12 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
         }
 
         if ($filter->hasStatuses()) {
+            $statusNumbers = [];
+            foreach ($filter->getStatuses() as $status) {
+                $statusNumbers[] = array_search($status, Booklet::statuses());
+            }
             $qb->andWhere('b.status IN (:statuses)')
-                ->setParameter('statuses', $filter->getStatuses());
+                ->setParameter('statuses', $statusNumbers);
         }
 
         if ($filter->hasDistributions()) {
