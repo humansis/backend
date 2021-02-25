@@ -27,21 +27,21 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
 {
     public function getLastId()
     {
-        $qb = $this->createQueryBuilder('dd')
-                   ->select("MAX(dd.id)");
+        $qb = $this->createQueryBuilder('ass')
+                   ->select("MAX(ass.id)");
         return $qb->getQuery()->getSingleScalarResult();
     }
 
     public function getTotalValue(string $country)
     {
-        $qb = $this->createQueryBuilder("dd");
+        $qb = $this->createQueryBuilder("ass");
 
         $qb
             ->select("SUM(c.value)")
-            ->leftJoin("dd.project", "p")
+            ->leftJoin("ass.project", "p")
             ->where("p.iso3 = :country")
                 ->setParameter("country", $country)
-            ->leftJoin("dd.commodities", "c")
+            ->leftJoin("ass.commodities", "c")
             ->leftJoin("c.modalityType", "mt")
             ->andWhere("mt.name = 'Mobile'");
 
@@ -50,17 +50,17 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
 
     public function getActiveByCountry(string $country)
     {
-        $qb = $this->createQueryBuilder("dd")
-                    ->leftJoin("dd.project", "p")
+        $qb = $this->createQueryBuilder("ass")
+                    ->leftJoin("ass.project", "p")
                     ->where("p.iso3 = :country")
                     ->setParameter("country", $country)
-                    ->andWhere("dd.archived = 0");
+                    ->andWhere("ass.archived = 0");
         return $qb->getQuery()->getResult();
     }
 
     public function getCodeOfUpcomingDistribution(string $countryISO)
     {
-        $qb = $this->createQueryBuilder('dd');
+        $qb = $this->createQueryBuilder('ass');
         $qb
             ->addSelect('p')
             ->addSelect('l')
@@ -68,38 +68,38 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
             ->addSelect('adm2')
             ->addSelect('adm3')
             ->addSelect('adm4')
-            ->innerJoin('dd.project', 'p')
-            ->innerJoin('dd.location', 'l')
+            ->innerJoin('ass.project', 'p')
+            ->innerJoin('ass.location', 'l')
             ->leftJoin('l.adm1', 'adm1')
             ->leftJoin('l.adm2', 'adm2')
             ->leftJoin('l.adm3', 'adm3')
             ->leftJoin('l.adm4', 'adm4')
             ->andWhere('p.iso3 = :country')
                 ->setParameter('country', $countryISO)
-            ->andWhere('dd.dateDistribution > :now')
+            ->andWhere('ass.dateDistribution > :now')
                 ->setParameter('now', new DateTime());
 
         return $qb->getQuery()->getResult();
     }
 
     public function countCompleted(string $countryISO3) {
-        $qb = $this->createQueryBuilder('dd');
-        $qb->select('COUNT(dd)')
-            ->leftJoin("dd.location", "l");
+        $qb = $this->createQueryBuilder('ass');
+        $qb->select('COUNT(ass)')
+            ->leftJoin("ass.location", "l");
         $locationRepository = $this->getEntityManager()->getRepository(Location::class);
         $locationRepository->whereCountry($qb, $countryISO3);
-        $qb->andWhere("dd.completed = 1");
+        $qb->andWhere("ass.completed = 1");
 
         return $qb->getQuery()->getSingleScalarResult();
 
     }
 
     public function getNoBenificiaryByResidencyStatus(int $distributionId, string $residencyStatus, string $distributionType) {
-        $qb = $this->createQueryBuilder('dd');
+        $qb = $this->createQueryBuilder('ass');
         $qb
-            ->andWhere('dd.id = :distributionId')
+            ->andWhere('ass.id = :distributionId')
                 ->setParameter('distributionId', $distributionId)
-            ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0');
+            ->leftJoin('ass.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0');
         if ($distributionType === AssistanceTargetType::INDIVIDUAL) {
             $qb->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.residencyStatus = :residencyStatus');
         } else {
@@ -113,11 +113,11 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
     }
 
     public function getNoHeadHouseholdsByGender(int $distributionId, int $gender) {
-        $qb = $this->createQueryBuilder('dd');
+        $qb = $this->createQueryBuilder('ass');
         $qb
-            ->andWhere('dd.id = :distributionId')
+            ->andWhere('ass.id = :distributionId')
                 ->setParameter('distributionId', $distributionId)
-            ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
+            ->leftJoin('ass.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
             ->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.gender = :gender AND b.status = 1')
                 ->setParameter('gender', $gender)
             ->select('COUNT(b)');
@@ -125,11 +125,11 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
     }
 
     public function getNoFamilies(int $distributionId) {
-        $qb = $this->createQueryBuilder('dd');
+        $qb = $this->createQueryBuilder('ass');
         $qb
-            ->andWhere('dd.id = :distributionId')
+            ->andWhere('ass.id = :distributionId')
                 ->setParameter('distributionId', $distributionId)
-            ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
+            ->leftJoin('ass.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
             ->leftJoin('db.beneficiary', 'b')
             ->leftJoin('b.household', 'hh')
             ->select('COUNT(DISTINCT hh)');
@@ -141,11 +141,11 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
         $minDateOfBirth = clone $distributionDate;
         $maxDateOfBirth->sub(new \DateInterval('P'.$minAge.'Y'));
         $minDateOfBirth->sub(new \DateInterval('P'.$maxAge.'Y'));
-        $qb = $this->createQueryBuilder('dd');
+        $qb = $this->createQueryBuilder('ass');
         $qb
-            ->andWhere('dd.id = :distributionId')
+            ->andWhere('ass.id = :distributionId')
                 ->setParameter('distributionId', $distributionId)
-            ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0');
+            ->leftJoin('ass.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0');
  
         if ($distributionType === AssistanceTargetType::INDIVIDUAL) {
             $qb->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.dateOfBirth >= :minDateOfBirth AND b.dateOfBirth < :maxDateOfBirth AND b.gender = :gender');
@@ -162,11 +162,11 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
     }
 
     public function getNoServed(int $distributionId, string $modalityType) {
-        $qb = $this->createQueryBuilder('dd');
+        $qb = $this->createQueryBuilder('ass');
         $qb
-            ->andWhere('dd.id = :distributionId')
+            ->andWhere('ass.id = :distributionId')
                 ->setParameter('distributionId', $distributionId)
-                ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
+                ->leftJoin('ass.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
                 ->select('COUNT(DISTINCT db)');
 
                 if ($modalityType === 'Mobile Money') {
@@ -187,9 +187,9 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
      */
     public function findDistributedToBeneficiary(Beneficiary $beneficiary)
     {
-        $qb = $this->createQueryBuilder('dd')
-            ->join('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.beneficiary = :beneficiary')
-            ->orderBy('dd.dateDistribution', 'DESC');
+        $qb = $this->createQueryBuilder('ass')
+            ->join('ass.distributionBeneficiaries', 'db', Join::WITH, 'db.beneficiary = :beneficiary')
+            ->orderBy('ass.dateDistribution', 'DESC');
 
         $qb->setParameter('beneficiary', $beneficiary);
 
@@ -256,12 +256,12 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
         ?AssistanceOrderInputType $orderBy = null,
         ?Pagination $pagination = null
     ): Paginator {
-        $qb = $this->createQueryBuilder('dd')
-            ->leftJoin('dd.project', 'p')
-            ->andWhere('dd.archived = 0');
+        $qb = $this->createQueryBuilder('ass')
+            ->leftJoin('ass.project', 'p')
+            ->andWhere('ass.archived = 0');
 
         if ($project) {
-            $qb->andWhere('dd.project = :project')
+            $qb->andWhere('ass.project = :project')
                 ->setParameter('project', $project);
         }
 
@@ -272,7 +272,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
 
         if ($filter) {
             if ($filter->hasIds()) {
-                $qb->andWhere('dd.id IN (:ids)')
+                $qb->andWhere('ass.id IN (:ids)')
                     ->setParameter('ids', $filter->getIds());
             }
             if ($filter->hasUpcomingOnly() && $filter->getUpcomingOnly()) {
@@ -280,8 +280,8 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                     ->setParameter('now', new DateTime('now'));
             }
             if ($filter->hasFulltext()) {
-                $qb->andWhere("dd.id = :fulltextExact OR
-                                dd.name LIKE :fulltextLike OR
+                $qb->andWhere("ass.id = :fulltextExact OR
+                                ass.name LIKE :fulltextLike OR
                                 p.iso3 = :fulltextExact OR
                                 p.name LIKE :fulltextLike")
                     ->setParameter('fulltextExact', $filter->getFulltext())
@@ -298,23 +298,23 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
             foreach ($orderBy->toArray() as $name => $direction) {
                 switch ($name) {
                     case AssistanceOrderInputType::SORT_BY_ID:
-                        $qb->orderBy('dd.id', $direction);
+                        $qb->orderBy('ass.id', $direction);
                         break;
                     case AssistanceOrderInputType::SORT_BY_LOCATION:
-                        $qb->leftJoin('dd.location', 'l');
+                        $qb->leftJoin('ass.location', 'l');
                         $qb->orderBy('l.id', $direction);
                         break;
                     case AssistanceOrderInputType::SORT_BY_DATE:
-                        $qb->orderBy('dd.dateDistribution', $direction);
+                        $qb->orderBy('ass.dateDistribution', $direction);
                         break;
                     case AssistanceOrderInputType::SORT_BY_NAME:
-                        $qb->orderBy('dd.name', $direction);
+                        $qb->orderBy('ass.name', $direction);
                         break;
                     case AssistanceOrderInputType::SORT_BY_TARGET:
-                        $qb->orderBy('dd.targetType', $direction);
+                        $qb->orderBy('ass.targetType', $direction);
                         break;
                     case AssistanceOrderInputType::SORT_BY_NUMBER_OF_BENEFICIARIES:
-                        $qb->orderBy('SIZE(dd.distributionBeneficiaries)', $direction);
+                        $qb->orderBy('SIZE(ass.distributionBeneficiaries)', $direction);
                         break;
                     default:
                         throw new \InvalidArgumentException('Invalid order by directive '.$name);
