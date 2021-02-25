@@ -44,7 +44,10 @@ class BeneficiaryController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByAssistance($assistance, $filter, $orderBy, $pagination);
+        $filter->setFilter([
+            'assistance' => $assistance->getId(),
+        ]);
+        $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByParams($filter, $orderBy, $pagination);
 
         return $this->json($beneficiaries);
     }
@@ -233,12 +236,18 @@ class BeneficiaryController extends AbstractController
      * @Rest\Get("/beneficiaries")
      *
      * @param BeneficiaryFilterInputType $filter
+     * @param BeneficiaryOrderInputType  $orderBy
+     * @param Pagination                 $pagination
      *
      * @return JsonResponse
      */
-    public function beneficiaryies(BeneficiaryFilterInputType $filter): JsonResponse
+    public function beneficiaries(
+        BeneficiaryFilterInputType $filter,
+        BeneficiaryOrderInputType $orderBy,
+        Pagination $pagination
+    ): JsonResponse
     {
-        $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByParams($filter);
+        $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByParams($filter, $orderBy, $pagination);
 
         return $this->json($beneficiaries);
     }

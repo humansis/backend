@@ -27,6 +27,11 @@ class BeneficiaryFilterInputType extends AbstractFilterInputType
      */
     protected $fulltext;
 
+    /**
+     * @Assert\Type("int")
+     */
+    protected $assistance;
+
     public function hasIds(): bool
     {
         return $this->has('id');
@@ -46,4 +51,15 @@ class BeneficiaryFilterInputType extends AbstractFilterInputType
     {
         return $this->fulltext;
     }
+
+    public function hasAssistance(): bool
+    {
+        return $this->has('assistance');
+    }
+
+    public function getAssistance()
+    {
+        return $this->assistance;
+    }
+
 }

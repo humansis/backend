@@ -2,6 +2,7 @@
 
 namespace BeneficiaryBundle\Repository;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Entity\Assistance;
 use CommonBundle\Entity\Location;
@@ -684,60 +685,43 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     }
 
     /**
-     * @param BeneficiaryFilterInputType $filterInputType
+     * @param BeneficiaryFilterInputType     $filter
+     * @param BeneficiaryOrderInputType|null $orderBy
+     * @param Pagination|null                $pagination
      *
-     * @return Paginator
+     * @return Paginator|Beneficiary[]
      */
-    public function findByParams(BeneficiaryFilterInputType $filterInputType): Paginator
-    {
-        $qbr = $this->createQueryBuilder('b')
-            ->andWhere('b.archived = 0');
-
-        if ($filterInputType->hasIds()) {
-            $qbr->andWhere('b.id IN (:ids)')
-                ->setParameter('ids', $filterInputType->getIds());
-        }
-
-        return new Paginator($qbr);
-    }
-
-    /**
-     * @param Assistance                      $assistance
-     * @param BeneficiaryFilterInputType|null $filter
-     * @param BeneficiaryOrderInputType|null  $orderBy
-     * @param Pagination|null                 $pagination
-     *
-     * @return Paginator|Assistance[]
-     */
-    public function findByAssistance(
-        Assistance $assistance,
-        ?BeneficiaryFilterInputType $filter,
-        ?BeneficiaryOrderInputType $orderBy = null,
+    public function findByParams(
+        BeneficiaryFilterInputType $filter,
+        BeneficiaryOrderInputType $orderBy = null,
         ?Pagination $pagination = null
     ): Paginator
     {
         $qbr = $this->createQueryBuilder('b')
-            ->join('b.assistanceBeneficiary', 'ab')
-            ->leftJoin('b.person', 'p')
-            ->andWhere('ab.assistance = :assistance')
-            ->setParameter('assistance', $assistance);
+            ->leftJoin('b.person', 'p');
 
         if ($pagination) {
             $qbr->setMaxResults($pagination->getLimit());
             $qbr->setFirstResult($pagination->getOffset());
         }
 
-        if ($filter) {
-            if ($filter->hasFulltext()) {
-                $qbr->andWhere('p.localGivenName LIKE :fulltext OR 
-                                p.localFamilyName LIKE :fulltext OR
-                                p.localParentsName LIKE :fulltext OR
-                                p.enGivenName LIKE :fulltext OR
-                                p.enFamilyName LIKE :fulltext OR
-                                p.enParentsName LIKE :fulltext OR
-                                p.enParentsName LIKE :fulltext')
-                    ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
-            }
+        if ($filter->hasAssistance()) {
+            $qbr->join('b.assistanceBeneficiary', 'ab')
+                ->andWhere('ab.assistance = :assistance')
+                ->setParameter('assistance', $filter->getAssistance());
+        }
+
+        if ($filter->hasFulltext()) {
+            $qbr->andWhere('b.id = :fulltextExact OR
+                        p.localGivenName LIKE :fulltextLike OR 
+                        p.localFamilyName LIKE :fulltextLike OR
+                        p.localParentsName LIKE :fulltextLike OR
+                        p.enGivenName LIKE :fulltextLike OR
+                        p.enFamilyName LIKE :fulltextLike OR
+                        p.enParentsName LIKE :fulltextLike OR
+                        p.enParentsName LIKE :fulltextLike')
+                ->setParameter('fulltextExact', $filter->getFulltext())
+                ->setParameter('fulltextLike', '%'.$filter->getFulltext().'%');
         }
 
         if ($orderBy) {
