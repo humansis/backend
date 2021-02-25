@@ -705,6 +705,11 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             $qbr->setFirstResult($pagination->getOffset());
         }
 
+        if ($filter->hasIds()) {
+            $qbr->andWhere('b.id IN (:ids)')
+                ->setParameter('ids', $filter->getIds());
+        }
+
         if ($filter->hasAssistance()) {
             $qbr->join('b.assistanceBeneficiary', 'ab')
                 ->andWhere('ab.assistance = :assistance')
