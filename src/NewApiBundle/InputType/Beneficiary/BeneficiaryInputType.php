@@ -72,13 +72,13 @@ class BeneficiaryInputType implements InputTypeInterface
      * @Assert\Type("array")
      * @Assert\Valid
      */
-    private $nationalIdCards;
+    private $nationalIdCards = [];
 
     /**
      * @Assert\Type("array")
      * @Assert\Valid
      */
-    private $phones;
+    private $phones = [];
 
     /**
      * @Assert\Choice(callback={"BeneficiaryBundle\Enum\ResidencyStatus", "all"})
@@ -114,7 +114,7 @@ class BeneficiaryInputType implements InputTypeInterface
      *     groups={"Strict"}
      * )
      */
-    private $vulnerabilityCriteriaIds;
+    private $vulnerabilityCriteriaIds = [];
 
     final public static function referralTypes()
     {

@@ -81,7 +81,7 @@ class HouseholdUpdateInputType implements InputTypeInterface
      * @Assert\Type("array")
      * @Assert\Valid
      */
-    private $beneficiaries; // todo validate only one head is allowed
+    private $beneficiaries = []; // todo validate only one head is allowed
 
     /**
      * @Assert\Type("integer")
@@ -121,7 +121,7 @@ class HouseholdUpdateInputType implements InputTypeInterface
      *     groups={"Strict"}
      * )
      */
-    private $supportReceivedTypes;
+    private $supportReceivedTypes = [];
 
     /**
      * @Assert\Type("string")
