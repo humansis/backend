@@ -3,7 +3,6 @@
 namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
 use DistributionBundle\Entity\Assistance;
@@ -12,11 +11,8 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\AddBeneficiaryToAssistanceInputType;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
-use NewApiBundle\InputType\CampAddressFilterInputType;
 use NewApiBundle\InputType\NationalIdFilterInputType;
 use NewApiBundle\InputType\PhoneFilterInputType;
-use NewApiBundle\InputType\ResidenceAddressFilterInputType;
-use NewApiBundle\InputType\TemporarySettlementAddressFilterInputType;
 use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -121,96 +117,6 @@ class BeneficiaryController extends AbstractController
     public function phone(Phone $phone): JsonResponse
     {
         return $this->json($phone);
-    }
-
-    /**
-     * @Rest\Get("/beneficiaries/addresses/camps")
-     *
-     * @param CampAddressFilterInputType $filter
-     *
-     * @return JsonResponse
-     */
-    public function camps(CampAddressFilterInputType $filter): JsonResponse
-    {
-        $campAddresses = $this->getDoctrine()->getRepository(HouseholdLocation::class)->findCampAddressesByParams($filter);
-
-        return $this->json($campAddresses);
-    }
-
-    /**
-     * @Rest\Get("/beneficiaries/addresses/camps/{id}")
-     *
-     * @param HouseholdLocation $campAddress
-     *
-     * @return JsonResponse
-     */
-    public function camp(HouseholdLocation $campAddress): JsonResponse
-    {
-        if (HouseholdLocation::LOCATION_TYPE_CAMP !== $campAddress->getType()) {
-            throw $this->createNotFoundException();
-        }
-
-        return $this->json($campAddress);
-    }
-
-    /**
-     * @Rest\Get("/beneficiaries/addresses/residencies")
-     *
-     * @param ResidenceAddressFilterInputType $filter
-     *
-     * @return JsonResponse
-     */
-    public function residences(ResidenceAddressFilterInputType $filter): JsonResponse
-    {
-        $residences = $this->getDoctrine()->getRepository(HouseholdLocation::class)->findResidenciesByParams($filter);
-
-        return $this->json($residences);
-    }
-
-    /**
-     * @Rest\Get("/beneficiaries/addresses/residencies/{id}")
-     *
-     * @param HouseholdLocation $residence
-     *
-     * @return JsonResponse
-     */
-    public function residence(HouseholdLocation $residence): JsonResponse
-    {
-        if (HouseholdLocation::LOCATION_TYPE_RESIDENCE !== $residence->getType()) {
-            throw $this->createNotFoundException();
-        }
-
-        return $this->json($residence);
-    }
-
-    /**
-     * @Rest\Get("/beneficiaries/addresses/temporary-settlements")
-     *
-     * @param TemporarySettlementAddressFilterInputType $filter
-     *
-     * @return JsonResponse
-     */
-    public function temporarySettlements(TemporarySettlementAddressFilterInputType $filter): JsonResponse
-    {
-        $temporarySettlements = $this->getDoctrine()->getRepository(HouseholdLocation::class)->findTemporarySettlementsByParams($filter);
-
-        return $this->json($temporarySettlements);
-    }
-
-    /**
-     * @Rest\Get("/beneficiaries/addresses/temporary-settlements/{id}")
-     *
-     * @param HouseholdLocation $temporarySettlement
-     *
-     * @return JsonResponse
-     */
-    public function temporarySettlement(HouseholdLocation $temporarySettlement): JsonResponse
-    {
-        if (HouseholdLocation::LOCATION_TYPE_SETTLEMENT !== $temporarySettlement->getType()) {
-            throw $this->createNotFoundException();
-        }
-
-        return $this->json($temporarySettlement);
     }
 
     /**
