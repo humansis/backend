@@ -102,7 +102,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         for ($j = 0; $j < rand(1, 3); ++$j) {
             $quantity = rand(1, 10000);
             $value = rand(1, 10000);
-            $purchase->addRecord($this->randomEntity(Product::class, $manager), $quantity, $value);
+            $purchase->addRecord($this->randomEntity(Product::class, $manager), $quantity, $value, 'CZK');
         }
 
         return $purchase;

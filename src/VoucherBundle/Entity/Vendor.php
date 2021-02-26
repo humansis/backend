@@ -35,7 +35,7 @@ class Vendor implements ExportableInterface
     private $name;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(name="shop", type="string", length=255, nullable=true)
      * @SymfonyGroups({"FullVendor"})
@@ -148,7 +148,7 @@ class Vendor implements ExportableInterface
     /**
      * Get shop.
      *
-     * @return string
+     * @return string|null
      */
     public function getShop()
     {

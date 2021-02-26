@@ -15,7 +15,8 @@ class SmartcardPurchase
      *      @Assert\Collection(fields={
      *          "id" = @Assert\Type("int"),
      *          "quantity" = @Assert\Type("numeric"),
-     *          "value" = @Assert\Type("numeric")
+     *          "value" = @Assert\Type("numeric"),
+     *          "currency" = @Assert\Type("string"),
      *      })
      * })
      */

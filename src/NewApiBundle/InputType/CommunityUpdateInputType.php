@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
-use NewApiBundle\InputType\Household\NationalIdCardInputType;
-use NewApiBundle\InputType\Household\PhoneInputType;
+use NewApiBundle\InputType\Beneficiary\AddressInputType;
+use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
+use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 

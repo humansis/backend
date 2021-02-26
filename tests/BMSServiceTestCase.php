@@ -175,6 +175,40 @@ class BMSServiceTestCase extends KernelTestCase
                         "id_type" => "ID_TYPE_TEST"
                     ]
                 ]
+            ],
+            [
+                "en_given_name" => "GIVENNAME_TEST",
+                "en_family_name" => "FAMILYNAME_TEST",
+                "local_given_name" => "GIVENNAME_TEST",
+                "local_family_name" => "FAMILYNAME_TEST",
+                "en_parents_name" => "PARENTSNAME_TEST_EN",
+                "local_parents_name" => "PARENTSNAME_TEST_LOCAL",
+                "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
+                "status" => 0,
+                "residency_status" => "returnee",
+                "date_of_birth" => "10-06-1976",
+                "profile" => [
+                    "photo" => "PHOTO_TEST"
+                ],
+                "vulnerability_criteria" => [
+                    [
+                        "id" => 2
+                    ]
+                ],
+                "phones" => [
+                    [
+                        "prefix" => "+855",
+                        "number" => "1111_TEST",
+                        "type" => "TYPE_TEST",
+                        "proxy" => true
+                    ]
+                ],
+                "national_ids" => [
+                    [
+                        "id_number" => "1111_TEST",
+                        "id_type" => "ID_TYPE_TEST"
+                    ]
+                ]
             ]
         ],
         "assets" => [1, 2],

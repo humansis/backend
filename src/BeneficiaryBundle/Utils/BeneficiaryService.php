@@ -13,10 +13,7 @@ use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use CommonBundle\Controller\ExportController;
 use CommonBundle\Utils\ExportService;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
-use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use PhpOption\Tests\PhpOptionRepo;
@@ -89,8 +86,8 @@ class BeneficiaryService
      * @param array $beneficiaryArray
      * @param $flush
      * @return Beneficiary|null|object
-     * @throws Exception
-     * @throws ValidationException
+     * @throws \Exception
+     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
     public function updateOrCreate(Household $household, array $beneficiaryArray, $flush)
     {
@@ -134,10 +131,10 @@ class BeneficiaryService
         if (array_key_exists("id", $beneficiaryArray) && $beneficiaryArray['id'] !== null) {
             $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
             if (!$beneficiary instanceof Beneficiary) {
-                throw new Exception("Beneficiary was not found.");
+                throw new \Exception("Beneficiary was not found.");
             }
             if ($beneficiary->getHousehold() !== $household) {
-                throw new Exception("You are trying to update a beneficiary in the wrong household.");
+                throw new \Exception("You are trying to update a beneficiary in the wrong household.");
             }
             
             // Clear vulnerability criteria, phones and national id
@@ -160,14 +157,14 @@ class BeneficiaryService
         }
 
         $beneficiary->setGender($beneficiaryArray["gender"])
-            ->setDateOfBirth(DateTime::createFromFormat('d-m-Y', $beneficiaryArray["date_of_birth"]))
+            ->setDateOfBirth(\DateTime::createFromFormat('d-m-Y', $beneficiaryArray["date_of_birth"]))
             ->setEnFamilyName($beneficiaryArray["en_family_name"])
             ->setEnGivenName($beneficiaryArray["en_given_name"])
             ->setLocalFamilyName($beneficiaryArray["local_family_name"])
             ->setLocalGivenName($beneficiaryArray["local_given_name"])
             ->setStatus($beneficiaryArray["status"])
             ->setResidencyStatus($beneficiaryArray["residency_status"])
-            ->setUpdatedOn(new DateTime());
+            ->setUpdatedOn(new \DateTime());
 
         $beneficiary->getPerson()
             ->setLocalParentsName($beneficiaryArray['local_parents_name'] ?? null)
@@ -183,7 +180,7 @@ class BeneficiaryService
                 }
                 $errorsMessage .= $error->getMessage();
             }
-            throw new Exception($errorsMessage);
+            throw new \Exception($errorsMessage);
         }
 
 
@@ -218,7 +215,7 @@ class BeneficiaryService
     /**
      * @param $vulnerabilityCriterionId
      * @return VulnerabilityCriterion
-     * @throws Exception
+     * @throws \Exception
      */
     public function getVulnerabilityCriterion($vulnerabilityCriterionId)
     {
@@ -226,7 +223,7 @@ class BeneficiaryService
         $vulnerabilityCriterion = $this->em->getRepository(VulnerabilityCriterion::class)->find($vulnerabilityCriterionId);
 
         if (!$vulnerabilityCriterion instanceof VulnerabilityCriterion) {
-            throw new Exception("This vulnerability #$vulnerabilityCriterionId doesn't exist.");
+            throw new \Exception("This vulnerability doesn't exist.");
         }
         return $vulnerabilityCriterion;
     }
@@ -236,7 +233,7 @@ class BeneficiaryService
      * @param array $phoneArray
      * @param $flush
      * @return Phone|null|object
-     * @throws ValidationException
+     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
     public function getOrSavePhone(Beneficiary $beneficiary, array $phoneArray, $flush)
     {
@@ -278,7 +275,7 @@ class BeneficiaryService
      * @param array $nationalIdArray
      * @param $flush
      * @return NationalId|null|object
-     * @throws ValidationException
+     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
     public function getOrSaveNationalId(Beneficiary $beneficiary, array $nationalIdArray, $flush)
     {
@@ -306,7 +303,7 @@ class BeneficiaryService
      * @param array $profileArray
      * @param $flush
      * @return Profile|null|object
-     * @throws ValidationException
+     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
     public function getOrSaveProfile(Beneficiary $beneficiary, array $profileArray, $flush)
     {
@@ -402,15 +399,15 @@ class BeneficiaryService
      * @param Beneficiary $beneficiary
      * @param array $beneficiaryData
      * @return Beneficiary
-     * @throws Exception
+     * @throws \Exception
      */
     public function update(Beneficiary $beneficiary, array $beneficiaryData)
     {
         try {
             $this->updateReferral($beneficiary, $beneficiaryData);
             $this->em->persist($beneficiary);
-        } catch (Exception $e) {
-            throw new Exception('Error updating Beneficiary');
+        } catch (\Exception $e) {
+            throw new \Exception('Error updating Beneficiary');
         }
         return $beneficiary;
     }

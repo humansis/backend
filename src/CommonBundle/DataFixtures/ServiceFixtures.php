@@ -7,11 +7,12 @@ use CommonBundle\Entity\OrganizationServices;
 use CommonBundle\Entity\Service;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use FOS\UserBundle\Doctrine\UserManager;
 use Symfony\Component\Security\Core\Encoder\EncoderFactory;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
-class ServiceFixtures extends Fixture
+class ServiceFixtures extends Fixture implements DependentFixtureInterface
 {
 
     /** @var UserManager $manager */
@@ -24,6 +25,13 @@ class ServiceFixtures extends Fixture
     {
         $this->manager = $manager;
         $this->encoderFactory = $encoderFactory;
+    }
+
+    public function getDependencies(): array
+    {
+        return [
+            OrganizationFixtures::class,
+        ];
     }
 
     private $data = [

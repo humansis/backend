@@ -9,7 +9,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\CommodityFilterInputType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class CommodityController extends AbstractController
+class AssistanceCommodityController extends AbstractController
 {
     /**
      * @Rest\Get("/assistances/commodities")

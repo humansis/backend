@@ -130,10 +130,11 @@ class SmartcardPurchase
      * @param Product    $product
      * @param float|null $quantity
      * @param float|null $value
+     * @param string|null $currency
      */
-    public function addRecord(Product $product, ?float $quantity, ?float $value): void
+    public function addRecord(Product $product, ?float $quantity, ?float $value, ?string $currency): void
     {
-        $this->records->add(SmartcardPurchaseRecord::create($this, $product, $quantity, $value));
+        $this->records->add(SmartcardPurchaseRecord::create($this, $product, $quantity, $value, $currency));
     }
 
     /**

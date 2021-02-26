@@ -78,3 +78,33 @@ services:
         arguments: [ '%kernel.debug%' ]
         tags:
             - { name: kernel.event_listener, event: kernel.exception, priority: -100 }
+
+    generator.household:
+        class: NewApiBundle\Component\SelectionCriteria\Generator\HouseholdFieldGenerator
+        arguments:
+            - "@=service('doctrine.orm.entity_manager').getRepository('BeneficiaryBundle:CountrySpecific')"
+            - "@request_stack"
+
+    generator.household_head:
+        class: NewApiBundle\Component\SelectionCriteria\Generator\HouseholdHeadFieldGenerator
+
+    generator.beneficiary:
+        class: NewApiBundle\Component\SelectionCriteria\Generator\BeneficiaryFieldGenerator
+        arguments: [ "@=service('doctrine.orm.entity_manager').getRepository('BeneficiaryBundle:VulnerabilityCriterion')" ]
+
+    service.selection_criterion:
+        public: true
+        class: NewApiBundle\Component\SelectionCriteria\SelectionCriterionService
+        arguments:
+            - [ '@generator.beneficiary', '@generator.household', '@generator.household_head' ]
+
+    transformer.selection_criterion_field:
+        class: NewApiBundle\Component\SelectionCriteria\FieldDbTransformer
+        arguments:
+            - "@=service('doctrine.orm.entity_manager').getRepository('BeneficiaryBundle:CountrySpecific')"
+            - "@=service('doctrine.orm.entity_manager').getRepository('BeneficiaryBundle:VulnerabilityCriterion')"
+            - "@=service('doctrine.orm.entity_manager').getRepository('CommonBundle:Location')"
+
+    NewApiBundle\Validator\Constraints\SelectionCriterionFieldValidator:
+        arguments: [ '@service.selection_criterion' ]
+

@@ -11,8 +11,6 @@ use BeneficiaryBundle\Model\Vulnerability\CategoryEnum;
 use CommonBundle\Entity\Location;
 use CommonBundle\Utils\ExportService;
 use CommonBundle\Utils\LocationService;
-use DateTime;
-use DateTimeInterface;
 use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
@@ -23,9 +21,10 @@ use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Utils\Retriever\AbstractRetriever;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use ReflectionClass;
+use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
+use NewApiBundle\InputType\AssistanceCreateInputType;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
@@ -73,6 +72,9 @@ class AssistanceService
     /** @var ExportService */
     private $exportCSVService;
 
+    /** @var FieldDbTransformer */
+    private $fieldDbTransformer;
+
     /**
      * AssistanceService constructor.
      *
@@ -83,11 +85,12 @@ class AssistanceService
      * @param CommodityService          $commodityService
      * @param ConfigurationLoader       $configurationLoader
      * @param CriteriaAssistanceService $criteriaAssistanceService
+     * @param FieldDbTransformer        $fieldDbTransformer
      * @param string                    $classRetrieverString
      * @param ContainerInterface        $container
      * @param ExportService             $exportCSVService
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -97,6 +100,7 @@ class AssistanceService
         CommodityService $commodityService,
         ConfigurationLoader $configurationLoader,
         CriteriaAssistanceService $criteriaAssistanceService,
+        FieldDbTransformer $fieldDbTransformer,
         string $classRetrieverString,
         ContainerInterface $container,
         ExportService $exportCSVService
@@ -108,6 +112,7 @@ class AssistanceService
         $this->commodityService = $commodityService;
         $this->configurationLoader = $configurationLoader;
         $this->criteriaAssistanceService = $criteriaAssistanceService;
+        $this->fieldDbTransformer = $fieldDbTransformer;
         $this->container = $container;
         try {
             $class = new ReflectionClass($classRetrieverString);
@@ -115,13 +120,14 @@ class AssistanceService
         } catch (Exception $exception) {
             throw new Exception("Your class Retriever is undefined or malformed.", 0, $exception);
         }
-        $this->exportCSVService = $exportCSVService;}
+        $this->exportCSVService = $exportCSVService;
+    }
 
 
     /**
      * @param Assistance $assistance
      * @return Assistance
-     * @throws Exception
+     * @throws \Exception
      */
     public function validateDistribution(Assistance $assistance)
     {
@@ -157,15 +163,24 @@ class AssistanceService
         return $assistance;
     }
 
+    public function create(AssistanceCreateInputType $inputType)
+    {
+        $distributionArray = $this->mapping($inputType);
+
+        $result = $this->createFromArray($inputType->getIso3(), $distributionArray);
+
+        return $result['distribution'];
+    }
+
     /**
      * Create a distribution
      *
      * @param $countryISO3
      * @param array $distributionArray
      * @return array
-     * @throws ValidationException
+     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
-    public function create($countryISO3, array $distributionArray)
+    public function createFromArray($countryISO3, array $distributionArray)
     {
         $location = $distributionArray['location'];
         unset($distributionArray['location']);
@@ -191,14 +206,14 @@ class AssistanceService
         $distribution = $this->serializer->deserialize(json_encode($distributionArray), Assistance::class, 'json', [
             PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true
         ]);
-        $distribution->setUpdatedOn(new DateTime());
+        $distribution->setUpdatedOn(new \DateTime());
         $errors = $this->validator->validate($distribution);
         if (count($errors) > 0) {
             $errorsArray = [];
             foreach ($errors as $error) {
                 $errorsArray[] = $error->getMessage();
             }
-            throw new Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
+            throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
         $distribution->setTargetType($distributionArray['target_type']);
@@ -294,7 +309,7 @@ class AssistanceService
      * @param Assistance $assistance
      * @param array      $listReceivers
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function saveReceivers(Assistance $assistance, array $listReceivers)
     {
@@ -369,7 +384,7 @@ class AssistanceService
     {
         if (!empty($assistance)) {
                 $assistance->setCompleted()
-                                ->setUpdatedOn(new DateTime);
+                                ->setUpdatedOn(new \DateTime);         
         }
 
         $this->em->persist($assistance);
@@ -384,12 +399,12 @@ class AssistanceService
      * @param Assistance $assistance
      * @param array $distributionArray
      * @return Assistance
-     * @throws Exception
+     * @throws \Exception
      */
     public function edit(Assistance $assistance, array $distributionArray)
     {
-        $assistance->setDateDistribution(DateTime::createFromFormat('d-m-Y', $distributionArray['date_distribution']))
-            ->setUpdatedOn(new DateTime());
+        $assistance->setDateDistribution(\DateTime::createFromFormat('d-m-Y', $distributionArray['date_distribution']))
+            ->setUpdatedOn(new \DateTime());
         $distributionNameWithoutDate = explode('-', $assistance->getName())[0];
         $newDistributionName = $distributionNameWithoutDate . '-' . $distributionArray['date_distribution'];
         $assistance->setName($newDistributionName);
@@ -648,8 +663,8 @@ class AssistanceService
             $generalRelief = $this->em->getRepository(GeneralReliefItem::class)->find($id);
             $generalRelief->setNotes($notes);
             $this->em->flush();
-        } catch (Exception $e) {
-            throw new Exception("Error updating general relief item");
+        } catch (\Exception $e) {
+            throw new \Exception("Error updating general relief item");
         }
     }
 
@@ -669,7 +684,7 @@ class AssistanceService
             if (!($gri instanceof GeneralReliefItem)) {
                 array_push($errorArray, $griId);
             } else {
-                $gri->setDistributedAt(new DateTime());
+                $gri->setDistributedAt(new \DateTime());
                 $this->em->persist($gri);
                 array_push($successArray, $gri);
             }
@@ -761,8 +776,8 @@ class AssistanceService
 
             $response = $this->container->get('pdf_service')->printPdf($html, 'landscape', 'bookletCodes');
             return $response;
-        } catch (Exception $e) {
-            throw new Exception($e);
+        } catch (\Exception $e) {
+            throw new \Exception($e);
         }
     }
 
@@ -869,5 +884,52 @@ class AssistanceService
         } else {
             return $adm.'-'.date('d-m-Y');
         }
+    }
+
+    public function mapping(AssistanceCreateInputType $inputType): array
+    {
+        /** @var \CommonBundle\Entity\Location $location */
+        $location = $this->em->getRepository(\CommonBundle\Entity\Location::class)->find($inputType->getLocationId());
+
+        $distributionArray = [
+            'countryIso3' => $inputType->getIso3(),
+            'assistance_type' => $inputType->getType(),
+            'target_type' => $inputType->getTarget(),
+            'date_distribution' => $inputType->getDateDistribution(),
+            'project' => ['id' => $inputType->getProjectId()],
+            'location' => [
+                'adm1' => $location->getAdm1() ? $location->getAdm1()->getId() : null,
+                'adm2' => $location->getAdm2() ? $location->getAdm2()->getId() : null,
+                'adm3' => $location->getAdm3() ? $location->getAdm3()->getId() : null,
+                'adm4' => $location->getAdm4() ? $location->getAdm4()->getId() : null,
+                'country_iso3' => $inputType->getIso3(),
+            ],
+            'sector' => $inputType->getSector(),
+            'subsector' => $inputType->getSubsector(),
+            'threshold' => $inputType->getThreshold(),
+            'institutions' => $inputType->getInstitutions(),
+            'communities' => $inputType->getCommunities(),
+            'households_targeted' => $inputType->getHouseholdsTargeted(),
+            'individuals_targeted' => $inputType->getIndividualsTargeted(),
+        ];
+
+        foreach ($inputType->getCommodities() as $commodity) {
+            $modalityType = $this->em->getRepository(ModalityType::class)->findOneBy(['name' => $commodity->getModalityType()]);
+            if (!$modalityType) {
+                throw new EntityNotFoundException(sprintf('ModalityType %s does not exists', $commodity->getModalityType()));
+            }
+            $distributionArray['commodities'][] = [
+                'value' => $commodity->getValue(),
+                'unit' => $commodity->getUnit(),
+                'description' => $commodity->getDescription(),
+                'modality_type' => ['id' => $modalityType->getId()],
+            ];
+        }
+
+        foreach ($inputType->getSelectionCriteria() as $criterion) {
+            $distributionArray['selection_criteria'][$criterion->getGroup()][] = $this->fieldDbTransformer->toArray($criterion);
+        }
+
+        return $distributionArray;
     }
 }

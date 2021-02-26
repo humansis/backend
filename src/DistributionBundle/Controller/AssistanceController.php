@@ -270,7 +270,7 @@ class AssistanceController extends Controller
 
         try {
             $listReceivers = $this->assistanceService
-                ->create($distributionArray['__country'], $distributionArray);
+                ->createFromArray($distributionArray['__country'], $distributionArray);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -434,7 +434,7 @@ class AssistanceController extends Controller
      */
     public function getDistributionBeneficiariesAction(Assistance $assistance)
     {
-        $distributionBeneficiaries = $this->assistanceBeneficiaryService->getDistributionBeneficiaries($assistance);
+        $distributionBeneficiaries = $this->assistanceBeneficiaryService->getAssistanceBeneficiaries($assistance);
 
         $json = $this->serializer
             ->serialize(
@@ -475,7 +475,7 @@ class AssistanceController extends Controller
             throw new NotFoundHttpException('There is no Community assistance with #'.$assistance->getId());
         }
 
-        $assistanceCommunities = $this->assistanceBeneficiaryService->getDistributionBeneficiaries($assistance);
+        $assistanceCommunities = $this->assistanceBeneficiaryService->getAssistanceBeneficiaries($assistance);
 
         return $this->json($this->assistanceCommunityMapper->toFullArrays($assistanceCommunities));
     }
@@ -506,7 +506,7 @@ class AssistanceController extends Controller
             throw new NotFoundHttpException('There is no Institution assistance with #'.$assistance->getId());
         }
 
-        $assistanceInstitutions = $this->assistanceBeneficiaryService->getDistributionBeneficiaries($assistance);
+        $assistanceInstitutions = $this->assistanceBeneficiaryService->getAssistanceBeneficiaries($assistance);
 
         return $this->json($this->assistanceInstitutionMapper->toFullArrays($assistanceInstitutions));
     }
@@ -534,7 +534,19 @@ class AssistanceController extends Controller
      */
     public function offlineGetDistributionBeneficiariesAction(Assistance $assistance)
     {
-        return $this->getDistributionBeneficiariesAction($assistance);
+        $distributionBeneficiaries = $this->assistanceBeneficiaryService->getActiveAssistanceBeneficiaries($assistance);
+
+        $json = $this->serializer
+            ->serialize(
+                $distributionBeneficiaries,
+                'json',
+                [
+                    'groups' => ["ValidatedAssistance"],
+                    'datetime_format' => 'd-m-Y H:i',
+                ]
+            );
+
+        return new Response($json);
     }
 
     /**

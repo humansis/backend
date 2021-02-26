@@ -5,7 +5,7 @@ use Tests\BMSServiceTestCase;
 use UserBundle\Utils\UserService;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\Vendor;
-use VoucherBundle\InputType\SmartcardPurchase;
+use VoucherBundle\InputType\SmartcardPurchaseDeprecated;
 
 class VendorControllerTest extends BMSServiceTestCase
 {
@@ -49,7 +49,7 @@ class VendorControllerTest extends BMSServiceTestCase
     {
         // First step
         // Get salt for a new vendor => save the username with the salt in database (user disabled for now)
-        $return = $this->getContainer()->get(UserService::class)->getSalt($this->username);
+        $return = $this->getContainer()->get(UserService::class)->getSaltOld($this->username);
         // Check if the first step has been done correctly
         $this->assertArrayHasKey('user_id', $return);
         $this->assertArrayHasKey('salt', $return);

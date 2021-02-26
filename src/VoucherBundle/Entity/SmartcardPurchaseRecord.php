@@ -32,6 +32,7 @@ class SmartcardPurchaseRecord
      * @ORM\JoinColumn(nullable=false)
      */
     private $smartcardPurchase;
+
     /**
      * @var Product
      *
@@ -43,12 +44,20 @@ class SmartcardPurchaseRecord
     private $product;
 
     /**
-     * @var mixed
+     * @var float
      *
-     * @ORM\Column(name="value", type="decimal", precision=10, scale=2, nullable=true)
+     * @ORM\Column(name="value", type="decimal", precision=10, scale=2)
      * @SymfonyGroups({"FullSmartcard"})
      */
     private $value;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="currency", type="string", nullable=true)
+     * @SymfonyGroups({"FullSmartcard"})
+     */
+    private $currency;
 
     /**
      * @var mixed
@@ -58,13 +67,14 @@ class SmartcardPurchaseRecord
      */
     private $quantity;
 
-    public static function create(SmartcardPurchase $purchase, Product $product, $quantity, $value)
+    public static function create(SmartcardPurchase $purchase, Product $product, $quantity, $value, ?string $currency)
     {
         $entity = new self();
         $entity->smartcardPurchase = $purchase;
         $entity->product = $product;
         $entity->quantity = $quantity;
         $entity->value = $value;
+        $entity->currency = $currency;
 
         return $entity;
     }
@@ -91,6 +101,14 @@ class SmartcardPurchaseRecord
     public function getValue()
     {
         return $this->value;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCurrency(): ?string
+    {
+        return $this->currency;
     }
 
     /**

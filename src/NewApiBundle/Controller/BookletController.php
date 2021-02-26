@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\BookletBatchCreateInputType;
 use NewApiBundle\InputType\BookletFilterInputType;
@@ -87,13 +86,7 @@ class BookletController extends AbstractController
      */
     public function create(BookletBatchCreateInputType $inputType): JsonResponse
     {
-        $this->eventDispatcher->addListener(KernelEvents::TERMINATE, function ($event) use ($inputType) {
-            try {
-                $this->bookletService->createBooklets($inputType);
-            } catch (Exception $e) {
-                $this->logger->error($e);
-            }
-        });
+        $this->bookletService->createBooklets($inputType);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
@@ -109,7 +102,7 @@ class BookletController extends AbstractController
     {
         try {
             $deleted = $this->bookletService->deleteBookletFromDatabase($object);
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             $deleted = false;
         }
 

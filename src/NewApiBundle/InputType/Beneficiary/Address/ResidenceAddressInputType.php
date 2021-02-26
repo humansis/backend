@@ -1,32 +1,40 @@
 <?php
 
-namespace NewApiBundle\InputType;
+declare(strict_types=1);
+
+namespace NewApiBundle\InputType\Beneficiary\Address;
 
 use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class AddressInputType implements InputTypeInterface
+class ResidenceAddressInputType implements InputTypeInterface
 {
     /**
      * @Assert\Type("string")
      * @Assert\Length(max="45")
+     * @Assert\NotBlank
      */
     private $number;
 
     /**
      * @Assert\Type("string")
      * @Assert\Length(max="255")
+     * @Assert\NotBlank
      */
     private $street;
 
     /**
      * @Assert\Type("string")
      * @Assert\Length(max="45")
+     * @Assert\NotBlank
      */
     private $postcode;
 
     /**
      * @Assert\Type("integer")
+     * @Assert\GreaterThanOrEqual("0")
+     * @Assert\NotBlank
+     * @Assert\NotNull
      */
     private $locationId;
 
@@ -41,7 +49,7 @@ class AddressInputType implements InputTypeInterface
     /**
      * @param string|null $number
      */
-    public function setNumber($number)
+    public function setNumber($number): void
     {
         $this->number = $number;
     }
@@ -57,7 +65,7 @@ class AddressInputType implements InputTypeInterface
     /**
      * @param string|null $street
      */
-    public function setStreet($street)
+    public function setStreet($street): void
     {
         $this->street = $street;
     }
@@ -73,13 +81,13 @@ class AddressInputType implements InputTypeInterface
     /**
      * @param string|null $postcode
      */
-    public function setPostcode($postcode)
+    public function setPostcode($postcode): void
     {
         $this->postcode = $postcode;
     }
 
     /**
-     * @return int|null
+     * @return int
      */
     public function getLocationId()
     {
@@ -87,9 +95,9 @@ class AddressInputType implements InputTypeInterface
     }
 
     /**
-     * @param int|null $locationId
+     * @param int $locationId
      */
-    public function setLocationId($locationId)
+    public function setLocationId($locationId): void
     {
         $this->locationId = $locationId;
     }

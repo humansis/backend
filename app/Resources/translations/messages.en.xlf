@@ -2043,7 +2043,7 @@
       </trans-unit>
       <trans-unit id="474" resname="log_field_status">
         <source>log_field_status</source>
-        <target>STATUS (Resident, IDP or Refugee)</target>
+        <target>STATUS (Resident, IDP, Refugee or Returnee)</target>
       </trans-unit>
       <trans-unit id="475" resname="log_field_user">
         <source>log_field_user</source>

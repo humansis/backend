@@ -118,7 +118,7 @@ class DonorControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('GET', '/api/basic/donors?sort[]=fullname.asc');
+        $this->request('GET', '/api/basic/donors?sort[]=fullname.asc&filter[fulltext]=test');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

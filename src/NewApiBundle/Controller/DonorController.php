@@ -6,6 +6,7 @@ namespace NewApiBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\DonorCreateInputType;
+use NewApiBundle\InputType\DonorFilterInputType;
 use NewApiBundle\InputType\DonorOrderInputType;
 use NewApiBundle\InputType\DonorUpdateInputType;
 use NewApiBundle\Request\Pagination;
@@ -44,15 +45,16 @@ class DonorController extends AbstractController
     /**
      * @Rest\Get("/donors")
      *
-     * @param Pagination          $pagination
-     * @param DonorOrderInputType $orderBy
+     * @param Pagination           $pagination
+     * @param DonorOrderInputType  $orderBy
+     * @param DonorFilterInputType $filter
      *
      * @return JsonResponse
      */
-    public function list(Pagination $pagination, DonorOrderInputType $orderBy): JsonResponse
+    public function list(Pagination $pagination, DonorOrderInputType $orderBy, DonorFilterInputType $filter): JsonResponse
     {
         $countrySpecifics = $this->getDoctrine()->getRepository(Donor::class)
-            ->findByParams($orderBy, $pagination);
+            ->findByParams($orderBy, $pagination, $filter);
 
         return $this->json($countrySpecifics);
     }

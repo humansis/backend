@@ -8,15 +8,21 @@ use Tests\BMSServiceTestCase;
 
 class ProjectControllerTest extends BMSServiceTestCase
 {
+    /** @var string  */
     private $projectName;
+
+    public function __construct($name = null, array $data = [], $dataName = '')
+    {
+        parent::__construct($name, $data, $dataName);
+
+        $this->projectName = 'Test project No. '.time();
+    }
 
     /**
      * @throws Exception
      */
     public function setUp()
     {
-        $this->projectName = 'Test project No. '.time();
-
         // Configuration of BMSServiceTest
         $this->setDefaultSerializerName('serializer');
         parent::setUpFunctionnal();
@@ -188,7 +194,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('GET', '/api/basic/projects?filter[id][]='.$id);
+        $this->request('GET', '/api/basic/projects?filter[id][]='.$id.'&filter[fulltext]='.$this->projectName);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

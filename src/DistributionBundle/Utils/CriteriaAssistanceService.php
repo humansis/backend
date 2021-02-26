@@ -123,6 +123,20 @@ class CriteriaAssistanceService
         }
     }
 
+    public function count(\NewApiBundle\InputType\AssistanceCreateInputType $inputType)
+    {
+        $project = $this->em->getRepository(Project::class)->find($inputType->getProjectId());
+        if (!$project) {
+            throw new \Doctrine\ORM\EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
+        }
+
+        $filters = $this->mapping($inputType);
+        $filters['criteria'] = $filters['selection_criteria'];
+
+        $this->load($filters, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), true);
+
+    }
+
     /**
      * @param array   $filters
      * @param Project $project

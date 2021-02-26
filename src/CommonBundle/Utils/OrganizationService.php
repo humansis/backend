@@ -5,6 +5,7 @@ namespace CommonBundle\Utils;
 use CommonBundle\Entity\Organization;
 use CommonBundle\Entity\OrganizationServices;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\InputType\OrganizationServicesInputType;
 use Psr\Container\ContainerInterface;
 use UserBundle\Entity\User;
 
@@ -103,4 +104,13 @@ class OrganizationService
             $this->em->getRepository(User::class)->toggleTwoFA($enabled);
         }
     }
+
+    public function updateOrganizationServices(OrganizationServices $organizationServices, OrganizationServicesInputType $inputType): OrganizationServices
+    {
+        $organizationServices->setEnabled($inputType->getEnabled());
+        $this->em->flush();
+
+        return $organizationServices;
+    }
+
 }

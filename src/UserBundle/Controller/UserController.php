@@ -223,7 +223,7 @@ class UserController extends Controller
     public function getSaltAction($username)
     {
         try {
-            $salt = $this->userService->getSalt($username);
+            $salt = $this->userService->getSaltOld($username);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
@@ -346,7 +346,7 @@ class UserController extends Controller
     public function initializeAction($username)
     {
         try {
-            $salt = $this->userService->initialize($username);
+            $salt = $this->userService->getSaltOld($username);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
@@ -388,7 +388,7 @@ class UserController extends Controller
         $userData = $request->request->all();
 
         try {
-            $return = $this->userService->create($userData);
+            $return = $this->userService->createFromArray($userData);
 
             $userJson = $this->serializer->serialize(
                 $return,
@@ -567,7 +567,7 @@ class UserController extends Controller
     public function updateAction(Request $request, User $user)
     {
         $userData = $request->request->all();
-        $userNew = $this->userService->update($user, $userData);
+        $userNew = $this->userService->updateFromArray($user, $userData);
         $json = $this->serializer->serialize($userNew, 'json', ['groups' => ['FullUser']]);
         return new Response($json);
     }
@@ -735,9 +735,7 @@ class UserController extends Controller
             return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
         
-        /** @var Serializer $serializer */
-        $serializer = $this->serializer;
-        $userJson = $serializer->serialize($user, 'json', ['groups' => ['FullUser']]);
+        $userJson = $this->serializer->serialize($user, 'json', ['groups' => ['FullUser']]);
         return new Response($userJson);
     }
 
@@ -765,9 +763,7 @@ class UserController extends Controller
             return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
         
-        /** @var Serializer $serializer */
-        $serializer = $this->serializer;
-        $userJson = $serializer->serialize($user, 'json', ['groups' => ['FullUser']]);
+        $userJson = $this->serializer->serialize($user, 'json', ['groups' => ['FullUser']]);
         return new Response($userJson);
     }
 

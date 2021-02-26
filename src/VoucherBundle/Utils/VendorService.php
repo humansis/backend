@@ -11,7 +11,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Dompdf\Dompdf;
 use Dompdf\Options;
-use Exception;
 use NewApiBundle\InputType\VendorCreateInputType;
 use NewApiBundle\InputType\VendorUpdateInputType;
 use RuntimeException;
@@ -82,7 +81,7 @@ class VendorService
      *
      * @param array $vendorData
      * @return mixed
-     * @throws Exception
+     * @throws \Exception
      */
     public function createFromArray($countryISO3, array $vendorData)
     {
@@ -91,7 +90,7 @@ class VendorService
         $vendorSaved = $userSaved instanceof User ? $this->em->getRepository(Vendor::class)->getVendorByUser($userSaved) : null;
 
         if (!($vendorSaved instanceof Vendor)) {
-            $user = $this->userService->create(
+            $user = $this->userService->createFromArray(
                 [
                     'username' => $username,
                     'email' => $username,
@@ -124,7 +123,7 @@ class VendorService
             $createdVendor = $this->em->getRepository(Vendor::class)->findOneByUser($user);
             return $createdVendor;
         } else {
-            throw new Exception('A vendor with this username already exists.');
+            throw new \Exception('A vendor with this username already exists.');
         }
     }
 
@@ -135,26 +134,11 @@ class VendorService
      */
     public function create(VendorCreateInputType $inputType): Vendor
     {
-        $userSaved = $this->em->getRepository(User::class)->findOneByUsername($inputType->getUsername());
-        $vendorSaved = $userSaved instanceof User ? $this->em->getRepository(Vendor::class)->getVendorByUser($userSaved) : null;
+        $user = $this->em->getRepository(User::class)->find($inputType->getUserId());
 
-        if ($vendorSaved instanceof Vendor) {
-            throw new RuntimeException('Vendor with username '.$inputType->getUsername().' already exists');
+        if (!$user instanceof User) {
+            throw new EntityNotFoundException('User with ID #'.$inputType->getUserId().' does not exists.');
         }
-
-        $user = $this->userService->create(
-            [
-                'username' => $inputType->getUsername(),
-                'email' => $inputType->getUsername(),
-                'roles' => ['ROLE_VENDOR'],
-                'password' => $inputType->getPassword(),
-                'salt' => $inputType->getSalt(),
-                'change_password' => false,
-                'phone_prefix' => '+34',
-                'phone_number' => '675676767',
-                'two_factor_authentication' => false,
-            ]
-        );
 
         $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
 
@@ -242,24 +226,25 @@ class VendorService
      */
     public function update(Vendor $vendor, VendorUpdateInputType $inputType): Vendor
     {
+        $user = $this->em->getRepository(User::class)->find($inputType->getUserId());
+
+        if (!$user instanceof User) {
+            throw new EntityNotFoundException('User with ID #'.$inputType->getUserId().' does not exists.');
+        }
+
+        $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
+
+        if (!$location instanceof Location) {
+            throw new EntityNotFoundException('Location with ID #'.$inputType->getLocationId().' does not exists.');
+        }
+
         $vendor->setShop($inputType->getShop())
             ->setName($inputType->getName())
             ->setAddressStreet($inputType->getAddressStreet())
             ->setAddressNumber($inputType->getAddressNumber())
-            ->setAddressPostcode($inputType->getAddressPostcode());
-
-        $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
-
-        if (!($location instanceof Location)) {
-            throw new EntityNotFoundException('Location with ID #'.$inputType->getLocationId().' does not exists.');
-        }
-
-        $user = $vendor->getUser();
-        $user->setSalt($inputType->getSalt());
-
-        if (null !== $inputType->getPassword()) {
-            $user->setPassword($inputType->getPassword());
-        }
+            ->setAddressPostcode($inputType->getAddressPostcode())
+            ->setLocation($location)
+            ->setUser($user);
 
         $this->em->persist($vendor);
         $this->em->flush();
@@ -273,7 +258,7 @@ class VendorService
      * @param Vendor $vendor
      * @param bool $archiveVendor
      * @return Vendor
-     * @throws Exception
+     * @throws \Exception
      */
     public function archiveVendor(Vendor $vendor, bool $archiveVendor = true)
     {
@@ -281,8 +266,8 @@ class VendorService
             $vendor->setArchived($archiveVendor);
             $this->em->persist($vendor);
             $this->em->flush();
-        } catch (Exception $exception) {
-            throw new Exception('Error archiving Vendor');
+        } catch (\Exception $exception) {
+            throw new \Exception('Error archiving Vendor');
         }
         return $vendor;
     }
@@ -301,7 +286,7 @@ class VendorService
             try {
                 $this->em->remove($vendor);
                 $this->em->flush();
-            } catch (Exception $exception) {
+            } catch (\Exception $exception) {
                 return $exception;
             }
         }
@@ -310,13 +295,13 @@ class VendorService
 
     /**
        * @param User $user
-       * @throws Exception
+       * @throws \Exception
        */
     public function login(User $user)
     {
         $vendor = $this->em->getRepository(Vendor::class)->findOneByUser($user);
         if (!$vendor) {
-            throw new Exception('You cannot log if you are not a vendor', Response::HTTP_BAD_REQUEST);
+            throw new \Exception('You cannot log if you are not a vendor', Response::HTTP_BAD_REQUEST);
         }
 
         return $vendor;
@@ -327,7 +312,7 @@ class VendorService
         try {
             $voucherPurchases = $this->em->getRepository(VoucherPurchase::class)->findByVendor($vendor);
             if (0 === count($voucherPurchases)) {
-                throw new Exception('This vendor has no voucher. Try syncing with the server.');
+                throw new \Exception('This vendor has no voucher. Try syncing with the server.');
             }
             $totalValue = 0;
             foreach ($voucherPurchases as $voucherPurchase) {
@@ -389,7 +374,7 @@ class VendorService
 
             $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'invoice');
             return $response;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
 

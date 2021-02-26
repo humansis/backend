@@ -81,9 +81,9 @@
         <source>PHONE NUMBER</source>
         <target>رقم الهاتف</target>
       </trans-unit>
-      <trans-unit id="PCHfRb3" resname="STATUS (Resident, IDP or Refugee">
-        <source>STATUS (Resident, IDP or Refugee</source>
-        <target>الحالة (المقيم ، النازح أو اللاجئ)</target>
+      <trans-unit id="PCHfRb3" resname="STATUS (Resident, IDP, Refugee or Returnee)">
+        <source>STATUS (Resident, IDP, Refugee or Returnee)</source>
+        <target>الحالة (مقيم ، نازح ، لاجئ أو عائد)</target>
       </trans-unit>
       <trans-unit id="pZ3Qho_" resname="Gender (M/F)">
         <source>Gender (M/F)</source>
@@ -100,6 +100,18 @@
       <trans-unit id="9nqxCtT" resname="F">
         <source>F</source>
         <target>مؤنث</target>
+      </trans-unit>
+      <trans-unit id="hIFv84P" resname="resident">
+        <source>resident</source>
+        <target>مقيم</target>
+      </trans-unit>
+      <trans-unit id="00vJDlK" resname="IDP">
+        <source>IDP</source>
+        <target>IDP</target>
+      </trans-unit>
+      <trans-unit id="8MkT7PE" resname="refugee">
+        <source>refugee</source>
+        <target>لاجئ</target>
       </trans-unit>
       <trans-unit id="1" resname="">
         <source>active</source>
@@ -3548,6 +3560,10 @@
       <trans-unit id="853" resname="vulnerability_solo_parent">
         <source>vulnerability_solo_parent</source>
         <target>الوالد منفردا</target>
+      </trans-unit>
+      <trans-unit id="854" resname="returnee">
+        <source>returnee</source>
+        <target>عائدون</target>
       </trans-unit>
     </body>
   </file>

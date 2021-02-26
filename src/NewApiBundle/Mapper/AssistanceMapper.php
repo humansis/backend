@@ -90,8 +90,11 @@ class AssistanceMapper implements MapperInterface
 
     public function getCommodityIds(): array
     {
-        return array_map(function ($item) {
-            return $item->getId();
-        }, $this->object->getCommodities()->toArray());
+        $result = [];
+        foreach ($this->object->getCommodities() as $commodity) {
+            $result[] = $commodity->getId();
+        }
+
+        return $result;
     }
 }

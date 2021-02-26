@@ -99,6 +99,31 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getOneOrNullResult();
     }
 
+    public function findActiveByAssistance(Assistance $assistance): iterable
+    {
+        $qb = $this->createQueryBuilder('db')
+            ->andWhere('db.assistance = :assistance')
+            ->andWhere('db.removed = false')
+            ->setParameter('assistance', $assistance)
+            ->leftJoin("db.beneficiary", "beneficiary")
+        ;
+
+        switch ($assistance->getTargetType()) {
+            case AssistanceTargetType::INDIVIDUAL:
+            case AssistanceTargetType::HOUSEHOLD:
+                $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Beneficiary::class));
+                break;
+            case AssistanceTargetType::COMMUNITY:
+                $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Community::class));
+                break;
+            case AssistanceTargetType::INSTITUTION:
+                $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Institution::class));
+                break;
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
     public function findByAssistance(Assistance $assistance): iterable
     {
         $qb = $this->createQueryBuilder('db')

@@ -41,7 +41,7 @@ class ModalityCodelistController extends AbstractController
      */
     public function types(string $code): JsonResponse
     {
-        $modality = $this->getDoctrine()->getRepository(Modality::class)->findOneBy(['id' => $code]);
+        $modality = $this->getDoctrine()->getRepository(Modality::class)->findOneBy(['name' => $code]);
         if (!$modality) {
             throw $this->createNotFoundException('Modality not found');
         }

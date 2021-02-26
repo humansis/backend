@@ -5,13 +5,14 @@ namespace UserBundle\Utils;
 use CommonBundle\Entity\Logs;
 use CommonBundle\Utils\ExportService;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
-use Google_Client;
+use InvalidArgumentException;
+use NewApiBundle\InputType\UserCreateInputType;
+use NewApiBundle\InputType\UserEditInputType;
+use NewApiBundle\InputType\UserInitializeInputType;
 use ProjectBundle\Entity\Project;
-use Swift_Attachment;
-use Swift_Message;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validation;
@@ -20,6 +21,7 @@ use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
 use UserBundle\Entity\UserProject;
 use Symfony\Component\HttpClient\HttpClient;
+use UserBundle\Repository\UserRepository;
 
 /**
  * Class UserService
@@ -73,12 +75,12 @@ class UserService
     /**
      * UserService constructor.
      *
-     * @param string $googleClient
-     * @param string $humanitarianSecret
+     * @param string                 $googleClient
+     * @param string                 $humanitarianSecret
      * @param EntityManagerInterface $entityManager
-     * @param ValidatorInterface $validator
-     * @param ContainerInterface $container
-     * @param ExportService $exportCSVService
+     * @param ValidatorInterface     $validator
+     * @param ContainerInterface     $container
+     * @param ExportService          $exportCSVService
      */
     public function __construct(string $googleClient, string $humanitarianSecret, EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container,
                                 ExportService $exportCSVService)
@@ -120,11 +122,13 @@ class UserService
     }
 
     /**
+     * @deprecated Remove in 3.0
+     *
      * @param User $user
      * @param array $userData
      * @return User
      */
-    public function update(User $user, array $userData)
+    public function updateFromArray(User $user, array $userData)
     {
         $roles = $userData['roles'];
         if (!empty($roles)) {
@@ -182,15 +186,49 @@ class UserService
     }
 
     /**
+     * @param UserInitializeInputType $inputType
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function initialize(UserInitializeInputType $inputType): array
+    {
+        $user = $this->em->getRepository(User::class)
+            ->findBy(['email' => $inputType->getUsername()]);
+
+        if ($user instanceof User) {
+            throw new \InvalidArgumentException('User with username '. $inputType->getUsername());
+        }
+
+        $salt = $this->generateSalt();
+
+        $user = new User();
+        $user->setUsername($inputType->getUsername())
+            ->setUsernameCanonical($inputType->getUsername())
+            ->setEmail($inputType->getUsername())
+            ->setEmailCanonical($inputType->getUsername())
+            ->setEnabled(false)
+            ->setSalt($salt)
+            ->setPassword('');
+
+        $this->em->persist($user);
+        $this->em->flush();
+
+        return ['userId' => $user->getId(), 'salt' => $user->getSalt()];
+    }
+
+    /**
+     * @deprecated Remove in 3.0
+     *
      * @param string $username
      * @return array
-     * @throws Exception
+     * @throws \Exception
      */
-    public function initialize(string $username)
+    public function initializeOld(string $username)
     {
         $user = $this->em->getRepository(User::class)->findOneByUsername($username);
         if ($user instanceof User) {
-            throw new Exception("Username already used.", Response::HTTP_BAD_REQUEST);
+            throw new \Exception("Username already used.", Response::HTTP_BAD_REQUEST);
         }
         $salt = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
         $user = new User();
@@ -215,10 +253,28 @@ class UserService
 
     /**
      * @param string $username
+     *
      * @return array
-     * @throws Exception
      */
-    public function getSalt(string $username)
+    public function getSalt(string $username): array
+    {
+        $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
+
+        if (!$user instanceof User) {
+            throw new \InvalidArgumentException("User with username $username does not exists.");
+        }
+
+        return ["userId" => $user->getId(), "salt" => $user->getSalt()];
+    }
+
+    /**
+     * @deprecated Remove in 3.0
+     *
+     * @param string $username
+     * @return array
+     * @throws \Exception
+     */
+    public function getSaltOld(string $username)
     {
         $validator = Validation::createValidator();
         $violations = $validator->validate($username, array(
@@ -232,13 +288,13 @@ class UserService
             foreach ($violations as $violation) {
                 $errors[] = $violation->getMessage();
             }
-            throw new Exception(json_encode($errors), Response::HTTP_BAD_REQUEST);
+            throw new \Exception(json_encode($errors), Response::HTTP_BAD_REQUEST);
         }
 
         $user = $this->em->getRepository(User::class)->findOneByUsername($username);
 
         if (!$user instanceof User) {
-            throw new Exception("This username doesn't exist", Response::HTTP_BAD_REQUEST);
+            throw new \Exception("This username doesn't exist", Response::HTTP_BAD_REQUEST);
         }
 
         return ["user_id" => $user->getId(), "salt" => $user->getSalt()];
@@ -248,7 +304,7 @@ class UserService
      * @param string $username
      * @param string $saltedPassword
      * @return mixed
-     * @throws Exception
+     * @throws \Exception
      */
     public function login(string $username, string $saltedPassword)
     {
@@ -261,32 +317,34 @@ class UserService
         ]);
 
         if (!$user instanceof User) {
-            throw new Exception('Wrong password', Response::HTTP_BAD_REQUEST);
+            throw new \Exception('Wrong password', Response::HTTP_BAD_REQUEST);
         }
 
         return $user;
     }
 
     /**
+     * @deprecated Remove in 3.0
+     *
      * @param array $userData
      * @return mixed
-     * @throws Exception
+     * @throws \Exception
      */
-    public function create(array $userData)
+    public function createFromArray(array $userData)
     {
         $roles = $userData['roles'];
 
         if (!isset($roles) || empty($roles)) {
-            throw new Exception("Rights can not be empty");
+            throw new \Exception("Rights can not be empty");
         }
 
         $user = $this->em->getRepository(User::class)->findOneByUsername($userData['username']);
 
         if (!$user instanceof User) {
-            throw new Exception("The user with username " . $userData['username'] . " has been not preconfigured. You need to ask 
+            throw new \Exception("The user with username " . $userData['username'] . " has been not preconfigured. You need to ask 
             the salt for this username beforehand.");
         } elseif ($user->isEnabled()) {
-            throw new Exception("The user with username " . $userData['username'] . " has already been added");
+            throw new \Exception("The user with username " . $userData['username'] . " has already been added");
         }
 
         $user->setSalt($userData['salt'])
@@ -348,12 +406,12 @@ class UserService
      * @param $oldPassword
      * @param $newPassword
      * @return User
-     * @throws Exception
+     * @throws \Exception
      */
     public function updatePassword(User $user, $oldPassword, $newPassword)
     {
         if ($user->getPassword() !== $oldPassword) {
-            throw new Exception("The old password doesn't match.");
+            throw new \Exception("The old password doesn't match.");
         }
 
         $user->setPassword($newPassword)
@@ -365,6 +423,8 @@ class UserService
     }
 
     /**
+     * @deprecated Remove in 3.0
+     *
      * Delete an user and its links in the api
      *
      * @param User $user
@@ -392,7 +452,7 @@ class UserService
             try {
                 $this->em->remove($user);
                 $this->em->flush();
-            } catch (Exception $exception) {
+            } catch (\Exception $exception) {
                 return false;
             }
         }
@@ -401,6 +461,8 @@ class UserService
     }
 
     /**
+     * @deprecated Remove in 3.0
+     *
      * Delete an user and its links in the api
      *
      * @param string $username
@@ -426,7 +488,7 @@ class UserService
         try {
             $this->em->remove($user);
             $this->em->flush();
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             return false;
         }
 
@@ -464,7 +526,7 @@ class UserService
 
 
         if (is_file($file_record) && file_get_contents($file_record)) {
-            $message = (new Swift_Message('Logs of ' . $user->getUsername()))
+            $message = (new \Swift_Message('Logs of ' . $user->getUsername()))
                 ->setFrom($this->email)
                 ->setTo($emailConnected->getEmail())
                 ->setBody(
@@ -477,9 +539,9 @@ class UserService
                     ),
                     'text/html'
                 );
-            $message->attach(Swift_Attachment::fromPath($dir_root . '/../var/data/record_log-' . $user->getId() . '.csv')->setFilename('logs-'. $user->getEmail() .'.csv'));
+            $message->attach(\Swift_Attachment::fromPath($dir_root . '/../var/data/record_log-' . $user->getId() . '.csv')->setFilename('logs-'. $user->getEmail() .'.csv'));
         } else {
-            $message = (new Swift_Message('Logs of ' . $user->getUsername()))
+            $message = (new \Swift_Message('Logs of ' . $user->getUsername()))
                 ->setFrom($this->email)
                 ->setTo($emailConnected->getEmail())
                 ->setBody(
@@ -562,14 +624,14 @@ class UserService
      */
     public function loginGoogle(string $token)
     {
-        $client = new Google_Client(['client_id' => $this->googleClient]);
+        $client = new \Google_Client(['client_id' => $this->googleClient]);
 
         $payload = $client->verifyIdToken($token);
         if ($payload) {
             $email = $payload['email'];
             return $this->loginSSO($email);
         } else {
-            throw new Exception('The token could not be verified');
+            throw new \Exception('The token could not be verified');
         }
     }
 
@@ -601,7 +663,7 @@ class UserService
         if ($statusCode === 200) {
             $content = $response->toArray();
         } else {
-            throw new Exception("There was a problem with the LinkedIn request: could not get token");
+            throw new \Exception("There was a problem with the LinkedIn request: could not get token"); 
         }
     }
 
@@ -618,7 +680,7 @@ class UserService
             $email = $this->getHIDEmail($token, $parameters);
             return $this->loginSSO($email);
             
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -662,7 +724,7 @@ class UserService
             $content = $response->toArray();
             return $content['access_token'];
         } else {
-            throw new Exception("There was a problem with the HID request: could not get token");
+            throw new \Exception("There was a problem with the HID request: could not get token"); 
         }
     }
 
@@ -675,7 +737,7 @@ class UserService
             $content = $response->toArray();
             return $content['email'];
         }  else {
-            throw new Exception("There was a problem with the HID request: could not get user email");
+            throw new \Exception("There was a problem with the HID request: could not get user email"); 
         }
     }
 
@@ -696,5 +758,159 @@ class UserService
         }
 
         return array_keys($countries);
+    }
+
+    public function create(User $initializedUser, UserCreateInputType $inputType): User
+    {
+        /** @var UserRepository $userRepository */
+        $userRepository = $this->em->getRepository(User::class);
+
+        if ($userRepository->findOneBy(['email' => $inputType->getEmail()]) instanceof User) {
+            throw new InvalidArgumentException('The user with email '.$inputType->getEmail().' has already been added');
+        }
+
+        $initializedUser->setEmail($inputType->getEmail())
+            ->setEmailCanonical($inputType->getEmail())
+            ->setEnabled(true)
+            ->setRoles($inputType->getRoles())
+            ->setChangePassword($inputType->isChangePassword())
+            ->setPhonePrefix($inputType->getPhonePrefix())
+            ->setPhoneNumber($inputType->getPhoneNumber() ? (int) $inputType->getPhoneNumber() : null)
+            ->setPassword($inputType->getPassword());
+
+        if (!empty($inputType->getProjectIds())) {
+            foreach ($inputType->getProjectIds() as $projectId) {
+                $project = $this->em->getRepository(Project::class)->find($projectId);
+
+                if (!$project instanceof Project) {
+                    throw new NotFoundHttpException("Project with id $projectId not found");
+                }
+
+                $userProject = new UserProject();
+                $userProject->setRights($inputType->getRoles()[0])//TODO edit after decision about roles and authorization will be made
+                ->setUser($initializedUser)
+                    ->setProject($project);
+
+                $this->em->persist($userProject);
+            }
+        }
+
+        if (!empty($inputType->getCountries())) {
+            foreach ($inputType->getCountries() as $country) {
+                $userCountry = new UserCountry();
+                $userCountry->setUser($initializedUser)
+                    ->setIso3($country)
+                    ->setRights($inputType->getRoles()[0]);//TODO edit after decision about roles and authorization will be made
+
+                $this->em->persist($userCountry);
+            }
+        }
+
+        $this->em->persist($initializedUser);
+        $this->em->flush();
+
+        return $initializedUser;
+    }
+
+    public function update(User $user, UserEditInputType $inputType): User
+    {
+        /** @var UserRepository $userRepository */
+        $userRepository = $this->em->getRepository(User::class);
+
+        $existingUser = $userRepository->findOneBy(['email' => $inputType->getEmail()]);
+        if ($existingUser instanceof User && $existingUser->getId() !== $user->getId()) {
+            throw new InvalidArgumentException('The user with email '.$inputType->getEmail().' already exists');
+        }
+
+        $existingUser = $userRepository->findOneBy(['username' => $inputType->getUsername()]);
+        if ($existingUser instanceof User && $existingUser->getId() !== $user->getId()) {
+            throw new InvalidArgumentException('The user with username '.$inputType->getUsername().' already exists');
+        }
+
+        $user->setEmail($inputType->getEmail())
+            ->setEmailCanonical($inputType->getEmail())
+            ->setUsername($inputType->getUsername())
+            ->setUsernameCanonical($inputType->getUsername())
+            ->setEnabled(true)
+            ->setRoles($inputType->getRoles())
+            ->setPhonePrefix($inputType->getPhonePrefix())
+            ->setPhoneNumber($inputType->getPhoneNumber() ? (int) $inputType->getPhoneNumber() : null);
+
+        if (null !== $inputType->getPassword()) {
+            $user->setPassword($this->hashPassword($inputType->getPassword(), $user->getSalt()));
+        }
+
+        /** @var UserProject $userProject */
+        foreach ($user->getProjects() as $userProject) {
+            $this->em->remove($userProject);
+        }
+        $user->getProjects()->clear();
+
+        if (!empty($inputType->getProjectIds())) {
+            foreach ($inputType->getProjectIds() as $projectId) {
+                $project = $this->em->getRepository(Project::class)->find($projectId);
+
+                if (!$project instanceof Project) {
+                    throw new NotFoundHttpException("Project with id $projectId not found");
+                }
+
+                $userProject = new UserProject();
+                $userProject->setRights($inputType->getRoles()[0])//TODO edit after decision about roles and authorization will be made
+                ->setUser($user)
+                    ->setProject($project);
+
+                $this->em->persist($userProject);
+            }
+        }
+
+        /** @var UserCountry $userCountry */
+        foreach ($user->getCountries() as $userCountry) {
+            $this->em->remove($userCountry);
+        }
+        $user->getCountries()->clear();
+
+        if (!empty($inputType->getCountries())) {
+            foreach ($inputType->getCountries() as $country) {
+                $userCountry = new UserCountry();
+                $userCountry->setUser($user)
+                    ->setIso3($country)
+                    ->setRights($inputType->getRoles()[0]);//TODO edit after decision about roles and authorization will be made
+
+                $this->em->persist($userCountry);
+            }
+        }
+
+        $this->em->flush();
+
+        return $user;
+    }
+
+    public function remove(User $user): void
+    {
+        $this->em->remove($user);
+        $this->em->flush();
+    }
+
+    /**
+     * @return string
+     * @throws \Exception
+     */
+    private function generateSalt()
+    {
+        return rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
+    }
+
+    public function hashPassword(string $password, string $salt): string
+    {
+        $saltedPassword = $password.'{'.$salt.'}';
+
+        $digest = hash('sha512', $saltedPassword);
+
+        for ($i = 1; $i < 5000; $i++) {
+            $newInput = hex2bin($digest).$saltedPassword;
+            $digest = hash('sha512', $newInput);
+        }
+
+        return base64_encode(hex2bin($digest));
     }
 }

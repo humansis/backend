@@ -26,6 +26,7 @@
 
       <trans-unit id="label_sector_skills_training"><source>label_sector_skills_training</source><target>Skills Training</target></trans-unit>
       <trans-unit id="label_sector_technical_support"><source>label_sector_technical_support</source><target>Technical Support</target></trans-unit>
+      <trans-unit id="label_sector_provision_of_inputs"><source>label_sector_provision_of_inputs</source><target>Provision of inputs</target></trans-unit>
       <trans-unit id="label_sector_distribution_of_inputs"><source>label_sector_distribution_of_inputs</source><target>Distribution of Inputs</target></trans-unit>
       <trans-unit id="label_sector_business_grants"><source>label_sector_business_grants</source><target>Business Grants</target></trans-unit>
       <trans-unit id="label_sector_agricultural_vouchers"><source>label_sector_agricultural_vouchers</source><target>Agricultural Vouchers</target></trans-unit>
