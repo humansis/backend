@@ -346,7 +346,7 @@ class UserController extends Controller
     public function initializeAction($username)
     {
         try {
-            $salt = $this->userService->getSaltOld($username);
+            $salt = $this->userService->initializeOld($username);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
