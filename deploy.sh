@@ -11,6 +11,7 @@ set -e
 
 # configure
 echo "Configuring application build"
+ec2_user="ubuntu"
 if [[ $1 == "prod" ]]; then
   ec2_host="api.humansis.org"
   mv docker/docker-compose.yml.prod docker-compose.yml
@@ -33,8 +34,20 @@ elif [[ $1 == "dev" ]]; then
   ec2_host="apidev.humansis.org"
   mv docker/docker-compose.yml.dev docker-compose.yml
   bash apply_env_config.sh ${RDS_HOSTNAME_DEV} ${RDS_DB_NAME_DEV} ${RDS_USERNAME_DEV} ${RDS_PASSWORD_DEV} ${MOBILE_KEY_DEV} ${MOBILE_APP_VERSION_DEV} ${MOBILE_APP_ID_DEV}
+elif [[ $1 == "proddca" ]]; then # DCA
+  ec2_user="admin"
+  ec2_host="api.dca.humansis.org"
+  mv docker/docker-compose.yml.template docker-compose.yml
+  sed -i -e "s|%env(EC2_HOSTNAME)%|${ec2_host}|g" docker-compose.yml
+  bash apply_env_config.sh ${RDS_HOSTNAME_DCA_PROD} ${RDS_DB_NAME_DCA_PROD} ${RDS_USERNAME_DCA_PROD} ${RDS_PASSWORD_DCA_PROD} ${MOBILE_KEY_DCA_PROD} ${MOBILE_APP_VERSION_DCA_PROD} ${MOBILE_APP_ID_DCA_PROD}
+elif [[ $1 == "testdca" ]]; then # DCA
+  ec2_user="admin"
+  ec2_host="api.testdca.humansis.org"
+  mv docker/docker-compose.yml.template docker-compose.yml
+  sed -i -e "s|%env(EC2_HOSTNAME)%|${ec2_host}|g" docker-compose.yml
+  bash apply_env_config.sh ${RDS_HOSTNAME_DCA_TEST} ${RDS_DB_NAME_DCA_TEST} ${RDS_USERNAME_DCA_TEST} ${RDS_PASSWORD_DCA_TEST} ${MOBILE_KEY_DCA_TEST} ${MOBILE_APP_VERSION_DCA_TEST} ${MOBILE_APP_ID_DCA_TEST}
 else
-  echo "Wrong environment parameter. Options are: [dev, test, stage, demo, prod]"
+  echo "Wrong environment parameter. Options are: [dev, test, stage, demo, prod, testdca, proddca]"
   exit 1
 fi
 echo "...done"
@@ -51,34 +64,34 @@ echo "...done"
 
 # deploy files to host
 echo "Upload application files to remote server"
-rsync --progress -avz -e "ssh" --exclude 'ec2_bms.pem' --exclude-from='sync_excludes' ./* ubuntu@$ec2_host:/var/www/html/bms_api/ --delete
+rsync --progress -avz -e "ssh" --exclude 'ec2_bms.pem' --exclude-from='sync_excludes' ./* $ec2_user@$ec2_host:/var/www/html/bms_api/ --delete
 echo "...done"
 echo "Starting application containers"
 start_app="cd /var/www/html/bms_api && sudo docker-compose up -d"
-ssh ubuntu@$ec2_host $start_app
+ssh $ec2_user@$ec2_host $start_app
 echo "...done"
 echo "Loading composer files"
 load_composer="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'composer install'"
-ssh ubuntu@$ec2_host $load_composer
+ssh $ec2_user@$ec2_host $load_composer
 echo "...done"
 
 # clean database
 echo "Cleaning database"
 if [[ $2 == "true" ]]; then
   clean_database="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'bash clean_database.sh migrations'"
-  ssh ubuntu@$ec2_host $clean_database
+  ssh $ec2_user@$ec2_host $clean_database
 elif [[ $2 == "database" ]]; then
   clean_database="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'bash clean_database.sh'"
-  ssh ubuntu@$ec2_host $clean_database
+  ssh $ec2_user@$ec2_host $clean_database
   # get database
   bash get_db.sh "$1"
   # run database migrations
   migrations="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'php bin/console doctrine:migrations:migrate -n'"
-  ssh ubuntu@$ec2_host $migrations
+  ssh $ec2_user@$ec2_host $migrations
 elif [[ $2 == "false" ]]; then
   # run database migrations
   migrations="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'php bin/console doctrine:migrations:migrate -n'"
-  ssh ubuntu@$ec2_host $migrations
+  ssh $ec2_user@$ec2_host $migrations
 else
   echo "Wrong clean database parameter. Options are: [true, false, database]"
   exit 1
@@ -97,7 +110,7 @@ if [[ $3 != "false" ]]; then
     exit 1
   fi
   if [[ ! -z $load_fixtures ]]; then
-    ssh ubuntu@$ec2_host $load_fixtures
+    ssh $ec2_user@$ec2_host $load_fixtures
   fi
 fi
 echo "...done"
@@ -107,5 +120,5 @@ echo "...done"
 # aggressive: normal + rm ./var/cache/* + docker restart php_container
 echo "Clearing cache"
 cache_clear="bash /var/www/html/bms_api/clear_cache.sh $4"
-ssh ubuntu@$ec2_host $cache_clear
+ssh $ec2_user@$ec2_host $cache_clear
 echo "...done"
