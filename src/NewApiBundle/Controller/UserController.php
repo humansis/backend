@@ -20,6 +20,19 @@ use UserBundle\Utils\UserService;
 
 class UserController extends AbstractController
 {
+    /** @var UserService */
+    private $userService;
+
+    /**
+     * UserController constructor.
+     *
+     * @param UserService $userService
+     */
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
     /**
      * @Rest\Get("/users/{id}")
      *
@@ -61,7 +74,7 @@ class UserController extends AbstractController
      */
     public function initialize(UserInitializeInputType $inputType): JsonResponse
     {
-        $initializedUser = $this->get('user.user_service')->initialize($inputType);
+        $initializedUser = $this->userService->initialize($inputType);
 
         return $this->json($initializedUser);
     }
@@ -77,7 +90,7 @@ class UserController extends AbstractController
     public function create(User $user, UserCreateInputType $inputType): JsonResponse
     {
         /** @var UserService $userService */
-        $userService = $this->get('user.user_service');
+        $userService = $this->userService;
 
         $user = $userService->create($user, $inputType);
 
@@ -95,7 +108,7 @@ class UserController extends AbstractController
     public function update(User $user, UserEditInputType $inputType): JsonResponse
     {
         /** @var UserService $userService */
-        $userService = $this->get('user.user_service');
+        $userService = $this->userService;
 
         $updatedUser = $userService->update($user, $inputType);
 
@@ -111,7 +124,7 @@ class UserController extends AbstractController
      */
     public function delete(User $user): JsonResponse
     {
-        $this->get('user.user_service')->remove($user);
+        $this->userService->remove($user);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
@@ -125,7 +138,7 @@ class UserController extends AbstractController
      */
     public function getSalt(string $username): JsonResponse
     {
-        $salt = $this->get('user.user_service')->getSalt($username);
+        $salt = $this->userService->getSalt($username);
 
         return $this->json($salt);
     }

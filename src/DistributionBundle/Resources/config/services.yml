@@ -36,7 +36,6 @@ services:
             - '@distribution.commodity_service'
             - '@distribution.configuration_loader'
             - '@DistributionBundle\Utils\CriteriaAssistanceService'
-            - '@distribution.criteria_assistance_service'
             - '@transformer.selection_criterion_field'
             - '%distribution.retriever%'
             - '@service_container'

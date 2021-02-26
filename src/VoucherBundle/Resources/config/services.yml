@@ -33,10 +33,6 @@ services:
     VoucherBundle\Model\PurchaseService:
         public: true
 
-    VoucherBundle\Utils\SmartcardService:
-        arguments: [ '@doctrine.orm.entity_manager', '@voucher.purchase_service' ]
-        public: true
-
     VoucherBundle\Mapper\SmartcardMapper:
         public: true
 

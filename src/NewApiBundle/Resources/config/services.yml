@@ -60,8 +60,6 @@ services:
     NewApiBundle\Mapper\ProjectMapper:
         tags: [ 'app.mapper' ]
 
-    NewApiBundle\Controller\AssistanceController:
-
     NewApiBundle\Controller\SectorsCodelistController:
         arguments:
             - "@ProjectBundle\\Utils\\SectorService"
@@ -92,9 +90,8 @@ services:
         class: NewApiBundle\Component\SelectionCriteria\Generator\BeneficiaryFieldGenerator
         arguments: [ "@=service('doctrine.orm.entity_manager').getRepository('BeneficiaryBundle:VulnerabilityCriterion')" ]
 
-    service.selection_criterion:
+    NewApiBundle\Component\SelectionCriteria\SelectionCriterionService:
         public: true
-        class: NewApiBundle\Component\SelectionCriteria\SelectionCriterionService
         arguments:
             - [ '@generator.beneficiary', '@generator.household', '@generator.household_head' ]
 
@@ -106,5 +103,3 @@ services:
             - "@=service('doctrine.orm.entity_manager').getRepository('CommonBundle:Location')"
 
     NewApiBundle\Validator\Constraints\SelectionCriterionFieldValidator:
-        arguments: [ '@service.selection_criterion' ]
-

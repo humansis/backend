@@ -7,6 +7,7 @@ namespace NewApiBundle\Controller;
 use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Repository\AssistanceRepository;
+use DistributionBundle\Utils\AssistanceService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Entity\AssistanceStatistics;
 use NewApiBundle\InputType\AssistanceCreateInputType;
@@ -23,6 +24,19 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class AssistanceController extends AbstractController
 {
+    /** @var AssistanceService */
+    private $assistanceService;
+
+    /**
+     * AssistanceController constructor.
+     *
+     * @param AssistanceService $assistanceService
+     */
+    public function __construct(AssistanceService $assistanceService)
+    {
+        $this->assistanceService = $assistanceService;
+    }
+
     /**
      * @Rest\Get("/assistances/statistics")
      *
@@ -94,7 +108,7 @@ class AssistanceController extends AbstractController
      */
     public function create(AssistanceCreateInputType $inputType): JsonResponse
     {
-        $assistance = $this->get('distribution.assistance_service')->create($inputType);
+        $assistance = $this->assistanceService->create($inputType);
 
         return $this->json($assistance);
     }
@@ -125,11 +139,11 @@ class AssistanceController extends AbstractController
     public function update(Request $request, Assistance $assistance): JsonResponse
     {
         if ($request->request->get('validated', false)) {
-            $this->get('distribution.assistance_service')->validateDistribution($assistance);
+            $this->assistanceService->validateDistribution($assistance);
         }
 
         if ($request->request->get('completed', false)) {
-            $this->get('distribution.assistance_service')->complete($assistance);
+            $this->assistanceService->complete($assistance);
         }
 
         return $this->json($assistance);
@@ -144,7 +158,7 @@ class AssistanceController extends AbstractController
      */
     public function delete(Assistance $assistance): JsonResponse
     {
-        $this->get('distribution.assistance_service')->delete($assistance);
+        $this->assistanceService->delete($assistance);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

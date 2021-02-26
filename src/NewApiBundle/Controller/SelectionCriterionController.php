@@ -6,6 +6,7 @@ namespace NewApiBundle\Controller;
 
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\SelectionCriteria\SelectionCriterionService;
 use NewApiBundle\Enum\SelectionCriteriaTarget;
 use NewApiBundle\Utils\CodeLists;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -18,6 +19,19 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  */
 class SelectionCriterionController extends AbstractController
 {
+    /** @var SelectionCriterionService */
+    private $selectionCriterionService;
+
+    /**
+     * SelectionCriterionController constructor.
+     *
+     * @param SelectionCriterionService $selectionCriterionService
+     */
+    public function __construct(SelectionCriterionService $selectionCriterionService)
+    {
+        $this->selectionCriterionService = $selectionCriterionService;
+    }
+
     /**
      * @Rest\Get("/selection-criteria/targets")
      *
@@ -49,7 +63,7 @@ class SelectionCriterionController extends AbstractController
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $data = $this->get('service.selection_criterion')->findFieldsByTarget($targetCode, $countryIso3);
+        $data = $this->selectionCriterionService->findFieldsByTarget($targetCode, $countryIso3);
 
         return $this->json(new Paginator($data));
     }
@@ -69,7 +83,7 @@ class SelectionCriterionController extends AbstractController
         }
 
         try {
-            $data = $this->get('service.selection_criterion')->findFieldConditions($fieldCode, $targetCode, $countryIso3);
+            $data = $this->selectionCriterionService->findFieldConditions($fieldCode, $targetCode, $countryIso3);
         } catch (\InvalidArgumentException|\BadMethodCallException $ex) {
             throw $this->createNotFoundException($ex->getMessage(), $ex);
         }

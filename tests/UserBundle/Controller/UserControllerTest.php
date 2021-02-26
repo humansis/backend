@@ -35,12 +35,14 @@ class UserControllerTest extends BMSServiceTestCase
     {
         $crawler = $this->request('GET', '/api/wsse/initialize/' . $this->username);
         $data = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $this->assertArrayHasKey('user_id', $data);
         $this->assertArrayHasKey('salt', $data);
 
         $crawler = $this->request('GET', '/api/wsse/salt/o');
         $data = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
         $this->assertTrue(!$this->client->getResponse()->isSuccessful());
     }

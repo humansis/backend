@@ -43,7 +43,6 @@ class BookletService
      * @param EntityManagerInterface   $entityManager
      * @param ValidatorInterface       $validator
      * @param ContainerInterface       $container
-     * @param EventDispatcherInterface $eventDispatcher
      * @param VoucherService           $voucherService
      * @param ExportService            $exportService
      * @param BookletGenerator         $generator
@@ -52,7 +51,6 @@ class BookletService
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
         ContainerInterface $container,
-        EventDispatcherInterface $eventDispatcher,
         VoucherService $voucherService,
         ExportService $exportService,
         BookletGenerator $generator
@@ -61,7 +59,6 @@ class BookletService
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
-        $this->eventDispatcher = $eventDispatcher;
         $this->voucherService = $voucherService;
         $this->exportCSVService = $exportService;
         $this->generator = $generator;

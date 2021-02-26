@@ -37,6 +37,7 @@ use VoucherBundle\InputType\SmartcardRedemtionBatch as RedemptionBatchInput;
 use VoucherBundle\Mapper\SmartcardMapper;
 use VoucherBundle\Model\PurchaseService;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
+use VoucherBundle\Utils\SmartcardService;
 
 /**
  * @SWG\Parameter(
@@ -59,7 +60,7 @@ class SmartcardController extends Controller
     private $purchaseService;
     /** @var SmartcardMapper */
     private $smartcardMapper;
-
+    /** @var SmartcardService */
     private $smartcardService;
 
     /**
@@ -70,11 +71,13 @@ class SmartcardController extends Controller
      * @param ValidatorInterface  $validator
      * @param PurchaseService     $purchaseService
      * @param SmartcardMapper     $smartcardMapper
+     * @param SmartcardService    $smartcardService
      */
     public function __construct(SerializerInterface $serializer, LoggerInterface $logger,
                                 ValidatorInterface $validator,
                                 PurchaseService $purchaseService,
-                                SmartcardMapper $smartcardMapper
+                                SmartcardMapper $smartcardMapper,
+                                SmartcardService $smartcardService
     )
     {
         $this->serializer = $serializer;
@@ -82,6 +85,7 @@ class SmartcardController extends Controller
         $this->validator = $validator;
         $this->purchaseService = $purchaseService;
         $this->smartcardMapper = $smartcardMapper;
+        $this->smartcardService = $smartcardService;
     }
 
     /**

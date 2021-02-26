@@ -16,7 +16,7 @@ class UserServiceTest extends KernelTestCase
 
         $this->bootKernel();
 
-        $this->userService = self::$kernel->getContainer()->get('user.user_service');
+        $this->userService = self::$kernel->getContainer()->get(UserService::class);
     }
 
     public function hashDataProvider()

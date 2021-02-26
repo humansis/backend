@@ -2,9 +2,8 @@
 
 namespace VoucherBundle\Utils;
 
-use DateTime;
 use DateTimeInterface;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
@@ -13,13 +12,13 @@ use VoucherBundle\Model\PurchaseService;
 
 class SmartcardService
 {
-    /** @var EntityManager */
+    /** @var EntityManagerInterface */
     private $em;
 
     /** @var PurchaseService */
     private $purchaseService;
 
-    public function __construct(EntityManager $em, PurchaseService $purchaseService)
+    public function __construct(EntityManagerInterface $em, PurchaseService $purchaseService)
     {
         $this->em = $em;
         $this->purchaseService = $purchaseService;

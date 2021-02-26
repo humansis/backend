@@ -16,6 +16,19 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class OrganizationController extends AbstractController
 {
+    /** @var OrganizationService */
+    private $organizationService;
+
+    /**
+     * OrganizationController constructor.
+     *
+     * @param OrganizationService $organizationService
+     */
+    public function __construct(OrganizationService $organizationService)
+    {
+        $this->organizationService = $organizationService;
+    }
+
     /**
      * @Rest\Get("/organizations/{id}")
      *
@@ -73,10 +86,7 @@ class OrganizationController extends AbstractController
      */
     public function updateService(OrganizationServices $organizationServices, OrganizationServicesInputType $inputType): JsonResponse
     {
-        /** @var OrganizationService $organizationService */
-        $organizationService = $this->get('organization_service');
-
-        $updatedOrganizationServices = $organizationService->updateOrganizationServices($organizationServices, $inputType);
+        $updatedOrganizationServices = $this->organizationService->updateOrganizationServices($organizationServices, $inputType);
 
         return $this->json($updatedOrganizationServices);
     }

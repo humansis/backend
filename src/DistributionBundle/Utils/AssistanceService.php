@@ -34,6 +34,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
+use Exception;
+use DateTime;
 
 /**
  * Class AssistanceService
@@ -41,7 +43,6 @@ use VoucherBundle\Entity\Product;
  */
 class AssistanceService
 {
-
     /** @var EntityManagerInterface $em */
     private $em;
 
@@ -866,7 +867,7 @@ class AssistanceService
         $this->em->flush();
     }
 
-    private function generateName(Location $location, ?DateTimeInterface $date = null): string
+    private function generateName(Location $location, ?\DateTimeInterface $date = null): string
     {
         $adm = '';
         if ($location->getAdm4()) {
