@@ -20,7 +20,7 @@
             <trans-unit id="unit_price"><source>unit_price</source><target>Unit Price</target></trans-unit>
             <trans-unit id="amount"><source>amount</source><target>Amount</target></trans-unit>
             <trans-unit id="currency"><source>currency</source><target>Currency</target></trans-unit>
-            <trans-unit id="redemption_payment_items"><source>redemption_payment_items</source><target>SmartCards redemption payment - Food Items</target></trans-unit>
+            <trans-unit id="redemption_payment_items"><source>redemption_payment_items</source><target>SmartCards redemption payment - Purchase Items</target></trans-unit>
             <trans-unit id="redemption_payment_items_description"><source>redemption_payment_items_description</source><target>Itemized breakdown in Annex I</target></trans-unit>
             <trans-unit id="redemption_payment_cash"><source>redemption_payment_cash</source><target>SmartCards redemption payment - Cash</target></trans-unit>
             <trans-unit id="redemption_payment_cash_description"><source>redemption_payment_cash_description</source><target>Itemized breakdown available from internal system under internal HUM Nr.</target></trans-unit>
