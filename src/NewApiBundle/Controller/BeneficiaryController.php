@@ -14,6 +14,7 @@ use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\InputType\NationalIdFilterInputType;
 use NewApiBundle\InputType\PhoneFilterInputType;
 use NewApiBundle\Request\Pagination;
+use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -145,6 +146,22 @@ class BeneficiaryController extends AbstractController
     public function beneficiaryies(BeneficiaryFilterInputType $filter): JsonResponse
     {
         $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByParams($filter);
+
+        return $this->json($beneficiaries);
+    }
+
+    /**
+     * @Rest\Get("/projects/{id}/beneficiaries")
+     *
+     * @param Project                    $project
+     *
+     * @param BeneficiaryFilterInputType $filter
+     *
+     * @return JsonResponse
+     */
+    public function getBeneficiaries(Project $project, BeneficiaryFilterInputType $filter): JsonResponse
+    {
+        $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByProject($project, $filter);
 
         return $this->json($beneficiaries);
     }

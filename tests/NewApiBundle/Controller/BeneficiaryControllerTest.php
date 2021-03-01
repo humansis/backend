@@ -9,6 +9,7 @@ use BeneficiaryBundle\Entity\Phone;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
 
 class BeneficiaryControllerTest extends BMSServiceTestCase
@@ -273,5 +274,52 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: '.$this->client->getResponse()->getContent()
         );
+    }
+
+    /**
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testGetBeneficiariesByProject()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $project = $em->getRepository(Project::class)->findOneBy([
+            'archived' => false,
+        ]);
+
+        $this->request('GET', '/api/basic/projects/'.$project->getId().'/beneficiaries?filter[assistanceTarget]=household');
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{
+            "totalCount": "*", 
+            "data": [
+                {
+                    "id": "*",
+                    "dateOfBirth": "*",
+                    "localFamilyName": "*",
+                    "localGivenName": "*",
+                    "localParentsName": "*",
+                    "enFamilyName": "*",
+                    "enGivenName": "*",
+                    "enParentsName": "*",
+                    "gender": "*",
+                    "nationalIds": "*",
+                    "phoneIds": "*",
+                    "referralType": "*",
+                    "referralComment": "*",
+                    "residencyStatus": "*",
+                    "isHead": "*",
+                    "vulnerabilityCriteria": "*"
+                }
+            ]}', $this->client->getResponse()->getContent());
     }
 }
