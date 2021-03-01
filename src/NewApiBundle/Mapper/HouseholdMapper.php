@@ -166,7 +166,7 @@ class HouseholdMapper implements MapperInterface
         foreach ($this->object->getHouseholdLocations() as $householdLocation) {
             /** @var HouseholdLocation $householdLocation */
             if (HouseholdLocation::LOCATION_TYPE_CAMP === $householdLocation->getType()) {
-                return $householdLocation->getCampAddress()->getId();
+                return $householdLocation->getId();
             }
         }
 
@@ -178,7 +178,7 @@ class HouseholdMapper implements MapperInterface
         foreach ($this->object->getHouseholdLocations() as $householdLocation) {
             /** @var HouseholdLocation $householdLocation */
             if (HouseholdLocation::LOCATION_TYPE_RESIDENCE === $householdLocation->getType()) {
-                return $householdLocation->getAddress()->getId();
+                return $householdLocation->getId();
             }
         }
 
@@ -190,7 +190,7 @@ class HouseholdMapper implements MapperInterface
         foreach ($this->object->getHouseholdLocations() as $householdLocation) {
             /** @var HouseholdLocation $householdLocation */
             if (HouseholdLocation::LOCATION_TYPE_SETTLEMENT === $householdLocation->getType()) {
-                return $householdLocation->getAddress()->getId();
+                return $householdLocation->getId();
             }
         }
 

@@ -2,6 +2,9 @@
 
 namespace BeneficiaryBundle\Repository;
 
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\AddressFilterInputType;
+
 /**
  * AddressRepository
  *
@@ -10,4 +13,17 @@ namespace BeneficiaryBundle\Repository;
  */
 class AddressRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findByParams(AddressFilterInputType $filter): Paginator
+    {
+        $qbr = $this->createQueryBuilder('a');
+
+        if ($filter) {
+            if ($filter->hasIds()) {
+                $qbr->andWhere('a.id IN (:ids)')
+                    ->setParameter('ids', $filter->getIds());
+            }
+        }
+
+        return new Paginator($qbr);
+    }
 }
