@@ -3764,6 +3764,10 @@
         <source>(name, position, signature)</source>
         <target>(имя, должность, подпись)</target>
       </trans-unit>
+      <trans-unit id="927" resname="ru">
+        <source>ru</source>
+        <target>Русский</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -3641,6 +3641,10 @@
         <source>(name, position, signature)</source>
         <target>(الاسم ، المنصب ، التوقيع)</target>
       </trans-unit>
+      <trans-unit id="927" resname="ar">
+        <source>ar</source>
+        <target>عربي</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

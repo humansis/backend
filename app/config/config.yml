@@ -9,6 +9,9 @@ parameters:
     locale: en
     email: support@humansis.org
 
+    # allowed languages in application
+    app.locales: [ en, ar, ru ]
+
 framework:
     #esi: ~
     translator:
