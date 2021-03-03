@@ -401,6 +401,19 @@ class AssistanceService
         return $assistance;
     }
 
+    public function updateDateDistribution(Assistance $assistance, \DateTimeInterface $date)
+    {
+        $distributionNameWithoutDate = explode('-', $assistance->getName())[0];
+        $newDistributionName = $distributionNameWithoutDate.'-'.$date->format('d-m-Y');
+
+        $assistance
+            ->setDateDistribution($date)
+            ->setName($newDistributionName)
+            ->setUpdatedOn(new \DateTime());
+
+        $this->em->persist($assistance);
+        $this->em->flush();
+    }
 
     /**
      * @param int $projectId
