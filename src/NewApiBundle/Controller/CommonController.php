@@ -10,6 +10,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Intl\Intl;
 
 class CommonController extends AbstractController
 {
@@ -86,6 +87,25 @@ class CommonController extends AbstractController
             $data[] = [
                 'code' => $locale,
                 'value' => $this->get('translator')->trans($locale, [], null, $locale),
+            ];
+        }
+
+        return $this->json($data);
+    }
+
+    /**
+     * @Rest\Get("/currencies")
+     *
+     * @return JsonResponse
+     */
+    public function currencies(): JsonResponse
+    {
+        $data = [];
+
+        foreach ($this->getParameter('app.currencies') as $currency) {
+            $data[] = [
+                'code' => $currency,
+                'value' => Intl::getCurrencyBundle()->getCurrencyName($currency),
             ];
         }
 
