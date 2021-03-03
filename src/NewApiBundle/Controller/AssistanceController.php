@@ -132,6 +132,10 @@ class AssistanceController extends AbstractController
             $this->get('distribution.assistance_service')->complete($assistance);
         }
 
+        if ($request->request->get('dateDistribution')) {
+            $this->get('distribution.assistance_service')->updateDateDistribution($assistance, new \DateTime($request->request->get('dateDistribution')));
+        }
+
         return $this->json($assistance);
     }
 
