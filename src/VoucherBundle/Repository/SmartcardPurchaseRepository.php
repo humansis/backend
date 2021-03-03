@@ -7,6 +7,7 @@ namespace VoucherBundle\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use ProjectBundle\Entity\Project;
 use VoucherBundle\DTO\PurchaseDetail;
 use VoucherBundle\DTO\PurchaseRedemptionBatch;
 use VoucherBundle\DTO\PurchaseSummary;
@@ -50,30 +51,77 @@ class SmartcardPurchaseRepository extends EntityRepository
     /**
      * @param Vendor $vendor
      *
-     * @return PurchaseRedemptionBatch
+     * @return PurchaseRedemptionBatch[]
      *
      * @throws NonUniqueResultException
      */
-    public function countPurchasesToRedeem(Vendor $vendor): PurchaseRedemptionBatch
+    public function countPurchasesToRedeem(Vendor $vendor): array
     {
-        $idsQuery = $this->createQueryBuilder('p')
-            ->select('p.id')
-            ->where('p.vendor = :vendor')
-            ->andWhere('IDENTITY(p.redemptionBatch) is null')
-            ->setParameter('vendor', $vendor);
-        $purchases = $idsQuery->getQuery()->getScalarResult();
+        $purchasePreAggregation = "SELECT
+            sp.id AS purchaseId,
+            (
+                SELECT
+                    a.project_id AS project_id
+                FROM
+                    assistance AS a
+                        INNER JOIN distribution_beneficiary AS db ON a.id = db.assistance_id
+                        INNER JOIN smartcard_deposit AS sd ON db.id = sd.distribution_beneficiary_id
+                WHERE s.id = sd.smartcard_id
+                ORDER BY sd.used_at DESC
+                LIMIT 1
+            ) AS projectId,
+            SUM(spr.value) as purchaseValue,
+            spr.currency AS currency,
+            sp.vendor_id as vendorId
+        FROM
+            smartcard AS s
+                INNER JOIN smartcard_purchase AS sp on s.id = sp.smartcard_id
+                INNER JOIN smartcard_purchase_record AS spr ON sp.id = spr.smartcard_purchase_id
+        WHERE sp.redemption_batch_id IS NULL
+        GROUP BY sp.id, spr.currency, projectId, vendorId";
 
-        $ids = array_map(function ($result) {
-            return (int) $result['id'];
-        }, $purchases);
+        $purchaseValuesAggregation = "SELECT
+                pre.currency,
+                SUM(pre.purchaseValue) as purchasesValue,
+                COUNT(pre.purchaseValue) as purchasesCount,
+                pre.projectId
+            FROM ($purchasePreAggregation) as pre
+            WHERE pre.vendorId = {$vendor->getId()} AND currency IS NOT NULL AND projectId IS NOT NULL
+            GROUP BY pre.vendorId, pre.projectId, pre.currency";
 
-        if (empty($purchases)) {
-            return new PurchaseRedemptionBatch(0, $ids);
+        $stmt = $this->_em->getConnection()->prepare($purchaseValuesAggregation);
+        $stmt->execute();
+        $batchCandidates = $stmt->fetchAll();
+
+        $projectRepo = $this->_em->getRepository(Project::class);
+        $batches = [];
+        foreach ($batchCandidates as $candidate) {
+            $purchaseIdsAggregation = "SELECT
+                    DISTINCT pre.purchaseId as id
+                FROM ($purchasePreAggregation) as pre
+                WHERE
+                    pre.vendorId = {$vendor->getId()} AND
+                    pre.projectId = {$candidate['projectId']} AND
+                    pre.currency = '{$candidate['currency']}'";
+
+            $stmt = $this->_em->getConnection()->prepare($purchaseIdsAggregation);
+            $stmt->execute();
+            $purchaseIds = $stmt->fetchAll();
+
+            $ids = array_map(function ($result) {
+                return (int) $result['id'];
+            }, $purchaseIds);
+
+            $batches[] = new PurchaseRedemptionBatch(
+                $candidate['purchasesValue'],
+                $candidate['currency'],
+                $projectRepo->find($candidate['projectId']),
+                $ids,
+                (int) $candidate['purchasesCount'],
+            );
         }
 
-        $value = $this->countPurchasesValue($purchases);
-
-        return new PurchaseRedemptionBatch($value, $ids);
+        return $batches;
     }
 
     public function countPurchasesValue(array $purchases)
