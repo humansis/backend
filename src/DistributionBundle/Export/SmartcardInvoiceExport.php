@@ -24,14 +24,19 @@ class SmartcardInvoiceExport
     /** @var TranslatorInterface */
     private $translator;
 
+    /** @var LocationMapper */
+    private $locationMapper;
+
     /**
      * SmartcardInvoiceExport constructor.
      *
      * @param TranslatorInterface $translator
+     * @param LocationMapper      $locationMapper
      */
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(TranslatorInterface $translator, LocationMapper $locationMapper)
     {
         $this->translator = $translator;
+        $this->locationMapper = $locationMapper;
     }
 
     public function export(SmartcardRedemptionBatch $batch, Organization $organization, User $user)
@@ -41,7 +46,7 @@ class SmartcardInvoiceExport
 
         self::formatCells($worksheet);
 
-        $lastRow = self::buildHeader($worksheet, $this->translator, $organization, $batch);
+        $lastRow = self::buildHeader($worksheet, $this->translator, $organization, $batch, $this->locationMapper);
         $lastRow = self::buildBody($worksheet, $this->translator, $batch, $lastRow + 1);
         $lastRow = self::buildFooter($worksheet, $this->translator, $organization, $user, $lastRow + 3);
         $lastRow = self::buildAnnex($worksheet, $this->translator, $batch, $lastRow + 2);
@@ -77,11 +82,11 @@ class SmartcardInvoiceExport
             ->setVertical(Alignment::VERTICAL_CENTER);
     }
 
-    private static function buildHeader(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, SmartcardRedemptionBatch $batch): int
+    private static function buildHeader(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, SmartcardRedemptionBatch $batch, LocationMapper $locationMapper): int
     {
         self::buildHeaderFirstLineBoxes($worksheet, $translator, $organization, $batch);
 
-        self::buildHeaderSecondLine($worksheet, $translator, $organization, $batch);
+        self::buildHeaderSecondLine($worksheet, $translator, $organization, $batch, $locationMapper);
         self::buildHeaderThirdLine($worksheet, $translator, $organization, $batch);
         self::buildHeaderFourthLine($worksheet, $translator, $organization, $batch);
 
@@ -152,7 +157,7 @@ class SmartcardInvoiceExport
         }
     }
 
-    private static function buildHeaderSecondLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, SmartcardRedemptionBatch $batch): void
+    private static function buildHeaderSecondLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, SmartcardRedemptionBatch $batch, LocationMapper $locationMapper): void
     {
         // structure
         $worksheet->mergeCells('C7:D7');
@@ -161,7 +166,7 @@ class SmartcardInvoiceExport
         // data
         $worksheet->setCellValue('B7', $translator->trans('customer', [], 'invoice'));
         $worksheet->setCellValue('C7', $organization->getName());
-        $worksheet->setCellValue('E7', LocationMapper::toName($batch->getVendor()->getLocation()));
+        $worksheet->setCellValue('E7', $locationMapper->toName($batch->getVendor()->getLocation()));
         $worksheet->setCellValue('I7', $batch->getRedeemedAt()->format('j-n-y'));
         $worksheet->setCellValue('H7', $translator->trans('invoice_date', [], 'invoice'));
         // style
