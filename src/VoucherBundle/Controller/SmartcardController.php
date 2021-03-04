@@ -725,6 +725,8 @@ class SmartcardController extends Controller
             $repository->countPurchasesValue($purchases),
             $purchases
         );
+        $currency = null;
+        $projectId = null;
         foreach ($purchases as $purchase) {
             if ($purchase->getVendor()->getId() !== $vendor->getId()) {
                 return new Response("Inconsistent vendor and purchase' #{$purchase->getId()} vendor", Response::HTTP_BAD_REQUEST);
@@ -733,9 +735,28 @@ class SmartcardController extends Controller
                 return new Response("Purchase' #{$purchase->getId()} was already redeemed at ".$purchase->getRedeemedAt()->format('Y-m-d H:i:s'),
                     Response::HTTP_BAD_REQUEST);
             }
+            if (null === $currency) {
+                $currency = $purchase->getCurrency();
+            }
+            if ($purchase->getCurrency() != $currency) {
+                return new Response("Purchases have inconsistent currencies. {$purchase->getCurrency()} in {$purchase->getId()} is different than {$currency}",
+                    Response::HTTP_BAD_REQUEST);
+            }
+            if (null === $this->extractProjectId($purchase)) {
+                return new Response("Purchase #{$purchase->getId()} has no project.",
+                    Response::HTTP_BAD_REQUEST);
+            }
+            if (null === $projectId) {
+                $projectId = $this->extractProjectId($purchase);
+            }
+            if ($this->extractProjectId($purchase) !== $projectId) {
+                return new Response("Purchases have inconsistent currencies. Project #{$this->extractProjectId($purchase)} in Purchase #{$purchase->getId()} is different than project of others: {$projectId}",
+                    Response::HTTP_BAD_REQUEST);
+            }
 
             $purchase->setRedemptionBatch($redemptionBath);
         }
+
 
         $this->getDoctrine()->getManager()->persist($redemptionBath);
         $this->getDoctrine()->getManager()->flush();
@@ -743,6 +764,18 @@ class SmartcardController extends Controller
         return $this->json([
             'id' => $redemptionBath->getId(),
         ]);
+    }
+
+    private function extractProjectId(SmartcardPurchase $purchase): ?int
+    {
+        if (null === $purchase->getSmartcard()
+            || null === $purchase->getSmartcard()->getDeposit()
+            || null === $purchase->getSmartcard()->getDeposit()->getAssistanceBeneficiary()->getAssistance()
+            || null === $purchase->getSmartcard()->getDeposit()->getAssistanceBeneficiary()->getAssistance()->getProject()
+        ) {
+            return null;
+        }
+        return $purchase->getSmartcard()->getDeposit()->getAssistanceBeneficiary()->getAssistance()->getProject()->getId();
     }
 
     /**

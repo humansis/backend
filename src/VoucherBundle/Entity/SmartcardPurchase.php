@@ -170,4 +170,12 @@ class SmartcardPurchase
         $this->redemptionBatch = $redemptionBatch;
     }
 
+    /**
+     * @return string
+     */
+    public function getCurrency(): string
+    {
+        return $this->getRecords()->first()->getCurrency();
+    }
+
 }

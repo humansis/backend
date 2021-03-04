@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace VoucherBundle\Repository;
 
+use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
