@@ -42,9 +42,10 @@ class UserControllerTest extends BMSServiceTestCase
 
         $crawler = $this->request('GET', '/api/wsse/salt/o');
         $data = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $this->assertTrue($this->client->getResponse()->isClientError(), "Request should fail: ".$this->client->getResponse()->getContent());
 
         $this->assertTrue(!$this->client->getResponse()->isSuccessful());
+        $this->assertTrue(!$this->client->getResponse()->isServerError());
     }
 
     /**
