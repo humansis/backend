@@ -169,6 +169,11 @@ class HouseholdUpdateInputType implements InputTypeInterface
      */
     private $countrySpecificAnswers = [];
 
+    /**
+     * @Assert\Valid
+     */
+    private $proxy;
+
     final public static function assets()
     {
         $keys = [];
@@ -581,5 +586,21 @@ class HouseholdUpdateInputType implements InputTypeInterface
     public function removeCountrySpecificAnswer(CountrySpecificsAnswerInputType $inputType)
     {
         // method must be declared to fullfill normalizer requirements
+    }
+
+    /**
+     * @return HouseholdProxyInputType|null
+     */
+    public function getProxy()
+    {
+        return $this->proxy;
+    }
+
+    /**
+     * @param HouseholdProxyInputType|null $proxy
+     */
+    public function setProxy(?HouseholdProxyInputType $proxy): void
+    {
+        $this->proxy = $proxy;
     }
 }

@@ -200,4 +200,13 @@ class HouseholdMapper implements MapperInterface
 
         return null;
     }
+
+    public function getProxyId(): ?int
+    {
+        if (null !== $this->object->getProxy()) {
+            return $this->object->getProxy()->getId();
+        }
+
+        return null;
+    }
 }

@@ -207,6 +207,14 @@ class Household extends AbstractBeneficiary
     private $enumeratorName = null;
 
     /**
+     * @var Person|null
+     *
+     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Person")
+     * @ORM\JoinColumn(name="proxy_id")
+     */
+    private $proxy;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -755,5 +763,21 @@ class Household extends AbstractBeneficiary
         $this->enumeratorName = $enumeratorName;
 
         return $this;
+    }
+
+    /**
+     * @return Person|null
+     */
+    public function getProxy(): ?Person
+    {
+        return $this->proxy;
+    }
+
+    /**
+     * @param Person|null $proxy
+     */
+    public function setProxy(?Person $proxy): void
+    {
+        $this->proxy = $proxy;
     }
 }

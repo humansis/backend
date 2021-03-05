@@ -21,6 +21,7 @@ use CommonBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\InputType\HouseholdCreateInputType;
+use NewApiBundle\InputType\HouseholdProxyInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
@@ -316,6 +317,54 @@ class HouseholdService
             foreach ($householdArray["country_specific_answers"] as $country_specific_answer) {
                 $this->addOrUpdateCountrySpecific($household, $country_specific_answer, false);
             }
+        }
+
+        $proxy = $household->getProxy();
+
+        if (null !== $householdArray['proxy']) {
+            if (null === $proxy) {
+                $proxy = new Person();
+                $this->em->persist($proxy);
+                $household->setProxy($proxy);
+            }
+
+            /** @var HouseholdProxyInputType $proxyInputType */
+            $proxyInputType = $householdArray['proxy'];
+
+            $proxy->setEnGivenName($proxyInputType->getEnGivenName());
+            $proxy->setEnFamilyName($proxyInputType->getEnFamilyName());
+            $proxy->setEnParentsName($proxyInputType->getEnParentsName());
+            $proxy->setLocalGivenName($proxyInputType->getLocalGivenName());
+            $proxy->setLocalFamilyName($proxyInputType->getLocalFamilyName());
+            $proxy->setLocalParentsName($proxyInputType->getLocalParentsName());
+
+            $proxy->getPhones()->clear();
+            foreach ($proxyInputType->getPhones() as $phoneInputType) {
+                $phone = new Phone();
+                $phone->setType($phoneInputType->getType());
+                $phone->setPrefix($phoneInputType->getPrefix());
+                $phone->setNumber($phoneInputType->getNumber());
+                $phone->setProxy($phoneInputType->getProxy());
+                $phone->setPerson($proxy);
+
+                $this->em->persist($phone);
+            }
+
+            $proxy->getNationalIds()->clear();
+            foreach ($proxyInputType->getNationalIdCards() as $nationalIdInputType) {
+                $nationalId = new NationalId();
+                $nationalId->setIdType($nationalIdInputType->getType());
+                $nationalId->setIdNumber($nationalIdInputType->getNumber());
+                $nationalId->setPerson($proxy);
+
+                $this->em->persist($nationalId);
+            }
+        } else {
+            if (null !== $proxy) {
+                $this->em->remove($proxy);
+            }
+
+            $household->setProxy(null);
         }
 
         if ($flush) {
@@ -620,6 +669,8 @@ class HouseholdService
                 'profile' => ['photo' => ''],
             ];
         }
+
+        $data['proxy'] = $inputType->getProxy();
 
         return $data;
     }
