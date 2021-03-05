@@ -64,6 +64,41 @@ class OrganizationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('footerContent', $result);
     }
 
+    public function testUpdate()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        /** @var Organization|null $organization */
+        $organization = $this->container->get('doctrine')->getRepository(Organization::class)->findBy([])[0];
+
+        $this->request('PUT', '/api/basic/organizations/'.$organization->getId(), [
+            'logo' => 'http://www.example.org/image.jpg',
+            'name' => 'Test organisation',
+            'primaryColor' => '#000000',
+            'secondaryColor' => '#000000',
+            'font' => 'Arial',
+            'footerContent' => 'Some text.',
+        ]);
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('id', $result);
+        $this->assertArrayHasKey('logo', $result);
+        $this->assertArrayHasKey('name', $result);
+        $this->assertArrayHasKey('primaryColor', $result);
+        $this->assertArrayHasKey('secondaryColor', $result);
+        $this->assertArrayHasKey('font', $result);
+        $this->assertArrayHasKey('footerContent', $result);
+    }
+
     /**
      *
      * @throws ORMException
