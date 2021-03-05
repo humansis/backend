@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\CountrySpecific;
+use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\CountrySpecificCreateInputType;
 use NewApiBundle\InputType\CountrySpecificFilterInputType;
@@ -18,6 +19,18 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class CountrySpecificController extends AbstractController
 {
+    /**
+     * @Rest\Get("/country-specifics/answers/{id}")
+     *
+     * @param CountrySpecificAnswer $object
+     *
+     * @return JsonResponse
+     */
+    public function answer(CountrySpecificAnswer $object): JsonResponse
+    {
+        return $this->json($object);
+    }
+
     /**
      * @Rest\Get("/country-specifics/{id}")
      *
