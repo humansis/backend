@@ -301,7 +301,11 @@ class AssistanceController extends Controller
         /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
         $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
 
-        $return = $assistanceBeneficiaryService->removeBeneficiaryInDistribution($distribution, $beneficiary, $deletionData);
+        try {
+            $return = $assistanceBeneficiaryService->removeBeneficiaryInDistribution($distribution, $beneficiary, $deletionData);
+        } catch (\InvalidArgumentException $e) {
+            throw new BadRequestHttpException($e->getMessage(), $e);
+        }
 
         return new Response(json_encode($return));
     }

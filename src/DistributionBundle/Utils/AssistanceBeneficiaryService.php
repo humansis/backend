@@ -237,13 +237,20 @@ class AssistanceBeneficiaryService
     }
 
     /**
-     * @param Assistance $assistance
-     * @param Beneficiary $beneficiary
+     * @param Assistance          $assistance
+     * @param AbstractBeneficiary $beneficiary
+     * @param                     $deletionData
+     *
      * @return bool
      */
     public function removeBeneficiaryInDistribution(Assistance $assistance, AbstractBeneficiary $beneficiary, $deletionData)
     {
+        /** @var AssistanceBeneficiary $assistanceBeneficiary */
         $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy(['beneficiary' => $beneficiary->getId(), 'assistance' => $assistance->getId()]);
+
+        if ($assistanceBeneficiary->hasDistributionStarted()) {
+            throw new \InvalidArgumentException("Beneficiary with distributed items can't be removed from assistance.");
+        }
 
         // Update updatedOn datetime
         $assistance->setUpdatedOn(new DateTime());
