@@ -262,8 +262,12 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
 
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $assistance = $em->getRepository(Assistance::class)->findBy([])[0];
-        $beneficiary = $em->getRepository(Beneficiary::class)->findBy([])[0];
+        $assistance = $em->getRepository(Assistance::class)->findOneBy([
+            'validated' => true,
+            'completed' => false,
+            'archived' => false,
+        ]);
+        $beneficiary = $em->getRepository(Beneficiary::class)->findOneBy([], ['id'=>'desc']);
 
         $this->request('PUT', '/api/basic/assistances/'.$assistance->getId().'/beneficiaries', [
             'beneficiaryIds' => [$beneficiary->getId()],
