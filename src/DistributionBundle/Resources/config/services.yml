@@ -92,9 +92,6 @@ services:
             - "@serializer"
         public: true
 
-    DistributionBundle\Mapper\CampMapper:
-        public: true
-
 #######################################################################################
 ##                                       CSV                                         ##
 #######################################################################################
@@ -119,4 +116,7 @@ services:
 
     distribution.export.smartcard_invoice:
         class: DistributionBundle\Export\SmartcardInvoiceExport
+        arguments:
+            - '@translator'
+            - '@CommonBundle\Mapper\LocationMapper'
         public: true
