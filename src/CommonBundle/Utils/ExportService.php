@@ -69,11 +69,6 @@ class ExportService
             throw new \InvalidArgumentException('No data to export');
         }
 
-        if (count($exportableTable) > ExportController::EXPORT_LIMIT) {
-            $count = count($exportableTable);
-            throw new BadRequestHttpException("Too much entities ($count) to export. Limit is ".ExportController::EXPORT_LIMIT);
-        }
-
         $rows = $this->normalize($exportableTable);
 
         $rowIndex = 1;
