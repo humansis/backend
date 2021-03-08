@@ -179,6 +179,13 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
+    CommonBundle\DataFixtures\SmartcardRedemptionFixtures:
+        arguments:
+            - "@=service('kernel').getEnvironment()"
+            - "@smartcard_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
     CommonBundle\DataFixtures\VoucherRedemptionFixtures:
         arguments:
             - "@=service('kernel').getEnvironment()"

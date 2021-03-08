@@ -3,6 +3,7 @@
 namespace VoucherBundle\Tests\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use CommonBundle\DataFixtures\VendorFixtures;
 use DistributionBundle\Entity\Assistance;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\User;
@@ -445,7 +446,9 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([], ['id' => 'asc']);
+        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([
+            'name' => VendorFixtures::VENDOR_KHM_NAME,
+        ], ['id' => 'asc']);
         $vendorId = $vendor->getId();
 
         $crawler = $this->request('GET', '/api/wsse/smartcards/purchases/to-redemption/'.$vendorId);
