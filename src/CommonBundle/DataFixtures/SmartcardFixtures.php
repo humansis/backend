@@ -133,18 +133,6 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         return $entities[$i];
     }
 
-    private function randomCurrency(int $currencyPoolSize): string
-    {
-        switch (rand(1, $currencyPoolSize)) {
-            case 1: return 'CZK';
-            case 2: return 'KHM';
-            case 3: return 'USD';
-            case 4: return 'SYP';
-            default:
-                return strtoupper(substr(md5(rand(1, $currencyPoolSize)), 0, 3));
-        }
-    }
-
     public function getDependencies()
     {
         return [
