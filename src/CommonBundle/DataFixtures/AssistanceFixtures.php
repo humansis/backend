@@ -22,7 +22,8 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class AssistanceFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
-    const REF_SMARTCARD_ASSISTANCE = '569f131a-387d-4588-9e17-ecd94f261a85';
+    const REF_SMARTCARD_ASSISTANCE_KHM = '569f131a-387d-4588-9e17-ecd94f261a85';
+    const REF_SMARTCARD_ASSISTANCE_SYR = 'CF9825AD-4C5E-4FE6-8561-F575B3AA3B5E';
 
     private $assistanceArray = [
         'adm1' => '',
@@ -109,9 +110,17 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             $this->loadCommonHouseholdAssistance($manager, $project);
             $this->loadCommonInstitutionAssistance($manager, $project);
             $this->loadCommonCommunityAssistance($manager, $project);
-            $this->loadSmartcardAssistance($manager, $project);
+            $this->loadSmartcardAssistance($manager, $project, 'USD');
             echo "\n";
         }
+
+        $khmProject = $manager->getRepository(Project::class)->findOneBy(['iso3' => 'KHM'], ['id' => 'asc']);
+        $khmAssistance = $this->loadSmartcardAssistance($manager, $khmProject, 'KHR');
+        $this->setReference(self::REF_SMARTCARD_ASSISTANCE_KHM, $khmAssistance);
+
+        $syrProject = $manager->getRepository(Project::class)->findOneBy(['iso3' => 'SYR'], ['id' => 'asc']);
+        $syrAssistance = $this->loadSmartcardAssistance($manager, $syrProject, 'SYP');
+        $this->setReference(self::REF_SMARTCARD_ASSISTANCE_SYR, $syrAssistance);
     }
 
     public function getDependencies(): array
@@ -211,7 +220,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         }
     }
 
-    private function loadSmartcardAssistance(ObjectManager $manager, Project $project)
+    private function loadSmartcardAssistance(ObjectManager $manager, Project $project, string $currency)
     {
         $modalityType = $manager->getRepository(ModalityType::class)->findOneBy(['name' => 'Smartcard']);
 
@@ -224,7 +233,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
                     'id' => $modalityType->getId(),
                 ],
                 'type' => 'Smartcard',
-                'unit' => 'USD',
+                'unit' => $currency,
                 'value' => 45,
                 'description' => null,
             ],
@@ -243,9 +252,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             ],
         ];
 
-        $result = $this->distributionService->createFromArray($project->getIso3(), $data, 1);
-
-        $this->setReference(self::REF_SMARTCARD_ASSISTANCE, $result['distribution']);
+        return $this->distributionService->createFromArray($project->getIso3(), $data, 1)['distribution'];
     }
 
     private function getCommodities(ObjectManager $manager, array $country): array

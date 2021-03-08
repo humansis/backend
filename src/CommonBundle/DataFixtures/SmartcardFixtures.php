@@ -46,40 +46,44 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         // set up seed will make random values will be same for each run of fixtures
         srand(42);
 
-        /** @var Vendor $vendor */
-        $vendor = $this->getReference(VendorFixtures::REF_VENDOR_KHM);
+        foreach ($this->getReference(AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM)->getDistributionBeneficiaries() as $ab) {
+            $this->generatePurchases($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_KHM));
+        }
 
-        /** @var Assistance $assistance */
-        $assistance = $this->getReference(AssistanceFixtures::REF_SMARTCARD_ASSISTANCE);
-        foreach ($assistance->getDistributionBeneficiaries() as $ab) {
-            $serialNumber = self::generateSerialNumber();
-            if ($manager->getRepository(Smartcard::class)->findOneBy(['serialNumber' => $serialNumber])) {
-                // fixtures already exists
-                return;
-            }
+        foreach ($this->getReference(AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR)->getDistributionBeneficiaries() as $ab) {
+            $this->generatePurchases($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_SYR));
+        }
 
-            $smartcard = new Smartcard($serialNumber, new DateTimeImmutable('now'));
-            $smartcard->setState(self::generateState());
+        $manager->flush();
+    }
 
-            for ($j = 0; $j < rand(0, 5); ++$j) {
-                $this->generatePurchase($j, $smartcard, $vendor, $manager);
-            }
+    private function generatePurchases(ObjectManager $manager, AssistanceBeneficiary $ab, Vendor $vendor): void
+    {
+        $serialNumber = self::generateSerialNumber();
+        if ($manager->getRepository(Smartcard::class)->findOneBy(['serialNumber' => $serialNumber])) {
+            // fixtures already exists
+            return;
+        }
 
-            $deposit = SmartcardDeposit::create(
+        $smartcard = new Smartcard($serialNumber, new DateTimeImmutable('now'));
+        $smartcard->setState(self::generateState());
+
+        $smartcard->setBeneficiary($ab->getBeneficiary());
+        foreach (range(1, rand(2, 4)) as $i) {
+            $smartcard->addDeposit(SmartcardDeposit::create(
                 $smartcard,
                 $this->randomEntity(User::class, $manager),
                 $ab,
                 rand(1, 10000),
-                new DateTimeImmutable('now')
-            );
-
-            $smartcard->setBeneficiary($ab->getBeneficiary());
-            $smartcard->addDeposit($deposit);
-
-            $manager->persist($smartcard);
+                new DateTimeImmutable("now-${i} days")
+            ));
         }
 
-        $manager->flush();
+        for ($j = 0; $j < rand(0, 50); ++$j) {
+            $this->generatePurchase($j, $smartcard, $vendor, $manager);
+        }
+
+        $manager->persist($smartcard);
     }
 
     private static function generateSerialNumber()
@@ -103,7 +107,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         for ($j = 0; $j < rand(1, 3); ++$j) {
             $quantity = rand(1, 10000);
             $value = rand(1, 10000);
-            $purchase->addRecord($this->randomEntity(Product::class, $manager), $quantity, $value, 'CZK');
+            $purchase->addRecord($this->randomEntity(Product::class, $manager), $quantity, $value, $smartcard->getCurrency());
         }
 
         return $purchase;
@@ -119,6 +123,18 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         $i = rand(0, count($entities) - 1);
 
         return $entities[$i];
+    }
+
+    private function randomCurrency(int $currencyPoolSize): string
+    {
+        switch (rand(1, $currencyPoolSize)) {
+            case 1: return 'CZK';
+            case 2: return 'KHM';
+            case 3: return 'USD';
+            case 4: return 'SYP';
+            default:
+                return strtoupper(substr(md5(rand(1, $currencyPoolSize)), 0, 3));
+        }
     }
 
     public function getDependencies()
