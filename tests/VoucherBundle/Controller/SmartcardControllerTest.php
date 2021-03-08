@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Assistance;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\User;
+use VoucherBundle\DTO\PurchaseRedemptionBatch;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
@@ -422,15 +423,17 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         $crawler = $this->request('GET', '/api/wsse/smartcards/purchases/to-redemption/'.$vendorId);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
-        $batch = json_decode($this->client->getResponse()->getContent(), true);
+        $batchCandidates = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertIsArray($batch);
-        $this->assertArrayHasKey('value', $batch);
-        $this->assertArrayHasKey('purchases_ids', $batch);
+        $this->assertIsArray($batchCandidates);
+        $batchCandidate = $batchCandidates[0];
+        $this->assertIsArray($batchCandidate);
+        $this->assertArrayHasKey('value', $batchCandidate);
+        $this->assertArrayHasKey('purchases_ids', $batchCandidate);
 
-        $this->assertIsNumeric($batch['value']);
-        $this->assertIsArray($batch['purchases_ids']);
-        foreach ($batch['purchases_ids'] as $id) {
+        $this->assertIsNumeric($batchCandidate['value']);
+        $this->assertIsArray($batchCandidate['purchases_ids']);
+        foreach ($batchCandidate['purchases_ids'] as $id) {
             $this->assertIsInt($id);
         }
     }
@@ -447,14 +450,17 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         $crawler = $this->request('GET', '/api/wsse/smartcards/purchases/to-redemption/'.$vendorId);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
-        $batch = json_decode($this->client->getResponse()->getContent(), true);
+        $batchCandidates = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertIsArray($batchCandidates);
+        $batchCandidate = $batchCandidates[0];
+        $this->assertIsArray($batchCandidate);
 
         /** @var SmartcardPurchaseRepository $repository */
         $repository = $this->em->getRepository(SmartcardPurchase::class);
-        $summary = $repository->countPurchasesToRedeem($vendor);
+        $summary = $repository->countPurchasesToRedeem($vendor)[0];
 
-        $this->assertCount(count($summary->getPurchasesIds()), $batch['purchases_ids'], 'There is wrong count number in batch to redeem');
-        $this->assertEquals($summary->getValue(), $batch['value'], 'There is wrong value of batch to redeem');
+        $this->assertCount(count($summary->getPurchasesIds()), $batchCandidate['purchases_ids'], 'There is wrong count number in batch to redeem');
+        $this->assertEquals($summary->getValue(), $batchCandidate['value'], 'There is wrong value of batch to redeem');
     }
 
     public function testBatchRedemption(): void
@@ -465,18 +471,14 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $vendor = $this->em->getRepository(Vendor::class)->findOneBy([], ['id' => 'asc']);
-        $vendorId = $vendor->getId();
-        $purchases = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->findBy([
-            'vendor' => $vendor,
-            'redemptionBatch' => null,
-        ]);
+        $repository = $this->em->getRepository(SmartcardPurchase::class);
+        /** @var PurchaseRedemptionBatch $redemptionCandidate */
+        $redemptionCandidate = $repository->countPurchasesToRedeem($vendor)[0];
         $batchToRedeem = [
-            'purchases' => array_map(function (\VoucherBundle\Entity\SmartcardPurchase $purchase) {
-                return $purchase->getId();
-            }, $purchases),
+            'purchases' => $redemptionCandidate->getPurchasesIds()
         ];
 
-        $crawler = $this->request('POST', '/api/wsse/smartcards/purchases/redeem-batch/'.$vendorId, $batchToRedeem);
+        $crawler = $this->request('POST', '/api/wsse/smartcards/purchases/redeem-batch/'.$vendor->getId(), $batchToRedeem);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
         $result = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArrayHasKey('id', $result);
