@@ -51,30 +51,39 @@ class SmartcardRedemptionFixtures extends Fixture implements DependentFixtureInt
             'vendor' => $this->getReference(VendorFixtures::REF_VENDOR_KHM),
             'redemptionBatch' => null,
         ]);
-        $purchaseIds = array_map(function (SmartcardPurchase $purchase) { return $purchase->getId(); }, $purchases);
+        $purchaseIds = [];
+        foreach ($purchases as $purchase) {
+            $purchaseIds[$this->smartcardService->extractPurchaseProjectId($purchase)][] = $purchase->getId();
+        }
 
-        $batch = new SmartcardRedemtionBatch();
-        $batch->setPurchases(array_slice($purchaseIds, 1, 5));
-        $this->smartcardService->redeem(
-            $this->getReference(VendorFixtures::REF_VENDOR_KHM),
-            $batch,
-            $adminUser
-        );
+        foreach ($purchaseIds as $projectId => $ids) {
+            $batch = new SmartcardRedemtionBatch();
+            $batch->setPurchases(array_slice($ids, 1, 5));
+            $this->smartcardService->redeem(
+                $this->getReference(VendorFixtures::REF_VENDOR_KHM),
+                $batch,
+                $adminUser
+            );
+        }
 
         $purchases = $manager->getRepository(SmartcardPurchase::class)->findBy([
             'vendor' => $this->getReference(VendorFixtures::REF_VENDOR_SYR),
             'redemptionBatch' => null,
         ]);
-        $purchaseIds = array_map(function (SmartcardPurchase $purchase) { return $purchase->getId(); }, $purchases);
+        $purchaseIds = [];
+        foreach ($purchases as $purchase) {
+            $purchaseIds[$this->smartcardService->extractPurchaseProjectId($purchase)][] = $purchase->getId();
+        }
 
-        $batch = new SmartcardRedemtionBatch();
-        $batch->setPurchases(array_slice($purchaseIds, 1, 5));
-        $this->smartcardService->redeem(
-            $this->getReference(VendorFixtures::REF_VENDOR_SYR),
-            $batch,
-            $adminUser
-        );
-
+        foreach ($purchaseIds as $projectId => $ids) {
+            $batch = new SmartcardRedemtionBatch();
+            $batch->setPurchases(array_slice($ids, 1, 5));
+            $this->smartcardService->redeem(
+                $this->getReference(VendorFixtures::REF_VENDOR_SYR),
+                $batch,
+                $adminUser
+            );
+        }
     }
 
     public function getDependencies(): array

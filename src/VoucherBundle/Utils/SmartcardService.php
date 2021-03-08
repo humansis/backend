@@ -103,14 +103,14 @@ class SmartcardService
             if ($purchase->getCurrency() != $currency) {
                 throw new \InvalidArgumentException("Purchases have inconsistent currencies. {$purchase->getCurrency()} in {$purchase->getId()} is different than {$currency}");
             }
-            if (null === $this->extractProjectId($purchase)) {
+            if (null === $this->extractPurchaseProjectId($purchase)) {
                 throw new \InvalidArgumentException("Purchase #{$purchase->getId()} has no project.");
             }
             if (null === $projectId) {
-                $projectId = $this->extractProjectId($purchase);
+                $projectId = $this->extractPurchaseProjectId($purchase);
             }
-            if ($this->extractProjectId($purchase) !== $projectId) {
-                throw new \InvalidArgumentException("Purchases have inconsistent currencies. Project #{$this->extractProjectId($purchase)} in Purchase #{$purchase->getId()} is different than project of others: {$projectId}");
+            if ($this->extractPurchaseProjectId($purchase) !== $projectId) {
+                throw new \InvalidArgumentException("Purchases have inconsistent currencies. Project #{$this->extractPurchaseProjectId($purchase)} in Purchase #{$purchase->getId()} is different than project of others: {$projectId}");
             }
 
             $purchase->setRedemptionBatch($redemptionBath);
@@ -123,7 +123,7 @@ class SmartcardService
         return $redemptionBath;
     }
 
-    private function extractProjectId(SmartcardPurchase $purchase): ?int
+    public function extractPurchaseProjectId(SmartcardPurchase $purchase): ?int
     {
         if (null === $purchase->getSmartcard()
             || null === $purchase->getSmartcard()->getDeposit()

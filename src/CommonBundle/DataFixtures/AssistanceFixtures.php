@@ -22,8 +22,10 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class AssistanceFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
-    const REF_SMARTCARD_ASSISTANCE_KHM = '569f131a-387d-4588-9e17-ecd94f261a85';
-    const REF_SMARTCARD_ASSISTANCE_SYR = 'CF9825AD-4C5E-4FE6-8561-F575B3AA3B5E';
+    const REF_SMARTCARD_ASSISTANCE_KHM_KHR = '569f131a-387d-4588-9e17-ecd94f261a85';
+    const REF_SMARTCARD_ASSISTANCE_KHM_USD = '9ab17087-f54f-41ee-9b8d-c91d932d8ec2';
+    const REF_SMARTCARD_ASSISTANCE_SYR_SYP = 'e643bdbc-df6f-449a-b424-8c842a408e47';
+    const REF_SMARTCARD_ASSISTANCE_SYR_USD = '223b91e8-0f05-44b4-9c74-f156cbd95d1a';
 
     private $assistanceArray = [
         'adm1' => '',
@@ -114,13 +116,17 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             echo "\n";
         }
 
-        $khmProject = $manager->getRepository(Project::class)->findOneBy(['iso3' => 'KHM'], ['id' => 'asc']);
-        $khmAssistance = $this->loadSmartcardAssistance($manager, $khmProject, 'KHR');
-        $this->setReference(self::REF_SMARTCARD_ASSISTANCE_KHM, $khmAssistance);
+        $khmProjects = $manager->getRepository(Project::class)->findBy(['iso3' => 'KHM'], ['id' => 'asc']);
+        $khmKhrAssistance = $this->loadSmartcardAssistance($manager, $khmProjects[0], 'KHR');
+        $this->setReference(self::REF_SMARTCARD_ASSISTANCE_KHM_KHR, $khmKhrAssistance);
+        $khmUsdAssistance = $this->loadSmartcardAssistance($manager, $khmProjects[1], 'USD');
+        $this->setReference(self::REF_SMARTCARD_ASSISTANCE_KHM_USD, $khmUsdAssistance);
 
-        $syrProject = $manager->getRepository(Project::class)->findOneBy(['iso3' => 'SYR'], ['id' => 'asc']);
-        $syrAssistance = $this->loadSmartcardAssistance($manager, $syrProject, 'SYP');
-        $this->setReference(self::REF_SMARTCARD_ASSISTANCE_SYR, $syrAssistance);
+        $syrProjects = $manager->getRepository(Project::class)->findBy(['iso3' => 'SYR'], ['id' => 'asc']);
+        $syrSypAssistance = $this->loadSmartcardAssistance($manager, $syrProjects[0], 'SYP');
+        $this->setReference(self::REF_SMARTCARD_ASSISTANCE_SYR_SYP, $syrSypAssistance);
+        $syrUsdAssistance = $this->loadSmartcardAssistance($manager, $syrProjects[1], 'USD');
+        $this->setReference(self::REF_SMARTCARD_ASSISTANCE_SYR_USD, $syrUsdAssistance);
     }
 
     public function getDependencies(): array
