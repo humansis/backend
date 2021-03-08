@@ -46,7 +46,7 @@ class NationalId
      *
      * @ORM\Column(name="id_type", type="string", length=45)
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "FullInstitution"})
-     * @Assert\Choice(callback={"BeneficiaryBundle\Entity\NationalId", "types"}, strict=true)
+     * @Assert\Choice(callback={"BeneficiaryBundle\Entity\NationalId", "types"})
      */
     private $idType;
 

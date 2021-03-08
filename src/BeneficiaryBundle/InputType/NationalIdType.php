@@ -9,7 +9,7 @@ class NationalIdType implements InputTypeInterface
     /**
      * @var string|null
      * @Assert\Length(max="255")
-     * @Assert\Choice(callback={"BeneficiaryBundle\Entity\NationalId","types"}, strict=true)
+     * @Assert\Choice(callback={"BeneficiaryBundle\Entity\NationalId","types"})
      */
     private $type;
     /**

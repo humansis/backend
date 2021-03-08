@@ -17,11 +17,11 @@ class Referral
     * Mapping of possible referral types
     */
     const REFERRALTYPES = [
-        1 => 'Health',
-        2 => 'Protection',
-        3 => 'Shelter',
-        4 => 'Nutrition',
-        5 => 'Other',
+        '1' => 'Health',
+        '2' => 'Protection',
+        '3' => 'Shelter',
+        '4' => 'Nutrition',
+        '5' => 'Other',
     ];
 
     /**

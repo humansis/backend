@@ -18,7 +18,7 @@ class HouseholdFilterInputType extends AbstractFilterInputType
     protected $fulltext;
 
     /**
-     * @Assert\Choice({"M", "F"}, strict=true)
+     * @Assert\Choice({"M", "F"})
      */
     protected $gender;
 
@@ -59,7 +59,7 @@ class HouseholdFilterInputType extends AbstractFilterInputType
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *         @Assert\Choice(callback={"BeneficiaryBundle\Enum\ResidencyStatus", "all"}, strict=true)
+     *         @Assert\Choice(callback={"BeneficiaryBundle\Enum\ResidencyStatus", "all"})
      *     },
      *     groups={"Strict"}
      * )
@@ -70,7 +70,7 @@ class HouseholdFilterInputType extends AbstractFilterInputType
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *         @Assert\Choice(callback="referralTypes", strict=true)
+     *         @Assert\Choice(callback="referralTypes")
      *     },
      *     groups={"Strict"}
      * )
@@ -81,7 +81,7 @@ class HouseholdFilterInputType extends AbstractFilterInputType
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *        @Assert\Choice(callback={"ProjectBundle\Enum\Livelihood", "values"}, strict=true, strict=true)
+     *        @Assert\Choice(callback={"ProjectBundle\Enum\Livelihood", "values"}, strict=true)
      *     },
      *     groups={"Strict"}
      * )

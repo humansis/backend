@@ -19,14 +19,14 @@ use Symfony\Component\Validator\Constraints as Assert;
 class HouseholdUpdateInputType implements InputTypeInterface
 {
     /**
-     * @Assert\Choice({"KHM", "SYR", "UKR", "ETH", "MNG", "ARM"}, strict=true)
+     * @Assert\Choice({"KHM", "SYR", "UKR", "ETH", "MNG", "ARM"})
      * @Assert\NotBlank
      * @Assert\NotNull
      */
     private $iso3;
 
     /**
-     * @Assert\Choice(callback={"ProjectBundle\Enum\Livelihood", "values"}, strict=true, strict=true)
+     * @Assert\Choice(callback={"ProjectBundle\Enum\Livelihood", "values"})
      */
     private $livelihood;
 
@@ -35,7 +35,7 @@ class HouseholdUpdateInputType implements InputTypeInterface
      * @Assert\NotNull
      * @Assert\All(
      *     constraints={
-     *         @Assert\Choice(callback="assets", strict=true, groups={"Strict"}, strict=true)
+     *         @Assert\Choice(callback="assets", strict=true, groups={"Strict"})
      *     },
      *     groups={"Strict"}
      * )
@@ -116,7 +116,7 @@ class HouseholdUpdateInputType implements InputTypeInterface
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *         @Assert\Choice(callback="supportReceivedTypes", strict=true, groups={"Strict"}, strict=true)
+     *         @Assert\Choice(callback="supportReceivedTypes", strict=true, groups={"Strict"})
      *     },
      *     groups={"Strict"}
      * )

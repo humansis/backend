@@ -18,7 +18,7 @@ class NationalIdCardInputType implements InputTypeInterface
     private $number;
 
     /**
-     * @Assert\Choice(callback={"BeneficiaryBundle\Entity\NationalId","types"}, strict=true)
+     * @Assert\Choice(callback={"BeneficiaryBundle\Entity\NationalId","types"})
      * @Assert\NotNull
      * @Assert\NotBlank
      */

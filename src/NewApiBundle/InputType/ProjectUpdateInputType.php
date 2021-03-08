@@ -28,7 +28,7 @@ class ProjectUpdateInputType implements InputTypeInterface
     private $internalId;
 
     /**
-     * @Assert\Choice({"KHM", "SYR", "UKR", "ETH", "MNG", "ARM"}, strict=true)
+     * @Assert\Choice({"KHM", "SYR", "UKR", "ETH", "MNG", "ARM"})
      * @Assert\NotBlank
      * @Assert\NotNull
      */
@@ -67,7 +67,7 @@ class ProjectUpdateInputType implements InputTypeInterface
      * @Assert\Count(min=1, groups={"Strict"})
      * @Assert\All(
      *     constraints={
-     *         @Assert\Choice(callback={"ProjectBundle\DBAL\SectorEnum", "all"}, strict=true, groups={"Strict"}, strict=true)
+     *         @Assert\Choice(callback={"ProjectBundle\DBAL\SectorEnum", "all"}, strict=true, groups={"Strict"})
      *     },
      *     groups={"Strict"}
      * )
