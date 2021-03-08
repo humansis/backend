@@ -31,10 +31,15 @@ class SmartcardService
             throw new \InvalidArgumentException('Argument 3 must be of type '.SmartcardPurchaseInput::class.' or '.SmartcardPurchaseDeprecatedInput::class);
         }
 
+        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
+        if (!$smartcard) {
+            $smartcard = $this->createSuspiciousSmartcard($serialNumber, $data->getCreatedAt());
+        }
+
         if ($data instanceof SmartcardPurchaseDeprecatedInput) {
             $products = [];
             foreach ($data->getProducts() as $product) {
-                $product['currency'] = null;
+                $product['currency'] = $smartcard->getCurrency();
                 $products[] = $product;
             }
 
@@ -44,11 +49,6 @@ class SmartcardService
             $new->setProducts($products);
 
             $data = $new;
-        }
-
-        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
-        if (!$smartcard) {
-            $smartcard = $this->createSuspiciousSmartcard($serialNumber, $data->getCreatedAt());
         }
 
         return $this->purchaseService->purchaseSmartcard($smartcard, $data);
