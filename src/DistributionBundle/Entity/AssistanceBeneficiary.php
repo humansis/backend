@@ -205,6 +205,14 @@ class AssistanceBeneficiary
     }
 
     /**
+     * @return Collection|SmartcardDeposit[]
+     */
+    public function getSmartcardDeposits()
+    {
+        return $this->smartcardDeposits;
+    }
+
+    /**
      * Get the value of Transaction.
      *
      * @return Transaction[]
