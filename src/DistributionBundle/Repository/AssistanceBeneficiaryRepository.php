@@ -128,8 +128,6 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
     {
         $qb = $this->createQueryBuilder('db')
             ->andWhere('db.assistance = :assistance')
-            ->andWhere('beneficiary.archived = false')
-            ->andWhere('db.removed = false')
             ->setParameter('assistance', $assistance)
             ->leftJoin("db.beneficiary", "beneficiary")
             ;
