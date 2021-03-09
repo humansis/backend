@@ -13,6 +13,7 @@ use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\SmartcardRedemptionBatch;
 use VoucherBundle\Entity\Vendor;
+use VoucherBundle\InputType\SmartcardRedemtionBatch;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
 
 class SmartcardControllerTest extends BMSServiceTestCase
@@ -331,36 +332,29 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([], ['id' => 'asc']);
+        $vendor = $this->em->getRepository(Vendor::class)->findOneBy(['name' => VendorFixtures::VENDOR_SYR_NAME], ['id' => 'asc']);
         $vendorId = $vendor->getId();
-        $smartcard = $this->em->getRepository(Smartcard::class)->findOneBy([]);
+        $smartcard = $this->em->getRepository(Smartcard::class)->findOneBy(['currency' => 'SYP']);
         $purchase = new \VoucherBundle\InputType\SmartcardPurchase();
         $purchase->setProducts([[
             'id' => 1,
             'quantity' => 5.9,
             'value' => 1000.05,
-            'currency' => 'CZK',
+            'currency' => 'SYP',
         ]]);
         $purchase->setVendorId($vendorId);
         $purchase->setCreatedAt(new \DateTime());
         $purchaseService = $this->container->get('voucher.purchase_service');
+        $smartcardService = $this->container->get('smartcard_service');
         $purchaseService->purchaseSmartcard($smartcard, $purchase);
         /** @var SmartcardPurchase $p2 */
         $p2 = $purchaseService->purchaseSmartcard($smartcard, $purchase);
         $p3 = $purchaseService->purchaseSmartcard($smartcard, $purchase);
-        $redemptionBatch = new SmartcardRedemptionBatch(
-            $vendor,
-            new \DateTime(),
-            $user,
-            $this->em->getRepository(SmartcardPurchase::class)->countPurchasesValue([$p2, $p3]),
-            'CZK',
-            [$p2, $p3]
-        );
-        $p2->setRedemptionBatch($redemptionBatch);
-        $p3->setRedemptionBatch($redemptionBatch);
-        $this->em->persist($p2);
-        $this->em->persist($p3);
-        $this->em->flush();
+
+        $redemptionBatch = new SmartcardRedemtionBatch();
+        $redemptionBatch->setPurchases([$p2->getId(), $p3->getId()]);
+
+        $smartcardService->redeem($vendor, $redemptionBatch, $user);
 
         $crawler = $this->request('GET', '/api/wsse/smartcards/batch?vendor='.$vendorId);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
@@ -377,7 +371,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             $this->assertRegExp('/\d\d-\d\d-\d\d\d\d \d\d:\d\d/', $batch['date'], 'Wrong datetime format');
             $this->assertIsNumeric($batch['count']);
             $this->assertIsNumeric($batch['value']);
-            $this->assertEquals('CZK', $batch['currency']);
+            $this->assertRegExp('/\w\w\w/', $batch['currency'], 'Wrong currency format');
         }
     }
 
