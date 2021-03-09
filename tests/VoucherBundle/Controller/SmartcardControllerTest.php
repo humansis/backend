@@ -353,6 +353,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             new \DateTime(),
             $user,
             $this->em->getRepository(SmartcardPurchase::class)->countPurchasesValue([$p2, $p3]),
+            'CZK',
             [$p2, $p3]
         );
         $p2->setRedemptionBatch($redemptionBatch);
@@ -371,10 +372,12 @@ class SmartcardControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('date', $batch);
             $this->assertArrayHasKey('count', $batch);
             $this->assertArrayHasKey('value', $batch);
+            $this->assertArrayHasKey('currency', $batch);
 
             $this->assertRegExp('/\d\d-\d\d-\d\d\d\d \d\d:\d\d/', $batch['date'], 'Wrong datetime format');
             $this->assertIsNumeric($batch['count']);
             $this->assertIsNumeric($batch['value']);
+            $this->assertEquals('CZK', $batch['currency']);
         }
     }
 

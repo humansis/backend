@@ -85,6 +85,7 @@ class SmartcardService
             new \DateTime(),
             $redeemedBy,
             $repository->countPurchasesValue($purchases),
+            $purchases[0]->getCurrency(),
             $purchases
         );
 
