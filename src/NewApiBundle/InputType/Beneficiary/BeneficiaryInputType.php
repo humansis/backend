@@ -326,7 +326,7 @@ class BeneficiaryInputType implements InputTypeInterface
      */
     public function setReferralType($referralType)
     {
-        $this->referralType = $referralType;
+        $this->referralType = (int) $referralType;
     }
 
     /**
