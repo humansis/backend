@@ -18,6 +18,9 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
     const REF_VENDOR_SYR = 'vendor_fixtures_syr';
     const REF_VENDOR_GENERIC = 'vendor_fixtures_generic';
 
+    const VENDOR_KHM_NAME = 'Vendor from Cambodia';
+    const VENDOR_SYR_NAME = 'Vendor from Syria';
+
     const VENDOR_COUNT_PER_COUNTRY = 3;
 
     /** @var Kernel */
@@ -78,7 +81,7 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
 
         $vendor = new Vendor();
         $vendor
-            ->setName('Vendor from Syria')
+            ->setName(self::VENDOR_SYR_NAME)
             ->setShop('shop')
             ->setAddressNumber('13')
             ->setAddressStreet('Main street')
@@ -99,7 +102,7 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
 
         $vendor = new Vendor();
         $vendor
-            ->setName('Vendor from Cambodia')
+            ->setName(self::VENDOR_KHM_NAME)
             ->setShop('market')
             ->setAddressNumber('1')
             ->setAddressStreet('Main boulevard')

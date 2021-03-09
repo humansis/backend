@@ -712,71 +712,18 @@ class SmartcardController extends Controller
      */
     public function redeemBatch(Vendor $vendor, RedemptionBatchInput $newBatch): Response
     {
-        /** @var SmartcardPurchaseRepository $repository */
-        $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardPurchase::class);
-        $purchases = $repository->findBy([
-            'id' => $newBatch->getPurchases(),
-        ]);
-
-        $redemptionBath = new SmartcardRedemptionBatch(
-            $vendor,
-            new \DateTime(),
-            $this->getUser(),
-            $repository->countPurchasesValue($purchases),
-            $purchases
-        );
-        $currency = null;
-        $projectId = null;
-        foreach ($purchases as $purchase) {
-            if ($purchase->getVendor()->getId() !== $vendor->getId()) {
-                return new Response("Inconsistent vendor and purchase' #{$purchase->getId()} vendor", Response::HTTP_BAD_REQUEST);
-            }
-            if (null !== $purchase->getRedeemedAt()) {
-                return new Response("Purchase' #{$purchase->getId()} was already redeemed at ".$purchase->getRedeemedAt()->format('Y-m-d H:i:s'),
-                    Response::HTTP_BAD_REQUEST);
-            }
-            if (null === $currency) {
-                $currency = $purchase->getCurrency();
-            }
-            if ($purchase->getCurrency() != $currency) {
-                return new Response("Purchases have inconsistent currencies. {$purchase->getCurrency()} in {$purchase->getId()} is different than {$currency}",
-                    Response::HTTP_BAD_REQUEST);
-            }
-            if (null === $this->extractProjectId($purchase)) {
-                return new Response("Purchase #{$purchase->getId()} has no project.",
-                    Response::HTTP_BAD_REQUEST);
-            }
-            if (null === $projectId) {
-                $projectId = $this->extractProjectId($purchase);
-            }
-            if ($this->extractProjectId($purchase) !== $projectId) {
-                return new Response("Purchases have inconsistent currencies. Project #{$this->extractProjectId($purchase)} in Purchase #{$purchase->getId()} is different than project of others: {$projectId}",
-                    Response::HTTP_BAD_REQUEST);
-            }
-
-            $purchase->setRedemptionBatch($redemptionBath);
+        try {
+            $redemptionBath = $this->get('smartcard_service')->redeem($vendor, $newBatch, $this->getUser());
+        } catch (\InvalidArgumentException $exception) {
+            throw new BadRequestHttpException($exception->getMessage(), $exception);
         }
-
-
-        $this->getDoctrine()->getManager()->persist($redemptionBath);
-        $this->getDoctrine()->getManager()->flush();
 
         return $this->json([
             'id' => $redemptionBath->getId(),
         ]);
     }
 
-    private function extractProjectId(SmartcardPurchase $purchase): ?int
-    {
-        if (null === $purchase->getSmartcard()
-            || null === $purchase->getSmartcard()->getDeposit()
-            || null === $purchase->getSmartcard()->getDeposit()->getAssistanceBeneficiary()->getAssistance()
-            || null === $purchase->getSmartcard()->getDeposit()->getAssistanceBeneficiary()->getAssistance()->getProject()
-        ) {
-            return null;
-        }
-        return $purchase->getSmartcard()->getDeposit()->getAssistanceBeneficiary()->getAssistance()->getProject()->getId();
-    }
+
 
     /**
      * @Rest\Get("/smartcards/batch/{id}/export")
