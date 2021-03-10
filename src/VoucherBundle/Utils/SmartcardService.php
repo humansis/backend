@@ -6,6 +6,7 @@ use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Persistence\ObjectManager;
+use ProjectBundle\Entity\Project;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardPurchase;
@@ -107,8 +108,12 @@ class SmartcardService
             }
         }
 
+        $projectRepository = $this->manager->getRepository(Project::class);
+        $project = $projectRepository->find($projectId);
+
         $redemptionBath = new SmartcardRedemptionBatch(
             $vendor,
+            $project,
             new \DateTime(),
             $redeemedBy,
             $repository->countPurchasesValue($purchases),
