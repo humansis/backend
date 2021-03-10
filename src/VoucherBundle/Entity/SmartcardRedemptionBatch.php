@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
+use ProjectBundle\Entity\Project;
 use UserBundle\Entity\User;
 
 /**
@@ -36,6 +37,14 @@ class SmartcardRedemptionBatch implements JsonSerializable
      * @ORM\JoinColumn(nullable=false)
      */
     private $vendor;
+
+    /**
+     * @var Project|null
+     *
+     * @ORM\ManyToOne(targetEntity="\ProjectBundle\Entity\Project")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $project;
 
     /**
      * @var DateTime
@@ -76,17 +85,19 @@ class SmartcardRedemptionBatch implements JsonSerializable
     /**
      * SmartcardPurchaseBatch constructor.
      *
-     * @param Vendor   $vendor
-     * @param DateTime $redeemedAt
-     * @param User     $redeemedBy
-     * @param mixed    $value
-     * @param string   $currency
-     * @param iterable $purchases
+     * @param Vendor       $vendor
+     * @param Project|null $project
+     * @param DateTime     $redeemedAt
+     * @param User         $redeemedBy
+     * @param mixed        $value
+     * @param string       $currency
+     * @param iterable     $purchases
      */
-    public function __construct(Vendor $vendor, DateTime $redeemedAt, User $redeemedBy, $value, string $currency,
+    public function __construct(Vendor $vendor, ?Project $project, DateTime $redeemedAt, User $redeemedBy, $value, string $currency,
                                 iterable $purchases)
     {
         $this->vendor = $vendor;
+        $this->project = $project;
         $this->redeemedAt = $redeemedAt;
         $this->redeemedBy = $redeemedBy;
         $this->value = $value;
@@ -110,6 +121,14 @@ class SmartcardRedemptionBatch implements JsonSerializable
     public function getVendor(): Vendor
     {
         return $this->vendor;
+    }
+
+    /**
+     * @return Project|null
+     */
+    public function getProject(): ?Project
+    {
+        return $this->project;
     }
 
     /**
@@ -201,6 +220,8 @@ class SmartcardRedemptionBatch implements JsonSerializable
             'count' => $this->purchases->count(),
             'value' => (float) $this->value,
             'currency' => $this->currency,
+            'project_id' => $this->getProject() ? $this->getProject()->getId() : null,
+            'project_name' => $this->getProject() ? $this->getProject()->getName() : null,
         ];
     }
 }

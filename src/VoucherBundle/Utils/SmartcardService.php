@@ -6,6 +6,7 @@ use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Persistence\ObjectManager;
+use ProjectBundle\Entity\Project;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardPurchase;
@@ -80,15 +81,7 @@ class SmartcardService
             'id' => $inputBatch->getPurchases(),
         ]);
 
-        $redemptionBath = new SmartcardRedemptionBatch(
-            $vendor,
-            new \DateTime(),
-            $redeemedBy,
-            $repository->countPurchasesValue($purchases),
-            $purchases[0]->getCurrency(),
-            $purchases
-        );
-
+        // purchases validation
         $currency = null;
         $projectId = null;
         foreach ($purchases as $purchase) {
@@ -113,10 +106,24 @@ class SmartcardService
             if ($this->extractPurchaseProjectId($purchase) !== $projectId) {
                 throw new \InvalidArgumentException("Purchases have inconsistent currencies. Project #{$this->extractPurchaseProjectId($purchase)} in Purchase #{$purchase->getId()} is different than project of others: {$projectId}");
             }
-
-            $purchase->setRedemptionBatch($redemptionBath);
         }
 
+        $projectRepository = $this->manager->getRepository(Project::class);
+        $project = $projectRepository->find($projectId);
+
+        $redemptionBath = new SmartcardRedemptionBatch(
+            $vendor,
+            $project,
+            new \DateTime(),
+            $redeemedBy,
+            $repository->countPurchasesValue($purchases),
+            $currency,
+            $purchases
+        );
+
+        foreach ($purchases as $purchase) {
+            $purchase->setRedemptionBatch($redemptionBath);
+        }
 
         $this->manager->persist($redemptionBath);
         $this->manager->flush();
