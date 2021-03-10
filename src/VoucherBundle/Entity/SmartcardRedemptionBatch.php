@@ -60,6 +60,13 @@ class SmartcardRedemptionBatch implements JsonSerializable
     private $value;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="currency", type="string", nullable=true)
+     */
+    private $currency;
+
+    /**
      * @var Collection|SmartcardPurchase[]
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardPurchase", mappedBy="redemptionBatch", cascade={"persist"}, orphanRemoval=false)
@@ -73,15 +80,17 @@ class SmartcardRedemptionBatch implements JsonSerializable
      * @param DateTime $redeemedAt
      * @param User     $redeemedBy
      * @param mixed    $value
+     * @param string   $currency
      * @param iterable $purchases
      */
-    public function __construct(Vendor $vendor, DateTime $redeemedAt, User $redeemedBy, $value,
+    public function __construct(Vendor $vendor, DateTime $redeemedAt, User $redeemedBy, $value, string $currency,
                                 iterable $purchases)
     {
         $this->vendor = $vendor;
         $this->redeemedAt = $redeemedAt;
         $this->redeemedBy = $redeemedBy;
         $this->value = $value;
+        $this->currency = $currency;
         $this->purchases = new ArrayCollection($purchases);
     }
 
@@ -152,6 +161,22 @@ class SmartcardRedemptionBatch implements JsonSerializable
     }
 
     /**
+     * @return string
+     */
+    public function getCurrency(): string
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @param string $currency
+     */
+    public function setCurrency(string $currency): void
+    {
+        $this->currency = $currency;
+    }
+
+    /**
      * @return Collection|SmartcardPurchase[]
      */
     public function getPurchases(): Collection
@@ -175,6 +200,7 @@ class SmartcardRedemptionBatch implements JsonSerializable
             'date' => $this->redeemedAt->format('d-m-Y H:i'),
             'count' => $this->purchases->count(),
             'value' => (float) $this->value,
+            'currency' => $this->currency,
         ];
     }
 }
