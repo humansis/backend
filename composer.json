@@ -25,6 +25,7 @@
 	"require": {
 		"php": "^7.3",
 		"ext-Zend-OPcache": "*",
+		"ext-gd": "^7.3",
 		"ext-json": "*",
 		"ext-xmlreader": "*",
 		"ext-simplexml": "*",
