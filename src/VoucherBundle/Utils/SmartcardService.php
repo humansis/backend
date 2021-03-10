@@ -80,15 +80,7 @@ class SmartcardService
             'id' => $inputBatch->getPurchases(),
         ]);
 
-        $redemptionBath = new SmartcardRedemptionBatch(
-            $vendor,
-            new \DateTime(),
-            $redeemedBy,
-            $repository->countPurchasesValue($purchases),
-            $purchases[0]->getCurrency(),
-            $purchases
-        );
-
+        // purchases validation
         $currency = null;
         $projectId = null;
         foreach ($purchases as $purchase) {
@@ -113,10 +105,20 @@ class SmartcardService
             if ($this->extractPurchaseProjectId($purchase) !== $projectId) {
                 throw new \InvalidArgumentException("Purchases have inconsistent currencies. Project #{$this->extractPurchaseProjectId($purchase)} in Purchase #{$purchase->getId()} is different than project of others: {$projectId}");
             }
-
-            $purchase->setRedemptionBatch($redemptionBath);
         }
 
+        $redemptionBath = new SmartcardRedemptionBatch(
+            $vendor,
+            new \DateTime(),
+            $redeemedBy,
+            $repository->countPurchasesValue($purchases),
+            $currency,
+            $purchases
+        );
+
+        foreach ($purchases as $purchase) {
+            $purchase->setRedemptionBatch($redemptionBath);
+        }
 
         $this->manager->persist($redemptionBath);
         $this->manager->flush();
