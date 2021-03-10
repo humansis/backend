@@ -22,3 +22,13 @@ services:
         arguments:
             - "@serializer"
         public: true
+
+    transaction.export.spreadsheet:
+        class: TransactionBundle\Export\TransactionSpreadsheetExport
+        arguments: [ '@translator' ]
+        public: true
+
+    transaction.export.pdf:
+        class: TransactionBundle\Export\TransactionPdfExport
+        arguments: [ '@translator', '@templating', '@pdf_service' ]
+        public: true

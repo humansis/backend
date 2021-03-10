@@ -65,6 +65,8 @@ class ExportControllerTest extends BMSServiceTestCase
      */
     public function testExport(string $type, string $otherQuery, array $body = [])
     {
+        $this->markTestSkipped('Export tests takes too much time. It kills processing.');
+
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
