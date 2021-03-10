@@ -24,7 +24,7 @@ class AssistanceCodelistController extends AbstractController
      */
     public function getTargets(): JsonResponse
     {
-        $data = CodeLists::mapArray(AssistanceTargetType::values());
+        $data = CodeLists::mapEnum(AssistanceTargetType::values());
 
         return $this->json(new Paginator($data));
     }
