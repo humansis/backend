@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\File\UploadService;
 use NewApiBundle\InputType\DonorCreateInputType;
 use NewApiBundle\InputType\DonorFilterInputType;
 use NewApiBundle\InputType\DonorOrderInputType;
@@ -12,10 +13,20 @@ use NewApiBundle\InputType\DonorUpdateInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Donor;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class DonorController extends AbstractController
 {
+    /** @var UploadService */
+    private $uploadService;
+
+    public function __construct(UploadService $uploadService)
+    {
+        $this->uploadService = $uploadService;
+    }
+
     /**
      * @Rest\Get("/donors/{id}")
      *
@@ -86,5 +97,33 @@ class DonorController extends AbstractController
         $this->get('project.donor_service')->delete($object);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Rest\Post("/donors/{id}/images")
+     *
+     * @param Donor   $donor
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function uploadImage(Donor $donor, Request $request): JsonResponse
+    {
+        if (!($file = $request->files->get('file'))) {
+            throw new BadRequestHttpException('File missing.');
+        }
+
+        if (!in_array($file->getMimeType(), ['image/gif', 'image/jpeg', 'image/png'])) {
+            throw new BadRequestHttpException('Invalid file type.');
+        }
+
+        $url = $this->uploadService->upload($file, 'donors');
+
+        $donor->setLogo($url);
+
+        $this->getDoctrine()->getManager()->persist($donor);
+        $this->getDoctrine()->getManager()->flush();
+
+        return $this->json(['url' => $url]);
     }
 }
