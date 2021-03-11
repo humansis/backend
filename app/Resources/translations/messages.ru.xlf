@@ -3688,7 +3688,7 @@
         <source>returnee</source>
         <target>Вернувшийся</target>
       </trans-unit>
-      <trans-unit id="908">
+      <trans-unit id="908x">
         <source>The below listed person agrees that their personal details will be processed by People in Needfor the purpose of implementation of the project. </source>
         <target>Человек также соглашается с тем, что его личные даные будут использованы организацией для реализации проекта.</target>
       </trans-unit>
