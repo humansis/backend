@@ -211,7 +211,7 @@ class UserController extends Controller
     public function getSaltAction($username)
     {
         try {
-            $salt = $this->get('user.user_service')->getSalt($username);
+            $salt = $this->get('user.user_service')->getSaltOld($username);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
@@ -334,7 +334,7 @@ class UserController extends Controller
     public function initializeAction($username)
     {
         try {
-            $salt = $this->get('user.user_service')->initialize($username);
+            $salt = $this->get('user.user_service')->initializeOld($username);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
@@ -379,7 +379,7 @@ class UserController extends Controller
         $userData = $request->request->all();
 
         try {
-            $return = $this->get('user.user_service')->create($userData);
+            $return = $this->get('user.user_service')->createFromArray($userData);
 
             $userJson = $serializer->serialize(
                 $return,
@@ -558,7 +558,7 @@ class UserController extends Controller
     public function updateAction(Request $request, User $user)
     {
         $userData = $request->request->all();
-        $userNew = $this->get('user.user_service')->update($user, $userData);
+        $userNew = $this->get('user.user_service')->updateFromArray($user, $userData);
         $json = $this->get('serializer')->serialize($userNew, 'json', ['groups' => ['FullUser']]);
         return new Response($json);
     }

@@ -71,6 +71,13 @@ class SectorService
                     ->setCommunityAllowed()
                     ->setInstitutionAllowed()
                     ;
+            case SubSectorEnum::PROVISION_OF_INPUTS:
+                return $sector->setDistributionAllowed()
+                    ->setHouseholdAllowed()
+                    ->setBeneficiaryAllowed()
+                    ->setCommunityAllowed()
+                    ->setInstitutionAllowed()
+                    ;
             case SubSectorEnum::DISTRIBUTION_OF_INPUTS:
                 return $sector->setDistributionAllowed()
                     ->setHouseholdAllowed()
@@ -230,6 +237,7 @@ class SectorService
 
             case SubSectorEnum::SKILLS_TRAINING:
             case SubSectorEnum::TECHNICAL_SUPPORT:
+            case SubSectorEnum::PROVISION_OF_INPUTS:
             case SubSectorEnum::DISTRIBUTION_OF_INPUTS:
             case SubSectorEnum::BUSINESS_GRANTS:
             case SubSectorEnum::AGRICULTURAL_VOUCHERS:

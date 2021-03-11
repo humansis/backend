@@ -12,6 +12,10 @@ use Doctrine\ORM\Mapping;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\BeneficiaryFilterInputType;
+use NewApiBundle\InputType\BeneficiaryOrderInputType;
+use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 use Doctrine\ORM\Query\Expr\Join;
 use CommonBundle\Entity\Adm3;
@@ -64,6 +68,17 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             $q = $q->andWhere('b.'.$key.' = :value'.$key)
                 ->setParameter('value'.$key, $value);
         }
+
+        return $q->getQuery()->getResult();
+    }
+
+    public function getUnarchivedByProject(Project $project): iterable
+    {
+        $qb = $this->createQueryBuilder("bnf");
+        $q = $qb->leftJoin("bnf.projects", "p")
+            ->where("p = :project")
+            ->setParameter("project", $project)
+            ->andWhere("bnf.archived = 0");
 
         return $q->getQuery()->getResult();
     }
@@ -666,5 +681,116 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             ->where('b.household = :household')
             ->setParameter('household', $household)
             ->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * @param BeneficiaryFilterInputType $filterInputType
+     *
+     * @return Paginator
+     */
+    public function findByParams(BeneficiaryFilterInputType $filterInputType): Paginator
+    {
+        $qbr = $this->createQueryBuilder('b')
+            ->andWhere('b.archived = 0');
+
+        if ($filterInputType->hasIds()) {
+            $qbr->andWhere('b.id IN (:ids)')
+                ->setParameter('ids', $filterInputType->getIds());
+        }
+
+        return new Paginator($qbr);
+    }
+
+    /**
+     * @param Assistance                      $assistance
+     * @param BeneficiaryFilterInputType|null $filter
+     * @param BeneficiaryOrderInputType|null  $orderBy
+     * @param Pagination|null                 $pagination
+     *
+     * @return Paginator|Assistance[]
+     */
+    public function findByAssistance(
+        Assistance $assistance,
+        ?BeneficiaryFilterInputType $filter,
+        ?BeneficiaryOrderInputType $orderBy = null,
+        ?Pagination $pagination = null
+    ): Paginator
+    {
+        $qbr = $this->createQueryBuilder('b')
+            ->join('b.assistanceBeneficiary', 'ab')
+            ->leftJoin('b.person', 'p')
+            ->andWhere('ab.assistance = :assistance')
+            ->setParameter('assistance', $assistance);
+
+        if ($pagination) {
+            $qbr->setMaxResults($pagination->getLimit());
+            $qbr->setFirstResult($pagination->getOffset());
+        }
+
+        if ($filter) {
+            if ($filter->hasFulltext()) {
+                $qbr->andWhere('p.localGivenName LIKE :fulltext OR 
+                                p.localFamilyName LIKE :fulltext OR
+                                p.localParentsName LIKE :fulltext OR
+                                p.enGivenName LIKE :fulltext OR
+                                p.enFamilyName LIKE :fulltext OR
+                                p.enParentsName LIKE :fulltext OR
+                                p.enParentsName LIKE :fulltext')
+                    ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+            }
+        }
+
+        if ($orderBy) {
+            foreach ($orderBy->toArray() as $name => $direction) {
+                switch ($name) {
+                    case BeneficiaryOrderInputType::SORT_BY_ID:
+                        $qbr->orderBy('b.id', $direction);
+                        break;
+                    case BeneficiaryOrderInputType::SORT_BY_LOCAL_FAMILY_NAME:
+                        $qbr->orderBy('p.localFamilyName', $direction);
+                        break;
+                    case BeneficiaryOrderInputType::SORT_BY_LOCAL_GIVEN_NAME:
+                        $qbr->orderBy('p.localGivenName', $direction);
+                        break;
+                    case BeneficiaryOrderInputType::SORT_BY_NATIONAL_ID:
+                        $qbr->leftJoin('p.nationalIds', 'n', 'WITH', 'n.idType = :type')
+                            ->setParameter('type', \BeneficiaryBundle\Entity\NationalId::TYPE_NATIONAL_ID)
+                            ->orderBy('n.idNumber', $direction);
+                        break;
+                    default:
+                        throw new \InvalidArgumentException('Invalid order by directive '.$name);
+                }
+            }
+        }
+
+        return new Paginator($qbr);
+    }
+
+    /**
+     * @param Project                         $project
+     * @param BeneficiaryFilterInputType|null $filter
+     *
+     * @return Paginator
+     */
+    public function findByProject(
+        Project $project,
+        ?BeneficiaryFilterInputType $filter = null
+    ) {
+        $qbr = $this->createQueryBuilder('bnf');
+        $qbr->leftJoin('bnf.projects', 'p')
+            ->where('p = :project')
+            ->setParameter('project', $project)
+            ->andWhere('bnf.archived = 0');
+
+        if ($filter) {
+            if ($filter->hasAssistanceTarget()) {
+                $qbr->join('bnf.assistanceBeneficiary', 'ab')
+                    ->leftJoin('ab.assistance', 'a')
+                    ->andWhere('a.targetType = :target')
+                    ->setParameter('target', $filter->getAssistanceTarget());
+            }
+        }
+
+        return new Paginator($qbr);
     }
 }

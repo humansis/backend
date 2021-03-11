@@ -61,13 +61,13 @@ class HouseholdExportCSVService
         'F 0 - 2' => '',
         'F 2 - 5' => '',
         'F 6 - 17' => '',
-        'F 18 - 64' => '',
-        'F 65+' => '',
+        'F 18 - 59' => '',
+        'F 60+' => '',
         'M 0 - 2' => '',
         'M 2 - 5' => '',
         'M 6 - 17' => '',
-        'M 18 - 64' => '',
-        'M 65+' => '',
+        'M 18 - 59' => '',
+        'M 60+' => '',
     ];
 
     private const MAPPING_HOUSEHOLD_HEAD = [
@@ -117,13 +117,13 @@ class HouseholdExportCSVService
         'F 0 - 2' => 2,
         'F 2 - 5' => 0,
         'F 6 - 17' => 0,
-        'F 18 - 64' => 0,
-        'F 65+' => 1,
+        'F 18 - 59' => 0,
+        'F 60+' => 1,
         'M 0 - 2' => 0,
         'M 2 - 5' => 3,
         'M 6 - 17' => 0,
-        'M 18 - 64' => 0,
-        'M 65+' => 0,
+        'M 18 - 59' => 0,
+        'M 60+' => 0,
     ];
 
     private const MAPPING_HOUSEHOLD_MEMBER = [
@@ -173,13 +173,13 @@ class HouseholdExportCSVService
         'F 0 - 2' => '',
         'F 2 - 5' => '',
         'F 6 - 17' => '',
-        'F 18 - 64' => '',
-        'F 65+' => '',
+        'F 18 - 59' => '',
+        'F 60+' => '',
         'M 0 - 2' => '',
         'M 2 - 5' => '',
         'M 6 - 17' => '',
-        'M 18 - 64' => '',
-        'M 65+' => '',
+        'M 18 - 59' => '',
+        'M 60+' => '',
     ];
 
     private const MAPPING_DETAILS = [
@@ -208,7 +208,7 @@ class HouseholdExportCSVService
         'English parent\'s name' => 'String',
         'Gender' => 'Male / Female*',
         'Head' => 'String [true-false]*',
-        'Residency status' => 'Refugee / IDP / Resident*',
+        'Residency status' => 'Refugee / IDP / Resident / Returnee*',
         'Date of birth' => 'DD-MM-YYYY',
         'Vulnerability criteria' => 'String',
         'Type phone 1' => 'Mobile / Landline',
@@ -229,13 +229,13 @@ class HouseholdExportCSVService
         'F 0 - 2' => 'Number',
         'F 2 - 5' => 'Number',
         'F 6 - 17' => 'Number',
-        'F 18 - 64' => 'Number',
-        'F 65+' => 'Number',
+        'F 18 - 59' => 'Number',
+        'F 60+' => 'Number',
         'M 0 - 2' => 'Number',
         'M 2 - 5' => 'Number',
         'M 6 - 17' => 'Number',
-        'M 18 - 64' => 'Number',
-        'M 65+' => 'Number',
+        'M 18 - 59' => 'Number',
+        'M 60+' => 'Number',
     ];
 
     private const MAPPING_HELP_HXL = [

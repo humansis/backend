@@ -10,6 +10,9 @@ use CommonBundle\InputType\DataTableFilterType;
 use CommonBundle\InputType\DataTableSorterType;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\InstitutionOrderInputType;
+use NewApiBundle\Request\Pagination;
+use ProjectBundle\Entity\Project;
 
 /**
  * InstitutionRepository.
@@ -98,5 +101,73 @@ class InstitutionRepository extends \Doctrine\ORM\EntityRepository
         $this->getInstitutionLocation($qb);
         $locationRepository = $this->getEntityManager()->getRepository(Location::class);
         $locationRepository->whereCountry($qb, $countryISO3);
+    }
+
+    public function getUnarchivedByProject(Project $project)
+    {
+        $qb = $this->createQueryBuilder("comm");
+        $q = $qb->leftJoin("comm.projects", "p")
+            ->where("p = :project")
+            ->setParameter("project", $project)
+            ->andWhere("comm.archived = 0");
+
+        return $q->getQuery()->getResult();
+    }
+
+    public function findByParams(?string $iso3, ?InstitutionOrderInputType $orderBy = null, ?Pagination $pagination = null)
+    {
+        $qb = $this->createQueryBuilder('i')
+            ->andWhere('i.archived = 0');
+
+        if ($iso3) {
+            $qb->leftJoin('i.address', 'a')
+                ->leftJoin('a.location', 'l');
+
+            $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+            $locationRepository->whereCountry($qb, $iso3);
+        }
+
+        if ($pagination) {
+            $qb->setMaxResults($pagination->getLimit());
+            $qb->setFirstResult($pagination->getOffset());
+        }
+
+        if ($orderBy) {
+            foreach ($orderBy->toArray() as $name => $direction) {
+                switch ($name) {
+                    case InstitutionOrderInputType::SORT_BY_ID:
+                        $qb->orderBy('i.id', $direction);
+                        break;
+                    case InstitutionOrderInputType::SORT_BY_NAME:
+                        $qb->orderBy('i.name', $direction);
+                        break;
+                    case InstitutionOrderInputType::SORT_BY_LONGITUDE:
+                        $qb->orderBy('i.longitude', $direction);
+                        break;
+                    case InstitutionOrderInputType::SORT_BY_LATITUDE:
+                        $qb->orderBy('i.latitude', $direction);
+                        break;
+                    case InstitutionOrderInputType::SORT_BY_CONTACT_GIVEN_NAME:
+                        if (!in_array('c', $qb->getAllAliases())) {
+                            $qb->leftJoin('i.contact', 'c');
+                        }
+                        $qb->orderBy('c.enGivenName', $direction);
+                        break;
+                    case InstitutionOrderInputType::SORT_BY_CONTACT_FAMILY_NAME:
+                        if (!in_array('c', $qb->getAllAliases())) {
+                            $qb->leftJoin('i.contact', 'c');
+                        }
+                        $qb->orderBy('c.enFamilyName', $direction);
+                        break;
+                    case InstitutionOrderInputType::SORT_BY_TYPE:
+                        $qb->orderBy('i.type', $direction);
+                        break;
+                    default:
+                        throw new \InvalidArgumentException('Invalid order by directive '.$name);
+                }
+            }
+        }
+
+        return new Paginator($qb);
     }
 }

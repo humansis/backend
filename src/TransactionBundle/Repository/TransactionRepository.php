@@ -63,7 +63,7 @@ class TransactionRepository extends \Doctrine\ORM\EntityRepository
 
         $sql = '
         SELECT '.$rsm->generateSelectClause().' FROM (
-            SELECT spr.id, sp.used_at, s.beneficiary_id, spr.product_id, p.name, p.unit, spr.value, s.currency, spr.quantity, \'Smartcard\' as source
+            SELECT spr.id, sp.used_at, s.beneficiary_id, spr.product_id, p.name, p.unit, spr.value, spr.currency, spr.quantity, \'Smartcard\' as source
                 FROM smartcard_purchase_record spr
                 JOIN smartcard_purchase sp ON sp.id=spr.smartcard_purchase_id
                 JOIN smartcard s ON s.id=sp.smartcard_id

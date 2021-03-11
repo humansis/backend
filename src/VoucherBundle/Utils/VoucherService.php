@@ -181,6 +181,7 @@ class VoucherService
         $check = $this->checkBatch($batch);
 
         if ($check->hasInvalidVouchers()) {
+            var_dump($check->jsonSerialize());
             throw new \InvalidArgumentException("Invalid voucher batch");
         }
 
@@ -266,11 +267,6 @@ class VoucherService
             $exportableCount = $this->em->getRepository(Voucher::class)->countByBooklets($booklets);
         }
 
-        if ($exportableCount > ExportController::EXPORT_LIMIT) {
-            $bookletCount = count($booklets);
-            throw new BadRequestHttpException("Too much entities ($exportableCount vouchers in $bookletCount booklets) to export. Limit is ".ExportController::EXPORT_LIMIT.' vouchers.');
-        }
-
         // If csv type, return the response
         if ('csv' === $type) {
             return $this->csvExport($exportableTable);
@@ -307,6 +303,13 @@ class VoucherService
 
         if ($booklets) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBooklets($booklets)->getResult();
+        }
+
+        $total = $ids ? $this->em->getRepository(Voucher::class)->countByBookletsIds($ids) : $this->em->getRepository(Voucher::class)->countByBooklets($booklets);
+        if ($total > ExportController::EXPORT_LIMIT) {
+            $totalBooklets = $ids ? count($ids) : count($booklets);
+            throw new \Exception("Too much vouchers for the export ($total vouchers in $totalBooklets). ".
+                "Export the data in batches of ".ExportController::EXPORT_LIMIT." vouchers or less");
         }
 
         try {

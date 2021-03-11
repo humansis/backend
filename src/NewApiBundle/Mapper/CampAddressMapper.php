@@ -51,33 +51,13 @@ class CampAddressMapper implements MapperInterface
         return $this->object->getLocationGroup();
     }
 
-    public function getName(): string
+    public function getCampId(): int
     {
-        return $this->object->getCampAddress()->getCamp()->getName();
+        return $this->object->getCampAddress()->getCamp()->getId();
     }
 
     public function getTentNumber(): string
     {
         return $this->object->getCampAddress()->getTentNumber();
-    }
-
-    public function getAdm1(): ?int
-    {
-        return $this->object->getCampAddress()->getCamp()->getLocation()->getAdm1Id() ?: null;
-    }
-
-    public function getAdm2(): ?int
-    {
-        return $this->object->getCampAddress()->getCamp()->getLocation()->getAdm2Id() ?: null;
-    }
-
-    public function getAdm3(): ?int
-    {
-        return $this->object->getCampAddress()->getCamp()->getLocation()->getAdm3Id() ?: null;
-    }
-
-    public function getAdm4(): ?int
-    {
-        return $this->object->getCampAddress()->getCamp()->getLocation()->getAdm4Id() ?: null;
     }
 }

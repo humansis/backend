@@ -9,12 +9,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
- * @Assert\GroupSequence({"BookletBatchCreateInputType", "Strict"})
+ * @Assert\GroupSequence({"BookletBatchCreateInputType", "PrimaryValidation", "SecondaryValidation"})
  */
 class BookletBatchCreateInputType implements InputTypeInterface
 {
     /**
-     * @Assert\Choice({"KHM", "SYR", "UKR", "ETH"})
+     * @Assert\Choice({"KHM", "SYR", "UKR", "ETH", "MNG", "ARM"})
      * @Assert\NotBlank
      * @Assert\NotNull
      */
@@ -37,18 +37,18 @@ class BookletBatchCreateInputType implements InputTypeInterface
     private $quantityOfVouchers;
 
     /**
-     * @Assert\Type("array")
      * @Assert\NotNull
+     * @Assert\Type("array", groups={"PrimaryValidation"})
      * @Assert\All(
      *     constraints={
-     *         @Assert\Type("integer", groups={"Strict"}),
-     *         @Assert\GreaterThan(0, groups={"Strict"}),
+     *         @Assert\Type("integer", groups={"SecondaryValidation"}),
+     *         @Assert\GreaterThan(0, groups={"SecondaryValidation"}),
      *     },
-     *     groups={"Strict"}
+     *     groups={"SecondaryValidation"}
      * )
-     * @Assert\Callback({"NewApiBundle\InputType\BookletBatchCreateInputType", "validateIndividualValues"}, groups={"Strict"}),
+     * @Assert\Callback({"NewApiBundle\InputType\BookletBatchCreateInputType", "validateIndividualValues"}, groups={"SecondaryValidation"}),
      */
-    private $individualValues;
+    private $values;
 
     /**
      * @Assert\Type("int")
@@ -122,14 +122,14 @@ class BookletBatchCreateInputType implements InputTypeInterface
     /**
      * @return array|int[]
      */
-    public function getIndividualValues()
+    public function getValues()
     {
-        return $this->individualValues;
+        return $this->values;
     }
 
-    public function setIndividualValues($individualValues)
+    public function setValues($values)
     {
-        $this->individualValues = $individualValues;
+        $this->values = $values;
     }
 
     /**

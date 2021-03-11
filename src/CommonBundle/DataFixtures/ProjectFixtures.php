@@ -57,6 +57,7 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
         foreach ($this->explicitTestProjects as $datum) {
             $this->createProjectFromData($manager, $datum);
         }
+        $manager->flush();
 
         foreach ($this->countries as $country) {
             $projectName = str_replace(
@@ -64,8 +65,9 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
                 $this->countryNameAdjectives[$country],
                 $this->countryProjectNameTemplate
             );
-            $this->createProjectFromData($manager, [$projectName, 1, 1, 'notes', $country]);
+            $this->createProjectFromData($manager, [$projectName, 1, 0, 'notes', $country]);
         }
+        $manager->flush();
     }
 
     /**
@@ -77,7 +79,7 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
     {
         $project = $manager->getRepository(Project::class)->findOneByName($data[0]);
         if ($project instanceof Project) {
-            echo "User {$project->getName()} in {$project->getIso3()} already exists. Ommit creation.\n";
+            echo "User {$project->getName()} in {$project->getIso3()} already exists. Omit creation.\n";
         } else {
             $project = new Project();
             $project->setName($data[0])
@@ -88,8 +90,7 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
                 ->setNotes($data[3])
                 ->setIso3($data[4]);
             $manager->persist($project);
-            $manager->flush();
-
+            echo $project->getName()." created\n";
         }
     }
 

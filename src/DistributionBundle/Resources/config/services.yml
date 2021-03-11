@@ -19,6 +19,7 @@ services:
             - '@distribution.commodity_service'
             - '@distribution.configuration_loader'
             - '@distribution.criteria_assistance_service'
+            - '@transformer.selection_criterion_field'
             - '%distribution.retriever%'
             - '@service_container'
 
@@ -91,9 +92,6 @@ services:
             - "@serializer"
         public: true
 
-    DistributionBundle\Mapper\CampMapper:
-        public: true
-
 #######################################################################################
 ##                                       CSV                                         ##
 #######################################################################################
@@ -118,4 +116,7 @@ services:
 
     distribution.export.smartcard_invoice:
         class: DistributionBundle\Export\SmartcardInvoiceExport
+        arguments:
+            - '@translator'
+            - '@CommonBundle\Mapper\LocationMapper'
         public: true

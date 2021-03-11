@@ -377,6 +377,14 @@ class ProjectService
         }
     }
 
+    public function isDeletable(Project $project): bool
+    {
+        /** @var \Doctrine\ORM\Tools\Pagination\Paginator $assistance */
+        $assistances = $this->em->getRepository(Assistance::class)->findByParams($project);
+
+        return 0 === count($assistances) || $this->checkIfAllDistributionClosed($assistances);
+    }
+
     /**
      * @param Project $project
      * @return void
@@ -397,7 +405,7 @@ class ProjectService
                 throw new \Exception("Error deleting project");
             }
         } else {
-            if (! $this->checkIfAllDistributionClosed($assistance)) {
+            if (!$this->checkIfAllDistributionClosed($assistance)) {
                 throw new \Exception("You can't delete this project as it has an unfinished distribution");
             } else {
                 try {

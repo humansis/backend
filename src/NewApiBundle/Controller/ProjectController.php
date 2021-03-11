@@ -8,6 +8,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\ProjectCreateInputType;
+use NewApiBundle\InputType\ProjectFilterInputType;
 use NewApiBundle\InputType\ProjectOrderInputType;
 use NewApiBundle\InputType\ProjectUpdateInputType;
 use NewApiBundle\Request\Pagination;
@@ -68,22 +69,21 @@ class ProjectController extends AbstractController
     /**
      * @Rest\Get("/projects")
      *
-     * @param Request               $request
-     * @param Pagination            $pagination
-     * @param ProjectOrderInputType $orderBy
+     * @param Request                $request
+     * @param ProjectFilterInputType $filter
+     * @param ProjectOrderInputType  $orderBy
+     * @param Pagination             $pagination
      *
      * @return JsonResponse
      */
-    public function list(Request $request, Pagination $pagination, ProjectOrderInputType $orderBy): JsonResponse
+    public function list(Request $request, ProjectFilterInputType $filter, ProjectOrderInputType $orderBy, Pagination $pagination): JsonResponse
     {
-        $countryIso3 = null;
-
-        $user = $this->getUser();
-        if (!$user->hasRole('ROLE_COUNTRY_MANAGER') && !$user->hasRole('ROLE_REGIONAL_MANAGER') && !$user->hasRole('ROLE_ADMIN')) {
-            $countryIso3 = $request->headers->get('country');
+        $countryIso3 = $request->headers->get('country', false);
+        if (!$countryIso3) {
+            throw new BadRequestHttpException('Missing country header');
         }
 
-        $projects = $this->getDoctrine()->getRepository(Project::class)->findByParams($countryIso3, $orderBy, $pagination);
+        $projects = $this->getDoctrine()->getRepository(Project::class)->findByParams($countryIso3, $filter, $orderBy, $pagination);
 
         return $this->json($projects);
     }

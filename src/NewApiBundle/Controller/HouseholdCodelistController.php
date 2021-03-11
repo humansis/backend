@@ -11,8 +11,12 @@ use CommonBundle\Pagination\Paginator;
 use NewApiBundle\Utils\CodeLists;
 use ProjectBundle\Enum\Livelihood;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+/**
+ * @Cache(expires="+5 days", public=true)
+ */
 class HouseholdCodelistController extends AbstractController
 {
     /**
@@ -41,6 +45,18 @@ class HouseholdCodelistController extends AbstractController
         foreach (Household::ASSETS as $key => $value) {
             $data[] = ['code' => $key, 'value' => $value];
         }
+
+        return $this->json(new Paginator($data));
+    }
+
+    /**
+     * @Rest\Get("/households/support-received-types")
+     *
+     * @return JsonResponse
+     */
+    public function supportReceivedTypes(): JsonResponse
+    {
+        $data = CodeLists::mapArray(Household::SUPPORT_RECIEVED_TYPES);
 
         return $this->json(new Paginator($data));
     }

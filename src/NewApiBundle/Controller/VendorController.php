@@ -5,6 +5,7 @@ namespace NewApiBundle\Controller;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\VendorCreateInputType;
+use NewApiBundle\InputType\VendorFilterInputType;
 use NewApiBundle\InputType\VendorOrderInputType;
 use NewApiBundle\InputType\VendorUpdateInputType;
 use NewApiBundle\Request\Pagination;
@@ -36,13 +37,14 @@ class VendorController extends AbstractController
     /**
      * @Rest\Get("/vendors")
      *
-     * @param Request              $request
-     * @param Pagination           $pagination
-     * @param VendorOrderInputType $orderBy
+     * @param Request               $request
+     * @param VendorFilterInputType $filter
+     * @param Pagination            $pagination
+     * @param VendorOrderInputType  $orderBy
      *
      * @return JsonResponse
      */
-    public function list(Request $request, Pagination $pagination, VendorOrderInputType $orderBy): JsonResponse
+    public function list(Request $request, VendorFilterInputType $filter, Pagination $pagination, VendorOrderInputType $orderBy): JsonResponse
     {
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
@@ -50,7 +52,7 @@ class VendorController extends AbstractController
 
         /** @var VendorRepository $repository */
         $repository = $this->getDoctrine()->getRepository(Vendor::class);
-        $data = $repository->findByParams($request->headers->get('country'), $orderBy, $pagination);
+        $data = $repository->findByParams($request->headers->get('country'), $filter, $orderBy, $pagination);
 
         return $this->json($data);
     }

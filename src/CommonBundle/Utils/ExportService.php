@@ -44,7 +44,7 @@ class ExportService
             $writer = IOFactory::createWriter($spreadsheet, 'Ods');
             $filename = $name.'.ods';
         } else {
-            return 'An error occured with the type file';
+            return 'An error occured with the type file: '.$type;
         }
 
         $writer->save($filename);
@@ -67,11 +67,6 @@ class ExportService
     {
         if (0 === count($exportableTable)) {
             throw new \InvalidArgumentException('No data to export');
-        }
-
-        if (count($exportableTable) > ExportController::EXPORT_LIMIT) {
-            $count = count($exportableTable);
-            throw new BadRequestHttpException("Too much entities ($count) to export. Limit is ".ExportController::EXPORT_LIMIT);
         }
 
         $rows = $this->normalize($exportableTable);

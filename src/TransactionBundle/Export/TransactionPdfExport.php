@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TransactionBundle\Export;
 
 use CommonBundle\Entity\Organization;
+use CommonBundle\Utils\PdfService;
 use DistributionBundle\Entity\Assistance;
 use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -17,10 +18,14 @@ class TransactionPdfExport
     /** @var TwigEngine */
     private $twig;
 
-    public function __construct(TranslatorInterface $translator, TwigEngine $twig)
+    /** @var PdfService */
+    private $pdfService;
+
+    public function __construct(TranslatorInterface $translator, TwigEngine $twig, PdfService $pdfService)
     {
         $this->translator = $translator;
         $this->twig = $twig;
+        $this->pdfService = $pdfService;
     }
 
     public function export(Assistance $assistance, Organization $organization)
@@ -30,6 +35,6 @@ class TransactionPdfExport
             'organisation' => $organization,
         ]);
 
-        echo $html;die;
+        return $this->pdfService->printPdf($html, 'portrait', 'transactions');
     }
 }

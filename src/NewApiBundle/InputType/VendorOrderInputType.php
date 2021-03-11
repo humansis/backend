@@ -13,6 +13,7 @@ class VendorOrderInputType extends AbstractSortInputType
     const SORT_BY_ADDRESS_STREET = 'addressStreet';
     const SORT_BY_ADDRESS_NUMBER = 'addressNumber';
     const SORT_BY_ADDRESS_POSTCODE = 'addressPostcode';
+    const SORT_BY_LOCATION = 'location';
 
     protected function getValidNames(): array
     {
@@ -24,6 +25,7 @@ class VendorOrderInputType extends AbstractSortInputType
             self::SORT_BY_ADDRESS_STREET,
             self::SORT_BY_ADDRESS_NUMBER,
             self::SORT_BY_ADDRESS_POSTCODE,
+            self::SORT_BY_LOCATION,
         ];
     }
 }

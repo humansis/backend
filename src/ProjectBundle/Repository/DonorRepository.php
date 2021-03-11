@@ -3,6 +3,7 @@
 namespace ProjectBundle\Repository;
 
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\DonorFilterInputType;
 use NewApiBundle\InputType\DonorOrderInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Donor;
@@ -18,16 +19,26 @@ class DonorRepository extends \Doctrine\ORM\EntityRepository
     /**
      * @param DonorOrderInputType|null $orderBy
      * @param Pagination|null          $pagination
+     * @param DonorFilterInputType|null     $filter
      *
      * @return Paginator|Donor[]
      */
-    public function findByParams(DonorOrderInputType $orderBy = null, ?Pagination $pagination = null): Paginator
+    public function findByParams(DonorOrderInputType $orderBy = null, ?Pagination $pagination = null, ?DonorFilterInputType $filter = null): Paginator
     {
         $qb = $this->createQueryBuilder('d');
 
         if ($pagination) {
             $qb->setMaxResults($pagination->getLimit());
             $qb->setFirstResult($pagination->getOffset());
+        }
+
+        if ($filter) {
+            if ($filter->hasFulltext()) {
+                $qb->andWhere('(d.fullname LIKE :fulltext OR
+                                d.shortname LIKE :fulltext OR
+                                d.notes LIKE :fulltext)')
+                    ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+            }
         }
 
         if ($orderBy) {

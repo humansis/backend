@@ -5,23 +5,31 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\NationalId;
+use BeneficiaryBundle\Entity\Referral;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;
 use CommonBundle\Pagination\Paginator;
-use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Enum\PhoneTypes;
 use NewApiBundle\Utils\CodeLists;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+/**
+ * @Cache(expires="+5 days", public=true)
+ */
 class BeneficiaryCodelistController extends AbstractController
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
+    /**
+     * @Rest\Get("/beneficiaries/referral-types")
+     *
+     * @return JsonResponse
+     */
+    public function getReferralTypes(): JsonResponse
     {
-        $this->entityManager = $entityManager;
+        $data = CodeLists::mapArray(Referral::REFERRALTYPES);
+
+        return $this->json(new Paginator($data));
     }
 
     /**
@@ -43,7 +51,7 @@ class BeneficiaryCodelistController extends AbstractController
      */
     public function getVulnerabilityCriterion(): JsonResponse
     {
-        $criterion = $this->entityManager->getRepository(VulnerabilityCriterion::class)
+        $criterion = $this->getDoctrine()->getRepository(VulnerabilityCriterion::class)
             ->findAllActive();
 
         return $this->json(new Paginator(CodeLists::mapCriterion($criterion)));

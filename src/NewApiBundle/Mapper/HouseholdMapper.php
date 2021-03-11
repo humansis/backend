@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Mapper;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use NewApiBundle\Serializer\MapperInterface;
@@ -95,6 +96,13 @@ class HouseholdMapper implements MapperInterface
         throw new \LogicException('Household #'.$this->object->getId().' does not have HH head.');
     }
 
+    public function getCountrySpecificAnswerIds(): iterable
+    {
+        return array_map(function ($item) {
+            return $item->getId();
+        }, $this->object->getCountrySpecificAnswers()->toArray());
+    }
+
     /**
      * @return int[]
      */
@@ -158,7 +166,7 @@ class HouseholdMapper implements MapperInterface
         foreach ($this->object->getHouseholdLocations() as $householdLocation) {
             /** @var HouseholdLocation $householdLocation */
             if (HouseholdLocation::LOCATION_TYPE_CAMP === $householdLocation->getType()) {
-                return $householdLocation->getCampAddress()->getId();
+                return $householdLocation->getId();
             }
         }
 
@@ -170,7 +178,7 @@ class HouseholdMapper implements MapperInterface
         foreach ($this->object->getHouseholdLocations() as $householdLocation) {
             /** @var HouseholdLocation $householdLocation */
             if (HouseholdLocation::LOCATION_TYPE_RESIDENCE === $householdLocation->getType()) {
-                return $householdLocation->getAddress()->getId();
+                return $householdLocation->getId();
             }
         }
 
@@ -182,7 +190,7 @@ class HouseholdMapper implements MapperInterface
         foreach ($this->object->getHouseholdLocations() as $householdLocation) {
             /** @var HouseholdLocation $householdLocation */
             if (HouseholdLocation::LOCATION_TYPE_SETTLEMENT === $householdLocation->getType()) {
-                return $householdLocation->getAddress()->getId();
+                return $householdLocation->getId();
             }
         }
 

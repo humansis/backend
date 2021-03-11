@@ -35,7 +35,7 @@ class BookletControllerTest extends BMSServiceTestCase
             'iso3' => 'KHM',
             'quantityOfBooklets' => 5,
             'quantityOfVouchers' => 2,
-            'individualValues' => [333],
+            'values' => [333],
             'projectId' => $project->getId(),
             'password' => null,
             'currency' => 'CZK',
@@ -73,7 +73,10 @@ class BookletControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('code', $result);
         $this->assertArrayHasKey('status', $result);
         $this->assertArrayHasKey('projectId', $result);
+        $this->assertArrayHasKey('beneficiaryId', $result);
+        $this->assertArrayHasKey('assistanceId', $result);
         $this->assertArrayHasKey('totalValue', $result);
+        $this->assertArrayHasKey('deletable', $result);
     }
 
     /**

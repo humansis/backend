@@ -75,7 +75,7 @@ class VendorService
         $vendorSaved = $userSaved instanceof User ? $this->em->getRepository(Vendor::class)->getVendorByUser($userSaved) : null;
 
         if (!($vendorSaved instanceof Vendor)) {
-            $user = $this->container->get('user.user_service')->create(
+            $user = $this->container->get('user.user_service')->createFromArray(
                 [
                     'username' => $username,
                     'email' => $username,
@@ -119,26 +119,11 @@ class VendorService
      */
     public function create(VendorCreateInputType $inputType): Vendor
     {
-        $userSaved = $this->em->getRepository(User::class)->findOneByUsername($inputType->getUsername());
-        $vendorSaved = $userSaved instanceof User ? $this->em->getRepository(Vendor::class)->getVendorByUser($userSaved) : null;
+        $user = $this->em->getRepository(User::class)->find($inputType->getUserId());
 
-        if ($vendorSaved instanceof Vendor) {
-            throw new RuntimeException('Vendor with username '.$inputType->getUsername().' already exists');
+        if (!$user instanceof User) {
+            throw new EntityNotFoundException('User with ID #'.$inputType->getUserId().' does not exists.');
         }
-
-        $user = $this->container->get('user.user_service')->create(
-            [
-                'username' => $inputType->getUsername(),
-                'email' => $inputType->getUsername(),
-                'roles' => ['ROLE_VENDOR'],
-                'password' => $inputType->getPassword(),
-                'salt' => $inputType->getSalt(),
-                'change_password' => false,
-                'phone_prefix' => '+34',
-                'phone_number' => '675676767',
-                'two_factor_authentication' => false,
-            ]
-        );
 
         $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
 
@@ -226,24 +211,25 @@ class VendorService
      */
     public function update(Vendor $vendor, VendorUpdateInputType $inputType): Vendor
     {
+        $user = $this->em->getRepository(User::class)->find($inputType->getUserId());
+
+        if (!$user instanceof User) {
+            throw new EntityNotFoundException('User with ID #'.$inputType->getUserId().' does not exists.');
+        }
+
+        $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
+
+        if (!$location instanceof Location) {
+            throw new EntityNotFoundException('Location with ID #'.$inputType->getLocationId().' does not exists.');
+        }
+
         $vendor->setShop($inputType->getShop())
             ->setName($inputType->getName())
             ->setAddressStreet($inputType->getAddressStreet())
             ->setAddressNumber($inputType->getAddressNumber())
-            ->setAddressPostcode($inputType->getAddressPostcode());
-
-        $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
-
-        if (!($location instanceof Location)) {
-            throw new EntityNotFoundException('Location with ID #'.$inputType->getLocationId().' does not exists.');
-        }
-
-        $user = $vendor->getUser();
-        $user->setSalt($inputType->getSalt());
-
-        if (null !== $inputType->getPassword()) {
-            $user->setPassword($inputType->getPassword());
-        }
+            ->setAddressPostcode($inputType->getAddressPostcode())
+            ->setLocation($location)
+            ->setUser($user);
 
         $this->em->persist($vendor);
         $this->em->flush();

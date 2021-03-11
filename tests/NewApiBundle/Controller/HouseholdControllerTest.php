@@ -2,6 +2,7 @@
 
 namespace Tests\NewApiBundle\Controller;
 
+use BeneficiaryBundle\Entity\Camp;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;
@@ -93,8 +94,10 @@ class HouseholdControllerTest extends BMSServiceTestCase
             ],
             'campAddress' => [
                 'tentNumber' => 'string',
-                'name' => 'string',
-                'locationId' => $location->getId(),
+                'camp' => [
+                    'name' => 'string',
+                    'locationId' => $location->getId(),
+                ],
             ],
         ]);
 
@@ -144,6 +147,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
 
         $vulnerabilityCriterion = $this->container->get('doctrine')->getRepository(VulnerabilityCriterion::class)->findBy([])[0];
         $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $camp = $this->container->get('doctrine')->getRepository(Camp::class)->findBy([])[0];
 
         $this->request('PUT', '/api/basic/households/'.$id, [
             'livelihood' => Livelihood::FARMING_AGRICULTURE,
@@ -201,8 +205,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             ],
             'campAddress' => [
                 'tentNumber' => 'string',
-                'name' => 'string',
-                'locationId' => $location->getId(),
+                'campId' => $camp->getId(),
             ],
         ]);
 
@@ -224,6 +227,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('latitude', $result);
         $this->assertArrayHasKey('householdHeadId', $result);
         $this->assertArrayHasKey('beneficiaryIds', $result);
+        $this->assertArrayHasKey('countrySpecificAnswerIds', $result);
         $this->assertArrayHasKey('incomeLevel', $result);
         $this->assertArrayHasKey('foodConsumptionScore', $result);
         $this->assertArrayHasKey('copingStrategiesIndex', $result);
@@ -270,6 +274,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('latitude', $result);
         $this->assertArrayHasKey('householdHeadId', $result);
         $this->assertArrayHasKey('beneficiaryIds', $result);
+        $this->assertArrayHasKey('countrySpecificAnswerIds', $result);
         $this->assertArrayHasKey('incomeLevel', $result);
         $this->assertArrayHasKey('foodConsumptionScore', $result);
         $this->assertArrayHasKey('copingStrategiesIndex', $result);

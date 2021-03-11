@@ -404,7 +404,7 @@ class BeneficiaryService
             $exportableTable = $this->em->getRepository(Beneficiary::class)->getAllInCountry($countryIso3);	
         }
 
-        if (count($households) > ExportController::EXPORT_LIMIT) {
+        if ('csv' !== $type && count($households) > ExportController::EXPORT_LIMIT) {
             $count = count($households);
             throw new BadRequestHttpException("Too much households ($count) to export. Limit is ".ExportController::EXPORT_LIMIT);
         }
@@ -417,7 +417,7 @@ class BeneficiaryService
             }
         }
 
-        if (count($exportableTable) > ExportController::EXPORT_LIMIT) {
+        if ('csv' !== $type && count($exportableTable) > ExportController::EXPORT_LIMIT) {
             $BNFcount = count($exportableTable);
             $HHcount = count($households);
             throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit is ".ExportController::EXPORT_LIMIT);

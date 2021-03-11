@@ -27,6 +27,7 @@ class BookletControllerTest extends BMSServiceTestCase
     public function testCreateBooklet()
     {
         $body = [
+            "project_id" => 1,
             "number_booklets" => 5,
             "individual_values" => [10, 3, 5],
             "currency" => 'USD',

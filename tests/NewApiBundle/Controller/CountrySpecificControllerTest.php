@@ -2,6 +2,7 @@
 
 namespace Tests\NewApiBundle\Controller;
 
+use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use Exception;
 use Tests\BMSServiceTestCase;
 
@@ -136,5 +137,28 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
         $this->request('GET', '/api/basic/country-specifics/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
+    }
+
+    public function testGetAnswer()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        /** @var CountrySpecificAnswer $answer */
+        $answer = $this->container->get('doctrine')->getRepository(CountrySpecificAnswer::class)->findBy([])[0];
+
+        $this->request('GET', '/api/basic/country-specifics/answers/'.$answer->getId());
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonStringEqualsJsonString('{
+            "id": '.$answer->getId().',
+            "countrySpecificOptionId": '.$answer->getCountrySpecific()->getId().',
+            "answer": "'.$answer->getAnswer().'"
+        }', $this->client->getResponse()->getContent());
     }
 }

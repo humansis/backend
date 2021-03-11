@@ -2,6 +2,7 @@
 
 namespace CommonBundle\Controller;
 
+use CommonBundle\Entity\Organization;
 use DistributionBundle\Entity\Assistance;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -99,11 +100,13 @@ class ExportController extends Controller
                 $filename = $this->get('beneficiary.household_export_csv_service')->exportToCsv($type, $countryIso3);
             } elseif ($request->query->get('transactionDistribution')) {
                 $idDistribution = $request->query->get('transactionDistribution');
-                if ($type === 'pdf') {
-                    return $this->get('distribution.assistance_service')->exportOneToPdf($idDistribution);
-                }
                 $distribution = $this->get('distribution.assistance_service')->findOneById($idDistribution);
-                $filename = $this->get('transaction.transaction_service')->exportToCsv($distribution, $type);
+                // todo find organisation by relation to distribution
+                $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
+                if ($type === 'pdf') {
+                    return $this->get('transaction.export.pdf')->export($distribution, $organization);
+                }
+                $filename = $this->get('transaction.export.spreadsheet')->export($distribution, $organization, $type);
             } elseif ($request->query->get('smartcardDistribution')) {
                 $idDistribution = $request->query->get('smartcardDistribution');
                 $distribution = $this->get('distribution.assistance_service')->findOneById($idDistribution);

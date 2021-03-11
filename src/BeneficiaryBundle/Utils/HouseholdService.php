@@ -543,10 +543,20 @@ class HouseholdService
         }
 
         if ($inputType->getCampAddress()) {
-            $location = $this->em->getRepository(Location::class)->find($inputType->getCampAddress()->getLocationId());
-            if (!$location) {
-                throw new EntityNotFoundException(sprintf('Location #%s does not exists', $inputType->getCampAddress()->getLocationId()));
+            $campName = $location = null;
+            if ($inputType->getCampAddress()->getCampId()) {
+                /** @var Camp $camp */
+                $camp = $this->em->getRepository(Camp::class)->find($inputType->getCampAddress()->getCampId());
+                $campName = $camp->getName();
+                $location = $camp->getLocation();
+            } else {
+                $campName = $inputType->getCampAddress()->getCamp()->getName();
+                $location = $this->em->getRepository(Location::class)->find($inputType->getCampAddress()->getCamp()->getLocationId());
+                if (!$location) {
+                    throw new EntityNotFoundException(sprintf('Location #%s does not exists', $inputType->getCampAddress()->getCamp()->getLocationId()));
+                }
             }
+
 
             $data['household_locations'][] = [
                 'location_group' => HouseholdLocation::LOCATION_GROUP_CURRENT,
@@ -560,7 +570,7 @@ class HouseholdService
                             'adm3' => $location->getAdm3Id(),
                             'adm4' => $location->getAdm4Id(),
                         ],
-                        'name' => $inputType->getCampAddress()->getName(),
+                        'name' => $campName,
                     ],
                 ],
             ];

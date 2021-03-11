@@ -6,6 +6,7 @@ namespace NewApiBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\ProductCreateInputType;
+use NewApiBundle\InputType\ProductFilterInputType;
 use NewApiBundle\InputType\ProductOrderInputType;
 use NewApiBundle\InputType\ProductUpdateInputType;
 use NewApiBundle\Request\Pagination;
@@ -36,13 +37,14 @@ class ProductController extends AbstractController
     /**
      * @Rest\Get("/products")
      *
-     * @param Request               $request
-     * @param Pagination            $pagination
-     * @param ProductOrderInputType $orderBy
+     * @param Request                $request
+     * @param ProductFilterInputType $filter
+     * @param Pagination             $pagination
+     * @param ProductOrderInputType  $orderBy
      *
      * @return JsonResponse
      */
-    public function list(Request $request, Pagination $pagination, ProductOrderInputType $orderBy): JsonResponse
+    public function list(Request $request, ProductFilterInputType $filter, Pagination $pagination, ProductOrderInputType $orderBy): JsonResponse
     {
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
@@ -50,7 +52,7 @@ class ProductController extends AbstractController
 
         /** @var ProductRepository $repository */
         $repository = $this->getDoctrine()->getRepository(Product::class);
-        $data = $repository->findByCountry($request->headers->get('country'), $orderBy, $pagination);
+        $data = $repository->findByCountry($request->headers->get('country'), $filter, $orderBy, $pagination);
 
         return $this->json($data);
     }

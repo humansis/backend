@@ -12,7 +12,11 @@ services:
 
     voucher.booklet_service:
         class: VoucherBundle\Utils\BookletService
-        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container', '@event_dispatcher']
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@validator'
+            - '@service_container'
+            - '@VoucherBundle\Utils\BookletGenerator'
         public: true
 
     voucher.voucher_service:
@@ -34,6 +38,11 @@ services:
         class: VoucherBundle\Model\PurchaseService
         arguments: [ '@doctrine.orm.entity_manager' ]
 
+    smartcard_service:
+        class: VoucherBundle\Utils\SmartcardService
+        arguments: [ '@doctrine.orm.entity_manager', '@voucher.purchase_service', '@doctrine.orm.entity_manager' ]
+        public: true
+
     VoucherBundle\Mapper\SmartcardMapper:
         public: true
 
@@ -44,3 +53,6 @@ services:
 
     VoucherBundle\Mapper\VoucherRedemptionBatchMapper:
         tags: [ 'app.mapper' ]
+
+    VoucherBundle\Utils\BookletGenerator:
+        arguments: [ '@doctrine.orm.entity_manager' ]

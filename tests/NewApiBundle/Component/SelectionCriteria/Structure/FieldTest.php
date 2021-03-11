@@ -1,0 +1,68 @@
+<?php
+declare(strict_types=1);
+
+namespace Tests\NewApiBundle\Component\SelectionCriteria\Structure;
+
+use NewApiBundle\Component\SelectionCriteria\Structure\Field;
+use PHPUnit\Framework\TestCase;
+
+class FieldTest extends TestCase
+{
+    public function testConditionsShouldNotBeEmpty()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new Field('field', [], 'type');
+    }
+
+    /**
+     * @param $type
+     *
+     * @dataProvider typeProvider
+     */
+    public function testTypeShouldBeValid($type)
+    {
+        try {
+            new Field('field', [1], $type);
+
+            $this->assertTrue(true);
+        } catch (\Exception $e) {
+            $this->fail($type.' is not valid type');
+        }
+    }
+
+    /**
+     * @param $callback
+     *
+     * @dataProvider callbackProvider
+     */
+    public function testCallbackShouldBeValid($callback)
+    {
+        try {
+            new Field('field', [1], 'integer', $callback);
+
+            $this->assertTrue(true);
+        } catch (\Exception $e) {
+            $this->fail('Invalid callback');
+        }
+    }
+
+    public function typeProvider()
+    {
+        return [
+            ['string'],
+            ['bool'],
+            ['boolean'],
+            ['integer'],
+        ];
+    }
+
+    public function callbackProvider()
+    {
+        return [
+            ['is_bool'],
+            [[self::class, 'callbackProvider']],
+            [null],
+        ];
+    }
+}

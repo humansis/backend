@@ -4,39 +4,167 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
+use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Repository\AssistanceRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Entity\AssistanceStatistics;
+use NewApiBundle\InputType\AssistanceCreateInputType;
+use NewApiBundle\InputType\AssistanceFilterInputType;
 use NewApiBundle\InputType\AssistanceOrderInputType;
+use NewApiBundle\InputType\AssistanceStatisticsFilterInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class AssistanceController extends AbstractController
 {
     /**
-     * @Rest\Get("/assistances")
+     * @Rest\Get("/assistances/statistics")
      *
-     * @param Request                  $request
-     * @param Pagination               $pagination
-     * @param AssistanceOrderInputType $orderBy
+     * @param Request                             $request
+     * @param AssistanceStatisticsFilterInputType $filter
      *
      * @return JsonResponse
      */
-    public function assistances(Request $request, Pagination $pagination, AssistanceOrderInputType $orderBy): JsonResponse
+    public function statistics(Request $request, AssistanceStatisticsFilterInputType $filter): JsonResponse
     {
         $countryIso3 = $request->headers->get('country', false);
         if (!$countryIso3) {
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $upcoming = ($request->query->has('upcoming') && $request->query->getBoolean('upcoming'));
+        $statistics = $this->getDoctrine()->getRepository(AssistanceStatistics::class)->findByParams($countryIso3, $filter);
 
-        $assistances = $this->getDoctrine()->getRepository(Assistance::class)->findByParams(null, $countryIso3, $upcoming, $orderBy, $pagination);
+        return $this->json(new Paginator($statistics));
+    }
+
+    /**
+     * @Rest\Get("/assistances/{id}/statistics")
+     * @ParamConverter("assistance", options={"mapping": {"id": "id"}})
+     *
+     * @param Assistance $assistance
+     *
+     * @return JsonResponse
+     */
+    public function assistanceStatistics(Assistance $assistance): JsonResponse
+    {
+        $statistics = $this->getDoctrine()->getRepository(AssistanceStatistics::class)->findByAssistance($assistance);
+
+        return $this->json($statistics);
+    }
+
+    /**
+     * @Rest\Get("/assistances")
+     *
+     * @param Request                   $request
+     * @param AssistanceFilterInputType $filter
+     * @param Pagination                $pagination
+     * @param AssistanceOrderInputType  $orderBy
+     *
+     * @return JsonResponse
+     */
+    public function assistances(
+        Request $request,
+        AssistanceFilterInputType $filter,
+        Pagination $pagination,
+        AssistanceOrderInputType $orderBy
+    ): JsonResponse
+    {
+        $countryIso3 = $request->headers->get('country', false);
+        if (!$countryIso3) {
+            throw new BadRequestHttpException('Missing country header');
+        }
+
+        $assistances = $this->getDoctrine()->getRepository(Assistance::class)->findByParams(null, $countryIso3, $filter, $orderBy, $pagination);
 
         return $this->json($assistances);
+    }
+
+    /**
+     * @Rest\Post("/assistances")
+     *
+     * @param AssistanceCreateInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function create(AssistanceCreateInputType $inputType): JsonResponse
+    {
+        $assistance = $this->get('distribution.assistance_service')->create($inputType);
+
+        return $this->json($assistance);
+    }
+
+    /**
+     * @Rest\Get("/assistances/{id}")
+     *
+     * @param Assistance $assistance
+     *
+     * @return JsonResponse
+     */
+    public function item(Assistance $assistance): JsonResponse
+    {
+        if ($assistance->getArchived()) {
+            $this->createNotFoundException();
+        }
+
+        return $this->json($assistance);
+    }
+
+    /**
+     * @Rest\Patch("/assistances/{id}")
+     *
+     * @param Assistance $assistance
+     *
+     * @return JsonResponse
+     */
+    public function update(Request $request, Assistance $assistance): JsonResponse
+    {
+        if ($request->request->get('validated', false)) {
+            $this->get('distribution.assistance_service')->validateDistribution($assistance);
+        }
+
+        if ($request->request->get('completed', false)) {
+            $this->get('distribution.assistance_service')->complete($assistance);
+        }
+
+        if ($request->request->get('dateDistribution')) {
+            $this->get('distribution.assistance_service')->updateDateDistribution($assistance, new \DateTime($request->request->get('dateDistribution')));
+        }
+
+        return $this->json($assistance);
+    }
+
+    /**
+     * @Rest\Delete("/assistances/{id}")
+     *
+     * @param Assistance $assistance
+     *
+     * @return JsonResponse
+     */
+    public function delete(Assistance $assistance): JsonResponse
+    {
+        $this->get('distribution.assistance_service')->delete($assistance);
+
+        return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Rest\Post("/assistances/summaries")
+     *
+     * @param AssistanceCreateInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function summaries(AssistanceCreateInputType $inputType): JsonResponse
+    {
+        $number = $this->get('distribution.criteria_assistance_service')->count($inputType);
+
+        return $this->json(['number' => (int) $number]);
     }
 
     /**

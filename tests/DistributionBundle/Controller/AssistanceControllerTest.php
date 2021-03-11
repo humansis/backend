@@ -375,12 +375,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
      */
     public function testDistributionBeneficiariesVouchers($distribution)
     {
-        $bookletService = new BookletService(
-            $this->em,
-            $this->container->get('validator'),
-            $this->container,
-            $this->container->get('event_dispatcher')
-        );
+        $bookletService = $this->container->get('voucher.booklet_service');
         $purchaseService = new PurchaseService($this->em);
 
         // Fake connection with a token for the user tester (ADMIN)
@@ -393,6 +388,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $bnfId = $firstAssistanceBeneficiary->getBeneficiary()->getId();
 
         $booklet = $bookletService->create('KHM', [
+            'project_id' => 1,
             'number_booklets' => 1,
             'number_vouchers' => 10,
             'currency' => 'USD',
@@ -401,6 +397,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $bookletService->assign($booklet, $firstAssistanceBeneficiary->getAssistance(), $firstAssistanceBeneficiary->getBeneficiary());
 
         $bookletBig = $bookletService->create('KHM', [
+            'project_id' => 1,
             'number_booklets' => 1,
             'number_vouchers' => 20,
             'currency' => 'EUR',

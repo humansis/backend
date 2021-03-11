@@ -7,6 +7,7 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Exception;
 use Tests\BMSServiceTestCase;
+use UserBundle\Entity\User;
 
 class VendorControllerTest extends BMSServiceTestCase
 {
@@ -32,28 +33,12 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->client = $this->container->get('test.client');
     }
 
-    public function testInitializeVendorUser(): string
-    {
-        $this->request('GET', '/api/wsse/initialize/'.$this->vendorUsername);
-
-        $response = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
-
-        $this->assertArrayHasKey('user_id', $response);
-        $this->assertArrayHasKey('salt', $response);
-
-        return $response['salt'];
-    }
-
     /**
-     * @depends testInitializeVendorUser
-     *
-     * @param string $salt
      * @return mixed
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function testCreate(string $salt)
+    public function testCreate()
     {
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
@@ -66,16 +51,21 @@ class VendorControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('To perform VendorController CRUD tests, you need to have at least one Adm1 record in database.');
         }
 
+        /** @var User[] $users */
+        $users = $this->em->getRepository(User::class)->findBy(['vendor' => null]);
+
+        if (empty($users)) {
+            $this->markTestSkipped('There needs to be at least one user in system which is not assigned to any vendor to complete this test');
+        }
+
         $this->request('POST', '/api/basic/vendors', [
             'shop' => 'test shop',
             'name' => 'test name',
-            'username' => $this->vendorUsername,
-            'salt' => $salt,
-            'password' => 'vendor-password',
             'addressStreet' => 'test street',
             'addressNumber' => '1234566',
             'addressPostcode' => '039 98',
             'locationId' => $adm1Results[0]->getId(),
+            'userId' => $users[0]->getId(),
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -89,12 +79,14 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('shop', $result);
         $this->assertArrayHasKey('name', $result);
-        $this->assertArrayHasKey('username', $result);
-        $this->assertArrayHasKey('salt', $result);
         $this->assertArrayHasKey('addressStreet', $result);
         $this->assertArrayHasKey('addressNumber', $result);
         $this->assertArrayHasKey('addressPostcode', $result);
         $this->assertArrayHasKey('locationId', $result);
+        $this->assertArrayHasKey('adm1Id', $result);
+        $this->assertArrayHasKey('adm2Id', $result);
+        $this->assertArrayHasKey('adm3Id', $result);
+        $this->assertArrayHasKey('adm4Id', $result);
 
         return $result;
     }
@@ -117,11 +109,11 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->request('PUT', '/api/basic/vendors/'.$vendor['id'], [
             'shop' => 'edited',
             'name' => $vendor['name'],
-            'salt' => $vendor['salt'],
             'addressStreet' => $vendor['addressStreet'],
             'addressNumber' => $vendor['addressNumber'],
             'addressPostcode' => '0000',
             'locationId' => $vendor['locationId'],
+            'userId' => $vendor['userId'],
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -135,12 +127,14 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('shop', $result);
         $this->assertArrayHasKey('name', $result);
-        $this->assertArrayHasKey('username', $result);
-        $this->assertArrayHasKey('salt', $result);
         $this->assertArrayHasKey('addressStreet', $result);
         $this->assertArrayHasKey('addressNumber', $result);
         $this->assertArrayHasKey('addressPostcode', $result);
         $this->assertArrayHasKey('locationId', $result);
+        $this->assertArrayHasKey('adm1Id', $result);
+        $this->assertArrayHasKey('adm2Id', $result);
+        $this->assertArrayHasKey('adm3Id', $result);
+        $this->assertArrayHasKey('adm4Id', $result);
 
         $this->assertEquals('edited', $result['shop']);
         $this->assertEquals('0000', $result['addressPostcode']);
@@ -176,12 +170,14 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('shop', $result);
         $this->assertArrayHasKey('name', $result);
-        $this->assertArrayHasKey('username', $result);
-        $this->assertArrayHasKey('salt', $result);
         $this->assertArrayHasKey('addressStreet', $result);
         $this->assertArrayHasKey('addressNumber', $result);
         $this->assertArrayHasKey('addressPostcode', $result);
         $this->assertArrayHasKey('locationId', $result);
+        $this->assertArrayHasKey('adm1Id', $result);
+        $this->assertArrayHasKey('adm2Id', $result);
+        $this->assertArrayHasKey('adm3Id', $result);
+        $this->assertArrayHasKey('adm4Id', $result);
 
         return $id;
     }

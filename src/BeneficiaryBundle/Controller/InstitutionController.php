@@ -146,7 +146,7 @@ class InstitutionController extends Controller
         /** @var InstitutionMapper $institutionMapper */
         $institutionMapper = $this->get(InstitutionMapper::class);
         try {
-            $institution = $institutionService->create($country, $newInstitution);
+            $institution = $institutionService->createDeprecated($country, $newInstitution);
             $this->getDoctrine()->getManager()->persist($institution);
             $this->getDoctrine()->getManager()->flush();
         } catch (\InvalidArgumentException $exception) {
@@ -206,7 +206,7 @@ class InstitutionController extends Controller
         /** @var InstitutionMapper $institutionMapper */
         $institutionMapper = $this->get(InstitutionMapper::class);
         try {
-            $institution = $institutionService->update($country, $institution, $institutionType);
+            $institution = $institutionService->updateDeprecated($country, $institution, $institutionType);
             $this->getDoctrine()->getManager()->persist($institution);
             $this->getDoctrine()->getManager()->flush();
         } catch (\InvalidArgumentException $exception) {

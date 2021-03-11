@@ -42,7 +42,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
     public function testCreateAssistanceBeneficiary()
     {
         //We check if there is an user in the Beneficiary to use him for the test :
-        $beneficiary = $this->em->getRepository(Beneficiary::class)->findAll();
+        $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'desc']);
 
         // If there is no user, we display an error :
         if (!$beneficiary) {
@@ -50,17 +50,29 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             $this->markTestIncomplete("There is no beneficiary with the ID specified to execute the test.");
         }
 
-        $assistance = $this->em->getRepository(Assistance::class)->findAll();
+        /** @var Assistance $assistance */
+        $assistance = $this->em->getRepository(Assistance::class)->findOneBy([
+            'validated' => false,
+            'completed' => false,
+            'archived' => false,
+        ]);
 
         if (!$assistance) {
             print_r("\nThere is no distribution with the ID specified to execute the test.\n");
             $this->markTestIncomplete("There is no distribution with the ID specified to execute the test.");
         }
 
+        $alreadyExistingBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)
+            ->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $assistance]);
+        if ($alreadyExistingBeneficiary) {
+            print_r("\nThere already is beneficiary ID specified to execute the test in assistance.\n");
+            $this->markTestIncomplete("There already is beneficiary ID specified to execute the test in assistance.");
+        }
+
         // If everything is ok, we create a new assistanceBeneficiary
         $assistanceBeneficiary = new AssistanceBeneficiary();
-        $assistanceBeneficiary->setBeneficiary($beneficiary[0])
-            ->setAssistance($assistance[0])
+        $assistanceBeneficiary->setBeneficiary($beneficiary)
+            ->setAssistance($assistance)
             ->setRemoved(0);
 
         $this->em->persist($assistanceBeneficiary);

@@ -4,6 +4,9 @@ namespace VoucherBundle\Repository;
 
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\Query\Expr\Join;
+use VoucherBundle\Entity\Booklet;
+use VoucherBundle\Entity\Vendor;
 
 /**
  * VoucherRepository
@@ -75,5 +78,26 @@ class VoucherRepository extends \Doctrine\ORM\EntityRepository
         } catch (NoResultException | NonUniqueResultException $e) {
             return 0;
         }
+    }
+
+    public function findUsedButUnredeemedByVendor(Vendor $vendor)
+    {
+        $qb = $this->createQueryBuilder("v");
+        $q = $qb->select('v')
+            ->leftJoin("v.booklet", "b")
+            ->leftJoin("v.voucherPurchase", "vp")
+            ->leftJoin("v.redemptionBatch", "rb", Join::WITH)
+            ->andWhere('vp.vendor = :vendor')
+            ->andWhere('vp IS NOT NULL')
+            ->andWhere('rb IS NULL')
+            ->andWhere('vp.vendor = :vendor')
+            ->andWhere('b.status = :bookletUsedStatus')
+            ->setParameter("vendor", $vendor)
+            ->setParameter("bookletUsedStatus", Booklet::USED)
+        ;
+
+        $qb->setParameter('vendor', $vendor);
+
+        return $qb->getQuery()->getResult();
     }
 }

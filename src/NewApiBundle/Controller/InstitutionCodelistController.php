@@ -7,10 +7,14 @@ namespace NewApiBundle\Controller;
 use BeneficiaryBundle\Entity\Institution;
 use CommonBundle\Pagination\Paginator;
 use NewApiBundle\Utils\CodeLists;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
+/**
+ * @Cache(expires="+5 days", public=true)
+ */
 class InstitutionCodelistController extends Controller
 {
     /**

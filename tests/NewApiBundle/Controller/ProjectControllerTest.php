@@ -8,15 +8,21 @@ use Tests\BMSServiceTestCase;
 
 class ProjectControllerTest extends BMSServiceTestCase
 {
+    /** @var string  */
     private $projectName;
+
+    public function __construct($name = null, array $data = [], $dataName = '')
+    {
+        parent::__construct($name, $data, $dataName);
+
+        $this->projectName = 'Test project No. '.time();
+    }
 
     /**
      * @throws Exception
      */
     public function setUp()
     {
-        $this->projectName = 'Test project No. '.time();
-
         // Configuration of BMSServiceTest
         $this->setDefaultSerializerName('serializer');
         parent::setUpFunctionnal();
@@ -60,6 +66,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('sectors', $result);
         $this->assertArrayHasKey('donorIds', $result);
         $this->assertArrayHasKey('numberOfHouseholds', $result);
+        $this->assertArrayHasKey('deletable', $result);
         $this->assertContains(SectorEnum::FOOD_SECURITY, $result['sectors']);
         $this->assertSame([], $result['donorIds']);
 
@@ -134,6 +141,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('sectors', $result);
         $this->assertArrayHasKey('donorIds', $result);
         $this->assertArrayHasKey('numberOfHouseholds', $result);
+        $this->assertArrayHasKey('deletable', $result);
         $this->assertContains(SectorEnum::EARLY_RECOVERY, $result['sectors']);
         $this->assertContains(SectorEnum::CAMP_MANAGEMENT, $result['sectors']);
         $this->assertNotContains(SectorEnum::FOOD_SECURITY, $result['sectors']);
@@ -171,6 +179,34 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('sectors', $result);
         $this->assertArrayHasKey('donorIds', $result);
         $this->assertArrayHasKey('numberOfHouseholds', $result);
+        $this->assertArrayHasKey('deletable', $result);
+
+        return $id;
+    }
+
+    /**
+     * @depends testGet
+     */
+    public function testGetList($id)
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('GET', '/api/basic/projects?filter[id][]='.$id.'&filter[fulltext]='.$this->projectName);
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertSame(1, $result['totalCount']);
+        $this->assertSame($id, $result['data'][0]['id']);
 
         return $id;
     }

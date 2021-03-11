@@ -3,6 +3,7 @@
 namespace Tests\NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\NationalId;
+use BeneficiaryBundle\Entity\Referral;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,6 +24,28 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
 
         // Get a Client instance for simulate a browser
         $this->client = $this->container->get('test.client');
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetReferralTypes()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('GET', '/api/basic/beneficiaries/referral-types');
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment(
+            '{"totalCount": '.count(Referral::REFERRALTYPES).', "data": [{"code": "*", "value": "*"}]}',
+            $this->client->getResponse()->getContent(),
+        );
     }
 
     /**

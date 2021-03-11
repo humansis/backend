@@ -51,37 +51,42 @@ class ResidenceAddressMapper implements MapperInterface
         return $this->object->getLocationGroup();
     }
 
-    public function getNumber(): string
+    public function getNumber(): ?string
     {
         return $this->object->getAddress()->getNumber();
     }
 
-    public function getStreet(): string
+    public function getStreet(): ?string
     {
         return $this->object->getAddress()->getStreet();
     }
 
-    public function getPostcode(): string
+    public function getPostcode(): ?string
     {
         return $this->object->getAddress()->getPostcode();
     }
 
-    public function getAdm1(): ?int
+    public function getLocationId(): int
+    {
+        return $this->object->getAddress()->getLocation()->getId();
+    }
+
+    public function getAdm1Id(): ?int
     {
         return $this->object->getAddress()->getLocation()->getAdm1Id() ?: null;
     }
 
-    public function getAdm2(): ?int
+    public function getAdm2Id(): ?int
     {
         return $this->object->getAddress()->getLocation()->getAdm2Id() ?: null;
     }
 
-    public function getAdm3(): ?int
+    public function getAdm3Id(): ?int
     {
         return $this->object->getAddress()->getLocation()->getAdm3Id() ?: null;
     }
 
-    public function getAdm4(): ?int
+    public function getAdm4Id(): ?int
     {
         return $this->object->getAddress()->getLocation()->getAdm4Id() ?: null;
     }
