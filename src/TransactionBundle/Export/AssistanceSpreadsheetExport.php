@@ -22,7 +22,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Symfony\Component\Translation\TranslatorInterface;
 
-class TransactionSpreadsheetExport
+class AssistanceSpreadsheetExport
 {
     /** @var TranslatorInterface */
     private $translator;
