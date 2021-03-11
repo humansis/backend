@@ -355,17 +355,25 @@ class AssistanceSpreadsheetExport
         $idx = 21;
         $no = 1;
         foreach ($assistance->getDistributionBeneficiaries() as $distributionBeneficiary) {
-            /* @var Beneficiary $bnf */
             $bnf = $distributionBeneficiary->getBeneficiary();
+            if ($bnf instanceof \BeneficiaryBundle\Entity\Household) {
+                $person = $bnf->getHouseholdHead()->getPerson();
+            } elseif ($bnf instanceof \BeneficiaryBundle\Entity\Community) {
+                $person = $bnf->getContact();
+            } elseif ($bnf instanceof \BeneficiaryBundle\Entity\Institution) {
+                $person = $bnf->getContact();
+            } else {
+                $person = $bnf->getPerson();
+            }
 
             $worksheet->setCellValue('B'.$idx, $no);
-            $worksheet->setCellValue('C'.$idx, $bnf->getPerson()->getLocalGivenName());
-            $worksheet->setCellValue('D'.$idx, $bnf->getPerson()->getLocalFamilyName());
-            $worksheet->setCellValue('E'.$idx, self::getNationalId($bnf->getPerson()));
-            $worksheet->setCellValue('F'.$idx, self::getPhone($bnf->getPerson()));
+            $worksheet->setCellValue('C'.$idx, $person->getLocalGivenName());
+            $worksheet->setCellValue('D'.$idx, $person->getLocalFamilyName());
+            $worksheet->setCellValue('E'.$idx, self::getNationalId($person));
+            $worksheet->setCellValue('F'.$idx, self::getPhone($person));
             $worksheet->setCellValue('G'.$idx, null);
             $worksheet->setCellValue('H'.$idx, null);
-            $worksheet->setCellValue('I'.$idx, self::getProxyPhone($bnf->getPerson()));
+            $worksheet->setCellValue('I'.$idx, self::getProxyPhone($person));
             $worksheet->setCellValue('J'.$idx, self::getDistributedItems($distributionBeneficiary));
             $worksheet->getStyle('B'.$idx.':K'.$idx)->applyFromArray($rowStyle);
             $worksheet->getRowDimension($idx)->setRowHeight(42.00);
