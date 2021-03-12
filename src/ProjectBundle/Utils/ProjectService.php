@@ -380,7 +380,7 @@ class ProjectService
     public function isDeletable(Project $project): bool
     {
         /** @var \Doctrine\ORM\Tools\Pagination\Paginator $assistance */
-        $assistances = $this->em->getRepository(Assistance::class)->findByParams($project);
+        $assistances = $this->em->getRepository(Assistance::class)->findByProject($project);
 
         return 0 === count($assistances) || $this->checkIfAllDistributionClosed($assistances);
     }
@@ -393,7 +393,7 @@ class ProjectService
     public function delete(Project $project)
     {
         /** @var \Doctrine\ORM\Tools\Pagination\Paginator $assistance */
-        $assistance = $this->em->getRepository(Assistance::class)->findByParams($project);
+        $assistance = $this->em->getRepository(Assistance::class)->findByProject($project);
 
         if (0 === $assistance->count()) {
             try {

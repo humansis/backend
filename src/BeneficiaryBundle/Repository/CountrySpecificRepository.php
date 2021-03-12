@@ -37,8 +37,9 @@ class CountrySpecificRepository extends EntityRepository
 
         if ($filter) {
             if ($filter->hasFulltext()) {
-                $qb->andWhere('cs.id LIKE :fulltext OR cs.fieldString LIKE :fulltext OR cs.type LIKE :fulltext')
-                    ->setParameter('fulltext', $filter->getFulltext());
+                $qb->andWhere('cs.id LIKE :id OR cs.fieldString LIKE :fulltext')
+                    ->setParameter('id', $filter->getFulltext())
+                    ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
             }
         }
 
