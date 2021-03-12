@@ -35,7 +35,7 @@ class SmartcardService
         $this->purchaseService = $purchaseService;
     }
 
-    public function deposit(string $serialNumber, int $distributionId, $value, DateTimeInterface $createdAt, User $user): SmartcardDeposit
+    public function deposit(string $serialNumber, int $distributionId, $value, $balance, DateTimeInterface $createdAt, User $user): SmartcardDeposit
     {
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
         if (!$smartcard) {
@@ -61,6 +61,7 @@ class SmartcardService
             $user,
             $assistanceBeneficiary,
             (float) $value,
+            null !== $balance ? (float) $balance : null,
             $createdAt
         );
 
