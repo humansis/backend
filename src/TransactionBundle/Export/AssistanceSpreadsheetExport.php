@@ -195,7 +195,7 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('G5')->setValue($this->translator->trans('Project & Donor').':');
         $worksheet->getCell('G5')->getStyle()->applyFromArray($labelStyle);
 
-        $worksheet->getCell('H4')->setValue($assistance->getProject()->getName().' & '.self::getDonors($assistance));
+        $worksheet->getCell('H4')->setValue(self::getProjectsAndDonors($assistance));
         $worksheet->getCell('H4')->getStyle()->applyFromArray($userInputStyle);
         $worksheet->mergeCells('H4:H5');
 
@@ -387,14 +387,14 @@ class AssistanceSpreadsheetExport
         }
     }
 
-    private static function getDonors(Assistance $assistance): string
+    private static function getProjectsAndDonors(Assistance $assistance): string
     {
         $donors = [];
         foreach ($assistance->getProject()->getDonors() as $donor) {
             $donors[] = $donor->getShortname();
         }
 
-        return implode(', ', $donors);
+        return [] === $donors ? $assistance->getProject()->getName() :  $assistance->getProject()->getName().' & '.implode(', ', $donors);
     }
 
     private static function getNationalId(Person $person): ?string

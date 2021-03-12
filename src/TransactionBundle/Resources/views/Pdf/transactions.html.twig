@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 
-{% macro getDonors(assistance) -%}
+{% macro getProjectsAndDonors(assistance) -%}
     {% set donorList = [] %}
     {% for donor in assistance.project.donors %}
         {% set donorList = donorList|merge([donor.shortname]) %}
     {% endfor %}
-    {{ donorList|join(",") }}
+    {{ assistance.project.name }}
+    {% if donorList != [] %} &amp; {{ donorList|join(",") }}{% endif %}
 {%- endmacro %}
 
 {% macro getNationalId(person) -%}
@@ -226,7 +227,7 @@
                 <td>{{ 'Location' }}:</td>
                 <td class="input" rowspan="2">{{ assistance.location.locationName }}</td>
                 <td>{{ 'Project & Donor' }}:</td>
-                <td class="input" rowspan="2">{{ assistance.project.name ~ ' & ' ~ _self.getDonors(assistance) }}</td>
+                <td class="input" rowspan="2">{{ _self.getProjectsAndDonors(assistance) }}</td>
                 <td>{{ 'Date' }}:</td>
                 <td class="input" rowspan="2">{{ assistance.dateDistribution|date('Y-m-d') }}</td>
             </tr>
