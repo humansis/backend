@@ -350,43 +350,15 @@ class SmartcardController extends Controller
         $this->container->get('logger')->error('headers', $request->headers->all());
         $this->container->get('logger')->error('content', [$request->getContent()]);
 
-        $serialNumber = $request->get('serialNumber');
-
-        $smartcard = $this->getDoctrine()->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
-        if (!$smartcard) {
-            $smartcard = new Smartcard($serialNumber, \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
-            $smartcard->setState(Smartcard::STATE_ACTIVE);
-            $smartcard->setSuspicious(true, 'Smartcard does not exists in database');
-        }
-
-        if (!$smartcard->isActive()) {
-            $smartcard->setSuspicious(true, 'Smartcard is in '.$smartcard->getState().' state');
-        }
-
-        $distribution = $this->getDoctrine()->getRepository(Assistance::class)->find($request->request->getInt('distributionId'));
-        if (!$distribution) {
-            throw new BadRequestHttpException('Distribution does not exists.');
-        }
-
-        $assistanceBeneficiary = $this->getDoctrine()->getRepository(AssistanceBeneficiary::class)->findByDistributionAndBeneficiary(
-            $distribution,
-            $smartcard->getBeneficiary()
+        $deposit = $this->get('smartcard_service')->deposit(
+            $request->get('serialNumber'),
+            $request->request->getInt('distributionId'),
+            $request->request->get('value'),
+            \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
+            $this->getUser()
         );
 
-        $deposit = SmartcardDeposit::create(
-            $smartcard,
-            $this->getUser(),
-            $assistanceBeneficiary,
-            (float) $request->request->get('value'),
-            \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt'))
-        );
-
-        $smartcard->addDeposit($deposit);
-
-        $this->getDoctrine()->getManager()->persist($smartcard);
-        $this->getDoctrine()->getManager()->flush();
-
-        $json = $this->get('serializer')->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
+        $json = $this->get('serializer')->serialize($deposit->getSmartcard(), 'json', ['groups' => ['SmartcardOverview']]);
 
         return new Response($json);
     }
