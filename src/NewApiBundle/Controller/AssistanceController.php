@@ -13,6 +13,7 @@ use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\AssistanceFilterInputType;
 use NewApiBundle\InputType\AssistanceOrderInputType;
 use NewApiBundle\InputType\AssistanceStatisticsFilterInputType;
+use NewApiBundle\InputType\ProjectsAssistanceFilterInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -80,7 +81,7 @@ class AssistanceController extends AbstractController
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $assistances = $this->getDoctrine()->getRepository(Assistance::class)->findByParams(null, $countryIso3, $filter, $orderBy, $pagination);
+        $assistances = $this->getDoctrine()->getRepository(Assistance::class)->findByParams($countryIso3, $filter, $orderBy, $pagination);
 
         return $this->json($assistances);
     }
@@ -170,18 +171,24 @@ class AssistanceController extends AbstractController
     /**
      * @Rest\Get("/projects/{id}/assistances")
      *
-     * @param Project                  $project
-     * @param Pagination               $pagination
-     * @param AssistanceOrderInputType $orderBy
+     * @param Project                           $project
+     * @param Pagination                        $pagination
+     * @param ProjectsAssistanceFilterInputType $filter
+     * @param AssistanceOrderInputType          $orderBy
      *
      * @return JsonResponse
      */
-    public function getProjectAssistances(Project $project, Pagination $pagination, AssistanceOrderInputType $orderBy): JsonResponse
+    public function getProjectAssistances(
+        Project $project,
+        Pagination $pagination,
+        ProjectsAssistanceFilterInputType $filter,
+        AssistanceOrderInputType $orderBy
+    ): JsonResponse
     {
         /** @var AssistanceRepository $repository */
         $repository = $this->getDoctrine()->getRepository(Assistance::class);
 
-        $assistances = $repository->findByParams($project, null, null, $orderBy, $pagination);
+        $assistances = $repository->findByProject($project, null, $filter, $orderBy, $pagination);
 
         return $this->json($assistances);
     }

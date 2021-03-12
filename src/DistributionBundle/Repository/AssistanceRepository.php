@@ -14,6 +14,7 @@ use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\InputType\AssistanceFilterInputType;
 use NewApiBundle\InputType\AssistanceOrderInputType;
+use NewApiBundle\InputType\ProjectsAssistanceFilterInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 
@@ -146,7 +147,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('dd.id = :distributionId')
                 ->setParameter('distributionId', $distributionId)
             ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0');
- 
+
         if ($distributionType === AssistanceTargetType::INDIVIDUAL) {
             $qb->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.dateOfBirth >= :minDateOfBirth AND b.dateOfBirth < :maxDateOfBirth AND b.gender = :gender');
         } else {
@@ -241,8 +242,81 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * @param Project|null                   $project
-     * @param string|null                    $iso3
+     * @param Project|null                           $project
+     * @param string|null                            $iso3
+     * @param ProjectsAssistanceFilterInputType|null $filter
+     * @param AssistanceOrderInputType|null          $orderBy
+     * @param Pagination|null                        $pagination
+     *
+     * @return Paginator|Assistance[]
+     */
+    public function findByProject(
+        Project $project,
+        ?string $iso3 = null,
+        ?ProjectsAssistanceFilterInputType $filter = null,
+        ?AssistanceOrderInputType $orderBy = null,
+        ?Pagination $pagination = null
+    ): Paginator
+    {
+        $qb = $this->createQueryBuilder('dd')
+            ->andWhere('dd.archived = 0')
+            ->andWhere('dd.project = :project')
+            ->setParameter('project', $project);
+
+        if ($iso3) {
+            $qb->leftJoin('dd.project', 'p')
+                ->andWhere('p.iso3 = :iso3')
+                ->setParameter('iso3', $iso3);
+        }
+
+        if ($filter) {
+            if ($filter->hasFulltext()) {
+                $qb->andWhere('dd.id = :id OR
+                               dd.name LIKE :fulltext OR
+                               dd.description LIKE :fulltext')
+                    ->setParameter('id', $filter->getFulltext())
+                    ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+            }
+        }
+
+        if ($pagination) {
+            $qb->setMaxResults($pagination->getLimit());
+            $qb->setFirstResult($pagination->getOffset());
+        }
+
+        if ($orderBy) {
+            foreach ($orderBy->toArray() as $name => $direction) {
+                switch ($name) {
+                    case AssistanceOrderInputType::SORT_BY_ID:
+                        $qb->orderBy('dd.id', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_LOCATION:
+                        $qb->leftJoin('dd.location', 'l');
+                        $qb->orderBy('l.id', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_DATE:
+                        $qb->orderBy('dd.dateDistribution', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_NAME:
+                        $qb->orderBy('dd.name', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_TARGET:
+                        $qb->orderBy('dd.targetType', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_NUMBER_OF_BENEFICIARIES:
+                        $qb->orderBy('SIZE(dd.distributionBeneficiaries)', $direction);
+                        break;
+                    default:
+                        throw new \InvalidArgumentException('Invalid order by directive '.$name);
+                }
+            }
+        }
+
+        return new Paginator($qb);
+    }
+
+    /**
+     * @param string                         $iso3
      * @param AssistanceFilterInputType|null $filter
      * @param AssistanceOrderInputType|null  $orderBy
      * @param Pagination|null                $pagination
@@ -250,19 +324,13 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
      * @return Paginator|Assistance[]
      */
     public function findByParams(
-        ?Project $project,
-        ?string $iso3 = null,
+        string $iso3,
         ?AssistanceFilterInputType $filter = null,
         ?AssistanceOrderInputType $orderBy = null,
         ?Pagination $pagination = null
     ): Paginator {
         $qb = $this->createQueryBuilder('dd')
             ->andWhere('dd.archived = 0');
-
-        if ($project) {
-            $qb->andWhere('dd.project = :project')
-                ->setParameter('project', $project);
-        }
 
         if ($iso3) {
             $qb->leftJoin('dd.project', 'p')
