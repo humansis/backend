@@ -3,8 +3,6 @@
 namespace NewApiBundle\InputType;
 
 use NewApiBundle\InputType\Beneficiary\AddressInputType;
-use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
-use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -46,18 +44,6 @@ class InstitutionUpdateInputType implements InputTypeInterface
     /**
      * @Assert\Type("string")
      * @Assert\Length(max="255")
-     */
-    private $contactGivenName;
-
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
-    private $contactFamilyName;
-
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
      * @Assert\NotNull
      */
     private $type;
@@ -70,18 +56,11 @@ class InstitutionUpdateInputType implements InputTypeInterface
     private $address;
 
     /**
-     * @var NationalIdCardInputType
-     *
+     * @var ContactInputType
      * @Assert\Valid
+     * @Assert\NotNull
      */
-    private $nationalIdCard;
-
-    /**
-     * @var PhoneInputType
-     *
-     * @Assert\Valid
-     */
-    private $phone;
+    private $contact;
 
     /**
      * @return int[]
@@ -148,38 +127,6 @@ class InstitutionUpdateInputType implements InputTypeInterface
     }
 
     /**
-     * @return string|null
-     */
-    public function getContactGivenName()
-    {
-        return $this->contactGivenName;
-    }
-
-    /**
-     * @param string|null $contactGivenName
-     */
-    public function setContactGivenName($contactGivenName)
-    {
-        $this->contactGivenName = $contactGivenName;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getContactFamilyName()
-    {
-        return $this->contactFamilyName;
-    }
-
-    /**
-     * @param string|null $contactFamilyName
-     */
-    public function setContactFamilyName($contactFamilyName)
-    {
-        $this->contactFamilyName = $contactFamilyName;
-    }
-
-    /**
      * @return string
      */
     public function getType()
@@ -212,35 +159,18 @@ class InstitutionUpdateInputType implements InputTypeInterface
     }
 
     /**
-     * @return NationalIdCardInputType|null
+     * @return ContactInputType
      */
-    public function getNationalIdCard()
+    public function getContact()
     {
-        return $this->nationalIdCard;
+        return $this->contact;
     }
 
     /**
-     * @param NationalIdCardInputType|null $nationalIdCard
+     * @param ContactInputType|null $contact
      */
-    public function setNationalIdCard(?NationalIdCardInputType $nationalIdCard)
+    public function setContact(?ContactInputType $contact): void
     {
-        $this->nationalIdCard = $nationalIdCard;
+        $this->contact = $contact;
     }
-
-    /**
-     * @return PhoneInputType|null
-     */
-    public function getPhone()
-    {
-        return $this->phone;
-    }
-
-    /**
-     * @param PhoneInputType|null $phone
-     */
-    public function setPhone(?PhoneInputType $phone): void
-    {
-        $this->phone = $phone;
-    }
-
 }

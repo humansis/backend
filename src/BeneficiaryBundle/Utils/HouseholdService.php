@@ -20,6 +20,7 @@ use CommonBundle\Entity\Location;
 use CommonBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
+use Exception;
 use NewApiBundle\InputType\HouseholdCreateInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
@@ -132,7 +133,7 @@ class HouseholdService
      * @param bool $flush
      * @return Household
      * @throws ValidationException
-     * @throws \Exception
+     * @throws Exception
      * @deprecated
      */
     public function createOrEdit(array $householdArray, array $projectsArray, $household = null, bool $flush = true)
@@ -174,7 +175,7 @@ class HouseholdService
                 if (!$camp instanceof Camp) {
                     $location = $this->locationService->getLocation($householdArray['__country'], $householdLocation['camp_address']['camp']['location']);
                     if (null === $location) {
-                        throw new \Exception("Location was not found.");
+                        throw new Exception("Location was not found.");
                     }
                     $camp = new Camp();
                     $camp->setName($householdLocation['camp_address']['camp']['name']);
@@ -187,7 +188,7 @@ class HouseholdService
             } else {
                 $location = $this->locationService->getLocation($householdArray['__country'], $householdLocation['address']["location"]);
                 if (null === $location) {
-                    throw new \Exception("Location was not found.");
+                    throw new Exception("Location was not found.");
                 }
                 $newHouseholdLocation->setAddress(Address::create(
                     $householdLocation['address']['street'] ?? null,
@@ -226,7 +227,7 @@ class HouseholdService
             }
 
             if (!$dateReceived instanceof \DateTimeInterface) {
-                throw new \Exception("Value of support_date_received is invalid");
+                throw new Exception("Value of support_date_received is invalid");
             }
         }
         $household->setSupportDateReceived($dateReceived);
@@ -252,7 +253,7 @@ class HouseholdService
         // Add projects
         foreach ($projectsArray as $project) {
             if (!$project instanceof Project) {
-                throw new \Exception("The project could not be found.");
+                throw new Exception("The project could not be found.");
             }
             if ($actualAction !== 'update' || !$household->getProjects()->contains($project)) {
                 $household->addProject($project);
@@ -280,12 +281,12 @@ class HouseholdService
                         $household->addBeneficiary($beneficiary);
                     }
                     $beneficiariesPersisted[] = $beneficiary;
-                } catch (\Exception $exception) {
+                } catch (Exception $exception) {
                     throw $exception;
                 }
                 if ($beneficiary->isHead()) {
                     if ($hasHead) {
-                        throw new \Exception("You have defined more than 1 head of household.");
+                        throw new Exception("You have defined more than 1 head of household.");
                     }
                     $hasHead = true;
                 }
@@ -368,7 +369,7 @@ class HouseholdService
      * @param Household $household
      * @param array $countrySpecificAnswerArray
      * @return array|CountrySpecificAnswer
-     * @throws \Exception
+     * @throws Exception
      */
     public function addOrUpdateCountrySpecific(Household $household, array $countrySpecificAnswerArray, bool $flush)
     {
@@ -382,7 +383,7 @@ class HouseholdService
             ->find($countrySpecificAnswerArray["country_specific"]["id"]);
 
         if (!$countrySpecific instanceof CountrySpecific) {
-            throw new \Exception("This country specific is unknown");
+            throw new Exception("This country specific is unknown");
         }
 
         $countrySpecificAnswer = $this->em->getRepository(CountrySpecificAnswer::class)
@@ -465,6 +466,13 @@ class HouseholdService
         return $households;
     }
 
+    /**
+     * @param HouseholdUpdateInputType $inputType
+     *
+     * @return array
+     * @throws EntityNotFoundException
+     * @throws Exception
+     */
     private function fallbackMap(HouseholdUpdateInputType $inputType)
     {
         $countrySpecificAnswers = [];
@@ -583,7 +591,7 @@ class HouseholdService
             }
 
             $phones = [];
-            foreach ($bnf->getPhones() as $phone) {
+            foreach ($bnf->getPerson()->getPhones() as $phone) {
                 $phones[] = [
                     'type' => $phone->getType(),
                     'prefix' => $phone->getPrefix(),
@@ -593,7 +601,7 @@ class HouseholdService
             }
 
             $nationalIds = [];
-            foreach ($bnf->getNationalIdCards() as $nationalIdCard) {
+            foreach ($bnf->getPerson()->getNationalIdCards() as $nationalIdCard) {
                 $nationalIds[] = [
                     'id_type' => $nationalIdCard->getType(),
                     'id_number' => $nationalIdCard->getNumber(),
@@ -601,21 +609,21 @@ class HouseholdService
             }
 
             $data['beneficiaries'][] = [
-                'gender' => $bnf->getGender(),
-                'date_of_birth' => $bnf->getDateOfBirth()->format('d-m-Y'),
-                'en_family_name' => $bnf->getEnFamilyName(),
-                'en_given_name' => $bnf->getEnGivenName(),
-                'en_parents_name' => $bnf->getEnParentsName(),
-                'local_family_name' => $bnf->getLocalFamilyName(),
-                'local_given_name' => $bnf->getLocalGivenName(),
-                'local_parents_name' => $bnf->getLocalParentsName(),
+                'gender' => $bnf->getPerson()->getGender(),
+                'date_of_birth' => $bnf->getPerson()->getDateOfBirth()->format('d-m-Y'),
+                'en_family_name' => $bnf->getPerson()->getEnFamilyName(),
+                'en_given_name' => $bnf->getPerson()->getEnGivenName(),
+                'en_parents_name' => $bnf->getPerson()->getEnParentsName(),
+                'local_family_name' => $bnf->getPerson()->getLocalFamilyName(),
+                'local_given_name' => $bnf->getPerson()->getLocalGivenName(),
+                'local_parents_name' => $bnf->getPerson()->getLocalParentsName(),
                 'status' => $bnf->isHead() ? 1 : 0,
                 'residency_status' => $bnf->getResidencyStatus(),
                 'vulnerability_criteria' => $vulnerabilityCriteria,
                 'phones' => $phones,
                 'national_ids' => $nationalIds,
-                'referral_type' => $bnf->getReferralType(),
-                'referral_comment' => $bnf->getReferralComment(),
+                'referral_type' => $bnf->getPerson()->getReferralType(),
+                'referral_comment' => $bnf->getPerson()->getReferralComment(),
                 'profile' => ['photo' => ''],
             ];
         }

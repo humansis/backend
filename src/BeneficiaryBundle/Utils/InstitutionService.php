@@ -110,8 +110,10 @@ class InstitutionService
         $institution->setType($inputType->getType());
         $institution->setLongitude($inputType->getLongitude());
         $institution->setLatitude($inputType->getLatitude());
-        $institution->setContactName($inputType->getContactGivenName());
-        $institution->setContactFamilyName($inputType->getContactFamilyName());
+
+        $contact = $institution->getContact();
+        $contact->setEnGivenName($inputType->getContact()->getEnGivenName());
+        $contact->setEnFamilyName($inputType->getContact()->getEnFamilyName());
 
         foreach ($inputType->getProjectIds() as $id) {
             $project = $this->em->getRepository(Project::class)->find($id);
@@ -137,18 +139,25 @@ class InstitutionService
             ));
         }
 
-        if ($inputType->getPhone()) {
-            $institution->setPhone(new Phone());
-            $institution->getPhone()->setType($inputType->getPhone()->getType());
-            $institution->getPhone()->setPrefix($inputType->getPhone()->getPrefix());
-            $institution->getPhone()->setNumber($inputType->getPhone()->getNumber());
-            $institution->getPhone()->setProxy($inputType->getPhone()->getProxy());
+        foreach ($inputType->getContact()->getPhones() as $phoneInputType) {
+            $phone = new Phone();
+            $phone->setType($phoneInputType->getType());
+            $phone->setPrefix($phoneInputType->getPrefix());
+            $phone->setNumber($phoneInputType->getNumber());
+            $phone->setProxy($phoneInputType->getProxy());
+            $phone->setPerson($contact);
+
+            $this->em->persist($phone);
         }
 
-        if ($inputType->getNationalIdCard()) {
-            $institution->setNationalId(new NationalId());
-            $institution->getNationalId()->setIdNumber($inputType->getNationalIdCard()->getNumber());
-            $institution->getNationalId()->setIdType($inputType->getNationalIdCard()->getType());
+        foreach ($inputType->getContact()->getNationalIdCards() as $nationalIdCardInputType) {
+            $nationalIdCard = new NationalId();
+
+            $nationalIdCard->setIdNumber($nationalIdCardInputType->getNumber());
+            $nationalIdCard->setIdType($nationalIdCardInputType->getType());
+            $nationalIdCard->setPerson($contact);
+
+            $this->em->persist($nationalIdCard);
         }
 
         $this->em->persist($institution);
@@ -270,8 +279,10 @@ class InstitutionService
         $institution->setType($inputType->getType());
         $institution->setLongitude($inputType->getLongitude());
         $institution->setLatitude($inputType->getLatitude());
-        $institution->setContactName($inputType->getContactGivenName());
-        $institution->setContactFamilyName($inputType->getContactFamilyName());
+
+        $contact = $institution->getContact();
+        $contact->setEnGivenName($inputType->getContact()->getEnGivenName());
+        $contact->setEnFamilyName($inputType->getContact()->getEnFamilyName());
 
         $institution->getProjects()->clear();
         foreach ($inputType->getProjectIds() as $id) {
@@ -304,34 +315,27 @@ class InstitutionService
             $institutionAddress->setStreet($addressType->getStreet());
         }
 
-        $nationalIdCardType = $inputType->getNationalIdCard();
-        if (null === $nationalIdCardType) {
-            $institution->setNationalId(null);
-        } else {
-            $institutionNationalIdCard = $institution->getNationalId();
-            if (null === $institutionNationalIdCard) {
-                $institutionNationalIdCard = new NationalId();
-                $institution->setNationalId($institutionNationalIdCard);
-            }
+        $contact->getPhones()->clear();
+        foreach ($inputType->getContact()->getPhones() as $phoneInputType) {
+            $phone = new Phone();
+            $phone->setType($phoneInputType->getType());
+            $phone->setPrefix($phoneInputType->getPrefix());
+            $phone->setNumber($phoneInputType->getNumber());
+            $phone->setProxy($phoneInputType->getProxy());
+            $phone->setPerson($contact);
 
-            $institutionNationalIdCard->setIdNumber($nationalIdCardType->getNumber());
-            $institutionNationalIdCard->setIdType($nationalIdCardType->getType());
+            $this->em->persist($phone);
         }
 
-        $phoneType = $inputType->getPhone();
-        if (null === $phoneType) {
-            $institution->setPhone(null);
-        } else {
-            $institutionPhone = $institution->getPhone();
-            if (null === $institutionPhone) {
-                $institutionPhone = new Phone();
-                $institution->setPhone($institutionPhone);
-            }
+        $contact->getNationalIds()->clear();
+        foreach ($inputType->getContact()->getNationalIdCards() as $nationalIdCardInputType) {
+            $nationalIdCard = new NationalId();
 
-            $institutionPhone->setPrefix($phoneType->getPrefix());
-            $institutionPhone->setNumber($phoneType->getNumber());
-            $institutionPhone->setType($phoneType->getType());
-            $institutionPhone->setProxy($phoneType->getProxy());
+            $nationalIdCard->setIdNumber($nationalIdCardInputType->getNumber());
+            $nationalIdCard->setIdType($nationalIdCardInputType->getType());
+            $nationalIdCard->setPerson($contact);
+
+            $this->em->persist($nationalIdCard);
         }
 
         $this->em->flush();

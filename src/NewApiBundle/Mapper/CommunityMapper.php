@@ -73,22 +73,6 @@ class CommunityMapper implements MapperInterface
     }
 
     /**
-     * @return string|null
-     */
-    public function getContactGivenName(): ?string
-    {
-        return $this->object->getContactName();
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getContactFamilyName(): ?string
-    {
-        return $this->object->getContactFamilyName();
-    }
-
-    /**
      * @return int|null
      */
     public function getAddressId(): ?int
@@ -100,27 +84,12 @@ class CommunityMapper implements MapperInterface
         return $this->object->getAddress()->getId();
     }
 
-    /**
-     * @return int|null
-     */
-    public function getNationalId(): ?int
+    public function getContactId(): ?int
     {
-        if (is_null($this->object->getNationalId())) {
+        if (null === $this->object->getContact()) {
             return null;
         }
 
-        return $this->object->getNationalId()->getId();
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getPhoneId(): ?int
-    {
-        if (is_null($this->object->getPhone())) {
-            return null;
-        }
-
-        return $this->object->getPhone()->getId();
+        return $this->object->getContact()->getId();
     }
 }

@@ -39,73 +39,9 @@ class BeneficiaryMapper implements MapperInterface
         return $this->object->getId();
     }
 
-    public function getDateOfBirth(): string
-    {
-        return $this->object->getPerson()->getDateOfBirth()->format('Y-m-d');
-    }
-
-    public function getLocalFamilyName(): string
-    {
-        return $this->object->getPerson()->getLocalFamilyName();
-    }
-
-    public function getLocalGivenName(): string
-    {
-        return $this->object->getPerson()->getLocalGivenName();
-    }
-
-    public function getLocalParentsName(): ?string
-    {
-        return $this->object->getPerson()->getLocalParentsName();
-    }
-
-    public function getEnFamilyName(): ?string
-    {
-        return $this->object->getPerson()->getEnFamilyName();
-    }
-
-    public function getEnGivenName(): ?string
-    {
-        return $this->object->getPerson()->getEnGivenName();
-    }
-
-    public function getEnParentsName(): ?string
-    {
-        return $this->object->getPerson()->getEnParentsName();
-    }
-
-    public function getGender(): string
-    {
-        return 1 === $this->object->getPerson()->getGender() ? 'M' : 'F';
-    }
-
-    public function getNationalIds(): array
-    {
-        return array_map(function ($item) {
-            return $item->getId();
-        }, $this->object->getPerson()->getNationalIds()->toArray());
-    }
-
-    public function getPhoneIds(): array
-    {
-        return array_map(function ($item) {
-            return $item->getId();
-        }, $this->object->getPerson()->getPhones()->toArray());
-    }
-
     public function getResidencyStatus(): string
     {
         return $this->object->getResidencyStatus();
-    }
-
-    public function getReferralType(): ?string
-    {
-        return $this->object->getPerson()->getReferral() ? $this->object->getPerson()->getReferral()->getType() : null;
-    }
-
-    public function getReferralComment(): ?string
-    {
-        return $this->object->getPerson()->getReferral() ? $this->object->getPerson()->getReferral()->getComment() : null;
     }
 
     public function getIsHead(): bool
@@ -124,5 +60,10 @@ class BeneficiaryMapper implements MapperInterface
         }
 
         return $data;
+    }
+
+    public function getPersonId(): ?int
+    {
+        return $this->object->getPerson()->getId();
     }
 }

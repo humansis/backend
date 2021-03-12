@@ -43,28 +43,6 @@ class CommunityUpdateInputType implements InputTypeInterface
      */
     private $latitude;
 
-
-    /**
-     * @var string $contactGivenName
-     *
-     * @Assert\Length(max="255")
-     * @Assert\Type("string")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
-    private $contactGivenName;
-
-    /**
-     * @var string $contactFamilyName
-     *
-     * @Assert\Length(max="255")
-     * @Assert\Type("string")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
-    private $contactFamilyName;
-
-
     /**
      * @var AddressInputType $address
      *
@@ -73,18 +51,11 @@ class CommunityUpdateInputType implements InputTypeInterface
     private $address;
 
     /**
-     * @var NationalIdCardInputType $nationalIdCard
-     *
+     * @var ContactInputType
      * @Assert\Valid
+     * @Assert\NotNull
      */
-    private $nationalIdCard;
-
-    /**
-     * @var PhoneInputType $phone
-     *
-     * @Assert\Valid
-     */
-    private $phone;
+    private $contact;
 
     /**
      * @return int[]
@@ -135,38 +106,6 @@ class CommunityUpdateInputType implements InputTypeInterface
     }
 
     /**
-     * @return string
-     */
-    public function getContactGivenName()
-    {
-        return $this->contactGivenName;
-    }
-
-    /**
-     * @param string $contactGivenName
-     */
-    public function setContactGivenName($contactGivenName): void
-    {
-        $this->contactGivenName = $contactGivenName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getContactFamilyName()
-    {
-        return $this->contactFamilyName;
-    }
-
-    /**
-     * @param string $contactFamilyName
-     */
-    public function setContactFamilyName($contactFamilyName)
-    {
-        $this->contactFamilyName = $contactFamilyName;
-    }
-
-    /**
      * @return AddressInputType
      */
     public function getAddress()
@@ -183,34 +122,18 @@ class CommunityUpdateInputType implements InputTypeInterface
     }
 
     /**
-     * @return NationalIdCardInputType|null
+     * @return ContactInputType
      */
-    public function getNationalIdCard()
+    public function getContact()
     {
-        return $this->nationalIdCard;
+        return $this->contact;
     }
 
     /**
-     * @param NationalIdCardInputType|null $nationalIdCard
+     * @param ContactInputType|null $contact
      */
-    public function setNationalIdCard(?NationalIdCardInputType $nationalIdCard)
+    public function setContact(?ContactInputType $contact): void
     {
-        $this->nationalIdCard = $nationalIdCard;
-    }
-
-    /**
-     * @return PhoneInputType|null
-     */
-    public function getPhone()
-    {
-        return $this->phone;
-    }
-
-    /**
-     * @param PhoneInputType|null $phone
-     */
-    public function setPhone(?PhoneInputType $phone): void
-    {
-        $this->phone = $phone;
+        $this->contact = $contact;
     }
 }

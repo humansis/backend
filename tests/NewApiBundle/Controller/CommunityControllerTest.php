@@ -48,8 +48,6 @@ class CommunityControllerTest extends BMSServiceTestCase
         $this->request('POST', '/api/basic/communities', [
             'longitude' => 'test longitude',
             'latitude' => 'test latitude',
-            'contactGivenName' => 'test contactGivenName',
-            'contactFamilyName' => 'test contactFamilyName',
             'projectIds' => [],
             'address' => [
                 'type' => 'test type',
@@ -59,15 +57,23 @@ class CommunityControllerTest extends BMSServiceTestCase
                 'postcode' => 'test postcode',
                 'locationId' => $location->getId(),
             ],
-            'nationalIdCard' => [
-                'number' => '022-33-1547',
-                'type' => 'Passport',
-            ],
-            'phone' => [
-                'prefix' => '420',
-                'number' => '123456789',
-                'type' => 'Landline',
-                'proxy' => true,
+            'contact' => [
+                'enGivenName' => 'test',
+                'enFamilyName' => 'test',
+                'nationalIdCards' => [
+                    [
+                        'number' => '022-33-1547',
+                        'type' => 'Passport',
+                    ]
+                ],
+                'phones' => [
+                    [
+                        'prefix' => '420',
+                        'number' => '123456789',
+                        'type' => 'Landline',
+                        'proxy' => true,
+                    ],
+                ],
             ],
         ]);
 
@@ -81,11 +87,8 @@ class CommunityControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('longitude', $result);
         $this->assertArrayHasKey('latitude', $result);
-        $this->assertArrayHasKey('contactGivenName', $result);
-        $this->assertArrayHasKey('contactFamilyName', $result);
         $this->assertArrayHasKey('addressId', $result);
-        $this->assertArrayHasKey('nationalId', $result);
-        $this->assertArrayHasKey('phoneId', $result);
+        $this->assertArrayHasKey('contactId', $result);
         $this->assertArrayHasKey('projectIds', $result);
 
         return $result['id'];
@@ -114,8 +117,6 @@ class CommunityControllerTest extends BMSServiceTestCase
         $data = [
             'longitude' => 'test CHANGED',
             'latitude' => 'test latitude',
-            'contactGivenName' => 'test contactGivenName',
-            'contactFamilyName' => 'test contactFamilyName',
             'projectIds' => [$project->getId()],
             'address' => [
                 'type' => 'test type',
@@ -125,15 +126,23 @@ class CommunityControllerTest extends BMSServiceTestCase
                 'postcode' => 'test postcode',
                 'locationId' => $location->getId(),
             ],
-            'nationalIdCard' => [
-                'number' => '022-33-1547',
-                'type' => 'Passport',
-            ],
-            'phone' => [
-                'prefix' => '420',
-                'number' => '123456789',
-                'type' => 'Landline',
-                'proxy' => true,
+            'contact' => [
+                'enGivenName' => 'test',
+                'enFamilyName' => 'test',
+                'nationalIdCards' => [
+                    [
+                        'number' => '022-33-1547',
+                        'type' => 'Passport',
+                    ]
+                ],
+                'phones' => [
+                    [
+                        'prefix' => '420',
+                        'number' => '123456789',
+                        'type' => 'Landline',
+                        'proxy' => true,
+                    ],
+                ],
             ],
         ];
 
@@ -150,11 +159,8 @@ class CommunityControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('longitude', $result);
         $this->assertArrayHasKey('latitude', $result);
-        $this->assertArrayHasKey('contactGivenName', $result);
-        $this->assertArrayHasKey('contactFamilyName', $result);
         $this->assertArrayHasKey('addressId', $result);
-        $this->assertArrayHasKey('nationalId', $result);
-        $this->assertArrayHasKey('phoneId', $result);
+        $this->assertArrayHasKey('contactId', $result);
         $this->assertArrayHasKey('projectIds', $result);
 
         $this->assertEquals($data['longitude'], $result['longitude']);
@@ -190,11 +196,8 @@ class CommunityControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('longitude', $result);
         $this->assertArrayHasKey('latitude', $result);
-        $this->assertArrayHasKey('contactGivenName', $result);
-        $this->assertArrayHasKey('contactFamilyName', $result);
         $this->assertArrayHasKey('addressId', $result);
-        $this->assertArrayHasKey('nationalId', $result);
-        $this->assertArrayHasKey('phoneId', $result);
+        $this->assertArrayHasKey('contactId', $result);
         $this->assertArrayHasKey('projectIds', $result);
 
         return $id;

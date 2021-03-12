@@ -51,21 +51,10 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
-        $this->assertArrayHasKey('dateOfBirth', $result);
-        $this->assertArrayHasKey('localFamilyName', $result);
-        $this->assertArrayHasKey('localGivenName', $result);
-        $this->assertArrayHasKey('localParentsName', $result);
-        $this->assertArrayHasKey('enFamilyName', $result);
-        $this->assertArrayHasKey('enGivenName', $result);
-        $this->assertArrayHasKey('enParentsName', $result);
-        $this->assertArrayHasKey('gender', $result);
-        $this->assertArrayHasKey('nationalIds', $result);
-        $this->assertArrayHasKey('phoneIds', $result);
-        $this->assertArrayHasKey('referralType', $result);
-        $this->assertArrayHasKey('referralComment', $result);
         $this->assertArrayHasKey('residencyStatus', $result);
         $this->assertArrayHasKey('isHead', $result);
         $this->assertArrayHasKey('vulnerabilityCriteria', $result);
+        $this->assertArrayHasKey('personId', $result);
     }
 
     /**
@@ -123,21 +112,10 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
             "data": [
                 {
                     "id": "*",
-                    "dateOfBirth": "*",
-                    "localFamilyName": "*",
-                    "localGivenName": "*",
-                    "localParentsName": "*",
-                    "enFamilyName": "*",
-                    "enGivenName": "*",
-                    "enParentsName": "*",
-                    "gender": "*",
-                    "nationalIds": "*",
-                    "phoneIds": "*",
-                    "referralType": "*",
-                    "referralComment": "*",
                     "residencyStatus": "*",
                     "isHead": "*",
                     "vulnerabilityCriteria": "*"
+                    "personId": "*"
                 }
             ]}', $this->client->getResponse()->getContent());
     }
@@ -334,21 +312,10 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
             "data": [
                 {
                     "id": "*",
-                    "dateOfBirth": "*",
-                    "localFamilyName": "*",
-                    "localGivenName": "*",
-                    "localParentsName": "*",
-                    "enFamilyName": "*",
-                    "enGivenName": "*",
-                    "enParentsName": "*",
-                    "gender": "*",
-                    "nationalIds": "*",
-                    "phoneIds": "*",
-                    "referralType": "*",
-                    "referralComment": "*",
                     "residencyStatus": "*",
                     "isHead": "*",
-                    "vulnerabilityCriteria": "*"
+                    "vulnerabilityCriteria": "*",
+                    "personId": "*"
                 }
             ]}', $this->client->getResponse()->getContent());
     }

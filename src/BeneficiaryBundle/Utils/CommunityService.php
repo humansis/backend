@@ -282,11 +282,13 @@ class CommunityService
     public function create(CommunityCreateInputType $inputType): Community
     {
         $community = new Community();
-        $community->setName($inputType->getContactFamilyName());
+        $community->setName($inputType->getContact()->getEnFamilyName());
         $community->setLongitude($inputType->getLongitude());
         $community->setLatitude($inputType->getLongitude());
-        $community->setContactFamilyName($inputType->getContactFamilyName());
-        $community->setContactName($inputType->getContactGivenName());
+
+        $contact = $community->getContact();
+        $contact->setEnGivenName($inputType->getContact()->getEnGivenName());
+        $contact->setEnFamilyName($inputType->getContact()->getEnFamilyName());
 
         foreach ($inputType->getProjectIds() as $id) {
             $project = $this->em->getRepository(Project::class)->find($id);
@@ -312,24 +314,25 @@ class CommunityService
             ));
         }
 
-        if (!is_null($inputType->getNationalIdCard())) {
-            $nationalIdCard = new NationalId();
+        foreach ($inputType->getContact()->getPhones() as $phoneInputType) {
+            $phone = new Phone();
+            $phone->setType($phoneInputType->getType());
+            $phone->setPrefix($phoneInputType->getPrefix());
+            $phone->setNumber($phoneInputType->getNumber());
+            $phone->setProxy($phoneInputType->getProxy());
+            $phone->setPerson($contact);
 
-            $nationalIdCard->setIdNumber($inputType->getNationalIdCard()->getNumber());
-            $nationalIdCard->setIdType($inputType->getNationalIdCard()->getType());
-
-            $community->setNationalId($nationalIdCard);
+            $this->em->persist($phone);
         }
 
-        if (!is_null($inputType->getPhone())) {
-            $phone = new Phone();
+        foreach ($inputType->getContact()->getNationalIdCards() as $nationalIdCardInputType) {
+            $nationalIdCard = new NationalId();
 
-            $phone->setPrefix($inputType->getPhone()->getPrefix());
-            $phone->setNumber($inputType->getPhone()->getNumber());
-            $phone->setType($inputType->getPhone()->getType());
-            $phone->setProxy($inputType->getPhone()->getProxy());
+            $nationalIdCard->setIdNumber($nationalIdCardInputType->getNumber());
+            $nationalIdCard->setIdType($nationalIdCardInputType->getType());
+            $nationalIdCard->setPerson($contact);
 
-            $community->setPhone($phone);
+            $this->em->persist($nationalIdCard);
         }
 
         $this->em->persist($community);
@@ -340,11 +343,13 @@ class CommunityService
 
     public function update(Community $community, CommunityUpdateInputType $inputType)
     {
-        $community->setName($inputType->getContactFamilyName());
+        $community->setName($inputType->getContact()->getEnFamilyName());
         $community->setLongitude($inputType->getLongitude());
         $community->setLatitude($inputType->getLatitude());
-        $community->setContactName($inputType->getContactGivenName());
-        $community->setContactFamilyName($inputType->getContactFamilyName());
+
+        $contact = $community->getContact();
+        $contact->setEnGivenName($inputType->getContact()->getEnGivenName());
+        $contact->setEnFamilyName($inputType->getContact()->getEnFamilyName());
 
         $community->getProjects()->clear();
         foreach ($inputType->getProjectIds() as $id) {
@@ -377,34 +382,27 @@ class CommunityService
             $communityAddress->setStreet($addressType->getStreet());
         }
 
-        $nationalIdCardType = $inputType->getNationalIdCard();
-        if (null === $nationalIdCardType) {
-            $community->setNationalId(null);
-        } else {
-            $communityNationalIdCard = $community->getNationalId();
-            if (null === $communityNationalIdCard) {
-                $communityNationalIdCard = new NationalId();
-                $community->setNationalId($communityNationalIdCard);
-            }
+        $contact->getPhones()->clear();
+        foreach ($inputType->getContact()->getPhones() as $phoneInputType) {
+            $phone = new Phone();
+            $phone->setType($phoneInputType->getType());
+            $phone->setPrefix($phoneInputType->getPrefix());
+            $phone->setNumber($phoneInputType->getNumber());
+            $phone->setProxy($phoneInputType->getProxy());
+            $phone->setPerson($contact);
 
-            $communityNationalIdCard->setIdNumber($nationalIdCardType->getNumber());
-            $communityNationalIdCard->setIdType($nationalIdCardType->getType());
+            $this->em->persist($phone);
         }
 
-        $phoneType = $inputType->getPhone();
-        if (null === $phoneType) {
-            $community->setPhone(null);
-        } else {
-            $communityPhone = $community->getPhone();
-            if (null === $communityPhone) {
-                $communityPhone = new Phone();
-                $community->setPhone($communityPhone);
-            }
+        $contact->getNationalIds()->clear();
+        foreach ($inputType->getContact()->getNationalIdCards() as $nationalIdCardInputType) {
+            $nationalIdCard = new NationalId();
 
-            $communityPhone->setPrefix($phoneType->getPrefix());
-            $communityPhone->setNumber($phoneType->getNumber());
-            $communityPhone->setType($phoneType->getType());
-            $communityPhone->setProxy($phoneType->getProxy());
+            $nationalIdCard->setIdNumber($nationalIdCardInputType->getNumber());
+            $nationalIdCard->setIdType($nationalIdCardInputType->getType());
+            $nationalIdCard->setPerson($contact);
+
+            $this->em->persist($nationalIdCard);
         }
 
         $this->em->flush();

@@ -5,6 +5,7 @@ namespace Tests\NewApiBundle\Controller;
 use BeneficiaryBundle\Entity\Camp;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\NationalId;
+use BeneficiaryBundle\Entity\Referral;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;
 use CommonBundle\Entity\Location;
@@ -51,29 +52,31 @@ class HouseholdControllerTest extends BMSServiceTestCase
             'latitude' => null,
             'beneficiaries' => [
                 [
-                    'dateOfBirth' => '2000-12-01',
-                    'localFamilyName' => 'Bond',
-                    'localGivenName' => 'James',
-                    'enFamilyName' => null,
-                    'enGivenName' => null,
-                    'gender' => 'M',
+                    'person' => [
+                        'dateOfBirth' => '2000-12-01',
+                        'localFamilyName' => 'Bond',
+                        'localGivenName' => 'James',
+                        'enFamilyName' => null,
+                        'enGivenName' => null,
+                        'gender' => 'M',
+                        'nationalIdCards' => [
+                            [
+                                'number' => '022-33-1547',
+                                'type' => NationalId::TYPE_NATIONAL_ID,
+                            ],
+                        ],
+                        'phones' => [
+                            [
+                                'prefix' => '420',
+                                'number' => '123456789',
+                                'type' => 'Landline',
+                                'proxy' => true,
+                            ],
+                        ],
+                        'referralType' => array_keys(Referral::REFERRALTYPES)[0],
+                        'referralComment' => 'string',
+                    ],
                     'residencyStatus' => ResidencyStatus::REFUGEE,
-                    'nationalIdCards' => [
-                        [
-                            'number' => '022-33-1547',
-                            'type' => NationalId::TYPE_NATIONAL_ID,
-                        ],
-                    ],
-                    'phones' => [
-                        [
-                            'prefix' => '420',
-                            'number' => '123456789',
-                            'type' => 'Landline',
-                            'proxy' => true,
-                        ],
-                    ],
-                    'referralType' => '1',
-                    'referralComment' => 'string',
                     'isHead' => true,
                     'vulnerabilityCriteriaIds' => [$vulnerabilityCriterion->getId()],
                 ],
@@ -162,29 +165,31 @@ class HouseholdControllerTest extends BMSServiceTestCase
             'latitude' => null,
             'beneficiaries' => [
                 [
-                    'dateOfBirth' => '2000-12-01',
-                    'localFamilyName' => 'Bond',
-                    'localGivenName' => 'James',
-                    'enFamilyName' => null,
-                    'enGivenName' => null,
-                    'gender' => 'M',
+                    'person' => [
+                        'dateOfBirth' => '2000-12-01',
+                        'localFamilyName' => 'Bond',
+                        'localGivenName' => 'James',
+                        'enFamilyName' => null,
+                        'enGivenName' => null,
+                        'gender' => 'M',
+                        'nationalIdCards' => [
+                            [
+                                'number' => '022-33-1547',
+                                'type' => NationalId::TYPE_NATIONAL_ID,
+                            ],
+                        ],
+                        'phones' => [
+                            [
+                                'prefix' => '420',
+                                'number' => '123456789',
+                                'type' => 'Landline',
+                                'proxy' => true,
+                            ],
+                        ],
+                        'referralType' => array_keys(Referral::REFERRALTYPES)[0],
+                        'referralComment' => 'string',
+                    ],
                     'residencyStatus' => ResidencyStatus::REFUGEE,
-                    'nationalIdCards' => [
-                        [
-                            'number' => '022-33-1547',
-                            'type' => NationalId::TYPE_NATIONAL_ID,
-                        ],
-                    ],
-                    'phones' => [
-                        [
-                            'prefix' => '420',
-                            'number' => '123456789',
-                            'type' => 'Landline',
-                            'proxy' => true,
-                        ],
-                    ],
-                    'referralType' => '1',
-                    'referralComment' => 'string',
                     'isHead' => true,
                     'vulnerabilityCriteriaIds' => [$vulnerabilityCriterion->getId()],
                 ],

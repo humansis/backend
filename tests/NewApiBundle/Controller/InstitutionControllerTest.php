@@ -60,15 +60,23 @@ class InstitutionControllerTest extends BMSServiceTestCase
                 'postcode' => 'test postcode',
                 'locationId' => $location->getId(),
             ],
-            'nationalIdCard' => [
-                'number' => '022-33-1547',
-                'type' => 'Passport',
-            ],
-            'phone' => [
-                'prefix' => '420',
-                'number' => '123456789',
-                'type' => 'Landline',
-                'proxy' => true,
+            'contact' => [
+                'enGivenName' => 'test',
+                'enFamilyName' => 'test',
+                'nationalIdCards' => [
+                    [
+                        'number' => '022-33-1547',
+                        'type' => 'Passport',
+                    ]
+                ],
+                'phones' => [
+                    [
+                        'prefix' => '420',
+                        'number' => '123456789',
+                        'type' => 'Landline',
+                        'proxy' => true,
+                    ],
+                ],
             ],
         ]);
 
@@ -83,12 +91,9 @@ class InstitutionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('longitude', $result);
         $this->assertArrayHasKey('latitude', $result);
         $this->assertArrayHasKey('name', $result);
-        $this->assertArrayHasKey('contactGivenName', $result);
-        $this->assertArrayHasKey('contactFamilyName', $result);
         $this->assertArrayHasKey('type', $result);
         $this->assertArrayHasKey('addressId', $result);
-        $this->assertArrayHasKey('nationalId', $result);
-        $this->assertArrayHasKey('phoneId', $result);
+        $this->assertArrayHasKey('contactId', $result);
         $this->assertArrayHasKey('projectIds', $result);
 
         return $result['id'];
@@ -120,8 +125,6 @@ class InstitutionControllerTest extends BMSServiceTestCase
             'longitude' => 'test CHANGED',
             'latitude' => 'test latitude',
             'name' => 'test name',
-            'contactGivenName' => 'test contactGivenName',
-            'contactFamilyName' => 'test contactFamilyName',
             'type' => 'test type',
             'projectIds' => [$project->getId()],
             'address' => [
@@ -132,15 +135,23 @@ class InstitutionControllerTest extends BMSServiceTestCase
                 'postcode' => 'test postcode',
                 'locationId' => $location->getId(),
             ],
-            'nationalIdCard' => [
-                'number' => '022-33-1547',
-                'type' => 'Passport',
-            ],
-            'phone' => [
-                'prefix' => '420',
-                'number' => '123456789',
-                'type' => 'Landline',
-                'proxy' => true,
+            'contact' => [
+                'enGivenName' => 'test',
+                'enFamilyName' => 'test',
+                'nationalIdCards' => [
+                    [
+                        'number' => '022-33-1547',
+                        'type' => 'Passport',
+                    ]
+                ],
+                'phones' => [
+                    [
+                        'prefix' => '420',
+                        'number' => '123456789',
+                        'type' => 'Landline',
+                        'proxy' => true,
+                    ],
+                ],
             ],
         ];
 
@@ -158,12 +169,9 @@ class InstitutionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('longitude', $result);
         $this->assertArrayHasKey('latitude', $result);
         $this->assertArrayHasKey('name', $result);
-        $this->assertArrayHasKey('contactGivenName', $result);
-        $this->assertArrayHasKey('contactFamilyName', $result);
         $this->assertArrayHasKey('type', $result);
         $this->assertArrayHasKey('addressId', $result);
-        $this->assertArrayHasKey('nationalId', $result);
-        $this->assertArrayHasKey('phoneId', $result);
+        $this->assertArrayHasKey('contactId', $result);
         $this->assertArrayHasKey('projectIds', $result);
 
         $this->assertEquals($data['longitude'], $result['longitude']);
@@ -201,12 +209,9 @@ class InstitutionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('longitude', $result);
         $this->assertArrayHasKey('latitude', $result);
         $this->assertArrayHasKey('name', $result);
-        $this->assertArrayHasKey('contactGivenName', $result);
-        $this->assertArrayHasKey('contactFamilyName', $result);
         $this->assertArrayHasKey('type', $result);
         $this->assertArrayHasKey('addressId', $result);
-        $this->assertArrayHasKey('nationalId', $result);
-        $this->assertArrayHasKey('phoneId', $result);
+        $this->assertArrayHasKey('contactId', $result);
         $this->assertArrayHasKey('projectIds', $result);
 
         return $id;
