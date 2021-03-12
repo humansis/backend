@@ -54,6 +54,18 @@ services:
 
     NewApiBundle\Controller\AssistanceController:
 
+    NewApiBundle\Controller\DonorController:
+        arguments:
+            - '@NewApiBundle\Component\File\UploadService'
+
+    NewApiBundle\Controller\OrganizationController:
+        arguments:
+            - '@NewApiBundle\Component\File\UploadService'
+
+    NewApiBundle\Controller\ProductController:
+        arguments:
+            - '@NewApiBundle\Component\File\UploadService'
+
     NewApiBundle\Controller\SectorsCodelistController:
         arguments:
             - "@project.sector_service"
@@ -61,7 +73,7 @@ services:
     NewApiBundle\Controller\BeneficiaryCodelistController:
         arguments:
             - "@doctrine.orm.entity_manager"
-            -
+
     NewApiBundle\Request\ParamConverter\:
         resource: '../../Request/ParamConverter'
         tags: [ 'request.param_converter' ]
@@ -100,3 +112,5 @@ services:
     NewApiBundle\Validator\Constraints\SelectionCriterionFieldValidator:
         arguments: [ '@service.selection_criterion' ]
 
+    NewApiBundle\Component\File\UploadService:
+        arguments: [ '@knp_gaufrette.filesystem_map', '%aws_s3_bucket_name%', '%aws_s3_region%' ]
