@@ -49,10 +49,19 @@ class PersonMapper implements MapperInterface
         return null;
     }
 
-    public function getReferralId(): ?int
+    public function getReferralType(): ?string
     {
         if ($this->object->getReferral()) {
-            return $this->object->getReferral()->getId();
+            return $this->object->getReferral()->getType();
+        }
+
+        return null;
+    }
+
+    public function getReferralComment(): ?string
+    {
+        if ($this->object->getReferral()) {
+            return $this->object->getReferral()->getComment();
         }
 
         return null;

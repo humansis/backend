@@ -54,7 +54,8 @@ class PersonControllerTest extends BMSServiceTestCase
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('profileId', $result);
-        $this->assertArrayHasKey('referralId', $result);
+        $this->assertArrayHasKey('referralType', $result);
+        $this->assertArrayHasKey('referralComment', $result);
         $this->assertArrayHasKey('enGivenName', $result);
         $this->assertArrayHasKey('enFamilyName', $result);
         $this->assertArrayHasKey('enParentsName', $result);
