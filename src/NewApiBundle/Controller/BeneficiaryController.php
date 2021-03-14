@@ -10,6 +10,7 @@ use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\AddBeneficiaryToAssistanceInputType;
 use NewApiBundle\InputType\AssistanceCreateInputType;
+use NewApiBundle\InputType\Beneficiary\ProjectBeneficiariesFilterInputType;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\InputType\NationalIdFilterInputType;
