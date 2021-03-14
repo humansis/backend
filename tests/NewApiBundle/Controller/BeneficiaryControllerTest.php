@@ -114,7 +114,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
                     "id": "*",
                     "residencyStatus": "*",
                     "isHead": "*",
-                    "vulnerabilityCriteria": "*"
+                    "vulnerabilityCriteria": "*",
                     "personId": "*"
                 }
             ]}', $this->client->getResponse()->getContent());
