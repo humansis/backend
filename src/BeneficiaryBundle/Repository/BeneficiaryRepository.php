@@ -13,6 +13,7 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\Beneficiary\ProjectBeneficiariesFilterInputType;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\Request\Pagination;
@@ -767,14 +768,14 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     }
 
     /**
-     * @param Project                         $project
-     * @param BeneficiaryFilterInputType|null $filter
+     * @param Project                                  $project
+     * @param ProjectBeneficiariesFilterInputType|null $filter
      *
      * @return Paginator
      */
     public function findByProject(
         Project $project,
-        ?BeneficiaryFilterInputType $filter = null
+        ?ProjectBeneficiariesFilterInputType $filter = null
     ) {
         $qbr = $this->createQueryBuilder('bnf');
         $qbr->leftJoin('bnf.projects', 'p')

@@ -9,6 +9,7 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\AddBeneficiaryToAssistanceInputType;
+use NewApiBundle\InputType\Beneficiary\ProjectBeneficiariesFilterInputType;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\InputType\NationalIdFilterInputType;
@@ -153,13 +154,13 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/projects/{id}/beneficiaries")
      *
-     * @param Project                    $project
+     * @param Project                             $project
      *
-     * @param BeneficiaryFilterInputType $filter
+     * @param ProjectBeneficiariesFilterInputType $filter
      *
      * @return JsonResponse
      */
-    public function getBeneficiaries(Project $project, BeneficiaryFilterInputType $filter): JsonResponse
+    public function getBeneficiaries(Project $project, ProjectBeneficiariesFilterInputType $filter): JsonResponse
     {
         $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByProject($project, $filter);
 
