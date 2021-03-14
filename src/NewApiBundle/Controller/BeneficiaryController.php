@@ -3,8 +3,6 @@
 namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Phone;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -12,8 +10,6 @@ use NewApiBundle\InputType\AddRemoveBeneficiaryToAssistanceInputType;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
-use NewApiBundle\InputType\NationalIdFilterInputType;
-use NewApiBundle\InputType\PhoneFilterInputType;
 use NewApiBundle\InputType\RemoveBeneficiaryFromAssistanceInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
@@ -113,58 +109,6 @@ class BeneficiaryController extends AbstractController
         }
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
-    }
-
-    /**
-     * @Rest\Get("/beneficiaries/national-ids")
-     *
-     * @param NationalIdFilterInputType $filter
-     *
-     * @return JsonResponse
-     */
-    public function nationalIds(NationalIdFilterInputType $filter): JsonResponse
-    {
-        $nationalIds = $this->getDoctrine()->getRepository(NationalId::class)->findByParams($filter);
-
-        return $this->json($nationalIds);
-    }
-
-    /**
-     * @Rest\Get("/beneficiaries/national-ids/{id}")
-     *
-     * @param NationalId $nationalId
-     *
-     * @return JsonResponse
-     */
-    public function nationalId(NationalId $nationalId): JsonResponse
-    {
-        return $this->json($nationalId);
-    }
-
-    /**
-     * @Rest\Get("/beneficiaries/phones")
-     *
-     * @param PhoneFilterInputType $filter
-     *
-     * @return JsonResponse
-     */
-    public function phones(PhoneFilterInputType $filter): JsonResponse
-    {
-        $params = $this->getDoctrine()->getRepository(Phone::class)->findByParams($filter);
-
-        return $this->json($params);
-    }
-
-    /**
-     * @Rest\Get("/beneficiaries/phones/{id}")
-     *
-     * @param Phone $phone
-     *
-     * @return JsonResponse
-     */
-    public function phone(Phone $phone): JsonResponse
-    {
-        return $this->json($phone);
     }
 
     /**

@@ -3,9 +3,6 @@
 namespace Tests\NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\HouseholdLocation;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Phone;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -117,114 +114,6 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
                     "vulnerabilityCriteria": "*",
                     "personId": "*"
                 }
-            ]}', $this->client->getResponse()->getContent());
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testGetNationalId()
-    {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $nationalId = $em->getRepository(NationalId::class)->findBy([])[0];
-
-        $this->request('GET', '/api/basic/beneficiaries/national-ids/'.$nationalId->getId());
-
-        $result = json_decode($this->client->getResponse()->getContent(), true);
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('id', $result);
-        $this->assertArrayHasKey('number', $result);
-        $this->assertArrayHasKey('type', $result);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testGetNationalIds()
-    {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $nationalId = $em->getRepository(NationalId::class)->findBy([])[0];
-
-        $this->request('GET', '/api/basic/beneficiaries/national-ids?filter[id][]='.$nationalId->getId());
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
-        $this->assertJsonFragment('{"totalCount": 1, "data": [{"id": "*"}]}', $this->client->getResponse()->getContent());
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testGetPhone()
-    {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $phone = $em->getRepository(Phone::class)->findBy([])[0];
-
-        $this->request('GET', '/api/basic/beneficiaries/phones/'.$phone->getId());
-
-        $result = json_decode($this->client->getResponse()->getContent(), true);
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('id', $result);
-        $this->assertArrayHasKey('number', $result);
-        $this->assertArrayHasKey('type', $result);
-        $this->assertArrayHasKey('prefix', $result);
-        $this->assertArrayHasKey('proxy', $result);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testGetPhones()
-    {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $phone1 = $em->getRepository(Phone::class)->findBy([])[0];
-        $phone2 = $em->getRepository(Phone::class)->findBy([])[1];
-
-        $this->request('GET', '/api/basic/beneficiaries/phones?filter[id][]='.$phone1->getId().'&filter[id][]='.$phone2->getId());
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
-        $this->assertJsonFragment('{
-            "totalCount": 2, 
-            "data": [{"id": '.$phone1->getId().'}, {"id": '.$phone2->getId().'}
             ]}', $this->client->getResponse()->getContent());
     }
 
