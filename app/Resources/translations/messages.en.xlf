@@ -3886,6 +3886,10 @@
         <source><![CDATA[Project & Donor]]></source>
         <target><![CDATA[Project & Donor]]></target>
       </trans-unit>
+      <trans-unit id="928" resname="en">
+        <source>en</source>
+        <target>English</target>
+    </trans-unit>
     </body>
   </file>
 </xliff>
