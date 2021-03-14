@@ -115,4 +115,18 @@ class PersonMapper implements MapperInterface
     {
         return $this->object->getUpdatedOn();
     }
+
+    public function getNationalIds(): array
+    {
+        return array_map(function ($item) {
+            return $item->getId();
+        }, $this->object->getNationalIds()->toArray());
+    }
+
+    public function getPhoneIds(): array
+    {
+        return array_map(function ($item) {
+            return $item->getId();
+        }, $this->object->getPhones()->toArray());
+    }
 }

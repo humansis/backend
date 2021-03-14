@@ -65,6 +65,8 @@ class PersonControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('gender', $result);
         $this->assertArrayHasKey('dateOfBirth', $result);
         $this->assertArrayHasKey('updatedOn', $result);
+        $this->assertArrayHasKey('nationalIds', $result);
+        $this->assertArrayHasKey('phoneIds', $result);
 
         return $result['id'];
     }
