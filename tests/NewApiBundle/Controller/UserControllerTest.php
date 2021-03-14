@@ -267,17 +267,19 @@ class UserControllerTest extends BMSServiceTestCase
     /**
      * @depends testUpdate
      *
+     * @param int $id
+     *
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function testList()
+    public function testList(int $id)
     {
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('GET', '/api/basic/users?sort[]=id.desc&filter[fulltext]=test');
+        $this->request('GET', '/api/basic/users?sort[]=id.desc&filter[fulltext]=test&filter[id][]='.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -288,6 +290,8 @@ class UserControllerTest extends BMSServiceTestCase
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
+        $this->assertSame(1, $result['totalCount']);
+        $this->assertSame($id, $result['data'][0]['id']);
     }
 
     /**
