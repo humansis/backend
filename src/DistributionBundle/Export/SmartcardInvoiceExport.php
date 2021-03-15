@@ -285,7 +285,7 @@ class SmartcardInvoiceExport
             'C0C0C0'
         ));
         $worksheet->setCellValue('H'.$lineStart, '');
-        $worksheet->setCellValue('J'.$lineStart, '');
+        $worksheet->setCellValue('J'.$lineStart, $currency);
 
         // style
         $worksheet->getRowDimension($lineStart)->setRowHeight(40);
@@ -299,7 +299,7 @@ class SmartcardInvoiceExport
         $worksheet->mergeCells('H'.$lineStart.':I'.$lineStart);
         // data
         $worksheet->setCellValue('B'.$lineStart, $translator->trans('total_to_pay', [], 'invoice'));
-        $worksheet->setCellValue('H'.$lineStart, '=H14+H15');
+        $worksheet->setCellValue('H'.$lineStart, sprintf('%.2f', $batch->getValue()));
         $worksheet->setCellValue('J'.$lineStart, $currency);
         // style
         $worksheet->getRowDimension($lineStart)->setRowHeight(22.52);
