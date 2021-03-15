@@ -437,6 +437,10 @@ class UserService
                 }
             }
         }
+        $activities = $this->em->getRepository(\BeneficiaryBundle\Entity\HouseholdActivity::class)->findBy(['author' => $user]);
+        foreach ($activities as $activity) {
+            $this->em->remove($activity);
+        }
 
         if ($removeUser) {
             try {
