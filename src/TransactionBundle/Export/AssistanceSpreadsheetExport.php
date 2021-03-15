@@ -22,7 +22,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Symfony\Component\Translation\TranslatorInterface;
 
-class TransactionSpreadsheetExport
+class AssistanceSpreadsheetExport
 {
     /** @var TranslatorInterface */
     private $translator;
@@ -195,7 +195,7 @@ class TransactionSpreadsheetExport
         $worksheet->getCell('G5')->setValue($this->translator->trans('Project & Donor').':');
         $worksheet->getCell('G5')->getStyle()->applyFromArray($labelStyle);
 
-        $worksheet->getCell('H4')->setValue($assistance->getProject()->getName().' & '.self::getDonors($assistance));
+        $worksheet->getCell('H4')->setValue(self::getProjectsAndDonors($assistance));
         $worksheet->getCell('H4')->getStyle()->applyFromArray($userInputStyle);
         $worksheet->mergeCells('H4:H5');
 
@@ -355,17 +355,25 @@ class TransactionSpreadsheetExport
         $idx = 21;
         $no = 1;
         foreach ($assistance->getDistributionBeneficiaries() as $distributionBeneficiary) {
-            /* @var Beneficiary $bnf */
             $bnf = $distributionBeneficiary->getBeneficiary();
+            if ($bnf instanceof \BeneficiaryBundle\Entity\Household) {
+                $person = $bnf->getHouseholdHead()->getPerson();
+            } elseif ($bnf instanceof \BeneficiaryBundle\Entity\Community) {
+                $person = $bnf->getContact();
+            } elseif ($bnf instanceof \BeneficiaryBundle\Entity\Institution) {
+                $person = $bnf->getContact();
+            } else {
+                $person = $bnf->getPerson();
+            }
 
             $worksheet->setCellValue('B'.$idx, $no);
-            $worksheet->setCellValue('C'.$idx, $bnf->getPerson()->getLocalGivenName());
-            $worksheet->setCellValue('D'.$idx, $bnf->getPerson()->getLocalFamilyName());
-            $worksheet->setCellValue('E'.$idx, self::getNationalId($bnf->getPerson()));
-            $worksheet->setCellValue('F'.$idx, self::getPhone($bnf->getPerson()));
+            $worksheet->setCellValue('C'.$idx, $person->getLocalGivenName());
+            $worksheet->setCellValue('D'.$idx, $person->getLocalFamilyName());
+            $worksheet->setCellValue('E'.$idx, self::getNationalId($person));
+            $worksheet->setCellValue('F'.$idx, self::getPhone($person));
             $worksheet->setCellValue('G'.$idx, null);
             $worksheet->setCellValue('H'.$idx, null);
-            $worksheet->setCellValue('I'.$idx, self::getProxyPhone($bnf->getPerson()));
+            $worksheet->setCellValue('I'.$idx, self::getProxyPhone($person));
             $worksheet->setCellValue('J'.$idx, self::getDistributedItems($distributionBeneficiary));
             $worksheet->getStyle('B'.$idx.':K'.$idx)->applyFromArray($rowStyle);
             $worksheet->getRowDimension($idx)->setRowHeight(42.00);
@@ -379,14 +387,14 @@ class TransactionSpreadsheetExport
         }
     }
 
-    private static function getDonors(Assistance $assistance): string
+    private static function getProjectsAndDonors(Assistance $assistance): string
     {
         $donors = [];
         foreach ($assistance->getProject()->getDonors() as $donor) {
             $donors[] = $donor->getShortname();
         }
 
-        return implode(', ', $donors);
+        return [] === $donors ? $assistance->getProject()->getName() :  $assistance->getProject()->getName().' & '.implode(', ', $donors);
     }
 
     private static function getNationalId(Person $person): ?string
