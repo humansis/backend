@@ -8,7 +8,7 @@ use CommonBundle\Pagination\Paginator;
 use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Enum\AssistanceTargetType;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\InputType\TargetTypeFilterType;
+use NewApiBundle\InputType\AssistanceTargetFilterInputType;
 use NewApiBundle\InputType\AssistanceTypeFilterInputType;
 use NewApiBundle\Utils\CodeLists;
 use ProjectBundle\Utils\SectorService;
@@ -40,10 +40,11 @@ class AssistanceCodelistController extends AbstractController
     /**
      * @Rest\Get("/assistances/targets")
      *
-     * @param TargetTypeFilterType $targetTypeFilterType
+     * @param AssistanceTargetFilterInputType $targetTypeFilterType
+     *
      * @return JsonResponse
      */
-    public function getTargets(TargetTypeFilterType $targetTypeFilterType): JsonResponse
+    public function getTargets(AssistanceTargetFilterInputType $targetTypeFilterType): JsonResponse
     {
         if (!$targetTypeFilterType->hasType()) {
             $data = CodeLists::mapArray(AssistanceTargetType::values());
@@ -64,13 +65,13 @@ class AssistanceCodelistController extends AbstractController
      */
     public function getTypes(AssistanceTypeFilterInputType $typeSubsectorInputType): JsonResponse
     {
-        if (!$typeSubsectorInputType->hasType()) {
+        if (!$typeSubsectorInputType->hasSubsector()) {
             $data = AssistanceTypeEnum::all();
 
-            $this->json(new Paginator($data));
+            return $this->json(new Paginator($data));
         }
 
-        $sector = $this->sectorService->findBySubSector($typeSubsectorInputType->getType());
+        $sector = $this->sectorService->findBySubSector($typeSubsectorInputType->getSubsector());
 
         if (is_null($sector)) {
             throw new BadRequestHttpException('Provided sector for provided subsector does not exist');

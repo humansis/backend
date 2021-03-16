@@ -18,7 +18,7 @@ class AssistanceTypeFilterInputType extends AbstractFilterInputType
     /**
      * @return string
      */
-    public function getType(): string
+    public function getSubsector(): string
     {
         return $this->subsector;
     }
@@ -26,7 +26,7 @@ class AssistanceTypeFilterInputType extends AbstractFilterInputType
     /**
      * @return bool
      */
-    public function hasType(): bool
+    public function hasSubsector(): bool
     {
         return $this->has('subsector');
     }
