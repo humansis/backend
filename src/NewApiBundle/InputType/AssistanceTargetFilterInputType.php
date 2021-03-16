@@ -6,7 +6,7 @@ namespace NewApiBundle\InputType;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class TargetTypeFilterType extends AbstractFilterInputType
+class AssistanceTargetFilterInputType extends AbstractFilterInputType
 {
     /**
      * @var string
