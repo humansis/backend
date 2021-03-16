@@ -5,7 +5,9 @@ namespace Tests\NewApiBundle\Controller;
 use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Enum\AssistanceTargetType;
+use DistributionBundle\Enum\AssistanceType;
 use Exception;
+use ProjectBundle\DBAL\SubSectorEnum;
 use Tests\BMSServiceTestCase;
 
 class AssistanceCodelistControllerTest extends BMSServiceTestCase
@@ -33,7 +35,7 @@ class AssistanceCodelistControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('GET', '/api/basic/assistances/targets');
+        $this->request('GET', '/api/basic/assistances/targets?filter[type]=' . AssistanceTargetType::INDIVIDUAL);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -45,7 +47,6 @@ class AssistanceCodelistControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
         $this->assertIsArray($result['data']);
-        $this->assertEquals(count(AssistanceTargetType::values()), $result['totalCount']);
     }
 
     /**
@@ -58,7 +59,7 @@ class AssistanceCodelistControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('GET', '/api/basic/assistances/types');
+        $this->request('GET', '/api/basic/assistances/types?filter[subsector]=' . SubSectorEnum::FOOD_CASH_FOR_WORK);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -70,6 +71,5 @@ class AssistanceCodelistControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
         $this->assertIsArray($result['data']);
-        $this->assertEquals(count(AssistanceTypeEnum::all()), $result['totalCount']);
     }
 }

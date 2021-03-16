@@ -66,6 +66,9 @@ services:
         arguments:
             - '@NewApiBundle\Component\File\UploadService'
 
+    NewApiBundle\Controller\AssistanceCodelistController:
+        arguments: ['@project.sector_service']
+
     NewApiBundle\Controller\SectorsCodelistController:
         arguments:
             - "@project.sector_service"
