@@ -9,6 +9,7 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\AddBeneficiaryToAssistanceInputType;
+use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\InputType\NationalIdFilterInputType;
@@ -20,6 +21,21 @@ use Symfony\Component\HttpFoundation\Response;
 
 class BeneficiaryController extends AbstractController
 {
+    /**
+     * @Rest\Post("/assistances/beneficiaries")
+     *
+     * @param AssistanceCreateInputType $inputType
+     * @param Pagination $paginationF
+     *
+     * @return JsonResponse
+     */
+    public function precalculateBeneficiaries(AssistanceCreateInputType $inputType, Pagination $pagination): JsonResponse
+    {
+        $beneficiaries = $this->get('distribution.assistance_service')->findByCriteria($inputType, $pagination);
+
+        return $this->json($beneficiaries);
+    }
+
     /**
      * @Rest\Get("/assistances/{id}/beneficiaries")
      *
