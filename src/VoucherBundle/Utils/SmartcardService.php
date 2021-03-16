@@ -4,10 +4,14 @@ namespace VoucherBundle\Utils;
 
 use DateTime;
 use DateTimeInterface;
+use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManager;
 use ProjectBundle\Entity\Project;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
+use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\SmartcardRedemptionBatch;
 use VoucherBundle\Entity\Vendor;
@@ -29,6 +33,44 @@ class SmartcardService
     {
         $this->em = $em;
         $this->purchaseService = $purchaseService;
+    }
+
+    public function deposit(string $serialNumber, int $distributionId, $value, $balance, DateTimeInterface $createdAt, User $user): SmartcardDeposit
+    {
+        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
+        if (!$smartcard) {
+            $smartcard = $this->createSuspiciousSmartcard($serialNumber, $createdAt);
+        }
+
+        if (!$smartcard->isActive()) {
+            $smartcard->setSuspicious(true, 'Smartcard is in '.$smartcard->getState().' state');
+        }
+
+        $distribution = $this->em->getRepository(Assistance::class)->find($distributionId);
+        if (!$distribution) {
+            throw new NotFoundHttpException('Distribution does not exists.');
+        }
+
+        $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findByDistributionAndBeneficiary(
+            $distribution,
+            $smartcard->getBeneficiary()
+        );
+
+        $deposit = SmartcardDeposit::create(
+            $smartcard,
+            $user,
+            $assistanceBeneficiary,
+            (float) $value,
+            null !== $balance ? (float) $balance : null,
+            $createdAt
+        );
+
+        $smartcard->addDeposit($deposit);
+
+        $this->em->persist($smartcard);
+        $this->em->flush();
+
+        return $deposit;
     }
 
     public function purchase(string $serialNumber, $data): SmartcardPurchase

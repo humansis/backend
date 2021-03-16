@@ -345,48 +345,97 @@ class SmartcardController extends Controller
      *
      * @return Response
      */
+    public function depositDeprecated(Request $request): Response
+    {
+        $this->container->get('logger')->error('headers', $request->headers->all());
+        $this->container->get('logger')->error('content', [$request->getContent()]);
+
+        $deposit = $this->get('smartcard_service')->deposit(
+            $request->get('serialNumber'),
+            $request->request->getInt('distributionId'),
+            $request->request->get('value'),
+            null,
+            \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
+            $this->getUser()
+        );
+
+        $json = $this->get('serializer')->serialize($deposit->getSmartcard(), 'json', ['groups' => ['SmartcardOverview']]);
+
+        return new Response($json);
+    }
+
+    /**
+     * Put money to smartcard. If smartcard does not exists, it will be created.
+     *
+     * @Rest\Patch("/offline-app/v2/smartcards/{serialNumber}/deposit")
+     * @ParamConverter("smartcard")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER') or is_granted('ROLE_ENUMERATOR')")
+     *
+     * @SWG\Tag(name="Smartcards")
+     *
+     * @SWG\Parameter(
+     *     name="serialNumber",
+     *     in="path",
+     *     type="string",
+     *     required=true,
+     *     description="Serial number (GUID) of smartcard"
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="body",
+     *     in="body",
+     *     required=true,
+     *     @SWG\Schema(
+     *         type="object",
+     *         @SWG\Property(
+     *             property="value",
+     *             type="number",
+     *             description="Value of money deposit to smartcard"
+     *         ),
+     *         @SWG\Property(
+     *             property="balance",
+     *             type="number",
+     *             description="Actual balance on smartcard"
+     *         ),
+     *         @SWG\Property(
+     *             property="distributionId",
+     *             type="int",
+     *             description="ID of distribution from which are money deposited"
+     *         ),
+     *         @SWG\Property(
+     *             property="createdAt",
+     *             type="string",
+     *             description="ISO 8601 time of deposit in UTC",
+     *             example="2020-02-02T12:00:00+0200"
+     *         )
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Money succesfully succesfully deposited to smartcard",
+     *     @Model(type=Smartcard::class, groups={"SmartcardOverview"})
+     * )
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
     public function deposit(Request $request): Response
     {
         $this->container->get('logger')->error('headers', $request->headers->all());
         $this->container->get('logger')->error('content', [$request->getContent()]);
 
-        $serialNumber = $request->get('serialNumber');
-
-        $smartcard = $this->getDoctrine()->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
-        if (!$smartcard) {
-            $smartcard = new Smartcard($serialNumber, \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
-            $smartcard->setState(Smartcard::STATE_ACTIVE);
-            $smartcard->setSuspicious(true, 'Smartcard does not exists in database');
-        }
-
-        if (!$smartcard->isActive()) {
-            $smartcard->setSuspicious(true, 'Smartcard is in '.$smartcard->getState().' state');
-        }
-
-        $distribution = $this->getDoctrine()->getRepository(Assistance::class)->find($request->request->getInt('distributionId'));
-        if (!$distribution) {
-            throw new BadRequestHttpException('Distribution does not exists.');
-        }
-
-        $assistanceBeneficiary = $this->getDoctrine()->getRepository(AssistanceBeneficiary::class)->findByDistributionAndBeneficiary(
-            $distribution,
-            $smartcard->getBeneficiary()
+        $deposit = $this->get('smartcard_service')->deposit(
+            $request->get('serialNumber'),
+            $request->request->getInt('distributionId'),
+            $request->request->get('value'),
+            $request->request->get('balance'),
+            \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
+            $this->getUser()
         );
 
-        $deposit = SmartcardDeposit::create(
-            $smartcard,
-            $this->getUser(),
-            $assistanceBeneficiary,
-            (float) $request->request->get('value'),
-            \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt'))
-        );
-
-        $smartcard->addDeposit($deposit);
-
-        $this->getDoctrine()->getManager()->persist($smartcard);
-        $this->getDoctrine()->getManager()->flush();
-
-        $json = $this->get('serializer')->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
+        $json = $this->get('serializer')->serialize($deposit->getSmartcard(), 'json', ['groups' => ['SmartcardOverview']]);
 
         return new Response($json);
     }

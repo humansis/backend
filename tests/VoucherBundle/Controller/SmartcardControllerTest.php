@@ -97,8 +97,9 @@ class SmartcardControllerTest extends BMSServiceTestCase
     {
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC');
 
-        $this->request('PATCH', '/api/wsse/offline-app/v1/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
+        $this->request('PATCH', '/api/wsse/offline-app/v2/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
             'value' => 255.25,
+            'balance' => 260.00,
             'distributionId' => $this->someSmartcardAssistance()->getId(),
             'createdAt' => '2020-02-02T12:00:00Z',
         ]);
@@ -120,7 +121,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         /** @var Smartcard $smartcard */
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC');
         $smartcard->setState(Smartcard::STATE_INACTIVE);
-        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $assistanceBeneficiary, 1000, new \DateTime('now')));
+        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $assistanceBeneficiary, 1000, null, new \DateTime('now')));
 
         $this->em->persist($smartcard);
         $this->em->flush();
@@ -139,7 +140,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $assistanceBeneficiary = $this->someSmartcardAssistance()->getDistributionBeneficiaries()->get(0);
 
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC');
-        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $assistanceBeneficiary, 600, new \DateTime('now')));
+        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $assistanceBeneficiary, 600, null, new \DateTime('now')));
 
         $this->em->persist($smartcard);
         $this->em->flush();
@@ -176,7 +177,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC');
         $smartcard->setState(Smartcard::STATE_INACTIVE);
-        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $assistanceBeneficiary, 100, new \DateTime('now')));
+        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $assistanceBeneficiary, 100, null, new \DateTime('now')));
 
         $this->em->persist($smartcard);
         $this->em->flush();

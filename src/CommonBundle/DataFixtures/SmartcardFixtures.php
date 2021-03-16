@@ -83,6 +83,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
                 $this->randomEntity(User::class, $manager),
                 $ab,
                 rand(1, 10000),
+                null,
                 new DateTimeImmutable("now-${i} days")
             ));
         }
