@@ -9,7 +9,7 @@ use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Enum\AssistanceTargetType;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\TargetTypeFilterType;
-use NewApiBundle\InputType\TypeSubsectorInputType;
+use NewApiBundle\InputType\AssistanceTypeFilterInputType;
 use NewApiBundle\Utils\CodeLists;
 use ProjectBundle\Utils\SectorService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -59,10 +59,10 @@ class AssistanceCodelistController extends AbstractController
     /**
      * @Rest\Get("/assistances/types")
      *
-     * @param TypeSubsectorInputType $typeSubsectorInputType
+     * @param AssistanceTypeFilterInputType $typeSubsectorInputType
      * @return JsonResponse
      */
-    public function getTypes(TypeSubsectorInputType $typeSubsectorInputType): JsonResponse
+    public function getTypes(AssistanceTypeFilterInputType $typeSubsectorInputType): JsonResponse
     {
         if (!$typeSubsectorInputType->hasType()) {
             $data = AssistanceTypeEnum::all();
