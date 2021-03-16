@@ -781,19 +781,50 @@ class AssistanceService
         /** @var \CommonBundle\Entity\Location $location */
         $location = $this->em->getRepository(\CommonBundle\Entity\Location::class)->find($inputType->getLocationId());
 
+        $locationArray = [];
+        if ($location->getAdm4()) {
+            $locationArray = [
+                'adm1' => $location->getAdm4()->getAdm3()->getAdm2()->getAdm1()->getId(),
+                'adm2' => $location->getAdm4()->getAdm3()->getAdm2()->getId(),
+                'adm3' => $location->getAdm4()->getAdm3()->getId(),
+                'adm4' => $location->getAdm4()->getId(),
+                'country_iso3' => $inputType->getIso3(),
+            ];
+        } elseif ($location->getAdm3()){
+            $locationArray = [
+                'adm1' => $location->getAdm3()->getAdm2()->getAdm1()->getId(),
+                'adm2' => $location->getAdm3()->getAdm2()->getId(),
+                'adm3' => $location->getAdm3()->getId(),
+                'adm4' => null,
+                'country_iso3' => $inputType->getIso3(),
+            ];
+        } elseif ($location->getAdm2()){
+            $locationArray = [
+                'adm1' => $location->getAdm2()->getAdm1()->getId(),
+                'adm2' => $location->getAdm2()->getId(),
+                'adm3' => null,
+                'adm4' => null,
+                'country_iso3' => $inputType->getIso3(),
+            ];
+        } elseif ($location->getAdm1()){
+            $locationArray = [
+                'adm1' => $location->getAdm1()->getId(),
+                'adm2' => null,
+                'adm3' => null,
+                'adm4' => null,
+                'country_iso3' => $inputType->getIso3(),
+            ];
+        }
+
+
+
         $distributionArray = [
             'countryIso3' => $inputType->getIso3(),
             'assistance_type' => $inputType->getType(),
             'target_type' => $inputType->getTarget(),
             'date_distribution' => $inputType->getDateDistribution(),
             'project' => ['id' => $inputType->getProjectId()],
-            'location' => [
-                'adm1' => $location->getAdm1() ? $location->getAdm1()->getId() : null,
-                'adm2' => $location->getAdm2() ? $location->getAdm2()->getId() : null,
-                'adm3' => $location->getAdm3() ? $location->getAdm3()->getId() : null,
-                'adm4' => $location->getAdm4() ? $location->getAdm4()->getId() : null,
-                'country_iso3' => $inputType->getIso3(),
-            ],
+            'location' => $locationArray,
             'sector' => $inputType->getSector(),
             'subsector' => $inputType->getSubsector(),
             'threshold' => $inputType->getThreshold(),
