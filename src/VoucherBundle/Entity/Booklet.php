@@ -104,10 +104,10 @@ class Booklet implements ExportableInterface
     public static function statuses(): array
     {
         return [
-            self::UNASSIGNED,
-            self::DISTRIBUTED,
-            self::USED,
-            self::DEACTIVATED,
+            self::UNASSIGNED => 'unassigned',
+            self::DISTRIBUTED => 'distributed',
+            self::USED => 'used',
+            self::DEACTIVATED => 'deactivated',
         ];
     }
 
