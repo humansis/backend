@@ -5,6 +5,7 @@ namespace NewApiBundle\InputType;
 
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
+use VoucherBundle\Entity\Booklet;
 
 /**
  * @Assert\GroupSequence({"BookletFilterInputType", "Strict"})
@@ -20,7 +21,7 @@ class BookletFilterInputType extends AbstractFilterInputType
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *         @Assert\Choice(callback={"VoucherBundle\Entity\Booklet", "statuses"}, strict=true)
+     *         @Assert\Choice(callback={"NewApiBundle\InputType\BookletFilterInputType", "bookletStatuses"}, strict=true)
      *     },
      *     groups={"Strict"}
      * )
@@ -59,6 +60,11 @@ class BookletFilterInputType extends AbstractFilterInputType
      * )
      */
     protected $beneficiaries;
+
+    private static function bookletStatuses()
+    {
+        return array_keys(Booklet::statuses());
+    }
 
     public function hasFulltext(): bool
     {
