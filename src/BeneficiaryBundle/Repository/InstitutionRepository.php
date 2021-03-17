@@ -10,6 +10,7 @@ use CommonBundle\InputType\DataTableFilterType;
 use CommonBundle\InputType\DataTableSorterType;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\InstitutionFilterInputType;
 use NewApiBundle\InputType\InstitutionOrderInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
@@ -114,7 +115,7 @@ class InstitutionRepository extends \Doctrine\ORM\EntityRepository
         return $q->getQuery()->getResult();
     }
 
-    public function findByParams(?string $iso3, ?InstitutionOrderInputType $orderBy = null, ?Pagination $pagination = null)
+    public function findByParams(?string $iso3, ?InstitutionFilterInputType $filter, ?InstitutionOrderInputType $orderBy = null, ?Pagination $pagination = null)
     {
         $qb = $this->createQueryBuilder('i')
             ->andWhere('i.archived = 0');
@@ -125,6 +126,33 @@ class InstitutionRepository extends \Doctrine\ORM\EntityRepository
 
             $locationRepository = $this->getEntityManager()->getRepository(Location::class);
             $locationRepository->whereCountry($qb, $iso3);
+        }
+
+        if ($filter) {
+            if ($filter->hasProjects()) {
+                $qb->leftJoin('i.projects', 'pro')
+                    ->andWhere('pro.id IN (:ids)')
+                    ->setParameter('ids', $filter->getProjects());
+            }
+
+            if ($filter->hasFulltext()) {
+                $qb->leftJoin('i.contact', 'per');
+                $qb->andWhere('(
+                    i.id LIKE :fulltextId OR
+                    i.name LIKE :fulltext OR
+                    i.latitude LIKE :fulltext OR
+                    i.longitude LIKE :fulltext OR
+                    per.localGivenName LIKE :fulltext OR 
+                    per.localFamilyName LIKE :fulltext OR
+                    per.localParentsName LIKE :fulltext OR
+                    per.enGivenName LIKE :fulltext OR
+                    per.enFamilyName LIKE :fulltext OR
+                    per.enParentsName LIKE :fulltext OR
+                    per.enParentsName LIKE :fulltext
+                )');
+                $qb->setParameter('fulltextId', $filter->getFulltext());
+                $qb->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+            }
         }
 
         if ($pagination) {
