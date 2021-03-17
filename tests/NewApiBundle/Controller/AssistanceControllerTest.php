@@ -52,7 +52,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "locationId": '.$assistance->getLocation()->getId().',
             "target": "'.$assistance->getTargetType().'",
             "type": "'.$assistance->getAssistanceType().'",
-            "commodityIds": ['.implode(',', $commodityIds).']
+            "commodityIds": ['.implode(',', $commodityIds).'],
+            "validated": '.($assistance->getValidated() ? 'true' : 'false').',
+            "completed": '.($assistance->getCompleted() ? 'true' : 'false').'
         }', $this->client->getResponse()->getContent());
     }
 
