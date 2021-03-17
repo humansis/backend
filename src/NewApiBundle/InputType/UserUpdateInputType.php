@@ -6,9 +6,9 @@ use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @Assert\GroupSequence({"UserEditInputType", "Strict"})
+ * @Assert\GroupSequence({"UserUpdateInputType", "Strict"})
  */
-class UserEditInputType implements InputTypeInterface
+class UserUpdateInputType implements InputTypeInterface
 {
     /**
      * @var string $username
@@ -47,7 +47,7 @@ class UserEditInputType implements InputTypeInterface
     private $phonePrefix;
 
     /**
-     * @var string|null $username
+     * @var string|null $phoneNumber
      *
      * @Assert\Length(min="2", max="45")
      * @Assert\Type("string")
@@ -95,7 +95,6 @@ class UserEditInputType implements InputTypeInterface
      * @var array|null $projectIds
      *
      * @Assert\Type("array")
-     * @Assert\NotBlank
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("int", groups={"Strict"})

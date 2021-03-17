@@ -7,7 +7,7 @@ namespace NewApiBundle\Controller;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\UserCreateInputType;
-use NewApiBundle\InputType\UserEditInputType;
+use NewApiBundle\InputType\UserUpdateInputType;
 use NewApiBundle\InputType\UserFilterInputType;
 use NewApiBundle\InputType\UserInitializeInputType;
 use NewApiBundle\InputType\UserOrderInputType;
@@ -87,12 +87,12 @@ class UserController extends AbstractController
     /**
      * @Rest\Put("/users/{id}")
      *
-     * @param User $user
-     * @param UserEditInputType $inputType
+     * @param User                $user
+     * @param UserUpdateInputType $inputType
      *
      * @return JsonResponse
      */
-    public function update(User $user, UserEditInputType $inputType): JsonResponse
+    public function update(User $user, UserUpdateInputType $inputType): JsonResponse
     {
         /** @var UserService $userService */
         $userService = $this->get('user.user_service');
