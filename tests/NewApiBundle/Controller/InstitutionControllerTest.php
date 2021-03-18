@@ -6,6 +6,7 @@ use CommonBundle\Entity\Location;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Exception;
+use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
 
 class InstitutionControllerTest extends BMSServiceTestCase
@@ -50,6 +51,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
             'contactGivenName' => 'test contactGivenName',
             'contactFamilyName' => 'test contactFamilyName',
             'type' => 'test type',
+            'projectIds' => [],
             'address' => [
                 'type' => 'test type',
                 'locationGroup' => 'test locationGroup',
@@ -87,13 +89,16 @@ class InstitutionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('addressId', $result);
         $this->assertArrayHasKey('nationalId', $result);
         $this->assertArrayHasKey('phoneId', $result);
+        $this->assertArrayHasKey('projectIds', $result);
 
         return $result['id'];
     }
 
     /**
      * @depends testCreate
+     *
      * @param int $id
+     *
      * @return int
      * @throws ORMException
      * @throws OptimisticLockException
@@ -108,6 +113,8 @@ class InstitutionControllerTest extends BMSServiceTestCase
 
         /** @var Location|null $location */
         $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        /** @var Project $project */
+        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
         $data = [
             'longitude' => 'test CHANGED',
@@ -116,6 +123,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
             'contactGivenName' => 'test contactGivenName',
             'contactFamilyName' => 'test contactFamilyName',
             'type' => 'test type',
+            'projectIds' => [$project->getId()],
             'address' => [
                 'type' => 'test type',
                 'locationGroup' => 'test locationGroup',
@@ -156,6 +164,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('addressId', $result);
         $this->assertArrayHasKey('nationalId', $result);
         $this->assertArrayHasKey('phoneId', $result);
+        $this->assertArrayHasKey('projectIds', $result);
 
         $this->assertEquals($data['longitude'], $result['longitude']);
 
@@ -166,6 +175,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
      * @depends testUpdate
      *
      * @param int $id
+     *
      * @return int
      * @throws ORMException
      * @throws OptimisticLockException
@@ -197,6 +207,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('addressId', $result);
         $this->assertArrayHasKey('nationalId', $result);
         $this->assertArrayHasKey('phoneId', $result);
+        $this->assertArrayHasKey('projectIds', $result);
 
         return $id;
     }
@@ -231,6 +242,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
      * @depends testGet
      *
      * @param int $id
+     *
      * @return int
      * @throws ORMException
      * @throws OptimisticLockException
@@ -253,6 +265,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
      * @depends testDelete
      *
      * @param int $id
+     *
      * @throws ORMException
      * @throws OptimisticLockException
      */
