@@ -17,6 +17,17 @@ use Symfony\Component\Validator\Constraints as Assert;
 class CommunityUpdateInputType implements InputTypeInterface
 {
     /**
+     * @Assert\Type("array")
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Type("integer", groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
+     */
+    private $projectIds = [];
+
+    /**
      * @var string|null $longitude
      *
      * @Assert\Length(max="45")
@@ -74,6 +85,22 @@ class CommunityUpdateInputType implements InputTypeInterface
      * @Assert\Valid
      */
     private $phone;
+
+    /**
+     * @return int[]
+     */
+    public function getProjectIds()
+    {
+        return (array) $this->projectIds;
+    }
+
+    /**
+     * @param int[]|null $ids
+     */
+    public function setProjectIds($ids)
+    {
+        $this->projectIds = $ids;
+    }
 
     /**
      * @return string|null

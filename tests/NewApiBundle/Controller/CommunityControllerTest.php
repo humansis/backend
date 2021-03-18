@@ -6,6 +6,7 @@ use CommonBundle\Entity\Location;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Exception;
+use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
 
 class CommunityControllerTest extends BMSServiceTestCase
@@ -49,6 +50,7 @@ class CommunityControllerTest extends BMSServiceTestCase
             'latitude' => 'test latitude',
             'contactGivenName' => 'test contactGivenName',
             'contactFamilyName' => 'test contactFamilyName',
+            'projectIds' => [],
             'address' => [
                 'type' => 'test type',
                 'locationGroup' => 'test locationGroup',
@@ -84,6 +86,7 @@ class CommunityControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('addressId', $result);
         $this->assertArrayHasKey('nationalId', $result);
         $this->assertArrayHasKey('phoneId', $result);
+        $this->assertArrayHasKey('projectIds', $result);
 
         return $result['id'];
     }
@@ -105,12 +108,15 @@ class CommunityControllerTest extends BMSServiceTestCase
 
         /** @var Location|null $location */
         $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        /** @var Project $project */
+        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
         $data = [
             'longitude' => 'test CHANGED',
             'latitude' => 'test latitude',
             'contactGivenName' => 'test contactGivenName',
             'contactFamilyName' => 'test contactFamilyName',
+            'projectIds' => [$project->getId()],
             'address' => [
                 'type' => 'test type',
                 'locationGroup' => 'test locationGroup',
@@ -149,6 +155,7 @@ class CommunityControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('addressId', $result);
         $this->assertArrayHasKey('nationalId', $result);
         $this->assertArrayHasKey('phoneId', $result);
+        $this->assertArrayHasKey('projectIds', $result);
 
         $this->assertEquals($data['longitude'], $result['longitude']);
 
@@ -188,6 +195,7 @@ class CommunityControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('addressId', $result);
         $this->assertArrayHasKey('nationalId', $result);
         $this->assertArrayHasKey('phoneId', $result);
+        $this->assertArrayHasKey('projectIds', $result);
 
         return $id;
     }
