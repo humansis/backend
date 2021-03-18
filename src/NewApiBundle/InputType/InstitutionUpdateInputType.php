@@ -212,7 +212,7 @@ class InstitutionUpdateInputType implements InputTypeInterface
     }
 
     /**
-     * @return NationalIdCardInputType
+     * @return NationalIdCardInputType|null
      */
     public function getNationalIdCard()
     {
@@ -220,25 +220,25 @@ class InstitutionUpdateInputType implements InputTypeInterface
     }
 
     /**
-     * @param NationalIdCardInputType $nationalIdCard
+     * @param NationalIdCardInputType|null $nationalIdCard
      */
-    public function setNationalIdCard(NationalIdCardInputType $nationalIdCard)
+    public function setNationalIdCard(?NationalIdCardInputType $nationalIdCard)
     {
         $this->nationalIdCard = $nationalIdCard;
     }
 
     /**
-     * @return PhoneInputType
+     * @return PhoneInputType|null
      */
-    public function getPhone(): PhoneInputType
+    public function getPhone()
     {
         return $this->phone;
     }
 
     /**
-     * @param PhoneInputType $phone
+     * @param PhoneInputType|null $phone
      */
-    public function setPhone(PhoneInputType $phone): void
+    public function setPhone(?PhoneInputType $phone): void
     {
         $this->phone = $phone;
     }
