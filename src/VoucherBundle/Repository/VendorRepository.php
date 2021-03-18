@@ -74,12 +74,14 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
 
         if ($filter) {
             if ($filter->hasFulltext()) {
-                $qb->andWhere('v.shop LIKE :fulltext OR
-                               v.name LIKE :fulltext OR
-                               v.addressNumber LIKE :fulltext OR
-                               v.addressPostcode LIKE :fulltext OR
-                               v.addressStreet LIKE :fulltext')
-                    ->setParameter('fulltext', $filter->getFulltext());
+                $qb->andWhere('(v.id = :fulltextId OR
+                                v.shop LIKE :fulltext OR
+                                v.name LIKE :fulltext OR
+                                v.addressNumber LIKE :fulltext OR
+                                v.addressPostcode LIKE :fulltext OR
+                                v.addressStreet LIKE :fulltext)')
+                    ->setParameter('fulltextId', $filter->getFulltext())
+                    ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
             }
         }
 
