@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Pagination\Paginator;
+use DistributionBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\BookletBatchCreateInputType;
 use NewApiBundle\InputType\BookletFilterInputType;
 use NewApiBundle\InputType\BookletOrderInputType;
 use NewApiBundle\Request\Pagination;
 use NewApiBundle\Utils\CodeLists;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -96,5 +99,24 @@ class BookletController extends AbstractController
         }
 
         return $this->json(null, $deleted ? Response::HTTP_NO_CONTENT : Response::HTTP_BAD_REQUEST);
+    }
+
+    /**
+     * @Rest\Put("/assistances/{assistanceId}/beneficiaries/{beneficiaryId}/booklets/{bookletCode}")
+     * @ParamConverter("assistance", options={"mapping": {"assistanceId" : "id"}})
+     * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId" : "id"}})
+     * @ParamConverter("booklet", options={"mapping": {"bookletCode" : "code"}})
+     *
+     * @param Assistance  $assistance
+     * @param Beneficiary $beneficiary
+     * @param Booklet     $booklet
+     *
+     * @return JsonResponse
+     */
+    public function assign(Assistance $assistance, Beneficiary $beneficiary, Booklet $booklet): JsonResponse
+    {
+        $this->get('voucher.booklet_service')->assign($booklet, $assistance, $beneficiary);
+
+        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 }
