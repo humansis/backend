@@ -14,6 +14,7 @@ use CommonBundle\Mapper\LocationMapper;
 use CommonBundle\Utils\LocationService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityNotFoundException;
 use InvalidArgumentException;
 use NewApiBundle\InputType\CommunityCreateInputType;
 use NewApiBundle\InputType\CommunityUpdateInputType;
@@ -287,6 +288,15 @@ class CommunityService
         $community->setContactFamilyName($inputType->getContactFamilyName());
         $community->setContactName($inputType->getContactGivenName());
 
+        foreach ($inputType->getProjectIds() as $id) {
+            $project = $this->em->getRepository(Project::class)->find($id);
+            if (!$project) {
+                throw new EntityNotFoundException('project', $id);
+            }
+
+            $community->addProject($project);
+        }
+
         if (!is_null($inputType->getAddress())) {
             $addressType = $inputType->getAddress();
 
@@ -335,6 +345,16 @@ class CommunityService
         $community->setLatitude($inputType->getLatitude());
         $community->setContactName($inputType->getContactGivenName());
         $community->setContactFamilyName($inputType->getContactFamilyName());
+
+        $community->getProjects()->clear();
+        foreach ($inputType->getProjectIds() as $id) {
+            $project = $this->em->getRepository(Project::class)->find($id);
+            if (!$project) {
+                throw new EntityNotFoundException('project', $id);
+            }
+
+            $community->addProject($project);
+        }
 
         $addressType = $inputType->getAddress();
 
