@@ -7,7 +7,7 @@ use CommonBundle\Utils\ExportService;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use NewApiBundle\InputType\UserCreateInputType;
-use NewApiBundle\InputType\UserEditInputType;
+use NewApiBundle\InputType\UserUpdateInputType;
 use NewApiBundle\InputType\UserInitializeInputType;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -447,6 +447,10 @@ class UserService
                 }
             }
         }
+        $activities = $this->em->getRepository(\BeneficiaryBundle\Entity\HouseholdActivity::class)->findBy(['author' => $user]);
+        foreach ($activities as $activity) {
+            $this->em->remove($activity);
+        }
 
         if ($removeUser) {
             try {
@@ -812,7 +816,7 @@ class UserService
         return $initializedUser;
     }
 
-    public function update(User $user, UserEditInputType $inputType): User
+    public function update(User $user, UserUpdateInputType $inputType): User
     {
         /** @var UserRepository $userRepository */
         $userRepository = $this->em->getRepository(User::class);

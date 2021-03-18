@@ -6,11 +6,11 @@ use BeneficiaryBundle\Utils\BeneficiaryService;
 use BeneficiaryBundle\Utils\CountrySpecificService;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
+use CommonBundle\Entity\Organization;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Export\SmartcardExport;
 use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use DistributionBundle\Utils\AssistanceService;
-use Exception;
 use ProjectBundle\Utils\DonorService;
 use ProjectBundle\Utils\ProjectService;
 use Punic\Misc;
@@ -180,14 +180,7 @@ class ExportController extends Controller
                 $countryIso3 = $request->request->get("__country");
                 $filters = $request->request->get('filters');
                 $ids = $request->request->get('ids');
-                $filename = $this->householdService->exportToCsv($type, $countryIso3, $filters, $ids);
-            } elseif ($request->query->get('beneficiariesInDistribution')) {
-                $idDistribution = $request->query->get('beneficiariesInDistribution');
-                if ($type === 'pdf') {
-                    return $this->assistanceService->exportOneToPdf($idDistribution);
-                }
-                $distribution = $this->assistanceService->findOneById($idDistribution);
-                $filename = $this->beneficiaryService->exportToCsvBeneficiariesInDistribution($distribution, $type);
+                $filename = $this->beneficiaryService->exportToCsv($type, $countryIso3, $filters, $ids);
             } elseif ($request->query->get('users')) {
                 $filename = $this->userService->exportToCsv($type);
             } elseif ($request->query->get('countries')) {
@@ -203,22 +196,24 @@ class ExportController extends Controller
                 $filename = $this->assistanceBeneficiaryService->exportToCsv($arrayObjectBeneficiary, $type);
             } elseif ($request->query->get('householdsTemplate')) {
                 $countryIso3 = $request->request->get("__country");
-                $filename = $this->householdExportCSVService->exportToCsv($type, $countryIso3);
-            } elseif ($request->query->get('transactionDistribution')) {
-                $idDistribution = $request->query->get('transactionDistribution');
+                $filename = $this->get('beneficiary.household_export_csv_service')->exportToCsv($type, $countryIso3);
+            } elseif ($request->query->get('transactionDistribution') ||
+                      $request->query->get('smartcardDistribution') ||
+                      $request->query->get('voucherDistribution') ||
+                      $request->query->get('generalreliefDistribution') ||
+                      $request->query->get('beneficiariesInDistribution')) {
+                $idDistribution = $request->query->get('transactionDistribution') ??
+                    $request->query->get('smartcardDistribution') ??
+                    $request->query->get('voucherDistribution') ??
+                    $request->query->get('generalreliefDistribution') ??
+                    $request->query->get('beneficiariesInDistribution');
+                $distribution = $this->get('distribution.assistance_service')->findOneById($idDistribution);
+                // todo find organisation by relation to distribution
+                $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
                 if ($type === 'pdf') {
-                    return $this->assistanceService->exportOneToPdf($idDistribution);
+                    return $this->get('export.pdf')->export($distribution, $organization);
                 }
-                $distribution = $this->assistanceService->findOneById($idDistribution);
-                $filename = $this->transactionService->exportToCsv($distribution, $type);
-            } elseif ($request->query->get('smartcardDistribution')) {
-                $idDistribution = $request->query->get('smartcardDistribution');
-                $distribution = $this->assistanceService->findOneById($idDistribution);
-                if ('pdf' === $type) {
-                    return $this->smartcardExport->exportPdf($distribution);
-                } else {
-                    $filename = $this->smartcardExport->exportSpreadsheet($distribution, $type);
-                }
+                $filename = $this->get('export.spreadsheet')->export($distribution, $organization, $type);
             } elseif ($request->query->get('bookletCodes')) {
                 $ids = $request->request->get('ids');
                 $countryIso3 = $request->request->get("__country");
@@ -232,20 +227,6 @@ class ExportController extends Controller
                 $filename = $this->voucherService->exportToCsv($type, $countryIso3, $ids, $filters);
             } elseif ($request->query->get('reporting')) {
                 $filename = $this->reportingService->exportToCsv($request->request, $type);
-            } elseif ($request->query->get('generalreliefDistribution')) {
-                $idDistribution = $request->query->get('generalreliefDistribution');
-                if ($type === 'pdf') {
-                    return $this->assistanceService->exportOneToPdf($idDistribution);
-                }
-                $distribution = $this->assistanceService->findOneById($idDistribution);
-                $filename = $this->assistanceService->exportGeneralReliefDistributionToCsv($distribution, $type);
-            } elseif ($request->query->get('voucherDistribution')) {
-                $idDistribution = $request->query->get('voucherDistribution');
-                if ($type === 'pdf') {
-                    return $this->assistanceService->exportOneToPdf($idDistribution);
-                }
-                $distribution = $this->assistanceService->findOneById($idDistribution);
-                $filename = $this->bookletService->exportVouchersDistributionToCsv($distribution, $type);
             } elseif ($request->query->get('products')) {
                 $countryIso3 = $request->request->get("__country");
                 $filename = $this->productService->exportToCsv($type, $countryIso3);
@@ -267,7 +248,7 @@ class ExportController extends Controller
             $response->deleteFileAfterSend(true);
 
             return $response;
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
     }
@@ -328,17 +309,8 @@ class ExportController extends Controller
             throw $this->createNotFoundException("Invalid file type requested.");
         }
 
-        $locale = $request->query->get('locale', 'en');
-        $this->get('translator')->setLocale($locale);
+        $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
 
-        $direction = ('left-to-right' === Misc::getCharacterOrder($locale)) ? 'ltr' : 'rtl';
-        $template = ('left-to-right' === Misc::getCharacterOrder($locale)) ? '@Distribution/Pdf/distributionTable.html.twig' : '@Distribution/Pdf/distributionTable.rtl.html.twig';
-
-        $html = $this->get('templating')->render($template, [
-            'direction' => $direction,
-            'distribution' => $distribution,
-        ]);
-
-        return $this->container->get('pdf_service')->printPdf($html, 'portrait', 'distribution');
+        return $this->get('transaction.export.pdf')->export($distribution, $organization);
     }
 }

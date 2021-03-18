@@ -7,8 +7,9 @@ use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Institution;
 use DistributionBundle\Entity\Assistance;
-use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Groups;
+use DistributionBundle\Enum\AssistanceTargetType;
+use DistributionBundle\Enum\AssistanceType;
+use InvalidArgumentException;
 
 /**
  * Sector DTO
@@ -217,5 +218,55 @@ class Sector
             || $target instanceof Institution && $this->isInstitutionAllowed()
             || $target instanceof Community && $this->isCommunityAllowed()
             ;
+    }
+
+    /**
+     * @param string $assistanceType
+     * @return bool
+     */
+    public function isAssistanceTypeAllowed(string $assistanceType): bool
+    {
+        if (!in_array($assistanceType, AssistanceType::values())) {
+            throw new InvalidArgumentException('This assistance type is not supported');
+        }
+
+        if ($assistanceType === AssistanceType::ACTIVITY && $this->isActivityAllowed()) {
+            return true;
+        }
+
+        if ($assistanceType === AssistanceType::DISTRIBUTION && $this->isDistributionAllowed()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string $assistanceTarget
+     * @return bool
+     */
+    public function isAssistanceTargetAllowed(string $assistanceTarget): bool
+    {
+        if (!in_array($assistanceTarget, AssistanceTargetType::values())) {
+            throw new InvalidArgumentException('This assistance target type is not supported');
+        }
+
+        if ($assistanceTarget === AssistanceTargetType::COMMUNITY && $this->isCommunityAllowed()) {
+            return true;
+        }
+
+        if ($assistanceTarget === AssistanceTargetType::HOUSEHOLD && $this->isHouseholdAllowed()) {
+            return true;
+        }
+
+        if ($assistanceTarget === AssistanceTargetType::INDIVIDUAL && $this->isBeneficiaryAllowed()) {
+            return true;
+        }
+
+        if ($assistanceTarget === AssistanceTargetType::INSTITUTION && $this->isInstitutionAllowed()) {
+            return true;
+        }
+
+        return false;
     }
 }

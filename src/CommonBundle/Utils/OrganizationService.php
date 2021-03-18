@@ -6,6 +6,7 @@ use CommonBundle\Entity\Organization;
 use CommonBundle\Entity\OrganizationServices;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\InputType\OrganizationServicesInputType;
+use NewApiBundle\InputType\OrganizationUpdateInputType;
 use Psr\Container\ContainerInterface;
 use UserBundle\Entity\User;
 
@@ -42,6 +43,8 @@ class OrganizationService
      * @param array $organizationArray
      * @return Organization
      * @throws \Exception
+     *
+     * @deprecated
      */
     public function edit(Organization $organization, array $organizationArray)
     {
@@ -59,6 +62,24 @@ class OrganizationService
         $this->em->flush();
 
         return $organization;
+    }
+
+    /**
+     * @param Organization $organization
+     * @param OrganizationUpdateInputType $inputType
+     */
+    public function update(Organization $organization, OrganizationUpdateInputType $inputType)
+    {
+        $organization
+            ->setName($inputType->getName())
+            ->setFont($inputType->getFont())
+            ->setPrimaryColor($inputType->getPrimaryColor())
+            ->setSecondaryColor($inputType->getSecondaryColor())
+            ->setFooterContent($inputType->getFooterContent())
+            ->setLogo($inputType->getLogo());
+
+        $this->em->persist($organization);
+        $this->em->flush();
     }
 
     public function printTemplate()

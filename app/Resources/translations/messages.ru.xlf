@@ -3688,6 +3688,86 @@
         <source>returnee</source>
         <target>Вернувшийся</target>
       </trans-unit>
+      <trans-unit id="908x">
+        <source>The below listed person agrees that their personal details will be processed by People in Needfor the purpose of implementation of the project. </source>
+        <target>Человек также соглашается с тем, что его личные даные будут использованы организацией для реализации проекта.</target>
+      </trans-unit>
+      <trans-unit id="909">
+        <source>Approved by</source>
+        <target>Одобрено</target>
+      </trans-unit>
+      <trans-unit id="910">
+        <source>Distributed by</source>
+        <target>Выдано</target>
+      </trans-unit>
+      <trans-unit id="911">
+        <source>Round</source>
+        <target>Раунд</target>
+      </trans-unit>
+      <trans-unit id="912">
+        <source>Distributed item(s)</source>
+        <target>Выдано товаров</target>
+      </trans-unit>
+      <trans-unit id="913">
+        <source>Date</source>
+        <target>Дата</target>
+      </trans-unit>
+      <trans-unit id="914">
+        <source>Location</source>
+        <target>Местонахождение</target>
+      </trans-unit>
+      <trans-unit id="915">
+        <source>Distribution No.</source>
+        <target>Номер выдачи</target>
+      </trans-unit>
+      <trans-unit id="916">
+        <source>No.</source>
+        <target>№</target>
+      </trans-unit>
+      <trans-unit id="917">
+        <source>First Name</source>
+        <target>Имя</target>
+      </trans-unit>
+      <trans-unit id="918">
+        <source>Second Name</source>
+        <target>Отчество</target>
+      </trans-unit>
+      <trans-unit id="919">
+        <source>ID No.</source>
+        <target>Номер паспорта</target>
+      </trans-unit>
+      <trans-unit id="920">
+        <source>Phone No.</source>
+        <target>Номер телефона</target>
+      </trans-unit>
+      <trans-unit id="921">
+        <source>Proxy First Name</source>
+        <target>Имя доверенного лица</target>
+      </trans-unit>
+      <trans-unit id="922">
+        <source>Proxy Second Name</source>
+        <target>Отчество доверенного лица</target>
+      </trans-unit>
+      <trans-unit id="923">
+        <source>Proxy ID No.</source>
+        <target>ИНН доверенного лица</target>
+      </trans-unit>
+      <trans-unit id="924">
+        <source>Distributed Item(s), Unit, Amount per beneficiary</source>
+        <target>Выдано товаров, единиц, количество на берефициара</target>
+      </trans-unit>
+      <trans-unit id="925">
+        <source>Signature</source>
+        <target>Подпись</target>
+      </trans-unit>
+      <trans-unit id="926">
+        <source>(name, position, signature)</source>
+        <target>(имя, должность, подпись)</target>
+      </trans-unit>
+      <trans-unit id="927" resname="ru">
+        <source>ru</source>
+        <target>Русский</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

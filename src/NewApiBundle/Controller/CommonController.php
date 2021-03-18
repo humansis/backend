@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Intl\Intl;
 
 class CommonController extends AbstractController
 {
@@ -108,6 +109,44 @@ class CommonController extends AbstractController
     }
 
     /**
+     * @Rest\Get("/languages")
+     *
+     * @return JsonResponse
+     */
+    public function languages(): JsonResponse
+    {
+        $data = [];
+
+        foreach ($this->getParameter('app.locales') as $locale) {
+            $data[] = [
+                'code' => $locale,
+                'value' => $this->get('translator')->trans($locale, [], null, $locale),
+            ];
+        }
+
+        return $this->json($data);
+    }
+
+    /**
+     * @Rest\Get("/currencies")
+     *
+     * @return JsonResponse
+     */
+    public function currencies(): JsonResponse
+    {
+        $data = [];
+
+        foreach ($this->getParameter('app.currencies') as $currency) {
+            $data[] = [
+                'code' => $currency,
+                'value' => Intl::getCurrencyBundle()->getCurrencyName($currency),
+            ];
+        }
+
+        return $this->json($data);
+    }
+
+    /**
      * @Rest\Get("/translations/{language}")
      *
      * @param string $language
@@ -116,6 +155,10 @@ class CommonController extends AbstractController
      */
     public function translations(string $language): JsonResponse
     {
+        if (!in_array($language, $this->getParameter('app.locales'))) {
+            throw $this->createNotFoundException('Locale '.$language.' does not exists.');
+        }
+
         $data = [];
 
         foreach ($this->translator->getCatalogue($language)->all('messages') as $key => $value) {

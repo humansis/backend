@@ -106,14 +106,9 @@
         <target>F</target>
       </trans-unit>
       <trans-unit id="L3..CFH"
-                  resname="The below listed person confirm by their signature of this Distribution List that they obtained and accepted&#10;the donation of the below specified items from People in Need. The below listed&#10;person agrees that their personal details will be processed by People in Need for the purpose of&#10;implementation of the project.">
-        <source>The below listed person confirm ...</source>
-        <target>The below listed person confirm by their signature of this Distribution List that they obtained and
-          accepted
-          the donation of the below specified items from People in Need. The below listed
-          person agrees that their personal details will be processed by People in Need for the purpose of
-          implementation of the project.
-        </target>
+                  resname="The below listed person confirm by their signature of this Distribution List that they obtained and accepted&#10;the donation of the below specified items from People in Need.">
+          <source>The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.</source>
+          <target>The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.</target>
       </trans-unit>
       <trans-unit id="hIFv84P" resname="resident">
         <source>resident</source>
@@ -3807,6 +3802,94 @@
         <source>vulnerability_solo_parent</source>
         <target>solo parent</target>
       </trans-unit>
+      <trans-unit id="908">
+        <source>The below listed person agrees that their personal details will be processed by People in Need
+          for the purpose of implementation of the project.
+        </source>
+        <target>The below listed person agrees that their personal details will be processed by People in Need
+          for the purpose of implementation of the project.
+        </target>
+      </trans-unit>
+      <trans-unit id="909">
+        <source>Approved by</source>
+        <target>Approved by</target>
+      </trans-unit>
+      <trans-unit id="910">
+        <source>Distributed by</source>
+        <target>Distributed by</target>
+      </trans-unit>
+      <trans-unit id="911">
+        <source>Round</source>
+        <target>Round</target>
+      </trans-unit>
+      <trans-unit id="912">
+        <source>Distributed item(s)</source>
+        <target>Distributed item(s)</target>
+      </trans-unit>
+      <trans-unit id="913">
+        <source>Date</source>
+        <target>Date</target>
+      </trans-unit>
+      <trans-unit id="914">
+        <source>Location</source>
+        <target>Location</target>
+      </trans-unit>
+      <trans-unit id="915">
+        <source>Distribution No.</source>
+        <target>Distribution No.</target>
+      </trans-unit>
+      <trans-unit id="916">
+        <source>No.</source>
+        <target>No.</target>
+      </trans-unit>
+      <trans-unit id="917">
+        <source>First Name</source>
+        <target>First Name</target>
+      </trans-unit>
+      <trans-unit id="918">
+        <source>Second Name</source>
+        <target>Second Name</target>
+      </trans-unit>
+      <trans-unit id="919">
+        <source>ID No.</source>
+        <target>ID No.</target>
+      </trans-unit>
+      <trans-unit id="920">
+        <source>Phone No.</source>
+        <target>Phone No.</target>
+      </trans-unit>
+      <trans-unit id="921">
+        <source>Proxy First Name</source>
+        <target>Proxy First Name</target>
+      </trans-unit>
+      <trans-unit id="922">
+        <source>Proxy Second Name</source>
+        <target>Proxy Second Name</target>
+      </trans-unit>
+      <trans-unit id="923">
+        <source>Proxy ID No.</source>
+        <target>Proxy ID No.</target>
+      </trans-unit>
+      <trans-unit id="924">
+        <source>Distributed Item(s), Unit, Amount per beneficiary</source>
+        <target>Distributed Item(s), Unit, Amount per beneficiary</target>
+      </trans-unit>
+      <trans-unit id="925">
+        <source>Signature</source>
+        <target>Signature</target>
+      </trans-unit>
+      <trans-unit id="926">
+        <source>(name, position, signature)</source>
+        <target>(name, position, signature)</target>
+      </trans-unit>
+      <trans-unit id="927">
+        <source><![CDATA[Project & Donor]]></source>
+        <target><![CDATA[Project & Donor]]></target>
+      </trans-unit>
+      <trans-unit id="928" resname="en">
+        <source>en</source>
+        <target>English</target>
+    </trans-unit>
     </body>
   </file>
 </xliff>

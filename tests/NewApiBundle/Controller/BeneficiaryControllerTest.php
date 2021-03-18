@@ -9,6 +9,7 @@ use BeneficiaryBundle\Entity\Phone;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
 
 class BeneficiaryControllerTest extends BMSServiceTestCase
@@ -252,195 +253,6 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
-    public function testGetCamp()
-    {
-        $this->markTestSkipped('There is no camp');
-
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $camp = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_CAMP])[0];
-
-        $this->request('GET', '/api/basic/beneficiaries/addresses/camps/'.$camp->getId());
-
-        $result = json_decode($this->client->getResponse()->getContent(), true);
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('id', $result);
-        $this->assertArrayHasKey('type', $result);
-        $this->assertArrayHasKey('locationGroup', $result);
-        $this->assertArrayHasKey('name', $result);
-        $this->assertArrayHasKey('tentNumber', $result);
-        $this->assertArrayHasKey('locationId', $result);
-        $this->assertArrayHasKey('adm1Id', $result);
-        $this->assertArrayHasKey('adm2Id', $result);
-        $this->assertArrayHasKey('adm3Id', $result);
-        $this->assertArrayHasKey('adm4Id', $result);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testGetCamps()
-    {
-        $this->markTestSkipped('There is no camp');
-
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $campAddress = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_CAMP])[0];
-
-        $this->request('GET', '/api/basic/beneficiaries/addresses/camps?filter[id][]='.$campAddress->getId());
-
-        $result = json_decode($this->client->getResponse()->getContent(), true);
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('totalCount', $result);
-        $this->assertArrayHasKey('data', $result);
-        $this->assertSame(1, $result['totalCount']);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testGetResidence()
-    {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $residence = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_RESIDENCE])[0];
-
-        $this->request('GET', '/api/basic/beneficiaries/addresses/residencies/'.$residence->getId());
-
-        $result = json_decode($this->client->getResponse()->getContent(), true);
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('id', $result);
-        $this->assertArrayHasKey('type', $result);
-        $this->assertArrayHasKey('locationGroup', $result);
-        $this->assertArrayHasKey('number', $result);
-        $this->assertArrayHasKey('street', $result);
-        $this->assertArrayHasKey('postcode', $result);
-        $this->assertArrayHasKey('locationId', $result);
-        $this->assertArrayHasKey('adm1Id', $result);
-        $this->assertArrayHasKey('adm2Id', $result);
-        $this->assertArrayHasKey('adm3Id', $result);
-        $this->assertArrayHasKey('adm4Id', $result);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testGetResidences()
-    {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $residency = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_RESIDENCE])[0];
-
-        $this->request('GET', '/api/basic/beneficiaries/addresses/residencies?filter[id][]='.$residency->getId());
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
-        $this->assertJsonFragment('{"totalCount": 1, "data": [{"id": "*"}]}', $this->client->getResponse()->getContent());
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testGetTemporarySettlement()
-    {
-        $this->markTestSkipped('There is no temporary settlement');
-
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $settlement = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_SETTLEMENT]);
-
-        $this->request('GET', '/api/basic/beneficiaries/addresses/temporary-settlements/'.$settlement->getId());
-
-        $result = json_decode($this->client->getResponse()->getContent(), true);
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('id', $result);
-        $this->assertArrayHasKey('type', $result);
-        $this->assertArrayHasKey('locationGroup', $result);
-        $this->assertArrayHasKey('number', $result);
-        $this->assertArrayHasKey('street', $result);
-        $this->assertArrayHasKey('postcode', $result);
-        $this->assertArrayHasKey('locationId', $result);
-        $this->assertArrayHasKey('adm1Id', $result);
-        $this->assertArrayHasKey('adm2Id', $result);
-        $this->assertArrayHasKey('adm3Id', $result);
-        $this->assertArrayHasKey('adm4Id', $result);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testGetTemporarySettlements()
-    {
-        $this->markTestSkipped('There is no temporary settlement');
-
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $settlement = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_SETTLEMENT])[0];
-
-        $this->request('GET', '/api/basic/beneficiaries/addresses/temporary-settlements?filter[id][]='.$settlement->getId());
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
-        $this->assertJsonFragment('{"totalCount": 1, "data": [{"id": "*"}]}', $this->client->getResponse()->getContent());
-    }
-
-    /**
-     * @throws Exception
-     */
     public function testAddBeneficiaryToAssistance()
     {
         // Log a user in order to go through the security firewall
@@ -450,8 +262,12 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
 
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $assistance = $em->getRepository(Assistance::class)->findBy([])[0];
-        $beneficiary = $em->getRepository(Beneficiary::class)->findBy([])[0];
+        $assistance = $em->getRepository(Assistance::class)->findOneBy([
+            'validated' => true,
+            'completed' => false,
+            'archived' => false,
+        ]);
+        $beneficiary = $em->getRepository(Beneficiary::class)->findOneBy([], ['id'=>'desc']);
 
         $this->request('PUT', '/api/basic/assistances/'.$assistance->getId().'/beneficiaries', [
             'beneficiaryIds' => [$beneficiary->getId()],
@@ -462,5 +278,52 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: '.$this->client->getResponse()->getContent()
         );
+    }
+
+    /**
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testGetBeneficiariesByProject()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $project = $em->getRepository(Project::class)->findOneBy([
+            'archived' => false,
+        ]);
+
+        $this->request('GET', '/api/basic/projects/'.$project->getId().'/beneficiaries?filter[assistanceTarget]=household');
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{
+            "totalCount": "*", 
+            "data": [
+                {
+                    "id": "*",
+                    "dateOfBirth": "*",
+                    "localFamilyName": "*",
+                    "localGivenName": "*",
+                    "localParentsName": "*",
+                    "enFamilyName": "*",
+                    "enGivenName": "*",
+                    "enParentsName": "*",
+                    "gender": "*",
+                    "nationalIds": "*",
+                    "phoneIds": "*",
+                    "referralType": "*",
+                    "referralComment": "*",
+                    "residencyStatus": "*",
+                    "isHead": "*",
+                    "vulnerabilityCriteria": "*"
+                }
+            ]}', $this->client->getResponse()->getContent());
     }
 }

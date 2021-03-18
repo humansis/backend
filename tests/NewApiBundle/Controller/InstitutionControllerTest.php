@@ -214,7 +214,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('GET', '/api/basic/institutions?sort[]=name.asc');
+        $this->request('GET', '/api/basic/institutions?sort[]=name.asc&filter[projects][]=1&filter[fulltext]=a');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

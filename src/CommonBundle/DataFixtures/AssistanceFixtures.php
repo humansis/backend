@@ -24,7 +24,10 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 class AssistanceFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
-    const REF_SMARTCARD_ASSISTANCE = '569f131a-387d-4588-9e17-ecd94f261a85';
+    const REF_SMARTCARD_ASSISTANCE_KHM_KHR = '569f131a-387d-4588-9e17-ecd94f261a85';
+    const REF_SMARTCARD_ASSISTANCE_KHM_USD = '9ab17087-f54f-41ee-9b8d-c91d932d8ec2';
+    const REF_SMARTCARD_ASSISTANCE_SYR_SYP = 'e643bdbc-df6f-449a-b424-8c842a408e47';
+    const REF_SMARTCARD_ASSISTANCE_SYR_USD = '223b91e8-0f05-44b4-9c74-f156cbd95d1a';
 
     private $assistanceArray = [
         'adm1' => '',
@@ -111,9 +114,21 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             $this->loadCommonHouseholdAssistance($manager, $project);
             $this->loadCommonInstitutionAssistance($manager, $project);
             $this->loadCommonCommunityAssistance($manager, $project);
-            $this->loadSmartcardAssistance($manager, $project);
+            $this->loadSmartcardAssistance($manager, $project, 'USD');
             echo "\n";
         }
+
+        $khmProjects = $manager->getRepository(Project::class)->findBy(['iso3' => 'KHM'], ['id' => 'asc']);
+        $khmKhrAssistance = $this->loadSmartcardAssistance($manager, $khmProjects[0], 'KHR');
+        $this->setReference(self::REF_SMARTCARD_ASSISTANCE_KHM_KHR, $khmKhrAssistance);
+        $khmUsdAssistance = $this->loadSmartcardAssistance($manager, $khmProjects[1], 'USD');
+        $this->setReference(self::REF_SMARTCARD_ASSISTANCE_KHM_USD, $khmUsdAssistance);
+
+        $syrProjects = $manager->getRepository(Project::class)->findBy(['iso3' => 'SYR'], ['id' => 'asc']);
+        $syrSypAssistance = $this->loadSmartcardAssistance($manager, $syrProjects[0], 'SYP');
+        $this->setReference(self::REF_SMARTCARD_ASSISTANCE_SYR_SYP, $syrSypAssistance);
+        $syrUsdAssistance = $this->loadSmartcardAssistance($manager, $syrProjects[1], 'USD');
+        $this->setReference(self::REF_SMARTCARD_ASSISTANCE_SYR_USD, $syrUsdAssistance);
     }
 
     public function getDependencies(): array
@@ -215,7 +230,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         }
     }
 
-    private function loadSmartcardAssistance(ObjectManager $manager, Project $project)
+    private function loadSmartcardAssistance(ObjectManager $manager, Project $project, string $currency)
     {
         $modalityType = $manager->getRepository(ModalityType::class)->findOneBy(['name' => 'Smartcard']);
 
@@ -228,7 +243,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
                     'id' => $modalityType->getId(),
                 ],
                 'type' => 'Smartcard',
-                'unit' => 'USD',
+                'unit' => $currency,
                 'value' => 45,
                 'description' => null,
             ],
@@ -247,9 +262,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             ],
         ];
 
-        $result = $this->distributionService->createFromArray($project->getIso3(), $data, 1);
-
-        $this->setReference(self::REF_SMARTCARD_ASSISTANCE, $result['distribution']);
+        return $this->distributionService->createFromArray($project->getIso3(), $data, 1)['distribution'];
     }
 
     private function getCommodities(ObjectManager $manager, array $country): array

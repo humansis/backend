@@ -67,7 +67,7 @@ services:
     NewApiBundle\Controller\BeneficiaryCodelistController:
         arguments:
             - "@doctrine.orm.entity_manager"
-            -
+
     NewApiBundle\Request\ParamConverter\:
         resource: '../../Request/ParamConverter'
         tags: [ 'request.param_converter' ]
@@ -103,3 +103,6 @@ services:
             - "@=service('doctrine.orm.entity_manager').getRepository('CommonBundle:Location')"
 
     NewApiBundle\Validator\Constraints\SelectionCriterionFieldValidator:
+
+    NewApiBundle\Component\File\UploadService:
+        arguments: [ '@knp_gaufrette.filesystem_map', '%aws_s3_bucket_name%', '%aws_s3_region%' ]

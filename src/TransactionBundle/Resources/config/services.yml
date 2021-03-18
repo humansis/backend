@@ -31,3 +31,13 @@ services:
         arguments:
             - "@serializer"
         public: true
+
+    export.spreadsheet:
+        class: TransactionBundle\Export\AssistanceSpreadsheetExport
+        arguments: [ '@translator' ]
+        public: true
+
+    export.pdf:
+        class: TransactionBundle\Export\AssistancePdfExport
+        arguments: [ '@translator', '@templating', '@pdf_service' ]
+        public: true

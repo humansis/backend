@@ -3565,6 +3565,86 @@
         <source>returnee</source>
         <target>عائدون</target>
       </trans-unit>
+      <trans-unit id="908">
+        <source>The below listed person agrees that their personal details will be processed by People in Need for the purpose of implementation of the project.</source>
+        <target>يوافق الشخص المدرج أدناه على أن بياناته الشخصية ستتم معالجتها بواسطة الناس في حاجة لغرض تنفيذ المشروع</target>
+      </trans-unit>
+      <trans-unit id="909">
+        <source>Approved by</source>
+        <target>تمت الموافقة عليه من قبل</target>
+      </trans-unit>
+      <trans-unit id="910">
+        <source>Distributed by</source>
+        <target>موزع من قبل</target>
+      </trans-unit>
+      <trans-unit id="911">
+        <source>Round</source>
+        <target>الجولة</target>
+      </trans-unit>
+      <trans-unit id="912">
+        <source>Distributed item(s)</source>
+        <target>العناصر الموزعة</target>
+      </trans-unit>
+      <trans-unit id="913">
+        <source>Date</source>
+        <target>تاريخ</target>
+      </trans-unit>
+      <trans-unit id="914">
+        <source>Location</source>
+        <target>الموقع</target>
+      </trans-unit>
+      <trans-unit id="915">
+        <source>Distribution No.</source>
+        <target>رقم التوزيع</target>
+      </trans-unit>
+      <trans-unit id="916">
+        <source>No.</source>
+        <target>الرقم</target>
+      </trans-unit>
+      <trans-unit id="917">
+        <source>First Name</source>
+        <target>الاسم </target>
+      </trans-unit>
+      <trans-unit id="918">
+        <source>Second Name</source>
+        <target>الاسم الثاني</target>
+      </trans-unit>
+      <trans-unit id="919">
+        <source>ID No.</source>
+        <target>رقم بطاقة الهوية</target>
+      </trans-unit>
+      <trans-unit id="920">
+        <source>Phone No.</source>
+        <target>رقم الهاتف</target>
+      </trans-unit>
+      <trans-unit id="921">
+        <source>Proxy First Name</source>
+        <target>الاسم الأول للوكيل</target>
+      </trans-unit>
+      <trans-unit id="922">
+        <source>Proxy Second Name</source>
+        <target>الاسم الثاني للوكيل</target>
+      </trans-unit>
+      <trans-unit id="923">
+        <source>Proxy ID No.</source>
+        <target>رقم معرف الوكيل</target>
+      </trans-unit>
+      <trans-unit id="924">
+        <source>Distributed Item(s), Unit, Amount per beneficiary</source>
+        <target>العناصر الموزعة ، الوحدة ، المبلغ لكل مستفيد</target>
+      </trans-unit>
+      <trans-unit id="925">
+        <source>Signature</source>
+        <target>التوقيع</target>
+      </trans-unit>
+      <trans-unit id="926">
+        <source>(name, position, signature)</source>
+        <target>(الاسم ، المنصب ، التوقيع)</target>
+      </trans-unit>
+      <trans-unit id="927" resname="ar">
+        <source>ar</source>
+        <target>عربي</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

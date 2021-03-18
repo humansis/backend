@@ -6,11 +6,13 @@ RUN apt-get update && \
     git \
     libpng-dev \
     libzip-dev \
+    libjpeg-dev \
     cron \
     sudo
 
 
-RUN docker-php-ext-install pdo_mysql zip gd opcache && \
+RUN docker-php-ext-configure gd --with-jpeg-dir=/usr/include/ && \
+    docker-php-ext-install pdo_mysql zip gd opcache && \
     pecl install apcu && \
     docker-php-ext-enable apcu
 
@@ -18,13 +20,11 @@ RUN touch /var/log/xdebug_remote.log
 RUN chmod 777 /var/log/xdebug_remote.log
 
 RUN pecl install xdebug && \
-    echo "xdebug.remote_enable=1" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
-    echo "xdebug.remote_autostart=1" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
-    echo "xdebug.remote_port=9002" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
-    echo "xdebug.remote_host=172.17.0.1" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
-    echo "xdebug.remote_connect_back=off" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
-    echo "xdebug.remote_log=/var/log/xdebug_remote.log" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
-    echo "xdebug.idekey=phpstorm" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+    echo "xdebug.client_port=9002" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+    echo "xdebug.client_host=172.17.0.1" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+    echo "xdebug.log=/var/log/xdebug_remote.log" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+    echo "xdebug.log_level=10" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+    echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
     docker-php-ext-enable xdebug
 
 # Install Composer

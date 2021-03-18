@@ -7,6 +7,7 @@ use BeneficiaryBundle\Repository\InstitutionRepository;
 use BeneficiaryBundle\Utils\InstitutionService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\InstitutionCreateInputType;
+use NewApiBundle\InputType\InstitutionFilterInputType;
 use NewApiBundle\InputType\InstitutionOrderInputType;
 use NewApiBundle\InputType\InstitutionUpdateInputType;
 use NewApiBundle\Request\Pagination;
@@ -48,21 +49,21 @@ class InstitutionController extends AbstractController
     /**
      * @Rest\Get("/institutions")
      *
-     * @param Request                   $request
-     * @param Pagination                $pagination
-     * @param InstitutionOrderInputType $orderBy
+     * @param Request                    $request
+     * @param Pagination                 $pagination
+     * @param InstitutionFilterInputType $filter
+     * @param InstitutionOrderInputType  $orderBy
      *
      * @return JsonResponse
      */
-    public function list(Request $request, Pagination $pagination, InstitutionOrderInputType $orderBy): JsonResponse
+    public function list(Request $request, Pagination $pagination, InstitutionFilterInputType $filter, InstitutionOrderInputType $orderBy): JsonResponse
     {
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        /** @var InstitutionRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(Institution::class);
-        $data = $repository->findByParams($request->headers->get('country'), $orderBy, $pagination);
+        $data = $this->getDoctrine()->getRepository(Institution::class)
+            ->findByParams($request->headers->get('country'), $filter, $orderBy, $pagination);
 
         return $this->json($data);
     }

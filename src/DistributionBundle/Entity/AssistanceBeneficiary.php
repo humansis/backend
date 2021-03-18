@@ -205,6 +205,14 @@ class AssistanceBeneficiary
     }
 
     /**
+     * @return Collection|SmartcardDeposit[]
+     */
+    public function getSmartcardDeposits()
+    {
+        return $this->smartcardDeposits;
+    }
+
+    /**
      * Get the value of Transaction.
      *
      * @return Transaction[]
@@ -389,5 +397,33 @@ class AssistanceBeneficiary
         $this->vulnerabilityScores = $vulnerabilityScores;
 
         return $this;
+    }
+
+    /**
+     * @return bool if anything was distributed to beneficiary
+     */
+    public function hasDistributionStarted(): bool
+    {
+        foreach ($this->getBooklets() as $booklet) {
+            if (Booklet::UNASSIGNED !== $booklet->getStatus()) {
+                return true;
+            }
+        }
+        foreach ($this->getGeneralReliefs() as $item) {
+            if (null !== $item->getDistributedAt()) {
+                return true;
+            }
+        }
+        foreach ($this->getTransactions() as $transaction) {
+            if (Transaction::SUCCESS === $transaction->getTransactionStatus()) {
+                return true;
+            }
+        }
+        foreach ($this->smartcardDeposits as $deposit) {
+            if ($deposit->getSmartcard()->getBeneficiary() === $this->getBeneficiary()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

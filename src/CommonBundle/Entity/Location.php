@@ -288,4 +288,19 @@ class Location
 
         return null;
     }
+
+    public function getLocationName(): string
+    {
+        if ($this->getAdm4()) {
+            return $this->getAdm4()->getName();
+        } elseif ($this->getAdm3()) {
+            return $this->getAdm3()->getName();
+        } elseif ($this->getAdm2()) {
+            return $this->getAdm2()->getName();
+        } elseif ($this->getAdm1()) {
+            return $this->getAdm1()->getName();
+        } else {
+            return '';
+        }
+    }
 }

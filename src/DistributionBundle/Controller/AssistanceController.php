@@ -26,6 +26,7 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -341,7 +342,15 @@ class AssistanceController extends Controller
     {
         $deletionData = $request->request->all();
 
-        $return = $this->assistanceBeneficiaryService->removeBeneficiaryInDistribution($distribution, $beneficiary, $deletionData);
+        if (true === $distribution->getCompleted() || true === $distribution->getArchived()) {
+            throw new BadRequestHttpException("Beneficiary can't be removed from closed or archived assistance");
+        }
+
+        try {
+            $return = $this->assistanceBeneficiaryService->removeBeneficiaryInDistribution($distribution, $beneficiary, $deletionData);
+        } catch (\InvalidArgumentException $e) {
+            throw new BadRequestHttpException($e->getMessage(), $e);
+        }
 
         return new Response(json_encode($return));
     }

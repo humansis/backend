@@ -12,7 +12,6 @@ use Doctrine\ORM\NoResultException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Swagger\Annotations as SWG;
@@ -387,48 +386,97 @@ class SmartcardController extends Controller
      *
      * @return Response
      */
+    public function depositDeprecated(Request $request): Response
+    {
+        $this->container->get('logger')->error('headers', $request->headers->all());
+        $this->container->get('logger')->error('content', [$request->getContent()]);
+
+        $deposit = $this->get('smartcard_service')->deposit(
+            $request->get('serialNumber'),
+            $request->request->getInt('distributionId'),
+            $request->request->get('value'),
+            null,
+            \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
+            $this->getUser()
+        );
+
+        $json = $this->get('serializer')->serialize($deposit->getSmartcard(), 'json', ['groups' => ['SmartcardOverview']]);
+
+        return new Response($json);
+    }
+
+    /**
+     * Put money to smartcard. If smartcard does not exists, it will be created.
+     *
+     * @Rest\Patch("/offline-app/v2/smartcards/{serialNumber}/deposit")
+     * @ParamConverter("smartcard")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER') or is_granted('ROLE_ENUMERATOR')")
+     *
+     * @SWG\Tag(name="Smartcards")
+     *
+     * @SWG\Parameter(
+     *     name="serialNumber",
+     *     in="path",
+     *     type="string",
+     *     required=true,
+     *     description="Serial number (GUID) of smartcard"
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="body",
+     *     in="body",
+     *     required=true,
+     *     @SWG\Schema(
+     *         type="object",
+     *         @SWG\Property(
+     *             property="value",
+     *             type="number",
+     *             description="Value of money deposit to smartcard"
+     *         ),
+     *         @SWG\Property(
+     *             property="balance",
+     *             type="number",
+     *             description="Actual balance on smartcard"
+     *         ),
+     *         @SWG\Property(
+     *             property="distributionId",
+     *             type="int",
+     *             description="ID of distribution from which are money deposited"
+     *         ),
+     *         @SWG\Property(
+     *             property="createdAt",
+     *             type="string",
+     *             description="ISO 8601 time of deposit in UTC",
+     *             example="2020-02-02T12:00:00+0200"
+     *         )
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Money succesfully succesfully deposited to smartcard",
+     *     @Model(type=Smartcard::class, groups={"SmartcardOverview"})
+     * )
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
     public function deposit(Request $request): Response
     {
         $this->logger->error('headers', $request->headers->all());
         $this->logger->error('content', [$request->getContent()]);
 
-        $serialNumber = $request->get('serialNumber');
-
-        $smartcard = $this->getDoctrine()->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
-        if (!$smartcard) {
-            $smartcard = new Smartcard($serialNumber, DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
-            $smartcard->setState(Smartcard::STATE_ACTIVE);
-            $smartcard->setSuspicious(true, 'Smartcard does not exists in database');
-        }
-
-        if (!$smartcard->isActive()) {
-            $smartcard->setSuspicious(true, 'Smartcard is in '.$smartcard->getState().' state');
-        }
-
-        $distribution = $this->getDoctrine()->getRepository(Assistance::class)->find($request->request->getInt('distributionId'));
-        if (!$distribution) {
-            throw new BadRequestHttpException('Distribution does not exists.');
-        }
-
-        $assistanceBeneficiary = $this->getDoctrine()->getRepository(AssistanceBeneficiary::class)->findByDistributionAndBeneficiary(
-            $distribution,
-            $smartcard->getBeneficiary()
+        $deposit = $this->smartcardService->deposit(
+            $request->get('serialNumber'),
+            $request->request->getInt('distributionId'),
+            $request->request->get('value'),
+            $request->request->get('balance'),
+            \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
+            $this->getUser()
         );
 
-        $deposit = SmartcardDeposit::create(
-            $smartcard,
-            $this->getUser(),
-            $assistanceBeneficiary,
-            (float) $request->request->get('value'),
-            \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt'))
-        );
-
-        $smartcard->addDeposit($deposit);
-
-        $this->getDoctrine()->getManager()->persist($smartcard);
-        $this->getDoctrine()->getManager()->flush();
-
-        $json = $this->serializer->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
+        $json = $this->serializer->serialize($deposit->getSmartcard(), 'json', ['groups' => ['SmartcardOverview']]);
 
         return new Response($json);
     }
@@ -634,9 +682,9 @@ class SmartcardController extends Controller
     {
         /** @var SmartcardPurchaseRepository $repository */
         $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardPurchase::class);
-        $summary = $repository->countPurchasesToRedeem($vendor);
+        $summaries = $repository->countPurchasesToRedeem($vendor);
 
-        return $this->json($summary);
+        return $this->json($summaries);
     }
 
     /**
@@ -754,33 +802,11 @@ class SmartcardController extends Controller
      */
     public function redeemBatch(Vendor $vendor, RedemptionBatchInput $newBatch): Response
     {
-        /** @var SmartcardPurchaseRepository $repository */
-        $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardPurchase::class);
-        $purchases = $repository->findBy([
-            'id' => $newBatch->getPurchases(),
-        ]);
-
-        $redemptionBath = new SmartcardRedemptionBatch(
-            $vendor,
-            new \DateTime(),
-            $this->getUser(),
-            $repository->countPurchasesValue($purchases),
-            $purchases
-        );
-        foreach ($purchases as $purchase) {
-            if ($purchase->getVendor()->getId() !== $vendor->getId()) {
-                return new Response("Inconsistent vendor and purchase' #{$purchase->getId()} vendor", Response::HTTP_BAD_REQUEST);
-            }
-            if (null !== $purchase->getRedeemedAt()) {
-                return new Response("Purchase' #{$purchase->getId()} was already redeemed at ".$purchase->getRedeemedAt()->format('Y-m-d H:i:s'),
-                    Response::HTTP_BAD_REQUEST);
-            }
-
-            $purchase->setRedemptionBatch($redemptionBath);
+        try {
+            $redemptionBath = $this->get('smartcard_service')->redeem($vendor, $newBatch, $this->getUser());
+        } catch (\InvalidArgumentException $exception) {
+            throw new BadRequestHttpException($exception->getMessage(), $exception);
         }
-
-        $this->getDoctrine()->getManager()->persist($redemptionBath);
-        $this->getDoctrine()->getManager()->flush();
 
         return $this->json([
             'id' => $redemptionBath->getId(),
@@ -813,7 +839,7 @@ class SmartcardController extends Controller
         // todo find organisation by relation to smartcard
         $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
 
-        $filename = $this->get('distribution.export.smartcard_invoice')->export($batch, $organization);
+        $filename = $this->get('distribution.export.smartcard_invoice')->export($batch, $organization, $this->getUser());
 
         $response = new BinaryFileResponse(getcwd().'/'.$filename);
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);

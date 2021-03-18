@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace ProjectBundle\Utils;
 
+use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\DTO\Sector;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -328,6 +328,34 @@ class SectorService
             $sectors[] = $this->findBySubSector($subSectorName);
         }
         return $sectors;
+    }
+
+    /**
+     * @param string $type
+     * @return array
+     */
+    public function findTargetsByType(string $type): array
+    {
+        if (!in_array($type, AssistanceTargetType::values())) {
+            throw new InvalidArgumentException('This assistence type is not supported');
+        }
+
+        $assistanceTargets = [];
+
+        foreach (SubSectorEnum::all() as $subSectorName) {
+            /** @var Sector $sector */
+            foreach ($this->findBySubSector($subSectorName) as $sector) {
+                if ($sector->isAssistanceTypeAllowed($subSectorName)) {
+                    foreach (AssistanceTargetType::values() as $targetType) {
+                        if ($sector->isAssistanceTargetAllowed($targetType)) {
+                            $assistanceTargets[] = $targetType;
+                        }
+                    }
+                }
+            }
+        }
+
+        return array_unique($assistanceTargets);
     }
 
     /**

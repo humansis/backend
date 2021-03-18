@@ -53,6 +53,21 @@ services:
         alias: DistributionBundle\Utils\CommodityService
         public: true
 
+    DistributionBundle\Mapper\AssistanceBeneficiaryMapper:
+        public: true
+
+    DistributionBundle\Mapper\AssistanceCommunityMapper:
+        public: true
+
+    DistributionBundle\Mapper\AssistanceInstitutionMapper:
+        public: true
+
+    DistributionBundle\Mapper\CampMapper:
+        public: true
+
+    DistributionBundle\Mapper\GeneralReliefItemMapper:
+        public: true
+
 #######################################################################################
 ##                                       CSV                                         ##
 #######################################################################################

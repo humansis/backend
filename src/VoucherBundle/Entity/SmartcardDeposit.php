@@ -68,6 +68,14 @@ class SmartcardDeposit
     private $value;
 
     /**
+     * @var float
+     *
+     * @ORM\Column(name="balance", type="decimal", precision=10, scale=2, nullable=true)
+     * @SymfonyGroups({"FullSmartcard"})
+     */
+    private $balance;
+
+    /**
      * @var DateTime
      *
      * @ORM\Column(name="used_at", type="datetime", nullable=true)
@@ -85,12 +93,14 @@ class SmartcardDeposit
         User $depositor,
         AssistanceBeneficiary $assistanceBeneficiary,
         $value,
+        $balance,
         DateTimeInterface $createdAt
     ) {
         $entity = new self();
         $entity->depositor = $depositor;
         $entity->assistanceBeneficiary = $assistanceBeneficiary;
         $entity->value = $value;
+        $entity->balance = $balance;
         $entity->createdAt = $createdAt;
         $entity->smartcard = $smartcard;
 
@@ -140,6 +150,11 @@ class SmartcardDeposit
     public function getValue(): float
     {
         return $this->value;
+    }
+
+    public function getBalance(): ?float
+    {
+        return $this->balance;
     }
 
     /**

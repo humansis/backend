@@ -97,4 +97,14 @@ class AssistanceMapper implements MapperInterface
 
         return $result;
     }
+
+    public function getValidated(): bool
+    {
+        return (bool) $this->object->getValidated();
+    }
+
+    public function getCompleted(): bool
+    {
+        return (bool) $this->object->getCompleted();
+    }
 }

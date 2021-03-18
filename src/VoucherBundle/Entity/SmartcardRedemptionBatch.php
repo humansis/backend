@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
+use ProjectBundle\Entity\Project;
 use UserBundle\Entity\User;
 
 /**
@@ -38,6 +39,14 @@ class SmartcardRedemptionBatch implements JsonSerializable
     private $vendor;
 
     /**
+     * @var Project|null
+     *
+     * @ORM\ManyToOne(targetEntity="\ProjectBundle\Entity\Project")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $project;
+
+    /**
      * @var DateTime
      *
      * @ORM\Column(name="redeemed_at", type="datetime", nullable=false)
@@ -60,6 +69,13 @@ class SmartcardRedemptionBatch implements JsonSerializable
     private $value;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="currency", type="string", nullable=true)
+     */
+    private $currency;
+
+    /**
      * @var Collection|SmartcardPurchase[]
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardPurchase", mappedBy="redemptionBatch", cascade={"persist"}, orphanRemoval=false)
@@ -69,19 +85,23 @@ class SmartcardRedemptionBatch implements JsonSerializable
     /**
      * SmartcardPurchaseBatch constructor.
      *
-     * @param Vendor   $vendor
-     * @param DateTime $redeemedAt
-     * @param User     $redeemedBy
-     * @param mixed    $value
-     * @param iterable $purchases
+     * @param Vendor       $vendor
+     * @param Project|null $project
+     * @param DateTime     $redeemedAt
+     * @param User         $redeemedBy
+     * @param mixed        $value
+     * @param string       $currency
+     * @param iterable     $purchases
      */
-    public function __construct(Vendor $vendor, DateTime $redeemedAt, User $redeemedBy, $value,
+    public function __construct(Vendor $vendor, ?Project $project, DateTime $redeemedAt, User $redeemedBy, $value, string $currency,
                                 iterable $purchases)
     {
         $this->vendor = $vendor;
+        $this->project = $project;
         $this->redeemedAt = $redeemedAt;
         $this->redeemedBy = $redeemedBy;
         $this->value = $value;
+        $this->currency = $currency;
         $this->purchases = new ArrayCollection($purchases);
     }
 
@@ -101,6 +121,14 @@ class SmartcardRedemptionBatch implements JsonSerializable
     public function getVendor(): Vendor
     {
         return $this->vendor;
+    }
+
+    /**
+     * @return Project|null
+     */
+    public function getProject(): ?Project
+    {
+        return $this->project;
     }
 
     /**
@@ -152,6 +180,22 @@ class SmartcardRedemptionBatch implements JsonSerializable
     }
 
     /**
+     * @return string
+     */
+    public function getCurrency(): string
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @param string $currency
+     */
+    public function setCurrency(string $currency): void
+    {
+        $this->currency = $currency;
+    }
+
+    /**
      * @return Collection|SmartcardPurchase[]
      */
     public function getPurchases(): Collection
@@ -175,6 +219,9 @@ class SmartcardRedemptionBatch implements JsonSerializable
             'date' => $this->redeemedAt->format('d-m-Y H:i'),
             'count' => $this->purchases->count(),
             'value' => (float) $this->value,
+            'currency' => $this->currency,
+            'project_id' => $this->getProject() ? $this->getProject()->getId() : null,
+            'project_name' => $this->getProject() ? $this->getProject()->getName() : null,
         ];
     }
 }

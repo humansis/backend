@@ -10,10 +10,8 @@ use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use Exception;
 use NewApiBundle\InputType\ProjectCreateInputType;
 use NewApiBundle\InputType\ProjectUpdateInputType;
-use RuntimeException;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\Entity\Donor;
 use ProjectBundle\Entity\Project;
@@ -114,7 +112,7 @@ class ProjectService
      * @param array $projectArray
      * @param User $user
      * @return Project
-     * @throws Exception
+     * @throws \Exception
      */
     public function createFromArray($countryISO3, array $projectArray, User $user)
     {
@@ -124,7 +122,7 @@ class ProjectService
         $endDate = DateTime::createFromFormat('d-m-Y', $projectArray["end_date"]);
 
         if ($startDate > $endDate) {
-            throw new Exception('The end date must be after the start date', Response::HTTP_BAD_REQUEST);
+            throw new \Exception('The end date must be after the start date', Response::HTTP_BAD_REQUEST);
         }
 
         $project = new Project();
@@ -155,7 +153,7 @@ class ProjectService
             foreach ($errors as $error) {
                 $errorsArray[] = $error->getMessage();
             }
-            throw new Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
+            throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
         $sectorsId = $projectArray["sectors"];
@@ -204,7 +202,7 @@ class ProjectService
         ]);
 
         if (!empty($existingProjects)) {
-            throw new RuntimeException('Project with the name '.$inputType->getName().' already exists');
+            throw new \RuntimeException('Project with the name '.$inputType->getName().' already exists');
         }
 
         $project = (new Project())
@@ -238,7 +236,7 @@ class ProjectService
      * @param Project $project
      * @param array $projectArray
      * @return array|bool|Project
-     * @throws Exception
+     * @throws \Exception
      */
     public function edit(Project $project, array $projectArray)
     {
@@ -246,7 +244,7 @@ class ProjectService
         $endDate = DateTime::createFromFormat('d-m-Y', $projectArray["end_date"]);
 
         if ($startDate > $endDate) {
-            throw new Exception('The end date must be after the start date', Response::HTTP_BAD_REQUEST);
+            throw new \Exception('The end date must be after the start date', Response::HTTP_BAD_REQUEST);
         }
     
         /** @var Project $editedProject */
@@ -283,13 +281,13 @@ class ProjectService
                 foreach ($errors as $error) {
                     $errorsArray[] = $error->getMessage();
                 }
-                throw new Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
+                throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
             }
 
             $this->em->persist($project);
             try {
                 $this->em->flush();
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 return false;
             }
 
@@ -314,7 +312,7 @@ class ProjectService
         ]);
 
         if (!empty($existingProjects) && $existingProjects[0]->getId() !== $project->getId()) {
-            throw new RuntimeException('Project with the name '.$project->getName().' already exists');
+            throw new \RuntimeException('Project with the name '.$project->getName().' already exists');
         }
 
         $project
@@ -390,7 +388,7 @@ class ProjectService
     public function isDeletable(Project $project): bool
     {
         /** @var \Doctrine\ORM\Tools\Pagination\Paginator $assistance */
-        $assistances = $this->em->getRepository(Assistance::class)->findByParams($project);
+        $assistances = $this->em->getRepository(Assistance::class)->findByProject($project);
 
         return 0 === count($assistances) || $this->checkIfAllDistributionClosed($assistances);
     }
@@ -402,8 +400,8 @@ class ProjectService
      */
     public function delete(Project $project)
     {
-        /** @var Paginator $assistance */
-        $assistance = $this->em->getRepository(Assistance::class)->findByParams($project);
+        /** @var \Doctrine\ORM\Tools\Pagination\Paginator $assistance */
+        $assistance = $this->em->getRepository(Assistance::class)->findByProject($project);
 
         if (0 === $assistance->count()) {
             try {
@@ -411,8 +409,8 @@ class ProjectService
                     $this->em->remove($projectSector);
                 }
                 $this->em->remove($project);
-            } catch (Exception $error) {
-                throw new Exception("Error deleting project");
+            } catch (\Exception $error) {
+                throw new \Exception("Error deleting project");
             }
         } else {
             if (!$this->checkIfAllDistributionClosed($assistance)) {
@@ -425,8 +423,8 @@ class ProjectService
 
                     $project->setArchived(true);
                     $this->em->persist($project);
-                } catch (Exception $error) {
-                    throw new Exception("Error archiving project");
+                } catch (\Exception $error) {
+                    throw new \Exception("Error archiving project");
                 }
             }
         }
