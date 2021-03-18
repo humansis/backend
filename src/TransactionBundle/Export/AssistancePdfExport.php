@@ -10,7 +10,7 @@ use DistributionBundle\Entity\Assistance;
 use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\Translation\TranslatorInterface;
 
-class TransactionPdfExport
+class AssistancePdfExport
 {
     /** @var TranslatorInterface */
     private $translator;
@@ -35,6 +35,6 @@ class TransactionPdfExport
             'organisation' => $organization,
         ]);
 
-        return $this->pdfService->printPdf($html, 'portrait', 'transactions');
+        return $this->pdfService->printPdf($html, 'landscape', 'distribution');
     }
 }

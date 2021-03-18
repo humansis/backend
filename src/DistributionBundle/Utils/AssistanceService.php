@@ -699,60 +699,6 @@ class AssistanceService
 
         return array($successArray, $errorArray, $numberIncomplete);
     }
-    
-    /**
-     * @param Assistance $assistance
-     * @param string $type
-     * @return mixed
-     */
-    public function exportGeneralReliefDistributionToCsv(Assistance $assistance, string $type)
-    {
-        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findByAssistance($assistance);
-
-        $generalreliefs = array();
-        $exportableTable = array();
-        foreach ($distributionBeneficiaries as $db) {
-            $generalrelief = $this->em->getRepository(GeneralReliefItem::class)->findOneByAssistanceBeneficiary($db);
-
-            if ($generalrelief) {
-                array_push($generalreliefs, $generalrelief);
-            }
-        }
-
-        foreach ($generalreliefs as $generalrelief) {
-            $beneficiary = $generalrelief->getAssistanceBeneficiary()->getBeneficiary();
-            $commodityNames = implode(', ',
-                array_map(
-                    function($commodity) { return  $commodity->getModalityType()->getName(); }, 
-                    $assistance->getCommodities()->toArray()
-                )
-            );
-
-
-            $commodityValues = implode(', ',
-                array_map(
-                    function($commodity) { return  $commodity->getValue() . ' ' . $commodity->getUnit(); }, 
-                    $assistance->getCommodities()->toArray()
-                )
-            );
-
-            $commonFields = $beneficiary->getCommonExportFields();
-
-            array_push($exportableTable, 
-                array_merge($commonFields, array(
-                    "Commodity" => $commodityNames,
-                    "Value" => $commodityValues,
-                    "Distributed At" => $generalrelief->getDistributedAt(),
-                    "Notes Distribution" => $generalrelief->getNotes(),
-                    "Removed" => $generalrelief->getAssistanceBeneficiary()->getRemoved() ? 'Yes' : 'No',
-                    "Justification for adding/removing" => $generalrelief->getAssistanceBeneficiary()->getJustification(),
-                ))
-            );
-        }
-
-        return $this->container->get('export_csv_service')->export($exportableTable, 'generalrelief', $type);
-    }
-
 
     /**
      * Export all distributions in a pdf
@@ -776,63 +722,6 @@ class AssistanceService
             );
 
             $response = $this->container->get('pdf_service')->printPdf($html, 'landscape', 'bookletCodes');
-            return $response;
-        } catch (\Exception $e) {
-            throw new \Exception($e);
-        }
-    }
-
-     /**
-     * Export a distribution in pdf
-     * @param int $distributionId
-     * @return mixed
-     */
-    public function exportOneToPdf(int $distributionId)
-    {
-        $exportableDistribution = $this->em->getRepository(Assistance::class)->findOneBy(['id' => $distributionId, 'archived' => false]);
-
-        $booklets = [];
-
-        if ($exportableDistribution->getCommodities()[0]->getModalityType()->getName() === 'QR Code Voucher') {
-            foreach ($exportableDistribution->getDistributionBeneficiaries() as $assistanceBeneficiary) {
-                    $activatedBooklets = $this->em->getRepository(Booklet::class)->getActiveBookletsByAssistanceBeneficiary($assistanceBeneficiary->getId());
-                    if (count($activatedBooklets) > 0) {
-                        $products = $this->em->getRepository(Product::class)->getNameByBooklet($activatedBooklets[0]->getId());
-                        $products = array_map(
-                            function($product) { return $product['name']; },
-                            $products
-                        );
-                        $booklet = [
-                            "code" => $activatedBooklets[0]->getCode(),
-                            "status" => $activatedBooklets[0]->getStatus(),
-                            "vouchers" => $activatedBooklets[0]->getVouchers(),
-                            "products" => implode(', ', $products),
-                            "value" => $activatedBooklets[0]->getTotalValue(),
-                            "currency" => $activatedBooklets[0]->getCurrency(),
-                            "usedAt" => $activatedBooklets[0]->getUsedAt()
-                        ];
-                        $booklets[$assistanceBeneficiary->getId()] = $booklet;
-                    }
-            }
-        }
-
-        try {
-            $html =  $this->container->get('templating')->render(
-                '@Distribution/Pdf/distribution.html.twig',
-                array_merge(
-                    [
-                        'distribution' => $exportableDistribution,
-                        'booklets' => $booklets,
-                        'commodities' => implode(', ', array_map(
-                            function($commodity) { return $commodity->getValue() . ' ' . $commodity->getUnit() . '/pers'; }, 
-                            $exportableDistribution->getCommodities()->toArray()
-                        ))
-                    ],
-                    $this->container->get('pdf_service')->getInformationStyle()
-                )
-            );
-
-            $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'bookletCodes');
             return $response;
         } catch (\Exception $e) {
             throw new \Exception($e);
@@ -892,19 +781,50 @@ class AssistanceService
         /** @var \CommonBundle\Entity\Location $location */
         $location = $this->em->getRepository(\CommonBundle\Entity\Location::class)->find($inputType->getLocationId());
 
+        $locationArray = [];
+        if ($location->getAdm4()) {
+            $locationArray = [
+                'adm1' => $location->getAdm4()->getAdm3()->getAdm2()->getAdm1()->getId(),
+                'adm2' => $location->getAdm4()->getAdm3()->getAdm2()->getId(),
+                'adm3' => $location->getAdm4()->getAdm3()->getId(),
+                'adm4' => $location->getAdm4()->getId(),
+                'country_iso3' => $inputType->getIso3(),
+            ];
+        } elseif ($location->getAdm3()){
+            $locationArray = [
+                'adm1' => $location->getAdm3()->getAdm2()->getAdm1()->getId(),
+                'adm2' => $location->getAdm3()->getAdm2()->getId(),
+                'adm3' => $location->getAdm3()->getId(),
+                'adm4' => null,
+                'country_iso3' => $inputType->getIso3(),
+            ];
+        } elseif ($location->getAdm2()){
+            $locationArray = [
+                'adm1' => $location->getAdm2()->getAdm1()->getId(),
+                'adm2' => $location->getAdm2()->getId(),
+                'adm3' => null,
+                'adm4' => null,
+                'country_iso3' => $inputType->getIso3(),
+            ];
+        } elseif ($location->getAdm1()){
+            $locationArray = [
+                'adm1' => $location->getAdm1()->getId(),
+                'adm2' => null,
+                'adm3' => null,
+                'adm4' => null,
+                'country_iso3' => $inputType->getIso3(),
+            ];
+        }
+
+
+
         $distributionArray = [
             'countryIso3' => $inputType->getIso3(),
             'assistance_type' => $inputType->getType(),
             'target_type' => $inputType->getTarget(),
             'date_distribution' => $inputType->getDateDistribution(),
             'project' => ['id' => $inputType->getProjectId()],
-            'location' => [
-                'adm1' => $location->getAdm1() ? $location->getAdm1()->getId() : null,
-                'adm2' => $location->getAdm2() ? $location->getAdm2()->getId() : null,
-                'adm3' => $location->getAdm3() ? $location->getAdm3()->getId() : null,
-                'adm4' => $location->getAdm4() ? $location->getAdm4()->getId() : null,
-                'country_iso3' => $inputType->getIso3(),
-            ],
+            'location' => $locationArray,
             'sector' => $inputType->getSector(),
             'subsector' => $inputType->getSubsector(),
             'threshold' => $inputType->getThreshold(),

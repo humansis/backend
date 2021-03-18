@@ -4,11 +4,14 @@ namespace VoucherBundle\Utils;
 
 use DateTime;
 use DateTimeInterface;
+use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManager;
-use Doctrine\Persistence\ObjectManager;
 use ProjectBundle\Entity\Project;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
+use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\SmartcardRedemptionBatch;
 use VoucherBundle\Entity\Vendor;
@@ -26,14 +29,48 @@ class SmartcardService
     /** @var PurchaseService */
     private $purchaseService;
 
-    /** @var ObjectManager */
-    private $manager;
-
-    public function __construct(EntityManager $em, PurchaseService $purchaseService, ObjectManager $manager)
+    public function __construct(EntityManager $em, PurchaseService $purchaseService)
     {
         $this->em = $em;
         $this->purchaseService = $purchaseService;
-        $this->manager = $manager;
+    }
+
+    public function deposit(string $serialNumber, int $distributionId, $value, $balance, DateTimeInterface $createdAt, User $user): SmartcardDeposit
+    {
+        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
+        if (!$smartcard) {
+            $smartcard = $this->createSuspiciousSmartcard($serialNumber, $createdAt);
+        }
+
+        if (!$smartcard->isActive()) {
+            $smartcard->setSuspicious(true, 'Smartcard is in '.$smartcard->getState().' state');
+        }
+
+        $distribution = $this->em->getRepository(Assistance::class)->find($distributionId);
+        if (!$distribution) {
+            throw new NotFoundHttpException('Distribution does not exists.');
+        }
+
+        $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findByDistributionAndBeneficiary(
+            $distribution,
+            $smartcard->getBeneficiary()
+        );
+
+        $deposit = SmartcardDeposit::create(
+            $smartcard,
+            $user,
+            $assistanceBeneficiary,
+            (float) $value,
+            null !== $balance ? (float) $balance : null,
+            $createdAt
+        );
+
+        $smartcard->addDeposit($deposit);
+
+        $this->em->persist($smartcard);
+        $this->em->flush();
+
+        return $deposit;
     }
 
     public function purchase(string $serialNumber, $data): SmartcardPurchase
@@ -76,7 +113,7 @@ class SmartcardService
     public function redeem(Vendor $vendor, RedemptionBatchInput $inputBatch, User $redeemedBy): SmartcardRedemptionBatch
     {
         /** @var SmartcardPurchaseRepository $repository */
-        $repository = $this->manager->getRepository(SmartcardPurchase::class);
+        $repository = $this->em->getRepository(SmartcardPurchase::class);
         $purchases = $repository->findBy([
             'id' => $inputBatch->getPurchases(),
         ]);
@@ -108,7 +145,7 @@ class SmartcardService
             }
         }
 
-        $projectRepository = $this->manager->getRepository(Project::class);
+        $projectRepository = $this->em->getRepository(Project::class);
         $project = $projectRepository->find($projectId);
 
         $redemptionBath = new SmartcardRedemptionBatch(
@@ -125,8 +162,8 @@ class SmartcardService
             $purchase->setRedemptionBatch($redemptionBath);
         }
 
-        $this->manager->persist($redemptionBath);
-        $this->manager->flush();
+        $this->em->persist($redemptionBath);
+        $this->em->flush();
 
         return $redemptionBath;
     }

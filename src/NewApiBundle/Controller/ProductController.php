@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\File\UploadService;
 use NewApiBundle\InputType\ProductCreateInputType;
 use NewApiBundle\InputType\ProductFilterInputType;
 use NewApiBundle\InputType\ProductOrderInputType;
@@ -13,11 +14,20 @@ use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Repository\ProductRepository;
 
 class ProductController extends AbstractController
 {
+    /** @var UploadService */
+    private $uploadService;
+
+    public function __construct(UploadService $uploadService)
+    {
+        $this->uploadService = $uploadService;
+    }
+
     /**
      * @Rest\Get("/products/{id}")
      *
@@ -84,6 +94,34 @@ class ProductController extends AbstractController
         $object = $this->get('voucher.product_service')->update($product, $inputType);
 
         return $this->json($object);
+    }
+
+    /**
+     * @Rest\Post("/products/{id}/images")
+     *
+     * @param Product $product
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function uploadImage(Product $product, Request $request): JsonResponse
+    {
+        if (!($file = $request->files->get('file'))) {
+            throw new BadRequestHttpException('File missing.');
+        }
+
+        if (!in_array($file->getMimeType(), ['image/gif', 'image/jpeg', 'image/png'])) {
+            throw new BadRequestHttpException('Invalid file type.');
+        }
+
+        $url = $this->uploadService->upload($file, 'products');
+
+        $product->setImage($url);
+
+        $this->getDoctrine()->getManager()->persist($product);
+        $this->getDoctrine()->getManager()->flush();
+
+        return $this->json(['url' => $url]);
     }
 
     /**

@@ -378,17 +378,6 @@ class BeneficiaryService
     }
 
     /**
-     * @param Assistance $assistance
-     * @param string $type
-     * @return mixed
-     */
-    public function exportToCsvBeneficiariesInDistribution(Assistance $assistance, string $type)
-    {
-        $beneficiaries = $this->em->getRepository(Beneficiary::class)->getNotRemovedofDistribution($assistance);
-        return $this->container->get('export_csv_service')->export($beneficiaries, 'beneficiaryInDistribution', $type);
-    }
-
-    /**
      * @param string $type
      * @return mixed
      */

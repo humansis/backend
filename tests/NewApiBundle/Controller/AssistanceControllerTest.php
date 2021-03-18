@@ -52,7 +52,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "locationId": '.$assistance->getLocation()->getId().',
             "target": "'.$assistance->getTargetType().'",
             "type": "'.$assistance->getAssistanceType().'",
-            "commodityIds": ['.implode(',', $commodityIds).']
+            "commodityIds": ['.implode(',', $commodityIds).'],
+            "validated": '.($assistance->getValidated() ? 'true' : 'false').',
+            "completed": '.($assistance->getCompleted() ? 'true' : 'false').'
         }', $this->client->getResponse()->getContent());
     }
 
@@ -118,7 +120,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'iso3' => 'KHM',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
-            'dateDistribution' => '2000-12-01',
+            'dateDistribution' => '2021-03-10T13:45:32.988Z',
             'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
             'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
             'type' => \DistributionBundle\Enum\AssistanceType::DISTRIBUTION,
@@ -172,7 +174,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'iso3' => 'KHM',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
-            'dateDistribution' => '2000-12-01',
+            'dateDistribution' => '2000-12-01T01:01:01+00:00',
             'sector' => \ProjectBundle\DBAL\SectorEnum::LIVELIHOODS,
             'subsector' => \ProjectBundle\DBAL\SubSectorEnum::SKILLS_TRAINING,
             'type' => \DistributionBundle\Enum\AssistanceType::ACTIVITY,
@@ -227,7 +229,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'iso3' => 'KHM',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
-            'dateDistribution' => '2000-12-01',
+            'dateDistribution' => '2000-12-01T01:01:01+0000',
             'sector' => \ProjectBundle\DBAL\SectorEnum::SHELTER,
             'subsector' => \ProjectBundle\DBAL\SubSectorEnum::CONSTRUCTION,
             'type' => \DistributionBundle\Enum\AssistanceType::ACTIVITY,

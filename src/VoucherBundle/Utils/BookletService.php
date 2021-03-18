@@ -508,65 +508,6 @@ class BookletService
     }
 
     /**
-     * @param Assistance $assistance
-     * @param string $type
-     * @return mixed
-     */
-    public function exportVouchersDistributionToCsv(Assistance $assistance, string $type)
-    {
-        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)
-            ->findByAssistance($assistance);
-
-        $beneficiaries = array();
-        $exportableTable = array();
-        foreach ($distributionBeneficiaries as $assistanceBeneficiary) {
-            $beneficiary = $assistanceBeneficiary->getBeneficiary();
-            $booklets = $assistanceBeneficiary->getBooklets();
-            $transactionBooklet = null;
-            if (count($booklets) > 0) {
-                foreach ($booklets as $booklet) {
-                    if ($booklet->getStatus() !== 3) {
-                        $transactionBooklet = $booklet;
-                    }
-                }
-                if ($transactionBooklet === null) {
-                    $transactionBooklet = $booklets[0];
-                }
-            }
-
-            $commonFields = $beneficiary->getCommonExportFields();
-
-            $products = [];
-            if ($transactionBooklet) {
-                /** @var Voucher $voucher */
-                foreach ($transactionBooklet->getVouchers() as $voucher) {
-                    if ($voucher->getVoucherPurchase()) {
-                        foreach ($voucher->getVoucherPurchase()->getRecords() as $record) {
-                            array_push($products, $record->getProduct()->getName());
-                        }
-                    }
-                }
-            }
-            $products = implode(', ', array_unique($products));
-
-            array_push(
-                $exportableTable,
-                array_merge($commonFields, array(
-                    "Booklet" => $transactionBooklet ? $transactionBooklet->getCode() : null,
-                    "Status" => $transactionBooklet ? $transactionBooklet->getStatus() : null,
-                    "Value" => $transactionBooklet ? $transactionBooklet->getTotalValue() . ' ' . $transactionBooklet->getCurrency() : null,
-                    "Used At" => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
-                    "Purchased items" => $products,
-                    "Removed" => $assistanceBeneficiary->getRemoved() ? 'Yes' : 'No',
-                    "Justification for adding/removing" => $assistanceBeneficiary->getJustification(),
-                ))
-            );
-        }
-
-        return $this->container->get('export_csv_service')->export($exportableTable, 'qrVouchers', $type);
-    }
-
-    /**
      * @param InputType\Country $countryISO3
      * @param InputType\DataTableType $filter
      * @return mixed

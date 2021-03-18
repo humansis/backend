@@ -56,12 +56,19 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
 
         if (null !== $filter) {
             if ($filter->hasFulltext()) {
-                $qb->andWhere('
+                $qb->andWhere('(
                     u.username LIKE :fulltext OR
                     u.email LIKE :fulltext OR
                     u.phonePrefix LIKE :fulltext OR
                     u.phoneNumber LIKE :fulltext
-                ')->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+                )')->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+            }
+
+            if ($filter->hasIds()) {
+                if ($filter->hasIds()) {
+                    $qb->andWhere('u.id IN (:ids)');
+                    $qb->setParameter('ids', $filter->getIds());
+                }
             }
         }
 

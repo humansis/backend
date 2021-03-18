@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\InputType;
 
 use NewApiBundle\Request\InputTypeInterface;
+use NewApiBundle\Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -20,7 +21,7 @@ class AssistanceCreateInputType implements InputTypeInterface
     private $iso3;
 
     /**
-     * @Assert\Date
+     * @Iso8601
      * @Assert\NotBlank
      * @Assert\NotNull
      */

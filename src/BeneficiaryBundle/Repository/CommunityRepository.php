@@ -263,7 +263,8 @@ class CommunityRepository extends EntityRepository
             if ($filter->hasFulltext()) {
                 $qb->leftJoin('comm.contact', 'per');
 
-                $qb->andWhere('comm.name LIKE :fulltext OR
+                $qb->andWhere('(comm.id LIKE :fulltextId OR
+                                comm.name LIKE :fulltext OR
                                 comm.latitude LIKE :fulltext OR
                                 comm.longitude LIKE :fulltext OR
                                 per.localGivenName LIKE :fulltext OR 
@@ -272,7 +273,8 @@ class CommunityRepository extends EntityRepository
                                 per.enGivenName LIKE :fulltext OR
                                 per.enFamilyName LIKE :fulltext OR
                                 per.enParentsName LIKE :fulltext OR
-                                per.enParentsName LIKE :fulltext')
+                                per.enParentsName LIKE :fulltext)')
+                    ->setParameter('fulltextId', $filter->getFulltext())
                     ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
             }
         }
