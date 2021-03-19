@@ -254,10 +254,10 @@ class BookletService
     {
         $qrCode = $voucher->getCode();
         // To know if we need to add a new password or replace an existant one
-        preg_match('/^([A-Z]+)(\d+)\*[^_]+_[^_]+_[^_]+_batch[\d]+-[\d]+(-[\dA-Z=+-\/]+)$/i', $qrCode, $matches);
+        preg_match('/^([A-Z]+)(\d+)\*[^_]+_[^_]+_[^_]+_((batch)|(booklet))[\d]+-[\d]+(-[\dA-Z=+-\/]+)$/i', $qrCode, $matches);
 
         if ($matches === null || count($matches) < 3) {
-            preg_match('/^([A-Z]+)(\d+)\*[^_]+_[^_]+_[^_]+_batch[\d]+-[\d]+$/i', $qrCode, $matches);
+            preg_match('/^([A-Z]+)(\d+)\*[^_]+_[^_]+_[^_]+_((batch)|(booklet))[\d]+-[\d]+$/i', $qrCode, $matches);
             if (!empty($password)) {
                 $qrCode .= '-' . $password;
             }
