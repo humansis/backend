@@ -297,7 +297,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
             'archived' => false,
         ]);
 
-        $this->request('GET', '/api/basic/projects/'.$project->getId().'/beneficiaries?filter[assistanceTarget]=household');
+        $this->request('GET', '/api/basic/projects/'.$project->getId().'/beneficiaries');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
