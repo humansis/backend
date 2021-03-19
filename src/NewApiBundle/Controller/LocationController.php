@@ -164,7 +164,7 @@ class LocationController extends AbstractController
      */
     public function item(Location $location)
     {
-        return $this->json($location->getAdm());
+        return $this->json($location);
     }
 
     /**
