@@ -2,6 +2,7 @@
 
 namespace VoucherBundle\Utils;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use DateTime;
 use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
@@ -33,6 +34,35 @@ class SmartcardService
     {
         $this->em = $em;
         $this->purchaseService = $purchaseService;
+    }
+
+    public function register(string $serialNumber, string $beneficiaryId, DateTime $createdAt): Smartcard
+    {
+        /** @var Smartcard $smartcard */
+        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
+        if (!$smartcard) {
+            $smartcard = new Smartcard($serialNumber, $createdAt);
+            $smartcard->setState(Smartcard::STATE_ACTIVE);
+        }
+
+        if ($smartcard->getBeneficiary() && $smartcard->getBeneficiary()->getId() !== $beneficiaryId) {
+            $smartcard->setSuspicious(true, sprintf('Beneficiary changed. #%s -> #%s',
+                $smartcard->getBeneficiary()->getId(),
+                $beneficiaryId
+            ));
+        }
+
+        /** @var Beneficiary $beneficiary */
+        $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryId);
+        if ($beneficiary) {
+            $smartcard->setBeneficiary($beneficiary);
+        } else {
+            $smartcard->setSuspicious(true, 'Beneficiary does not exists');
+        }
+
+        $this->em->persist($smartcard);
+        $this->em->flush();
+        return $smartcard;
     }
 
     public function deposit(string $serialNumber, int $distributionId, $value, $balance, DateTimeInterface $createdAt, User $user): SmartcardDeposit
