@@ -58,6 +58,11 @@ class BookletMapper implements MapperInterface
         return $this->object->getTotalValue();
     }
 
+    public function getQuantityOfVouchers(): int
+    {
+        return $this->object->getNumberVouchers();
+    }
+
     public function getProjectId(): ?int
     {
         return $this->object->getProject() ? $this->object->getProject()->getId() : null;
