@@ -729,13 +729,13 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
 
         if ($filter) {
             if ($filter->hasFulltext()) {
-                $qbr->andWhere('p.localGivenName LIKE :fulltext OR 
+                $qbr->andWhere('(p.localGivenName LIKE :fulltext OR 
                                 p.localFamilyName LIKE :fulltext OR
                                 p.localParentsName LIKE :fulltext OR
                                 p.enGivenName LIKE :fulltext OR
                                 p.enFamilyName LIKE :fulltext OR
                                 p.enParentsName LIKE :fulltext OR
-                                p.enParentsName LIKE :fulltext')
+                                p.enParentsName LIKE :fulltext)')
                     ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
             }
         }
