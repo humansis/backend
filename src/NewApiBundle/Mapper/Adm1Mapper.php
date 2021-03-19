@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Mapper;
 
 use CommonBundle\Entity\Adm1;
+use CommonBundle\Entity\Location;
 use NewApiBundle\Serializer\MapperInterface;
 
 class Adm1Mapper implements MapperInterface
@@ -16,7 +17,11 @@ class Adm1Mapper implements MapperInterface
      */
     public function supports(object $object, $format = null, array $context = null): bool
     {
-        return $object instanceof Adm1 && isset($context[self::NEW_API]) && true === $context[self::NEW_API];
+        if (!isset($context[self::NEW_API]) || false === $context[self::NEW_API]) {
+            return false;
+        }
+
+        return $object instanceof Adm1 || ($object instanceof Location && null !== $object->getAdm1());
     }
 
     /**
@@ -26,6 +31,10 @@ class Adm1Mapper implements MapperInterface
     {
         if ($object instanceof Adm1) {
             $this->object = $object;
+
+            return;
+        } elseif ($object instanceof Location && null !== $object->getAdm1()) {
+            $this->object = $object->getAdm1();
 
             return;
         }
