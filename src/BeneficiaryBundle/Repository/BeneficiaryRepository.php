@@ -768,29 +768,17 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     }
 
     /**
-     * @param Project                                  $project
-     * @param ProjectBeneficiariesFilterInputType|null $filter
+     * @param Project $project
      *
      * @return Paginator
      */
-    public function findByProject(
-        Project $project,
-        ?ProjectBeneficiariesFilterInputType $filter = null
-    ) {
+    public function findByProject(Project $project)
+    {
         $qbr = $this->createQueryBuilder('bnf');
         $qbr->leftJoin('bnf.projects', 'p')
             ->where('p = :project')
             ->setParameter('project', $project)
             ->andWhere('bnf.archived = 0');
-
-        if ($filter) {
-            if ($filter->hasAssistanceTarget()) {
-                $qbr->join('bnf.assistanceBeneficiary', 'ab')
-                    ->leftJoin('ab.assistance', 'a')
-                    ->andWhere('a.targetType = :target')
-                    ->setParameter('target', $filter->getAssistanceTarget());
-            }
-        }
 
         return new Paginator($qbr);
     }
