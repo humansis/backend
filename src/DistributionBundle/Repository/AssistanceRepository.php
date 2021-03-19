@@ -271,9 +271,9 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
 
         if ($filter) {
             if ($filter->hasFulltext()) {
-                $qb->andWhere('dd.id = :id OR
+                $qb->andWhere('(dd.id = :id OR
                                dd.name LIKE :fulltext OR
-                               dd.description LIKE :fulltext')
+                               dd.description LIKE :fulltext)')
                     ->setParameter('id', $filter->getFulltext())
                     ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
             }
