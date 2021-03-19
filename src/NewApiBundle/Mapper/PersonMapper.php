@@ -100,7 +100,7 @@ class PersonMapper implements MapperInterface
     public function getGender(): ?string
     {
         if (null !== $this->object->getGender()) {
-            return 1 === $this->object->getGender() ? 'M' : 'F';
+            return Person::GENDER_MALE === $this->object->getGender() ? 'M' : 'F';
         }
 
         return null;
