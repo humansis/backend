@@ -195,15 +195,13 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/projects/{id}/beneficiaries")
      *
-     * @param Project                    $project
-     *
-     * @param BeneficiaryFilterInputType $filter
+     * @param Project $project
      *
      * @return JsonResponse
      */
-    public function getBeneficiaries(Project $project, BeneficiaryFilterInputType $filter): JsonResponse
+    public function getBeneficiaries(Project $project): JsonResponse
     {
-        $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByProject($project, $filter);
+        $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByProject($project);
 
         return $this->json($beneficiaries);
     }
