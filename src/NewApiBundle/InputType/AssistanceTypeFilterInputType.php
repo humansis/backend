@@ -11,7 +11,7 @@ class AssistanceTypeFilterInputType extends AbstractFilterInputType
 {
     /**
      * @var string
-     * @Assert\Type("string")
+     * @Assert\Choice(callback={"ProjectBundle\DBAL\SubSectorEnum", "all"})
      */
     protected $subsector;
 

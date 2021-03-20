@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ProjectBundle\Utils;
 
 use DistributionBundle\Enum\AssistanceTargetType;
+use DistributionBundle\Enum\AssistanceType;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
@@ -336,7 +337,7 @@ class SectorService
      */
     public function findTargetsByType(string $type): array
     {
-        if (!in_array($type, AssistanceTargetType::values())) {
+        if (!in_array($type, AssistanceType::values())) {
             throw new InvalidArgumentException('This assistence type is not supported');
         }
 
@@ -344,12 +345,11 @@ class SectorService
 
         foreach (SubSectorEnum::all() as $subSectorName) {
             /** @var Sector $sector */
-            foreach ($this->findBySubSector($subSectorName) as $sector) {
-                if ($sector->isAssistanceTypeAllowed($subSectorName)) {
-                    foreach (AssistanceTargetType::values() as $targetType) {
-                        if ($sector->isAssistanceTargetAllowed($targetType)) {
-                            $assistanceTargets[] = $targetType;
-                        }
+            $sector = $this->findBySubSector($subSectorName);
+            if ($sector && $sector->isAssistanceTypeAllowed($type)) {
+                foreach (AssistanceTargetType::values() as $targetType) {
+                    if ($sector->isAssistanceTargetAllowed($targetType)) {
+                        $assistanceTargets[] = $targetType;
                     }
                 }
             }
