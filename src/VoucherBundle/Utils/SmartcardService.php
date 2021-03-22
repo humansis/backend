@@ -139,6 +139,11 @@ class SmartcardService
         return $this->purchaseService->purchaseSmartcard($smartcard, $data);
     }
 
+    public function getRedemptionCandidates(Vendor $vendor): array
+    {
+        return $this->em->getRepository(SmartcardPurchase::class)->countPurchasesToRedeem($vendor);
+    }
+
     /**
      * @param Vendor               $vendor
      * @param RedemptionBatchInput $inputBatch
