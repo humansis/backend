@@ -68,7 +68,7 @@ class SmartcardPurchaseRepository extends EntityRepository
                         INNER JOIN distribution_beneficiary AS db ON a.id = db.assistance_id
                         INNER JOIN smartcard_deposit AS sd ON db.id = sd.distribution_beneficiary_id AND sd.used_at <= sp.used_at
                 WHERE s.id = sd.smartcard_id
-                ORDER BY sd.used_at ASC
+                ORDER BY sd.used_at DESC, sd.id DESC 
                 LIMIT 1
             ) AS projectId,
             SUM(spr.value) as purchaseValue,
