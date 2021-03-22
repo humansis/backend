@@ -39,6 +39,10 @@ class DonorRepository extends \Doctrine\ORM\EntityRepository
                                 d.notes LIKE :fulltext)')
                     ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
             }
+            if ($filter->hasIds()) {
+                $qb->andWhere('d.id IN (:ids)')
+                    ->setParameter('ids', $filter->getIds());
+            }
         }
 
         if ($orderBy) {
