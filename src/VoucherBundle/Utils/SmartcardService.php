@@ -78,13 +78,20 @@ class SmartcardService
 
         $distribution = $this->em->getRepository(Assistance::class)->find($distributionId);
         if (!$distribution) {
-            throw new NotFoundHttpException('Distribution does not exists.');
+            throw new NotFoundHttpException('Distribution does not exist.');
+        }
+        if (!$smartcard->getBeneficiary()) {
+            throw new NotFoundHttpException('Smartcard does not have assigned beneficiary.');
         }
 
         $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findByDistributionAndBeneficiary(
             $distribution,
             $smartcard->getBeneficiary()
         );
+
+        if (!$assistanceBeneficiary) {
+            throw new NotFoundHttpException("Distribution does not have smartcard's beneficiary.");
+        }
 
         $deposit = SmartcardDeposit::create(
             $smartcard,
