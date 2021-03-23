@@ -1,6 +1,6 @@
 <?php
 
-namespace VoucherBundle\Tests\Controller;
+namespace VoucherBundle\Tests\Utils;
 
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
@@ -47,21 +47,10 @@ class SmartcardServiceTest extends KernelTestCase
 
         $this->smartcardService = $this->container->get('smartcard_service');
 
-        // if (!$this->vendor) {
-            $this->createTempVendor();
-        // }
+        $this->createTempVendor();
         $this->em->persist($this->vendor);
 
         $this->smartcardNumber = substr(md5((uniqid())), 0, 7);
-        $this->em->flush();
-    }
-
-    protected function tearDown()
-    {
-        // $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC');
-        // $this->em->remove($smartcard);
-        // $this->em->remove($this->vendor->getUser());
-        // $this->em->remove($this->vendor);
         $this->em->flush();
     }
 
