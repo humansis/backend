@@ -150,9 +150,9 @@ report starting:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never
     - if: '$CI_COMMIT_REF_NAME =~ /^release\/.*$/'
-      when: always
+      when: on_success 
     - if: '$CI_COMMIT_TAG =~ /^v.*$/'
-      when: always
+      when: on_success
     - when: never
 
 deploy stage:
