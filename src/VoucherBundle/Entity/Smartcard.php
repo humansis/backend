@@ -285,13 +285,12 @@ class Smartcard
         return $this;
     }
 
-    public function getDeposit(): SmartcardDeposit
+    /**
+     * @return Collection|SmartcardDeposit[]
+     */
+    public function getDeposites()
     {
-        $deposits = $this->deposites->toArray();
-        usort($deposits, function (SmartcardDeposit $d1, SmartcardDeposit $d2) {
-            return $d1->getCreatedAt()->getTimestamp() - $d2->getCreatedAt()->getTimestamp();
-        });
-        return $deposits[0];
+        return $this->deposites;
     }
 
     public function addPurchase(SmartcardPurchase $purchase): self

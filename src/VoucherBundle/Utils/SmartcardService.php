@@ -212,14 +212,32 @@ class SmartcardService
 
     public function extractPurchaseProjectId(SmartcardPurchase $purchase): ?int
     {
-        if (null === $purchase->getSmartcard()
-            || null === $purchase->getSmartcard()->getDeposit()
-            || null === $purchase->getSmartcard()->getDeposit()->getAssistanceBeneficiary()->getAssistance()
-            || null === $purchase->getSmartcard()->getDeposit()->getAssistanceBeneficiary()->getAssistance()->getProject()
+        if (null === $purchase->getSmartcard() || null === $purchase->getSmartcard()->getDeposites()) {
+            return null;
+        }
+        $deposits = $purchase->getSmartcard()->getDeposites()->toArray();
+        $purchaseDeposit = $this->getDeposit($deposits, $purchase->getCreatedAt());
+
+        if (null === $purchaseDeposit->getAssistanceBeneficiary()->getAssistance()
+            || null === $purchaseDeposit->getAssistanceBeneficiary()->getAssistance()->getProject()
         ) {
             return null;
         }
-        return $purchase->getSmartcard()->getDeposit()->getAssistanceBeneficiary()->getAssistance()->getProject()->getId();
+
+        return $purchaseDeposit->getAssistanceBeneficiary()->getAssistance()->getProject()->getId();
+    }
+
+    private function getDeposit(array $deposits, DateTimeInterface $purchaseDate): SmartcardDeposit
+    {
+        usort($deposits, function (SmartcardDeposit $d1, SmartcardDeposit $d2) {
+            return $d2->getCreatedAt()->getTimestamp() - $d1->getCreatedAt()->getTimestamp();
+        });
+        /** @var SmartcardDeposit $deposit */
+        foreach ($deposits as $deposit) {
+            if ($deposit->getCreatedAt()->getTimestamp() <= $purchaseDate->getTimestamp()) {
+                return $deposit;
+            }
+        }
     }
 
     protected function createSuspiciousSmartcard(string $serialNumber, DateTimeInterface $createdAt): Smartcard

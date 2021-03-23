@@ -217,28 +217,26 @@ class SmartcardServiceTest extends KernelTestCase
                     );
                     break;
             }
+            $date = clone $date;
             $date->modify('+1 day');
         }
         /** @var PurchaseRedemptionBatch[] $batchCandidates */
         $batchCandidates = $this->smartcardService->getRedemptionCandidates($this->vendor);
         $this->assertIsArray($batchCandidates, "Redemption candidates must be array");
-        // DEBUG
-        foreach ($expectedResults as $expectedResult) {
-            echo implode(' ', $expectedResult)."\n";
-        }
         $this->assertCount(count($expectedResults), $batchCandidates, "Wrong count of redemption candidates");
         foreach ($batchCandidates as $candidate) {
             $this->assertContains([$candidate->getValue(), $candidate->getCurrency(), $candidate->getProjectId()], $expectedResults, "Result was unexpected");
         }
         // redeem test
-        foreach ($batchCandidates as $candidate) {
+        foreach ($batchCandidates as $candidateToSave) {
             $batchRequest = new SmartcardRedemtionBatch();
-            $batchRequest->setPurchases($candidate->getPurchasesIds());
+            $batchRequest->setPurchases($candidateToSave->getPurchasesIds());
+
             $batch = $this->smartcardService->redeem($this->vendor, $batchRequest, $admin);
-            $this->assertEquals($candidate->getValue(), $batch->getValue(), "Redemption value of batch is different");
-            $this->assertEquals($candidate->getCurrency(), $batch->getCurrency(), "Redemption currency of batch is different");
-            $this->assertEquals($candidate->getProjectId(), $batch->getProject()->getId(), "Redemption project if of batch is different");
-            $this->assertEquals($candidate->getPurchasesCount(), $batch->getPurchases()->count(), "Redemption purchase count of batch is different");
+            $this->assertEquals($candidateToSave->getValue(), $batch->getValue(), "Redemption value of batch is different");
+            $this->assertEquals($candidateToSave->getCurrency(), $batch->getCurrency(), "Redemption currency of batch is different");
+            $this->assertEquals($candidateToSave->getProjectId(), $batch->getProject()->getId(), "Redemption project is of batch is different");
+            $this->assertEquals($candidateToSave->getPurchasesCount(), $batch->getPurchases()->count(), "Redemption purchase count of batch is different");
         }
     }
 
