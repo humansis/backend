@@ -5,14 +5,10 @@ namespace CommonBundle\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use UserBundle\Entity\User;
+use Symfony\Component\HttpKernel\KernelInterface;
 use VoucherBundle\Entity\SmartcardPurchase;
-use VoucherBundle\Entity\Vendor;
-use VoucherBundle\Entity\Voucher;
 use VoucherBundle\InputType\SmartcardRedemtionBatch;
-use VoucherBundle\InputType\VoucherRedemptionBatch;
 use VoucherBundle\Utils\SmartcardService;
-use VoucherBundle\Utils\VoucherService;
 
 class SmartcardRedemptionFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -23,12 +19,12 @@ class SmartcardRedemptionFixtures extends Fixture implements DependentFixtureInt
     private $smartcardService;
 
     /**
-     * @param string           $environment
+     * @param KernelInterface  $kernel
      * @param SmartcardService $smartcardService
      */
-    public function __construct(string $environment, SmartcardService $smartcardService)
+    public function __construct(KernelInterface $kernel, SmartcardService $smartcardService)
     {
-        $this->environment = $environment;
+        $this->environment = $kernel->getEnvironment();
         $this->smartcardService = $smartcardService;
     }
 
