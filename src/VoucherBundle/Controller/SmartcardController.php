@@ -139,32 +139,10 @@ class SmartcardController extends Controller
         $this->logger->error('headers', $request->headers->all());
         $this->logger->error('content', [$request->getContent()]);
 
-        $serialNumber = strtoupper($request->get('serialNumber'));
-
-        /** @var Smartcard $smartcard */
-        $smartcard = $this->getDoctrine()->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
-        if (!$smartcard) {
-            $smartcard = new Smartcard($serialNumber, \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
-            $smartcard->setState(Smartcard::STATE_ACTIVE);
-        }
-
-        if ($smartcard->getBeneficiary() && $smartcard->getBeneficiary()->getId() !== $request->get('beneficiaryId')) {
-            $smartcard->setSuspicious(true, sprintf('Beneficiary changed. #%s -> #%s',
-                $smartcard->getBeneficiary()->getId(),
-                $request->get('beneficiaryId')
-            ));
-        }
-
-        /** @var Beneficiary $beneficiary */
-        $beneficiary = $this->getDoctrine()->getRepository(Beneficiary::class)->find($request->get('beneficiaryId'));
-        if ($beneficiary) {
-            $smartcard->setBeneficiary($beneficiary);
-        } else {
-            $smartcard->setSuspicious(true, 'Beneficiary does not exists');
-        }
-
-        $this->getDoctrine()->getManager()->persist($smartcard);
-        $this->getDoctrine()->getManager()->flush();
+        $smartcard = $this->get('smartcard_service')->register(
+            strtoupper($request->get('serialNumber')),
+            $request->get('beneficiaryId'),
+            \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
 
         return $this->json($this->smartcardMapper->toFullArray($smartcard));
     }
