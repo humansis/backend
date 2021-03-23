@@ -5,7 +5,7 @@ namespace TransactionBundle\Repository;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
-use TransactionBundle\Entity\Purchase;
+use TransactionBundle\Entity\PurchasedItem;
 
 /**
  * TransactionRepository
@@ -18,12 +18,12 @@ class TransactionRepository extends \Doctrine\ORM\EntityRepository
     /**
      * @param Beneficiary $beneficiary
      *
-     * @return Purchase[]
+     * @return PurchasedItem[]
      */
     public function getPurchases(Beneficiary $beneficiary): iterable
     {
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
-        $rsm->addRootEntityFromClassMetadata(Purchase::class, 'p');
+        $rsm->addRootEntityFromClassMetadata(PurchasedItem::class, 'p');
 
         $sql = '
         SELECT '.$rsm->generateSelectClause().' FROM (
@@ -54,12 +54,12 @@ class TransactionRepository extends \Doctrine\ORM\EntityRepository
     /**
      * @param Household $household
      *
-     * @return Purchase[]
+     * @return PurchasedItem[]
      */
     public function getHouseholdPurchases(Household $household): iterable
     {
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
-        $rsm->addRootEntityFromClassMetadata(Purchase::class, 'p');
+        $rsm->addRootEntityFromClassMetadata(PurchasedItem::class, 'p');
 
         $sql = '
         SELECT '.$rsm->generateSelectClause().' FROM (
