@@ -53,7 +53,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
 
         if ($filter) {
             if ($filter->hasFulltext()) {
-                $qb->andWhere('p.id LIKE :fulltext OR p.name LIKE :fulltext OR p.unit LIKE :fulltext')
+                $qb->andWhere('(p.id LIKE :fulltext OR p.name LIKE :fulltext OR p.unit LIKE :fulltext)')
                     ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
             }
         }

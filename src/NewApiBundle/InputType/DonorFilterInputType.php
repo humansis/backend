@@ -7,8 +7,32 @@ namespace NewApiBundle\InputType;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * @Assert\GroupSequence({"DonorFilterInputType", "Strict"})
+ */
 class DonorFilterInputType extends AbstractFilterInputType
 {
+    /**
+     * @Assert\Type("array")
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Type("int", groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
+     */
+    protected $id;
+
+    public function hasIds(): bool
+    {
+        return $this->has('id');
+    }
+
+    public function getIds(): array
+    {
+        return $this->id;
+    }
+
     /**
      * @Assert\Type("string")
      */

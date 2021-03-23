@@ -8,8 +8,22 @@ use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * @Assert\GroupSequence({"InstitutionUpdateInputType", "Strict"})
+ */
 class InstitutionUpdateInputType implements InputTypeInterface
 {
+    /**
+     * @Assert\Type("array")
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Type("integer", groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
+     */
+    private $projectIds = [];
+
     /**
      * @Assert\Type("string")
      * @Assert\Length(max="45")
@@ -68,6 +82,22 @@ class InstitutionUpdateInputType implements InputTypeInterface
      * @Assert\Valid
      */
     private $phone;
+
+    /**
+     * @return int[]
+     */
+    public function getProjectIds()
+    {
+        return (array) $this->projectIds;
+    }
+
+    /**
+     * @param int[]|null $ids
+     */
+    public function setProjectIds($ids)
+    {
+        $this->projectIds = $ids;
+    }
 
     /**
      * @return string|null
@@ -182,7 +212,7 @@ class InstitutionUpdateInputType implements InputTypeInterface
     }
 
     /**
-     * @return NationalIdCardInputType
+     * @return NationalIdCardInputType|null
      */
     public function getNationalIdCard()
     {
@@ -190,25 +220,25 @@ class InstitutionUpdateInputType implements InputTypeInterface
     }
 
     /**
-     * @param NationalIdCardInputType $nationalIdCard
+     * @param NationalIdCardInputType|null $nationalIdCard
      */
-    public function setNationalIdCard(NationalIdCardInputType $nationalIdCard)
+    public function setNationalIdCard(?NationalIdCardInputType $nationalIdCard)
     {
         $this->nationalIdCard = $nationalIdCard;
     }
 
     /**
-     * @return PhoneInputType
+     * @return PhoneInputType|null
      */
-    public function getPhone(): PhoneInputType
+    public function getPhone()
     {
         return $this->phone;
     }
 
     /**
-     * @param PhoneInputType $phone
+     * @param PhoneInputType|null $phone
      */
-    public function setPhone(PhoneInputType $phone): void
+    public function setPhone(?PhoneInputType $phone): void
     {
         $this->phone = $phone;
     }

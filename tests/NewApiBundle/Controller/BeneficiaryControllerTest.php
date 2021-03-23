@@ -278,6 +278,31 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: '.$this->client->getResponse()->getContent()
         );
+
+        return [$assistance->getId(), $beneficiary->getId()];
+    }
+
+    /**
+     * @depends testAddBeneficiaryToAssistance
+     */
+    public function testRemoveBeneficiaryToAssistance($data)
+    {
+        list($assistanceId, $beneficiaryId) = $data;
+
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('DELETE', '/api/basic/assistances/'.$assistanceId.'/beneficiaries', [
+            'beneficiaryIds' => [$beneficiaryId],
+            'justification' => 'test remove',
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
     }
 
     /**
@@ -297,7 +322,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
             'archived' => false,
         ]);
 
-        $this->request('GET', '/api/basic/projects/'.$project->getId().'/beneficiaries?filter[assistanceTarget]=household');
+        $this->request('GET', '/api/basic/projects/'.$project->getId().'/beneficiaries');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

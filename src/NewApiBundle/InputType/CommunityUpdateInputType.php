@@ -17,6 +17,17 @@ use Symfony\Component\Validator\Constraints as Assert;
 class CommunityUpdateInputType implements InputTypeInterface
 {
     /**
+     * @Assert\Type("array")
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Type("integer", groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
+     */
+    private $projectIds = [];
+
+    /**
      * @var string|null $longitude
      *
      * @Assert\Length(max="45")
@@ -74,6 +85,22 @@ class CommunityUpdateInputType implements InputTypeInterface
      * @Assert\Valid
      */
     private $phone;
+
+    /**
+     * @return int[]
+     */
+    public function getProjectIds()
+    {
+        return (array) $this->projectIds;
+    }
+
+    /**
+     * @param int[]|null $ids
+     */
+    public function setProjectIds($ids)
+    {
+        $this->projectIds = $ids;
+    }
 
     /**
      * @return string|null
@@ -156,7 +183,7 @@ class CommunityUpdateInputType implements InputTypeInterface
     }
 
     /**
-     * @return NationalIdCardInputType
+     * @return NationalIdCardInputType|null
      */
     public function getNationalIdCard()
     {
@@ -164,15 +191,15 @@ class CommunityUpdateInputType implements InputTypeInterface
     }
 
     /**
-     * @param NationalIdCardInputType $nationalIdCard
+     * @param NationalIdCardInputType|null $nationalIdCard
      */
-    public function setNationalIdCard(NationalIdCardInputType $nationalIdCard)
+    public function setNationalIdCard(?NationalIdCardInputType $nationalIdCard)
     {
         $this->nationalIdCard = $nationalIdCard;
     }
 
     /**
-     * @return PhoneInputType
+     * @return PhoneInputType|null
      */
     public function getPhone()
     {
@@ -180,9 +207,9 @@ class CommunityUpdateInputType implements InputTypeInterface
     }
 
     /**
-     * @param PhoneInputType $phone
+     * @param PhoneInputType|null $phone
      */
-    public function setPhone(PhoneInputType $phone): void
+    public function setPhone(?PhoneInputType $phone): void
     {
         $this->phone = $phone;
     }

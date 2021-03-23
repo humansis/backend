@@ -21,7 +21,7 @@ class BookletFilterInputType extends AbstractFilterInputType
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *         @Assert\Choice(callback={"NewApiBundle\InputType\BookletFilterInputType", "bookletStatuses"}, strict=true)
+     *         @Assert\Choice(callback="bookletStatuses", strict=true)
      *     },
      *     groups={"Strict"}
      * )
@@ -61,7 +61,7 @@ class BookletFilterInputType extends AbstractFilterInputType
      */
     protected $beneficiaries;
 
-    private static function bookletStatuses()
+    public static function bookletStatuses()
     {
         return array_keys(Booklet::statuses());
     }

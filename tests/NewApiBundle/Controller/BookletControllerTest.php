@@ -2,6 +2,8 @@
 
 namespace Tests\NewApiBundle\Controller;
 
+use BeneficiaryBundle\Entity\Beneficiary;
+use DistributionBundle\Entity\Assistance;
 use Exception;
 use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
@@ -76,6 +78,7 @@ class BookletControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('beneficiaryId', $result);
         $this->assertArrayHasKey('assistanceId', $result);
         $this->assertArrayHasKey('totalValue', $result);
+        $this->assertArrayHasKey('quantityOfVouchers', $result);
         $this->assertArrayHasKey('deletable', $result);
     }
 
@@ -123,5 +126,26 @@ class BookletControllerTest extends BMSServiceTestCase
         );
 
         $this->assertTrue($this->client->getResponse()->isEmpty(), "Delete request should answer empty body. Returned '{$this->client->getResponse()->getContent()}'");
+    }
+
+    public function testAssign()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $doctrine = $this->container->get('doctrine');
+        $assistance = $doctrine->getRepository(Assistance::class)->findBy([])[0];
+        $beneficiary = $doctrine->getRepository(Beneficiary::class)->findBy([])[0];
+        $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED])[0];
+
+        $this->request('PUT', '/api/basic/assistances/'.$assistance->getId().'/beneficiaries/'.$beneficiary->getId().'/booklets/'.$booklet->getCode());
+
+        $this->assertTrue(
+            $this->client->getResponse()->isEmpty(),
+            'Request failed: '.$this->client->getResponse()->getStatusCode()
+        );
+        $this->assertEquals(Booklet::DISTRIBUTED, $doctrine->getRepository(Booklet::class)->find(['id' => $booklet->getId()])->getStatus());
     }
 }

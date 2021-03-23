@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
@@ -7,9 +8,9 @@ use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @Assert\GroupSequence({"BeneficiaryFilterInputType", "Strict"})
+ * @Assert\GroupSequence({"GeneralReliefFilterInputType", "Strict"})
  */
-class BeneficiaryFilterInputType extends AbstractFilterInputType
+class GeneralReliefFilterInputType extends AbstractFilterInputType
 {
     /**
      * @Assert\Type("array")
@@ -23,9 +24,9 @@ class BeneficiaryFilterInputType extends AbstractFilterInputType
     protected $id;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("boolean")
      */
-    protected $fulltext;
+    protected $upcoming;
 
     public function hasIds(): bool
     {
@@ -35,15 +36,5 @@ class BeneficiaryFilterInputType extends AbstractFilterInputType
     public function getIds(): array
     {
         return $this->id;
-    }
-
-    public function hasFulltext(): bool
-    {
-        return $this->has('fulltext');
-    }
-
-    public function getFulltext()
-    {
-        return $this->fulltext;
     }
 }

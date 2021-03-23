@@ -15,6 +15,7 @@ use CommonBundle\Utils\LocationService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
+use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\InputType\InstitutionCreateInputType;
 use NewApiBundle\InputType\InstitutionUpdateInputType;
 use ProjectBundle\Entity\Project;
@@ -119,6 +120,15 @@ class InstitutionService
         $institution->setLatitude($inputType->getLatitude());
         $institution->setContactName($inputType->getContactGivenName());
         $institution->setContactFamilyName($inputType->getContactFamilyName());
+
+        foreach ($inputType->getProjectIds() as $id) {
+            $project = $this->em->getRepository(Project::class)->find($id);
+            if (!$project) {
+                throw new EntityNotFoundException('project', $id);
+            }
+
+            $institution->addProject($project);
+        }
 
         if ($inputType->getAddress()) {
             $addressType = $inputType->getAddress();
@@ -270,6 +280,16 @@ class InstitutionService
         $institution->setLatitude($inputType->getLatitude());
         $institution->setContactName($inputType->getContactGivenName());
         $institution->setContactFamilyName($inputType->getContactFamilyName());
+
+        $institution->getProjects()->clear();
+        foreach ($inputType->getProjectIds() as $id) {
+            $project = $this->em->getRepository(Project::class)->find($id);
+            if (!$project) {
+                throw new EntityNotFoundException('project', $id);
+            }
+
+            $institution->addProject($project);
+        }
 
         $addressType = $inputType->getAddress();
 

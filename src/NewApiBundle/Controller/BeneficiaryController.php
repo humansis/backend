@@ -9,10 +9,12 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\AddBeneficiaryToAssistanceInputType;
+use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\InputType\NationalIdFilterInputType;
 use NewApiBundle\InputType\PhoneFilterInputType;
+use NewApiBundle\InputType\RemoveBeneficiaryFromAssistanceInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -31,6 +33,21 @@ class BeneficiaryController extends AbstractController
     public function __construct(AssistanceBeneficiaryService $assistanceBeneficiaryService)
     {
         $this->assistanceBeneficiaryService = $assistanceBeneficiaryService;
+    }
+
+    /**
+     * @Rest\Post("/assistances/beneficiaries")
+     *
+     * @param AssistanceCreateInputType $inputType
+     * @param Pagination $paginationF
+     *
+     * @return JsonResponse
+     */
+    public function precalculateBeneficiaries(AssistanceCreateInputType $inputType, Pagination $pagination): JsonResponse
+    {
+        $beneficiaries = $this->get('distribution.assistance_service')->findByCriteria($inputType, $pagination);
+
+        return $this->json($beneficiaries);
     }
 
     /**
@@ -75,6 +92,31 @@ class BeneficiaryController extends AbstractController
         }
 
         $this->assistanceBeneficiaryService->addBeneficiaries($assistance, $data);
+
+        return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Rest\Delete("/assistances/{id}/beneficiaries")
+     *
+     * @param Assistance                               $assistance
+     * @param RemoveBeneficiaryFromAssistanceInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function removeBeneficiariesFromAssistance(Assistance $assistance, RemoveBeneficiaryFromAssistanceInputType $inputType): JsonResponse
+    {
+        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
+        $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
+
+        foreach ($inputType->getBeneficiaryIds() as $id) {
+            $beneficiary = $this->getDoctrine()->getRepository(Beneficiary::class)->find($id);
+            $assistanceBeneficiaryService->removeBeneficiaryInDistribution(
+                $assistance,
+                $beneficiary,
+                ['justification' => $inputType->getJustification()]
+            );
+        }
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
@@ -164,15 +206,13 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/projects/{id}/beneficiaries")
      *
-     * @param Project                    $project
-     *
-     * @param BeneficiaryFilterInputType $filter
+     * @param Project $project
      *
      * @return JsonResponse
      */
-    public function getBeneficiaries(Project $project, BeneficiaryFilterInputType $filter): JsonResponse
+    public function getBeneficiaries(Project $project): JsonResponse
     {
-        $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByProject($project, $filter);
+        $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByProject($project);
 
         return $this->json($beneficiaries);
     }

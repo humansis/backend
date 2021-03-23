@@ -35,7 +35,7 @@ class AssistanceCodelistControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('GET', '/api/basic/assistances/targets?filter[type]=' . AssistanceTargetType::INDIVIDUAL);
+        $this->request('GET', '/api/basic/assistances/targets?filter[type]=' . AssistanceType::ACTIVITY);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

@@ -169,20 +169,6 @@ class AssistanceController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/assistances/summaries")
-     *
-     * @param AssistanceCreateInputType $inputType
-     *
-     * @return JsonResponse
-     */
-    public function summaries(AssistanceCreateInputType $inputType): JsonResponse
-    {
-        $number = $this->get('distribution.criteria_assistance_service')->count($inputType);
-
-        return $this->json(['number' => (int) $number]);
-    }
-
-    /**
      * @Rest\Get("/projects/{id}/assistances")
      *
      * @param Project                           $project

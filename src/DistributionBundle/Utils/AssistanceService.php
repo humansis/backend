@@ -25,6 +25,8 @@ use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use ReflectionClass;
 use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
 use NewApiBundle\InputType\AssistanceCreateInputType;
+use NewApiBundle\InputType\GeneralReliefItemUpdateInputType;
+use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
@@ -160,6 +162,27 @@ class AssistanceService
         $this->em->flush();
 
         return $assistance;
+    }
+
+    public function findByCriteria(AssistanceCreateInputType $inputType, Pagination $pagination)
+    {
+        $project = $this->em->getRepository(Project::class)->find($inputType->getProjectId());
+        if (!$project) {
+            throw new \Doctrine\ORM\EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
+        }
+
+        $filters = $this->mapping($inputType);
+        $filters['criteria'] = $filters['selection_criteria'];
+
+        $result = $this->criteriaAssistanceService->load($filters, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false);
+        $ids = array_keys($result['finalArray']);
+        $count = count($ids);
+
+        $ids = array_slice($ids, $pagination->getOffset(), $pagination->getSize());
+
+        $beneficiaries = $this->em->getRepository(\BeneficiaryBundle\Entity\AbstractBeneficiary::class)->findBy(['id' => $ids]);
+
+        return new \CommonBundle\Pagination\Paginator($beneficiaries, $count);
     }
 
     public function create(AssistanceCreateInputType $inputType)
