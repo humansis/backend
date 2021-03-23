@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use TransactionBundle\Entity\Transaction;
+use TransactionBundle\Repository\PurchasedItemRepository;
 
 /**
  * Class TransactionController
@@ -287,7 +288,7 @@ class TransactionController extends Controller
      */
     public function purchasesAction(Beneficiary $beneficiary)
     {
-        $result = $this->getDoctrine()->getRepository(Transaction::class)->getPurchases($beneficiary);
+        $result = $this->getDoctrine()->getRepository(PurchasedItemRepository::class)->getPurchases($beneficiary);
 
         return $this->json($result);
     }
@@ -307,7 +308,7 @@ class TransactionController extends Controller
      */
     public function purchasesOfHouseholdAction(Household $household)
     {
-        $result = $this->getDoctrine()->getRepository(Transaction::class)->getHouseholdPurchases($household);
+        $result = $this->getDoctrine()->getRepository(PurchasedItemRepository::class)->getHouseholdPurchases($household);
 
         return $this->json($result);
     }
