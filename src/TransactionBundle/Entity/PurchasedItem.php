@@ -11,7 +11,7 @@ use VoucherBundle\Entity\Product;
  *
  * @ORM\MappedSuperclass()
  */
-class Purchase implements \JsonSerializable
+class PurchasedItem implements \JsonSerializable
 {
     /**
      * @var int
