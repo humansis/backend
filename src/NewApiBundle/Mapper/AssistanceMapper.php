@@ -88,6 +88,16 @@ class AssistanceMapper implements MapperInterface
         return $this->object->getLocation()->getAdm4Id() ?: null;
     }
 
+    public function getSector(): string
+    {
+        return $this->object->getSector();
+    }
+
+    public function getSubsector(): ?string
+    {
+        return $this->object->getSubSector();
+    }
+
     public function getCommodityIds(): array
     {
         $result = [];
