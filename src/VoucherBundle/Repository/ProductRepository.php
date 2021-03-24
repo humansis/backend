@@ -52,6 +52,10 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('countryIso3', $countryIso3);
 
         if ($filter) {
+            if ($filter->hasIds()) {
+                $qb->andWhere('p.id IN (:ids)')
+                    ->setParameter('ids', $filter->getIds());
+            }
             if ($filter->hasFulltext()) {
                 $qb->andWhere('(p.id LIKE :fulltext OR p.name LIKE :fulltext OR p.unit LIKE :fulltext)')
                     ->setParameter('fulltext', '%'.$filter->getFulltext().'%');

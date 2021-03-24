@@ -120,7 +120,7 @@ class ProductControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('GET', '/api/basic/products?sort[]=name.asc');
+        $this->request('GET', '/api/basic/products?sort[]=name.asc&filter[id][]=1');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
