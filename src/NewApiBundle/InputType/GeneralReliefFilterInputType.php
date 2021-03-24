@@ -23,11 +23,6 @@ class GeneralReliefFilterInputType extends AbstractFilterInputType
      */
     protected $id;
 
-    /**
-     * @Assert\Type("boolean")
-     */
-    protected $upcoming;
-
     public function hasIds(): bool
     {
         return $this->has('id');
