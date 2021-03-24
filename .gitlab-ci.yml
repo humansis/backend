@@ -99,7 +99,7 @@ backup-code:
     HOSTNAME: api.humansis.org
   <<: *prepare_ssh
   script:
-    - ssh ubuntu@${HOSTNAME} "cd /var/www/html/; tar czf backup_$(date '+%Y-%m-%d').tar.gz bms_api/"
+    - ssh ubuntu@${HOSTNAME} "cd /var/www/html/; tar czf backup_$(date '+%Y-%m-%d').tar.gz --exclude=bms_api/var/logs bms_api/"
   <<: *remove_key
   only:
     - tags
