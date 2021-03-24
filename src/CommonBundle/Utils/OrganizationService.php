@@ -126,12 +126,19 @@ class OrganizationService
         }
     }
 
-    public function updateOrganizationServices(OrganizationServices $organizationServices, OrganizationServicesInputType $inputType): OrganizationServices
+    public function setEnable(OrganizationServices $organizationServices, bool $enabled)
     {
-        $organizationServices->setEnabled($inputType->getEnabled());
+        $organizationServices->setEnabled($enabled);
         $this->em->flush();
-
-        return $organizationServices;
     }
 
+    public function setParameters(OrganizationServices $organizationServices, $json)
+    {
+        if (false === $json || [] !== array_diff(array_keys($organizationServices->getParametersValue()), array_keys($json))) {
+            throw new \RuntimeException('Unable to save organization service parameters. Invalid JSON given.');
+        }
+
+        $organizationServices->setParametersValue($json);
+        $this->em->flush();
+    }
 }

@@ -47,4 +47,9 @@ class OrganizationServicesMapper implements MapperInterface
     {
         return $this->object->getEnabled();
     }
+
+    public function getParameters(): array
+    {
+        return $this->object->getParametersValue();
+    }
 }
