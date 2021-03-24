@@ -11,7 +11,6 @@ use CommonBundle\Repository\OrganizationServicesRepository;
 use CommonBundle\Utils\OrganizationService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\File\UploadService;
-use NewApiBundle\InputType\OrganizationServicesInputType;
 use NewApiBundle\InputType\OrganizationUpdateInputType;
 use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -93,19 +92,25 @@ class OrganizationController extends AbstractController
     /**
      * @Rest\Patch("/organizations/services/{id}")
      *
-     * @param OrganizationServices          $organizationServices
-     * @param OrganizationServicesInputType $inputType
+     * @param Request              $request
+     * @param OrganizationServices $organizationServices
      *
      * @return JsonResponse
      */
-    public function updateService(OrganizationServices $organizationServices, OrganizationServicesInputType $inputType): JsonResponse
+    public function updateService(Request $request, OrganizationServices $organizationServices): JsonResponse
     {
         /** @var OrganizationService $organizationService */
         $organizationService = $this->get('organization_service');
 
-        $updatedOrganizationServices = $organizationService->updateOrganizationServices($organizationServices, $inputType);
+        if ($request->request->has('enabled')) {
+            $organizationService->setEnable($organizationServices, $request->request->getBoolean('enabled'));
+        }
 
-        return $this->json($updatedOrganizationServices);
+        if ($request->request->has('parameters')) {
+            $organizationService->setParameters($organizationServices, $request->request->get('parameters'));
+        }
+
+        return $this->json($organizationServices);
     }
 
     /**
