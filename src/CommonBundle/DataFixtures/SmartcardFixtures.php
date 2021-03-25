@@ -75,6 +75,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
 
         $smartcard = new Smartcard($serialNumber, new DateTimeImmutable('now'));
         $smartcard->setState(self::generateState());
+        $smartcard->setCurrency('SYP');
 
         $smartcard->setBeneficiary($ab->getBeneficiary());
         foreach (range(1, rand(2, 4)) as $i) {
