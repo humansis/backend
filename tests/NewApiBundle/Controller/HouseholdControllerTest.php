@@ -24,7 +24,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
     public function testCreate()
@@ -34,9 +34,9 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
-        $vulnerabilityCriterion = $this->container->get('doctrine')->getRepository(VulnerabilityCriterion::class)->findBy([])[0];
-        $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $vulnerabilityCriterion = self::$container->get('doctrine')->getRepository(VulnerabilityCriterion::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
         $this->request('POST', '/api/basic/households', [
             'livelihood' => Livelihood::DAILY_LABOUR,
@@ -145,9 +145,9 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $vulnerabilityCriterion = $this->container->get('doctrine')->getRepository(VulnerabilityCriterion::class)->findBy([])[0];
-        $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
-        $camp = $this->container->get('doctrine')->getRepository(Camp::class)->findBy([])[0];
+        $vulnerabilityCriterion = self::$container->get('doctrine')->getRepository(VulnerabilityCriterion::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $camp = self::$container->get('doctrine')->getRepository(Camp::class)->findBy([])[0];
 
         $this->request('PUT', '/api/basic/households/'.$id, [
             'livelihood' => Livelihood::FARMING_AGRICULTURE,

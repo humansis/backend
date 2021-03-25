@@ -34,7 +34,7 @@ class UserControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
     /**
@@ -84,7 +84,7 @@ class UserControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         /** @var Project|null $project */
-        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
         if (null === $project) {
             $this->markTestSkipped('There needs to be at least one project in system to complete this test');
@@ -175,7 +175,7 @@ class UserControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         /** @var Project|null $project */
-        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
         if (null === $project) {
             $this->markTestSkipped('There needs to be at least one project in system to complete this test');
