@@ -6,7 +6,6 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Assistance;
 use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Mapper\AssistanceBeneficiaryMapper;
-use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -14,8 +13,8 @@ use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use TransactionBundle\Entity\Transaction;
 use TransactionBundle\Utils\TransactionService;
+use TransactionBundle\Repository\PurchasedItemRepository;
 
 /**
  * Class TransactionController
@@ -115,7 +114,7 @@ class TransactionController extends Controller
         $user = $this->getUser();
         try {
             $this->transactionService->sendVerifyEmail($user, $assistance);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         return new Response("Email sent");
@@ -144,7 +143,7 @@ class TransactionController extends Controller
         try {
             $beneficiaries = $this->transactionService->updateTransactionStatus($countryISO3, $assistance);
             return $this->json($this->assistanceBeneficiaryMapper->toMinimalTransactionArrays($beneficiaries));
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -169,7 +168,7 @@ class TransactionController extends Controller
         $user = $this->getUser();
         try {
             $this->transactionService->sendLogsEmail($user, $assistance);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         return new Response("Email sent");
@@ -197,7 +196,7 @@ class TransactionController extends Controller
 
         try {
             $response = $this->transactionService->testConnection($countryISO3, $assistance);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         return new Response("Connection successful: " . json_encode($response));
@@ -224,7 +223,7 @@ class TransactionController extends Controller
 
         try {
             $response = $this->transactionService->checkProgression($user, $assistance);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         return new Response(json_encode($response));
@@ -251,7 +250,7 @@ class TransactionController extends Controller
 
         try {
             $response = $this->transactionService->getFinancialCredential($country);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
@@ -282,7 +281,7 @@ class TransactionController extends Controller
 
         try {
             $response = $this->transactionService->updateFinancialCredential($data);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
@@ -307,7 +306,7 @@ class TransactionController extends Controller
      */
     public function purchasesAction(Beneficiary $beneficiary)
     {
-        $result = $this->getDoctrine()->getRepository(Transaction::class)->getPurchases($beneficiary);
+        $result = $this->getDoctrine()->getRepository(PurchasedItemRepository::class)->getPurchases($beneficiary);
 
         return $this->json($result);
     }
@@ -327,7 +326,7 @@ class TransactionController extends Controller
      */
     public function purchasesOfHouseholdAction(Household $household)
     {
-        $result = $this->getDoctrine()->getRepository(Transaction::class)->getHouseholdPurchases($household);
+        $result = $this->getDoctrine()->getRepository(PurchasedItemRepository::class)->getHouseholdPurchases($household);
 
         return $this->json($result);
     }

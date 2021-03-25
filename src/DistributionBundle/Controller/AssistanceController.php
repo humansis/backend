@@ -161,7 +161,7 @@ class AssistanceController extends Controller
      */
     public function assistancesToHousehold(Household $household)
     {
-        $distributions = $this->getDoctrine()->getRepository(Assistance::class)->findDistributedToHousehold($household);
+        $distributions = $this->getDoctrine()->getRepository(\DistributionBundle\Entity\DistributedItem::class)->findDistributedToHousehold($household);
 
         return $this->json($distributions);
     }

@@ -191,6 +191,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('name', $result);
         $this->assertArrayHasKey('iso3', $result);
         $this->assertArrayHasKey('enabled', $result);
+        $this->assertArrayHasKey('parameters', $result);
 
         $this->assertEquals($data['enabled'], $result['enabled']);
     }

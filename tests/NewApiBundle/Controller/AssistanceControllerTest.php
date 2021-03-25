@@ -52,6 +52,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "locationId": '.$assistance->getLocation()->getId().',
             "target": "'.$assistance->getTargetType().'",
             "type": "'.$assistance->getAssistanceType().'",
+            "sector": "'.$assistance->getSector().'",
+            "subsector": "*",
             "commodityIds": ['.implode(',', $commodityIds).'],
             "validated": '.($assistance->getValidated() ? 'true' : 'false').',
             "completed": '.($assistance->getCompleted() ? 'true' : 'false').'
@@ -153,6 +155,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "locationId": "*",
             "target": "*",
             "type": "*",
+            "sector": "*",
+            "subsector": "*",
             "commodityIds": ["*"]
         }', $this->client->getResponse()->getContent());
     }
@@ -205,6 +209,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "locationId": "*",
             "target": "*",
             "type": "*",
+            "sector": "*",
+            "subsector": "*",
             "commodityIds": ["*"]
         }', $this->client->getResponse()->getContent());
     }
@@ -252,6 +258,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "locationId": "*",
             "target": "*",
             "type": "*",
+            "sector": "*",
+            "subsector": "*",
             "commodityIds": []
         }', $this->client->getResponse()->getContent());
     }
