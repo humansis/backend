@@ -115,7 +115,11 @@ class BookletController extends AbstractController
      */
     public function assign(Assistance $assistance, Beneficiary $beneficiary, Booklet $booklet): JsonResponse
     {
-        $this->get('voucher.booklet_service')->assign($booklet, $assistance, $beneficiary);
+        try {
+            $this->get('voucher.booklet_service')->assign($booklet, $assistance, $beneficiary);
+        } catch (\InvalidArgumentException $e) {
+            throw new BadRequestHttpException($e->getMessage(), $e);
+        }
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

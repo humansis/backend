@@ -357,12 +357,15 @@ class BookletService
     public function assign(Booklet $booklet, Assistance $assistance, Beneficiary $beneficiary)
     {
         if ($booklet->getStatus() === Booklet::DEACTIVATED || $booklet->getStatus() === Booklet::USED || $booklet->getStatus() === Booklet::DISTRIBUTED) {
-            throw new \Exception("This booklet has already been distributed, used or is actually deactivated");
+            throw new \InvalidArgumentException("This booklet has already been distributed, used or is actually deactivated");
         }
 
         $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy(
             ['beneficiary' => $beneficiary, "assistance" => $assistance]
         );
+        if (!$assistanceBeneficiary) {
+            throw new \InvalidArgumentException("This assistance has not this beneficiary");
+        }
         $booklet->setAssistanceBeneficiary($assistanceBeneficiary)
             ->setStatus(Booklet::DISTRIBUTED);
         $this->em->persist($booklet);
