@@ -487,6 +487,77 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $result);
     }
 
+    /**
+     * This is test of issue #PIN-1572: Synces are in wrong order.
+     * Vendor performs sync purchases before Field officer performs sync smartcard deposit. In result, currency is missing.
+     */
+    public function testPurchasesShouldHaveCurrencyInNotPresentInRequestStep1()
+    {
+        $nonexistentSmarcard = '123ABCDE';
+
+        $this->client->request('PATCH', '/api/wsse/vendor-app/v1/smartcards/'.$nonexistentSmarcard.'/purchase', [], [], ['HTTP_COUNTRY' => 'KHM'],
+            json_encode([
+                'products' => [
+                    [
+                        'id' => 1, // @todo replace for fixture
+                        'value' => 200,
+                        'quantity' => 1,
+                    ],
+                ],
+                'vendorId' => 1,
+                'createdAt' => '2020-02-02T12:00:00Z',
+            ]));
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+
+        return $nonexistentSmarcard;
+    }
+
+    /**
+     * @depends testPurchasesShouldHaveCurrencyInNotPresentInRequestStep1
+     */
+    public function testPurchasesShouldHaveCurrencyInNotPresentInRequestStep2($smartcard)
+    {
+        /** @var \DistributionBundle\Entity\ModalityType $modalityType */
+        $modalityType = $this->em->getRepository(\DistributionBundle\Entity\ModalityType::class)->findOneBy(['name' => 'Smartcard']);
+        /** @var \DistributionBundle\Entity\Commodity $commodity */
+        $commodity = $this->em->getRepository(\DistributionBundle\Entity\Commodity::class)->findBy(['modalityType' => $modalityType])[0];
+        $assistance = $commodity->getAssistance();
+        $beneficiary = $assistance->getDistributionBeneficiaries()[0]->getBeneficiary();
+
+        $this->request('POST', '/api/wsse/offline-app/v1/smartcards', [
+            'serialNumber' => $smartcard,
+            'beneficiaryId' => $beneficiary->getId(),
+            'createdAt' => '2020-02-02T12:00:00Z',
+        ]);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+
+        return [$smartcard, $assistance];
+    }
+
+    /**
+     * @depends testPurchasesShouldHaveCurrencyInNotPresentInRequestStep2
+     */
+    public function testPurchasesShouldHaveCurrencyInNotPresentInRequestStep3($array)
+    {
+        list($nonexistentSmarcard, $distribution) = $array;
+
+        $this->request('PATCH', '/api/wsse/offline-app/v1/smartcards/'.$nonexistentSmarcard.'/deposit', [
+            'value' => 500,
+            'createdAt' => '2020-02-02T12:00:00+0001',
+            'distributionId' => $distribution->getId(),
+        ]);
+        echo "\n".$this->client->getResponse()->getContent();
+
+        /** @var Smartcard $smartcard */
+        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($nonexistentSmarcard);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $this->assertNotNull($smartcard->getCurrency());
+        $this->assertNotNull($smartcard->getPurchases()[0]->getCurrency());
+    }
+
     private function someSmartcardAssistance(): Assistance
     {
         foreach ($this->em->getRepository(Assistance::class)->findAll() as $assistance) {
