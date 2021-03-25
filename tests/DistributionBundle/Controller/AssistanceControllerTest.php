@@ -47,8 +47,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
-        $this->distributionCSVService = $this->container->get('distribution.distribution_csv_service');
+        $this->client = self::$container->get('test.client');
+        $this->distributionCSVService = self::$container->get('distribution.distribution_csv_service');
     }
 
     /**
@@ -59,7 +59,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 //        $this->removeHousehold($this->namefullnameHousehold);
         $this->createHousehold();
 
-        $adm2 = $this->container->get('doctrine')->getRepository(\CommonBundle\Entity\Adm2::class)->findOneBy([]);
+        $adm2 = self::$container->get('doctrine')->getRepository(\CommonBundle\Entity\Adm2::class)->findOneBy([]);
 
         $criteria = array(
             "id" => null,
@@ -376,7 +376,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
      */
     public function testDistributionBeneficiariesVouchers($distribution)
     {
-        $bookletService = $this->container->get('voucher.booklet_service');
+        $bookletService = self::$container->get('voucher.booklet_service');
         $purchaseService = new PurchaseService($this->em);
 
         // Fake connection with a token for the user tester (ADMIN)
@@ -633,13 +633,13 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $distributionCSVService = $this->container->get('distribution.distribution_csv_service');
+        $distributionCSVService = self::$container->get('distribution.distribution_csv_service');
 
         $countryIso3 = 'KHM';
 
         //assistance will be used in the function "parseCSV" to get all the beneficiaries in a project :
         $assistance = $this->em->getRepository(Assistance::class)->findOneById($distribution['id']);
-        $assistanceBeneficiaryService = $this->container->get('distribution.assistance_beneficiary_service');
+        $assistanceBeneficiaryService = self::$container->get('distribution.assistance_beneficiary_service');
 
         //beneficiaries contains all beneficiaries in a distribution :
         $beneficiaries = $assistanceBeneficiaryService->getBeneficiaries($assistance);
@@ -919,7 +919,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testCreateDistributionForCommunity()
     {
         /** @var \BeneficiaryBundle\Repository\CommunityRepository $communityRepo */
-        $communityRepo = $this->container->get('doctrine')->getRepository(\BeneficiaryBundle\Entity\Community::class);
+        $communityRepo = self::$container->get('doctrine')->getRepository(\BeneficiaryBundle\Entity\Community::class);
         $community = $communityRepo->findBy([])[0];
 
         $body = [
@@ -991,7 +991,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testCreateDistributionForInstitution()
     {
         /** @var \BeneficiaryBundle\Repository\InstitutionRepository $institutionRepo */
-        $institutionRepo = $this->container->get('doctrine')->getRepository(\BeneficiaryBundle\Entity\Institution::class);
+        $institutionRepo = self::$container->get('doctrine')->getRepository(\BeneficiaryBundle\Entity\Institution::class);
         $institution = $institutionRepo->findBy([])[0];
 
         $body = [
