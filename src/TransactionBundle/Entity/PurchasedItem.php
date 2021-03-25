@@ -9,9 +9,9 @@ use VoucherBundle\Entity\Product;
 /**
  * Read only entity.
  *
- * @ORM\MappedSuperclass()
+ * @ORM\MappedSuperclass(repositoryClass="TransactionBundle\Repository\PurchasedItemRepository")
  */
-class Purchase implements \JsonSerializable
+class PurchasedItem implements \JsonSerializable
 {
     /**
      * @var int
@@ -61,6 +61,42 @@ class Purchase implements \JsonSerializable
      * @ORM\Column(name="used_at", type="datetime")
      */
     private $usedAt;
+
+    public function getBeneficiary(): Beneficiary
+    {
+        return $this->beneficiary;
+    }
+
+    public function getProduct(): Product
+    {
+        return $this->product;
+    }
+
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    public function getCurrency(): string
+    {
+        return $this->currency;
+    }
+
+    public function getQuantity()
+    {
+        return $this->quantity;
+
+    }
+
+    public function getSource(): string
+    {
+        return $this->source;
+    }
+
+    public function getUsedAt(): \DateTimeInterface
+    {
+        return $this->usedAt;
+    }
 
     /**
      * {@inheritdoc}
