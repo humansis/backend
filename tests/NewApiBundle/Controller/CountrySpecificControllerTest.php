@@ -147,7 +147,7 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         /** @var CountrySpecificAnswer $answer */
-        $answer = $this->container->get('doctrine')->getRepository(CountrySpecificAnswer::class)->findBy([])[0];
+        $answer = $this->getContainer()->get('doctrine')->getRepository(CountrySpecificAnswer::class)->findBy([])[0];
 
         $this->request('GET', '/api/basic/country-specifics/answers/'.$answer->getId());
 

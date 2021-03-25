@@ -135,7 +135,7 @@ class BookletControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $doctrine = $this->container->get('doctrine');
+        $doctrine = $this->getContainer()->get('doctrine');
         $assistance = $doctrine->getRepository(Assistance::class)->findBy([])[0];
         $beneficiary = $doctrine->getRepository(Beneficiary::class)->findBy([])[0];
         $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED])[0];

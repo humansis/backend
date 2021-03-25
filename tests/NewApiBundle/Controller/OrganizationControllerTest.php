@@ -72,7 +72,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         /** @var Organization|null $organization */
-        $organization = $this->container->get('doctrine')->getRepository(Organization::class)->findBy([])[0];
+        $organization = $this->getContainer()->get('doctrine')->getRepository(Organization::class)->findBy([])[0];
 
         $this->request('PUT', '/api/basic/organizations/'.$organization->getId(), [
             'logo' => 'http://www.example.org/image.jpg',

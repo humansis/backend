@@ -18,7 +18,7 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = $this->getContainer()->get('test.client');
     }
 
     public function testGet()
@@ -29,7 +29,7 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         /** @var GeneralReliefItem $item */
-        $item = $this->container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy([])[0];
+        $item = $this->getContainer()->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy([])[0];
 
         $this->request('GET', '/api/basic/general-relief-items/'.$item->getId());
 
@@ -73,7 +73,7 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         /** @var GeneralReliefItem $item */
-        $item = $this->container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy(['distributedAt' => null])[0];
+        $item = $this->getContainer()->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy(['distributedAt' => null])[0];
 
         $this->request('PATCH', '/api/basic/general-relief-items/'.$item->getId(), [
             'distributed' => true,
