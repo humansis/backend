@@ -52,6 +52,7 @@ services:
 ##                                     LISTENER                                      ##
 #######################################################################################
     CommonBundle\Listener\RequestListener:
+        public: true
         arguments:
         - "@doctrine.orm.entity_manager"
         - "@service_container"
@@ -60,6 +61,7 @@ services:
             - { name: kernel.event_listener, event: kernel.request }
 
     CommonBundle\Listener\ResponseListener:
+        public: true
         arguments:
         - "@doctrine.orm.entity_manager"
         - "@service_container"
@@ -67,12 +69,14 @@ services:
         - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
 
     CommonBundle\InputType\RequestConverter:
+        public: true
         arguments:
             - '@validator'
         tags:
             - { name: request.param_converter, converter: input_types_converter }
 
     CommonBundle\Listener\LoggerSubscriber:
+        public: true
         arguments:
             - '@logger'
         tags:
@@ -92,6 +96,7 @@ services:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\LocationFixtures:
+        public: true
         arguments:
             - "@kernel"
             - "@location_service"
@@ -99,6 +104,7 @@ services:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\Beneficiaries\BeneficiaryFixtures:
+        public: true
         arguments:
             - "@kernel"
             - "@beneficiary.household_service"
@@ -106,6 +112,7 @@ services:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\LocationTestFixtures:
+        public: true
         arguments:
             - "@kernel"
         tags:
@@ -116,12 +123,14 @@ services:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\ProjectFixtures:
+        public: true
         arguments:
             - "@kernel"
         tags:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\UserFixtures:
+        public: true
         arguments:
             - "@fos_user.user_manager"
             - "@security.encoder_factory"
@@ -134,6 +143,7 @@ services:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\BookletFixtures:
+        public: true
         arguments:
             - "@kernel"
             - "@voucher.booklet_service"
@@ -141,6 +151,7 @@ services:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\Beneficiaries\BeneficiaryBookletFixtures:
+        public: true
         arguments:
             - "@kernel"
             - "@voucher.booklet_service"
@@ -148,6 +159,7 @@ services:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\BeneficiaryTestFixtures:
+        public: true
         arguments:
             - "@kernel"
             - "@beneficiary.household_service"
@@ -155,6 +167,7 @@ services:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\Beneficiaries\InstitutionFixture:
+        public: true
         arguments:
             - "@=service('kernel').getEnvironment()"
             - "@beneficiary.institution_service"
@@ -162,6 +175,7 @@ services:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\Beneficiaries\CommunityFixture:
+        public: true
         arguments:
             - "@=service('kernel').getEnvironment()"
             - "@beneficiary.community_service"
@@ -169,6 +183,7 @@ services:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\AssistanceFixtures:
+        public: true
         arguments:
             - "@kernel"
             - "@distribution.assistance_service"
@@ -176,6 +191,7 @@ services:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\AssistanceValidationFixtures:
+        public: true
         arguments:
             - "@kernel"
             - "@distribution.assistance_service"
@@ -183,6 +199,7 @@ services:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\Beneficiaries\AssistanceBeneficiaryFixtures:
+        public: true
         arguments:
             - "@kernel"
             - "@distribution.assistance_service"
@@ -190,6 +207,7 @@ services:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\VoucherPurchaseFixtures:
+        public: true
         arguments:
             - "@=service('kernel').getEnvironment()"
             - "@voucher.purchase_service"
@@ -197,6 +215,7 @@ services:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\SmartcardRedemptionFixtures:
+        public: true
         arguments:
             - "@=service('kernel').getEnvironment()"
             - "@smartcard_service"
@@ -204,6 +223,7 @@ services:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\VoucherRedemptionFixtures:
+        public: true
         arguments:
             - "@=service('kernel').getEnvironment()"
             - "@voucher.voucher_service"
@@ -211,12 +231,14 @@ services:
             - { name: doctrine.fixture.orm }
     
     CommonBundle\DataFixtures\OrganizationFixtures:
+        public: true
         arguments:
             - "@kernel"
         tags:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\ServiceFixtures:
+        public: true
         arguments:
         - "@fos_user.user_manager"
         - "@security.encoder_factory"
@@ -224,12 +246,14 @@ services:
         - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\SmartcardFixtures:
+        public: true
         arguments:
             - "@=service('kernel').getEnvironment()"
         tags:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\TransactionFixtures:
+        public: true
         arguments:
             - "@=service('kernel').getEnvironment()"
             - "@transaction.khm_financial_provider"
@@ -237,12 +261,14 @@ services:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\ProductFixtures:
+        public: true
         arguments:
             - "@kernel"
         tags:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\VendorFixtures:
+        public: true
         arguments:
             - "@kernel"
         tags:
@@ -256,6 +282,7 @@ services:
 
     voter_default:
         class: CommonBundle\Voter\DefaultVoter
+        public: true
         arguments:
             - "@security.role_hierarchy"
             - "@doctrine.orm.entity_manager"
@@ -266,6 +293,7 @@ services:
 
     voter_project:
         class: CommonBundle\Voter\ProjectVoter
+        public: true
         arguments:
             - "@security.role_hierarchy"
             - "@doctrine.orm.entity_manager"

@@ -54,31 +54,38 @@ services:
         tags: [ 'app.mapper' ]
 
     NewApiBundle\Mapper\ProjectMapper:
+        public: true
         arguments: [ '@project.project_service' ]
         tags: [ 'app.mapper' ]
 
     NewApiBundle\Controller\AssistanceController:
 
     NewApiBundle\Controller\DonorController:
+        public: true
         arguments:
             - '@NewApiBundle\Component\File\UploadService'
 
     NewApiBundle\Controller\OrganizationController:
+        public: true
         arguments:
             - '@NewApiBundle\Component\File\UploadService'
 
     NewApiBundle\Controller\ProductController:
+        public: true
         arguments:
             - '@NewApiBundle\Component\File\UploadService'
 
     NewApiBundle\Controller\AssistanceCodelistController:
+        public: true
         arguments: ['@project.sector_service']
 
     NewApiBundle\Controller\SectorsCodelistController:
+        public: true
         arguments:
             - "@project.sector_service"
 
     NewApiBundle\Controller\BeneficiaryCodelistController:
+        public: true
         arguments:
             - "@doctrine.orm.entity_manager"
 
@@ -87,12 +94,14 @@ services:
         tags: [ 'request.param_converter' ]
 
     NewApiBundle\Listener\ErrorResponseListener:
+        public: true
         arguments: [ '%kernel.debug%' ]
         tags:
             - { name: kernel.event_listener, event: kernel.exception, priority: -100 }
 
     generator.household:
         class: NewApiBundle\Component\SelectionCriteria\Generator\HouseholdFieldGenerator
+        public: true
         arguments:
             - "@=service('doctrine.orm.entity_manager').getRepository('BeneficiaryBundle:CountrySpecific')"
             - "@request_stack"
@@ -102,6 +111,7 @@ services:
 
     generator.beneficiary:
         class: NewApiBundle\Component\SelectionCriteria\Generator\BeneficiaryFieldGenerator
+        public: true
         arguments: [ "@=service('doctrine.orm.entity_manager').getRepository('BeneficiaryBundle:VulnerabilityCriterion')" ]
 
     service.selection_criterion:
@@ -112,13 +122,16 @@ services:
 
     transformer.selection_criterion_field:
         class: NewApiBundle\Component\SelectionCriteria\FieldDbTransformer
+        public: true
         arguments:
             - "@=service('doctrine.orm.entity_manager').getRepository('BeneficiaryBundle:CountrySpecific')"
             - "@=service('doctrine.orm.entity_manager').getRepository('BeneficiaryBundle:VulnerabilityCriterion')"
             - "@=service('doctrine.orm.entity_manager').getRepository('CommonBundle:Location')"
 
     NewApiBundle\Validator\Constraints\SelectionCriterionFieldValidator:
+        public: true
         arguments: [ '@service.selection_criterion' ]
 
     NewApiBundle\Component\File\UploadService:
+        public: true
         arguments: [ '@knp_gaufrette.filesystem_map', '%aws_s3_bucket_name%', '%aws_s3_region%' ]

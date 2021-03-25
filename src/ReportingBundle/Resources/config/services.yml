@@ -57,6 +57,7 @@ services:
 
     reporting.computer:
         class: ReportingBundle\Utils\Computers\Computer
+        public: true
         arguments: ['@doctrine.orm.entity_manager', '@reporting.data_retrievers.project']
 
     ############################### Data Retrievers ###############################
@@ -85,4 +86,5 @@ services:
 
     reporting.finder:
         class: ReportingBundle\Utils\Finders\Finder
+        public: true
         arguments: ['@doctrine.orm.entity_manager']
