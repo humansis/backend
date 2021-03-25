@@ -102,10 +102,29 @@ class AssistanceMapper implements MapperInterface
     {
         $result = [];
         foreach ($this->object->getCommodities() as $commodity) {
+            if ('Activity item' === $commodity->getModalityType()->getName()) {
+                continue;
+            }
+
             $result[] = $commodity->getId();
         }
 
         return $result;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->object->getDescription();
+    }
+
+    public function getHouseholdsTargeted(): ?int
+    {
+        return $this->object->getHouseholdsTargeted();
+    }
+
+    public function getIndividualsTargeted(): ?int
+    {
+        return $this->object->getIndividualsTargeted();
     }
 
     public function getValidated(): bool
