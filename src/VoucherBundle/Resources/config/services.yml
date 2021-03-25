@@ -66,4 +66,5 @@ services:
         tags: [ 'app.mapper' ]
 
     VoucherBundle\Utils\BookletGenerator:
+        public: true
         arguments: [ '@doctrine.orm.entity_manager' ]
