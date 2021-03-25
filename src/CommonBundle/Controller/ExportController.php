@@ -207,7 +207,7 @@ class ExportController extends Controller
                     $request->query->get('voucherDistribution') ??
                     $request->query->get('generalreliefDistribution') ??
                     $request->query->get('beneficiariesInDistribution');
-                $distribution = $this->get('distribution.assistance_service')->findOneById($idDistribution);
+                $distribution = $this->assistanceService->findOneById($idDistribution);
                 // todo find organisation by relation to distribution
                 $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
                 if ($type === 'pdf') {

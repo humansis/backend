@@ -59,7 +59,7 @@ class OrganizationController extends AbstractController
      */
     public function update(Organization $organization, OrganizationUpdateInputType $inputType): JsonResponse
     {
-        $this->get('organization_service')->update($organization, $inputType);
+        $this->organizationService->update($organization, $inputType);
 
         return $this->json($organization);
     }

@@ -120,7 +120,7 @@ class CommonController extends AbstractController
         foreach ($this->getParameter('app.locales') as $locale) {
             $data[] = [
                 'code' => $locale,
-                'value' => $this->get('translator')->trans($locale, [], null, $locale),
+                'value' => $this->translator->trans($locale, [], null, $locale),
             ];
         }
 

@@ -17,6 +17,7 @@ use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Model\PurchaseService;
 use VoucherBundle\InputType\SmartcardRedemtionBatch;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
+use VoucherBundle\Utils\SmartcardService;
 
 class SmartcardControllerTest extends BMSServiceTestCase
 {
@@ -351,8 +352,8 @@ class SmartcardControllerTest extends BMSServiceTestCase
         ]]);
         $purchase->setVendorId($vendorId);
         $purchase->setCreatedAt(new \DateTime());
-        $purchaseService = $this->getContainer()->get('voucher.purchase_service');
-        $smartcardService = $this->getContainer()->get('smartcard_service');
+        $purchaseService = $this->getContainer()->get(PurchaseService::class);
+        $smartcardService = $this->getContainer()->get(SmartcardService::class);
         $purchaseService->purchaseSmartcard($smartcard, $purchase);
         /** @var SmartcardPurchase $p2 */
         $p2 = $purchaseService->purchaseSmartcard($smartcard, $purchase);

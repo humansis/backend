@@ -45,7 +45,7 @@ class BeneficiaryController extends AbstractController
      */
     public function precalculateBeneficiaries(AssistanceCreateInputType $inputType, Pagination $pagination): JsonResponse
     {
-        $beneficiaries = $this->get('distribution.assistance_service')->findByCriteria($inputType, $pagination);
+        $beneficiaries = $this->assistanceService->findByCriteria($inputType, $pagination);
 
         return $this->json($beneficiaries);
     }
@@ -106,12 +106,9 @@ class BeneficiaryController extends AbstractController
      */
     public function removeBeneficiariesFromAssistance(Assistance $assistance, RemoveBeneficiaryFromAssistanceInputType $inputType): JsonResponse
     {
-        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
-        $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
-
         foreach ($inputType->getBeneficiaryIds() as $id) {
             $beneficiary = $this->getDoctrine()->getRepository(Beneficiary::class)->find($id);
-            $assistanceBeneficiaryService->removeBeneficiaryInDistribution(
+            $this->assistanceBeneficiaryService->removeBeneficiaryInDistribution(
                 $assistance,
                 $beneficiary,
                 ['justification' => $inputType->getJustification()]

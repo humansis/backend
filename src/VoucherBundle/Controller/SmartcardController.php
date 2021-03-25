@@ -139,7 +139,7 @@ class SmartcardController extends Controller
         $this->logger->error('headers', $request->headers->all());
         $this->logger->error('content', [$request->getContent()]);
 
-        $smartcard = $this->get('smartcard_service')->register(
+        $smartcard = $this->smartcardService->register(
             strtoupper($request->get('serialNumber')),
             $request->get('beneficiaryId'),
             \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
@@ -366,10 +366,10 @@ class SmartcardController extends Controller
      */
     public function depositDeprecated(Request $request): Response
     {
-        $this->container->get('logger')->error('headers', $request->headers->all());
-        $this->container->get('logger')->error('content', [$request->getContent()]);
+        $this->logger->error('headers', $request->headers->all());
+        $this->logger->error('content', [$request->getContent()]);
 
-        $deposit = $this->get('smartcard_service')->deposit(
+        $deposit = $this->smartcardService->deposit(
             $request->get('serialNumber'),
             $request->request->getInt('distributionId'),
             $request->request->get('value'),
@@ -781,7 +781,7 @@ class SmartcardController extends Controller
     public function redeemBatch(Vendor $vendor, RedemptionBatchInput $newBatch): Response
     {
         try {
-            $redemptionBath = $this->get('smartcard_service')->redeem($vendor, $newBatch, $this->getUser());
+            $redemptionBath = $this->smartcardService->redeem($vendor, $newBatch, $this->getUser());
         } catch (\InvalidArgumentException $exception) {
             throw new BadRequestHttpException($exception->getMessage(), $exception);
         }

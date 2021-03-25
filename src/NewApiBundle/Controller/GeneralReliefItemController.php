@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use DistributionBundle\Entity\GeneralReliefItem;
+use DistributionBundle\Utils\AssistanceService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\GeneralReliefFilterInputType;
 use NewApiBundle\Request\Pagination;
@@ -14,6 +15,19 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class GeneralReliefItemController extends AbstractController
 {
+    /** @var AssistanceService */
+    private $assistanceService;
+
+    /**
+     * GeneralReliefItemController constructor.
+     *
+     * @param AssistanceService $assistanceService
+     */
+    public function __construct(AssistanceService $assistanceService)
+    {
+        $this->assistanceService = $assistanceService;
+    }
+
     /**
      * @Rest\Get("/general-relief-items/{id}")
      *
@@ -37,11 +51,11 @@ class GeneralReliefItemController extends AbstractController
     public function patch(Request $request, GeneralReliefItem $object): JsonResponse
     {
         if ($request->request->get('distributed', false)) {
-            $this->get('distribution.assistance_service')->setGeneralReliefItemsAsDistributed([$object->getId()]);
+            $this->assistanceService->setGeneralReliefItemsAsDistributed([$object->getId()]);
         }
 
         if ($request->request->has('notes')) {
-            $this->get('distribution.assistance_service')->editGeneralReliefItemNotes($object->getId(),
+            $this->assistanceService->editGeneralReliefItemNotes($object->getId(),
                 $request->request->get('editGeneralReliefItemNotes'));
         }
 
