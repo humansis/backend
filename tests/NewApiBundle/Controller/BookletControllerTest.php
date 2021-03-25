@@ -132,7 +132,7 @@ class BookletControllerTest extends BMSServiceTestCase
 
         $doctrine = self::$container->get('doctrine');
         $assistance = $doctrine->getRepository(Assistance::class)->findBy([])[0];
-        $beneficiary = $doctrine->getRepository(Beneficiary::class)->findBy([])[0];
+        $beneficiary = $assistance->getDistributionBeneficiaries()[0]->getBeneficiary();
         $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED])[0];
 
         $this->request('PUT', '/api/basic/assistances/'.$assistance->getId().'/beneficiaries/'.$beneficiary->getId().'/booklets/'.$booklet->getCode());
