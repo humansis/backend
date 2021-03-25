@@ -55,6 +55,7 @@ services:
         arguments:
         - "@doctrine.orm.entity_manager"
         - "@service_container"
+        - "@logger"
         tags:
             - { name: kernel.event_listener, event: kernel.request }
 
