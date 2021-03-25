@@ -22,7 +22,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
     public function testGetItem()
@@ -33,7 +33,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         /** @var Assistance $assistance */
-        $assistance = $this->container->get('doctrine')->getRepository(Assistance::class)->findBy([])[0];
+        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy([])[0];
         $commodityIds = array_map(function (\DistributionBundle\Entity\Commodity $commodity) {
             return $commodity->getId();
         }, $assistance->getCommodities()->toArray());
@@ -90,7 +90,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
         $this->request('GET', '/api/basic/projects/'.$project->getId().'/assistances');
 
@@ -113,13 +113,13 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         /** @var Project $project */
-        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
         /** @var Location $location */
-        $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
         /** @var ModalityType $modalityType */
-        $modalityType = $this->container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Cash'])[0];
+        $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Cash'])[0];
 
         $this->request('POST', '/api/basic/assistances', [
             'iso3' => 'KHM',
@@ -175,10 +175,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         /** @var Project $project */
-        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
         /** @var Location $location */
-        $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
         $this->request('POST', '/api/basic/assistances', [
             'iso3' => 'KHM',
@@ -232,13 +232,13 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         /** @var Project $project */
-        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
         /** @var Location $location */
-        $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
         /** @var Community $community */
-        $community = $this->container->get('doctrine')->getRepository(Community::class)->findBy([])[0];
+        $community = self::$container->get('doctrine')->getRepository(Community::class)->findBy([])[0];
 
         $this->request('POST', '/api/basic/assistances', [
             'iso3' => 'KHM',

@@ -3,9 +3,9 @@
 namespace Tests\BeneficiaryBundle\Utils;
 
 use BeneficiaryBundle\Utils\ExcelColumnsGenerator;
-use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-class ExcelColumnsGeneratorTest extends TestCase
+class ExcelColumnsGeneratorTest extends KernelTestCase
 {
     /**
      * @param int   $arg            number of iterations
