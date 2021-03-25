@@ -54,6 +54,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "type": "'.$assistance->getAssistanceType().'",
             "sector": "'.$assistance->getSector().'",
             "subsector": "*",
+            "householdsTargeted": '.($assistance->getHouseholdsTargeted() ?: 'null').',
+            "individualsTargeted": '.($assistance->getIndividualsTargeted() ?: 'null').',
+            "description": "*",
             "commodityIds": ['.implode(',', $commodityIds).'],
             "validated": '.($assistance->getValidated() ? 'true' : 'false').',
             "completed": '.($assistance->getCompleted() ? 'true' : 'false').'
@@ -157,6 +160,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "type": "*",
             "sector": "*",
             "subsector": "*",
+            "householdsTargeted": "*",
+            "individualsTargeted": "*",
+            "description": "*",
             "commodityIds": ["*"]
         }', $this->client->getResponse()->getContent());
     }
@@ -211,7 +217,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "type": "*",
             "sector": "*",
             "subsector": "*",
-            "commodityIds": ["*"]
+            "householdsTargeted": "*",
+            "individualsTargeted": "*",
+            "description": "*",
+            "commodityIds": "*"
         }', $this->client->getResponse()->getContent());
     }
 
@@ -260,6 +269,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "type": "*",
             "sector": "*",
             "subsector": "*",
+            "householdsTargeted": "*",
+            "individualsTargeted": "*",
+            "description": "*",
             "commodityIds": []
         }', $this->client->getResponse()->getContent());
     }
