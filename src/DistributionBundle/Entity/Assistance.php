@@ -558,7 +558,7 @@ class Assistance implements ExportableInterface
     /**
      * Get commodities.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return \Doctrine\Common\Collections\Collection|Commodity[]
      */
     public function getCommodities()
     {
