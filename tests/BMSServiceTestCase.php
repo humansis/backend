@@ -41,9 +41,6 @@ class BMSServiceTestCase extends KernelTestCase
     /** @var EntityManager $em */
     protected $em;
 
-    /** @var Container $container */
-    protected $container;
-
     /** @var SerializerInterface */
     protected $serializer;
 
