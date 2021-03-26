@@ -24,6 +24,16 @@ class Referral
         '5' => 'Other',
     ];
 
+    public static function types(): array
+    {
+        $keys = [];
+        foreach (Referral::REFERRALTYPES as $key => $value) {
+            $keys[] = $key;
+        }
+
+        return $keys;
+    }
+
     /**
      * @var int
      *
