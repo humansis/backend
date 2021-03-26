@@ -2,6 +2,7 @@
 
 namespace DistributionBundle\Repository;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\GeneralReliefItem;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -27,6 +28,24 @@ class GeneralReliefItemRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere("gri.distributedAt is NULL");
 
         return $q->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * @param Assistance $assistance
+     * @param Beneficiary $beneficiary
+     *
+     * @return GeneralReliefItem[]
+     */
+    public function findByAssistanceBeneficiary(Assistance $assistance, Beneficiary $beneficiary)
+    {
+        $qbr = $this->createQueryBuilder('gri')
+            ->join('gri.assistanceBeneficiary', 'ab')
+            ->andWhere('ab.assistance = :assistance')
+            ->andWhere('ab.beneficiary = :beneficiary')
+            ->setParameter('assistance', $assistance)
+            ->setParameter('beneficiary', $beneficiary);
+
+        return $qbr->getQuery()->getResult();
     }
 
     /**
