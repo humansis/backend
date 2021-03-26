@@ -8,7 +8,7 @@ use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @Assert\GroupSequence({"AddBeneficiaryToProjectInputType", "Strict"})
+ * @Assert\GroupSequence({"AddHouseholdsToProjectInputType", "Strict"})
  */
 class AddHouseholdsToProjectInputType implements InputTypeInterface
 {

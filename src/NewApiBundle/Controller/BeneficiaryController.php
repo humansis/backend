@@ -9,7 +9,6 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\AddBeneficiaryToAssistanceInputType;
-use NewApiBundle\InputType\AddHouseholdsToProjectInputType;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
@@ -205,21 +204,5 @@ class BeneficiaryController extends AbstractController
         $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByProject($project);
 
         return $this->json($beneficiaries);
-    }
-
-    /**
-     * @Rest\Post("/projects/{id}/beneficiaries")
-     *
-     * @param Project                         $project
-     *
-     * @param AddHouseholdsToProjectInputType $inputType
-     *
-     * @return JsonResponse
-     */
-    public function addBeneficiariesToProject(Project $project, AddHouseholdsToProjectInputType $inputType): JsonResponse
-    {
-        $this->get('project.project_service')->addHouseholds($project, $inputType);
-
-        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 }

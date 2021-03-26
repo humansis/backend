@@ -4,11 +4,13 @@ namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Household;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\InputType\AddHouseholdsToProjectInputType;
 use NewApiBundle\InputType\HouseholdCreateInputType;
 use NewApiBundle\InputType\HouseholdFilterInputType;
 use NewApiBundle\InputType\HouseholdOrderInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
 use NewApiBundle\Request\Pagination;
+use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -92,6 +94,22 @@ class HouseholdController extends AbstractController
     public function delete(Household $household): JsonResponse
     {
         $this->get('beneficiary.household_service')->remove($household);
+
+        return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Rest\Put("/projects/{id}/households")
+     *
+     * @param Project                         $project
+     *
+     * @param AddHouseholdsToProjectInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function addHouseholdsToProject(Project $project, AddHouseholdsToProjectInputType $inputType): JsonResponse
+    {
+        $this->get('project.project_service')->addHouseholds($project, $inputType);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
