@@ -855,6 +855,7 @@ class AssistanceService
             'communities' => $inputType->getCommunities(),
             'households_targeted' => $inputType->getHouseholdsTargeted(),
             'individuals_targeted' => $inputType->getIndividualsTargeted(),
+            'description' => $inputType->getDescription(),
         ];
 
         foreach ($inputType->getCommodities() as $commodity) {
