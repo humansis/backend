@@ -237,6 +237,22 @@ class AssistanceBeneficiaryService
     }
 
     /**
+     * Remove beneficiaries from the assistacne
+     *
+     * @param Assistance $assistance
+     * @param array      $beneficiariesData
+     *
+     * @return AssistanceBeneficiary[]
+     * @throws \Exception
+     */
+    public function removeBeneficiaries(Assistance $assistance, array $beneficiariesData)
+    {
+        foreach ($beneficiariesData['beneficiaries'] as $id) {
+            $this->removeBeneficiaryInDistribution($assistance, $this->em->getRepository(AbstractBeneficiary::class)->find($id), $beneficiariesData);
+        }
+    }
+
+    /**
      * @param Assistance          $assistance
      * @param AbstractBeneficiary $beneficiary
      * @param                     $deletionData
