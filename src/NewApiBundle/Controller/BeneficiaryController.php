@@ -8,7 +8,7 @@ use BeneficiaryBundle\Entity\Phone;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\InputType\AddBeneficiaryToAssistanceInputType;
+use NewApiBundle\InputType\AddRemoveBeneficiaryToAssistanceInputType;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
@@ -66,12 +66,12 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Put("/assistances/{id}/beneficiaries")
      *
-     * @param Assistance                          $assistance
-     * @param AddBeneficiaryToAssistanceInputType $inputType
+     * @param Assistance                                $assistance
+     * @param AddRemoveBeneficiaryToAssistanceInputType $inputType
      *
      * @return JsonResponse
      */
-    public function addBeneficiaryToAssistance(Assistance $assistance, AddBeneficiaryToAssistanceInputType $inputType): JsonResponse
+    public function addOrRemoveBeneficiaryToAssistance(Assistance $assistance, AddRemoveBeneficiaryToAssistanceInputType $inputType): JsonResponse
     {
         $data = ['beneficiaries' => [], 'justification' => $inputType->getJustification()];
         foreach ($inputType->getBeneficiaryIds() as $id) {
@@ -80,7 +80,12 @@ class BeneficiaryController extends AbstractController
 
         /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
         $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
-        $assistanceBeneficiaryService->addBeneficiaries($assistance, $data);
+
+        if ($inputType->getAdded()) {
+            $assistanceBeneficiaryService->addBeneficiaries($assistance, $data);
+        } elseif ($inputType->getRemoved()) {
+            $assistanceBeneficiaryService->removeBeneficiaries($assistance, $data);
+        }
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

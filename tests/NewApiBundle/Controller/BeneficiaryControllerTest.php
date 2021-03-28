@@ -272,6 +272,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $this->request('PUT', '/api/basic/assistances/'.$assistance->getId().'/beneficiaries', [
             'beneficiaryIds' => [$beneficiary->getId()],
             'justification' => 'test',
+            'added' => true,
         ]);
 
         $this->assertTrue(
