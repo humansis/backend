@@ -8,6 +8,8 @@ use dateTime;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
+use InvalidArgumentException;
+use NewApiBundle\InputType\AddHouseholdsToProjectInputType;
 use NewApiBundle\InputType\ProjectCreateInputType;
 use NewApiBundle\InputType\ProjectUpdateInputType;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
@@ -334,6 +336,8 @@ class ProjectService
     }
 
     /**
+     * @deprecated remove in 3.0
+     *
      * Add multiple households to project.
      *
      * @param Project $project
@@ -357,6 +361,27 @@ class ProjectService
         $this->em->flush();
 
         return $households ;
+    }
+
+    /**
+     * @param Project                         $project
+     * @param AddHouseholdsToProjectInputType $inputType
+     */
+    public function addHouseholds(Project $project, AddHouseholdsToProjectInputType $inputType): void
+    {
+        foreach ($inputType->getHouseholdIds() as $householdId) {
+            $household = $this->em->getRepository(Household::class)->find($householdId);
+
+            if (!$household instanceof Household) {
+                throw new InvalidArgumentException("Household with id $householdId not found.");
+            }
+
+            if (!$household->getProjects()->contains($project)) {
+                $household->addProject($project);
+            }
+        }
+
+        $this->em->flush();
     }
 
     /**

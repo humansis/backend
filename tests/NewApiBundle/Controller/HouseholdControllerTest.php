@@ -3,10 +3,12 @@
 namespace Tests\NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Camp;
+use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;
 use CommonBundle\Entity\Location;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Enum\Livelihood;
@@ -344,5 +346,30 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->request('GET', '/api/basic/households/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testAddHouseholdToProject()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $project = $em->getRepository(Project::class)->findOneBy([]);
+        $household = $em->getRepository(Household::class)->findOneBy([], ['id'=>'desc']);
+
+        $this->request('PUT', '/api/basic/projects/'.$project->getId().'/households', [
+            'householdIds' => [$household->getId()],
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
     }
 }
