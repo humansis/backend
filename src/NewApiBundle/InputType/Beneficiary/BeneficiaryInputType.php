@@ -88,7 +88,7 @@ class BeneficiaryInputType implements InputTypeInterface
     private $residencyStatus;
 
     /**
-     * @Assert\Choice(callback="referralTypes")
+     * @Assert\Choice(callback={"BeneficiaryBundle\Entity\Referral", "types"})
      * @Assert\Length(max="255")
      */
     private $referralType;
@@ -115,11 +115,6 @@ class BeneficiaryInputType implements InputTypeInterface
      * )
      */
     private $vulnerabilityCriteriaIds = [];
-
-    final public static function referralTypes()
-    {
-        return array_keys(Referral::REFERRALTYPES);
-    }
 
     /**
      * @return \DateTimeInterface

@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
-use BeneficiaryBundle\Entity\Referral;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -70,7 +69,7 @@ class HouseholdFilterInputType extends AbstractFilterInputType
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *         @Assert\Choice(callback="referralTypes")
+     *         @Assert\Choice(callback={"BeneficiaryBundle\Entity\Referral", "types"})
      *     },
      *     groups={"Strict"}
      * )
@@ -98,11 +97,6 @@ class HouseholdFilterInputType extends AbstractFilterInputType
      * )
      */
     protected $locations;
-
-    final public static function referralTypes()
-    {
-        return array_keys(Referral::REFERRALTYPES);
-    }
 
     public function hasFulltext(): bool
     {
