@@ -6,6 +6,7 @@ namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
+use CommonBundle\Controller\ExportController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\CountrySpecificCreateInputType;
 use NewApiBundle\InputType\CountrySpecificFilterInputType;
@@ -19,6 +20,23 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class CountrySpecificController extends AbstractController
 {
+    /**
+     * @Rest\Get("/country-specifics/exports")
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function exports(Request $request): JsonResponse
+    {
+        $request->query->add([
+            'countries' => true,
+            '__country' => $request->headers->get('country'),
+        ]);
+
+        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
+    }
+
     /**
      * @Rest\Get("/country-specifics/answers/{id}")
      *

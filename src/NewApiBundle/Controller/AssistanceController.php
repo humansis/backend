@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
+use CommonBundle\Controller\ExportController;
 use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Repository\AssistanceRepository;
@@ -152,6 +153,21 @@ class AssistanceController extends AbstractController
         $this->get('distribution.assistance_service')->delete($assistance);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Rest\Get("/projects/{id}/assistances/exports")
+     *
+     * @param Project $project
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function exports(Project $project, Request $request): Response
+    {
+        $request->query->add(['officialDistributions' => $project->getId()]);
+
+        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
     }
 
     /**

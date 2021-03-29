@@ -5,11 +5,13 @@ namespace NewApiBundle\Controller;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
+use CommonBundle\Controller\ExportController;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\AddRemoveBeneficiaryToAssistanceInputType;
 use NewApiBundle\InputType\AssistanceCreateInputType;
+use NewApiBundle\InputType\BeneficiaryExportFilterInputType;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\InputType\NationalIdFilterInputType;
@@ -18,6 +20,7 @@ use NewApiBundle\InputType\RemoveBeneficiaryFromAssistanceInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class BeneficiaryController extends AbstractController
@@ -113,6 +116,58 @@ class BeneficiaryController extends AbstractController
         }
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Rest\Get("/beneficiaries/exports")
+     *
+     * @param Request                          $request
+     * @param BeneficiaryExportFilterInputType $inputType
+     *
+     * @return Response
+     */
+    public function exports(Request $request, BeneficiaryExportFilterInputType $inputType): Response
+    {
+        $sample = [];
+        if ($inputType->hasIds()) {
+            foreach ($inputType->getIds() as $id) {
+                $bnf = $this->getDoctrine()->getRepository(Beneficiary::class)->find($id);
+                if (!$bnf) {
+                    throw new \Doctrine\ORM\EntityNotFoundException('Beneficiary with ID #'.$id.' does not exists.');
+                }
+
+                $sample[] = [
+                    'gender' => (string) $bnf->getGender(),
+                    'en_given_name' => $bnf->getEnGivenName(),
+                    'en_family_name' => $bnf->getEnFamilyName(),
+                    'local_given_name' => $bnf->getLocalGivenName(),
+                    'local_family_name' => $bnf->getLocalFamilyName(),
+                    'status' => (string) $bnf->getStatus(),
+                    'residency_status' => $bnf->getResidencyStatus(),
+                    'date_of_birth' => $bnf->getDateOfBirth(),
+                ];
+            }
+        }
+
+        $request->query->add(['distributionSample' => true]);
+        $request->request->add(['sample' => $sample]);
+
+        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
+    }
+
+    /**
+     * @Rest\Get("/assistances/{id}/beneficiaries/exports")
+     *
+     * @param Assistance $assistance
+     * @param Request    $request
+     *
+     * @return Response
+     */
+    public function exportsByAssistance(Assistance $assistance, Request $request): Response
+    {
+        $request->query->add(['beneficiariesInDistribution' => $assistance->getId()]);
+
+        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
     }
 
     /**
