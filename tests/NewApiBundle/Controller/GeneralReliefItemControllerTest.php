@@ -97,7 +97,7 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         /** @var GeneralReliefItem $item */
-        $item = $this->container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy(['distributedAt' => null])[0];
+        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy(['distributedAt' => null])[0];
         $assistanceId = $item->getAssistanceBeneficiary()->getAssistance()->getId();
         $beneficiaryId = $item->getAssistanceBeneficiary()->getBeneficiary()->getId();
 
