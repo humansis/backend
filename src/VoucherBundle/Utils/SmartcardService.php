@@ -67,6 +67,20 @@ class SmartcardService
 
         $smartcard->addDeposit($deposit);
 
+        if (null === $smartcard->getCurrency()) {
+            $smartcard->setCurrency(self::findCurrency($assistanceBeneficiary));
+        }
+
+        // for situation, that purchases are sync before any money were deposited, we need to fix missing currency
+        foreach ($smartcard->getPurchases() as $purchase) {
+            foreach ($purchase->getRecords() as $record) {
+                if (null === $record->getCurrency()) {
+                    $record->setCurrency($smartcard->getCurrency());
+                    $this->em->persist($record);
+                }
+            }
+        }
+
         $this->em->persist($smartcard);
         $this->em->flush();
 
@@ -190,5 +204,17 @@ class SmartcardService
         $this->em->flush();
 
         return $smartcard;
+    }
+
+    private static function findCurrency(AssistanceBeneficiary $assistanceBeneficiary): string
+    {
+        foreach ($assistanceBeneficiary->getAssistance()->getCommodities() as $commodity) {
+            /** @var \DistributionBundle\Entity\Commodity $commodity */
+            if ('Smartcard' === $commodity->getModalityType()->getName()) {
+                return $commodity->getUnit();
+            }
+        }
+
+        throw new \LogicException('Unable to find currency for AssistanceBeneficiary #'.$assistanceBeneficiary->getId());
     }
 }

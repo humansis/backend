@@ -168,9 +168,9 @@ class Smartcard
     }
 
     /**
-     * @return Collection|SmartcardPurchaseRecord[]
+     * @return Collection|SmartcardPurchase[]
      */
-    public function getRecords(): iterable
+    public function getPurchases(): iterable
     {
         return $this->purchases;
     }
