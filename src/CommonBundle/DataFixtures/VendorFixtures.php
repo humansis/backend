@@ -142,7 +142,7 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
         static $genericUserCount = 0;
         $userIndex = ++$genericUserCount;
         $email = "vendor$userIndex.$country@example.org";
-        $instance = new User();
+        $instance = new User($manager);
         $instance->setEnabled(1)
             ->setEmail($email)
             ->setEmailCanonical($email)

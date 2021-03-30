@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -26,6 +28,18 @@ class Privilege
      * @ORM\Column(name="code", type="string", nullable=false, unique=true)
      */
     private $code;
+
+    /**
+     * @var Collection|Role[]
+     *
+     * @ORM\ManyToMany(targetEntity="NewApiBundle\Entity\Role", mappedBy="privileges")
+     */
+    private $roles;
+
+    public function __construct()
+    {
+        $this->roles = new ArrayCollection();
+    }
 
     /**
      * @return int
@@ -57,5 +71,13 @@ class Privilege
     public function setCode(string $code): void
     {
         $this->code = $code;
+    }
+
+    /**
+     * @return Collection|Role[]
+     */
+    public function getRoles()
+    {
+        return $this->roles;
     }
 }
