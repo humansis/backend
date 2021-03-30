@@ -22,18 +22,6 @@ class BeneficiaryInputType implements InputTypeInterface
     private $residencyStatus;
 
     /**
-     * @Assert\Choice(callback={"BeneficiaryBundle\Entity\Referral", "types"})
-     * @Assert\Length(max="255")
-     */
-    private $referralType;
-
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
-    private $referralComment;
-
-    /**
      * @Assert\Type("boolean")
      * @Assert\NotNull
      */

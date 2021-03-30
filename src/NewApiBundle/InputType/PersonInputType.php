@@ -57,7 +57,7 @@ class PersonInputType
     protected $profileId;
 
     /**
-     * @Assert\Choice(callback="referralTypes")
+     * @Assert\Choice(callback={"BeneficiaryBundle\Entity\Referral", "types"})
      * @Assert\Length(max="255")
      */
     private $referralType;
@@ -89,11 +89,6 @@ class PersonInputType
      * @Assert\Valid
      */
     protected $phones = [];
-
-    final public static function referralTypes()
-    {
-        return array_keys(Referral::REFERRALTYPES);
-    }
 
     /**
      * @return string|null
