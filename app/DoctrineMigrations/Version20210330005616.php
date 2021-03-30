@@ -53,13 +53,35 @@ final class Version20210330005616 extends AbstractMigration implements Container
             $this->addSql("INSERT INTO role (name, deletable) VALUES (?, 0)", [$role]);
         }
 
-        $this->addSql('CREATE TABLE user_role (user_id INT NOT NULL, role_id INT NOT NULL, INDEX IDX_2DE8C6A3A76ED395 (user_id), INDEX IDX_2DE8C6A3D60322AC (role_id), PRIMARY KEY(user_id, role_id)) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('ALTER TABLE user_role ADD CONSTRAINT FK_2DE8C6A3A76ED395 FOREIGN KEY (user_id) REFERENCES `user` (id) ON DELETE CASCADE');
-        $this->addSql('ALTER TABLE user_role ADD CONSTRAINT FK_2DE8C6A3D60322AC FOREIGN KEY (role_id) REFERENCES role (id) ON DELETE CASCADE');
+        $this->addSql('
+            CREATE TABLE user_role
+            (
+                user_id INT NOT NULL,
+                role_id INT NOT NULL,
+                INDEX IDX_2DE8C6A3A76ED395 (user_id),
+                INDEX IDX_2DE8C6A3D60322AC (role_id),
+                PRIMARY KEY (user_id, role_id),
+                CONSTRAINT FK_2DE8C6A3A76ED395 FOREIGN KEY (user_id) REFERENCES `user` (id) ON DELETE CASCADE,
+                CONSTRAINT FK_2DE8C6A3D60322AC FOREIGN KEY (role_id) REFERENCES role (id) ON DELETE CASCADE
+            ) DEFAULT CHARACTER SET UTF8
+              COLLATE `UTF8_unicode_ci`
+              ENGINE = InnoDB
+        ');
 
-        $this->addSql('CREATE TABLE role_privilege (role_id INT NOT NULL, privilege_id INT NOT NULL, INDEX IDX_D6D4495BD60322AC (role_id), INDEX IDX_D6D4495B32FB8AEA (privilege_id), PRIMARY KEY(role_id, privilege_id)) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('ALTER TABLE role_privilege ADD CONSTRAINT FK_D6D4495BD60322AC FOREIGN KEY (role_id) REFERENCES role (id) ON DELETE CASCADE');
-        $this->addSql('ALTER TABLE role_privilege ADD CONSTRAINT FK_D6D4495B32FB8AEA FOREIGN KEY (privilege_id) REFERENCES privilege (id) ON DELETE CASCADE');
+        $this->addSql('
+            CREATE TABLE role_privilege
+            (
+                role_id      INT NOT NULL,
+                privilege_id INT NOT NULL,
+                INDEX IDX_D6D4495BD60322AC (role_id),
+                INDEX IDX_D6D4495B32FB8AEA (privilege_id),
+                PRIMARY KEY (role_id, privilege_id),
+                CONSTRAINT FK_D6D4495BD60322AC FOREIGN KEY (role_id) REFERENCES role (id) ON DELETE CASCADE,
+                CONSTRAINT FK_D6D4495B32FB8AEA FOREIGN KEY (privilege_id) REFERENCES privilege (id) ON DELETE CASCADE
+            ) DEFAULT CHARACTER SET UTF8
+              COLLATE `UTF8_unicode_ci`
+              ENGINE = InnoDB
+        ');
 
         $this->addSql('ALTER TABLE user DROP roles');
 
@@ -70,8 +92,6 @@ final class Version20210330005616 extends AbstractMigration implements Container
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE user_role DROP FOREIGN KEY FK_2DE8C6A3D60322AC');
-        $this->addSql('ALTER TABLE role_privilege DROP FOREIGN KEY FK_D6D4495BD60322AC');
         $this->addSql('DROP TABLE user_role');
         $this->addSql('DROP TABLE role');
         $this->addSql('DROP TABLE role_privilege');
