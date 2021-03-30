@@ -73,6 +73,10 @@ services:
         arguments:
             - "@project.sector_service"
 
+    NewApiBundle\Controller\SelectionCriterionController:
+        arguments:
+            - "@transformer.selection_criterion_field"
+
     NewApiBundle\Controller\BeneficiaryCodelistController:
         arguments:
             - "@doctrine.orm.entity_manager"
