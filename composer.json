@@ -27,8 +27,8 @@
 		"ext-Zend-OPcache": "*",
 		"ext-gd": "^7.3",
 		"ext-json": "*",
-		"ext-xmlreader": "*",
 		"ext-simplexml": "*",
+		"ext-xmlreader": "*",
 		"aws/aws-sdk-php": "^3.90",
 		"beberlei/doctrineextensions": "^1.0",
 		"doctrine/doctrine-bundle": "^1.6",
@@ -59,9 +59,10 @@
 		"symfony/swiftmailer-bundle": "^2.6.4",
 		"symfony/symfony": "^3.4",
 		"symfony/templating": "^3.4",
+		"symfony/translation-contracts": "^2.3",
 		"tecnickcom/tcpdf": "^6.2",
 		"twig/twig": "^1.0||^2.0"
-    },
+	},
 	"require-dev": {
 		"doctrine/coding-standard": "^5.0",
 		"mashape/unirest-php": "^3.0",

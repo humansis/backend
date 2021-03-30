@@ -2,8 +2,9 @@
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
     <file source-language="en" target-language="en" datatype="plaintext" original="file_invoice.ext">
         <body>
-            <trans-unit id="temporary_invoice_no"><source>temporary_invoice_no</source><target>Temporary Invoice No.</target></trans-unit>
-            <trans-unit id="invoice_no"><source>invoice_no</source><target>Invoice No.</target></trans-unit>
+            <trans-unit id="Temporary Invoice No."><source>Temporary Invoice No.</source><target>Temporary Invoice No.</target></trans-unit>
+            <trans-unit id="Humansis Invoice No."><source>Humansis Invoice No.</source><target>Humansis Invoice No.</target></trans-unit>
+            <trans-unit id="Invoice No."><source>Invoice No.</source><target>Invoice No.</target></trans-unit>
             <trans-unit id="invoice"><source>invoice</source><target>Invoice</target></trans-unit>
             <trans-unit id="customer"><source>customer</source><target>Customer</target></trans-unit>
             <trans-unit id="supplier_name"><source>supplier_name</source><target>Supplier</target></trans-unit>

@@ -123,24 +123,29 @@ class SmartcardInvoiceExport
         $worksheet->getRowDimension('5')->setRowHeight(26.80);
 
         // Temporary Invoice No. box
-        $worksheet->setCellValue('B2', $translator->trans('temporary_invoice_no', [], 'invoice'));
+        $countryIso3 = $batch->getProject()->getIso3();
+        $humansisId = sprintf('%05d', $batch->getId());
+        $vendor = $batch->getVendor()->getId();
+        $date = $batch->getRedeemedAt()->format('Ymd');
+        $worksheet->setCellValue('B2', $translator->trans('Temporary Invoice No.', [], 'invoice'));
+        $worksheet->setCellValue('B3', "{$countryIso3}{$vendor}{$date}{$humansisId}");
         self::setSmallHeadline($worksheet, 'B2:B3');
         self::setSmallBorder($worksheet, 'B2:B3');
 
-        // vendor username box
-        $worksheet->mergeCells('D2:E2');
-        $worksheet->mergeCells('D3:E3');
-        $worksheet->setCellValue('D2', 'Humansis Vendor Username');
-        $worksheet->setCellValue('D3', $batch->getVendor()->getUser()->getUsername());
-        self::setSmallHeadline($worksheet, 'D2:E3');
-        self::setSmallBorder($worksheet, 'D2:E3');
+        // Humansis Invoice No. box
+        $worksheet->mergeCells('E2:F2');
+        $worksheet->mergeCells('E3:F3');
+        $worksheet->setCellValue('E2', $translator->trans('Humansis Invoice No.', [], 'invoice'));
+        $worksheet->setCellValue('E3', $humansisId);
+        self::setSmallHeadline($worksheet, 'E2:F3');
+        self::setSmallBorder($worksheet, 'E2:F3');
 
         // Invoice No. box
-        $worksheet->mergeCells('F2:H2');
-        $worksheet->mergeCells('F3:H3');
-        $worksheet->setCellValue('F2', $translator->trans('invoice_no', [], 'invoice'));
-        self::setSmallHeadline($worksheet, 'F2:H3');
-        self::setSmallBorder($worksheet, 'F2:H3');
+        $worksheet->mergeCells('I2:J2');
+        $worksheet->mergeCells('I3:J3');
+        $worksheet->setCellValue('I2', $translator->trans('Invoice No.', [], 'invoice'));
+        self::setSmallHeadline($worksheet, 'I2:J2');
+        self::setSmallBorder($worksheet, 'I3:J3');
 
         // wide header "Invoice"
         $worksheet->mergeCells('B5:J5');
@@ -151,19 +156,6 @@ class SmartcardInvoiceExport
             ->setName('Arial');
         $worksheet->getStyle('B5')->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_CENTER);
-
-        // logo
-        if ($organization->getLogo()) {
-            $resource = imagecreatefrompng($organization->getLogo());
-
-            $drawing = new MemoryDrawing();
-            $drawing->setCoordinates('J2');
-            $drawing->setImageResource($resource);
-            $drawing->setRenderingFunction(MemoryDrawing::RENDERING_DEFAULT);
-            $drawing->setMimeType(MemoryDrawing::MIMETYPE_DEFAULT);
-            $drawing->setHeight(60);
-            $drawing->setWorksheet($worksheet);
-        }
     }
 
     private static function buildHeaderSecondLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, SmartcardRedemptionBatch $batch, LocationMapper $locationMapper): void
