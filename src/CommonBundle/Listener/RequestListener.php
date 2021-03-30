@@ -99,7 +99,7 @@ class RequestListener
                     $event->getRequest()->request->add(["__country" => $countryISO3]);
                 } else {
                     if ($fallbackCountry === $countryISO3) {
-                        $this->container->get('logger')->error("You are not allowed to access data for this country", [$countryISO3]);
+                        $this->logger->error("You are not allowed to access data for this country", [$countryISO3]);
                         $response = new Response("You are not allowed to access data for this country", Response::HTTP_FORBIDDEN);
                         $event->setResponse($response);
                     } else {
@@ -113,7 +113,7 @@ class RequestListener
         // return error response if api request (i.e. not profiler or doc) or login routes (for api tester)
         elseif (preg_match('/api/', $event->getRequest()->getPathInfo()) &&
                 !preg_match('/api\/wsse\/(login|salt)/', $event->getRequest()->getPathInfo())) {
-            $this->container->get('logger')->error("'country' header missing from request (iso3 code).", [$event->getRequest()->getPathInfo()]);
+            $this->container->logger->error("'country' header missing from request (iso3 code).", [$event->getRequest()->getPathInfo()]);
             $response = new Response("'country' header missing from request (iso3 code).", Response::HTTP_BAD_REQUEST);
             $event->setResponse($response);
         }
