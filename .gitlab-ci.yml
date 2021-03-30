@@ -46,7 +46,7 @@ test:
       alias: db
       command: ["--default-authentication-plugin=mysql_native_password", "--log-bin-trust-function-creators=ON"]
   variables:
-    SYMFONY_VERSION: "3.4.*"
+    SYMFONY_VERSION: "4.4.*"
     DB: db_test
     MYSQL_ROOT_PASSWORD: "root"
   before_script:
