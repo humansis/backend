@@ -6,6 +6,7 @@ namespace DistributionBundle\Export;
 
 use CommonBundle\Entity\Organization;
 use CommonBundle\Mapper\LocationMapper;
+use CommonBundle\Utils\StringUtils;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -15,6 +16,7 @@ use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Translation\TranslatorInterface;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\SmartcardRedemptionBatch;
@@ -53,9 +55,16 @@ class SmartcardInvoiceExport
         self::buildFooter($worksheet, $this->translator, $organization, $user, $lastRow + 3);
 
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-        $writer->save('invoice.xlsx');
 
-        return 'invoice.xlsx';
+        $slugger = new AsciiSlugger();
+
+        $countryIso3 = $batch->getProject()->getIso3();
+        $id = sprintf('%05d', $batch->getId());
+        $vendorName = $slugger->slug($batch->getVendor()->getName());
+        $invoiceName = "{$countryIso3}EFV{$id}{$vendorName}.xlsx";
+
+        $writer->save($invoiceName);
+        return $invoiceName;
     }
 
     private static function formatCells(Worksheet $worksheet)
