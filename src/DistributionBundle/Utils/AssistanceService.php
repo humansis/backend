@@ -872,7 +872,7 @@ class AssistanceService
         }
 
         foreach ($inputType->getSelectionCriteria() as $criterion) {
-            $distributionArray['selection_criteria'][$criterion->getGroup()][] = $this->fieldDbTransformer->toArray($criterion);
+            $distributionArray['selection_criteria'][$criterion->getGroup()][] = $this->fieldDbTransformer->toDbArray($criterion);
         }
 
         return $distributionArray;
