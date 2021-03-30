@@ -55,6 +55,7 @@
 		"symfony/monolog-bundle": "^3.4",
 		"symfony/polyfill-apcu": "^1.0",
 		"symfony/property-info": "^3.4",
+		"symfony/string": "^5.2",
 		"symfony/swiftmailer-bundle": "^2.6.4",
 		"symfony/symfony": "^3.4",
 		"symfony/templating": "^3.4",
