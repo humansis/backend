@@ -28,7 +28,7 @@ class Referral
     {
         $keys = [];
         foreach (Referral::REFERRALTYPES as $key => $value) {
-            $keys[] = $key;
+            $keys[] = (string) $key;
         }
 
         return $keys;
