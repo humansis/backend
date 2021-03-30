@@ -102,9 +102,9 @@ echo "...done"
 echo "Loading fixtures"
 if [[ $3 != "false" ]]; then
   if [[ $3 == "dev" ]]; then
-    load_fixtures="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'php bin/console doctrine:fixtures:load --env=dev'"
+    load_fixtures="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'php bin/console doctrine:fixtures:load -n --env=dev'"
   elif [[ $3 == "test" ]]; then
-    load_fixtures="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'php bin/console doctrine:fixtures:load --env=test'"
+    load_fixtures="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'php bin/console doctrine:fixtures:load -n --env=test'"
   else
     echo "Wrong fixtures environment parameter. Options are: [dev, test, false (do not load fixtures)]"
     exit 1
