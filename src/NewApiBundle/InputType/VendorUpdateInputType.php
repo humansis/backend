@@ -51,6 +51,18 @@ class VendorUpdateInputType implements InputTypeInterface
     private $userId;
 
     /**
+     * @Assert\Type("string")
+     * @Assert\Length(max=255)
+     */
+    private $vendorNo;
+
+    /**
+     * @Assert\Type("string")
+     * @Assert\Length(max=255)
+     */
+    private $contractNo;
+
+    /**
      * @return string|null
      */
     public function getShop()
@@ -160,5 +172,37 @@ class VendorUpdateInputType implements InputTypeInterface
     public function setUserId($userId)
     {
         $this->userId = $userId;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getVendorNo()
+    {
+        return $this->vendorNo;
+    }
+
+    /**
+     * @param string|null $vendorNo
+     */
+    public function setVendorNo($vendorNo)
+    {
+        $this->vendorNo = $vendorNo;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getContractNo()
+    {
+        return $this->contractNo;
+    }
+
+    /**
+     * @param string|null $contractNo
+     */
+    public function setContractNo($contractNo): void
+    {
+        $this->contractNo = $contractNo;
     }
 }

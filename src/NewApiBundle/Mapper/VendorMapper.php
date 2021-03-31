@@ -86,4 +86,14 @@ class VendorMapper implements MapperInterface
     {
         return $this->object->getUser()->getId();
     }
+
+    public function getVendorNo(): ?string
+    {
+        return $this->object->getVendorNo();
+    }
+
+    public function getContractNo(): ?string
+    {
+        return $this->object->getContractNo();
+    }
 }
