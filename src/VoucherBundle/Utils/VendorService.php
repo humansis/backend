@@ -348,6 +348,8 @@ class VendorService
                         'addressStreet'  => $vendor->getAddressStreet(),
                         'addressPostcode'  => $vendor->getAddressPostcode(),
                         'addressNumber'  => $vendor->getAddressNumber(),
+                        'vendorNo' => $vendor->getVendorNo(),
+                        'contractNo' => $vendor->getContractNo(),
                         'addressVillage' => $village ? $village->getName() : null,
                         'addressCommune' => $commune ? $commune->getName() : null,
                         'addressDistrict' => $district ? $district->getName() : null,
