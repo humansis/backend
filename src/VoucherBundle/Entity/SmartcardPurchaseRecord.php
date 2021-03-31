@@ -112,6 +112,18 @@ class SmartcardPurchaseRecord
     }
 
     /**
+     * @param string $currency
+     */
+    public function setCurrency(string $currency): void
+    {
+        if (null !== $this->currency) {
+            throw new \LogicException('Unable to change currency in purchase record #'.$this->id);
+        }
+
+        $this->currency = $currency;
+    }
+
+    /**
      * @return mixed
      */
     public function getQuantity()
