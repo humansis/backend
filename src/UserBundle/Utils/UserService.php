@@ -193,6 +193,9 @@ class UserService
         $salt = $this->generateSalt();
 
         $user = new User();
+
+        $user->injectObjectManager($this->em);
+
         $user->setUsername($inputType->getUsername())
             ->setUsernameCanonical($inputType->getUsername())
             ->setEmail($inputType->getUsername())
@@ -222,6 +225,9 @@ class UserService
         }
         $salt = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
         $user = new User();
+
+        $user->injectObjectManager($this->em);
+
         $user->setUsername($username)
             ->setUsernameCanonical($username)
             ->setEnabled(0)
@@ -686,6 +692,9 @@ class UserService
             $salt = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
             $password = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
             $user = new User();
+
+            $user->injectObjectManager($this->em);
+
             $user->setSalt($salt)
                 ->setEmail($email)
                 ->setEmailCanonical($email)

@@ -11,6 +11,7 @@ use Doctrine\Persistence\ObjectManager;
 use FOS\UserBundle\Model\User as BaseUser;
 use InvalidArgumentException;
 use NewApiBundle\Entity\Role;
+use RuntimeException;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
 use TransactionBundle\Entity\Transaction;
@@ -24,7 +25,7 @@ use Doctrine\Common\Persistence\ObjectManagerAware;
  */
 class User extends BaseUser implements ExportableInterface, ObjectManagerAware
 {
-    /** @var ObjectManager */
+    /** @var ObjectManager|null */
     private $em;
 
     /**
@@ -143,9 +144,21 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
         $this->roles = new ArrayCollection();
     }
 
-    public function injectObjectManager(ObjectManager $objectManager, ClassMetadata $classMetadata)
+    public function injectObjectManager(ObjectManager $objectManager, ?ClassMetadata $classMetadata = null)
     {
         $this->em = $objectManager;
+    }
+
+    /**
+     * @return ObjectManager
+     */
+    private function getObjectManager()
+    {
+        if (!$this->em instanceof ObjectManager) {
+            throw new RuntimeException('You need to call injectObjectManager() first to use entity manager inside entity.');
+        }
+
+        return $this->em;
     }
 
     /**
@@ -424,7 +437,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
      */
     public function hasRole($roleName)
     {
-        $role = $this->em->getRepository(Role::class)->findOneBy([
+        $role = $this->getObjectManager()->getRepository(Role::class)->findOneBy([
             'name' => $roleName,
         ]);
 
@@ -454,7 +467,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
      */
     public function addRole($roleName)
     {
-        $role = $this->em->getRepository(Role::class)->findOneBy([
+        $role = $this->getObjectManager()->getRepository(Role::class)->findOneBy([
             'name' => $roleName,
         ]);
 
@@ -474,7 +487,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
      */
     public function removeRole($roleName)
     {
-        $role = $this->em->getRepository(Role::class)->findOneBy([
+        $role = $this->getObjectManager()->getRepository(Role::class)->findOneBy([
             'name' => $roleName,
         ]);
 

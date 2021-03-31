@@ -4,16 +4,12 @@ namespace Application\Migrations;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20210330005616 extends AbstractMigration implements ContainerAwareInterface
+final class Version20210330005616 extends AbstractMigration
 {
-    use ContainerAwareTrait;
-
     private const ROLES = [
         'ROLE_REPORTING_READ',
         'ROLE_REPORTING_WRITE',
@@ -40,6 +36,8 @@ final class Version20210330005616 extends AbstractMigration implements Container
         'ROLE_PROJECT_MANAGER',
         'ROLE_COUNTRY_MANAGER',
         'ROLE_REGIONAL_MANAGER',
+        'ROLE_ADMIN',
+        'ROLE_ENUMERATOR',
     ];
 
     public function up(Schema $schema): void
@@ -48,10 +46,6 @@ final class Version20210330005616 extends AbstractMigration implements Container
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('CREATE TABLE role (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, deletable TINYINT(1) NOT NULL, UNIQUE INDEX UNIQ_57698A6A5E237E06 (name), PRIMARY KEY(id)) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB');
-
-        foreach (self::ROLES as $role) {
-            $this->addSql("INSERT INTO role (name, deletable) VALUES (?, 0)", [$role]);
-        }
 
         $this->addSql('
             CREATE TABLE user_role
@@ -68,6 +62,17 @@ final class Version20210330005616 extends AbstractMigration implements Container
               ENGINE = InnoDB
         ');
 
+        foreach (self::ROLES as $role) {
+            $this->addSql("INSERT INTO role (name, deletable) VALUES (?, 0)", [$role]);
+
+            $this->addSql('
+                INSERT INTO user_role (user_id, role_id)
+                SELECT id, (SELECT id FROM role WHERE role.name=?)
+                FROM user
+                WHERE user.roles LIKE ?
+            ', [$role, '%"'.$role.'"%']);
+        }
+
         $this->addSql('
             CREATE TABLE role_privilege
             (
@@ -83,7 +88,7 @@ final class Version20210330005616 extends AbstractMigration implements Container
               ENGINE = InnoDB
         ');
 
-        $this->addSql('ALTER TABLE user DROP roles');
+        $this->addSql('ALTER TABLE user CHANGE roles roles VARCHAR(255) DEFAULT \'blabla\'');
 
     }
 
