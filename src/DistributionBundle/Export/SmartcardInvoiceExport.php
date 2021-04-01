@@ -94,8 +94,6 @@ class SmartcardInvoiceExport
         $worksheet->getColumnDimension('J')->setWidth(10.996);
         $worksheet->getColumnDimension('K')->setWidth(02.429);
 
-        $worksheet->getRowDimension('A1:A10000')->setRowHeight(4.064);
-
         $worksheet->getStyle('A1:K10000')->getFont()
             ->setBold(true)
             ->setSize(10)
