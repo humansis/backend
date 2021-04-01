@@ -27,6 +27,7 @@ class SmartcardInvoiceExport
 {
     const TEMPLATE_VERSION = '1.2';
     const DATE_FORMAT = 'j-n-y';
+    const EOL = "\r\n";
 
     /** @var TranslatorInterface */
     private $translator;
@@ -55,7 +56,7 @@ class SmartcardInvoiceExport
 
     public function export(SmartcardRedemptionBatch $batch, Organization $organization, User $user)
     {
-        $language = CountryController::COUNTRIES[$batch->getProject()->getIso3()]['language'] ?? 'ar';
+        $language = CountryController::COUNTRIES[$batch->getProject()->getIso3()]['language'] ?? 'en';
         $this->translator->setLocale($language);
 
         $spreadsheet = new Spreadsheet();
@@ -181,13 +182,14 @@ class SmartcardInvoiceExport
         $worksheet->mergeCells("I$row1:J$row2");
         // data
         self::undertranslatedSmallHeadline($worksheet, $translator, "Customer", "B", $row1);
-        $worksheet->setCellValue("C$row1", self::addTrans($translator, $organization->getName(), "\n"));
-        $worksheet->setCellValue("E$row1", self::addTrans($translator, 'Address: Idlib, Bardaqli, Syria', "\n"));
+        $worksheet->setCellValue("C$row1", self::addTrans($translator, $organization->getName(), self::EOL));
+        $worksheet->setCellValue("E$row1", self::addTrans($translator, 'Address: Idlib, Bardaqli, Syria', self::EOL));
         $worksheet->setCellValue("I$row1", $batch->getRedeemedAt()->format(self::DATE_FORMAT));
         self::undertranslatedSmallHeadline($worksheet, $translator, "Invoice Date", "H", $row1);
         // style
         $worksheet->getRowDimension("$row1")->setRowHeight(25);
         $worksheet->getRowDimension("$row2")->setRowHeight(25);
+        $worksheet->getStyle("C$row1")->getAlignment()->setWrapText(true);
         $worksheet->getStyle("E$row1")->getAlignment()->setWrapText(true);
         $worksheet->getStyle("B$row1")->getAlignment()->setWrapText(true);
         self::setImportantFilledInfo($worksheet, "C$row1:G$row2");
@@ -232,10 +234,10 @@ class SmartcardInvoiceExport
         $worksheet->mergeCells("F$row1:G$row3");
         $worksheet->mergeCells("C$row1:C$row3");
         // data
-        $worksheet->setCellValue("B$row1", self::addTrans($translator, 'Contract No.', "\n"));
+        $worksheet->setCellValue("B$row1", self::addTrans($translator, 'Contract No.', self::EOL));
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Period Start', 'D', $row1);
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Period End', 'E', $row1);
-        $worksheet->setCellValue("F$row1", self::addTrans($translator, 'Payment Method', "\n"));
+        $worksheet->setCellValue("F$row1", self::addTrans($translator, 'Payment Method', self::EOL));
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Cash', 'H', $row1);
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Cheque', 'I', $row1);
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Bank', 'J', $row1);
