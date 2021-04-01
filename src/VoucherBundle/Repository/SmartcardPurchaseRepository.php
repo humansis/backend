@@ -66,9 +66,9 @@ class SmartcardPurchaseRepository extends EntityRepository
                 FROM
                     assistance AS a
                         INNER JOIN distribution_beneficiary AS db ON a.id = db.assistance_id
-                        INNER JOIN smartcard_deposit AS sd ON db.id = sd.distribution_beneficiary_id
+                        INNER JOIN smartcard_deposit AS sd ON db.id = sd.distribution_beneficiary_id AND sd.used_at <= sp.used_at
                 WHERE s.id = sd.smartcard_id
-                ORDER BY sd.used_at DESC
+                ORDER BY sd.used_at DESC, sd.id DESC 
                 LIMIT 1
             ) AS projectId,
             SUM(spr.value) as purchaseValue,
@@ -140,6 +140,20 @@ class SmartcardPurchaseRepository extends EntityRepository
         } catch (NonUniqueResultException $e) {
             return 0;
         }
+    }
+
+    public function countPurchasesRecordsByBatch(SmartcardRedemptionBatch $batch): array
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select('prod.name as name, pr.currency as currency, SUM(pr.value) as value, SUM(pr.quantity) as quantity, prod.unit as unit')
+            ->join('p.records', 'pr')
+            ->join('pr.product', 'prod')
+            ->where('p.id IN (:purchases)')
+            ->setParameter('purchases', $batch->getPurchases())
+            ->groupBy('prod.name, pr.currency, prod.unit')
+        ;
+
+        return $qb->getQuery()->getArrayResult();
     }
 
     /**
