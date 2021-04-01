@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DistributionBundle\Export;
 
+use CommonBundle\Controller\CountryController;
 use CommonBundle\Entity\Organization;
 use CommonBundle\Mapper\LocationMapper;
 use CommonBundle\Utils\StringUtils;
@@ -54,6 +55,9 @@ class SmartcardInvoiceExport
 
     public function export(SmartcardRedemptionBatch $batch, Organization $organization, User $user)
     {
+        $language = CountryController::COUNTRIES[$batch->getProject()->getIso3()]['language'] ?? 'ar';
+        $this->translator->setLocale($language);
+
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
 
@@ -174,7 +178,6 @@ class SmartcardInvoiceExport
         // structure
         $worksheet->mergeCells("C$row1:D$row2");
         $worksheet->mergeCells("E$row1:G$row2");
-        $worksheet->mergeCells("E$row2:G$row2");
         $worksheet->mergeCells("I$row1:J$row2");
         // data
         self::undertranslatedSmallHeadline($worksheet, $translator, "Customer", "B", $row1);
