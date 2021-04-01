@@ -485,7 +485,8 @@ class SmartcardInvoiceExport
         $worksheet->setCellValue('H'.$nextRow, $translator->trans('generated_by', ['username'=>$user->getUsername()], 'invoice'));
         // Generated on: [date]
         ++$nextRow;
-        $worksheet->setCellValue('H'.$nextRow, $translator->trans('generated_on', ['date'=>time()], 'invoice'));
+        $today = new \DateTime();
+        $worksheet->setCellValue('H'.$nextRow, $translator->trans('generated_on', ['date'=>$today->format(self::DATE_FORMAT)], 'invoice'));
         // Unique document integrity ID: BLANK
         ++$nextRow;
         $worksheet->setCellValue('H'.$nextRow, $translator->trans('checksum', ['checksum'=>''], 'invoice'));
