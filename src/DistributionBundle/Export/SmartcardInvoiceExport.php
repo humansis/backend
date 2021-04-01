@@ -170,8 +170,8 @@ class SmartcardInvoiceExport
         $worksheet->mergeCells("I$row1:J$row2");
         // data
         self::undertranslatedSmallHeadline($worksheet, $translator, "Customer", "B", $row1);
-        self::sidetranslated($worksheet, $translator, $organization->getName(), "C", $row1);
-        $worksheet->setCellValue("E$row1", $locationMapper->toName($batch->getVendor()->getLocation()));
+        $worksheet->setCellValue("C$row1", self::addTrans($translator, $organization->getName(), "\n"));
+        $worksheet->setCellValue("E$row1", self::addTrans($translator, 'Address: Idlib, Bardaqli, Syria', "\n"));
         $worksheet->setCellValue("I$row1", $batch->getRedeemedAt()->format(self::DATE_FORMAT));
         self::undertranslatedSmallHeadline($worksheet, $translator, "Invoice Date", "H", $row1);
         // style
@@ -604,13 +604,13 @@ class SmartcardInvoiceExport
             ->setBorderStyle(Border::BORDER_THIN);
     }
 
-    private static function addTrans(TranslatorInterface $translator, string $text): string
+    private static function addTrans(TranslatorInterface $translator, string $text, string $delimiter = ' '): string
     {
         $translation = $translator->trans($text, [], 'invoice');
         if ($translation == $text) {
             return $text;
         }
-        return $text.' '.$translation;
+        return $text.$delimiter.$translation;
     }
 
     private static function translate(TranslatorInterface $translator, string $text): string
