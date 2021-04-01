@@ -269,14 +269,8 @@ class SmartcardInvoiceExport
         self::sidetranslatedSmallHeadline($worksheet, $translator, 'Amount', 'H', $row);
         self::sidetranslatedSmallHeadline($worksheet, $translator, 'Currency', 'J', $row);
 
-        // $worksheet->setCellValue('E$row', $translator->trans('qty', [], 'invoice'));
-        // $worksheet->setCellValue('F$row', $translator->trans('unit', [], 'invoice'));
-        // $worksheet->setCellValue('G$row', $translator->trans('unit_price', [], 'invoice'));
-
         // style
         $worksheet->getRowDimension($row)->setRowHeight(30);
-        // self::setSmallHeadline($worksheet,"B13:J13');
-        // self::setSmallBorder($worksheet,'B13:J13');
     }
 
     private static function buildBodyLine(Worksheet $worksheet, TranslatorInterface $translator, string $mainText, string $descriptionText, string $value, string $currency, int $row1): void
