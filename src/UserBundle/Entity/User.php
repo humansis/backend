@@ -4,11 +4,18 @@ namespace UserBundle\Entity;
 
 use CommonBundle\Utils\ExportableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\ObjectManager;
 use FOS\UserBundle\Model\User as BaseUser;
+use InvalidArgumentException;
+use NewApiBundle\Entity\Role;
+use RuntimeException;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
 use TransactionBundle\Entity\Transaction;
+use Doctrine\Common\Persistence\ObjectManagerAware;
 
 /**
  * User
@@ -16,8 +23,11 @@ use TransactionBundle\Entity\Transaction;
  * @ORM\Table(name="`user")
  * @ORM\Entity(repositoryClass="UserBundle\Repository\UserRepository")
  */
-class User extends BaseUser implements ExportableInterface
+class User extends BaseUser implements ExportableInterface, ObjectManagerAware
 {
+    /** @var ObjectManager|null */
+    private $em;
+
     /**
      * @var int
      *
@@ -69,8 +79,8 @@ class User extends BaseUser implements ExportableInterface
     protected $email;
 
     /**
-     * @var array
-     * @SymfonyGroups({"FullUser"})
+     * @var Collection|Role[]
+     * @ORM\ManyToMany(targetEntity="NewApiBundle\Entity\Role", inversedBy="users")
      */
     protected $roles;
     
@@ -131,6 +141,24 @@ class User extends BaseUser implements ExportableInterface
         parent::__construct();
         $this->countries = new ArrayCollection();
         $this->projects = new ArrayCollection();
+        $this->roles = new ArrayCollection();
+    }
+
+    public function injectObjectManager(ObjectManager $objectManager, ?ClassMetadata $classMetadata = null)
+    {
+        $this->em = $objectManager;
+    }
+
+    /**
+     * @return ObjectManager
+     */
+    private function getObjectManager()
+    {
+        if (!$this->em instanceof ObjectManager) {
+            throw new RuntimeException('You need to call injectObjectManager() first to use entity manager inside entity.');
+        }
+
+        return $this->em;
     }
 
     /**
@@ -275,7 +303,7 @@ class User extends BaseUser implements ExportableInterface
     {
         return [
             'email' => $this->getEmail(),
-            'role' => $this->getRoles()[0]
+            'role' => $this->getRoles()[0],
         ];
     }
 
@@ -402,5 +430,87 @@ class User extends BaseUser implements ExportableInterface
     public function setTwoFactorAuthentication($twoFactorAuthentication)
     {
         $this->twoFactorAuthentication = $twoFactorAuthentication;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasRole($roleName)
+    {
+        $role = $this->getObjectManager()->getRepository(Role::class)->findOneBy([
+            'name' => $roleName,
+        ]);
+
+        if (!$role instanceof Role) {
+            throw new InvalidArgumentException('Role with name '.$roleName.' does not exist.');
+        }
+
+        return $this->roles->contains($role);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setRoles(array $roles)
+    {
+        $this->roles->clear();
+
+        foreach ($roles as $role) {
+            $this->addRole($role);
+        }
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addRole($roleName)
+    {
+        $role = $this->getObjectManager()->getRepository(Role::class)->findOneBy([
+            'name' => $roleName,
+        ]);
+
+        if (!$role instanceof Role) {
+            throw new InvalidArgumentException('Role with name '.$roleName.' does not exist.');
+        }
+
+        if (!$this->roles->contains($role)) {
+            $this->roles->add($role);
+        }
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removeRole($roleName)
+    {
+        $role = $this->getObjectManager()->getRepository(Role::class)->findOneBy([
+            'name' => $roleName,
+        ]);
+
+        if (!$role instanceof Role) {
+            throw new InvalidArgumentException('Role with name '.$roleName.' does not exist.');
+        }
+
+        if (!$this->roles->contains($role)) {
+            $this->roles->removeElement($role);
+        }
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @SymfonyGroups({"FullUser"})
+     */
+    public function getRoles()
+    {
+        return array_map(function (Role $role) {
+            return $role->getName();
+        }, $this->roles->toArray());
     }
 }

@@ -231,6 +231,10 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
+    CommonBundle\DataFixtures\RoleFixtures:
+        tags:
+            - { name: doctrine.fixture.orm }
+
 
 
 #######################################################################################

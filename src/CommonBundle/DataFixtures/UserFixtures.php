@@ -146,7 +146,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         if ($instance instanceof User) {
             echo "User {$instance->getUsername()} already exists. Ommit creation.\n";
         } else {
-            $instance = $this->saveDataAsUser($userData);
+            $instance = $this->saveDataAsUser($userData, $manager);
         }
 
         $this->makeAccessRights($manager, $instance, $countries);
@@ -163,9 +163,13 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         return $instance;
     }
 
-    private function saveDataAsUser(array $userData): User
+    private function saveDataAsUser(array $userData, ObjectManager $manager): User
     {
+        /** @var User $instance */
         $instance = $this->manager->createUser();
+
+        $instance->injectObjectManager($manager);
+
         $instance->setEnabled(1)
             ->setEmail($userData['email'])
             ->setEmailCanonical($userData['email'])
@@ -232,6 +236,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             ProjectFixtures::class,
+            RoleFixtures::class,
         ];
     }
 }
