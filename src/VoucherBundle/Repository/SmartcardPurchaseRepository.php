@@ -142,6 +142,20 @@ class SmartcardPurchaseRepository extends EntityRepository
         }
     }
 
+    public function countPurchasesRecordsByBatch(SmartcardRedemptionBatch $batch): array
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select('prod.name as name, pr.currency as currency, SUM(pr.value) as value, SUM(pr.quantity) as quantity, prod.unit as unit')
+            ->join('p.records', 'pr')
+            ->join('pr.product', 'prod')
+            ->where('p.id IN (:purchases)')
+            ->setParameter('purchases', $batch->getPurchases())
+            ->groupBy('prod.name, pr.currency, prod.unit')
+        ;
+
+        return $qb->getQuery()->getArrayResult();
+    }
+
     /**
      * @param SmartcardRedemptionBatch $batch
      *
