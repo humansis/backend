@@ -50,6 +50,7 @@
             <trans-unit id="purchase_item_total"><source>purchase_item_total</source><target>Total per Item</target></trans-unit>
             <trans-unit id="Total per Vendor and Period"><source>Total per Vendor and Period</source><target>الإجمالي لكل بائع والفترة</target></trans-unit>
             <trans-unit id="People in Need address in SYR"><source>People in Need address in SYR</source><target>Idlib, Bardaqli, Syria&#13;&#10;ادلب ,البردقلي,سوريا</target></trans-unit>
+            <trans-unit id="People in Need address in anywhere"><source>People in Need address in anywhere</source><target>Idlib, Bardaqli, Syria&#13;&#10;ادلب ,البردقلي,سوريا</target></trans-unit>
         </body>
     </file>
 </xliff>

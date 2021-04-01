@@ -56,8 +56,14 @@ class SmartcardInvoiceExport
 
     public function export(SmartcardRedemptionBatch $batch, Organization $organization, User $user)
     {
-        $language = CountryController::COUNTRIES[$batch->getProject()->getIso3()]['language'] ?? 'en';
-        $this->translator->setLocale($language);
+        $countryIso3 = $batch->getProject() ? $batch->getProject()->getIso3() : 'ALL';
+        if ($batch->getProject()) {
+            $language = CountryController::COUNTRIES[$countryIso3]['language'] ?? 'en';
+            $this->translator->setLocale($language);
+            $countryIso3 = $batch->getProject()->getIso3();
+        } else {
+            $countryIso3 = 'ALL';
+        }
 
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
@@ -74,7 +80,6 @@ class SmartcardInvoiceExport
 
         $slugger = new AsciiSlugger();
 
-        $countryIso3 = $batch->getProject()->getIso3();
         $id = sprintf('%05d', $batch->getId());
         $vendorName = $slugger->slug($batch->getVendor()->getName());
         $invoiceName = "{$countryIso3}EFV{$id}{$vendorName}.xlsx";
@@ -137,7 +142,7 @@ class SmartcardInvoiceExport
         $worksheet->getRowDimension('5')->setRowHeight(26.80);
 
         // Temporary Invoice No. box
-        $countryIso3 = $batch->getProject()->getIso3();
+        $countryIso3 = $batch->getProject() ? $batch->getProject()->getIso3() : '';
         $humansisId = sprintf('%06d', $batch->getId());
         $vendor = sprintf('%03d', $batch->getVendor()->getId());
         $date = $batch->getRedeemedAt()->format('y');
@@ -183,7 +188,8 @@ class SmartcardInvoiceExport
         // data
         self::undertranslatedSmallHeadline($worksheet, $translator, "Customer", "B", $row1);
         $worksheet->setCellValue("C$row1", self::addTrans($translator, $organization->getName(), self::EOL));
-        $worksheet->setCellValue("E$row1", $translator->trans("{$organization->getName()} address in {$batch->getProject()->getIso3()}", [], 'invoice'));
+        $countryIso3 = $batch->getProject() ? $batch->getProject()->getIso3() : 'anywhere';
+        $worksheet->setCellValue("E$row1", $translator->trans("{$organization->getName()} address in $countryIso3", [], 'invoice'));
         $worksheet->setCellValue("I$row1", $batch->getRedeemedAt()->format(self::DATE_FORMAT));
         self::undertranslatedSmallHeadline($worksheet, $translator, "Invoice Date", "H", $row1);
         // style
