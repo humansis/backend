@@ -553,7 +553,7 @@ class SmartcardInvoiceExport
     private static function undertranslatedSmallHeadline(Worksheet $worksheet, TranslatorInterface $translator, string $importantInfo, string $column, int $row): void
     {
         $worksheet->setCellValue($column.$row, $importantInfo);
-        $worksheet->setCellValue($column.($row+1), $translator->trans($importantInfo, [], 'invoice'));
+        $worksheet->setCellValue($column.($row+1), self::translate($translator, $importantInfo));
         self::setSmallHeadline($worksheet, $column.$row.':'.$column.($row+1));
         $worksheet->getStyle($column.$row.':'.$column.($row+1))->getBorders()
             ->getOutline()
@@ -569,8 +569,8 @@ class SmartcardInvoiceExport
         $row3 = $row1 + 2;
 
         $worksheet->setCellValue($column.$row1, $importantInfo);
-        $worksheet->setCellValue($column.$row2, $translator->trans($importantInfo, [], 'invoice'));
-        $worksheet->setCellValue($column.$row3, $description.' '.$translator->trans($description, [], 'invoice'));
+        $worksheet->setCellValue($column.$row2, self::translate($translator, $importantInfo));
+        $worksheet->setCellValue($column.$row3, self::addTrans($translator, $description));
 
         $worksheet->getStyle("$column$row1:$column$row2")->getFont()
             ->setBold(true)
@@ -592,16 +592,34 @@ class SmartcardInvoiceExport
 
     private static function sidetranslated(Worksheet $worksheet, TranslatorInterface $translator, string $importantInfo, string $column, int $row): void
     {
-        $worksheet->setCellValue($column.$row, $importantInfo.' '.$translator->trans($importantInfo, [], 'invoice'));
+        $worksheet->setCellValue($column.$row, self::addTrans($translator, $importantInfo));
     }
 
     private static function sidetranslatedSmallHeadline(Worksheet $worksheet, TranslatorInterface $translator, string $importantInfo, string $column, int $row): void
     {
-        $worksheet->setCellValue($column.$row, $importantInfo.' '.$translator->trans($importantInfo, [], 'invoice'));
+        $worksheet->setCellValue($column.$row, self::addTrans($translator, $importantInfo));
         self::setSmallHeadline($worksheet, $column.$row);
         $worksheet->getStyle($column.$row)->getBorders()
             ->getAllBorders()
             ->setBorderStyle(Border::BORDER_THIN);
+    }
+
+    private static function addTrans(TranslatorInterface $translator, string $text): string
+    {
+        $translation = $translator->trans($text, [], 'invoice');
+        if ($translation == $text) {
+            return $text;
+        }
+        return $text.' '.$translation;
+    }
+
+    private static function translate(TranslatorInterface $translator, string $text): string
+    {
+        $translation = $translator->trans($text, [], 'invoice');
+        if ($translation == $text) {
+            return '';
+        }
+        return $translation;
     }
 
     private static function setSmallBorder(Worksheet $worksheet, string $cellCoordination) {
