@@ -217,15 +217,14 @@ class SmartcardInvoiceExport
         $row3 = $row1+2;
 
         // structure
-        $worksheet->mergeCells("F$row1:G$row1");
-        $worksheet->mergeCells("F$row2:G$row2");
-        $worksheet->mergeCells("F$row3:G$row3");
+        $worksheet->mergeCells("B$row1:B$row3");
+        $worksheet->mergeCells("F$row1:G$row3");
         $worksheet->mergeCells("C$row1:C$row3");
         // data
-        self::undertranslatedSmallHeadline($worksheet, $translator, 'Contract No.', 'B', $row1);
+        $worksheet->setCellValue("B$row1", self::addTrans($translator, 'Contract No.', "\n"));
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Period Start', 'D', $row1);
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Period End', 'E', $row1);
-        self::undertranslatedSmallHeadline($worksheet, $translator, 'Payment Method', 'F', $row1);
+        $worksheet->setCellValue("F$row1", self::addTrans($translator, 'Payment Method', "\n"));
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Cash', 'H', $row1);
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Cheque', 'I', $row1);
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Bank', 'J', $row1);
@@ -249,10 +248,14 @@ class SmartcardInvoiceExport
         $worksheet->getRowDimension($row2)->setRowHeight(20);
         $worksheet->getRowDimension($row3)->setRowHeight(25);
         self::setSmallHeadline($worksheet, "B$row3:J$row3");
+        self::setSmallHeadline($worksheet, "B$row1");
+        self::setSmallHeadline($worksheet, "F$row1");
         self::setImportantFilledInfo($worksheet, "H$row3");
         self::setImportantFilledInfo($worksheet, "I$row3");
         self::setImportantFilledInfo($worksheet, "J$row3");
         self::setSmallBorder($worksheet, "B$row3:J$row3");
+        self::setSmallBorder($worksheet, "B$row1");
+        self::setSmallBorder($worksheet, "F$row1");
     }
 
     private static function buildBodyHeader(Worksheet $worksheet, TranslatorInterface $translator, SmartcardRedemptionBatch $batch, int $row): void
