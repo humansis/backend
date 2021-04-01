@@ -58,7 +58,7 @@
 		"symfony/symfony": "^4.4",
 		"symfony/templating": "^4.4",
 		"symfony/string": "^5.2",
-		"symfony/translation-contracts": "^2.3",
+		"symfony/contracts": "^1.1",
 		"tecnickcom/tcpdf": "^6.2",
 		"twig/twig": "^1.0||^2.0"
 	},
