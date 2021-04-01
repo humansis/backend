@@ -5,6 +5,12 @@ services:
 ##                                       CRUD                                        ##
 #######################################################################################
 
+    smartcard_purchase.repository:
+        class: VoucherBundle\Repository\SmartcardPurchaseRepository
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        arguments:
+            - VoucherBundle\Entity\SmartcardPurchase
+
     voucher.vendor_service:
         class: VoucherBundle\Utils\VendorService
         arguments: ['@doctrine.orm.entity_manager', '@validator', '@location_service', '@service_container']
