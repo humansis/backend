@@ -183,7 +183,7 @@ class SmartcardInvoiceExport
         // data
         self::undertranslatedSmallHeadline($worksheet, $translator, "Customer", "B", $row1);
         $worksheet->setCellValue("C$row1", self::addTrans($translator, $organization->getName(), self::EOL));
-        $worksheet->setCellValue("E$row1", self::addTrans($translator, 'Address: Idlib, Bardaqli, Syria', self::EOL));
+        $worksheet->setCellValue("E$row1", $translator->trans("{$organization->getName()} address in {$batch->getProject()->getIso3()}", [], 'invoice'));
         $worksheet->setCellValue("I$row1", $batch->getRedeemedAt()->format(self::DATE_FORMAT));
         self::undertranslatedSmallHeadline($worksheet, $translator, "Invoice Date", "H", $row1);
         // style
