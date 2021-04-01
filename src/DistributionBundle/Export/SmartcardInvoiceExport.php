@@ -138,7 +138,7 @@ class SmartcardInvoiceExport
 
         // Temporary Invoice No. box
         $countryIso3 = $batch->getProject()->getIso3();
-        $humansisId = sprintf('%05d', $batch->getId());
+        $humansisId = sprintf('%06d', $batch->getId());
         $vendor = sprintf('%03d', $batch->getVendor()->getId());
         $date = $batch->getRedeemedAt()->format('y');
         $worksheet->setCellValue('B2', 'Temporary Invoice No.');
