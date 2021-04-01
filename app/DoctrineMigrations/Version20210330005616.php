@@ -88,8 +88,7 @@ final class Version20210330005616 extends AbstractMigration
               ENGINE = InnoDB
         ');
 
-        $this->addSql('ALTER TABLE user CHANGE roles roles VARCHAR(255) DEFAULT \'blabla\'');
-
+        $this->addSql('ALTER TABLE user DROP roles');
     }
 
     public function down(Schema $schema): void
