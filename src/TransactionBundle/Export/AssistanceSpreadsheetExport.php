@@ -115,24 +115,24 @@ class AssistanceSpreadsheetExport
             'font' => ['italic' => true],
         ];
 
-        $worksheet->getRowDimension('1')->setRowHeight(05.76);
-        $worksheet->getRowDimension('2')->setRowHeight(66.96);
-        $worksheet->getRowDimension('3')->setRowHeight(09.36);
-        $worksheet->getRowDimension('4')->setRowHeight(15.12);
-        $worksheet->getRowDimension('5')->setRowHeight(15.12);
-        $worksheet->getRowDimension('6')->setRowHeight(09.36);
-        $worksheet->getRowDimension('7')->setRowHeight(15.12);
-        $worksheet->getRowDimension('8')->setRowHeight(15.12);
-        $worksheet->getRowDimension('9')->setRowHeight(09.36);
-        $worksheet->getRowDimension('10')->setRowHeight(13.00);
-        $worksheet->getRowDimension('11')->setRowHeight(13.00);
-        $worksheet->getRowDimension('12')->setRowHeight(13.00);
-        $worksheet->getRowDimension('13')->setRowHeight(13.00);
-        $worksheet->getRowDimension('14')->setRowHeight(09.36);
-        $worksheet->getRowDimension('15')->setRowHeight(12.24);
-        $worksheet->getRowDimension('16')->setRowHeight(18.00);
-        $worksheet->getRowDimension('17')->setRowHeight(18.00);
-        $worksheet->getRowDimension('18')->setRowHeight(12.24);
+        $worksheet->getRowDimension(1)->setRowHeight(05.76);
+        $worksheet->getRowDimension(2)->setRowHeight(66.96);
+        $worksheet->getRowDimension(3)->setRowHeight(09.36);
+        $worksheet->getRowDimension(4)->setRowHeight(15.12);
+        $worksheet->getRowDimension(5)->setRowHeight(15.12);
+        $worksheet->getRowDimension(6)->setRowHeight(09.36);
+        $worksheet->getRowDimension(7)->setRowHeight(15.12);
+        $worksheet->getRowDimension(8)->setRowHeight(15.12);
+        $worksheet->getRowDimension(9)->setRowHeight(09.36);
+        $worksheet->getRowDimension(10)->setRowHeight(13.00);
+        $worksheet->getRowDimension(11)->setRowHeight(13.00);
+        $worksheet->getRowDimension(12)->setRowHeight(13.00);
+        $worksheet->getRowDimension(13)->setRowHeight(13.00);
+        $worksheet->getRowDimension(14)->setRowHeight(09.36);
+        $worksheet->getRowDimension(15)->setRowHeight(12.24);
+        $worksheet->getRowDimension(16)->setRowHeight(18.00);
+        $worksheet->getRowDimension(17)->setRowHeight(18.00);
+        $worksheet->getRowDimension(18)->setRowHeight(12.24);
 
         $worksheet->getCell('B2')->setValue('DISTRIBUTION LIST');
         $worksheet->getCell('B2')->getStyle()->applyFromArray($titleStyle);
@@ -323,7 +323,7 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('K19')->setValue('Signature');
         $worksheet->getStyle('B19:K19')->applyFromArray($rowStyle);
         $worksheet->getStyle('B19:K19')->getFont()->setBold(true);
-        $worksheet->getRowDimension('19')->setRowHeight(42.00);
+        $worksheet->getRowDimension(19)->setRowHeight(42.00);
 
         $worksheet->setCellValue('B20', $this->translator->trans('No.'));
         $worksheet->setCellValue('C20', $this->translator->trans('First Name'));
@@ -337,7 +337,7 @@ class AssistanceSpreadsheetExport
         $worksheet->setCellValue('K20', $this->translator->trans('Signature'));
         $worksheet->getStyle('B20:K20')->applyFromArray($rowStyle);
         $worksheet->getStyle('B20:K20')->getFont()->setItalic(true);
-        $worksheet->getRowDimension('20')->setRowHeight(42.00);
+        $worksheet->getRowDimension(20)->setRowHeight(42.00);
 
         $worksheet->getStyle('B19:K19')->getBorders()
             ->getTop()
