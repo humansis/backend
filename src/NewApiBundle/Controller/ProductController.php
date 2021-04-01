@@ -97,14 +97,13 @@ class ProductController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/products/{id}/images")
+     * @Rest\Post("/products/images")
      *
-     * @param Product $product
      * @param Request $request
      *
      * @return JsonResponse
      */
-    public function uploadImage(Product $product, Request $request): JsonResponse
+    public function uploadImage(Request $request): JsonResponse
     {
         if (!($file = $request->files->get('file'))) {
             throw new BadRequestHttpException('File missing.');
@@ -115,11 +114,6 @@ class ProductController extends AbstractController
         }
 
         $url = $this->uploadService->upload($file, 'products');
-
-        $product->setImage($url);
-
-        $this->getDoctrine()->getManager()->persist($product);
-        $this->getDoctrine()->getManager()->flush();
 
         return $this->json(['url' => $url]);
     }
