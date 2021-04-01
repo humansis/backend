@@ -26,10 +26,10 @@
             <trans-unit id="Itemized breakdown in Annex I"><source>Itemized breakdown in Annex I</source><target>تفاصيل المواد في الملحق 1</target></trans-unit>
             <trans-unit id="SmartCards redemption payment - Cash"><source>SmartCards redemption payment - Cash</source><target>دفع مقابل صرف البطاقات الذكية - نقداً</target></trans-unit>
             <trans-unit id="redemption_payment_cash_description"><source>redemption_payment_cash_description</source><target>Itemized breakdown available from internal system under internal HUM Nr.</target></trans-unit>
-            <trans-unit id="Total Amount to be Paid"><source>Total Amount to be Paid</source><target>لمبلغ الذي سيتم دفعه</target></trans-unit>
+            <trans-unit id="Total Amount to be Paid"><source>Total Amount to be Paid</source><target>المبلغ الذي سيتم دفعه</target></trans-unit>
             <trans-unit id="Signature/Name"><source>Signature/Name</source><target>التوقيع \ الأسم</target></trans-unit>
             <trans-unit id="Signature/Name/Position"><source>Signature/Name/Position</source><target>التوقيع \ الأسم \ المنصب</target></trans-unit>
-            <trans-unit id="Supplier's Signature"><source>Supplier's Signature</source><target>وقيع المزود</target></trans-unit>
+            <trans-unit id="Supplier's Signature"><source>Supplier's Signature</source><target>توقيع المزود</target></trans-unit>
             <trans-unit id="People in Need"><source>People in Need</source><target>الناس في حاجة</target></trans-unit>
             <trans-unit id="People in Need Signature"><source>People in Need Signature</source><target>توقيع الناس في حاجة</target></trans-unit>
             <trans-unit id="Period Start"><source>Period Start</source><target>تاريخ البدء</target></trans-unit>
