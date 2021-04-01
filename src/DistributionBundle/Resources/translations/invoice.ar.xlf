@@ -49,8 +49,7 @@
             <trans-unit id="purchase_unit"><source>purchase_unit</source><target>Unit</target></trans-unit>
             <trans-unit id="purchase_item_total"><source>purchase_item_total</source><target>Total per Item</target></trans-unit>
             <trans-unit id="Total per Vendor and Period"><source>Total per Vendor and Period</source><target>الإجمالي لكل بائع والفترة</target></trans-unit>
-            <trans-unit id="Ks"><source>Ks</source><target>~الم~</target></trans-unit>
-            <trans-unit id="toothbrush"><source>toothbrush</source><target>~تفصيل المواد~</target></trans-unit>
+            <trans-unit id="Address: Idlib, Bardaqli, Syria"><source>Address: Idlib, Bardaqli, Syria</source><target>العنوان: ادلب ,البردقلي,سوريا</target></trans-unit>
         </body>
     </file>
 </xliff>
