@@ -24,6 +24,7 @@ use VoucherBundle\Entity\SmartcardRedemptionBatch;
 class SmartcardInvoiceExport
 {
     const TEMPLATE_VERSION = '1.2';
+    const DATE_FORMAT = 'j-n-y';
 
     /** @var TranslatorInterface */
     private $translator;
@@ -169,16 +170,18 @@ class SmartcardInvoiceExport
         $worksheet->mergeCells("I$row1:J$row2");
         // data
         self::undertranslatedSmallHeadline($worksheet, $translator, "Customer", "B", $row1);
-        $worksheet->setCellValue("C$row1", $organization->getName());
+        self::sidetranslated($worksheet, $translator, $organization->getName(), "C", $row1);
         $worksheet->setCellValue("E$row1", $locationMapper->toName($batch->getVendor()->getLocation()));
-        $worksheet->setCellValue("I$row1", $batch->getRedeemedAt()->format("j-n-y"));
+        $worksheet->setCellValue("I$row1", $batch->getRedeemedAt()->format(self::DATE_FORMAT));
         self::undertranslatedSmallHeadline($worksheet, $translator, "Invoice Date", "H", $row1);
         // style
         $worksheet->getRowDimension("$row1")->setRowHeight(25);
         $worksheet->getRowDimension("$row2")->setRowHeight(25);
         $worksheet->getStyle("E$row1")->getAlignment()->setWrapText(true);
+        $worksheet->getStyle("B$row1")->getAlignment()->setWrapText(true);
         self::setImportantFilledInfo($worksheet, "C$row1:G$row2");
         self::setImportantFilledInfo($worksheet, "I$row1:J$row2");
+        self::setSmallHeadline($worksheet, "E$row1:G$row2");
         self::setSmallBorder($worksheet, "C$row1:D$row2");
         self::setSmallBorder($worksheet, "E$row1:G$row2");
         self::setSmallBorder($worksheet, "I$row1:J$row2");
@@ -214,11 +217,10 @@ class SmartcardInvoiceExport
         $row3 = $row1+2;
 
         // structure
-        $worksheet->mergeCells("B$row2:B$row3");
         $worksheet->mergeCells("F$row1:G$row1");
-        $worksheet->mergeCells("F$row2:G$row3");
-        $worksheet->mergeCells("C$row1:C$row1");
-        $worksheet->mergeCells("C$row2:C$row3");
+        $worksheet->mergeCells("F$row2:G$row2");
+        $worksheet->mergeCells("F$row3:G$row3");
+        $worksheet->mergeCells("C$row1:C$row3");
         // data
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Contract No.', 'B', $row1);
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Period Start', 'D', $row1);
@@ -227,6 +229,18 @@ class SmartcardInvoiceExport
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Cash', 'H', $row1);
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Cheque', 'I', $row1);
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Bank', 'J', $row1);
+        $firstPurchaseDate = null;
+        $lastPurchaseDate = null;
+        foreach ($batch->getPurchases() as $purchase) {
+            if (null === $firstPurchaseDate || $firstPurchaseDate > $purchase->getCreatedAt()->getTimestamp()) {
+                $firstPurchaseDate = $purchase->getCreatedAt()->getTimestamp();
+            }
+            if (null === $lastPurchaseDate || $lastPurchaseDate < $purchase->getCreatedAt()->getTimestamp()) {
+                $lastPurchaseDate = $purchase->getCreatedAt()->getTimestamp();
+            }
+        }
+        $worksheet->setCellValue("D$row3", date( self::DATE_FORMAT, $firstPurchaseDate));
+        $worksheet->setCellValue("E$row3", date( self::DATE_FORMAT, $lastPurchaseDate));
         $worksheet->setCellValue("H$row3", "x");
         $worksheet->setCellValue("I$row3", "");
         $worksheet->setCellValue("J$row3", "");
@@ -349,56 +363,75 @@ class SmartcardInvoiceExport
     private static function buildAnnex(Worksheet $worksheet, TranslatorInterface $translator, SmartcardRedemptionBatch $batch, int $lineStart): int
     {
         // header
-        $worksheet->setCellValue('B'.$lineStart, $translator->trans('annex', [], 'invoice'));
-        $worksheet->setCellValue('C'.$lineStart, $translator->trans('annex_description', [], 'invoice'));
+        $worksheet->mergeCells("C$lineStart:E$lineStart");
+        self::sidetranslatedSmallHeadline($worksheet, $translator, 'Annex I', "B", $lineStart);
+        self::sidetranslatedSmallHeadline($worksheet, $translator, 'Itemized Breakdown', "C", $lineStart);
 
         // table header
-        $lineStart += 2;
-        $worksheet->setCellValue('B'.$lineStart, $translator->trans('purchase_customer_id', [], 'invoice'));
-        $worksheet->setCellValue('C'.$lineStart, $translator->trans('purchase_customer_first_name', [], 'invoice'));
-        $worksheet->setCellValue('D'.$lineStart, $translator->trans('purchase_customer_family_name', [], 'invoice'));
-        $worksheet->setCellValue('E'.$lineStart, $translator->trans('purchase_date', [], 'invoice'));
-        $worksheet->setCellValue('F'.$lineStart, $translator->trans('purchase_time', [], 'invoice'));
-        $worksheet->setCellValue('G'.$lineStart, $translator->trans('purchase_item', [], 'invoice'));
-        $worksheet->setCellValue('H'.$lineStart, $translator->trans('purchase_unit', [], 'invoice'));
-        $worksheet->setCellValue('I'.$lineStart, $translator->trans('purchase_item_total', [], 'invoice'));
-        $worksheet->setCellValue('J'.$lineStart, $translator->trans('currency', [], 'invoice'));
-        $worksheet->getRowDimension($lineStart)->setRowHeight(50);
-        self::setSmallHeadline($worksheet, 'B'.$lineStart.':J'.$lineStart);
-        self::setSmallBorder($worksheet, 'B'.$lineStart.':J'.$lineStart);
-        self::setSoftBackground($worksheet, 'B'.$lineStart.':J'.$lineStart);
-        $worksheet->getStyle('B'.$lineStart.':J'.$lineStart)->getAlignment()->setWrapText(true);
+        $row1 = $lineStart + 2;
+        $row2 = $lineStart + 3;
+        $worksheet->mergeCells("B$row1:C$row1");
+        $worksheet->mergeCells("B$row2:C$row2");
+        $worksheet->mergeCells("G$row1:H$row1");
+        $worksheet->mergeCells("G$row2:H$row2");
+        self::undertranslatedSmallHeadline($worksheet, $translator, 'Item', "B", $row1);
+        self::undertranslatedSmallHeadline($worksheet, $translator, 'Quantity', "D", $row1);
+        self::undertranslatedSmallHeadline($worksheet, $translator, 'Unit', "E", $row1);
+        self::undertranslatedSmallHeadline($worksheet, $translator, 'Unit Price', "F", $row1);
+        self::undertranslatedSmallHeadline($worksheet, $translator, 'Total Amount per Item', "G", $row1);
+        self::undertranslatedSmallHeadline($worksheet, $translator, 'Currency', "I", $row1);
+        $worksheet->getRowDimension($row1)->setRowHeight(18);
+        $worksheet->getRowDimension($row2)->setRowHeight(18);
+        self::setSmallBorder($worksheet, "B$row1:I$row2");
+        $worksheet->getStyle("B$row1:I$row2")->getAlignment()->setWrapText(true);
+        self::setSoftBackground($worksheet, "B$row1:I$row2");
 
         // table with purchases
+        $lineStart += 3;
+        $purchasedProducts = [];
         foreach ($batch->getPurchases() as $purchase) {
             foreach ($purchase->getRecords() as $record) {
-                ++$lineStart;
-                $worksheet->setCellValue('B'.$lineStart, $purchase->getSmartcard()->getBeneficiary()->getId());
-                $worksheet->setCellValue('C'.$lineStart, $purchase->getSmartcard()->getBeneficiary()->getPerson()->getLocalGivenName());
-                $worksheet->setCellValue('D'.$lineStart, $purchase->getSmartcard()->getBeneficiary()->getPerson()->getLocalFamilyName());
-                $worksheet->setCellValue('E'.$lineStart, $purchase->getCreatedAt()->format('Y-m-d'));
-                $worksheet->setCellValue('F'.$lineStart, $purchase->getCreatedAt()->format('H:i'));
-                $worksheet->setCellValue('G'.$lineStart, $record->getProduct()->getName());
-                $worksheet->setCellValue('H'.$lineStart, $record->getProduct()->getUnit());
-                $worksheet->setCellValue('I'.$lineStart, sprintf('%.2f', $record->getValue()));
-                $worksheet->setCellValue('J'.$lineStart, $purchase->getSmartcard()->getCurrency());
-
-                self::setSmallBorder($worksheet, 'B'.$lineStart.':J'.$lineStart);
+                if (!isset($purchasedProducts[$record->getProduct()->getId()])) {
+                    $purchasedProducts[$record->getProduct()->getId()] = [
+                        'name' => $record->getProduct()->getName(),
+                        'qty' => $record->getQuantity(),
+                        'unit' => $record->getProduct()->getUnit(),
+                        'value' => $record->getValue(),
+                        'currency' => $record->getCurrency(),
+                    ];
+                } else {
+                    $purchasedProducts[$record->getProduct()->getId()]['qty'] += $record->getQuantity();
+                    $purchasedProducts[$record->getProduct()->getId()]['value'] += $record->getValue();
+                }
             }
+        }
+        foreach ($purchasedProducts as $purchasedProduct) {
+            ++$lineStart;
+            $worksheet->mergeCells("B$lineStart:C$lineStart");
+            $worksheet->mergeCells("G$lineStart:H$lineStart");
+            self::sidetranslated($worksheet, $translator, $purchasedProduct['name'], "B", $lineStart);
+            $worksheet->setCellValue('D'.$lineStart, $purchasedProduct['qty']);
+            self::sidetranslated($worksheet, $translator, $purchasedProduct['unit'], "E", $lineStart);
+            $worksheet->setCellValue('F'.$lineStart, '');
+            $worksheet->setCellValue('G'.$lineStart, sprintf('%.2f', $purchasedProduct['value']));
+            $worksheet->setCellValue('I'.$lineStart, $purchasedProduct['currency']);
+            self::setSmallBorder($worksheet, "B$lineStart:I$lineStart");
         }
 
         // total
-        ++$lineStart;
-        $worksheet->mergeCells('F'.$lineStart.':H'.$lineStart);
+        $lineStart += 2;
+        $worksheet->mergeCells('C'.$lineStart.':F'.$lineStart);
+        $worksheet->mergeCells('G'.$lineStart.':H'.$lineStart);
         $currency = '';
         foreach ($batch->getPurchases() as $purchase) {
             $currency = $purchase->getSmartcard()->getCurrency();
             break;
         }
-        $worksheet->setCellValue('F'.$lineStart, $translator->trans('purchase_total', [], 'invoice'));
-        $worksheet->setCellValue('I'.$lineStart, sprintf('%.2f', $batch->getValue()));
-        $worksheet->setCellValue('J'.$lineStart, $currency);
-        self::setSmallHeadline($worksheet,'F'.$lineStart);
+        self::sidetranslatedSmallHeadline($worksheet, $translator, 'Total per Vendor and Period', "C", $lineStart);
+        $worksheet->setCellValue('G'.$lineStart, sprintf('%.2f', $batch->getValue()));
+        $worksheet->setCellValue('I'.$lineStart, $currency);
+        self::setSmallHeadline($worksheet,"C$lineStart:I$lineStart");
+        self::setSmallBorder($worksheet,"C$lineStart:I$lineStart");
 
         return $lineStart+1;
     }
@@ -430,7 +463,7 @@ class SmartcardInvoiceExport
         $nextRow += 2;
         $worksheet->mergeCells('B'.$nextRow.':D'.$nextRow);
         $worksheet->mergeCells('E'.$nextRow.':J'.$nextRow);
-        self::sidetranslated($worksheet, $translator, "People in Need Signature", "B", $nextRow);
+        self::sidetranslated($worksheet, $translator, $organization->getName()." Signature", "B", $nextRow);
         $worksheet->getRowDimension($nextRow)->setRowHeight(40);
         $worksheet->getStyle('B'.$nextRow.':D'.$nextRow)->getFont()
             ->setSize(12);
@@ -451,7 +484,7 @@ class SmartcardInvoiceExport
         // Template version: [v]
         ++$nextRow;
         self::setMinorText($worksheet, 'H'.$nextRow.':H'.($nextRow+2));
-        $worksheet->setCellValue('H'.$nextRow, $translator->trans('template_version', ['versionNumber'=>self::TEMPLATE_VERSION], 'invoice'));
+        $worksheet->setCellValue('H'.$nextRow, $translator->trans('Invoice template version', ['versionNumber'=>self::TEMPLATE_VERSION], 'invoice'));
         // Generated by: [login or PIN staff name]
         ++$nextRow;
         self::setMinorText($worksheet, 'H'.$nextRow.':H'.($nextRow+2));
