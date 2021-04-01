@@ -342,7 +342,7 @@ class SmartcardInvoiceExport
             'SmartCards redemption payment - Cash',
             '',
             '',
-            $currency,
+            '',
             $rowFrom
         );
         $worksheet->getStyle("B$rowFrom:G$rowTo")->getFont()->getColor()->setRGB('C0C0C0');
