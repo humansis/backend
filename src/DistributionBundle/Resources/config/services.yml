@@ -114,4 +114,5 @@ services:
         arguments:
             - '@translator'
             - '@CommonBundle\Mapper\LocationMapper'
+            - '@smartcard_purchase.repository'
         public: true

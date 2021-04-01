@@ -20,6 +20,7 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Translation\TranslatorInterface;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\SmartcardRedemptionBatch;
+use VoucherBundle\Repository\SmartcardPurchaseRepository;
 
 class SmartcardInvoiceExport
 {
@@ -32,16 +33,23 @@ class SmartcardInvoiceExport
     /** @var LocationMapper */
     private $locationMapper;
 
+    /** @var SmartcardPurchaseRepository */
+    private $purchaseRepository;
+
     /**
      * SmartcardInvoiceExport constructor.
      *
      * @param TranslatorInterface $translator
-     * @param LocationMapper      $locationMapper
+     * @param LocationMapper $locationMapper
+     * @param SmartcardPurchaseRepository $purchaseRepository
      */
-    public function __construct(TranslatorInterface $translator, LocationMapper $locationMapper)
+    public function __construct(TranslatorInterface $translator, LocationMapper $locationMapper,
+                                SmartcardPurchaseRepository $purchaseRepository
+    )
     {
         $this->translator = $translator;
         $this->locationMapper = $locationMapper;
+        $this->purchaseRepository = $purchaseRepository;
     }
 
     public function export(SmartcardRedemptionBatch $batch, Organization $organization, User $user)
@@ -54,7 +62,7 @@ class SmartcardInvoiceExport
         $lastRow = self::buildHeader($worksheet, $this->translator, $organization, $batch, $this->locationMapper);
         $lastRow = self::buildBody($worksheet, $this->translator, $batch, $lastRow + 1);
         $lastRow = self::buildFooter($worksheet, $this->translator, $organization, $user, $lastRow + 3);
-        $lastRow = self::buildAnnex($worksheet, $this->translator, $batch, $lastRow + 2);
+        $lastRow = self::buildAnnex($worksheet, $this->translator, $this->purchaseRepository, $batch, $lastRow + 2);
         self::buildFooter($worksheet, $this->translator, $organization, $user, $lastRow + 3);
 
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
@@ -357,7 +365,7 @@ class SmartcardInvoiceExport
     }
 
 
-    private static function buildAnnex(Worksheet $worksheet, TranslatorInterface $translator, SmartcardRedemptionBatch $batch, int $lineStart): int
+    private static function buildAnnex(Worksheet $worksheet, TranslatorInterface $translator, SmartcardPurchaseRepository $purchaseRepository, SmartcardRedemptionBatch $batch, int $lineStart): int
     {
         // header
         $worksheet->mergeCells("C$lineStart:E$lineStart");
@@ -385,29 +393,13 @@ class SmartcardInvoiceExport
 
         // table with purchases
         $lineStart += 3;
-        $purchasedProducts = [];
-        foreach ($batch->getPurchases() as $purchase) {
-            foreach ($purchase->getRecords() as $record) {
-                if (!isset($purchasedProducts[$record->getProduct()->getId()])) {
-                    $purchasedProducts[$record->getProduct()->getId()] = [
-                        'name' => $record->getProduct()->getName(),
-                        'qty' => $record->getQuantity(),
-                        'unit' => $record->getProduct()->getUnit(),
-                        'value' => $record->getValue(),
-                        'currency' => $record->getCurrency(),
-                    ];
-                } else {
-                    $purchasedProducts[$record->getProduct()->getId()]['qty'] += $record->getQuantity();
-                    $purchasedProducts[$record->getProduct()->getId()]['value'] += $record->getValue();
-                }
-            }
-        }
+        $purchasedProducts = $purchaseRepository->countPurchasesRecordsByBatch($batch);
         foreach ($purchasedProducts as $purchasedProduct) {
             ++$lineStart;
             $worksheet->mergeCells("B$lineStart:C$lineStart");
             $worksheet->mergeCells("G$lineStart:H$lineStart");
             self::sidetranslated($worksheet, $translator, $purchasedProduct['name'], "B", $lineStart);
-            $worksheet->setCellValue('D'.$lineStart, $purchasedProduct['qty']);
+            $worksheet->setCellValue('D'.$lineStart, $purchasedProduct['quantity']);
             self::sidetranslated($worksheet, $translator, $purchasedProduct['unit'], "E", $lineStart);
             $worksheet->setCellValue('F'.$lineStart, '');
             $worksheet->setCellValue('G'.$lineStart, sprintf('%.2f', $purchasedProduct['value']));
