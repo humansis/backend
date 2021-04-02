@@ -4,18 +4,14 @@ declare(strict_types=1);
 
 namespace DistributionBundle\Export;
 
-use CommonBundle\Controller\CountryController;
 use CommonBundle\Entity\Organization;
 use CommonBundle\Mapper\LocationMapper;
-use CommonBundle\Utils\StringUtils;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -54,9 +50,8 @@ class SmartcardInvoiceExport
         $this->purchaseRepository = $purchaseRepository;
     }
 
-    public function export(SmartcardRedemptionBatch $batch, Organization $organization, User $user)
+    public function export(SmartcardRedemptionBatch $batch, Organization $organization, User $user, string $language)
     {
-        $language = CountryController::COUNTRIES[$batch->getProject()->getIso3()]['language'] ?? 'en';
         $this->translator->setLocale($language);
 
         $spreadsheet = new Spreadsheet();

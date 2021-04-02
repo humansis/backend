@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace CommonBundle\DataFixtures;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use CommonBundle\Controller\CountryController;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
@@ -29,11 +28,16 @@ class BookletFixtures extends Fixture implements FixtureGroupInterface, Dependen
     /** @var BookletService */
     private $bookletService;
 
+    private $countries = [];
 
-    public function __construct(Kernel $kernel, BookletService $bookletService)
+    public function __construct(Kernel $kernel, array $countries, BookletService $bookletService)
     {
         $this->kernel = $kernel;
         $this->bookletService = $bookletService;
+
+        foreach ($countries as $country) {
+            $this->countries[$country['iso3']] = $country;
+        }
     }
 
     /**
@@ -49,7 +53,7 @@ class BookletFixtures extends Fixture implements FixtureGroupInterface, Dependen
             return;
         }
 
-        foreach (CountryController::COUNTRIES as $country) {
+        foreach ($this->countries as $country) {
             $recipientCount = $manager->getRepository(Beneficiary::class)->countAllInCountry($country['iso3']);
             $project = $manager->getRepository(Project::class)->findOneBy(['iso3' => $country['iso3']]);
             $voucherAssistanceCount = count($manager->getRepository(Assistance::class)->getActiveByCountry($country['iso3']));
