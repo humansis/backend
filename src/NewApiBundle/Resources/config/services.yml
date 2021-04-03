@@ -51,6 +51,10 @@ services:
         resource: '../../Mapper'
         tags: [ 'app.mapper' ]
 
+    NewApiBundle\Mapper\SelectionCriterionFieldMapper:
+        arguments: [ '@translator' ]
+        tags: [ 'app.mapper' ]
+
     NewApiBundle\Mapper\ProjectMapper:
         arguments: [ '@project.project_service' ]
         tags: [ 'app.mapper' ]

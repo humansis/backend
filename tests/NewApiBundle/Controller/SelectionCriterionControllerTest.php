@@ -66,9 +66,9 @@ class SelectionCriterionControllerTest extends BMSServiceTestCase
         $this->assertJsonFragment('{
             "totalCount": "*",
             "data": [
-                {"code": "gender", "type": "gender"},
-                {"code": "dateOfBirth", "type": "date"},
-                {"code": "hasNotBeenInDistributionsSince", "type": "boolean"}
+                {"code": "gender", "type": "gender", "value": "Gender"},
+                {"code": "dateOfBirth", "type": "date", "value": "Date of Birth"},
+                {"code": "hasNotBeenInDistributionsSince", "type": "boolean", "value": "Has Not Been in a Distribution Since"}
             ]
         }', $this->client->getResponse()->getContent());
     }
