@@ -8,7 +8,8 @@ use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\Referral;
 use CommonBundle\Pagination\Paginator;
-use NewApiBundle\Utils\CodeLists;
+use NewApiBundle\Component\Codelist\CodeItem;
+use NewApiBundle\Component\Codelist\CodeLists;
 use ProjectBundle\Enum\Livelihood;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -28,7 +29,7 @@ class HouseholdCodelistController extends AbstractController
     {
         $data = [];
         foreach (Livelihood::values() as $code) {
-            $data[] = ['code' => $code, 'value' => Livelihood::translate($code)];
+            $data[] = new CodeItem($code, Livelihood::translate($code));
         }
 
         return $this->json(new Paginator($data));
@@ -41,10 +42,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function getAssets(): JsonResponse
     {
-        $data = [];
-        foreach (Household::ASSETS as $key => $value) {
-            $data[] = ['code' => $key, 'value' => $value];
-        }
+        $data = CodeLists::mapArray(Household::ASSETS);
 
         return $this->json(new Paginator($data));
     }

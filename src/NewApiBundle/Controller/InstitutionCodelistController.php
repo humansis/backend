@@ -6,7 +6,7 @@ namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Institution;
 use CommonBundle\Pagination\Paginator;
-use NewApiBundle\Utils\CodeLists;
+use NewApiBundle\Component\Codelist\CodeLists;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
