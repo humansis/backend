@@ -548,7 +548,6 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'createdAt' => '2020-02-02T12:00:00+0001',
             'distributionId' => $distribution->getId(),
         ]);
-        echo "\n".$this->client->getResponse()->getContent();
 
         /** @var Smartcard $smartcard */
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($nonexistentSmarcard);
