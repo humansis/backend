@@ -92,6 +92,11 @@ services:
         resource: '../../Request/ParamConverter'
         tags: [ 'request.param_converter' ]
 
+    NewApiBundle\Listener\AcceptHeaderListener:
+        arguments: [ '%app.locales%' ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.request }
+
     NewApiBundle\Listener\ErrorResponseListener:
         arguments: [ '%kernel.debug%' ]
         tags:
