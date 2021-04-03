@@ -57,6 +57,10 @@ services:
 
     NewApiBundle\Controller\AssistanceController:
 
+    NewApiBundle\Controller\CommonController:
+        arguments:
+            - '@NewApiBundle\Component\Country\Countries'
+
     NewApiBundle\Controller\DonorController:
         arguments:
             - '@NewApiBundle\Component\File\UploadService'
