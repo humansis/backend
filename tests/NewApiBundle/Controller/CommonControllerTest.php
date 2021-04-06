@@ -131,4 +131,28 @@ class CommonControllerTest extends BMSServiceTestCase
         );
         $this->assertJsonFragment('{"active": "Active"}', $this->client->getResponse()->getContent());
     }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetAdmsNames()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $this->request('GET', '/api/basic/adms');
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{
+            "adm1": "*",
+            "adm2": "*",
+            "adm3": "*",
+            "adm4": "*"
+        }', $this->client->getResponse()->getContent());
+    }
 }

@@ -7,13 +7,27 @@ namespace NewApiBundle\Controller;
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\Country\Countries;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Intl\Intl;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class CommonController extends AbstractController
 {
+    /** @var Countries */
+    private $countries;
+
+    /** @var TranslatorInterface */
+    private $translator;
+
+    public function __construct(Countries $countries, TranslatorInterface $translator)
+    {
+        $this->countries = $countries;
+        $this->translator = $translator;
+    }
+
     /**
      * @Rest\Get("/summaries")
      *
@@ -132,5 +146,32 @@ class CommonController extends AbstractController
         }
 
         return $this->json($data);
+    }
+
+    /**
+     * @Rest\Get("/adms")
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function adms(Request $request): JsonResponse
+    {
+        $countryIso3 = $request->headers->get('country', false);
+        if (!$countryIso3) {
+            throw new BadRequestHttpException('Missing country header');
+        }
+
+        $country = $this->countries->getCountry($countryIso3);
+        if (null === $country) {
+            throw $this->createNotFoundException('Country '.$countryIso3.' does not exists.');
+        }
+
+        return $this->json([
+            'adm1' => $this->translator->trans($country->getAdm1Name()),
+            'adm2' => $this->translator->trans($country->getAdm2Name()),
+            'adm3' => $this->translator->trans($country->getAdm3Name()),
+            'adm4' => $this->translator->trans($country->getAdm4Name()),
+        ]);
     }
 }

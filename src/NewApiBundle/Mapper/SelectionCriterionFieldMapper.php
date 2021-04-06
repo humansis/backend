@@ -5,11 +5,20 @@ namespace NewApiBundle\Mapper;
 
 use NewApiBundle\Component\SelectionCriteria\Structure\Field;
 use NewApiBundle\Serializer\MapperInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class SelectionCriterionFieldMapper implements MapperInterface
 {
     /** @var Field */
     private $object;
+
+    /** @var TranslatorInterface */
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
 
     /**
      * {@inheritdoc}
@@ -36,6 +45,11 @@ class SelectionCriterionFieldMapper implements MapperInterface
     public function getCode(): string
     {
         return $this->object->getCode();
+    }
+
+    public function getValue(): string
+    {
+        return $this->translator->trans($this->object->getCode());
     }
 
     public function getType(): string

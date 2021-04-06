@@ -51,11 +51,19 @@ services:
         resource: '../../Mapper'
         tags: [ 'app.mapper' ]
 
+    NewApiBundle\Mapper\SelectionCriterionFieldMapper:
+        arguments: [ '@translator' ]
+        tags: [ 'app.mapper' ]
+
     NewApiBundle\Mapper\ProjectMapper:
         arguments: [ '@project.project_service' ]
         tags: [ 'app.mapper' ]
 
     NewApiBundle\Controller\AssistanceController:
+
+    NewApiBundle\Controller\CommonController:
+        arguments:
+            - '@NewApiBundle\Component\Country\Countries'
 
     NewApiBundle\Controller\DonorController:
         arguments:
@@ -91,6 +99,11 @@ services:
     NewApiBundle\Request\ParamConverter\:
         resource: '../../Request/ParamConverter'
         tags: [ 'request.param_converter' ]
+
+    NewApiBundle\Listener\AcceptHeaderListener:
+        arguments: [ '%app.locales%' ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.request }
 
     NewApiBundle\Listener\ErrorResponseListener:
         arguments: [ '%kernel.debug%' ]

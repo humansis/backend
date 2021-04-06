@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace NewApiBundle\Utils;
+namespace NewApiBundle\Component\Codelist;
 
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use ProjectBundle\DTO\Sector;
@@ -13,7 +13,7 @@ class CodeLists
     {
         $data = [];
         foreach ($list as $value) {
-            $data[] = ['code' => $value, 'value' => $value];
+            $data[] = new CodeItem($value, $value);
         }
 
         return $data;
@@ -23,7 +23,7 @@ class CodeLists
     {
         $data = [];
         foreach ($list as $key => $value) {
-            $data[] = ['code' => (string) $key, 'value' => $value];
+            $data[] = new CodeItem($key, $value);
         }
 
         return $data;
@@ -35,7 +35,7 @@ class CodeLists
 
         /** @var Sector $subSector */
         foreach ($subSectors as $subSector) {
-            $data[] = ['code' => $subSector->getSubSectorName(), 'value' => $subSector->getSubSectorName()];
+            $data[] = new CodeItem($subSector->getSubSectorName(), $subSector->getSubSectorName());
         }
 
         return $data;
@@ -47,7 +47,7 @@ class CodeLists
 
         /* @var VulnerabilityCriterion $criteria */
         foreach ($criterion as $criteria) {
-            $data[] = ['code' => (string) $criteria->getId(), 'value' => $criteria->getFieldString()];
+            $data[] = new CodeItem($criteria->getId(), $criteria->getFieldString());
         }
 
         return $data;
