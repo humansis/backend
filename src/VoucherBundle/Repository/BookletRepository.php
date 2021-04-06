@@ -3,6 +3,7 @@
 namespace VoucherBundle\Repository;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -19,6 +20,24 @@ use VoucherBundle\Entity\Booklet;
  */
 class BookletRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * @param Assistance  $assistance
+     * @param Beneficiary $beneficiary
+     *
+     * @return Booklet[]
+     */
+    public function findByAssistanceBeneficiary(Assistance $assistance, Beneficiary $beneficiary)
+    {
+        $qbr = $this->createQueryBuilder('b')
+            ->join('b.distribution_beneficiary', 'ab')
+            ->andWhere('ab.assistance = :assistance')
+            ->andWhere('ab.beneficiary = :beneficiary')
+            ->setParameter('assistance', $assistance)
+            ->setParameter('beneficiary', $beneficiary);
+
+        return $qbr->getQuery()->getResult();
+    }
+
     /**
      * Finds booklets with same code prefix and return latest
      *
