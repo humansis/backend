@@ -22,6 +22,39 @@ parameters:
                       SEK, SGD, SHP, SLL, SOS, SRD, SSP, STN, SYP, SZL, THB, TJS, TMT, TND, TOP, TRY, TTD, TWD, TZS, UAH,
                       UGX, USD, UYU, UZS, VES, VND, VUV, WST, XAF, XCD, XOF, XPF, YER, ZAR, ZMW ]
 
+    # countries supported in the application
+    app.countries:
+        - name: Cambodia
+          iso3: KHM
+          currency: KHR
+          adms: [ Province, District, Commune, Village ]
+
+        - name: Syria
+          iso3: SYR
+          currency: SYP
+          adms: [ Governorate, District, Sub-District, Block ]
+          language: ar # remove in 3.0
+
+        - name: Ukraine
+          iso3: UKR
+          currency: UAH
+          adms: [ Region, District, Community, Settlement ]
+
+        - name: Ethiopia
+          iso3: ETH
+          currency: ETB
+          adms: [ Region, Zone, Woreda, Village ]
+
+        - name: Mongolia
+          iso3: MNG
+          currency: MNT
+          adms: [ Province, District, Commune, Village ]
+
+        - name: Armenia
+          iso3: ARM
+          currency: AMD
+          adms: [ Province, District, Commune, Village ]
+
 framework:
     #esi: ~
     translator:

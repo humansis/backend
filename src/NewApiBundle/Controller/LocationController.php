@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-use CommonBundle\Controller\CountryController;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
@@ -12,6 +11,7 @@ use CommonBundle\Entity\Adm4;
 use CommonBundle\Entity\Location;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\InputType\LocationFilterInputType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,6 +19,14 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class LocationController extends AbstractController
 {
+    /** @var Countries */
+    private $countries;
+
+    public function __construct(Countries $countries)
+    {
+        $this->countries = $countries;
+    }
+
     /**
      * @Rest\Get("/countries/{iso3}")
      *
@@ -28,10 +36,9 @@ class LocationController extends AbstractController
      */
     public function country(string $iso3): JsonResponse
     {
-        foreach (CountryController::COUNTRIES as $country) {
-            if ($iso3 === $country['iso3']) {
-                return $this->json($country);
-            }
+        $country = $this->countries->getCountry($iso3);
+        if (null !== $country) {
+            return $this->json($country);
         }
 
         throw $this->createNotFoundException();
@@ -44,7 +51,7 @@ class LocationController extends AbstractController
      */
     public function countries(): JsonResponse
     {
-        return $this->json(new Paginator(array_values(CountryController::COUNTRIES)));
+        return $this->json(new Paginator($this->countries->getAll()));
     }
 
     /**

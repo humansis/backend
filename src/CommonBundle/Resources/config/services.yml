@@ -119,6 +119,7 @@ services:
     CommonBundle\DataFixtures\BookletFixtures:
         arguments:
             - "@kernel"
+            - "%app.countries%"
             - "@voucher.booklet_service"
         tags:
             - { name: doctrine.fixture.orm }
@@ -140,6 +141,7 @@ services:
     CommonBundle\DataFixtures\Beneficiaries\InstitutionFixture:
         arguments:
             - "@=service('kernel').getEnvironment()"
+            - "%app.countries%"
             - "@beneficiary.institution_service"
         tags:
             - { name: doctrine.fixture.orm }
@@ -147,6 +149,7 @@ services:
     CommonBundle\DataFixtures\Beneficiaries\CommunityFixture:
         arguments:
             - "@=service('kernel').getEnvironment()"
+            - "%app.countries%"
             - "@beneficiary.community_service"
         tags:
             - { name: doctrine.fixture.orm }
@@ -154,6 +157,7 @@ services:
     CommonBundle\DataFixtures\AssistanceFixtures:
         arguments:
             - "@kernel"
+            - "%app.countries%"
             - "@distribution.assistance_service"
         tags:
             - { name: doctrine.fixture.orm }
@@ -221,13 +225,14 @@ services:
 
     CommonBundle\DataFixtures\ProductFixtures:
         arguments:
-            - "@kernel"
+            - "%app.countries%"
         tags:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\VendorFixtures:
         arguments:
             - "@kernel"
+            - "%app.countries%"
         tags:
             - { name: doctrine.fixture.orm }
 
