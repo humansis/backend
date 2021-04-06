@@ -23,7 +23,16 @@ class Transaction
     const FAILURE = 0;
     const SUCCESS = 1;
     const NO_PHONE = 2;
-    
+
+    public static function statuses()
+    {
+        return [
+            self::FAILURE => 'Failure',
+            self::SUCCESS => 'Success',
+            self::NO_PHONE => 'No Phone',
+        ];
+    }
+
     /**
      * @var int
      *

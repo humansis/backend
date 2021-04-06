@@ -2,6 +2,7 @@
 
 namespace CommonBundle\DataFixtures;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -40,7 +41,7 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
         // set up seed will make random values will be same for each run of fixtures
         srand(42);
 
-        foreach ($manager->getRepository(AssistanceBeneficiary::class)->findAll() as $ab) {
+        foreach ($this->getAssistanceBeneficiaries($manager) as $ab) {
             for ($j = 0; $j < rand(0, 2); ++$j) {
                 $this->generateNoPhoneTransaction($ab, $manager);
             }
@@ -128,6 +129,13 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($transaction);
 
         return $transaction;
+    }
+
+    private function getAssistanceBeneficiaries(ObjectManager $manager)
+    {
+        $beneficiaries = $manager->getRepository(Beneficiary::class)->findBy([], [], 100);
+
+        return $manager->getRepository(AssistanceBeneficiary::class)->findBy(['beneficiary' => $beneficiaries]);
     }
 
     public function getDependencies()

@@ -2,6 +2,10 @@
 
 namespace TransactionBundle\Repository;
 
+use BeneficiaryBundle\Entity\Beneficiary;
+use DistributionBundle\Entity\Assistance;
+use TransactionBundle\Entity\Transaction;
+
 /**
  * TransactionRepository
  *
@@ -10,5 +14,21 @@ namespace TransactionBundle\Repository;
  */
 class TransactionRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * @param Assistance  $assistance
+     * @param Beneficiary $beneficiary
+     *
+     * @return Transaction[]
+     */
+    public function findByAssistanceBeneficiary(Assistance $assistance, Beneficiary $beneficiary)
+    {
+        $qbr = $this->createQueryBuilder('t')
+            ->join('t.assistanceBeneficiary', 'ab')
+            ->andWhere('ab.assistance = :assistance')
+            ->andWhere('ab.beneficiary = :beneficiary')
+            ->setParameter('assistance', $assistance)
+            ->setParameter('beneficiary', $beneficiary);
 
+        return $qbr->getQuery()->getResult();
+    }
 }
