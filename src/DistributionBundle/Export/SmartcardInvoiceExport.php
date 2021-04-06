@@ -631,9 +631,25 @@ class SmartcardInvoiceExport
 
     private static function extractCountryIso3(Vendor $vendor): string
     {
-        if (!$vendor->getLocation() || $vendor->getLocation()->getAdm1()) {
+        if (!$vendor->getLocation()) {
            return 'ALL';
         }
-        return $vendor->getLocation()->getAdm1()->getCountryISO3();
+        $adm1 = null;
+        if ($vendor->getLocation()->getAdm1()) {
+            $adm1 = $vendor->getLocation()->getAdm1();
+        }
+        if ($vendor->getLocation()->getAdm2()) {
+            $adm1 = $vendor->getLocation()->getAdm2()->getAdm1();
+        }
+        if ($vendor->getLocation()->getAdm3()) {
+            $adm1 = $vendor->getLocation()->getAdm3()->getAdm2()->getAdm1();
+        }
+        if ($vendor->getLocation()->getAdm4()) {
+            $adm1 = $vendor->getLocation()->getAdm4()->getAdm3()->getAdm2()->getAdm1();
+        }
+        if (!$adm1) {
+            return 'ALL';
+        }
+        return $adm1->getCountryISO3();
     }
 }
