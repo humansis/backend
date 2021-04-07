@@ -2,6 +2,7 @@
 
 namespace VoucherBundle\Utils;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use DateTime;
 use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
@@ -35,6 +36,35 @@ class SmartcardService
         $this->purchaseService = $purchaseService;
     }
 
+    public function register(string $serialNumber, string $beneficiaryId, DateTime $createdAt): Smartcard
+    {
+        /** @var Smartcard $smartcard */
+        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
+        if (!$smartcard) {
+            $smartcard = new Smartcard($serialNumber, $createdAt);
+            $smartcard->setState(Smartcard::STATE_ACTIVE);
+        }
+
+        if ($smartcard->getBeneficiary() && $smartcard->getBeneficiary()->getId() !== $beneficiaryId) {
+            $smartcard->setSuspicious(true, sprintf('Beneficiary changed. #%s -> #%s',
+                $smartcard->getBeneficiary()->getId(),
+                $beneficiaryId
+            ));
+        }
+
+        /** @var Beneficiary $beneficiary */
+        $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryId);
+        if ($beneficiary) {
+            $smartcard->setBeneficiary($beneficiary);
+        } else {
+            $smartcard->setSuspicious(true, 'Beneficiary does not exists');
+        }
+
+        $this->em->persist($smartcard);
+        $this->em->flush();
+        return $smartcard;
+    }
+
     public function deposit(string $serialNumber, int $distributionId, $value, $balance, DateTimeInterface $createdAt, User $user): SmartcardDeposit
     {
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
@@ -48,13 +78,20 @@ class SmartcardService
 
         $distribution = $this->em->getRepository(Assistance::class)->find($distributionId);
         if (!$distribution) {
-            throw new NotFoundHttpException('Distribution does not exists.');
+            throw new NotFoundHttpException('Distribution does not exist.');
+        }
+        if (!$smartcard->getBeneficiary()) {
+            throw new NotFoundHttpException('Smartcard does not have assigned beneficiary.');
         }
 
         $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findByDistributionAndBeneficiary(
             $distribution,
             $smartcard->getBeneficiary()
         );
+
+        if (!$assistanceBeneficiary) {
+            throw new NotFoundHttpException("Distribution does not have smartcard's beneficiary.");
+        }
 
         $deposit = SmartcardDeposit::create(
             $smartcard,
@@ -114,6 +151,11 @@ class SmartcardService
         }
 
         return $this->purchaseService->purchaseSmartcard($smartcard, $data);
+    }
+
+    public function getRedemptionCandidates(Vendor $vendor): array
+    {
+        return $this->em->getRepository(SmartcardPurchase::class)->countPurchasesToRedeem($vendor);
     }
 
     /**
@@ -184,14 +226,32 @@ class SmartcardService
 
     public function extractPurchaseProjectId(SmartcardPurchase $purchase): ?int
     {
-        if (null === $purchase->getSmartcard()
-            || null === $purchase->getSmartcard()->getDeposit()
-            || null === $purchase->getSmartcard()->getDeposit()->getAssistanceBeneficiary()->getAssistance()
-            || null === $purchase->getSmartcard()->getDeposit()->getAssistanceBeneficiary()->getAssistance()->getProject()
+        if (null === $purchase->getSmartcard() || null === $purchase->getSmartcard()->getDeposites()) {
+            return null;
+        }
+        $deposits = $purchase->getSmartcard()->getDeposites()->toArray();
+        $purchaseDeposit = $this->getDeposit($deposits, $purchase->getCreatedAt());
+
+        if (null === $purchaseDeposit->getAssistanceBeneficiary()->getAssistance()
+            || null === $purchaseDeposit->getAssistanceBeneficiary()->getAssistance()->getProject()
         ) {
             return null;
         }
-        return $purchase->getSmartcard()->getDeposit()->getAssistanceBeneficiary()->getAssistance()->getProject()->getId();
+
+        return $purchaseDeposit->getAssistanceBeneficiary()->getAssistance()->getProject()->getId();
+    }
+
+    private function getDeposit(array $deposits, DateTimeInterface $purchaseDate): SmartcardDeposit
+    {
+        usort($deposits, function (SmartcardDeposit $d1, SmartcardDeposit $d2) {
+            return $d2->getCreatedAt()->getTimestamp() - $d1->getCreatedAt()->getTimestamp();
+        });
+        /** @var SmartcardDeposit $deposit */
+        foreach ($deposits as $deposit) {
+            if ($deposit->getCreatedAt()->getTimestamp() <= $purchaseDate->getTimestamp()) {
+                return $deposit;
+            }
+        }
     }
 
     protected function createSuspiciousSmartcard(string $serialNumber, DateTimeInterface $createdAt): Smartcard
