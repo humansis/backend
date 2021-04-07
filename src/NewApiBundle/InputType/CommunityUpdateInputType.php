@@ -49,8 +49,6 @@ class CommunityUpdateInputType implements InputTypeInterface
      *
      * @Assert\Length(max="255")
      * @Assert\Type("string")
-     * @Assert\NotBlank
-     * @Assert\NotNull
      */
     private $contactGivenName;
 
@@ -59,8 +57,6 @@ class CommunityUpdateInputType implements InputTypeInterface
      *
      * @Assert\Length(max="255")
      * @Assert\Type("string")
-     * @Assert\NotBlank
-     * @Assert\NotNull
      */
     private $contactFamilyName;
 
@@ -69,6 +65,7 @@ class CommunityUpdateInputType implements InputTypeInterface
      * @var AddressInputType $address
      *
      * @Assert\Valid
+     * @Assert\NotNull
      */
     private $address;
 
