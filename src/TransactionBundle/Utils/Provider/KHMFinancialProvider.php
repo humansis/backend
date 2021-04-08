@@ -167,7 +167,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
             $transaction->setMoneyReceived(true);
             $transaction->setPickupDate(new \DateTime());
             
-            $this->em->merge($transaction);
+            $this->em->persist($transaction);
             $this->em->flush();
         }
         

@@ -21,7 +21,7 @@ class BookletControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
     public function testCreate()
@@ -31,7 +31,7 @@ class BookletControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
         $this->request('POST', '/api/basic/booklets/batches', [
             'iso3' => 'KHM',
@@ -59,7 +59,7 @@ class BookletControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $booklet = $this->container->get('doctrine')->getRepository(Booklet::class)->findBy([])[0];
+        $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([])[0];
 
         $this->request('GET', '/api/basic/booklets/'.$booklet->getId());
 
@@ -116,7 +116,7 @@ class BookletControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $booklet = $this->container->get('doctrine')->getRepository(Booklet::class)->findBy([], ['id' => 'desc'], 1)[0];
+        $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([], ['id' => 'desc'], 1)[0];
 
         $this->request('DELETE', '/api/basic/booklets/'.$booklet->getId());
 
@@ -130,9 +130,9 @@ class BookletControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $doctrine = $this->container->get('doctrine');
+        $doctrine = self::$container->get('doctrine');
         $assistance = $doctrine->getRepository(Assistance::class)->findBy([])[0];
-        $beneficiary = $doctrine->getRepository(Beneficiary::class)->findBy([])[0];
+        $beneficiary = $assistance->getDistributionBeneficiaries()[0]->getBeneficiary();
         $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED])[0];
 
         $this->request('PUT', '/api/basic/assistances/'.$assistance->getId().'/beneficiaries/'.$beneficiary->getId().'/booklets/'.$booklet->getCode());
@@ -152,7 +152,7 @@ class BookletControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         /** @var Booklet $item */
-        $item = $this->container->get('doctrine')->getRepository(Booklet::class)->findBy([])[0];
+        $item = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([])[0];
         $assistanceId = $item->getAssistanceBeneficiary()->getAssistance()->getId();
         $beneficiaryId = $item->getAssistanceBeneficiary()->getBeneficiary()->getId();
 

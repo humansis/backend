@@ -194,7 +194,7 @@ class VendorService
                     $vendor->setLocation($location);
                 }
             }
-            $this->em->merge($vendor);
+            $this->em->persist($vendor);
             $this->em->flush();
         } catch (\Exception $e) {
             throw new \Exception('Error updating Vendor');
@@ -249,7 +249,7 @@ class VendorService
     {
         try {
             $vendor->setArchived($archiveVendor);
-            $this->em->merge($vendor);
+            $this->em->persist($vendor);
             $this->em->flush();
         } catch (\Exception $exception) {
             throw new \Exception('Error archiving Vendor');

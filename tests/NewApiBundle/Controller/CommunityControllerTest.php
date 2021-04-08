@@ -21,7 +21,7 @@ class CommunityControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
 
@@ -39,7 +39,7 @@ class CommunityControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         /** @var Location|null $location */
-        $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
         if (null === $location) {
             $this->markTestSkipped('There needs to be at least one location in system to complete this test');
@@ -106,7 +106,7 @@ class CommunityControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         /** @var Location|null $location */
-        $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
         $this->request('POST', '/api/basic/communities', [
             'address' => [
@@ -155,9 +155,9 @@ class CommunityControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         /** @var Location|null $location */
-        $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
         /** @var Project $project */
-        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
         $data = [
             'longitude' => 'test CHANGED',

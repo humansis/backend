@@ -18,7 +18,7 @@ class TransactionControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
     public function testListByAssistanceAndBeneficiary()
@@ -29,7 +29,7 @@ class TransactionControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         /** @var Transaction $item */
-        $item = $this->container->get('doctrine')->getRepository(Transaction::class)->findBy([])[0];
+        $item = self::$container->get('doctrine')->getRepository(Transaction::class)->findBy([])[0];
         $assistanceId = $item->getAssistanceBeneficiary()->getAssistance()->getId();
         $beneficiaryId = $item->getAssistanceBeneficiary()->getBeneficiary()->getId();
 

@@ -1,5 +1,9 @@
 services:
 
+    VoucherBundle\Controller\:
+        resource: '../../Controller'
+        public: true
+        tags: [ 'app.controller' ]
 
 #######################################################################################
 ##                                       CRUD                                        ##
@@ -42,6 +46,7 @@ services:
 
     voucher.purchase_service:
         class: VoucherBundle\Model\PurchaseService
+        public: true
         arguments: [ '@doctrine.orm.entity_manager' ]
 
     smartcard_service:
@@ -61,4 +66,5 @@ services:
         tags: [ 'app.mapper' ]
 
     VoucherBundle\Utils\BookletGenerator:
+        public: true
         arguments: [ '@doctrine.orm.entity_manager' ]

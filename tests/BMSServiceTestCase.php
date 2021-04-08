@@ -41,9 +41,6 @@ class BMSServiceTestCase extends KernelTestCase
     /** @var EntityManager $em */
     protected $em;
 
-    /** @var Container $container */
-    protected $container;
-
     /** @var SerializerInterface */
     protected $serializer;
 
@@ -247,24 +244,23 @@ class BMSServiceTestCase extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->container = static::$kernel->getContainer();
 
         //Preparing the EntityManager
-        $this->em = $this->container
+        $this->em = self::$container
             ->get('doctrine')
             ->getManager();
 
         //Mocking Serializer, Container
-        $this->serializer = $this->container
+        $this->serializer = self::$container
             ->get($this->defaultSerializerName);
 
         //Symdfony Validator
-        $this->validator = $this->container
+        $this->validator = self::$container
             ->get('validator');
 
         //setting the token_storage
-        $this->tokenStorage = $this->container->get('security.token_storage');
-        $this->householdService = $this->container->get('beneficiary.household_service');
+        $this->tokenStorage = self::$container->get('security.token_storage');
+        $this->householdService = self::$container->get('beneficiary.household_service');
     }
 
 
@@ -324,13 +320,13 @@ class BMSServiceTestCase extends KernelTestCase
 
     protected function mockContainer()
     {
-        $this->container = $this->getMockBuilder(Container::class)
+        self::$container = $this->getMockBuilder(Container::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->container->method('get')
+        self::$container->method('get')
             ->with($this->defaultSerializerName)
             ->will($this->returnValue($this->serializer));
-        return $this->container;
+        return self::$container;
     }
 
     protected function getUserToken(User $user)

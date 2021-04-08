@@ -128,11 +128,11 @@ doctrine:
                 levenshtein:        Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinFunction
                 levenshtein_ratio:  Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinRatioFunction
         metadata_cache_driver:
-            type: apcu
+            type: array
         result_cache_driver:
-            type: apcu
+            type: array
         query_cache_driver:
-            type: apcu
+            type: array
         hydrators:
             plain_values_hydrator: CommonBundle\Hydration\PlainValuesHydrator
 
@@ -172,14 +172,8 @@ fos_rest:
         view_response_listener: 'force'
         formats:
             json : true
-        templating_formats:
-            html: true
-        force_redirects:
-            html: true
         failed_validation: HTTP_BAD_REQUEST
-        default_engine: twig
-    routing_loader:
-        default_format: json
+    routing_loader: false
     serializer:
         serialize_null: true
 

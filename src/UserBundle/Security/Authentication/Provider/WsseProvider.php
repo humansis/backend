@@ -4,7 +4,7 @@ namespace UserBundle\Security\Authentication\Provider;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Core\Exception\NonceExpiredException;
+use Symfony\Component\Security\Core\Exception\AuthenticationExpiredException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use UserBundle\Security\Authentication\Token\WsseUserToken;
 
@@ -79,7 +79,7 @@ class WsseProvider implements AuthenticationProviderInterface
                 'server_time' => time(),
                 'conditition_time' => file_get_contents($this->cacheDir.'/'.$nonce) + 300,
             ]);
-            throw new NonceExpiredException('Previously used nonce detected');
+            throw new AuthenticationExpiredException('Previously used nonce detected');
         }
         // If cache directory does not exist we create it
         if (!is_dir($this->cacheDir)) {

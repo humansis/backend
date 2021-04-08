@@ -1,9 +1,30 @@
 services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    ReportingBundle\Controller\:
+        resource: '../../Controller'
+        public: true
+        tags: [ 'app.controller' ]
 
     reporting.reporting_service:
         class: ReportingBundle\Utils\ReportingService
         arguments: ['@doctrine.orm.entity_manager', '@service_container']
         public: true
+
+    reporting.code_indicator_command:
+        class: ReportingBundle\Command\ReportingCodeIndicatorAddCommand
+        public: true
+        tags:
+            - { name: 'console.command' }
+
+    reporting.data_indicator_command:
+        class: ReportingBundle\Command\ReportingDataIndicatorAddCommand
+        public: true
+        tags:
+            - { name: 'console.command' }
 
     ############################### Data Fillers ###############################
 
@@ -36,6 +57,7 @@ services:
 
     reporting.computer:
         class: ReportingBundle\Utils\Computers\Computer
+        public: true
         arguments: ['@doctrine.orm.entity_manager', '@reporting.data_retrievers.project']
 
     ############################### Data Retrievers ###############################
@@ -64,4 +86,5 @@ services:
 
     reporting.finder:
         class: ReportingBundle\Utils\Finders\Finder
+        public: true
         arguments: ['@doctrine.orm.entity_manager']
