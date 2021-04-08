@@ -120,12 +120,17 @@ class FieldDbTransformer
             ];
         }
 
+        $value = $input->getValue();
+        if ('gender' === $input->getField()) {
+            $value = ('M' === $input->getValue()) ? '1' : '0';
+        }
+
         return [
             'condition_string' => $input->getCondition(),
             'field_string' => $input->getField(),
             'target' => $input->getTarget(),
             'table_string' => 'Personnal',
-            'value_string' => $input->getValue(),
+            'value_string' => $value,
             'weight' => $input->getWeight(),
             'type' => 'table_field',
         ];
@@ -191,12 +196,17 @@ class FieldDbTransformer
             ];
         }
 
+        $value = $criterion->getValueString();
+        if ('gender' === $criterion->getFieldString()) {
+            $value = (1 == $criterion->getValueString()) ? 'M' : 'F';
+        }
+
         return [
             'group' => $criterion->getGroupNumber(),
             'target' => $criterion->getTarget(),
             'field' => $criterion->getFieldString(),
             'condition' => $criterion->getConditionString(),
-            'value' => $criterion->getValueString(),
+            'value' => $value,
             'weight' => $criterion->getWeight(),
         ];
     }

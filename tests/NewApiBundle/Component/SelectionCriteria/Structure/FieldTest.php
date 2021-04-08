@@ -12,7 +12,7 @@ class FieldTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        new Field('field', [], 'type');
+        new Field('field', 'Text label', [], 'type');
     }
 
     /**
@@ -23,7 +23,7 @@ class FieldTest extends TestCase
     public function testTypeShouldBeValid($type)
     {
         try {
-            new Field('field', [1], $type);
+            new Field('field', 'Text label', [1], $type);
 
             $this->assertTrue(true);
         } catch (\Exception $e) {
@@ -39,7 +39,7 @@ class FieldTest extends TestCase
     public function testCallbackShouldBeValid($callback)
     {
         try {
-            new Field('field', [1], 'integer', $callback);
+            new Field('field', 'Text label', [1], 'integer', $callback);
 
             $this->assertTrue(true);
         } catch (\Exception $e) {

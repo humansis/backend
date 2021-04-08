@@ -13,9 +13,9 @@ class HouseholdHeadFieldGenerator implements FieldGeneratorInterface
      */
     public function generate(?string $countryIso3)
     {
-        yield new Field('gender', ['='], 'gender', [self::class, 'validateGender']);
-        yield new Field('headOfHouseholdDateOfBirth', ['=', '<', '>', '<=', '>='], 'date', [self::class, 'validateDate']);
-        yield new Field('disabledHeadOfHousehold', ['='], 'boolean');
+        yield new Field('gender', 'Gender', ['='], 'gender', [self::class, 'validateGender']);
+        yield new Field('headOfHouseholdDateOfBirth', 'Date of Birth', ['=', '<', '>', '<=', '>='], 'date', [self::class, 'validateDate']);
+        yield new Field('disabledHeadOfHousehold', 'Disabled', ['='], 'boolean');
     }
 
     /**

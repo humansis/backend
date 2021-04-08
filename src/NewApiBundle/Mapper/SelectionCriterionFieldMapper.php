@@ -49,7 +49,7 @@ class SelectionCriterionFieldMapper implements MapperInterface
 
     public function getValue(): string
     {
-        return $this->translator->trans($this->object->getCode());
+        return $this->translator->trans($this->object->getLabel());
     }
 
     public function getType(): string
