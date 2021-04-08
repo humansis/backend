@@ -80,6 +80,7 @@ class BookletControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('totalValue', $result);
         $this->assertArrayHasKey('quantityOfVouchers', $result);
         $this->assertArrayHasKey('deletable', $result);
+        $this->assertArrayHasKey('distributed', $result);
     }
 
     /**

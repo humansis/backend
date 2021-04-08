@@ -82,4 +82,9 @@ class BookletMapper implements MapperInterface
     {
         return 0 === count($this->object->getVouchers());
     }
+
+    public function getDistributed(): bool
+    {
+        return Booklet::DISTRIBUTED === $this->object->getStatus();
+    }
 }
