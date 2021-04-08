@@ -106,7 +106,7 @@ class CommunityControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         /** @var Location|null $location */
-        $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
         $this->request('POST', '/api/basic/communities', [
             'address' => [

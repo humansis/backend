@@ -18,7 +18,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
     public function testListByAssistanceAndBeneficiary()
@@ -29,7 +29,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         /** @var SmartcardDeposit $item */
-        $item = $this->container->get('doctrine')->getRepository(SmartcardDeposit::class)->findBy([])[0];
+        $item = self::$container->get('doctrine')->getRepository(SmartcardDeposit::class)->findBy([])[0];
         $assistanceId = $item->getAssistanceBeneficiary()->getAssistance()->getId();
         $beneficiaryId = $item->getAssistanceBeneficiary()->getBeneficiary()->getId();
 

@@ -152,7 +152,7 @@ class BookletControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         /** @var Booklet $item */
-        $item = $this->container->get('doctrine')->getRepository(Booklet::class)->findBy([])[0];
+        $item = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([])[0];
         $assistanceId = $item->getAssistanceBeneficiary()->getAssistance()->getId();
         $beneficiaryId = $item->getAssistanceBeneficiary()->getBeneficiary()->getId();
 
