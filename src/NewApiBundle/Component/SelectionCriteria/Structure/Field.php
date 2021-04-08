@@ -8,6 +8,9 @@ class Field
     /** @var string */
     private $code;
 
+    /** @var string */
+    private $label;
+
     /** @var array */
     private $conditions;
 
@@ -17,7 +20,7 @@ class Field
     /** @var callable|null */
     private $callback;
 
-    public function __construct(string $code, array $conditions, string $type, ?callable $callback = null)
+    public function __construct(string $code, string $label, array $conditions, string $type, ?callable $callback = null)
     {
         if (count($conditions) <= 0) {
             throw new \InvalidArgumentException('Argument 3 is not valid array. Conditions must be non empty value');
@@ -35,6 +38,7 @@ class Field
         }
 
         $this->code = $code;
+        $this->label = $label;
         $this->conditions = $conditions;
         $this->type = $type;
         $this->callback = $callback;
@@ -43,6 +47,11 @@ class Field
     public function getCode(): string
     {
         return $this->code;
+    }
+
+    public function getLabel(): string
+    {
+        return $this->label;
     }
 
     public function getConditions(): array
