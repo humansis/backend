@@ -25,7 +25,7 @@ class BeneficiaryFieldGenerator implements FieldGeneratorInterface
     {
         yield new Field('gender', ['='], 'gender', [self::class, 'validateGender']);
         yield new Field('dateOfBirth', ['=', '<', '>', '<=', '>='], 'date', [self::class, 'validateDate']);
-        yield new Field('residency_status', ['='], 'residencyStatus', [self::class, 'validateResidencyStatus']);
+        yield new Field('residencyStatus', ['='], 'residencyStatus', [self::class, 'validateResidencyStatus']);
         yield new Field('hasNotBeenInDistributionsSince', ['='], 'boolean');
 
         foreach ($this->vulnerabilityCriterionRepository->findAllActive() as $vulnerabilityCriterion) {
