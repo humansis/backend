@@ -17,6 +17,7 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Translation\TranslatorInterface;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\SmartcardRedemptionBatch;
+use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
 
 class SmartcardInvoiceExport
@@ -52,6 +53,8 @@ class SmartcardInvoiceExport
 
     public function export(SmartcardRedemptionBatch $batch, Organization $organization, User $user, string $language)
     {
+        $countryIso3 = self::extractCountryIso3($batch->getVendor());
+
         $this->translator->setLocale($language);
 
         $spreadsheet = new Spreadsheet();
@@ -69,7 +72,6 @@ class SmartcardInvoiceExport
 
         $slugger = new AsciiSlugger();
 
-        $countryIso3 = $batch->getProject()->getIso3();
         $id = sprintf('%05d', $batch->getId());
         $vendorName = $slugger->slug($batch->getVendor()->getName());
         $invoiceName = "{$countryIso3}EFV{$id}{$vendorName}.xlsx";
@@ -132,7 +134,7 @@ class SmartcardInvoiceExport
         $worksheet->getRowDimension('5')->setRowHeight(26.80);
 
         // Temporary Invoice No. box
-        $countryIso3 = $batch->getProject()->getIso3();
+        $countryIso3 = self::extractCountryIso3($batch->getVendor());
         $humansisId = sprintf('%06d', $batch->getId());
         $vendor = sprintf('%03d', $batch->getVendor()->getId());
         $date = $batch->getRedeemedAt()->format('y');
@@ -178,7 +180,12 @@ class SmartcardInvoiceExport
         // data
         self::undertranslatedSmallHeadline($worksheet, $translator, "Customer", "B", $row1);
         $worksheet->setCellValue("C$row1", self::addTrans($translator, $organization->getName(), self::EOL));
-        $worksheet->setCellValue("E$row1", $translator->trans("{$organization->getName()} address in {$batch->getProject()->getIso3()}", [], 'invoice'));
+        $countryIso3 = self::extractCountryIso3($batch->getVendor());
+        if ($countryIso3 == 'ALL') {
+            $worksheet->setCellValue("E$row1", $translator->trans("{$organization->getName()} address missing", [], 'invoice'));
+        } else {
+            $worksheet->setCellValue("E$row1", $translator->trans("{$organization->getName()} address in $countryIso3", [], 'invoice'));
+        }
         $worksheet->setCellValue("I$row1", $batch->getRedeemedAt()->format(self::DATE_FORMAT));
         self::undertranslatedSmallHeadline($worksheet, $translator, "Invoice Date", "H", $row1);
         // style
@@ -616,5 +623,29 @@ class SmartcardInvoiceExport
         $worksheet->getStyle($cellCoordination)->getBorders()
             ->getAllBorders()
             ->setBorderStyle(Border::BORDER_THIN);
+    }
+
+    private static function extractCountryIso3(Vendor $vendor): string
+    {
+        if (!$vendor->getLocation()) {
+           return 'ALL';
+        }
+        $adm1 = null;
+        if ($vendor->getLocation()->getAdm1()) {
+            $adm1 = $vendor->getLocation()->getAdm1();
+        }
+        if ($vendor->getLocation()->getAdm2()) {
+            $adm1 = $vendor->getLocation()->getAdm2()->getAdm1();
+        }
+        if ($vendor->getLocation()->getAdm3()) {
+            $adm1 = $vendor->getLocation()->getAdm3()->getAdm2()->getAdm1();
+        }
+        if ($vendor->getLocation()->getAdm4()) {
+            $adm1 = $vendor->getLocation()->getAdm4()->getAdm3()->getAdm2()->getAdm1();
+        }
+        if (!$adm1) {
+            return 'ALL';
+        }
+        return $adm1->getCountryISO3();
     }
 }

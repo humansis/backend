@@ -31,7 +31,9 @@
             <trans-unit id="Signature/Name/Position"><source>Signature/Name/Position</source><target>التوقيع \ الأسم \ المنصب</target></trans-unit>
             <trans-unit id="Supplier's Signature"><source>Supplier's Signature</source><target>توقيع المزود</target></trans-unit>
             <trans-unit id="People in Need"><source>People in Need</source><target>الناس في حاجة</target></trans-unit>
+            <trans-unit id="People In Need"><source>People In Need</source><target>الناس في حاجة</target></trans-unit>
             <trans-unit id="People in Need Signature"><source>People in Need Signature</source><target>توقيع الناس في حاجة</target></trans-unit>
+            <trans-unit id="People In Need Signature"><source>People In Need Signature</source><target>توقيع الناس في حاجة</target></trans-unit>
             <trans-unit id="Period Start"><source>Period Start</source><target>تاريخ البدء</target></trans-unit>
             <trans-unit id="Period End"><source>Period End</source><target>تاريخ الانتهاء</target></trans-unit>
             <trans-unit id="Invoice template version"><source>Invoice template version</source><target>Invoice template version: versionNumber</target></trans-unit>
@@ -50,6 +52,9 @@
             <trans-unit id="purchase_item_total"><source>purchase_item_total</source><target>Total per Item</target></trans-unit>
             <trans-unit id="Total per Vendor and Period"><source>Total per Vendor and Period</source><target>الإجمالي لكل بائع والفترة</target></trans-unit>
             <trans-unit id="People in Need address in SYR"><source>People in Need address in SYR</source><target>Idlib, Bardaqli, Syria&#13;&#10;ادلب ,البردقلي,سوريا</target></trans-unit>
+            <trans-unit id="People in Need address missing"><source>People in Need address missing</source><target>Idlib, Bardaqli, Syria&#13;&#10;ادلب ,البردقلي,سوريا</target></trans-unit>
+            <trans-unit id="People In Need address in SYR"><source>People In Need address in SYR</source><target>Idlib, Bardaqli, Syria&#13;&#10;ادلب ,البردقلي,سوريا</target></trans-unit>
+            <trans-unit id="People In Need address missing"><source>People In Need address missing</source><target>Idlib, Bardaqli, Syria&#13;&#10;ادلب ,البردقلي,سوريا</target></trans-unit>
         </body>
     </file>
 </xliff>
