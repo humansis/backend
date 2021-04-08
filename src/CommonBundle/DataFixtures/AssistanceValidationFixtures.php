@@ -22,10 +22,16 @@ class AssistanceValidationFixtures extends Fixture implements DependentFixtureIn
 
     private $kernel;
 
-    public function __construct(Kernel $kernel, AssistanceService $assistanceService)
+    private $countries = [];
+
+    public function __construct(Kernel $kernel, array $countries, AssistanceService $assistanceService)
     {
         $this->assistanceService = $assistanceService;
         $this->kernel = $kernel;
+
+        foreach ($countries as $country) {
+            $this->countries[$country['iso3']] = $country;
+        }
     }
 
     /**
@@ -41,8 +47,13 @@ class AssistanceValidationFixtures extends Fixture implements DependentFixtureIn
             return;
         }
 
+<<<<<<< Updated upstream
         $assistances = $manager->getRepository(Assistance::class)->findBy([
         ]);
+=======
+        foreach ($this->countries as $iso3 => $details) {
+            $project = $manager->getRepository(Project::class)->findOneBy([], ['id' => 'desc']);
+>>>>>>> Stashed changes
 
         foreach ($assistances as $assistance) {
             if ($assistance->getId() % 2 === 0) {
@@ -53,8 +64,12 @@ class AssistanceValidationFixtures extends Fixture implements DependentFixtureIn
             }
             $manager->persist($assistance);
         }
+<<<<<<< Updated upstream
         echo "\n";
         $manager->flush();
+=======
+
+>>>>>>> Stashed changes
     }
 
     public function getDependencies(): array

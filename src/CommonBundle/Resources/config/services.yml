@@ -165,6 +165,7 @@ services:
     CommonBundle\DataFixtures\AssistanceValidationFixtures:
         arguments:
             - "@kernel"
+            - "%app.countries%"
             - "@distribution.assistance_service"
         tags:
             - { name: doctrine.fixture.orm }
