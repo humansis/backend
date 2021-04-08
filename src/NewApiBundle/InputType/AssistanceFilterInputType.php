@@ -24,6 +24,39 @@ class AssistanceFilterInputType extends AbstractFilterInputType
      */
     protected $upcoming;
 
+    /**
+     * @Assert\Type("array")
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Type("int", groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
+     */
+    protected $projects;
+
+    /**
+     * @Assert\Type("array")
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Type("int", groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
+     */
+    protected $locations;
+
+    /**
+     * @Assert\Type("array")
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Type("string", groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
+     */
+    protected $modalityTypes;
+
     public function hasIds(): bool
     {
         return $this->has('id');
@@ -42,5 +75,44 @@ class AssistanceFilterInputType extends AbstractFilterInputType
     public function getUpcomingOnly(): bool
     {
         return $this->upcoming;
+    }
+
+    public function hasProjects(): bool
+    {
+        return $this->has('projects');
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getProjects(): array
+    {
+        return $this->projects;
+    }
+
+    public function hasModalityTypes(): bool
+    {
+        return $this->has('modalityTypes');
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getModalityTypes(): array
+    {
+        return $this->modalityTypes;
+    }
+
+    public function hasLocations(): bool
+    {
+        return $this->has('locations');
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getLocations(): array
+    {
+        return $this->locations;
     }
 }
