@@ -71,9 +71,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         /** @var Project $project */
-        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
         /** @var Location $location */
-        $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
         $this->request('GET', '/api/basic/assistances?filter[modalityTypes][]=Smartcard&filter[projects][]='.$project->getId().'&filter[locations][]='.$location->getId());
 
