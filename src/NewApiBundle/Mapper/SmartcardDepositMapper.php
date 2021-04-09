@@ -3,12 +3,13 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
+use NewApiBundle\Component\Smartcard\EmptySmartcardDeposit;
 use NewApiBundle\Serializer\MapperInterface;
 use VoucherBundle\Entity\SmartcardDeposit;
 
 class SmartcardDepositMapper implements MapperInterface
 {
-    /** @var SmartcardDeposit */
+    /** @var SmartcardDeposit|EmptySmartcardDeposit */
     private $object;
 
     /**
@@ -16,7 +17,7 @@ class SmartcardDepositMapper implements MapperInterface
      */
     public function supports(object $object, $format = null, array $context = null): bool
     {
-        return $object instanceof SmartcardDeposit && isset($context[self::NEW_API]) && true === $context[self::NEW_API];
+        return ($object instanceof SmartcardDeposit || $object instanceof EmptySmartcardDeposit) && isset($context[self::NEW_API]) && true === $context[self::NEW_API];
     }
 
     /**
@@ -24,7 +25,7 @@ class SmartcardDepositMapper implements MapperInterface
      */
     public function populate(object $object)
     {
-        if ($object instanceof SmartcardDeposit) {
+        if ($object instanceof SmartcardDeposit || $object instanceof EmptySmartcardDeposit) {
             $this->object = $object;
 
             return;
@@ -33,9 +34,9 @@ class SmartcardDepositMapper implements MapperInterface
         throw new \InvalidArgumentException('Invalid argument. It should be instance of '.SmartcardDeposit::class.', '.get_class($object).' given.');
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
-        return $this->object->getId();
+        return $this->object instanceof SmartcardDeposit ? $this->object->getId() : null;
     }
 
     public function getValue()
@@ -43,18 +44,36 @@ class SmartcardDepositMapper implements MapperInterface
         return $this->object->getValue();
     }
 
-    public function getCurrency(): string
+    public function getCurrency(): ?string
     {
-        return $this->object->getSmartcard()->getCurrency();
+        if ($this->object instanceof SmartcardDeposit && $this->object->getSmartcard()) {
+            return $this->object->getSmartcard()->getCurrency();
+        }
+
+        return null;
     }
 
-    public function getSmartcard(): string
+    public function getSmartcard(): ?string
     {
-        return $this->object->getSmartcard()->getSerialNumber();
+        if ($this->object instanceof SmartcardDeposit && $this->object->getSmartcard()) {
+            return $this->object->getSmartcard()->getSerialNumber();
+        }
+
+        return null;
     }
 
-    public function getDepositorId(): int
+    public function getDepositorId(): ?int
     {
-        return $this->object->getDepositor()->getId();
+        return $this->object instanceof SmartcardDeposit ? $this->object->getDepositor()->getId() : null;
+    }
+
+    public function getDistributed(): bool
+    {
+        return $this->object instanceof SmartcardDeposit;
+    }
+
+    public function getDateOfDistribution(): ?string
+    {
+        return $this->object instanceof SmartcardDeposit ? $this->object->getCreatedAt()->format(\DateTime::ISO8601) : null;
     }
 }
