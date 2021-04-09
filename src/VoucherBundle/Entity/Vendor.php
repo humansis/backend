@@ -329,6 +329,8 @@ class Vendor implements ExportableInterface
             "Address number" => $this->getAddressNumber(),
             "Address street" => $this->getAddressStreet(),
             "Address postcode" => $this->getAddressPostcode(),
+            'Contract No.' => $this->getContractNo(),
+            'Vendor No.'=> $this->getVendorNo(),
             "adm1" => $adm1,
             "adm2" =>$adm2,
             "adm3" =>$adm3,
