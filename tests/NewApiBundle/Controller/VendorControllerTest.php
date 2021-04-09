@@ -60,7 +60,7 @@ class VendorControllerTest extends BMSServiceTestCase
 
         $this->request('POST', '/api/basic/vendors', [
             'shop' => 'test shop',
-            'name' => 'test name',
+            'name' => $this->vendorUsername,
             'addressStreet' => 'test street',
             'addressNumber' => '1234566',
             'addressPostcode' => '039 98',
@@ -108,7 +108,7 @@ class VendorControllerTest extends BMSServiceTestCase
 
         $this->request('PUT', '/api/basic/vendors/'.$vendor['id'], [
             'shop' => 'edited',
-            'name' => $vendor['name'],
+            'name' => $this->vendorUsername,
             'addressStreet' => $vendor['addressStreet'],
             'addressNumber' => $vendor['addressNumber'],
             'addressPostcode' => '0000',
