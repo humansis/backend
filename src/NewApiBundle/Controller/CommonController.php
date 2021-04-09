@@ -11,7 +11,7 @@ use NewApiBundle\Component\Country\Countries;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Intl\Intl;
+use Symfony\Component\Intl\Currencies;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class CommonController extends AbstractController
@@ -119,7 +119,7 @@ class CommonController extends AbstractController
         foreach ($this->getParameter('app.currencies') as $currency) {
             $data[] = [
                 'code' => $currency,
-                'value' => Intl::getCurrencyBundle()->getCurrencyName($currency),
+                'value' => Currencies::getName($currency),
             ];
         }
 

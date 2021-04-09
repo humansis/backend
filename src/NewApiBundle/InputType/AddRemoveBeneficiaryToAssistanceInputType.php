@@ -41,7 +41,7 @@ class AddRemoveBeneficiaryToAssistanceInputType implements InputTypeInterface
      */
     protected $justification;
 
-    public function validate($object, ExecutionContextInterface $context, $payload)
+    public static function validate($object, ExecutionContextInterface $context, $payload)
     {
         if ($object->getAdded() !== true && $object->getRemoved() !== true) {
             $context->buildViolation('One of added/removed attributes must be set.')

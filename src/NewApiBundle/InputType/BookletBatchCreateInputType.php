@@ -70,7 +70,7 @@ class BookletBatchCreateInputType implements InputTypeInterface
      */
     private $currency;
 
-    public function validateIndividualValues($array, ExecutionContextInterface $context, $payload)
+    public static function validateIndividualValues($array, ExecutionContextInterface $context, $payload)
     {
         if (count($array) > $context->getObject()->getQuantityOfVouchers()) {
             $context->buildViolation('Too many individual values')
