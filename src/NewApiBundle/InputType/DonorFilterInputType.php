@@ -34,7 +34,7 @@ class DonorFilterInputType extends AbstractFilterInputType
     }
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      */
     protected $fulltext;
 

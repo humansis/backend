@@ -15,7 +15,7 @@ class CommunityFilterType extends AbstractFilterInputType
 {
     /**
      * @var string
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      */
     protected $fulltext;
 

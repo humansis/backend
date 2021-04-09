@@ -23,7 +23,7 @@ class ProjectFilterInputType extends AbstractFilterInputType
     protected $id;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      */
     protected $fulltext;
 

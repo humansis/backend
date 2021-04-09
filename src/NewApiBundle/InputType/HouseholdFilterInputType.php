@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class HouseholdFilterInputType extends AbstractFilterInputType
 {
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      */
     protected $fulltext;
 
