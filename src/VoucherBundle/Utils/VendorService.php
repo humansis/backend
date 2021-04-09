@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use NewApiBundle\Exception\NotUniqueException;
 use NewApiBundle\InputType\VendorCreateInputType;
 use NewApiBundle\InputType\VendorUpdateInputType;
 use RuntimeException;
@@ -116,6 +117,7 @@ class VendorService
      * @param VendorCreateInputType $inputType
      * @return Vendor
      * @throws EntityNotFoundException
+     * @throws NotUniqueException
      */
     public function create(VendorCreateInputType $inputType): Vendor
     {
@@ -129,6 +131,11 @@ class VendorService
 
         if (!$location instanceof Location) {
             throw new EntityNotFoundException('Location with ID #'.$inputType->getLocationId().' does not exists.');
+        }
+
+        $vendor = $this->em->getRepository(Vendor::class)->findOneBy(['name' => $inputType->getName()]);
+        if (null !== $vendor) {
+            throw new NotUniqueException($inputType->getName(), 'name');
         }
 
         $vendor = new Vendor();
@@ -208,6 +215,7 @@ class VendorService
      * @param VendorUpdateInputType $inputType
      * @return Vendor
      * @throws EntityNotFoundException
+     * @throws NotUniqueException
      */
     public function update(Vendor $vendor, VendorUpdateInputType $inputType): Vendor
     {
@@ -221,6 +229,11 @@ class VendorService
 
         if (!$location instanceof Location) {
             throw new EntityNotFoundException('Location with ID #'.$inputType->getLocationId().' does not exists.');
+        }
+
+        $vendorOrig = $this->em->getRepository(Vendor::class)->findOneBy(['name' => $inputType->getName()]);
+        if ($vendor->getId() !== $vendorOrig->getId()) {
+            throw new NotUniqueException($inputType->getName(), 'name');
         }
 
         $vendor->setShop($inputType->getShop())

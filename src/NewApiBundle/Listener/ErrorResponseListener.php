@@ -10,6 +10,7 @@ use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\Validator\ConstraintViolationInterface;
 
 class ErrorResponseListener
 {
@@ -35,6 +36,15 @@ class ErrorResponseListener
             $data = [
                 'code' => 400,
                 'errors' => $errors,
+            ];
+
+        } elseif ($exception instanceof ConstraintViolationInterface) {
+            $data = [
+                'code' => 400,
+                'errors' => [[
+                    'message' => $exception->getMessage(),
+                    'source' => $exception->getPropertyPath(),
+                ]],
             ];
 
         } elseif ($exception instanceof HttpExceptionInterface) {
