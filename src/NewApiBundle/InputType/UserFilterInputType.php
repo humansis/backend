@@ -19,8 +19,7 @@ class UserFilterInputType extends AbstractFilterInputType
     protected $id;
 
     /**
-     * @var string
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      */
     protected $fulltext;
 
@@ -34,10 +33,7 @@ class UserFilterInputType extends AbstractFilterInputType
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
-    public function getFulltext(): string
+    public function getFulltext()
     {
         return $this->fulltext;
     }

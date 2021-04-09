@@ -13,7 +13,7 @@ use VoucherBundle\Entity\Booklet;
 class BookletFilterInputType extends AbstractFilterInputType
 {
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      */
     protected $fulltext;
 
