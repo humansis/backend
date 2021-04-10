@@ -132,6 +132,7 @@ doctrine:
             enum_livelihood: ProjectBundle\DBAL\LivelihoodEnum
             enum_sector: ProjectBundle\DBAL\SectorEnum
             enum_sub_sector: ProjectBundle\DBAL\SubSectorEnum
+            enum_settlement_type: NewApiBundle\Enum\SettlementTypeEnum
             enum_import_state: NewApiBundle\DBAL\ImportStateEnum
             enum_import_queue_state: NewApiBundle\DBAL\ImportStateQueueEnum
             enum_import_duplicity_state: NewApiBundle\DBAL\ImportDuplicityStateEnum

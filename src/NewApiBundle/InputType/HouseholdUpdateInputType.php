@@ -206,6 +206,15 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      * @Assert\Type("string")
      */
     private $proxyEnFamilyName;
+    /**
+     * @Assert\Choice(callback={"NewApiBundle\Enum\SettlementTypeEnum", "all"}, strict=true)
+     */
+    private $settlementType;
+
+    final public static function assets()
+    {
+        return array_keys(Household::ASSETS);
+    }
 
     /**
      * @Assert\Type("string")
@@ -812,5 +821,21 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
             if ($beneficiaryInputType->isHead()) return $beneficiaryInputType;
         }
         throw new \InvalidArgumentException('There must be head');
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSettlementType()
+    {
+        return $this->settlementType;
+    }
+
+    /**
+     * @param string|null $settlementType
+     */
+    public function setSettlementType($settlementType)
+    {
+        $this->settlementType = $settlementType;
     }
 }

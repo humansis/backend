@@ -280,4 +280,9 @@ class HouseholdMapper implements MapperInterface
 
         return $this->object->getProxy()->getPhones()->current()->getId();
     }
+
+    public function getSettlementType(): ?string
+    {
+        return $this->object->getSettlementType();
+    }
 }

@@ -11,6 +11,7 @@ use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use NewApiBundle\Enum\NationalIdType;
+use NewApiBundle\Enum\SettlementTypeEnum;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Enum\Livelihood;
 use Tests\BMSServiceTestCase;
@@ -144,6 +145,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 'type' => 'Landline',
                 'proxy' => true,
             ],
+            'settlementType' => SettlementTypeEnum::DISPLACED_COMMUNAL_UNPLANNED_INFORMAL_SETTLEMENT,
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -184,6 +186,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('proxyEnParentsName', $result);
         $this->assertArrayHasKey('proxyNationalIdCardId', $result);
         $this->assertArrayHasKey('proxyPhoneId', $result);
+        $this->assertArrayHasKey('settlementType', $result);
 
         return $result['id'];
     }
@@ -311,6 +314,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 'type' => 'Landline',
                 'proxy' => true,
             ],
+            'settlementType' => SettlementTypeEnum::DISPLACED_COMMUNAL_UNPLANNED_INFORMAL_SETTLEMENT,
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -354,6 +358,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('proxyPhoneId', $result);
 
         $this->assertEquals(2, $household->getBeneficiaries()->count());
+        $this->assertArrayHasKey('settlementType', $result);
 
         return $id;
     }
@@ -404,6 +409,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('proxyEnParentsName', $result);
         $this->assertArrayHasKey('proxyNationalIdCardId', $result);
         $this->assertArrayHasKey('proxyPhoneId', $result);
+        $this->assertArrayHasKey('settlementType', $result);
 
         return $id;
     }
