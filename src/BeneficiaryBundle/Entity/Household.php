@@ -39,6 +39,7 @@ class Household extends AbstractBeneficiary
         7 => 'Room or Space in Public Building',
         8 => 'Room or Space in Unfinished Building',
         9 => 'Other',
+        10 => 'House/Apartment - Lightly Damaged',
     ];
 
     const SUPPORT_RECIEVED_TYPES = [
