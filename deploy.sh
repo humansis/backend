@@ -57,6 +57,11 @@ if [[ -z `ssh-keygen -F $ec2_host` ]]; then
   ssh-keyscan -H $ec2_host >> ~/.ssh/known_hosts
 fi
 
+# Generate JWT private/public keys
+echo "Generating JWT keypair..."
+bin/console lexik:jwt:generate-keypair --skip-if-exists
+echo "...done"
+
 # get app version
 echo "Getting application information"
 bash get_info.sh

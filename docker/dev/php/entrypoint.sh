@@ -24,4 +24,7 @@ then
     bin/console doctrine:migrations:migrate
 fi
 
+# Generate JWT private/public keys
+bin/console lexik:jwt:generate-keypair --skip-if-exists
+
 php-fpm
