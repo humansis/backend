@@ -1596,7 +1596,7 @@
       </trans-unit>
       <trans-unit id="364" resname="household_location_settlement">
         <source>household_location_settlement</source>
-        <target>Temporary settlement</target>
+        <target>Informal settlement</target>
       </trans-unit>
       <trans-unit id="365" resname="household_location_tent">
         <source>household_location_tent</source>
