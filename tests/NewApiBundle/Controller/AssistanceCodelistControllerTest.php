@@ -30,11 +30,6 @@ class AssistanceCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetTargets()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/assistances/targets?filter[type]=' . AssistanceType::ACTIVITY);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -54,11 +49,6 @@ class AssistanceCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetAssistanceTypes()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/assistances/types?filter[subsector]=' . SubSectorEnum::FOOD_CASH_FOR_WORK);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);

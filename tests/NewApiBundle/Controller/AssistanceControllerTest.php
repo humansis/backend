@@ -27,11 +27,6 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     public function testGetItem()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Assistance $assistance */
         $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy([])[0];
         $commodityIds = array_map(function (\DistributionBundle\Entity\Commodity $commodity) {
@@ -65,11 +60,6 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     public function testList()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Project $project */
         $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
         /** @var Location $location */
@@ -90,11 +80,6 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     public function testAsisstancesByProject()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
         $this->request('GET', '/api/basic/projects/'.$project->getId().'/assistances');
@@ -112,11 +97,6 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     public function testCreateDistribution()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Project $project */
         $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
@@ -174,11 +154,6 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     public function testCreateActivity()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Project $project */
         $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
@@ -231,11 +206,6 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     public function testCreateCommunityActivity()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Project $project */
         $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 

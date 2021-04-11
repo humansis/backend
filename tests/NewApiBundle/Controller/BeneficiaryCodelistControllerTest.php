@@ -31,11 +31,6 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetReferralTypes()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/beneficiaries/referral-types');
 
         $this->assertTrue(
@@ -53,11 +48,6 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetResidencyStatuses()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/beneficiaries/residency-statuses');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -81,11 +71,6 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
 
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/beneficiaries/vulnerability-criteria');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -108,11 +93,6 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetNationalIdsTypes()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/beneficiaries/national-ids/types');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -133,11 +113,6 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetPhoneTypes()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/beneficiaries/phones/types');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);

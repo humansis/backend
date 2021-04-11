@@ -23,11 +23,6 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
     public function testListByAssistanceAndBeneficiary()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var SmartcardDeposit $item */
         $item = self::$container->get('doctrine')->getRepository(SmartcardDeposit::class)->findBy([])[0];
         $assistanceId = $item->getAssistanceBeneficiary()->getAssistance()->getId();

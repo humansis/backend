@@ -36,11 +36,6 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testCreate()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Location|null $location */
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
@@ -103,11 +98,6 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testCreate2()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Location|null $location */
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
@@ -152,11 +142,6 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Location|null $location */
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
         /** @var Project $project */
@@ -224,11 +209,6 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/communities/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -261,11 +241,6 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/communities?sort[]=id.asc&filter[fulltext]=test');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -289,11 +264,6 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('DELETE', '/api/basic/communities/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
@@ -310,11 +280,6 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/communities/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());

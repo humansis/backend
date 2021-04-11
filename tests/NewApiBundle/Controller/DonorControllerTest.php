@@ -22,11 +22,6 @@ class DonorControllerTest extends BMSServiceTestCase
 
     public function testCreate()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('POST', '/api/basic/donors', [
             'fullname' => 'Test Donor',
             'shortname' => 'TD',
@@ -53,11 +48,6 @@ class DonorControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('PUT', '/api/basic/donors/'.$id, [
             'fullname' => 'Test Donor',
             'shortname' => 'TD',
@@ -85,11 +75,6 @@ class DonorControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/donors/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -113,11 +98,6 @@ class DonorControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/donors?sort[]=fullname.asc&filter[fulltext]=test&filter[id][]=1');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -136,11 +116,6 @@ class DonorControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('DELETE', '/api/basic/donors/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
@@ -153,11 +128,6 @@ class DonorControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/donors/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());

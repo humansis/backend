@@ -23,11 +23,6 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
 
     public function testGet()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var GeneralReliefItem $item */
         $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy([])[0];
 
@@ -47,11 +42,6 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
 
     public function testList()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/general-relief-items?&filter[id][]=1');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -67,11 +57,6 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
 
     public function testPatch()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var GeneralReliefItem $item */
         $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy(['distributedAt' => null])[0];
 
@@ -91,11 +76,6 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
 
     public function testListByAssistanceAndBeneficiary()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var GeneralReliefItem $item */
         $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy(['distributedAt' => null])[0];
         $assistanceId = $item->getAssistanceBeneficiary()->getAssistance()->getId();

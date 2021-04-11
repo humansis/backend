@@ -27,11 +27,6 @@ class ModalityControllerTest extends BMSServiceTestCase
      */
     public function testGetModalities()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/modalities');
 
         $this->assertTrue(
@@ -49,11 +44,6 @@ class ModalityControllerTest extends BMSServiceTestCase
      */
     public function testGetModalityTypes()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $modality = $em->getRepository(Modality::class)->findBy([])[0];

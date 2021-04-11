@@ -27,11 +27,6 @@ class CommodityControllerTest extends BMSServiceTestCase
      */
     public function testGetCommodities()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $commodity1 = $em->getRepository(Commodity::class)->findBy([])[0];
@@ -68,11 +63,6 @@ class CommodityControllerTest extends BMSServiceTestCase
      */
     public function testGetCommoditiesByAssistance()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $assistance = $em->getRepository(\DistributionBundle\Entity\Assistance::class)->findBy(['archived' => 0])[0];

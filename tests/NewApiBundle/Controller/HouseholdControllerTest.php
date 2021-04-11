@@ -31,11 +31,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
 
     public function testCreate()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
         $vulnerabilityCriterion = self::$container->get('doctrine')->getRepository(VulnerabilityCriterion::class)->findBy([])[0];
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
@@ -142,11 +137,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $vulnerabilityCriterion = self::$container->get('doctrine')->getRepository(VulnerabilityCriterion::class)->findBy([])[0];
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
         $camp = self::$container->get('doctrine')->getRepository(Camp::class)->findBy([])[0];
@@ -251,11 +241,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/households/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -298,11 +283,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/households?sort[]=localFirstName.asc&filter[gender]=F');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -321,11 +301,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('DELETE', '/api/basic/households/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
@@ -338,11 +313,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/households/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
@@ -353,11 +323,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testAddHouseholdToProject()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $project = $em->getRepository(Project::class)->findOneBy([]);

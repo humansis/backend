@@ -32,11 +32,6 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
      */
     public function testGetBeneficiary()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $beneficiary = $em->getRepository(Beneficiary::class)->findBy([])[0];
@@ -73,11 +68,6 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
      */
     public function testGetBeneficiaries()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $beneficiary = $em->getRepository(Beneficiary::class)->findBy([])[0];
@@ -98,11 +88,6 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
 
     public function testGetBeneficiariesByAssistance()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $assistance = $em->getRepository(\DistributionBundle\Entity\Assistance::class)->findOneBy([
@@ -147,11 +132,6 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
      */
     public function testGetNationalId()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $nationalId = $em->getRepository(NationalId::class)->findBy([])[0];
@@ -175,11 +155,6 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
      */
     public function testGetNationalIds()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $nationalId = $em->getRepository(NationalId::class)->findBy([])[0];
@@ -198,11 +173,6 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
      */
     public function testGetPhone()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $phone = $em->getRepository(Phone::class)->findBy([])[0];
@@ -228,11 +198,6 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
      */
     public function testGetPhones()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $phone1 = $em->getRepository(Phone::class)->findBy([])[0];
@@ -255,11 +220,6 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
      */
     public function testAddBeneficiaryToAssistance()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $assistance = $em->getRepository(Assistance::class)->findOneBy([
@@ -290,11 +250,6 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
     {
         list($assistanceId, $beneficiaryId) = $data;
 
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('DELETE', '/api/basic/assistances/'.$assistanceId.'/beneficiaries', [
             'beneficiaryIds' => [$beneficiaryId],
             'justification' => 'test remove',
@@ -312,11 +267,6 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
      */
     public function testGetBeneficiariesByProject()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $project = $em->getRepository(Project::class)->findOneBy([
