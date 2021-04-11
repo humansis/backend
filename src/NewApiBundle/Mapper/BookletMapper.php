@@ -63,6 +63,15 @@ class BookletMapper implements MapperInterface
         return $this->object->getNumberVouchers();
     }
 
+    public function getQuantityOfUsedVouchers(): int
+    {
+        $fn = function ($ax, \VoucherBundle\Entity\Voucher $dx) {
+            return $ax + ($dx->getUsedAt() ? 1 : 0);
+        };
+
+        return array_reduce($this->object->getVouchers()->toArray(), $fn, 0);
+    }
+
     public function getProjectId(): ?int
     {
         return $this->object->getProject() ? $this->object->getProject()->getId() : null;
