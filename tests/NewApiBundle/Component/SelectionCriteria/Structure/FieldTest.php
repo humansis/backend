@@ -47,7 +47,7 @@ class FieldTest extends TestCase
         }
     }
 
-    public function typeProvider()
+    public static function typeProvider()
     {
         return [
             ['string'],
@@ -57,7 +57,7 @@ class FieldTest extends TestCase
         ];
     }
 
-    public function callbackProvider()
+    public static function callbackProvider()
     {
         return [
             ['is_bool'],
