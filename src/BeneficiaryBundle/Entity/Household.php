@@ -35,7 +35,7 @@ class Household extends AbstractBeneficiary
         3 => 'Transitional Shelter',
         4 => 'House/Apartment - Severely Damaged',
         5 => 'House/Apartment - Moderately Damaged',
-        6 => 'House/Apartment - Good Condition',
+        6 => 'House/Apartment - Not Damaged',
         7 => 'Room or Space in Public Building',
         8 => 'Room or Space in Unfinished Building',
         9 => 'Other',
