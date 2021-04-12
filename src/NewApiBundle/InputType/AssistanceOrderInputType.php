@@ -12,7 +12,7 @@ class AssistanceOrderInputType extends AbstractSortInputType
     const SORT_BY_LOCATION = 'location';
     const SORT_BY_PROJECT = 'project';
     const SORT_BY_MODALITY_TYPE = 'modalityType';
-    const SORT_BY_DATE = 'date';
+    const SORT_BY_DATE = 'dateDistribution';
     const SORT_BY_TARGET = 'target';
     const SORT_BY_NUMBER_OF_BENEFICIARIES = 'bnfCount';
     const SORT_BY_VALUE = 'value';
