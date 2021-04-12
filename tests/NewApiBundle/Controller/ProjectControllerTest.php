@@ -43,8 +43,8 @@ class ProjectControllerTest extends BMSServiceTestCase
             'internalId' => 'PT23',
             'iso3' => 'KHM',
             'target' => 10,
-            'startDate' => '2010-10-10',
-            'endDate' => '2011-10-10',
+            'startDate' => '2010-10-10T00:00:00+0000',
+            'endDate' => '2011-10-10T00:00:00+0000',
             'sectors' => [SectorEnum::FOOD_SECURITY],
         ]);
 
@@ -118,8 +118,8 @@ class ProjectControllerTest extends BMSServiceTestCase
             'internalId' => 'TPX',
             'iso3' => 'KHM',
             'target' => 10,
-            'startDate' => '2010-10-10',
-            'endDate' => '2011-10-10',
+            'startDate' => '2010-10-10T00:00:00+0000',
+            'endDate' => '2011-10-10T00:00:00+0000',
             'sectors' => [SectorEnum::EARLY_RECOVERY, SectorEnum::CAMP_MANAGEMENT],
         ]);
 
