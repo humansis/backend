@@ -7,6 +7,7 @@ namespace NewApiBundle\InputType\Beneficiary;
 use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Entity\Referral;
 use NewApiBundle\Request\InputTypeInterface;
+use NewApiBundle\Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -15,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class BeneficiaryInputType implements InputTypeInterface
 {
     /**
-     * @Assert\Date
+     * @Iso8601
      * @Assert\NotBlank
      * @Assert\NotNull
      */

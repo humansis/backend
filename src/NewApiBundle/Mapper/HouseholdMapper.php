@@ -135,7 +135,7 @@ class HouseholdMapper implements MapperInterface
 
     public function getSupportDateReceived(): ?string
     {
-        return $this->object->getSupportDateReceived() ? $this->object->getSupportDateReceived()->format('Y-m-d') : null;
+        return $this->object->getSupportDateReceived() ? $this->object->getSupportDateReceived()->format(\DateTime::ISO8601) : null;
     }
 
     /**

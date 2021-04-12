@@ -11,6 +11,7 @@ use NewApiBundle\InputType\Beneficiary\Address\TemporarySettlementAddressInputTy
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 use NewApiBundle\InputType\Beneficiary\CountrySpecificsAnswerInputType;
 use NewApiBundle\Request\InputTypeInterface;
+use NewApiBundle\Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -108,7 +109,7 @@ class HouseholdUpdateInputType implements InputTypeInterface
     private $debtLevel;
 
     /**
-     * @Assert\Date
+     * @Iso8601
      */
     private $supportDateReceived;
 
@@ -404,7 +405,7 @@ class HouseholdUpdateInputType implements InputTypeInterface
      */
     public function getSupportDateReceived()
     {
-        return $this->supportDateReceived ? \DateTime::createFromFormat('d-m-Y', $this->supportDateReceived) : null;
+        return $this->supportDateReceived ? new \DateTime($this->supportDateReceived) : null;
     }
 
     /**
