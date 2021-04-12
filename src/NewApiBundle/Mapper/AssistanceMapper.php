@@ -45,7 +45,7 @@ class AssistanceMapper implements MapperInterface
 
     public function getDateDistribution(): string
     {
-        return $this->object->getDateDistribution()->format('Y-m-d');
+        return $this->object->getDateDistribution()->format(\DateTime::ISO8601);
     }
 
     public function getProjectId(): int

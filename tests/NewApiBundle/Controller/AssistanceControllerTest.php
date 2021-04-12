@@ -47,7 +47,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertJsonFragment('{
             "id": '.$assistance->getId().',
             "name": "'.$assistance->getName().'",
-            "dateDistribution": "'.$assistance->getDateDistribution()->format('Y-m-d').'",
+            "dateDistribution": "'.$assistance->getDateDistribution()->format(\DateTime::ISO8601).'",
             "projectId": '.$assistance->getProject()->getId().',
             "locationId": '.$assistance->getLocation()->getId().',
             "target": "'.$assistance->getTargetType().'",
