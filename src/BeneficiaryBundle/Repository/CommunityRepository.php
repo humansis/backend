@@ -4,10 +4,12 @@ namespace BeneficiaryBundle\Repository;
 
 use BeneficiaryBundle\Entity\CommunityLocation;
 use CommonBundle\Entity\Location;
+use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use InvalidArgumentException;
+use NewApiBundle\InputType\AssistanceCommunitiesFilterInputType;
 use NewApiBundle\InputType\CommunityFilterType;
 use NewApiBundle\InputType\CommunityOrderInputType;
 use NewApiBundle\Request\Pagination;
@@ -292,38 +294,100 @@ class CommunityRepository extends EntityRepository
         }
 
         if ($orderBy) {
-            foreach ($orderBy->toArray() as $name => $direction) {
-                switch ($name) {
-                    case CommunityOrderInputType::SORT_BY_ID:
-                        $qb->orderBy('comm.id', $direction);
-                        break;
-                    case CommunityOrderInputType::SORT_BY_NAME:
-                        $qb->orderBy('comm.name', $direction);
-                        break;
-                    case CommunityOrderInputType::SORT_BY_LONGITUDE:
-                        $qb->orderBy('comm.longitude', $direction);
-                        break;
-                    case CommunityOrderInputType::SORT_BY_LATITUDE:
-                        $qb->orderBy('comm.latitude', $direction);
-                        break;
-                    case CommunityOrderInputType::SORT_BY_CONTACT_GIVEN_NAME:
-                        if (!in_array('c', $qb->getAllAliases())) {
-                            $qb->leftJoin('comm.contact', 'c');
-                        }
-                        $qb->orderBy('c.enGivenName', $direction);
-                        break;
-                    case CommunityOrderInputType::SORT_BY_CONTACT_FAMILY_NAME:
-                        if (!in_array('c', $qb->getAllAliases())) {
-                            $qb->leftJoin('comm.contact', 'c');
-                        }
-                        $qb->orderBy('c.enFamilyName', $direction);
-                        break;
-                    default:
-                        throw new InvalidArgumentException('Invalid order by directive '.$name);
-                }
-            }
+            $this->addOrderByCommonOrderInputType($qb, $orderBy);
         }
 
         return new Paginator($qb);
+    }
+
+    /**
+     * @param Assistance                                $assistance
+     * @param AssistanceCommunitiesFilterInputType|null $filter
+     * @param CommunityOrderInputType|null              $orderBy
+     * @param Pagination|null                           $pagination
+     *
+     * @return Paginator|Assistance[]
+     */
+    public function findByAssistance(
+        Assistance $assistance,
+        ?AssistanceCommunitiesFilterInputType $filter,
+        ?CommunityOrderInputType $orderBy = null,
+        ?Pagination $pagination = null
+    ): Paginator
+    {
+        $qb = $this->createQueryBuilder('comm')
+            ->join('comm.assistanceBeneficiary', 'ab')
+            ->leftJoin('comm.contact', 'c')
+            ->andWhere('comm.archived = 0')
+            ->andWhere('ab.assistance = :assistance')
+            ->setParameter('assistance', $assistance);
+
+        if ($pagination) {
+            $qb->setMaxResults($pagination->getLimit());
+            $qb->setFirstResult($pagination->getOffset());
+        }
+
+        if ($filter) {
+            if ($filter->hasFulltext()) {
+                $qb->andWhere('(comm.id LIKE :fulltextId OR
+                                comm.name LIKE :fulltext OR
+                                comm.latitude LIKE :fulltext OR
+                                comm.longitude LIKE :fulltext OR
+                                c.localGivenName LIKE :fulltext OR 
+                                c.localFamilyName LIKE :fulltext OR
+                                c.localParentsName LIKE :fulltext OR
+                                c.enGivenName LIKE :fulltext OR
+                                c.enFamilyName LIKE :fulltext OR
+                                c.enParentsName LIKE :fulltext OR
+                                c.enParentsName LIKE :fulltext)')
+                    ->setParameter('fulltextId', $filter->getFulltext())
+                    ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+            }
+
+            if ($filter->hasIds()) {
+                $qb->andWhere('comm.id IN (:ids)')
+                    ->setParameter('ids', $filter->getIds());
+            }
+        }
+
+        if ($orderBy) {
+            $this->addOrderByCommonOrderInputType($qb, $orderBy);
+        }
+
+        return new Paginator($qb);
+    }
+
+    private function addOrderByCommonOrderInputType(QueryBuilder $qb, CommunityOrderInputType $orderBy)
+    {
+        foreach ($orderBy->toArray() as $name => $direction) {
+            switch ($name) {
+                case CommunityOrderInputType::SORT_BY_ID:
+                    $qb->orderBy('comm.id', $direction);
+                    break;
+                case CommunityOrderInputType::SORT_BY_NAME:
+                    $qb->orderBy('comm.name', $direction);
+                    break;
+                case CommunityOrderInputType::SORT_BY_LONGITUDE:
+                    $qb->orderBy('comm.longitude', $direction);
+                    break;
+                case CommunityOrderInputType::SORT_BY_LATITUDE:
+                    $qb->orderBy('comm.latitude', $direction);
+                    break;
+                case CommunityOrderInputType::SORT_BY_CONTACT_GIVEN_NAME:
+                    if (!in_array('c', $qb->getAllAliases())) {
+                        $qb->leftJoin('comm.contact', 'c');
+                    }
+                    $qb->orderBy('c.enGivenName', $direction);
+                    break;
+                case CommunityOrderInputType::SORT_BY_CONTACT_FAMILY_NAME:
+                    if (!in_array('c', $qb->getAllAliases())) {
+                        $qb->leftJoin('comm.contact', 'c');
+                    }
+                    $qb->orderBy('c.enFamilyName', $direction);
+                    break;
+                default:
+                    throw new InvalidArgumentException('Invalid order by directive '.$name);
+            }
+        }
     }
 }

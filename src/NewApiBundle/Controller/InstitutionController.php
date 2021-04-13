@@ -3,8 +3,9 @@
 namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Institution;
-use BeneficiaryBundle\Repository\InstitutionRepository;
+use DistributionBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\InputType\AssistanceInstitutionsFilterInputType;
 use NewApiBundle\InputType\InstitutionCreateInputType;
 use NewApiBundle\InputType\InstitutionFilterInputType;
 use NewApiBundle\InputType\InstitutionOrderInputType;
@@ -95,5 +96,31 @@ class InstitutionController extends AbstractController
         $this->get('beneficiary.institution_service')->remove($institution);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Rest\Get("/assistances/{id}/institutions")
+     *
+     * @param Assistance                            $assistance
+     * @param AssistanceInstitutionsFilterInputType $filter
+     * @param InstitutionOrderInputType             $orderBy
+     * @param Pagination                            $pagination
+     *
+     * @return JsonResponse
+     */
+    public function beneficiariesByAssistance(
+        Assistance $assistance,
+        AssistanceInstitutionsFilterInputType $filter,
+        InstitutionOrderInputType $orderBy,
+        Pagination $pagination
+    ): JsonResponse
+    {
+        if ($assistance->getArchived()) {
+            throw $this->createNotFoundException();
+        }
+
+        $institutions = $this->getDoctrine()->getRepository(Institution::class)->findByAssistance($assistance, $filter, $orderBy, $pagination);
+
+        return $this->json($institutions);
     }
 }
