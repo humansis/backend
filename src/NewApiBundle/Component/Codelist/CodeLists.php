@@ -47,7 +47,7 @@ class CodeLists
 
         /* @var VulnerabilityCriterion $criteria */
         foreach ($criterion as $criteria) {
-            $data[] = new CodeItem($criteria->getId(), $criteria->getFieldString());
+            $data[] = new CodeItem($criteria->getId(), VulnerabilityCriterion::all()[$criteria->getFieldString()]);
         }
 
         return $data;
