@@ -15,7 +15,7 @@ class SectorEnum extends AbstractEnum
         self::SHELTER,
         self::WASH,
         self::PROTECTION,
-        self::EDUCATION,
+        self::EDUCATION_TVET,
         self::EMERGENCY_TELCO,
         self::HEALTH,
         self::LOGISTICS,
@@ -33,7 +33,7 @@ class SectorEnum extends AbstractEnum
     const SHELTER = 'shelter';
     const WASH = 'wash';
     const PROTECTION = 'protection';
-    const EDUCATION = 'education';
+    const EDUCATION_TVET = 'education_tvet';
     const EMERGENCY_TELCO = 'emergency_telco';
     const HEALTH = 'health';
     const LOGISTICS = 'logistics';

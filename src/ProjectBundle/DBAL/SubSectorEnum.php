@@ -9,15 +9,14 @@ use CommonBundle\DBAL\AbstractEnum;
 class SubSectorEnum extends AbstractEnum
 {
     protected static $values = [
-        self::FOOD_DISTRIBUTIONS,
-        self::CASH_GRANTS,
+        self::IN_KIND_FOOD,
+        self::CASH_TRANSFERS,
         self::FOOD_VOUCHERS,
         self::FOOD_CASH_FOR_WORK,
 
         self::SKILLS_TRAINING,
         self::TECHNICAL_SUPPORT,
         self::PROVISION_OF_INPUTS,
-        self::DISTRIBUTION_OF_INPUTS,
         self::BUSINESS_GRANTS,
         self::AGRICULTURAL_VOUCHERS,
         self::LIVELIHOOD_CASH_FOR_WORK,
@@ -57,7 +56,7 @@ class SubSectorEnum extends AbstractEnum
         self::TEACHER_TRAINING,
         self::LEARNING_MATERIALS,
         self::EDUCATION_PSYCHOSOCIAL_SUPPORT,
-        self::EDUCATION_SERVICES,
+        self::LEARNING_SUPPORT,
         self::EDUCATION_CASH_FOR_WORK,
         self::PARENT_SESSIONS,
 
@@ -72,15 +71,14 @@ class SubSectorEnum extends AbstractEnum
         self::DEFAULT_EARLY_RECOVERY,
     ];
 
-    const FOOD_DISTRIBUTIONS = 'food_distribution';
+    const IN_KIND_FOOD = 'in-kind-food';
     const FOOD_VOUCHERS = 'food_vouchers';
-    const CASH_GRANTS = 'food_cash_grants';
+    const CASH_TRANSFERS = 'food_cash_transfers';
     const FOOD_CASH_FOR_WORK = 'food_cash_for_work';
 
     const SKILLS_TRAINING = 'skills_training';
     const TECHNICAL_SUPPORT = 'technical_support';
     const PROVISION_OF_INPUTS = 'provision_of_inputs';
-    const DISTRIBUTION_OF_INPUTS = 'distribution_of_inputs';
     const BUSINESS_GRANTS = 'business_grants';
     const AGRICULTURAL_VOUCHERS = 'agricultural_vouchers';
     const LIVELIHOOD_CASH_FOR_WORK = 'livelihood_cash_for_work';
@@ -118,9 +116,10 @@ class SubSectorEnum extends AbstractEnum
     const TEACHER_TRAINING = 'teacher_training';
     const LEARNING_MATERIALS = 'learning_materials';
     const EDUCATION_PSYCHOSOCIAL_SUPPORT = 'education_psychosocial_support';
-    const EDUCATION_SERVICES = 'education_services';
+    const LEARNING_SUPPORT = 'learning_support';
     const EDUCATION_CASH_FOR_WORK = 'education_cash_for_work';
     const PARENT_SESSIONS = 'education_parent_sessions';
+    const SCHOOL_OPERATIONAL_SUPPORT = 'school_operational_support';
 
     const DEFAULT_EMERGENCY_TELCO = 'default_emergency_telco';
     const DEFAULT_HEALTH = 'default_health';

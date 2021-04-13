@@ -121,7 +121,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             ],
             "threshold"=> 1,
             'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
-            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_DISTRIBUTIONS,
+            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::IN_KIND_FOOD,
         );
 
 
@@ -865,7 +865,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             ],
             'threshold' => 1,
             'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
-            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_DISTRIBUTIONS,
+            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::IN_KIND_FOOD,
         ];
 
         $user = $this->getTestUser(self::USER_TESTER);
@@ -972,7 +972,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'households_targeted' => 3,
             'individuals_targeted' => 5,
             'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
-            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_DISTRIBUTIONS,
+            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::IN_KIND_FOOD,
         ];
 
         $user = $this->getTestUser(self::USER_TESTER);
@@ -1030,7 +1030,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             ],
             'institutions' => [$institution->getId()],
             'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
-            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_DISTRIBUTIONS,
+            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::IN_KIND_FOOD,
         ];
 
         $user = $this->getTestUser(self::USER_TESTER);

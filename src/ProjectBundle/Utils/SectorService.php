@@ -50,8 +50,8 @@ class SectorService
             return null;
         }
         switch ($sector->getSubSectorName()) {
-            case SubSectorEnum::FOOD_DISTRIBUTIONS:
-            case SubSectorEnum::CASH_GRANTS:
+            case SubSectorEnum::IN_KIND_FOOD:
+            case SubSectorEnum::CASH_TRANSFERS:
             case SubSectorEnum::FOOD_VOUCHERS:
                 return $sector->setDistributionAllowed()
                     ->setHouseholdAllowed()
@@ -79,19 +79,16 @@ class SectorService
                     ->setCommunityAllowed()
                     ->setInstitutionAllowed()
                     ;
-            case SubSectorEnum::DISTRIBUTION_OF_INPUTS:
-                return $sector->setDistributionAllowed()
-                    ->setHouseholdAllowed()
-                    ->setBeneficiaryAllowed()
-                    ;
             case SubSectorEnum::BUSINESS_GRANTS:
                 return $sector->setDistributionAllowed()
                     ->setBeneficiaryAllowed()
+                    ->setInstitutionAllowed()
                     ;
             case SubSectorEnum::AGRICULTURAL_VOUCHERS:
                 return $sector->setDistributionAllowed()
                     ->setHouseholdAllowed()
                     ->setBeneficiaryAllowed()
+                    ->setInstitutionAllowed()
                     ;
             case SubSectorEnum::LIVELIHOOD_CASH_FOR_WORK:
                 return $sector->setActivityAllowed()
@@ -100,6 +97,7 @@ class SectorService
             case SubSectorEnum::MULTI_PURPOSE_CASH_ASSISTANCE:
                 return $sector->setDistributionAllowed()
                     ->setHouseholdAllowed()
+                    ->setBeneficiaryAllowed()
                     ;
             case SubSectorEnum::REHABILITATION:
             case SubSectorEnum::CONSTRUCTION:
@@ -195,7 +193,7 @@ class SectorService
                     ->setInstitutionAllowed()
                     ;
             case SubSectorEnum::EDUCATION_PSYCHOSOCIAL_SUPPORT:
-            case SubSectorEnum::EDUCATION_SERVICES:
+            case SubSectorEnum::LEARNING_SUPPORT:
             case SubSectorEnum::EDUCATION_CASH_FOR_WORK:
             case SubSectorEnum::PARENT_SESSIONS:
                 return $sector->setActivityAllowed()
@@ -217,6 +215,10 @@ class SectorService
                     ->setCommunityAllowed()
                     ->setInstitutionAllowed()
                     ;
+            case SubSectorEnum::SCHOOL_OPERATIONAL_SUPPORT:
+                return $sector->setActivityAllowed()
+                    ->setInstitutionAllowed()
+                    ;
             default:
                 return null;
         }
@@ -230,8 +232,8 @@ class SectorService
     private function findSector($subSectorName): ?Sector
     {
         switch ($subSectorName) {
-            case SubSectorEnum::FOOD_DISTRIBUTIONS:
-            case SubSectorEnum::CASH_GRANTS:
+            case SubSectorEnum::IN_KIND_FOOD:
+            case SubSectorEnum::CASH_TRANSFERS:
             case SubSectorEnum::FOOD_VOUCHERS:
             case SubSectorEnum::FOOD_CASH_FOR_WORK:
                 return new Sector(SectorEnum::FOOD_SECURITY, $subSectorName);
@@ -239,7 +241,6 @@ class SectorService
             case SubSectorEnum::SKILLS_TRAINING:
             case SubSectorEnum::TECHNICAL_SUPPORT:
             case SubSectorEnum::PROVISION_OF_INPUTS:
-            case SubSectorEnum::DISTRIBUTION_OF_INPUTS:
             case SubSectorEnum::BUSINESS_GRANTS:
             case SubSectorEnum::AGRICULTURAL_VOUCHERS:
             case SubSectorEnum::LIVELIHOOD_CASH_FOR_WORK:
@@ -282,10 +283,10 @@ class SectorService
             case SubSectorEnum::TEACHER_TRAINING:
             case SubSectorEnum::LEARNING_MATERIALS:
             case SubSectorEnum::EDUCATION_PSYCHOSOCIAL_SUPPORT:
-            case SubSectorEnum::EDUCATION_SERVICES:
+            case SubSectorEnum::LEARNING_SUPPORT:
             case SubSectorEnum::EDUCATION_CASH_FOR_WORK:
             case SubSectorEnum::PARENT_SESSIONS:
-                return new Sector(SectorEnum::EDUCATION, $subSectorName);
+                return new Sector(SectorEnum::EDUCATION_TVET, $subSectorName);
 
             case SubSectorEnum::DEFAULT_EMERGENCY_TELCO:
                 return new Sector(SectorEnum::EMERGENCY_TELCO, $subSectorName);

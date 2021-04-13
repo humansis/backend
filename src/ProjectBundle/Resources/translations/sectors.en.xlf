@@ -8,7 +8,7 @@
       <trans-unit id="label_sector_shelter"><source>label_sector_shelter</source><target>Shelter</target></trans-unit>
       <trans-unit id="label_sector_wash"><source>label_sector_wash</source><target>WASH</target></trans-unit>
       <trans-unit id="label_sector_protection"><source>label_sector_protection</source><target>Protection</target></trans-unit>
-      <trans-unit id="label_sector_education"><source>label_sector_education</source><target>Education</target></trans-unit>
+      <trans-unit id="label_sector_education_tvet"><source>education_tvet</source><target>Education &amp; TVET</target></trans-unit>
       <trans-unit id="label_sector_emergency_telco"><source>label_sector_emergency_telco</source><target>Emergency Telecomms</target></trans-unit>
       <trans-unit id="label_sector_health"><source>label_sector_health</source><target>Health</target></trans-unit>
       <trans-unit id="label_sector_logistics"><source>label_sector_logistics</source><target>Logistics</target></trans-unit>
@@ -19,15 +19,14 @@
       <trans-unit id="label_sector_camp_management"><source>label_sector_camp_management</source><target>Camp Coordination and Management</target></trans-unit>
       <trans-unit id="label_sector_early_recovery"><source>label_sector_early_recovery</source><target>Early Recovery</target></trans-unit>
 
-      <trans-unit id="label_sector_food_distribution"><source>label_sector_food_distribution</source><target>Food distribution</target></trans-unit>
+      <trans-unit id="label_sector_in-kind-food"><source>label_sector_in-kind-food</source><target>In-kind Food</target></trans-unit>
       <trans-unit id="label_sector_food_vouchers"><source>label_sector_food_vouchers</source><target>Food Vouchers</target></trans-unit>
       <trans-unit id="label_sector_food_cash_for_work"><source>label_sector_food_cash_for_work</source><target>Cash for Work</target></trans-unit>
-      <trans-unit id="label_sector_food_cash_grants"><source>label_sector_food_cash_grants</source><target>Cash Grants</target></trans-unit>
+      <trans-unit id="label_sector_food_cash_transfers"><source>label_sector_food_cash_transfers</source><target>Cash Transfers</target></trans-unit>
 
       <trans-unit id="label_sector_skills_training"><source>label_sector_skills_training</source><target>Skills Training</target></trans-unit>
       <trans-unit id="label_sector_technical_support"><source>label_sector_technical_support</source><target>Technical Support</target></trans-unit>
       <trans-unit id="label_sector_provision_of_inputs"><source>label_sector_provision_of_inputs</source><target>Provision of inputs</target></trans-unit>
-      <trans-unit id="label_sector_distribution_of_inputs"><source>label_sector_distribution_of_inputs</source><target>Distribution of Inputs</target></trans-unit>
       <trans-unit id="label_sector_business_grants"><source>label_sector_business_grants</source><target>Business Grants</target></trans-unit>
       <trans-unit id="label_sector_agricultural_vouchers"><source>label_sector_agricultural_vouchers</source><target>Agricultural Vouchers</target></trans-unit>
       <trans-unit id="label_sector_livelihood_cash_for_work"><source>label_sector_livelihood_cash_for_work</source><target>Cash for Work</target></trans-unit>
@@ -65,9 +64,10 @@
       <trans-unit id="label_sector_teacher_training"><source>label_sector_teacher_training</source><target>Teacher Training</target></trans-unit>
       <trans-unit id="label_sector_learning_materials"><source>label_sector_learning_materials</source><target>Learning Materials</target></trans-unit>
       <trans-unit id="label_sector_education_psychosocial_support"><source>label_sector_education_psychosocial_support</source><target>Psychosocial Support</target></trans-unit>
-      <trans-unit id="label_sector_education_services"><source>label_sector_education_services</source><target>Education Services</target></trans-unit>
+      <trans-unit id="label_sector_learning_support"><source>label_sector_learning_support</source><target>Learning Support</target></trans-unit>
       <trans-unit id="label_sector_education_cash_for_work"><source>label_sector_education_cash_for_work</source><target>Cash for Work</target></trans-unit>
       <trans-unit id="label_sector_education_parent_sessions"><source>label_sector_education_parent_sessions</source><target>Sessions for Parents and Caregivers</target></trans-unit>
+      <trans-unit id="label_sector_school_operational_support"><source>label_sector_school_operational_support</source><target>School Operational Support</target></trans-unit>
 
       <trans-unit id="label_sector_default_emergency_telco"><source>label_sector_default_emergency_telco</source><target>Default Emergency Telecomms</target></trans-unit>
       <trans-unit id="label_sector_default_health"><source>label_sector_default_health</source><target>Default Health</target></trans-unit>
