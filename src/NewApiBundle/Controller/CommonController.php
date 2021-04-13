@@ -85,6 +85,10 @@ class CommonController extends AbstractController
             $data[] = ['key' => $key, 'svg' => $svg];
         }
 
+        foreach ($this->getParameter('icons_vulnerability_criteria') as $key => $svg) {
+            $data[] = ['key' => $key, 'svg' => $svg];
+        }
+
         return $this->json($data);
     }
 
