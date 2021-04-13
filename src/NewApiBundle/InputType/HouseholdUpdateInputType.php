@@ -171,17 +171,32 @@ class HouseholdUpdateInputType implements InputTypeInterface
 
     final public static function assets()
     {
-        return array_keys(Household::ASSETS);
+        $keys = [];
+        foreach (Household::ASSETS as $key => $value) {
+            $keys[] = (string) $key;
+        }
+
+        return $keys;
     }
 
     final public static function shelterStatuses()
     {
-        return array_keys(Household::SHELTER_STATUSES);
+        $keys = [];
+        foreach (Household::SHELTER_STATUSES as $key => $value) {
+            $keys[] = (string) $key;
+        }
+
+        return $keys;
     }
 
     final public static function supportReceivedTypes()
     {
-        return array_keys(Household::SUPPORT_RECIEVED_TYPES);
+        $keys = [];
+        foreach (Household::SUPPORT_RECIEVED_TYPES as $key => $value) {
+            $keys[] = (string) $key;
+        }
+
+        return $keys;
     }
 
     /**
