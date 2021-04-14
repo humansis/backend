@@ -3784,7 +3784,7 @@
       </trans-unit>
       <trans-unit id="903" resname="vulnerability_disabled">
         <source>vulnerability_disabled</source>
-        <target>disabled</target>
+        <target>Person with Disability</target>
       </trans-unit>
       <trans-unit id="904" resname="vulnerability_lactating">
         <source>vulnerability_lactating</source>
