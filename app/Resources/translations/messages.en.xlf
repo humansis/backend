@@ -3890,6 +3890,10 @@
         <source>en</source>
         <target>English</target>
     </trans-unit>
+      <trans-unit id="household_proxy">
+        <source>Household Proxy</source>
+        <target>Household Proxy</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
