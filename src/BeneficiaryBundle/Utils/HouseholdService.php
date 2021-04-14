@@ -321,7 +321,7 @@ class HouseholdService
 
         $proxy = $household->getProxy();
 
-        if (null !== $householdArray['proxy']) {
+        if (array_key_exists('proxy', $householdArray) && null !== $householdArray['proxy']) {
             if (null === $proxy) {
                 $proxy = new Person();
                 $this->em->persist($proxy);
