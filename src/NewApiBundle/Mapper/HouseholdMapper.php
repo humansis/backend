@@ -51,12 +51,14 @@ class HouseholdMapper implements MapperInterface
      */
     public function getAssets(): iterable
     {
-        return $this->object->getAssets();
+        return array_map(function ($item) {
+            return (string) $item;
+        }, $this->object->getAssets());
     }
 
-    public function getShelterStatus(): ?int
+    public function getShelterStatus(): ?string
     {
-        return $this->object->getShelterStatus();
+        return $this->object->getShelterStatus() ? (string) $this->object->getShelterStatus() : null;
     }
 
     /**
@@ -139,11 +141,13 @@ class HouseholdMapper implements MapperInterface
     }
 
     /**
-     * @return int[]
+     * @return string[]
      */
     public function getSupportReceivedTypes(): iterable
     {
-        return $this->object->getSupportReceivedTypes();
+        return array_map(function ($item) {
+            return (string) $item;
+        }, $this->object->getSupportReceivedTypes());
     }
 
     public function getSupportOrganizationName(): ?string
