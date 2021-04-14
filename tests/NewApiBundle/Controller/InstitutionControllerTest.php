@@ -2,7 +2,10 @@
 
 namespace Tests\NewApiBundle\Controller;
 
+use BeneficiaryBundle\Entity\Institution;
 use CommonBundle\Entity\Location;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Exception;
@@ -279,5 +282,51 @@ class InstitutionControllerTest extends BMSServiceTestCase
         $this->request('GET', '/api/basic/institutions/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
+    }
+
+    public function testGetCommunitiesByAssistance()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+
+        try {
+            $assistanceId = $em->createQueryBuilder()
+                ->select('a.id')
+                ->from(Institution::class, 'i')
+                ->join('i.assistanceBeneficiary', 'ab')
+                ->join('ab.assistance', 'a')
+                ->where('i.archived = 0')
+                ->getQuery()
+                ->setMaxResults(1)
+                ->getSingleScalarResult();
+        } catch (NoResultException $e) {
+            $this->markTestSkipped('You need to have at least one assistance with institution in database to complete this test.');
+            return;
+        }
+
+        $this->request('GET', '/api/basic/assistances/'.$assistanceId.'/institutions?sort[]=id.desc');
+
+        $this->assertJsonFragment('{
+            "totalCount": "*", 
+            "data": [
+                {
+                    "id": "*",
+                    "name": "*",
+                    "longitude": "*",
+                    "latitude": "*",
+                    "contactGivenName": "*",
+                    "contactFamilyName": "*",
+                    "addressId": "*",
+                    "nationalId": "*",
+                    "phoneId": "*",
+                    "projectIds": "*",
+                    "type": "*"
+                }
+            ]}', $this->client->getResponse()->getContent());
     }
 }
