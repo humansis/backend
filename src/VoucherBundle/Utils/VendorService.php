@@ -146,7 +146,9 @@ class VendorService
             ->setAddressPostcode($inputType->getAddressPostcode())
             ->setLocation($location)
             ->setArchived(false)
-            ->setUser($user);
+            ->setUser($user)
+            ->setVendorNo($inputType->getVendorNo())
+            ->setContractNo($inputType->getContractNo());
 
         $this->em->persist($vendor);
         $this->em->flush();
@@ -242,7 +244,9 @@ class VendorService
             ->setAddressNumber($inputType->getAddressNumber())
             ->setAddressPostcode($inputType->getAddressPostcode())
             ->setLocation($location)
-            ->setUser($user);
+            ->setUser($user)
+            ->setVendorNo($inputType->getVendorNo())
+            ->setContractNo($inputType->getContractNo());
 
         $this->em->persist($vendor);
         $this->em->flush();
@@ -357,6 +361,8 @@ class VendorService
                         'addressStreet'  => $vendor->getAddressStreet(),
                         'addressPostcode'  => $vendor->getAddressPostcode(),
                         'addressNumber'  => $vendor->getAddressNumber(),
+                        'vendorNo' => $vendor->getVendorNo(),
+                        'contractNo' => $vendor->getContractNo(),
                         'addressVillage' => $village ? $village->getName() : null,
                         'addressCommune' => $commune ? $commune->getName() : null,
                         'addressDistrict' => $district ? $district->getName() : null,

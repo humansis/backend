@@ -90,6 +90,20 @@ class Vendor implements ExportableInterface
      */
     private $user;
 
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="vendor_no", type="string", nullable=true)
+     */
+    private $vendorNo;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="contract_no", type="string", nullable=true)
+     */
+    private $contractNo;
+
     public function __construct()
     {
         $this->vouchers = new ArrayCollection();
@@ -320,5 +334,45 @@ class Vendor implements ExportableInterface
             "adm3" =>$adm3,
             "adm4" =>$adm4,
         ];
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getVendorNo(): ?string
+    {
+        return $this->vendorNo;
+    }
+
+    /**
+     * @param string|null $vendorNo
+     *
+     * @return Vendor
+     */
+    public function setVendorNo(?string $vendorNo): self
+    {
+        $this->vendorNo = $vendorNo;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getContractNo(): ?string
+    {
+        return $this->contractNo;
+    }
+
+    /**
+     * @param string|null $contractNo
+     *
+     * @return Vendor
+     */
+    public function setContractNo(?string $contractNo): self
+    {
+        $this->contractNo = $contractNo;
+
+        return $this;
     }
 }

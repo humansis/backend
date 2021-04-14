@@ -66,6 +66,8 @@ class VendorControllerTest extends BMSServiceTestCase
             'addressPostcode' => '039 98',
             'locationId' => $adm1Results[0]->getId(),
             'userId' => $users[0]->getId(),
+            'vendorNo' => 'v-10',
+            'contractNo' => 'c-10',
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -87,6 +89,8 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('adm2Id', $result);
         $this->assertArrayHasKey('adm3Id', $result);
         $this->assertArrayHasKey('adm4Id', $result);
+        $this->assertArrayHasKey('vendorNo', $result);
+        $this->assertArrayHasKey('contractNo', $result);
 
         return $result;
     }
@@ -106,7 +110,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('PUT', '/api/basic/vendors/'.$vendor['id'], [
+        $data = [
             'shop' => 'edited',
             'name' => $this->vendorUsername,
             'addressStreet' => $vendor['addressStreet'],
@@ -114,7 +118,11 @@ class VendorControllerTest extends BMSServiceTestCase
             'addressPostcode' => '0000',
             'locationId' => $vendor['locationId'],
             'userId' => $vendor['userId'],
-        ]);
+            'vendorNo' => 'v-10-changed',
+            'contractNo' => 'c-10-changed',
+        ];
+
+        $this->request('PUT', '/api/basic/vendors/'.$vendor['id'], $data);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -135,9 +143,13 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('adm2Id', $result);
         $this->assertArrayHasKey('adm3Id', $result);
         $this->assertArrayHasKey('adm4Id', $result);
+        $this->assertArrayHasKey('vendorNo', $result);
+        $this->assertArrayHasKey('contractNo', $result);
 
-        $this->assertEquals('edited', $result['shop']);
-        $this->assertEquals('0000', $result['addressPostcode']);
+        $this->assertEquals($data['shop'], $result['shop']);
+        $this->assertEquals($data['addressPostcode'], $result['addressPostcode']);
+        $this->assertEquals($data['vendorNo'], $result['vendorNo']);
+        $this->assertEquals($data['contractNo'], $result['contractNo']);
 
         return $result['id'];
     }
@@ -178,6 +190,8 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('adm2Id', $result);
         $this->assertArrayHasKey('adm3Id', $result);
         $this->assertArrayHasKey('adm4Id', $result);
+        $this->assertArrayHasKey('vendorNo', $result);
+        $this->assertArrayHasKey('contractNo', $result);
 
         return $id;
     }
