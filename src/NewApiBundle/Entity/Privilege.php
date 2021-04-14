@@ -80,14 +80,4 @@ class Privilege
     {
         return $this->roles;
     }
-
-    public function addRole(Role $role)
-    {
-        $this->roles->add($role);
-    }
-
-    public function removeRole(Role $role)
-    {
-        $this->roles->removeElement($role);
-    }
 }
