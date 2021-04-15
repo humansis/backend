@@ -469,7 +469,9 @@ class SmartcardController extends Controller
         $errors = $this->get('validator')->validate($data);
         if (count($errors) > 0) {
             $this->container->get('logger')->error('validation errors: '.((string) $errors));
-            throw new \RuntimeException((string) $errors);
+            // Changed by PIN-1637: it is needed for one specific period of syncing and need to be reverted after vendor app change
+            // throw new \RuntimeException((string) $errors);
+            return new Response();
         }
 
         $purchase = $this->get('smartcard_service')->purchase($request->get('serialNumber'), $data);
@@ -528,7 +530,9 @@ class SmartcardController extends Controller
         $errors = $this->get('validator')->validate($data);
         if (count($errors) > 0) {
             $this->container->get('logger')->error('validation errors: '.((string) $errors));
-            throw new \RuntimeException((string) $errors);
+            // Changed by PIN-1637: it is needed for one specific period of syncing and need to be reverted after vendor app change
+            // throw new \RuntimeException((string) $errors);
+            return new Response();
         }
 
         $purchase = $this->get('smartcard_service')->purchase($request->get('serialNumber'), $data);
