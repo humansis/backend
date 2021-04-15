@@ -197,12 +197,83 @@ class HouseholdMapper implements MapperInterface
         return null;
     }
 
-    public function getProxyId(): ?int
+    public function getProxyEnGivenName(): ?string
     {
-        if (null !== $this->object->getProxy()) {
-            return $this->object->getProxy()->getId();
+        if (null === $this->object->getProxy()) {
+            return null;
         }
 
-        return null;
+        return $this->object->getProxy()->getEnGivenName();
+    }
+
+    public function getProxyEnFamilyName(): ?string
+    {
+        if (null === $this->object->getProxy()) {
+            return null;
+        }
+
+        return $this->object->getProxy()->getEnFamilyName();
+    }
+
+    public function getProxyEnParentsName(): ?string
+    {
+        if (null === $this->object->getProxy()) {
+            return null;
+        }
+
+        return $this->object->getProxy()->getEnParentsName();
+    }
+
+    public function getProxyLocalGivenName(): ?string
+    {
+        if (null === $this->object->getProxy()) {
+            return null;
+        }
+
+        return $this->object->getProxy()->getLocalGivenName();
+    }
+
+    public function getProxyLocalFamilyName(): ?string
+    {
+        if (null === $this->object->getProxy()) {
+            return null;
+        }
+
+        return $this->object->getProxy()->getLocalFamilyName();
+    }
+
+    public function getProxyLocalParentsName(): ?string
+    {
+        if (null === $this->object->getProxy()) {
+            return null;
+        }
+
+        return $this->object->getProxy()->getLocalParentsName();
+    }
+
+    public function getProxyNationalIdCardId(): ?int
+    {
+        if (null === $this->object->getProxy()) {
+            return null;
+        }
+
+        if ($this->object->getProxy()->getNationalIds()->count() === 0) {
+            return null;
+        }
+
+        return $this->object->getProxy()->getNationalIds()->current()->getId();
+    }
+
+    public function getProxyPhoneId(): ?int
+    {
+        if (null === $this->object->getProxy()) {
+            return null;
+        }
+
+        if ($this->object->getProxy()->getPhones()->count() === 0) {
+            return null;
+        }
+
+        return $this->object->getProxy()->getPhones()->current()->getId();
     }
 }

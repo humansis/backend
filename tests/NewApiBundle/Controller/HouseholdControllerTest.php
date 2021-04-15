@@ -101,27 +101,21 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'locationId' => $location->getId(),
                 ],
             ],
-            'proxy' => [
-                'localFamilyName' => 'Bond',
-                'localGivenName' => 'James',
-                'localParentsName' => 'Jones',
-                'enFamilyName' => null,
-                'enGivenName' => null,
-                'enParentsName' => null,
-                'nationalIdCards' => [
-                    [
-                        'number' => '022-33-1547',
-                        'type' => NationalId::TYPE_NATIONAL_ID,
-                    ],
-                ],
-                'phones' => [
-                    [
-                        'prefix' => '420',
-                        'number' => '123456789',
-                        'type' => 'Landline',
-                        'proxy' => true,
-                    ],
-                ],
+            'proxyLocalFamilyName' => 'Bond',
+            'proxyLocalGivenName' => 'James',
+            'proxyLocalParentsName' => 'Jones',
+            'proxyEnFamilyName' => null,
+            'proxyEnGivenName' => null,
+            'proxyEnParentsName' => null,
+            'proxyNationalIdCard' => [
+                'number' => '022-33-1547',
+                'type' => NationalId::TYPE_NATIONAL_ID,
+            ],
+            'proxyPhone' => [
+                'prefix' => '420',
+                'number' => '123456789',
+                'type' => 'Landline',
+                'proxy' => true,
             ],
         ]);
 
@@ -155,7 +149,14 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('campAddressId', $result);
         $this->assertArrayHasKey('residenceAddressId', $result);
         $this->assertArrayHasKey('temporarySettlementAddressId', $result);
-        $this->assertArrayHasKey('proxyId', $result);
+        $this->assertArrayHasKey('proxyLocalFamilyName', $result);
+        $this->assertArrayHasKey('proxyLocalGivenName', $result);
+        $this->assertArrayHasKey('proxyLocalParentsName', $result);
+        $this->assertArrayHasKey('proxyEnFamilyName', $result);
+        $this->assertArrayHasKey('proxyEnGivenName', $result);
+        $this->assertArrayHasKey('proxyEnParentsName', $result);
+        $this->assertArrayHasKey('proxyNationalIdCardId', $result);
+        $this->assertArrayHasKey('proxyPhoneId', $result);
 
         return $result['id'];
     }
@@ -232,7 +233,22 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 'tentNumber' => 'string',
                 'campId' => $camp->getId(),
             ],
-            'proxy' => null,
+            'proxyLocalFamilyName' => 'Bond',
+            'proxyLocalGivenName' => 'James',
+            'proxyLocalParentsName' => 'Jones',
+            'proxyEnFamilyName' => null,
+            'proxyEnGivenName' => null,
+            'proxyEnParentsName' => null,
+            'proxyNationalIdCard' => [
+                'number' => '022-33-1547',
+                'type' => NationalId::TYPE_NATIONAL_ID,
+            ],
+            'proxyPhone' => [
+                'prefix' => '420',
+                'number' => '123456789',
+                'type' => 'Landline',
+                'proxy' => true,
+            ],
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -266,7 +282,14 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('campAddressId', $result);
         $this->assertArrayHasKey('residenceAddressId', $result);
         $this->assertArrayHasKey('temporarySettlementAddressId', $result);
-        $this->assertArrayHasKey('proxyId', $result);
+        $this->assertArrayHasKey('proxyLocalFamilyName', $result);
+        $this->assertArrayHasKey('proxyLocalGivenName', $result);
+        $this->assertArrayHasKey('proxyLocalParentsName', $result);
+        $this->assertArrayHasKey('proxyEnFamilyName', $result);
+        $this->assertArrayHasKey('proxyEnGivenName', $result);
+        $this->assertArrayHasKey('proxyEnParentsName', $result);
+        $this->assertArrayHasKey('proxyNationalIdCardId', $result);
+        $this->assertArrayHasKey('proxyPhoneId', $result);
 
         return $id;
     }
@@ -314,7 +337,14 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('campAddressId', $result);
         $this->assertArrayHasKey('residenceAddressId', $result);
         $this->assertArrayHasKey('temporarySettlementAddressId', $result);
-        $this->assertArrayHasKey('proxyId', $result);
+        $this->assertArrayHasKey('proxyLocalFamilyName', $result);
+        $this->assertArrayHasKey('proxyLocalGivenName', $result);
+        $this->assertArrayHasKey('proxyLocalParentsName', $result);
+        $this->assertArrayHasKey('proxyEnFamilyName', $result);
+        $this->assertArrayHasKey('proxyEnGivenName', $result);
+        $this->assertArrayHasKey('proxyEnParentsName', $result);
+        $this->assertArrayHasKey('proxyNationalIdCardId', $result);
+        $this->assertArrayHasKey('proxyPhoneId', $result);
 
         return $id;
     }

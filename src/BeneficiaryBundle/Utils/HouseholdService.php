@@ -20,6 +20,8 @@ use CommonBundle\Entity\Location;
 use CommonBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
+use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
+use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\InputType\HouseholdCreateInputType;
 use NewApiBundle\InputType\HouseholdProxyInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
@@ -321,44 +323,48 @@ class HouseholdService
 
         $proxy = $household->getProxy();
 
-        if (array_key_exists('proxy', $householdArray) && null !== $householdArray['proxy']) {
+        if (array_key_exists('proxy', $householdArray) && (null !== $householdArray['proxy']['localGivenName'] || null !== $householdArray['proxy']['localFamilyName']) ) {
             if (null === $proxy) {
                 $proxy = new Person();
                 $this->em->persist($proxy);
                 $household->setProxy($proxy);
             }
 
-            /** @var HouseholdProxyInputType $proxyInputType */
-            $proxyInputType = $householdArray['proxy'];
+            $proxyArray = $householdArray['proxy'];
 
-            $proxy->setEnGivenName($proxyInputType->getEnGivenName());
-            $proxy->setEnFamilyName($proxyInputType->getEnFamilyName());
-            $proxy->setEnParentsName($proxyInputType->getEnParentsName());
-            $proxy->setLocalGivenName($proxyInputType->getLocalGivenName());
-            $proxy->setLocalFamilyName($proxyInputType->getLocalFamilyName());
-            $proxy->setLocalParentsName($proxyInputType->getLocalParentsName());
+            $proxy->setEnGivenName($proxyArray['enGivenName']);
+            $proxy->setEnFamilyName($proxyArray['enFamilyName']);
+            $proxy->setEnParentsName($proxyArray['enParentsName']);
+            $proxy->setLocalGivenName($proxyArray['localGivenName']);
+            $proxy->setLocalFamilyName($proxyArray['localFamilyName']);
+            $proxy->setLocalParentsName($proxyArray['localParentsName']);
+
+            /** @var PhoneInputType $phoneInputType */
+            $phoneInputType = $proxyArray['phone'];
 
             $proxy->getPhones()->clear();
-            foreach ($proxyInputType->getPhones() as $phoneInputType) {
-                $phone = new Phone();
-                $phone->setType($phoneInputType->getType());
-                $phone->setPrefix($phoneInputType->getPrefix());
-                $phone->setNumber($phoneInputType->getNumber());
-                $phone->setProxy($phoneInputType->getProxy());
-                $phone->setPerson($proxy);
 
-                $this->em->persist($phone);
-            }
+            $phone = new Phone();
+            $phone->setType($phoneInputType->getType());
+            $phone->setPrefix($phoneInputType->getPrefix());
+            $phone->setNumber($phoneInputType->getNumber());
+            $phone->setProxy($phoneInputType->getProxy());
+            $phone->setPerson($proxy);
+
+            $this->em->persist($phone);
+
+            /** @var NationalIdCardInputType $nationalIdInputType */
+            $nationalIdInputType = $proxyArray['nationalIdCard'];
 
             $proxy->getNationalIds()->clear();
-            foreach ($proxyInputType->getNationalIdCards() as $nationalIdInputType) {
-                $nationalId = new NationalId();
-                $nationalId->setIdType($nationalIdInputType->getType());
-                $nationalId->setIdNumber($nationalIdInputType->getNumber());
-                $nationalId->setPerson($proxy);
 
-                $this->em->persist($nationalId);
-            }
+            $nationalId = new NationalId();
+            $nationalId->setIdType($nationalIdInputType->getType());
+            $nationalId->setIdNumber($nationalIdInputType->getNumber());
+            $nationalId->setPerson($proxy);
+
+            $this->em->persist($nationalId);
+
         } else {
             if (null !== $proxy) {
                 $this->em->remove($proxy);
@@ -669,7 +675,16 @@ class HouseholdService
             ];
         }
 
-        $data['proxy'] = $inputType->getProxy();
+        $data['proxy'] = [
+            'localFamilyName' => $inputType->getProxyLocalFamilyName(),
+            'localGivenName' => $inputType->getProxyLocalGivenName(),
+            'localParentsName' => $inputType->getProxyLocalParentsName(),
+            'enFamilyName' => $inputType->getProxyEnFamilyName(),
+            'enGivenName' => $inputType->getProxyEnGivenName(),
+            'enParentsName' => $inputType->getProxyEnParentsName(),
+            'nationalIdCard' => $inputType->getProxyNationalIdCard(),
+            'phone' => $inputType->getProxyPhone(),
+        ];
 
         return $data;
     }
