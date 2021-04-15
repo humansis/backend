@@ -115,7 +115,7 @@ class BeneficiaryInputType implements InputTypeInterface
      *     groups={"Strict"}
      * )
      */
-    private $vulnerabilityCriteriaIds = [];
+    private $vulnerabilityCriteria = [];
 
     /**
      * @return \DateTimeInterface
@@ -358,18 +358,18 @@ class BeneficiaryInputType implements InputTypeInterface
     }
 
     /**
-     * @return int[]
+     * @return string[]
      */
-    public function getVulnerabilityCriteriaIds()
+    public function getVulnerabilityCriteria()
     {
-        return $this->vulnerabilityCriteriaIds;
+        return $this->vulnerabilityCriteria;
     }
 
     /**
-     * @param int[] $vulnerabilityCriteriaIds
+     * @param string[] $vulnerabilityCriteria
      */
-    public function setVulnerabilityCriteriaIds($vulnerabilityCriteriaIds)
+    public function setVulnerabilityCriteria($vulnerabilityCriteria)
     {
-        $this->vulnerabilityCriteriaIds = $vulnerabilityCriteriaIds;
+        $this->vulnerabilityCriteria = $vulnerabilityCriteria;
     }
 }

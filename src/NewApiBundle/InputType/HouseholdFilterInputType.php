@@ -36,7 +36,7 @@ class HouseholdFilterInputType extends AbstractFilterInputType
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *         @Assert\Type("integer", groups={"Strict"})
+     *         @Assert\Choice(callback="vulnerabilities", strict=true, groups={"Strict"})
      *     },
      *     groups={"Strict"}
      * )
@@ -97,6 +97,11 @@ class HouseholdFilterInputType extends AbstractFilterInputType
      * )
      */
     protected $locations;
+
+    public static function vulnerabilities(): array
+    {
+        return array_keys(\BeneficiaryBundle\Entity\VulnerabilityCriterion::all());
+    }
 
     public function hasFulltext(): bool
     {

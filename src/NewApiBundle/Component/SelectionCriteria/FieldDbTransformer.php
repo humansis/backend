@@ -230,9 +230,9 @@ class FieldDbTransformer
         static $list = null;
         if (null === $list) {
             $list = [];
-            $countrySpecifics = $this->vulnerabilityCriterionRepository->findBy(['active' => true]);
-            foreach ($countrySpecifics as $countrySpecific) {
-                $list[$countrySpecific->getFieldString()] = $countrySpecific;
+            $vulnerabilityCriteria = $this->vulnerabilityCriterionRepository->findBy(['active' => true]);
+            foreach ($vulnerabilityCriteria as $criterion) {
+                $list[$criterion->getFieldString()] = $criterion;
             }
         }
 

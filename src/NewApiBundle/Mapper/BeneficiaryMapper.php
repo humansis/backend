@@ -119,7 +119,7 @@ class BeneficiaryMapper implements MapperInterface
 
         foreach ($this->object->getVulnerabilityCriteria() as $criterion) {
             if ($criterion->isActive()) {
-                $data[] = (string) $criterion->getId();
+                $data[] = (string) $criterion->getFieldString();
             }
         }
 
