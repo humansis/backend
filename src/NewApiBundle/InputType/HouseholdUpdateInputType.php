@@ -10,15 +10,46 @@ use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\Address\TemporarySettlementAddressInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 use NewApiBundle\InputType\Beneficiary\CountrySpecificsAnswerInputType;
+use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
+use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\Request\InputTypeInterface;
 use NewApiBundle\Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\GroupSequenceProviderInterface;
 
 /**
- * @Assert\GroupSequence({"HouseholdUpdateInputType", "Strict"})
+ * @Assert\GroupSequenceProvider()
  */
-class HouseholdUpdateInputType implements InputTypeInterface
+class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProviderInterface
 {
+    public function getGroupSequence()
+    {
+        $commonSequence = [
+            'HouseholdUpdateInputType',
+            'Strict',
+        ];
+
+        $proxyParameters = [
+            $this->getProxyLocalGivenName(),
+            $this->getProxyLocalFamilyName(),
+            $this->getProxyLocalParentsName(),
+            $this->getProxyEnGivenName(),
+            $this->getProxyEnFamilyName(),
+            $this->getProxyEnParentsName(),
+            $this->getProxyPhone(),
+            $this->getProxyNationalIdCard(),
+        ];
+
+        foreach ($proxyParameters as $proxyParameter) {
+            if (null !== $proxyParameter) {
+                $commonSequence[] = 'Proxy';
+                break;
+            }
+        }
+
+        return $commonSequence;
+    }
+
     /**
      * @Assert\Choice({"KHM", "SYR", "UKR", "ETH", "MNG", "ARM"})
      * @Assert\NotBlank
@@ -170,9 +201,46 @@ class HouseholdUpdateInputType implements InputTypeInterface
     private $countrySpecificAnswers = [];
 
     /**
+     * @Assert\Type("string")
+     */
+    private $proxyEnGivenName;
+
+    /**
+     * @Assert\Type("string")
+     */
+    private $proxyEnFamilyName;
+
+    /**
+     * @Assert\Type("string")
+     */
+    private $proxyEnParentsName;
+
+    /**
+     * @Assert\Type("string")
+     * @Assert\NotBlank(groups={"Proxy"})
+     */
+    private $proxyLocalGivenName;
+
+    /**
+     * @Assert\Type("string")
+     * @Assert\NotBlank(groups={"Proxy"})
+     */
+    private $proxyLocalFamilyName;
+
+    /**
+     * @Assert\Type("string")
+     */
+    private $proxyLocalParentsName;
+
+    /**
      * @Assert\Valid
      */
-    private $proxy;
+    private $proxyNationalIdCard;
+
+    /**
+     * @Assert\Valid
+     */
+    private $proxyPhone;
 
     final public static function assets()
     {
@@ -589,18 +657,130 @@ class HouseholdUpdateInputType implements InputTypeInterface
     }
 
     /**
-     * @return HouseholdProxyInputType|null
+     * @return string|null
      */
-    public function getProxy()
+    public function getProxyEnGivenName()
     {
-        return $this->proxy;
+        return $this->proxyEnGivenName;
     }
 
     /**
-     * @param HouseholdProxyInputType|null $proxy
+     * @param string|null $proxyEnGivenName
      */
-    public function setProxy(?HouseholdProxyInputType $proxy): void
+    public function setProxyEnGivenName($proxyEnGivenName)
     {
-        $this->proxy = $proxy;
+        $this->proxyEnGivenName = $proxyEnGivenName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getProxyEnFamilyName()
+    {
+        return $this->proxyEnFamilyName;
+    }
+
+    /**
+     * @param string|null $proxyEnFamilyName
+     */
+    public function setProxyEnFamilyName($proxyEnFamilyName)
+    {
+        $this->proxyEnFamilyName = $proxyEnFamilyName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getProxyEnParentsName()
+    {
+        return $this->proxyEnParentsName;
+    }
+
+    /**
+     * @param string|null $proxyEnParentsName
+     */
+    public function setProxyEnParentsName($proxyEnParentsName)
+    {
+        $this->proxyEnParentsName = $proxyEnParentsName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getProxyLocalGivenName()
+    {
+        return $this->proxyLocalGivenName;
+    }
+
+    /**
+     * @param string|null $proxyLocalGivenName
+     */
+    public function setProxyLocalGivenName($proxyLocalGivenName)
+    {
+        $this->proxyLocalGivenName = $proxyLocalGivenName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getProxyLocalFamilyName()
+    {
+        return $this->proxyLocalFamilyName;
+    }
+
+    /**
+     * @param string|null $proxyLocalFamilyName
+     */
+    public function setProxyLocalFamilyName($proxyLocalFamilyName)
+    {
+        $this->proxyLocalFamilyName = $proxyLocalFamilyName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getProxyLocalParentsName()
+    {
+        return $this->proxyLocalParentsName;
+    }
+
+    /**
+     * @param string|null $proxyLocalParentsName
+     */
+    public function setProxyLocalParentsName($proxyLocalParentsName)
+    {
+        $this->proxyLocalParentsName = $proxyLocalParentsName;
+    }
+
+    /**
+     * @return NationalIdCardInputType|null
+     */
+    public function getProxyNationalIdCard()
+    {
+        return $this->proxyNationalIdCard;
+    }
+
+    /**
+     * @param NationalIdCardInputType|null $proxyNationalIdCard
+     */
+    public function setProxyNationalIdCard(?NationalIdCardInputType $proxyNationalIdCard)
+    {
+        $this->proxyNationalIdCard = $proxyNationalIdCard;
+    }
+
+    /**
+     * @return PhoneInputType|null
+     */
+    public function getProxyPhone()
+    {
+        return $this->proxyPhone;
+    }
+
+    /**
+     * @param PhoneInputType|null $proxyPhone
+     */
+    public function setProxyPhone(?PhoneInputType $proxyPhone)
+    {
+        $this->proxyPhone = $proxyPhone;
     }
 }
