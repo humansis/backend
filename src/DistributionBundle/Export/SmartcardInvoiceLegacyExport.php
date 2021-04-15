@@ -20,6 +20,7 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Translation\TranslatorInterface;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\SmartcardRedemptionBatch;
+use VoucherBundle\Entity\Vendor;
 
 class SmartcardInvoiceLegacyExport
 {
@@ -58,7 +59,7 @@ class SmartcardInvoiceLegacyExport
 
         $slugger = new AsciiSlugger();
 
-        $countryIso3 = $batch->getProject()->getIso3();
+        $countryIso3 = self::extractCountryIso3($batch->getVendor());
         $id = sprintf('%05d', $batch->getId());
         $vendorName = $slugger->slug($batch->getVendor()->getName());
         $invoiceName = "{$countryIso3}LEGACY{$id}{$vendorName}.xlsx";
@@ -515,5 +516,29 @@ class SmartcardInvoiceLegacyExport
         $worksheet->getStyle($cellCoordination)->getBorders()
             ->getAllBorders()
             ->setBorderStyle(Border::BORDER_THIN);
+    }
+
+    private static function extractCountryIso3(Vendor $vendor): string
+    {
+        if (!$vendor->getLocation()) {
+            return 'ALL';
+        }
+        $adm1 = null;
+        if ($vendor->getLocation()->getAdm1()) {
+            $adm1 = $vendor->getLocation()->getAdm1();
+        }
+        if ($vendor->getLocation()->getAdm2()) {
+            $adm1 = $vendor->getLocation()->getAdm2()->getAdm1();
+        }
+        if ($vendor->getLocation()->getAdm3()) {
+            $adm1 = $vendor->getLocation()->getAdm3()->getAdm2()->getAdm1();
+        }
+        if ($vendor->getLocation()->getAdm4()) {
+            $adm1 = $vendor->getLocation()->getAdm4()->getAdm3()->getAdm2()->getAdm1();
+        }
+        if (!$adm1) {
+            return 'ALL';
+        }
+        return $adm1->getCountryISO3();
     }
 }
