@@ -243,7 +243,7 @@ class AssistanceBeneficiaryService
      * @param array      $beneficiariesData
      *
      * @return AssistanceBeneficiary[]
-     * @throws \Exception
+     * @throws Exception\RemoveBeneficiaryWithReliefException
      */
     public function removeBeneficiaries(Assistance $assistance, array $beneficiariesData)
     {
@@ -258,6 +258,7 @@ class AssistanceBeneficiaryService
      * @param                     $deletionData
      *
      * @return bool
+     * @throws Exception\RemoveBeneficiaryWithReliefException
      */
     public function removeBeneficiaryInDistribution(Assistance $assistance, AbstractBeneficiary $beneficiary, $deletionData)
     {
@@ -265,7 +266,7 @@ class AssistanceBeneficiaryService
         $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy(['beneficiary' => $beneficiary->getId(), 'assistance' => $assistance->getId()]);
 
         if ($assistanceBeneficiary->hasDistributionStarted()) {
-            throw new \InvalidArgumentException("Beneficiary with distributed items can't be removed from assistance.");
+            throw new Exception\RemoveBeneficiaryWithReliefException($assistanceBeneficiary->getBeneficiary());
         }
 
         // Update updatedOn datetime
