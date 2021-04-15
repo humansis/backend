@@ -34,7 +34,7 @@ class NotUniqueException extends \RuntimeException implements ConstraintViolatio
      */
     public function getParameters()
     {
-        ['{{ value }}' => $this->value];
+        return ['{{ value }}' => $this->value];
     }
 
     /**
