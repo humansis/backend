@@ -41,13 +41,15 @@ class CodeLists
         return $data;
     }
 
-    public static function mapCriterion(iterable $criterion)
+    public static function mapCriterion(iterable $criteria)
     {
         $data = [];
 
-        /* @var VulnerabilityCriterion $criteria */
-        foreach ($criterion as $criteria) {
-            $data[] = new CodeItem($criteria->getId(), VulnerabilityCriterion::all()[$criteria->getFieldString()]);
+        /* @var VulnerabilityCriterion $criterion */
+        foreach ($criteria as $criterion) {
+            if ($criterion->isActive()) {
+                $data[] = new CodeItem($criterion->getFieldString(), VulnerabilityCriterion::all()[$criterion->getFieldString()]);
+            }
         }
 
         return $data;
