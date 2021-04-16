@@ -96,6 +96,7 @@ class AssistanceBeneficiary
         $this->booklets = new ArrayCollection();
         $this->generalReliefs = new ArrayCollection();
         $this->smartcardDeposits = new ArrayCollection();
+        $this->transactions = new ArrayCollection();
     }
 
     /**
@@ -215,7 +216,7 @@ class AssistanceBeneficiary
     /**
      * Get the value of Transaction.
      *
-     * @return Transaction[]
+     * @return Collection|Transaction[]
      */
     public function getTransactions()
     {

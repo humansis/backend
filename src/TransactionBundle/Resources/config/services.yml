@@ -36,6 +36,11 @@ services:
             - "@serializer"
         public: true
 
+    export.distributed_summary.spreadsheet:
+        class: TransactionBundle\Export\DistributedSummarySpreadsheetExport
+        arguments: [ '@translator', '@NewApiBundle\Component\Country\Countries' ]
+        public: true
+
     export.spreadsheet:
         class: TransactionBundle\Export\AssistanceSpreadsheetExport
         arguments: [ '@translator' ]
