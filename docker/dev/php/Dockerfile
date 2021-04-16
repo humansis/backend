@@ -7,12 +7,13 @@ RUN apt-get update && \
     libpng-dev \
     libzip-dev \
     libjpeg-dev \
+    libicu-dev \
     cron \
     sudo
 
 
 RUN docker-php-ext-configure gd --with-jpeg-dir=/usr/include/ && \
-    docker-php-ext-install pdo_mysql zip gd opcache && \
+    docker-php-ext-install pdo_mysql zip gd opcache intl && \
     pecl install apcu && \
     docker-php-ext-enable apcu
 
