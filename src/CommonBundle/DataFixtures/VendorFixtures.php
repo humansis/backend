@@ -96,8 +96,8 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
             ->setArchived(false)
             ->setUser($user)
             ->setLocation($adm2->getLocation())
-            ->setVendorNo(sprintf('%06d', random_int(1000, 1000000)))
-            ->setContractNo(sprintf('%06d', random_int(1000, 1000000)))
+            ->setVendorNo('SYR'.sprintf('%07d', random_int(100, 10000)))
+            ->setContractNo('SYRSP'.sprintf('%06d', random_int(100, 10000)))
         ;
 
         return $vendor;
@@ -120,8 +120,8 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
             ->setArchived(false)
             ->setUser($user)
             ->setLocation($adm2->getLocation())
-            ->setVendorNo(sprintf('%06d', random_int(1000, 1000000)))
-            ->setContractNo(sprintf('%06d', random_int(1000, 1000000)))
+            ->setVendorNo('KHM'.sprintf('%07d', random_int(100, 10000)))
+            ->setContractNo('KHMSP'.sprintf('%06d', random_int(100, 10000)))
         ;
 
         return $vendor;
@@ -144,8 +144,8 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
             ->setArchived(false)
             ->setUser($user)
             ->setLocation($adm2->getLocation())
-            ->setVendorNo(sprintf('%06d', random_int(100, 10000)))
-            ->setContractNo(sprintf('%06d', random_int(100, 10000)))
+            ->setVendorNo($country.sprintf('%07d', random_int(100, 10000)))
+            ->setContractNo($country.'SP'.sprintf('%06d', random_int(100, 10000)))
         ;
 
         $manager->persist($vendor);
