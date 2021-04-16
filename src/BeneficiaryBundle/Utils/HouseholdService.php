@@ -579,7 +579,7 @@ class HouseholdService
         foreach ($inputType->getBeneficiaries() as $bnf) {
             $vulnerabilityCriteria = [];
             foreach ($bnf->getVulnerabilityCriteria() as $name) {
-                $criterion = $this->em->getRepository(VulnerabilityCriterion::class)->findBy(['fieldString' => $name]);
+                $criterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy(['fieldString' => $name]);
                 $vulnerabilityCriteria[] = ['id' => $criterion->getId()];
             }
 
