@@ -2,6 +2,7 @@
 
 namespace VoucherBundle\Utils;
 
+use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
@@ -348,21 +349,27 @@ class BookletService
      * Assign the booklet to a beneficiary
      *
      * @param Booklet $booklet
-     * @param Beneficiary $beneficiary
+     * @param AbstractBeneficiary $abstractBeneficiary
      * @param Assistance $assistance
      * @return string
      * @throws \Exception
      *
      */
-    public function assign(Booklet $booklet, Assistance $assistance, Beneficiary $beneficiary)
+    public function assign(Booklet $booklet, Assistance $assistance, AbstractBeneficiary $abstractBeneficiary)
     {
         if ($booklet->getStatus() === Booklet::DEACTIVATED || $booklet->getStatus() === Booklet::USED || $booklet->getStatus() === Booklet::DISTRIBUTED) {
             throw new \Exception("This booklet has already been distributed, used or is actually deactivated");
         }
 
+        /** @var AssistanceBeneficiary|null $assistanceBeneficiary */
         $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy(
-            ['beneficiary' => $beneficiary, "assistance" => $assistance]
+            ['beneficiary' => $abstractBeneficiary, "assistance" => $assistance]
         );
+
+        if (!$assistanceBeneficiary instanceof AssistanceBeneficiary) {
+            throw new \InvalidArgumentException('Beneficiary with id '.$abstractBeneficiary->getId().' does not belong to assistance with id '.$assistance->getId());
+        }
+
         $booklet->setAssistanceBeneficiary($assistanceBeneficiary)
             ->setStatus(Booklet::DISTRIBUTED);
         $this->em->persist($booklet);
