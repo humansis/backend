@@ -132,8 +132,8 @@ deploy test:
   variables:
     HOSTNAME: apitest.humansis.org
     ENVIRONMENT: test
-    CLEAN_DATABASE: "true"
-    LOAD_FIXTURES: dev
+    CLEAN_DATABASE: "database"
+    LOAD_FIXTURES: "false"
     CACHE_CLEAR_MODE: aggressive
   <<: *prepare_ssh
   script:

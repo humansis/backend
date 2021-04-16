@@ -103,7 +103,7 @@ elif [[ $2 == "database" ]]; then
   clean_database="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'bash clean_database.sh'"
   ssh $ec2_user@$ec2_host $clean_database
   # get database
-  bash get_db.sh "$1"
+  bash get_db.sh ${RDS_HOSTNAME_STAGE} ${DB_DEPLOY_USER} ${DB_DEPLOY_USER_PASSWORD} ${DB_DEPLOY_NAME} "$1"
   # run database migrations
   migrations="cd /var/www/html/bms_api && sudo docker-compose exec -T php bash -c 'php bin/console doctrine:migrations:migrate -n'"
   ssh $ec2_user@$ec2_host $migrations
