@@ -269,13 +269,18 @@ class VoucherService
 
         // If csv type, return the response
         if ('csv' === $type) {
+            if ($exportableCount >= ExportController::EXPORT_LIMIT_CSV) {
+                $totalBooklets = $ids ? count($ids) : count($booklets);
+                throw new \Exception("Too much vouchers for the export ($exportableCount vouchers in $totalBooklets booklets). ".
+                    "Export the data in batches of ".ExportController::EXPORT_LIMIT_CSV." vouchers or less");
+            }
             return $this->csvExport($exportableTable);
         }
 
         $total = $ids ? $this->em->getRepository(Voucher::class)->countByBookletsIds($ids) : $this->em->getRepository(Voucher::class)->countByBooklets($booklets);
         if ($total > ExportController::EXPORT_LIMIT) {
             $totalBooklets = $ids ? count($ids) : count($booklets);
-            throw new \Exception("Too much vouchers for the export ($total vouchers in $totalBooklets). ".
+            throw new \Exception("Too much vouchers for the export ($total vouchers in $totalBooklets booklets). ".
             "Export the data in batches of ".ExportController::EXPORT_LIMIT." vouchers or less");
         }
         return $this->container->get('export_csv_service')->export($exportableTable->getResult(), 'bookletCodes', $type);
