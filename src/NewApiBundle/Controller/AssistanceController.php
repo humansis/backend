@@ -18,9 +18,11 @@ use NewApiBundle\InputType\ProjectsAssistanceFilterInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class AssistanceController extends AbstractController
@@ -135,7 +137,8 @@ class AssistanceController extends AbstractController
         }
 
         if ($request->request->get('dateDistribution')) {
-            $this->get('distribution.assistance_service')->updateDateDistribution($assistance, new \DateTime($request->request->get('dateDistribution')));
+            $this->get('distribution.assistance_service')->updateDateDistribution($assistance,
+                new \DateTime($request->request->get('dateDistribution')));
         }
 
         return $this->json($assistance);
@@ -153,6 +156,24 @@ class AssistanceController extends AbstractController
         $this->get('distribution.assistance_service')->delete($assistance);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Rest\Get("/projects/{id}/distributed-items/exports")
+     *
+     * @param Project $project
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function summaryExports(Project $project, Request $request): Response
+    {
+        $filename = $this->get('export.distributed_summary.spreadsheet')->export($project, $request->get('type'));
+
+        $response = new BinaryFileResponse($filename);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
+
+        return $response;
     }
 
     /**
