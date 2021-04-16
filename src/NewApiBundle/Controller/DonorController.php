@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
+use CommonBundle\Controller\ExportController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\File\UploadService;
 use NewApiBundle\InputType\DonorCreateInputType;
@@ -12,6 +13,7 @@ use NewApiBundle\InputType\DonorOrderInputType;
 use NewApiBundle\InputType\DonorUpdateInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Donor;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,6 +27,20 @@ class DonorController extends AbstractController
     public function __construct(UploadService $uploadService)
     {
         $this->uploadService = $uploadService;
+    }
+
+    /**
+     * @Rest\Get("/donors/exports")
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function exports(Request $request): BinaryFileResponse
+    {
+        $request->query->add(['donors' => true]);
+
+        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
     }
 
     /**

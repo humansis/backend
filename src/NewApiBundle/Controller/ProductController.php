@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
+use CommonBundle\Controller\ExportController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\File\UploadService;
 use NewApiBundle\InputType\ProductCreateInputType;
@@ -26,6 +27,25 @@ class ProductController extends AbstractController
     public function __construct(UploadService $uploadService)
     {
         $this->uploadService = $uploadService;
+    }
+
+    /**
+     * @Rest\Get("/products/exports")
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function exports(Request $request): Response
+    {
+        $request->query->add([
+            'products' => true,
+        ]);
+        $request->request->add([
+            '__country' => $request->headers->get('country'),
+        ]);
+
+        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
     }
 
     /**

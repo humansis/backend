@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
+use CommonBundle\Controller\ExportController;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\UserCreateInputType;
@@ -13,6 +14,7 @@ use NewApiBundle\InputType\UserInitializeInputType;
 use NewApiBundle\InputType\UserOrderInputType;
 use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use UserBundle\Entity\User;
 use UserBundle\Repository\UserRepository;
@@ -20,6 +22,20 @@ use UserBundle\Utils\UserService;
 
 class UserController extends AbstractController
 {
+    /**
+     * @Rest\Get("/users/exports")
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function exports(Request $request): Response
+    {
+        $request->query->add(['users' => true]);
+
+        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
+    }
+
     /**
      * @Rest\Get("/users/{id}")
      *

@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use CommonBundle\Controller\ExportController;
 use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Codelist\CodeLists;
 use NewApiBundle\InputType\BookletBatchCreateInputType;
+use NewApiBundle\InputType\BookletExportFilterInputType;
 use NewApiBundle\InputType\BookletFilterInputType;
 use NewApiBundle\InputType\BookletOrderInputType;
 use NewApiBundle\Request\Pagination;
@@ -32,6 +34,30 @@ class BookletController extends AbstractController
         $data = CodeLists::mapArray(Booklet::statuses());
 
         return $this->json(new Paginator($data));
+    }
+
+    /**
+     * @Rest\Get("/booklets/exports")
+     *
+     * @param Request                      $request
+     * @param BookletExportFilterInputType $inputType
+     *
+     * @return Response
+     */
+    public function exports(Request $request, BookletExportFilterInputType $inputType): Response
+    {
+        $request->query->add([
+            'bookletCodes' => true,
+        ]);
+        $request->request->add([
+            '__country' => $request->headers->get('country'),
+        ]);
+
+        if ($inputType->hasIds()) {
+            $request->request->add(['ids' => $inputType->getIds()]);
+        }
+
+        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
     }
 
     /**

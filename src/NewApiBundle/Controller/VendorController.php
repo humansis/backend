@@ -2,6 +2,7 @@
 
 namespace NewApiBundle\Controller;
 
+use CommonBundle\Controller\ExportController;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Exception\ConstraintViolationException;
@@ -21,6 +22,21 @@ use VoucherBundle\Repository\VendorRepository;
 
 class VendorController extends AbstractController
 {
+    /**
+     * @Rest\Get("/vendors/exports")
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function exports(Request $request): JsonResponse
+    {
+        $request->query->add(['vendors' => true]);
+        $request->query->add(['__country' => $request->headers->get('country')]);
+
+        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
+    }
+
     /**
      * @Rest\Get("/vendors/{id}")
      *
