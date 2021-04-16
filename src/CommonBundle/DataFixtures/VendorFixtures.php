@@ -95,7 +95,10 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
             ->setAddressPostcode('12345')
             ->setArchived(false)
             ->setUser($user)
-            ->setLocation($adm2->getLocation());
+            ->setLocation($adm2->getLocation())
+            ->setVendorNo(sprintf('%06d', random_int(1000, 1000000)))
+            ->setContractNo(sprintf('%06d', random_int(1000, 1000000)))
+        ;
 
         return $vendor;
     }
@@ -116,7 +119,10 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
             ->setAddressPostcode('54321')
             ->setArchived(false)
             ->setUser($user)
-            ->setLocation($adm2->getLocation());
+            ->setLocation($adm2->getLocation())
+            ->setVendorNo(sprintf('%06d', random_int(1000, 1000000)))
+            ->setContractNo(sprintf('%06d', random_int(1000, 1000000)))
+        ;
 
         return $vendor;
     }
@@ -137,7 +143,10 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
             ->setAddressPostcode(rand(10000, 99999))
             ->setArchived(false)
             ->setUser($user)
-            ->setLocation($adm2->getLocation());
+            ->setLocation($adm2->getLocation())
+            ->setVendorNo(sprintf('%06d', random_int(100, 10000)))
+            ->setContractNo(sprintf('%06d', random_int(100, 10000)))
+        ;
 
         $manager->persist($vendor);
 
