@@ -397,6 +397,10 @@ class BeneficiaryService
             $count = count($households);
             throw new BadRequestHttpException("Too much households ($count) to export. Limit is ".ExportController::EXPORT_LIMIT);
         }
+        if ('csv' === $type && count($households) > ExportController::EXPORT_LIMIT_CSV) {
+            $count = count($households);
+            throw new BadRequestHttpException("Too much households ($count) to export. Limit for CSV is ".ExportController::EXPORT_LIMIT_CSV);
+        }
         
         if ($households) {
             foreach ($households as $household) {
@@ -410,6 +414,11 @@ class BeneficiaryService
             $BNFcount = count($exportableTable);
             $HHcount = count($households);
             throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit is ".ExportController::EXPORT_LIMIT);
+        }
+        if ('csv' === $type && count($exportableTable) > ExportController::EXPORT_LIMIT_CSV) {
+            $BNFcount = count($exportableTable);
+            $HHcount = count($households);
+            throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit for CSV is ".ExportController::EXPORT_LIMIT_CSV);
         }
 
         return $this->container->get('export_csv_service')->export($exportableTable, 'beneficiaryhousehoulds', $type);
