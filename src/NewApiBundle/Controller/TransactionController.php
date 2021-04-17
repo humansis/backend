@@ -29,6 +29,12 @@ class TransactionController extends AbstractController
      */
     public function byAssistanceAndBeneficiary(Assistance $assistance, Beneficiary $beneficiary): JsonResponse
     {
+        try {
+            $this->get('transaction.transaction_service')->updateTransactionStatus($assistance->getProject()->getIso3(), $assistance);
+        } catch (\Exception $exception) {
+            $this->get('logger')->addCritical($exception->getMessage());
+        }
+
         $list = $this->getDoctrine()->getRepository(Transaction::class)
             ->findByAssistanceBeneficiary($assistance, $beneficiary);
 
