@@ -211,11 +211,13 @@ class SmartcardInvoiceExport
         self::undertranslatedSmallHeadline($worksheet, $translator, "Supplier", "B", $row1);
         $worksheet->setCellValue("C$row1", $batch->getVendor()->getName());
         self::undertranslatedSmallHeadline($worksheet, $translator, "Vendor No.", "H", $row1);
+        $worksheet->setCellValue("I$row1", $batch->getVendor()->getVendorNo());
         // style
         $worksheet->getRowDimension($row1)->setRowHeight(20);
         $worksheet->getRowDimension($row2)->setRowHeight(20);
         $worksheet->getStyle("H$row1")->getAlignment()->setWrapText(true);
         self::setImportantFilledInfo($worksheet, "C$row1");
+        self::setImportantFilledInfo($worksheet, "I$row1");
         $worksheet->getStyle("C$row1:G$row2")->getBorders()
             ->getOutline()
             ->setBorderStyle(Border::BORDER_THIN);
@@ -235,6 +237,7 @@ class SmartcardInvoiceExport
         $worksheet->mergeCells("C$row1:C$row3");
         // data
         $worksheet->setCellValue("B$row1", self::addTrans($translator, 'Contract No.', self::EOL));
+        $worksheet->setCellValue("C$row1", $batch->getVendor()->getContractNo());
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Period Start', 'D', $row1);
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Period End', 'E', $row1);
         $worksheet->setCellValue("F$row1", self::addTrans($translator, 'Payment Method', self::EOL));
@@ -263,6 +266,7 @@ class SmartcardInvoiceExport
         self::setSmallHeadline($worksheet, "B$row3:J$row3");
         self::setSmallHeadline($worksheet, "B$row1");
         self::setSmallHeadline($worksheet, "F$row1");
+        self::setImportantFilledInfo($worksheet, "C$row1");
         self::setImportantFilledInfo($worksheet, "H$row3");
         self::setImportantFilledInfo($worksheet, "I$row3");
         self::setImportantFilledInfo($worksheet, "J$row3");
