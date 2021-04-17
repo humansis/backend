@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Community;
+use BeneficiaryBundle\Entity\Institution;
 use CommonBundle\Controller\ExportController;
 use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
@@ -139,9 +141,47 @@ class BookletController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function assign(Assistance $assistance, Beneficiary $beneficiary, Booklet $booklet): JsonResponse
+    public function assignToBeneficiary(Assistance $assistance, Beneficiary $beneficiary, Booklet $booklet): JsonResponse
     {
         $this->get('voucher.booklet_service')->assign($booklet, $assistance, $beneficiary);
+
+        return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Rest\Put("/assistances/{assistanceId}/communities/{communityId}/booklets/{bookletCode}")
+     * @ParamConverter("assistance", options={"mapping": {"assistanceId" : "id"}})
+     * @ParamConverter("community", options={"mapping": {"communityId" : "id"}})
+     * @ParamConverter("booklet", options={"mapping": {"bookletCode" : "code"}})
+     *
+     * @param Assistance  $assistance
+     * @param Community $community
+     * @param Booklet     $booklet
+     *
+     * @return JsonResponse
+     */
+    public function assignToCommunity(Assistance $assistance, Community $community, Booklet $booklet): JsonResponse
+    {
+        $this->get('voucher.booklet_service')->assign($booklet, $assistance, $community);
+
+        return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Rest\Put("/assistances/{assistanceId}/institutions/{institutionId}/booklets/{bookletCode}")
+     * @ParamConverter("assistance", options={"mapping": {"assistanceId" : "id"}})
+     * @ParamConverter("institution", options={"mapping": {"institutionId" : "id"}})
+     * @ParamConverter("booklet", options={"mapping": {"bookletCode" : "code"}})
+     *
+     * @param Assistance $assistance
+     * @param Institution  $institution
+     * @param Booklet    $booklet
+     *
+     * @return JsonResponse
+     */
+    public function assignToInstitution(Assistance $assistance, Institution $institution, Booklet $booklet): JsonResponse
+    {
+        $this->get('voucher.booklet_service')->assign($booklet, $assistance, $institution);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
