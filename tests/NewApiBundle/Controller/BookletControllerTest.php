@@ -28,11 +28,6 @@ class BookletControllerTest extends BMSServiceTestCase
 
     public function testCreate()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
         $this->request('POST', '/api/basic/booklets/batches', [
@@ -56,11 +51,6 @@ class BookletControllerTest extends BMSServiceTestCase
      */
     public function testGet()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([])[0];
 
         $this->request('GET', '/api/basic/booklets/'.$booklet->getId());
@@ -90,11 +80,6 @@ class BookletControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/booklets?sort[]=value.asc&filter[fulltext]=KHM');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -113,11 +98,6 @@ class BookletControllerTest extends BMSServiceTestCase
      */
     public function testDelete()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([], ['id' => 'desc'], 1)[0];
 
         $this->request('DELETE', '/api/basic/booklets/'.$booklet->getId());
@@ -127,11 +107,6 @@ class BookletControllerTest extends BMSServiceTestCase
 
     public function testAssignToBeneficiary()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $doctrine = self::$container->get('doctrine');
 
         try {
@@ -232,11 +207,6 @@ class BookletControllerTest extends BMSServiceTestCase
 
     public function testListByAssistanceAndBeneficiary()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Booklet $item */
         $item = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([])[0];
         $assistanceId = $item->getAssistanceBeneficiary()->getAssistance()->getId();

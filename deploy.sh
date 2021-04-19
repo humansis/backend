@@ -14,35 +14,49 @@ echo "Configuring application build"
 ec2_user="ubuntu"
 if [[ $1 == "prod" ]]; then
   ec2_host="api.humansis.org"
+  JWT_CERT=$JWT_CERT_PROD
+  JWT_KEY=$JWT_KEY_PROD
   mv docker/docker-compose.yml.prod docker-compose.yml
   bash apply_env_config.sh ${RDS_HOSTNAME_PROD} ${RDS_DB_NAME_PROD} ${RDS_USERNAME_PROD} ${RDS_PASSWORD_PROD} ${MOBILE_KEY_PROD} ${MOBILE_APP_VERSION_PROD} ${MOBILE_APP_ID_PROD}
 elif [[ $1 == "demo" ]]; then
   echo "Demo environment is currently not supported"
   exit 0
   ec2_host="api-demo.humansis.org"
+  JWT_CERT=$JWT_CERT_DEMO
+  JWT_KEY=$JWT_KEY_DEMO
   mv docker/docker-compose.yml.demo docker-compose.yml
   bash apply_env_config.sh ${RDS_HOSTNAME_DEMO} ${RDS_DB_NAME_DEMO} ${RDS_USERNAME_DEMO} ${RDS_PASSWORD_DEMO} ${MOBILE_KEY_DEMO} ${MOBILE_APP_VERSION_DEMO} ${MOBILE_APP_ID_DEMO}
 elif [[ $1 == "stage" ]]; then
   ec2_host="apistage.humansis.org"
+  JWT_CERT=$JWT_CERT_STAGE
+  JWT_KEY=$JWT_KEY_STAGE
   mv docker/docker-compose.yml.stage docker-compose.yml
   bash apply_env_config.sh ${RDS_HOSTNAME_STAGE} ${RDS_DB_NAME_STAGE} ${RDS_USERNAME_STAGE} ${RDS_PASSWORD_STAGE} ${MOBILE_KEY_STAGE} ${MOBILE_APP_VERSION_STAGE} ${MOBILE_APP_ID_STAGE}
 elif [[ $1 == "test" ]]; then
   ec2_host="apitest.humansis.org"
+  JWT_CERT=$JWT_CERT_TEST
+  JWT_KEY=$JWT_KEY_TEST
   mv docker/docker-compose.yml.test docker-compose.yml
   bash apply_env_config.sh ${RDS_HOSTNAME_TEST} ${RDS_DB_NAME_TEST} ${RDS_USERNAME_TEST} ${RDS_PASSWORD_TEST} ${MOBILE_KEY_TEST} ${MOBILE_APP_VERSION_TEST} ${MOBILE_APP_ID_TEST}
 elif [[ $1 == "dev" ]]; then
   ec2_host="apidev.humansis.org"
+  JWT_CERT=$JWT_CERT_DEV
+  JWT_KEY=$JWT_KEY_DEV
   mv docker/docker-compose.yml.dev docker-compose.yml
   bash apply_env_config.sh ${RDS_HOSTNAME_DEV} ${RDS_DB_NAME_DEV} ${RDS_USERNAME_DEV} ${RDS_PASSWORD_DEV} ${MOBILE_KEY_DEV} ${MOBILE_APP_VERSION_DEV} ${MOBILE_APP_ID_DEV}
 elif [[ $1 == "proddca" ]]; then # DCA
   ec2_user="admin"
   ec2_host="api.dca.humansis.org"
+  JWT_CERT=$JWT_CERT_PRODDCA
+  JWT_KEY=$JWT_KEY_PRODDCA
   mv docker/docker-compose.yml.template docker-compose.yml
   sed -i -e "s|%env(EC2_HOSTNAME)%|${ec2_host}|g" docker-compose.yml
   bash apply_env_config.sh ${RDS_HOSTNAME_DCA_PROD} ${RDS_DB_NAME_DCA_PROD} ${RDS_USERNAME_DCA_PROD} ${RDS_PASSWORD_DCA_PROD} ${MOBILE_KEY_DCA_PROD} ${MOBILE_APP_VERSION_DCA_PROD} ${MOBILE_APP_ID_DCA_PROD}
 elif [[ $1 == "testdca" ]]; then # DCA
   ec2_user="admin"
   ec2_host="api.testdca.humansis.org"
+  JWT_CERT=$JWT_CERT_TESTDCA
+  JWT_KEY=$JWT_KEY_TESTDCA
   mv docker/docker-compose.yml.template docker-compose.yml
   sed -i -e "s|%env(EC2_HOSTNAME)%|${ec2_host}|g" docker-compose.yml
   bash apply_env_config.sh ${RDS_HOSTNAME_DCA_TEST} ${RDS_DB_NAME_DCA_TEST} ${RDS_USERNAME_DCA_TEST} ${RDS_PASSWORD_DCA_TEST} ${MOBILE_KEY_DCA_TEST} ${MOBILE_APP_VERSION_DCA_TEST} ${MOBILE_APP_ID_DCA_TEST}
@@ -64,7 +78,11 @@ echo "...done"
 
 # deploy files to host
 echo "Upload application files to remote server"
-rsync --progress -avz -e "ssh" --exclude 'ec2_bms.pem' --exclude-from='sync_excludes' ./* $ec2_user@$ec2_host:/var/www/html/bms_api/ --delete
+rsync --progress -avz --no-perms -e "ssh" --exclude 'ec2_bms.pem' --exclude-from='sync_excludes' ./* $ec2_user@$ec2_host:/var/www/html/bms_api/ --delete
+echo "...done"
+echo "Uploading JWT keypair"
+rsync --chmod=u+rw,g-rwx,o-rwx $JWT_KEY $ec2_user@$ec2_host:/var/www/html/bms_api/app/config/private.pem
+rsync --chmod=u+rw,g+rw,o+r $JWT_CERT $ec2_user@$ec2_host:/var/www/html/bms_api/app/config/public.pem
 echo "...done"
 echo "Starting application containers"
 start_app="cd /var/www/html/bms_api && sudo docker-compose up -d"

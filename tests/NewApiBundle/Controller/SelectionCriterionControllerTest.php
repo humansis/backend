@@ -26,11 +26,6 @@ class SelectionCriterionControllerTest extends BMSServiceTestCase
      */
     public function testGetTargets()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/selection-criteria/targets');
 
         $this->assertTrue(
@@ -52,11 +47,6 @@ class SelectionCriterionControllerTest extends BMSServiceTestCase
      */
     public function testGetFields()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/selection-criteria/targets/'.SelectionCriteriaTarget::BENEFICIARY.'/fields', ['country' => 'KHM']);
 
         $this->assertTrue(
@@ -78,11 +68,6 @@ class SelectionCriterionControllerTest extends BMSServiceTestCase
      */
     public function testGetConditions()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/selection-criteria/targets/'.SelectionCriteriaTarget::BENEFICIARY.'/fields/gender/conditions', ['country' => 'KHM']);
 
         $this->assertTrue(

@@ -90,6 +90,6 @@ rest_voucher:
 
 rest-new:
     type: annotation
-    prefix: /api/basic
+    prefix: /api/{firewall}
     defaults: { _format: 'json', disable-common-request-listener: true }
     resource: '@NewApiBundle/Controller'

@@ -23,11 +23,6 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
 
     public function testStatistics()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Assistance $assistance */
         $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy([])[0];
 
@@ -48,11 +43,6 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
 
     public function testList()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Assistance $assistance */
         $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy(['archived' => false])[0];
 

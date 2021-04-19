@@ -229,7 +229,12 @@ class BMSServiceTestCase extends KernelTestCase
 
     protected function request($method, $uri, $body = [], $files = [], $headers = null)
     {
-        $this->client->request($method, $uri, $body, $files, (null === $headers) ? ['HTTP_COUNTRY' => 'KHM'] : $headers);
+        $headers = array_merge([
+            'HTTP_COUNTRY' => 'KHM',
+            'PHP_AUTH_USER' => 'admin@example.org',
+            'PHP_AUTH_PW'   => 'pin1234'
+        ], (array) $headers);
+        $this->client->request($method, $uri, $body, $files, $headers);
     }
 
 

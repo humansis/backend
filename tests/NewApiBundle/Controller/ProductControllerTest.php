@@ -22,11 +22,6 @@ class ProductControllerTest extends BMSServiceTestCase
 
     public function testCreate()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('POST', '/api/basic/products', [
             'name' => 'Test product',
             'unit' => 'Kg',
@@ -55,11 +50,6 @@ class ProductControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('PUT', '/api/basic/products/'.$id, [
             'image' => 'http://example.org/image2.jpg',
         ]);
@@ -86,11 +76,6 @@ class ProductControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/products/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -115,11 +100,6 @@ class ProductControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/products?sort[]=name.asc&filter[id][]=1');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -138,11 +118,6 @@ class ProductControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('DELETE', '/api/basic/products/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
@@ -155,11 +130,6 @@ class ProductControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/products/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());

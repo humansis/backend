@@ -759,7 +759,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('GET', '/api/wsse/transaction/distribution/'. $distribution['id'].'/email');
+        $crawler = $this->request('POST', '/api/wsse/transaction/distribution/'. $distribution['id'].'/email');
         // $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $update = json_decode($this->client->getResponse()->getContent(), true);
 

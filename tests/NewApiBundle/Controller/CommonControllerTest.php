@@ -30,11 +30,6 @@ class CommonControllerTest extends BMSServiceTestCase
      */
     public function testGetSummaries()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/summaries?code[]=total_registrations&code[]=active_projects', ['country' => 'KHM']);
 
         $this->assertTrue(
@@ -54,11 +49,6 @@ class CommonControllerTest extends BMSServiceTestCase
      */
     public function testGetIcons()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/icons');
 
         $this->assertTrue(
@@ -76,11 +66,6 @@ class CommonControllerTest extends BMSServiceTestCase
      */
     public function testGetCurrencies()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/currencies');
 
         $this->assertTrue(
@@ -97,11 +82,6 @@ class CommonControllerTest extends BMSServiceTestCase
      */
     public function testGetLanguages()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/languages');
 
         $this->assertTrue(
@@ -118,11 +98,6 @@ class CommonControllerTest extends BMSServiceTestCase
      */
     public function testGetTranslations()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/translations/en');
 
         $this->assertTrue(
@@ -137,11 +112,6 @@ class CommonControllerTest extends BMSServiceTestCase
      */
     public function testGetAdmsNames()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/adms');
 
         $this->assertTrue(

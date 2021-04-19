@@ -33,11 +33,6 @@ class OrganizationControllerTest extends BMSServiceTestCase
      */
     public function testGet()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Organization|null $organization */
         $organization = self::$container->get('doctrine')->getRepository(Organization::class)->findBy([])[0];
 
@@ -66,11 +61,6 @@ class OrganizationControllerTest extends BMSServiceTestCase
 
     public function testUpdate()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Organization|null $organization */
         $organization = self::$container->get('doctrine')->getRepository(Organization::class)->findBy([])[0];
 
@@ -106,11 +96,6 @@ class OrganizationControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/organizations');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -130,11 +115,6 @@ class OrganizationControllerTest extends BMSServiceTestCase
      */
     public function testListServices()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Organization[] $service */
         $services = self::$container->get('doctrine')->getRepository(OrganizationServices::class)->findBy([]);
 
@@ -162,11 +142,6 @@ class OrganizationControllerTest extends BMSServiceTestCase
      */
     public function testUpdateServices()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Organization[] $service */
         $services = self::$container->get('doctrine')->getRepository(OrganizationServices::class)->findBy([]);
 
