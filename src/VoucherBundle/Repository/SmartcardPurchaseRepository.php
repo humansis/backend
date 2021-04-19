@@ -8,6 +8,8 @@ use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 use VoucherBundle\DTO\PurchaseDetail;
 use VoucherBundle\DTO\PurchaseRedemptionBatch;
@@ -197,6 +199,26 @@ class SmartcardPurchaseRepository extends EntityRepository
         }
 
         return $details;
+    }
+
+    /**
+     * @param SmartcardRedemptionBatch $redemptionBatch
+     * @param Pagination|null          $pagination
+     *
+     * @return Paginator|SmartcardPurchase[]
+     */
+    public function findByBatch(SmartcardRedemptionBatch $redemptionBatch, ?Pagination $pagination = null)
+    {
+        $qbr = $this->createQueryBuilder('sp')
+            ->andWhere('sp.redemptionBatch = :redemptionBatch')
+            ->setParameter('redemptionBatch', $redemptionBatch);
+
+        if ($pagination) {
+            $qbr->setMaxResults($pagination->getLimit())
+                ->setFirstResult($pagination->getOffset());
+        }
+
+        return new Paginator($qbr);
     }
 
     /**

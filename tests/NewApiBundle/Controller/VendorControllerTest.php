@@ -8,6 +8,7 @@ use Doctrine\ORM\ORMException;
 use Exception;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\User;
+use VoucherBundle\Entity\Vendor;
 
 class VendorControllerTest extends BMSServiceTestCase
 {
@@ -200,6 +201,22 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
+    }
+
+    public function testSummaries()
+    {
+        $vendor = $this->em->getRepository(Vendor::class)->findBy([])[0];
+
+        $this->request('GET', '/api/basic/vendors/'.$vendor->getId().'/summaries');
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{
+            "redeemedSmartcardPurchasesTotalCount": "*",
+            "redeemedSmartcardPurchasesTotalValue": "*"
+        }', $this->client->getResponse()->getContent());
     }
 
     /**
