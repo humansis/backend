@@ -237,7 +237,7 @@ class SmartcardInvoiceExport
         $worksheet->mergeCells("C$row1:C$row3");
         // data
         $worksheet->setCellValue("B$row1", self::addTrans($translator, 'Contract No.', self::EOL));
-        $worksheet->setCellValue("C$row1", $batch->getVendor()->getContractNo());
+        $worksheet->setCellValue("C$row1", $batch->getContractNo());
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Period Start', 'D', $row1);
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Period End', 'E', $row1);
         $worksheet->setCellValue("F$row1", self::addTrans($translator, 'Payment Method', self::EOL));
