@@ -81,8 +81,9 @@ echo "Upload application files to remote server"
 rsync --progress -avz --no-perms -e "ssh" --exclude 'ec2_bms.pem' --exclude-from='sync_excludes' ./* $ec2_user@$ec2_host:/var/www/html/bms_api/ --delete
 echo "...done"
 echo "Uploading JWT keypair"
-rsync --chmod=u+rw,g-rwx,o-rwx $JWT_KEY $ec2_user@$ec2_host:/var/www/html/bms_api/app/config/private.pem
-rsync --chmod=u+rw,g+rw,o+r $JWT_CERT $ec2_user@$ec2_host:/var/www/html/bms_api/app/config/public.pem
+ssh $ec2_user@$ec2_host "mkdir -p /var/www/html/bms_api/app/config/jwt/"
+rsync --chmod=u+rw,g-rwx,o-rwx $JWT_KEY $ec2_user@$ec2_host:/var/www/html/bms_api/app/config/jwt/private.pem
+rsync --chmod=u+rw,g+rw,o+r $JWT_CERT $ec2_user@$ec2_host:/var/www/html/bms_api/app/config/jwt/public.pem
 echo "...done"
 echo "Starting application containers"
 start_app="cd /var/www/html/bms_api && sudo docker-compose up -d"
