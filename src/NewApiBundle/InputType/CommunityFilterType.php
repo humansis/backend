@@ -33,7 +33,7 @@ class CommunityFilterType extends AbstractFilterInputType
     /**
      * @return string
      */
-    public function getFulltext(): string
+    public function getFulltext()
     {
         return $this->fulltext;
     }

@@ -71,7 +71,7 @@ class BookletFilterInputType extends AbstractFilterInputType
         return $this->has('fulltext');
     }
 
-    public function getFulltext(): string
+    public function getFulltext()
     {
         return $this->fulltext;
     }
