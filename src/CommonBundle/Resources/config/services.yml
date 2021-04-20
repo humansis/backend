@@ -5,6 +5,11 @@ services:
         public: true
         tags: [ 'app.controller' ]
 
+    CommonBundle\Command\AdmXML2DBCommand:
+        public: true
+        tags:
+            - { name: 'console.command' }
+
     CommonBundle\Command\ClearCacheImportCommand:
         public: true
         tags:
