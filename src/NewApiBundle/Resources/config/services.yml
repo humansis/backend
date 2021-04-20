@@ -69,7 +69,9 @@ services:
         tags: [ 'app.mapper' ]
 
     NewApiBundle\Mapper\ProjectMapper:
-        arguments: [ '@project.project_service' ]
+        arguments:
+            - '@project.project_service'
+            - '@beneficiary.repository'
         tags: [ 'app.mapper' ]
 
     NewApiBundle\Controller\AssistanceController:
