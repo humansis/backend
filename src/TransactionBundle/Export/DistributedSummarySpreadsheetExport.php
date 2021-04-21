@@ -12,21 +12,14 @@ use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\AssistanceBeneficiary;
-use DistributionBundle\Entity\Commodity;
-use DistributionBundle\Entity\GeneralReliefItem;
-use DistributionBundle\Enum\AssistanceType;
 use NewApiBundle\Component\Country\Countries;
+use NewApiBundle\Repository\DistributedItemRepository;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\Translation\TranslatorInterface;
-use TransactionBundle\Entity\Transaction;
-use VoucherBundle\Entity\Booklet;
-use VoucherBundle\Entity\SmartcardDeposit;
-use VoucherBundle\Entity\Voucher;
 
 class DistributedSummarySpreadsheetExport
 {
@@ -36,10 +29,14 @@ class DistributedSummarySpreadsheetExport
     /** @var Countries */
     private $countries;
 
-    public function __construct(TranslatorInterface $translator, Countries $countries)
+    /** @var DistributedItemRepository */
+    private $repository;
+
+    public function __construct(TranslatorInterface $translator, Countries $countries, DistributedItemRepository $repository)
     {
         $this->translator = $translator;
         $this->countries = $countries;
+        $this->repository = $repository;
     }
 
     public function export(Project $project, string $filetype)
@@ -118,104 +115,32 @@ class DistributedSummarySpreadsheetExport
         $worksheet->setCellValue('R1', $this->translator->trans('Field Officer Email'));
 
         $i = 1;
-        /** @var Assistance $assistance */
-        foreach ($project->getDistributions() as $assistance) {
-            if (AssistanceType::ACTIVITY === $assistance->getAssistanceType()) {
-                continue;
-            }
+        foreach ($this->repository->findByProject($project) as $distributedItem) {
+            $beneficiary = $distributedItem->getBeneficiary();
+            $assistance = $distributedItem->getAssistance();
+            $commodity = $distributedItem->getCommodity();
+            $datetime = $distributedItem->getDateDistribution();
+            $fieldOfficerEmail = $distributedItem->getFieldOfficer() ? $distributedItem->getFieldOfficer()->getEmail() : null;
 
-            /** @var Commodity $commodity */
-            $commodity = $assistance->getCommodities()->first();
-
-            /** @var AssistanceBeneficiary $assistanceBeneficiary */
-            foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
-                if ($assistanceBeneficiary->getSmartcardDeposits()->isEmpty() &&
-                    $assistanceBeneficiary->getTransactions()->isEmpty() &&
-                    $assistanceBeneficiary->getBooklets()->isEmpty() &&
-                    $assistanceBeneficiary->getGeneralReliefs()->isEmpty()) {
-                    continue;
-                }
-
-                /** @var Beneficiary $beneficiary */
-                $beneficiary = $assistanceBeneficiary->getBeneficiary();
-
-                $carrier = $dateOfDistribution = $fieldOfficerEmail = $amount = null;
-                switch ($commodity->getModalityType()) {
-                    case 'Smartcard':
-                        if (!$assistanceBeneficiary->getSmartcardDistributedAt()) {
-                            continue 2;
-                        }
-
-                        $carrier = $beneficiary->getSmartcard();
-                        $dateOfDistribution = $dateFormatter->format($assistanceBeneficiary->getSmartcardDistributedAt());
-                        $fieldOfficerEmail = $assistanceBeneficiary->getSmartcardDeposits()->first()->getDepositor()->getEmail();
-                        $amount = array_reduce($assistanceBeneficiary->getSmartcardDeposits()->toArray(), function ($ax, SmartcardDeposit $dx) {
-                            return $ax + $dx->getValue();
-                        }, 0);
-                        break;
-
-                    case 'QR Code Voucher':
-                        /** @var Booklet $booklet */
-                        $booklet = $assistanceBeneficiary->getBooklets()->first();
-                        if (Booklet::USED !== $booklet->getStatus() && Booklet::DISTRIBUTED !== $booklet->getStatus()) {
-                            continue 2;
-                        }
-
-                        $carrier = $booklet->getCode();
-                        $dateOfDistribution = $booklet->getUsedAt() ? $dateFormatter->format($booklet->getUsedAt()) : null;
-                        $amount = array_reduce($booklet->getVouchers()->toArray(), function ($ax, Voucher $dx) {
-                            return $ax + $dx->getValue();
-                        }, 0);
-                        break;
-
-                    case 'Mobile Money':
-                        $transactions = $assistanceBeneficiary->getTransactions()->filter(function (Transaction $transaction) {
-                            return Transaction::SUCCESS === $transaction->getTransactionStatus();
-                        });
-                        if ($transactions->isEmpty()) {
-                            continue 2;
-                        }
-
-                        $dateOfDistribution = $dateFormatter->format($transactions->last()->getPickupDate());
-                        $fieldOfficerEmail = $transactions->first()->getSentBy()->getEmail();
-                        $amount = array_reduce($transactions->toArray(), function ($ax, Transaction $dx) {
-                            preg_match('~\d+(\.\d+)?~', $dx->getAmountSent(), $matches);
-                            return $ax + $matches[0];
-                        }, 0);
-                        break;
-
-                    default:
-                        /** @var GeneralReliefItem $generalRelief */
-                        $generalRelief = $assistanceBeneficiary->getGeneralReliefs()->first();
-                        if (!$generalRelief->getDistributedAt()) {
-                            continue 2;
-                        }
-
-                        $dateOfDistribution = $dateFormatter->format($generalRelief->getDistributedAt());
-                        $amount = $commodity->getValue();
-                        break;
-                }
-
-                $i++;
-                $worksheet->setCellValue('A'.$i, $beneficiary->getId());
-                $worksheet->setCellValue('B'.$i, $beneficiary->isHead() ? $this->translator->trans('Household') : $this->translator->trans('Individual'));
-                $worksheet->setCellValue('C'.$i, $beneficiary->getLocalGivenName());
-                $worksheet->setCellValue('D'.$i, $beneficiary->getLocalFamilyName());
-                $worksheet->setCellValue('E'.$i, self::nationalId($beneficiary) ?? $this->translator->trans('N/A'));
-                $worksheet->setCellValue('F'.$i, self::phone($beneficiary) ?? $this->translator->trans('N/A'));
-                $worksheet->setCellValue('G'.$i, $assistance->getName());
-                $worksheet->setCellValue('H'.$i, self::adms($assistance)[0]);
-                $worksheet->setCellValue('I'.$i, self::adms($assistance)[1]);
-                $worksheet->setCellValue('J'.$i, self::adms($assistance)[2]);
-                $worksheet->setCellValue('K'.$i, self::adms($assistance)[3]);
-                $worksheet->setCellValue('L'.$i, $dateOfDistribution ?? $this->translator->trans('N/A'));
-                $worksheet->setCellValue('M'.$i, $commodity->getModalityType()->getName());
-                $worksheet->setCellValue('N'.$i, $carrier ?? $this->translator->trans('N/A'));
-                $worksheet->setCellValue('O'.$i, $commodity->getValue());
-                $worksheet->setCellValue('P'.$i, $amount);
-                $worksheet->setCellValue('Q'.$i, $commodity->getUnit());
-                $worksheet->setCellValue('R'.$i, $fieldOfficerEmail ?? $this->translator->trans('N/A'));
-            }
+            $i++;
+            $worksheet->setCellValue('A'.$i, $beneficiary->getId());
+            $worksheet->setCellValue('B'.$i, $beneficiary->isHead() ? $this->translator->trans('Household') : $this->translator->trans('Individual'));
+            $worksheet->setCellValue('C'.$i, $beneficiary->getLocalGivenName());
+            $worksheet->setCellValue('D'.$i, $beneficiary->getLocalFamilyName());
+            $worksheet->setCellValue('E'.$i, self::nationalId($beneficiary) ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('F'.$i, self::phone($beneficiary) ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('G'.$i, $assistance->getName());
+            $worksheet->setCellValue('H'.$i, self::adms($assistance)[0]);
+            $worksheet->setCellValue('I'.$i, self::adms($assistance)[1]);
+            $worksheet->setCellValue('J'.$i, self::adms($assistance)[2]);
+            $worksheet->setCellValue('K'.$i, self::adms($assistance)[3]);
+            $worksheet->setCellValue('L'.$i, $datetime ? $dateFormatter->format($datetime) : $this->translator->trans('N/A'));
+            $worksheet->setCellValue('M'.$i, $distributedItem->getModalityType());
+            $worksheet->setCellValue('N'.$i, $distributedItem->getCarrierNumber() ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('O'.$i, $commodity->getValue());
+            $worksheet->setCellValue('P'.$i, $distributedItem->getAmount());
+            $worksheet->setCellValue('Q'.$i, $commodity->getUnit());
+            $worksheet->setCellValue('R'.$i, $fieldOfficerEmail ?? $this->translator->trans('N/A'));
         }
     }
 
