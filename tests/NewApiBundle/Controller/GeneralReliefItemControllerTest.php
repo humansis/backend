@@ -73,25 +73,4 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
             "distributed": true
         }', $this->client->getResponse()->getContent());
     }
-
-    public function testListByAssistanceAndBeneficiary()
-    {
-        /** @var GeneralReliefItem $item */
-        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy(['distributedAt' => null])[0];
-        $assistanceId = $item->getAssistanceBeneficiary()->getAssistance()->getId();
-        $beneficiaryId = $item->getAssistanceBeneficiary()->getBeneficiary()->getId();
-
-        $this->request('GET', '/api/basic/assistances/'.$assistanceId.'/beneficiaries/'.$beneficiaryId.'/general-relief-items');
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
-
-        $result = json_decode($this->client->getResponse()->getContent(), true);
-
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('totalCount', $result);
-        $this->assertArrayHasKey('data', $result);
-    }
 }

@@ -25,22 +25,4 @@ class SmartcardDepositRepository extends EntityRepository
 
         return $qb->getQuery()->getOneOrNullResult();
     }
-
-    /**
-     * @param Assistance  $assistance
-     * @param Beneficiary $beneficiary
-     *
-     * @return SmartcardDeposit[]
-     */
-    public function findByAssistanceBeneficiary(Assistance $assistance, Beneficiary $beneficiary)
-    {
-        $qbr = $this->createQueryBuilder('sd')
-            ->join('sd.assistanceBeneficiary', 'ab')
-            ->andWhere('ab.assistance = :assistance')
-            ->andWhere('ab.beneficiary = :beneficiary')
-            ->setParameter('assistance', $assistance)
-            ->setParameter('beneficiary', $beneficiary);
-
-        return $qbr->getQuery()->getResult();
-    }
 }

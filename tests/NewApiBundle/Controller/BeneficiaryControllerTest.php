@@ -3,10 +3,8 @@
 namespace Tests\NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
-use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use ProjectBundle\Entity\Project;
@@ -84,47 +82,6 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
         $this->assertSame(1, $result['totalCount']);
-    }
-
-    public function testGetBeneficiariesByAssistance()
-    {
-        /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $assistance = $em->getRepository(\DistributionBundle\Entity\Assistance::class)->findOneBy([
-            'validated' => true,
-        ]);
-        $assistanceBeneficiary = $em->getRepository(\DistributionBundle\Entity\AssistanceBeneficiary::class)->findOneBy([
-            'assistance' => $assistance,
-        ]);
-
-        $this->request('GET', '/api/basic/assistances/'.$assistanceBeneficiary->getAssistance()->getId().'/beneficiaries?sort[]=nationalId');
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
-        $this->assertJsonFragment('{
-            "totalCount": "*", 
-            "data": [
-                {
-                    "id": "*",
-                    "dateOfBirth": "*",
-                    "localFamilyName": "*",
-                    "localGivenName": "*",
-                    "localParentsName": "*",
-                    "enFamilyName": "*",
-                    "enGivenName": "*",
-                    "enParentsName": "*",
-                    "gender": "*",
-                    "nationalIds": "*",
-                    "phoneIds": "*",
-                    "referralType": "*",
-                    "referralComment": "*",
-                    "residencyStatus": "*",
-                    "isHead": "*",
-                    "vulnerabilityCriteria": "*"
-                }
-            ]}', $this->client->getResponse()->getContent());
     }
 
     public function testAddReferral()
@@ -254,52 +211,6 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
             "totalCount": 2, 
             "data": [{"id": '.$phone1->getId().'}, {"id": '.$phone2->getId().'}
             ]}', $this->client->getResponse()->getContent());
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testAddBeneficiaryToAssistance()
-    {
-        /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $assistance = $em->getRepository(Assistance::class)->findOneBy([
-            'validated' => true,
-            'completed' => false,
-            'archived' => false,
-        ]);
-        $beneficiary = $em->getRepository(Beneficiary::class)->findOneBy([], ['id'=>'desc']);
-
-        $this->request('PUT', '/api/basic/assistances/'.$assistance->getId().'/beneficiaries', [
-            'beneficiaryIds' => [$beneficiary->getId()],
-            'justification' => 'test',
-            'added' => true,
-        ]);
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
-
-        return [$assistance->getId(), $beneficiary->getId()];
-    }
-
-    /**
-     * @depends testAddBeneficiaryToAssistance
-     */
-    public function testRemoveBeneficiaryToAssistance($data)
-    {
-        list($assistanceId, $beneficiaryId) = $data;
-
-        $this->request('DELETE', '/api/basic/assistances/'.$assistanceId.'/beneficiaries', [
-            'beneficiaryIds' => [$beneficiaryId],
-            'justification' => 'test remove',
-        ]);
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
     }
 
     /**

@@ -7,17 +7,13 @@ use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
 use CommonBundle\Controller\ExportController;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\InputType\AddRemoveBeneficiaryToAssistanceInputType;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\BenefciaryPatchInputType;
 use NewApiBundle\InputType\BeneficiaryExportFilterInputType;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
-use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\InputType\NationalIdFilterInputType;
 use NewApiBundle\InputType\PhoneFilterInputType;
-use NewApiBundle\InputType\RemoveBeneficiaryFromAssistanceInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -39,84 +35,6 @@ class BeneficiaryController extends AbstractController
         $beneficiaries = $this->get('distribution.assistance_service')->findByCriteria($inputType, $pagination);
 
         return $this->json($beneficiaries);
-    }
-
-    /**
-     * @Rest\Get("/assistances/{id}/beneficiaries")
-     *
-     * @param Assistance                 $assistance
-     * @param BeneficiaryFilterInputType $filter
-     * @param BeneficiaryOrderInputType  $orderBy
-     * @param Pagination                 $pagination
-     *
-     * @return JsonResponse
-     */
-    public function beneficiariesByAssistance(
-        Assistance $assistance,
-        BeneficiaryFilterInputType $filter,
-        BeneficiaryOrderInputType $orderBy,
-        Pagination $pagination
-    ): JsonResponse
-    {
-        if ($assistance->getArchived()) {
-            throw $this->createNotFoundException();
-        }
-
-        $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByAssistance($assistance, $filter, $orderBy, $pagination);
-
-        return $this->json($beneficiaries);
-    }
-
-    /**
-     * @Rest\Put("/assistances/{id}/beneficiaries")
-     *
-     * @param Assistance                                $assistance
-     * @param AddRemoveBeneficiaryToAssistanceInputType $inputType
-     *
-     * @return JsonResponse
-     */
-    public function addOrRemoveBeneficiaryToAssistance(Assistance $assistance, AddRemoveBeneficiaryToAssistanceInputType $inputType): JsonResponse
-    {
-        $data = ['beneficiaries' => [], 'justification' => $inputType->getJustification()];
-        foreach ($inputType->getBeneficiaryIds() as $id) {
-            $data['beneficiaries'][] = ['id' => $id];
-        }
-
-        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
-        $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
-
-        if ($inputType->getAdded()) {
-            $assistanceBeneficiaryService->addBeneficiaries($assistance, $data);
-        } elseif ($inputType->getRemoved()) {
-            $assistanceBeneficiaryService->removeBeneficiaries($assistance, $data);
-        }
-
-        return $this->json(null, Response::HTTP_NO_CONTENT);
-    }
-
-    /**
-     * @Rest\Delete("/assistances/{id}/beneficiaries")
-     *
-     * @param Assistance                               $assistance
-     * @param RemoveBeneficiaryFromAssistanceInputType $inputType
-     *
-     * @return JsonResponse
-     */
-    public function removeBeneficiariesFromAssistance(Assistance $assistance, RemoveBeneficiaryFromAssistanceInputType $inputType): JsonResponse
-    {
-        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
-        $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
-
-        foreach ($inputType->getBeneficiaryIds() as $id) {
-            $beneficiary = $this->getDoctrine()->getRepository(Beneficiary::class)->find($id);
-            $assistanceBeneficiaryService->removeBeneficiaryInDistribution(
-                $assistance,
-                $beneficiary,
-                ['justification' => $inputType->getJustification()]
-            );
-        }
-
-        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
     /**

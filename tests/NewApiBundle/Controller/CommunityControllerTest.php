@@ -284,49 +284,4 @@ class CommunityControllerTest extends BMSServiceTestCase
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }
-
-    public function testGetCommunitiesByAssistance()
-    {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-
-        try {
-            $assistanceId = $em->createQueryBuilder()
-                ->select('a.id')
-                ->from(Community::class, 'comm')
-                ->join('comm.assistanceBeneficiary', 'ab')
-                ->join('ab.assistance', 'a')
-                ->where('comm.archived = 0')
-                ->getQuery()
-                ->setMaxResults(1)
-                ->getSingleScalarResult();
-        } catch (NoResultException $e) {
-            $this->markTestSkipped('You need to have at least one assistance with community in database to complete this test.');
-            return;
-        }
-
-        $this->request('GET', '/api/basic/assistances/'.$assistanceId.'/communities?sort[]=id.desc');
-
-        $this->assertJsonFragment('{
-            "totalCount": "*", 
-            "data": [
-                {
-                    "id": "*",
-                    "name": "*",
-                    "longitude": "*",
-                    "latitude": "*",
-                    "contactGivenName": "*",
-                    "contactFamilyName": "*",
-                    "addressId": "*",
-                    "nationalId": "*",
-                    "phoneId": "*",
-                    "projectIds": "*"
-                }
-            ]}', $this->client->getResponse()->getContent());
-    }
 }

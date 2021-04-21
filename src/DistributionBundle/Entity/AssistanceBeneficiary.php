@@ -52,7 +52,7 @@ class AssistanceBeneficiary
     private $beneficiary;
 
     /**
-     * @var Transaction[]
+     * @var Collection|Transaction[]
      *
      * @ORM\OneToMany(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
@@ -61,7 +61,7 @@ class AssistanceBeneficiary
     private $transactions;
 
     /**
-     * @var Booklet
+     * @var Collection|Booklet[]
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Booklet", mappedBy="distribution_beneficiary", cascade={"persist", "remove"})
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
@@ -77,7 +77,7 @@ class AssistanceBeneficiary
     private $generalReliefs;
 
     /**
-     * @var SmartcardDeposit[]
+     * @var Collection|SmartcardDeposit[]
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardDeposit", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
      * @ORM\OrderBy({"createdAt": "ASC"})
@@ -226,7 +226,7 @@ class AssistanceBeneficiary
     /**
      * Add a Transaction.
      *
-     * @param Transaction transaction
+     * @param Transaction $transaction
      *
      * @return self
      */

@@ -31,24 +31,6 @@ class GeneralReliefItemRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * @param Assistance $assistance
-     * @param Beneficiary $beneficiary
-     *
-     * @return GeneralReliefItem[]
-     */
-    public function findByAssistanceBeneficiary(Assistance $assistance, Beneficiary $beneficiary)
-    {
-        $qbr = $this->createQueryBuilder('gri')
-            ->join('gri.assistanceBeneficiary', 'ab')
-            ->andWhere('ab.assistance = :assistance')
-            ->andWhere('ab.beneficiary = :beneficiary')
-            ->setParameter('assistance', $assistance)
-            ->setParameter('beneficiary', $beneficiary);
-
-        return $qbr->getQuery()->getResult();
-    }
-
-    /**
      * @param GeneralReliefFilterInputType $filter
      * @param Pagination|null              $pagination
      *

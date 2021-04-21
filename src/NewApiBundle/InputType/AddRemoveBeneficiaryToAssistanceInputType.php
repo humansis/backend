@@ -3,26 +3,13 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
-use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @Assert\GroupSequence({"AddRemoveBeneficiaryToAssistanceInputType", "Strict"})
- * @Assert\Callback({"NewApiBundle\InputType\AddRemoveBeneficiaryToAssistanceInputType", "validate"})
  */
-class AddRemoveBeneficiaryToAssistanceInputType implements InputTypeInterface
+class AddRemoveBeneficiaryToAssistanceInputType extends AddRemoveAbstractBeneficiaryToAssistanceInputType
 {
-    /**
-     * @Assert\Type("boolean")
-     */
-    protected $added;
-
-    /**
-     * @Assert\Type("boolean")
-     */
-    protected $removed;
-
     /**
      * @Assert\Type("array")
      * @Assert\All(
@@ -34,22 +21,6 @@ class AddRemoveBeneficiaryToAssistanceInputType implements InputTypeInterface
      */
     protected $beneficiaryIds;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
-    protected $justification;
-
-    public static function validate($object, ExecutionContextInterface $context, $payload)
-    {
-        if ($object->getAdded() !== true && $object->getRemoved() !== true) {
-            $context->buildViolation('One of added/removed attributes must be set.')
-                ->addViolation()
-            ;
-        }
-    }
-
     public function setBeneficiaryIds($beneficiaryIds)
     {
         $this->beneficiaryIds = $beneficiaryIds;
@@ -58,35 +29,5 @@ class AddRemoveBeneficiaryToAssistanceInputType implements InputTypeInterface
     public function getBeneficiaryIds()
     {
         return $this->beneficiaryIds;
-    }
-
-    public function setJustification($justification)
-    {
-        $this->justification = $justification;
-    }
-
-    public function getJustification()
-    {
-        return $this->justification;
-    }
-
-    public function setAdded($added)
-    {
-        $this->added = $added;
-    }
-
-    public function getAdded()
-    {
-        return $this->added;
-    }
-
-    public function setRemoved($removed)
-    {
-        $this->removed = $removed;
-    }
-
-    public function getRemoved()
-    {
-        return $this->removed;
     }
 }
