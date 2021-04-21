@@ -26,12 +26,10 @@ class DistributedItemController extends AbstractController
      */
     public function listByBeneficiary(Beneficiary $beneficiary): JsonResponse
     {
-        /** @var DistributedItemRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(DistributedItem::class);
+        $data = $this->getDoctrine()->getRepository(DistributedItem::class)
+            ->findByBeneficiary($beneficiary);
 
-        $data = $repository->findDistributedToBeneficiary($beneficiary);
-
-        return $this->json(new Paginator($data));
+        return $this->json($data);
     }
 
     /**
@@ -44,8 +42,11 @@ class DistributedItemController extends AbstractController
      */
     public function listByHousehold(Household $household): JsonResponse
     {
-        /** @var DistributedItemRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(DistributedItem::class);
+        $data = $this->getDoctrine()->getRepository(DistributedItem::class)
+            ->findByHousehold($household);
+
+        return $this->json($data);
+    }
 
     /**
      * @Rest\Get("/distributed-items")

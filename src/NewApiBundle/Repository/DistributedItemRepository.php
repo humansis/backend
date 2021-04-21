@@ -72,4 +72,36 @@ class DistributedItemRepository extends EntityRepository
 
         return new Paginator($qbr);
     }
+
+    /**
+     * @param Beneficiary $beneficiary
+     *
+     * @return Paginator|DistributedItem[]
+     */
+    public function findByBeneficiary(Beneficiary $beneficiary): Paginator
+    {
+        $qbr = $this->createQueryBuilder('di')
+            ->andWhere('di.beneficiaryType = :type')
+            ->andWhere('di.beneficiary = :beneficiary')
+            ->setParameter('type', 'Beneficiary')
+            ->setParameter('beneficiary', $beneficiary);
+
+        return new Paginator($qbr);
+    }
+
+    /**
+     * @param Household $household
+     *
+     * @return Paginator|DistributedItem[]
+     */
+    public function findByHousehold(Household $household): Paginator
+    {
+        $qbr = $this->createQueryBuilder('di')
+            ->andWhere('di.beneficiaryType = :type')
+            ->andWhere('di.beneficiary = :household')
+            ->setParameter('type', 'Household')
+            ->setParameter('household', $household);
+
+        return new Paginator($qbr);
+    }
 }
