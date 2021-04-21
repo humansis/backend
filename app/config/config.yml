@@ -105,6 +105,7 @@ doctrine:
         server_version: '8.0'
         mapping_types:
             enum: string
+        schema_filter: ~^(?!view_)~ # support views with prefix "view_"
         types:
             enum_assistance_type: DistributionBundle\DBAL\AssistanceTypeEnum
             enum_assistance_target_type: DistributionBundle\DBAL\AssistanceTargetTypeEnum

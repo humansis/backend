@@ -3,50 +3,65 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Entity;
 
+use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Read only entity.
  *
  * @ORM\MappedSuperclass(repositoryClass="NewApiBundle\Repository\AssistanceStatisticsRepository")
+ * @ORM\Table(name="view_assistance_statistics")
  */
 class AssistanceStatistics
 {
     /**
      * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="assistance_id", type="integer")
      * @ORM\Id
      */
     private $id;
 
     /**
+     * @var Assistance
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Assistance")
+     */
+    private $assistance;
+
+    /**
      * @var int
-     * @ORM\Column(name="numberOfBeneficiaries", type="integer")
+     * @ORM\Column(name="number_of_beneficiaries", type="integer")
      */
     private $numberOfBeneficiaries;
 
     /**
      * @var float
-     * @ORM\Column(name="summaryOfTotalItems", type="decimal", precision=10, scale=2, nullable=false)
+     * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
      */
-    private $summaryOfTotalItems;
+    private $amountTotal;
 
     /**
      * @var float
-     * @ORM\Column(name="summaryOfDistributedItems", type="decimal", precision=10, scale=2, nullable=false)
+     * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
      */
-    private $summaryOfDistributedItems;
+    private $amountDistributed;
 
     /**
      * @var float|null
-     * @ORM\Column(name="summaryOfUsedItems", type="decimal", precision=10, scale=2, nullable=true)
+     * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
      */
-    private $summaryOfUsedItems;
+    private $amountUsed;
 
-    protected function __construct()
-    {
-    }
+    /**
+     * @var float|null
+     * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
+     */
+    private $amountSent;
+
+    /**
+     * @var float|null
+     * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
+     */
+    private $amountPickedUp;
 
     /**
      * @return int
@@ -65,26 +80,42 @@ class AssistanceStatistics
     }
 
     /**
-     * @return float
+     * @return float|null
      */
-    public function getSummaryOfTotalItems(): float
+    public function getAmountTotal(): ?float
     {
-        return (float) $this->summaryOfTotalItems;
-    }
-
-    /**
-     * @return float
-     */
-    public function getSummaryOfDistributedItems(): float
-    {
-        return (float) $this->summaryOfDistributedItems;
+        return null === $this->amountTotal ? null : (float) $this->amountTotal;
     }
 
     /**
      * @return float|null
      */
-    public function getSummaryOfUsedItems(): ?float
+    public function getAmountDistributed(): ?float
     {
-        return null === $this->summaryOfUsedItems ? null : (float) $this->summaryOfUsedItems;
+        return null === $this->amountDistributed ? null : (float) $this->amountDistributed;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getAmountUsed(): ?float
+    {
+        return null === $this->amountUsed ? null : (float) $this->amountUsed;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getAmountSent(): ?float
+    {
+        return null === $this->amountSent ? null : (float) $this->amountSent;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getAmountPickedUp(): ?float
+    {
+        return null === $this->amountPickedUp ? null : (float) $this->amountPickedUp;
     }
 }
