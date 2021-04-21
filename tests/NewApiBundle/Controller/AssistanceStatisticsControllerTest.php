@@ -35,9 +35,11 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
         $this->assertJsonFragment('{
             "id": '.$assistance->getId().',
             "numberOfBeneficiaries": "*",
-            "summaryOfTotalItems": "*",
-            "summaryOfDistributedItems": "*",
-            "summaryOfUsedItems": "*"
+            "amountTotal": "*",
+            "amountDistributed": "*",
+            "amountUsed": "*",
+            "amountSent": "*",
+            "amountPickedUp": "*"
         }', $this->client->getResponse()->getContent());
     }
 
