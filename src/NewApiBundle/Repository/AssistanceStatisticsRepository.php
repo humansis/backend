@@ -55,7 +55,7 @@ class AssistanceStatisticsRepository extends \Doctrine\ORM\EntityRepository
             LEFT JOIN transaction t ON t.distribution_beneficiary_id=db.id
             -- general reliefs
             LEFT JOIN general_relief_item gri ON gri.distribution_beneficiary_id=db.id
-            WHERE db.assistance_id=:assistance AND (sd.id IS NOT NULL OR gri.id IS NOT NULL OR t.id IS NOT NULL)
+            WHERE db.assistance_id=:assistance
         ) AS counts
         ';
 
