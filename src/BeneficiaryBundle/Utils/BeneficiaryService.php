@@ -13,6 +13,7 @@ use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use CommonBundle\Controller\ExportController;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\InputType\BenefciaryPatchInputType;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use PhpOption\Tests\PhpOptionRepo;
@@ -440,6 +441,27 @@ class BeneficiaryService
         } catch (\Exception $e) {
             throw new \Exception('Error updating Beneficiary');
         }
+        return $beneficiary;
+    }
+
+    public function patch(Beneficiary $beneficiary, BenefciaryPatchInputType $inputType)
+    {
+        if (($inputType->getReferralType() || $inputType->getReferralComment()) && null == $beneficiary->getPerson()->getReferral()) {
+            $beneficiary->getPerson()->setReferral(new Referral());
+        }
+
+        if ($inputType->getReferralComment()) {
+            $beneficiary->getPerson()->getReferral()->setComment($inputType->getReferralComment());
+        }
+
+        if ($inputType->getReferralType()) {
+            $beneficiary->getPerson()->getReferral()->setType($inputType->getReferralType());
+        }
+
+        $this->em->persist($beneficiary->getPerson()->getReferral());
+        $this->em->persist($beneficiary->getPerson());
+        $this->em->flush();
+
         return $beneficiary;
     }
 

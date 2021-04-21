@@ -11,6 +11,7 @@ use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\AddRemoveBeneficiaryToAssistanceInputType;
 use NewApiBundle\InputType\AssistanceCreateInputType;
+use NewApiBundle\InputType\BenefciaryPatchInputType;
 use NewApiBundle\InputType\BeneficiaryExportFilterInputType;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
@@ -234,6 +235,25 @@ class BeneficiaryController extends AbstractController
         if ($beneficiary->getArchived()) {
             throw $this->createNotFoundException();
         }
+
+        return $this->json($beneficiary);
+    }
+
+    /**
+     * @Rest\Patch("/beneficiaries/{id}")
+     *
+     * @param Beneficiary              $beneficiary
+     * @param BenefciaryPatchInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function update(Beneficiary $beneficiary, BenefciaryPatchInputType $inputType): JsonResponse
+    {
+        if ($beneficiary->getArchived()) {
+            throw $this->createNotFoundException();
+        }
+
+        $this->get('beneficiary.beneficiary_service')->patch($beneficiary, $inputType);
 
         return $this->json($beneficiary);
     }

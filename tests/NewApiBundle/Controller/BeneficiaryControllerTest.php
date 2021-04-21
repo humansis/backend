@@ -127,6 +127,47 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
             ]}', $this->client->getResponse()->getContent());
     }
 
+    public function testAddReferral()
+    {
+        $bnfId = $this->em->createQueryBuilder()
+            ->select('b.id')
+            ->from(Beneficiary::class, 'b')
+            ->join('b.person', 'p')
+            ->leftJoin('p.referral', 'r')
+            ->where('r.id IS NULL')
+            ->getQuery()
+            ->setMaxResults(1)
+            ->getSingleScalarResult();
+
+        $this->request('PATCH', '/api/basic/beneficiaries/'.$bnfId, [
+            'referralType' => \BeneficiaryBundle\Entity\Referral::types()[0],
+            'referralComment' => 'test status',
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{
+            "id": "*",
+            "dateOfBirth": "*",
+            "localFamilyName": "*",
+            "localGivenName": "*",
+            "localParentsName": "*",
+            "enFamilyName": "*",
+            "enGivenName": "*",
+            "enParentsName": "*",
+            "gender": "*",
+            "nationalIds": "*",
+            "phoneIds": "*",
+            "referralType": "1",
+            "referralComment": "test status",
+            "residencyStatus": "*",
+            "isHead": "*",
+            "vulnerabilityCriteria": "*"
+        }', $this->client->getResponse()->getContent());
+    }
+
     /**
      * @throws Exception
      */
