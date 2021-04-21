@@ -38,7 +38,10 @@ services:
 
     export.distributed_summary.spreadsheet:
         class: TransactionBundle\Export\DistributedSummarySpreadsheetExport
-        arguments: [ '@translator', '@NewApiBundle\Component\Country\Countries' ]
+        arguments:
+            - '@translator'
+            - '@NewApiBundle\Component\Country\Countries'
+            - "@=service('doctrine.orm.entity_manager').getRepository('NewApiBundle:DistributedItem')"
         public: true
 
     export.spreadsheet:
