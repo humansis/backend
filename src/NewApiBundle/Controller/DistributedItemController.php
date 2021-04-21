@@ -6,12 +6,13 @@ namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
-use CommonBundle\Pagination\Paginator;
-use DistributionBundle\Entity\DistributedItem;
-use DistributionBundle\Repository\DistributedItemRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Entity\DistributedItem;
+use NewApiBundle\InputType\DistributedItemFilterInputType;
+use NewApiBundle\Request\Pagination;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class DistributedItemController extends AbstractController
 {
@@ -46,8 +47,24 @@ class DistributedItemController extends AbstractController
         /** @var DistributedItemRepository $repository */
         $repository = $this->getDoctrine()->getRepository(DistributedItem::class);
 
-        $data = $repository->findDistributedToHousehold($household);
+    /**
+     * @Rest\Get("/distributed-items")
+     *
+     * @param Request                        $request
+     * @param DistributedItemFilterInputType $inputType
+     * @param Pagination                     $pagination
+     *
+     * @return JsonResponse
+     */
+    public function distributedItems(Request $request, DistributedItemFilterInputType $inputType, Pagination $pagination): JsonResponse
+    {
+        if (!$request->headers->has('country')) {
+            throw $this->createNotFoundException('Missing header attribute country');
+        }
 
-        return $this->json(new Paginator($data));
+        $data = $this->getDoctrine()->getRepository(DistributedItem::class)
+            ->findByParams($request->headers->get('country'), $inputType, $pagination);
+
+        return $this->json($data);
     }
 }
