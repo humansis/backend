@@ -6,12 +6,13 @@ namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
-use CommonBundle\Pagination\Paginator;
-use DistributionBundle\Entity\DistributedItem;
-use DistributionBundle\Repository\DistributedItemRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Entity\DistributedItem;
+use NewApiBundle\InputType\DistributedItemFilterInputType;
+use NewApiBundle\Request\Pagination;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class DistributedItemController extends AbstractController
 {
@@ -25,12 +26,10 @@ class DistributedItemController extends AbstractController
      */
     public function listByBeneficiary(Beneficiary $beneficiary): JsonResponse
     {
-        /** @var DistributedItemRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(DistributedItem::class);
+        $data = $this->getDoctrine()->getRepository(DistributedItem::class)
+            ->findByBeneficiary($beneficiary);
 
-        $data = $repository->findDistributedToBeneficiary($beneficiary);
-
-        return $this->json(new Paginator($data));
+        return $this->json($data);
     }
 
     /**
@@ -43,11 +42,30 @@ class DistributedItemController extends AbstractController
      */
     public function listByHousehold(Household $household): JsonResponse
     {
-        /** @var DistributedItemRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(DistributedItem::class);
+        $data = $this->getDoctrine()->getRepository(DistributedItem::class)
+            ->findByHousehold($household);
 
-        $data = $repository->findDistributedToHousehold($household);
+        return $this->json($data);
+    }
 
-        return $this->json(new Paginator($data));
+    /**
+     * @Rest\Get("/distributed-items")
+     *
+     * @param Request                        $request
+     * @param DistributedItemFilterInputType $inputType
+     * @param Pagination                     $pagination
+     *
+     * @return JsonResponse
+     */
+    public function distributedItems(Request $request, DistributedItemFilterInputType $inputType, Pagination $pagination): JsonResponse
+    {
+        if (!$request->headers->has('country')) {
+            throw $this->createNotFoundException('Missing header attribute country');
+        }
+
+        $data = $this->getDoctrine()->getRepository(DistributedItem::class)
+            ->findByParams($request->headers->get('country'), $inputType, $pagination);
+
+        return $this->json($data);
     }
 }
