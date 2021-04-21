@@ -6,6 +6,8 @@ namespace Tests\NewApiBundle\Controller;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Institution;
+use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NoResultException;
 use Exception;
@@ -151,5 +153,149 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
                     "bookletIds": "*"
                 }
             ]}', $this->client->getResponse()->getContent());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testAddBeneficiaryToAssistance()
+    {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $assistance = $em->getRepository(Assistance::class)->findOneBy([
+            'validated' => true,
+            'completed' => false,
+            'archived' => false,
+            'targetType' => AssistanceTargetType::INDIVIDUAL,
+        ]);
+        $beneficiary = $em->getRepository(Beneficiary::class)->findOneBy([], ['id'=>'desc']);
+
+        $this->request('PUT', '/api/basic/assistances/'.$assistance->getId().'/assistances-beneficiaries', [
+            'beneficiaryIds' => [$beneficiary->getId()],
+            'justification' => 'test',
+            'added' => true,
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        return [$assistance->getId(), $beneficiary->getId()];
+    }
+
+    /**
+     * @depends testAddBeneficiaryToAssistance
+     */
+    public function testRemoveBeneficiaryFromAssistance($data)
+    {
+        list($assistanceId, $beneficiaryId) = $data;
+
+        $this->request('PUT', '/api/basic/assistances/'.$assistanceId.'/assistances-beneficiaries', [
+            'beneficiaryIds' => [$beneficiaryId],
+            'justification' => 'test',
+            'removed' => true,
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testAddInstitutionToAssistance()
+    {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $assistance = $em->getRepository(Assistance::class)->findOneBy([
+            'validated' => true,
+            'completed' => false,
+            'archived' => false,
+            'targetType' => AssistanceTargetType::INSTITUTION,
+        ]);
+        $institution = $em->getRepository(Institution::class)->findOneBy([], ['id'=>'desc']);
+
+        $this->request('PUT', '/api/basic/assistances/'.$assistance->getId().'/assistances-institutions', [
+            'institutionIds' => [$institution->getId()],
+            'justification' => 'test',
+            'added' => true,
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        return [$assistance->getId(), $institution->getId()];
+    }
+
+    /**
+     * @depends testAddInstitutionToAssistance
+     */
+    public function testRemoveInstitutionFromAssistance($data)
+    {
+        list($assistanceId, $institutionId) = $data;
+
+        $this->request('PUT', '/api/basic/assistances/'.$assistanceId.'/assistances-institutions', [
+            'institutionIds' => [$institutionId],
+            'justification' => 'test',
+            'removed' => true,
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testAddCommunityToAssistance()
+    {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $assistance = $em->getRepository(Assistance::class)->findOneBy([
+            'validated' => true,
+            'completed' => false,
+            'archived' => false,
+            'targetType' => AssistanceTargetType::COMMUNITY,
+        ]);
+        $community = $em->getRepository(Community::class)->findOneBy([], ['id'=>'desc']);
+
+        $this->request('PUT', '/api/basic/assistances/'.$assistance->getId().'/assistances-communities', [
+            'communityIds' => [$community->getId()],
+            'justification' => 'test',
+            'added' => true,
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        return [$assistance->getId(), $community->getId()];
+    }
+
+    /**
+     * @depends testAddCommunityToAssistance
+     */
+    public function testRemoveCommunityFromAssistance($data)
+    {
+        list($assistanceId, $communityId) = $data;
+
+        $this->request('PUT', '/api/basic/assistances/'.$assistanceId.'/assistances-communities', [
+            'communityIds' => [$communityId],
+            'justification' => 'test',
+            'removed' => true,
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
     }
 }
