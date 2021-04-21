@@ -185,22 +185,4 @@ class BookletController extends AbstractController
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
-
-    /**
-     * @Rest\Get("/assistances/{assistanceId}/beneficiaries/{beneficiaryId}/booklets")
-     * @ParamConverter("assistance", options={"mapping": {"assistanceId" : "id"}})
-     * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId" : "id"}})
-     *
-     * @param Assistance  $assistance
-     * @param Beneficiary $beneficiary
-     *
-     * @return JsonResponse
-     */
-    public function byAssistanceAndBeneficiary(Assistance $assistance, Beneficiary $beneficiary): JsonResponse
-    {
-        $list = $this->getDoctrine()->getRepository(Booklet::class)
-            ->findByAssistanceBeneficiary($assistance, $beneficiary);
-
-        return $this->json(new Paginator($list));
-    }
 }

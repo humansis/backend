@@ -21,25 +21,6 @@ class TransactionControllerTest extends BMSServiceTestCase
         $this->client = self::$container->get('test.client');
     }
 
-    public function testListByAssistanceAndBeneficiary()
-    {
-        /** @var Transaction $item */
-        $item = self::$container->get('doctrine')->getRepository(Transaction::class)->findBy([])[0];
-        $assistanceId = $item->getAssistanceBeneficiary()->getAssistance()->getId();
-        $beneficiaryId = $item->getAssistanceBeneficiary()->getBeneficiary()->getId();
-
-        $this->request('GET', '/api/basic/assistances/'.$assistanceId.'/beneficiaries/'.$beneficiaryId.'/transactions');
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
-        $this->assertJsonFragment('{
-            "totalCount": "*",
-            "data": ["*"]
-        }', $this->client->getResponse()->getContent());
-    }
-
     public function testListOfStatuses()
     {
         $this->request('GET', '/api/basic/transactions/statuses');

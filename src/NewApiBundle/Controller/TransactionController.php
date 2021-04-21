@@ -18,30 +18,6 @@ use TransactionBundle\Entity\Transaction;
 class TransactionController extends AbstractController
 {
     /**
-     * @Rest\Get("/assistances/{assistanceId}/beneficiaries/{beneficiaryId}/transactions")
-     * @ParamConverter("assistance", options={"mapping": {"assistanceId" : "id"}})
-     * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId" : "id"}})
-     *
-     * @param Assistance  $assistance
-     * @param Beneficiary $beneficiary
-     *
-     * @return JsonResponse
-     */
-    public function byAssistanceAndBeneficiary(Assistance $assistance, Beneficiary $beneficiary): JsonResponse
-    {
-        try {
-            $this->get('transaction.transaction_service')->updateTransactionStatus($assistance->getProject()->getIso3(), $assistance);
-        } catch (\Exception $exception) {
-            $this->get('logger')->addCritical($exception->getMessage());
-        }
-
-        $list = $this->getDoctrine()->getRepository(Transaction::class)
-            ->findByAssistanceBeneficiary($assistance, $beneficiary);
-
-        return $this->json(new Paginator($list));
-    }
-
-    /**
      * @Rest\Post("/assistances/{id}/transactions")
      *
      * @param Assistance $assistance

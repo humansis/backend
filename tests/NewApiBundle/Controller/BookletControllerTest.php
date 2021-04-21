@@ -204,23 +204,4 @@ class BookletControllerTest extends BMSServiceTestCase
         );
         $this->assertEquals(Booklet::DISTRIBUTED, $doctrine->getRepository(Booklet::class)->find(['id' => $booklet->getId()])->getStatus());
     }
-
-    public function testListByAssistanceAndBeneficiary()
-    {
-        /** @var Booklet $item */
-        $item = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([])[0];
-        $assistanceId = $item->getAssistanceBeneficiary()->getAssistance()->getId();
-        $beneficiaryId = $item->getAssistanceBeneficiary()->getBeneficiary()->getId();
-
-        $this->request('GET', '/api/basic/assistances/'.$assistanceId.'/beneficiaries/'.$beneficiaryId.'/booklets');
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
-        $this->assertJsonFragment('{
-            "totalCount": "*",
-            "data": ["*"]
-        }', $this->client->getResponse()->getContent());
-    }
 }

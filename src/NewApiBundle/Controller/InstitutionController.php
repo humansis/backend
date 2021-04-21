@@ -97,30 +97,4 @@ class InstitutionController extends AbstractController
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
-
-    /**
-     * @Rest\Get("/assistances/{id}/institutions")
-     *
-     * @param Assistance                            $assistance
-     * @param AssistanceInstitutionsFilterInputType $filter
-     * @param InstitutionOrderInputType             $orderBy
-     * @param Pagination                            $pagination
-     *
-     * @return JsonResponse
-     */
-    public function beneficiariesByAssistance(
-        Assistance $assistance,
-        AssistanceInstitutionsFilterInputType $filter,
-        InstitutionOrderInputType $orderBy,
-        Pagination $pagination
-    ): JsonResponse
-    {
-        if ($assistance->getArchived()) {
-            throw $this->createNotFoundException();
-        }
-
-        $institutions = $this->getDoctrine()->getRepository(Institution::class)->findByAssistance($assistance, $filter, $orderBy, $pagination);
-
-        return $this->json($institutions);
-    }
 }
