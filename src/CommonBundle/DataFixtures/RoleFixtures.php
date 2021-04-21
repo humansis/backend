@@ -68,7 +68,7 @@ class RoleFixtures extends Fixture
         'countryReport' => ['ROLE_ADMIN', 'ROLE_REGIONAL_MANAGER', 'ROLE_COUNTRY_MANAGER'],
         'projectReport' => ['ROLE_ADMIN', 'ROLE_REGIONAL_MANAGER', 'ROLE_COUNTRY_MANAGER', 'ROLE_PROJECT_MANAGER', 'ROLE_PROJECT_OFFICER'],
         'distributionReport' => ['ROLE_ADMIN', 'ROLE_REGIONAL_MANAGER', 'ROLE_COUNTRY_MANAGER', 'ROLE_PROJECT_MANAGER', 'ROLE_PROJECT_OFFICER', 'ROLE_FIELD_OFFICER'],
-        'authoriseElectronic Cash Transfer' => ['ROLE_COUNTRY_MANAGER'],
+        'authoriseElectronicCashTransfer' => ['ROLE_COUNTRY_MANAGER'],
         'countrySettings' => ['ROLE_ADMIN'],
         'addEditUsers' => ['ROLE_ADMIN'],
         'adminSettings' => ['ROLE_ADMIN'],
