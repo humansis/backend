@@ -78,6 +78,19 @@ class SmartcardRedemptionBatchController extends AbstractController
     }
 
     /**
+     * @Rest\Get("/vendor-app/v2/vendors/{id}/smartcard-redemption-batches")
+     *
+     * @param Vendor $vendor
+     * @param Pagination $pagination
+     *
+     * @return JsonResponse
+     */
+    public function batchesForVendorApp(Vendor $vendor, Pagination $pagination): JsonResponse
+    {
+        return $this->forward(self::class.'::batches', ['vendor' => $vendor, 'pagination' => $pagination]);
+    }
+
+    /**
      * @Rest\Post("/vendors/{id}/smartcard-redemption-batches")
      *
      * @param Vendor $vendor
@@ -108,5 +121,17 @@ class SmartcardRedemptionBatchController extends AbstractController
             ->countPurchasesToRedeem($vendor);
 
         return $this->json(new Paginator($candidates));
+    }
+
+    /**
+     * @Rest\Get("/vendor-app/v2/vendors/{id}/smartcard-redemption-candidates")
+     *
+     * @param Vendor $vendor
+     *
+     * @return JsonResponse
+     */
+    public function candidatesForVendorApp(Vendor $vendor): Response
+    {
+        return $this->forward(self::class.'::candidates', ['vendor' => $vendor]);
     }
 }
