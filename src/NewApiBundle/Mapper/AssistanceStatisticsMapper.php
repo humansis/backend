@@ -45,12 +45,12 @@ class AssistanceStatisticsMapper implements MapperInterface
 
     public function getAmountTotal(): float
     {
-        return $this->object->getAmountTotal();
+        return (float) $this->object->getAmountTotal();
     }
 
     public function getAmountDistributed(): float
     {
-        return $this->object->getAmountDistributed();
+        return (float) $this->object->getAmountDistributed();
     }
 
     public function getAmountUsed(): ?float
