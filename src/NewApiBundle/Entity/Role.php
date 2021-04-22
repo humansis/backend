@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace NewApiBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use FontLib\TrueType\Collection;
 use UserBundle\Entity\User;
 
 /**
@@ -26,7 +26,14 @@ class Role
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", nullable=false, unique=true)
+     * @ORM\Column(name="code", type="string", nullable=false, unique=true)
+     */
+    private $code;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", nullable=false)
      */
     private $name;
 
@@ -71,6 +78,22 @@ class Role
     public function setId(int $id): void
     {
         $this->id = $id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCode(): string
+    {
+        return $this->code;
+    }
+
+    /**
+     * @param string $code
+     */
+    public function setCode(string $code): void
+    {
+        $this->code = $code;
     }
 
     /**

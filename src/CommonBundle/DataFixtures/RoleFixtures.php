@@ -11,33 +11,33 @@ use NewApiBundle\Entity\Role;
 class RoleFixtures extends Fixture
 {
     private const ROLES = [
-        'ROLE_REPORTING_READ',
-        'ROLE_REPORTING_WRITE',
-        'ROLE_PROJECT_MANAGEMENT_READ',
-        'ROLE_PROJECT_MANAGEMENT_WRITE',
-        'ROLE_PROJECT_MANAGEMENT_ASSIGN',
-        'ROLE_BENEFICIARY_MANAGEMENT_READ',
-        'ROLE_BENEFICIARY_MANAGEMENT_WRITE',
-        'ROLE_USER_MANAGEMENT_READ',
-        'ROLE_USER_MANAGEMENT_WRITE',
-        'ROLE_AUTHORISE_PAYMENT',
-        'ROLE_USER',
-        'ROLE_DISTRIBUTION_CREATE',
-        'ROLE_REPORTING',
-        'ROLE_BENEFICIARY_MANAGEMENT',
-        'ROLE_DISTRIBUTIONS_DIRECTOR',
-        'ROLE_PROJECT_MANAGEMENT',
-        'ROLE_USER_MANAGEMENT',
-        'ROLE_REPORTING_COUNTRY',
-        'ROLE_VENDOR',
-        'ROLE_READ_ONLY',
-        'ROLE_FIELD_OFFICER',
-        'ROLE_PROJECT_OFFICER',
-        'ROLE_PROJECT_MANAGER',
-        'ROLE_COUNTRY_MANAGER',
-        'ROLE_REGIONAL_MANAGER',
-        'ROLE_ADMIN',
-        'ROLE_ENUMERATOR',
+        'ROLE_REPORTING_READ' => 'Reporting Read',
+        'ROLE_REPORTING_WRITE' => 'Reporting Write',
+        'ROLE_PROJECT_MANAGEMENT_READ' => 'Project Management Read',
+        'ROLE_PROJECT_MANAGEMENT_WRITE' => 'Project Management Write',
+        'ROLE_PROJECT_MANAGEMENT_ASSIGN' => 'Project Management Assign',
+        'ROLE_BENEFICIARY_MANAGEMENT_READ' => 'Beneficiary Management Read',
+        'ROLE_BENEFICIARY_MANAGEMENT_WRITE' => 'Beneficiary Management Write',
+        'ROLE_USER_MANAGEMENT_READ' => 'User Management Read',
+        'ROLE_USER_MANAGEMENT_WRITE' => 'User Management Write',
+        'ROLE_AUTHORISE_PAYMENT' => 'Authorise Payment',
+        'ROLE_USER' => 'User',
+        'ROLE_DISTRIBUTION_CREATE' => 'Distribution Create',
+        'ROLE_REPORTING' => 'Reporting',
+        'ROLE_BENEFICIARY_MANAGEMENT' => 'Beneficiary Management',
+        'ROLE_DISTRIBUTIONS_DIRECTOR' => 'Distributions Director',
+        'ROLE_PROJECT_MANAGEMENT' => 'Project Management',
+        'ROLE_USER_MANAGEMENT' => 'User Management',
+        'ROLE_REPORTING_COUNTRY' => 'Reporting Country',
+        'ROLE_VENDOR' => 'Vendor',
+        'ROLE_READ_ONLY' => 'Read Only',
+        'ROLE_FIELD_OFFICER' => 'Field Officer',
+        'ROLE_PROJECT_OFFICER' => 'Project Officer',
+        'ROLE_PROJECT_MANAGER' => 'Project Manager',
+        'ROLE_COUNTRY_MANAGER' => 'Country Manager',
+        'ROLE_REGIONAL_MANAGER' => 'Regional Manager',
+        'ROLE_ADMIN' => 'Admin',
+        'ROLE_ENUMERATOR' => 'Enumerator',
     ];
 
     private const PRIVILEGES = [
@@ -78,11 +78,12 @@ class RoleFixtures extends Fixture
     {
         $roles = [];
 
-        foreach (self::ROLES as $roleName) {
+        foreach (self::ROLES as $code => $roleName) {
             $role = new Role();
+            $role->setCode($code);
             $role->setName($roleName);
 
-            $roles[$roleName] = $role;
+            $roles[$code] = $role;
 
             $manager->persist($role);
         }

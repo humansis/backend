@@ -438,11 +438,11 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     public function hasRole($roleName)
     {
         $role = $this->getObjectManager()->getRepository(Role::class)->findOneBy([
-            'name' => $roleName,
+            'code' => $roleName,
         ]);
 
         if (!$role instanceof Role) {
-            throw new InvalidArgumentException('Role with name '.$roleName.' does not exist.');
+            throw new InvalidArgumentException('Role with code '.$roleName.' does not exist.');
         }
 
         return $this->roles->contains($role);
@@ -468,11 +468,11 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     public function addRole($roleName)
     {
         $role = $this->getObjectManager()->getRepository(Role::class)->findOneBy([
-            'name' => $roleName,
+            'code' => $roleName,
         ]);
 
         if (!$role instanceof Role) {
-            throw new InvalidArgumentException('Role with name '.$roleName.' does not exist.');
+            throw new InvalidArgumentException('Role with code '.$roleName.' does not exist.');
         }
 
         if (!$this->roles->contains($role)) {
@@ -488,11 +488,11 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     public function removeRole($roleName)
     {
         $role = $this->getObjectManager()->getRepository(Role::class)->findOneBy([
-            'name' => $roleName,
+            'code' => $roleName,
         ]);
 
         if (!$role instanceof Role) {
-            throw new InvalidArgumentException('Role with name '.$roleName.' does not exist.');
+            throw new InvalidArgumentException('Role with code '.$roleName.' does not exist.');
         }
 
         if (!$this->roles->contains($role)) {
@@ -510,7 +510,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     public function getRoles()
     {
         return array_map(function (Role $role) {
-            return $role->getName();
+            return $role->getCode();
         }, $this->roles->toArray());
     }
 }
