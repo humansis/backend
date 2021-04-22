@@ -58,6 +58,15 @@ class BookletMapper implements MapperInterface
         return $this->object->getTotalValue();
     }
 
+    public function getIndividualValues(): array
+    {
+        $fn = function (\VoucherBundle\Entity\Voucher $item) {
+            return $item->getValue();
+        };
+
+        return array_map($fn, $this->object->getVouchers()->toArray());
+    }
+
     public function getQuantityOfVouchers(): int
     {
         return $this->object->getNumberVouchers();
