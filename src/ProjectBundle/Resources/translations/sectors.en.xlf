@@ -8,7 +8,7 @@
       <trans-unit id="label_sector_shelter"><source>label_sector_shelter</source><target>Shelter</target></trans-unit>
       <trans-unit id="label_sector_wash"><source>label_sector_wash</source><target>WASH</target></trans-unit>
       <trans-unit id="label_sector_protection"><source>label_sector_protection</source><target>Protection</target></trans-unit>
-      <trans-unit id="label_sector_education_tvet"><source>education_tvet</source><target>Education &amp; TVET</target></trans-unit>
+      <trans-unit id="label_sector_education_tvet"><source>label_sector_education_tvet</source><target>Education &amp; TVET</target></trans-unit>
       <trans-unit id="label_sector_emergency_telco"><source>label_sector_emergency_telco</source><target>Emergency Telecomms</target></trans-unit>
       <trans-unit id="label_sector_health"><source>label_sector_health</source><target>Health</target></trans-unit>
       <trans-unit id="label_sector_logistics"><source>label_sector_logistics</source><target>Logistics</target></trans-unit>
