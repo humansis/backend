@@ -82,6 +82,7 @@ final class Version20210421113520 extends AbstractMigration
                 WHERE b.distribution_beneficiary_id IS NOT NULL
                 GROUP BY b.id, b.distribution_beneficiary_id
             ) AS b ON b.distribution_beneficiary_id=db.id
+            GROUP BY db.assistance_id, db.beneficiary_id
         ) AS counts GROUP BY assistance_id');
     }
 
