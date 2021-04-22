@@ -1596,7 +1596,7 @@
       </trans-unit>
       <trans-unit id="364" resname="household_location_settlement">
         <source>household_location_settlement</source>
-        <target>Temporary settlement</target>
+        <target>Informal settlement</target>
       </trans-unit>
       <trans-unit id="365" resname="household_location_tent">
         <source>household_location_tent</source>
@@ -3784,7 +3784,7 @@
       </trans-unit>
       <trans-unit id="903" resname="vulnerability_disabled">
         <source>vulnerability_disabled</source>
-        <target>disabled</target>
+        <target>Person with Disability</target>
       </trans-unit>
       <trans-unit id="904" resname="vulnerability_lactating">
         <source>vulnerability_lactating</source>
