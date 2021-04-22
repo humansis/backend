@@ -9,10 +9,9 @@ use BeneficiaryBundle\Entity\NationalId;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Entity\DistributedItem;
-use NewApiBundle\InputType\DistributedItemFilterInputType;
+use NewApiBundle\Entity\PurchasedItem;
 use NewApiBundle\InputType\PurchasedItemFilterInputType;
 use NewApiBundle\Request\Pagination;
-use ProjectBundle\Entity\Project;
 
 class PurchasedItemRepository extends EntityRepository
 {
@@ -21,7 +20,7 @@ class PurchasedItemRepository extends EntityRepository
      * @param PurchasedItemFilterInputType|null $filter
      * @param Pagination|null                     $pagination
      *
-     * @return Paginator|DistributedItem[]
+     * @return Paginator|PurchasedItem[]
      */
     public function findByParams(string $countryIso3, ?PurchasedItemFilterInputType $filter = null, ?Pagination $pagination = null): Paginator
     {
