@@ -30,10 +30,10 @@ class VendorController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function exports(Request $request): JsonResponse
+    public function exports(Request $request): Response
     {
         $request->query->add(['vendors' => true]);
-        $request->query->add(['__country' => $request->headers->get('country')]);
+        $request->request->add(['__country' => $request->headers->get('country')]);
 
         return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
     }
