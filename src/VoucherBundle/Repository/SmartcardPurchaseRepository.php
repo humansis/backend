@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace VoucherBundle\Repository;
 
-use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\SmartcardPurchaseFilterInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 use VoucherBundle\DTO\PurchaseDetail;
@@ -212,6 +212,29 @@ class SmartcardPurchaseRepository extends EntityRepository
         $qbr = $this->createQueryBuilder('sp')
             ->andWhere('sp.redemptionBatch = :redemptionBatch')
             ->setParameter('redemptionBatch', $redemptionBatch);
+
+        if ($pagination) {
+            $qbr->setMaxResults($pagination->getLimit())
+                ->setFirstResult($pagination->getOffset());
+        }
+
+        return new Paginator($qbr);
+    }
+
+    /**
+     * @param SmartcardPurchaseFilterInputType $filter
+     * @param Pagination|null                  $pagination
+     *
+     * @return Paginator|SmartcardPurchase[]
+     */
+    public function findByParams(SmartcardPurchaseFilterInputType $filter, Pagination $pagination): Paginator
+    {
+        $qbr = $this->createQueryBuilder('sp');
+
+        if ($filter->hasIds()) {
+            $qbr->andWhere('sp.id IN (:ids)')
+                ->setParameter('ids', $filter->getIds());
+        }
 
         if ($pagination) {
             $qbr->setMaxResults($pagination->getLimit())

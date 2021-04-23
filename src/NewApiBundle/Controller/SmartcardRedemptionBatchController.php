@@ -45,23 +45,6 @@ class SmartcardRedemptionBatchController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/smartcard-redemption-batches/{id}/purchases")
-     * @ParamConverter("redemptionBatch", class="VoucherBundle\Entity\SmartcardRedemptionBatch")
-     *
-     * @param SmartcardRedemptionBatch $redemptionBatch
-     * @param Pagination $pagination
-     *
-     * @return JsonResponse
-     */
-    public function purchases(SmartcardRedemptionBatch $redemptionBatch, Pagination $pagination): JsonResponse
-    {
-        $purchases = $this->getDoctrine()->getRepository(SmartcardPurchase::class)
-            ->findByBatch($redemptionBatch, $pagination);
-
-        return $this->json($purchases);
-    }
-
-    /**
      * @Rest\Get("/vendors/{id}/smartcard-redemption-batches")
      *
      * @param Vendor $vendor
