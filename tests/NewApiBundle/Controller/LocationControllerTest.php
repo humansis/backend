@@ -86,6 +86,30 @@ class LocationControllerTest extends BMSServiceTestCase
     }
 
     /**
+     * @throws Exception
+     */
+    public function testGetListOfAdm1Filtered()
+    {
+        $this->request('GET', '/api/basic/adm1?filter[id][]=1');
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertIsArray($result['data']);
+        $this->assertArrayHasKey('id', $result['data'][0]);
+        $this->assertArrayHasKey('name', $result['data'][0]);
+        $this->assertArrayHasKey('code', $result['data'][0]);
+        $this->assertArrayHasKey('countryIso3', $result['data'][0]);
+        $this->assertArrayHasKey('locationId', $result['data'][0]);
+    }
+
+    /**
      * @depends testGetListOfAdm1
      */
     public function testGetDetailOfAdm1($id)
@@ -130,6 +154,27 @@ class LocationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('adm1Id', $result['data'][0]);
 
         return $result['data'][0]['id'];
+    }
+
+    public function testGetListOfAdm2Filtered()
+    {
+        $this->request('GET', '/api/basic/adm2?filter[id][]=1');
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertIsArray($result['data']);
+        $this->assertArrayHasKey('id', $result['data'][0]);
+        $this->assertArrayHasKey('name', $result['data'][0]);
+        $this->assertArrayHasKey('code', $result['data'][0]);
+        $this->assertArrayHasKey('locationId', $result['data'][0]);
+        $this->assertArrayHasKey('adm1Id', $result['data'][0]);
     }
 
     /**
@@ -179,6 +224,27 @@ class LocationControllerTest extends BMSServiceTestCase
         return $result['data'][0]['id'];
     }
 
+    public function testGetListOfAdm3Filtered()
+    {
+        $this->request('GET', '/api/basic/adm3?filter[id][]=1');
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertIsArray($result['data']);
+        $this->assertArrayHasKey('id', $result['data'][0]);
+        $this->assertArrayHasKey('name', $result['data'][0]);
+        $this->assertArrayHasKey('code', $result['data'][0]);
+        $this->assertArrayHasKey('locationId', $result['data'][0]);
+        $this->assertArrayHasKey('adm2Id', $result['data'][0]);
+    }
+
     /**
      * @depends testGetListOfAdm3
      */
@@ -224,6 +290,27 @@ class LocationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('adm3Id', $result['data'][0]);
 
         return $result['data'][0]['id'];
+    }
+
+    public function testGetListOfAdm4Filtered()
+    {
+        $this->request('GET', '/api/basic/adm4?filter[id][]=1');
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertIsArray($result['data']);
+        $this->assertArrayHasKey('id', $result['data'][0]);
+        $this->assertArrayHasKey('name', $result['data'][0]);
+        $this->assertArrayHasKey('code', $result['data'][0]);
+        $this->assertArrayHasKey('locationId', $result['data'][0]);
+        $this->assertArrayHasKey('adm3Id', $result['data'][0]);
     }
 
     /**

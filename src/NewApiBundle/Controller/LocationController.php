@@ -12,6 +12,7 @@ use CommonBundle\Entity\Location;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Country\Countries;
+use NewApiBundle\InputType\AdmFilterInputType;
 use NewApiBundle\InputType\LocationFilterInputType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -109,13 +110,15 @@ class LocationController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function adm1List(Request $request): JsonResponse
+    public function adm1List(Request $request, AdmFilterInputType $inputType): JsonResponse
     {
-        if (!$request->headers->has('country')) {
+        if ($inputType->hasIds()) {
+            $data = $this->getDoctrine()->getRepository(Adm1::class)->findByFilter($inputType);
+        } elseif ($request->headers->has('country')) {
+            $data = $this->getDoctrine()->getRepository(Adm1::class)->findByCountry($request->headers->get('country'));
+        } else {
             throw new BadRequestHttpException('Missing header attribute country');
         }
-
-        $data = $this->getDoctrine()->getRepository(Adm1::class)->findByCountry($request->headers->get('country'));
 
         return $this->json(new Paginator($data));
     }
@@ -127,9 +130,23 @@ class LocationController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function adm2List(Adm1 $adm1): JsonResponse
+    public function adm2ListByAdm1(Adm1 $adm1): JsonResponse
     {
         $data = $this->getDoctrine()->getRepository(Adm2::class)->findByAdm1($adm1);
+
+        return $this->json(new Paginator($data));
+    }
+
+    /**
+     * @Rest\Get("/adm2")
+     *
+     * @param AdmFilterInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function adm2List(AdmFilterInputType $inputType): JsonResponse
+    {
+        $data = $this->getDoctrine()->getRepository(Adm2::class)->findByFilter($inputType);
 
         return $this->json(new Paginator($data));
     }
@@ -141,9 +158,23 @@ class LocationController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function adm3List(Adm2 $adm2): JsonResponse
+    public function adm3ListByAdm2(Adm2 $adm2): JsonResponse
     {
         $data = $this->getDoctrine()->getRepository(Adm3::class)->findByAdm2($adm2);
+
+        return $this->json(new Paginator($data));
+    }
+
+    /**
+     * @Rest\Get("/adm3")
+     *
+     * @param AdmFilterInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function adm3List(AdmFilterInputType $inputType): JsonResponse
+    {
+        $data = $this->getDoctrine()->getRepository(Adm3::class)->findByFilter($inputType);
 
         return $this->json(new Paginator($data));
     }
@@ -155,9 +186,23 @@ class LocationController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function adm4List(Adm3 $adm3): JsonResponse
+    public function adm4ListByAdm3(Adm3 $adm3): JsonResponse
     {
         $data = $this->getDoctrine()->getRepository(Adm4::class)->findByAdm3($adm3);
+
+        return $this->json(new Paginator($data));
+    }
+
+    /**
+     * @Rest\Get("/adm4")
+     *
+     * @param AdmFilterInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function adm4List(AdmFilterInputType $inputType): JsonResponse
+    {
+        $data = $this->getDoctrine()->getRepository(Adm4::class)->findByFilter($inputType);
 
         return $this->json(new Paginator($data));
     }

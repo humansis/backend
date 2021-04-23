@@ -2,6 +2,8 @@
 
 namespace CommonBundle\Repository;
 
+use NewApiBundle\InputType\AdmFilterInputType;
+
 /**
  * Adm1Repository
  *
@@ -13,5 +15,10 @@ class Adm1Repository extends \Doctrine\ORM\EntityRepository
     public function findByCountry(string $iso3): array
     {
         return $this->findBy(['countryISO3' => $iso3], ['name' => 'ASC']);
+    }
+
+    public function findByFilter(AdmFilterInputType $filter): array
+    {
+        return $this->findBy(['id' => $filter->getIds()]);
     }
 }

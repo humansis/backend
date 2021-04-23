@@ -3,6 +3,7 @@
 namespace CommonBundle\Repository;
 
 use CommonBundle\Entity\Adm2;
+use NewApiBundle\InputType\AdmFilterInputType;
 
 /**
  * Adm3Repository
@@ -15,5 +16,10 @@ class Adm3Repository extends \Doctrine\ORM\EntityRepository
     public function findByAdm2(Adm2 $adm1): array
     {
         return $this->findBy(['adm2' => $adm1], ['name' => 'ASC']);
+    }
+
+    public function findByFilter(AdmFilterInputType $filter): array
+    {
+        return $this->findBy(['id' => $filter->getIds()]);
     }
 }
