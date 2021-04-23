@@ -11,7 +11,6 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Entity\DistributedItem;
 use NewApiBundle\InputType\DistributedItemFilterInputType;
 use NewApiBundle\Request\Pagination;
-use ProjectBundle\Entity\Project;
 
 class DistributedItemRepository extends EntityRepository
 {
@@ -22,7 +21,7 @@ class DistributedItemRepository extends EntityRepository
      *
      * @return Paginator|DistributedItem[]
      */
-    public function findByParams(string $countryIso3, ?DistributedItemFilterInputType $filter, ?Pagination $pagination): Paginator
+    public function findByParams(string $countryIso3, ?DistributedItemFilterInputType $filter = null, ?Pagination $pagination = null): Paginator
     {
         $qbr = $this->createQueryBuilder('di')
             ->join('di.project', 'pr')
@@ -102,20 +101,6 @@ class DistributedItemRepository extends EntityRepository
             ->andWhere('di.beneficiary = :household')
             ->setParameter('type', 'Household')
             ->setParameter('household', $household);
-
-        return new Paginator($qbr);
-    }
-
-    /**
-     * @param Project $project
-     *
-     * @return Paginator|DistributedItem[]
-     */
-    public function findByProject(Project $project): Paginator
-    {
-        $qbr = $this->createQueryBuilder('di')
-            ->andWhere('di.project = :project')
-            ->setParameter('project', $project);
 
         return new Paginator($qbr);
     }

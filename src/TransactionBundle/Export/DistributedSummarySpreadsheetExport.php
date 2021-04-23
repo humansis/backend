@@ -13,12 +13,12 @@ use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
 use DistributionBundle\Entity\Assistance;
 use NewApiBundle\Component\Country\Countries;
+use NewApiBundle\Component\Country\Country;
 use NewApiBundle\Repository\DistributedItemRepository;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use ProjectBundle\Entity\Project;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class DistributedSummarySpreadsheetExport
@@ -39,8 +39,13 @@ class DistributedSummarySpreadsheetExport
         $this->repository = $repository;
     }
 
-    public function export(Project $project, string $filetype)
+    public function export(string $countryIso3, string $filetype)
     {
+        $country = $this->countries->getCountry($countryIso3);
+        if (!$country) {
+            throw new \InvalidArgumentException('Invalid country '.$countryIso3);
+        }
+
         if (!in_array($filetype, ['ods', 'xlsx', 'csv'], true)) {
             throw new \InvalidArgumentException('Invalid file type. Expected one of ods, xlsx, csv. '.$filetype.' given.');
         }
@@ -50,7 +55,7 @@ class DistributedSummarySpreadsheetExport
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
 
-        $this->build($worksheet, $project);
+        $this->build($worksheet, $country);
 
         $writer = IOFactory::createWriter($spreadsheet, ucfirst($filetype));
         $writer->save($filename);
@@ -58,7 +63,7 @@ class DistributedSummarySpreadsheetExport
         return $filename;
     }
 
-    private function build(Worksheet $worksheet, Project $project)
+    private function build(Worksheet $worksheet, Country $country)
     {
         $worksheet->getColumnDimension('A')->setWidth(16.852);
         $worksheet->getColumnDimension('B')->setWidth(14.423);
@@ -92,7 +97,6 @@ class DistributedSummarySpreadsheetExport
             ],
         ]);
 
-        $country = $this->countries->getCountry($project->getIso3());
         $dateFormatter = new \IntlDateFormatter($this->translator->getLocale(), \IntlDateFormatter::SHORT, \IntlDateFormatter::NONE);
 
         $worksheet->setCellValue('A1', $this->translator->trans('Beneficiary ID'));
@@ -115,7 +119,7 @@ class DistributedSummarySpreadsheetExport
         $worksheet->setCellValue('R1', $this->translator->trans('Field Officer Email'));
 
         $i = 1;
-        foreach ($this->repository->findByProject($project) as $distributedItem) {
+        foreach ($this->repository->findByParams($country->getIso3()) as $distributedItem) {
             $beneficiary = $distributedItem->getBeneficiary();
             $assistance = $distributedItem->getAssistance();
             $commodity = $distributedItem->getCommodity();
