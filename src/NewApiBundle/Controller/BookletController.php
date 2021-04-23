@@ -16,6 +16,7 @@ use NewApiBundle\InputType\BookletBatchCreateInputType;
 use NewApiBundle\InputType\BookletExportFilterInputType;
 use NewApiBundle\InputType\BookletFilterInputType;
 use NewApiBundle\InputType\BookletOrderInputType;
+use NewApiBundle\InputType\BookletPrintFilterInputType;
 use NewApiBundle\Request\Pagination;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -63,15 +64,17 @@ class BookletController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/booklets/{id}/exports")
+     * @Rest\Get("/booklets/prints")
      *
-     * @param Booklet $booklet
+     * @param BookletPrintFilterInputType $inputType
      *
      * @return Response
      */
-    public function bookletExports(Booklet $booklet): Response
+    public function bookletPrings(BookletPrintFilterInputType $inputType): Response
     {
-        return $this->get('voucher.booklet_service')->generatePdf([$booklet]);
+        $booklets = $this->getDoctrine()->getRepository(Booklet::class)->findBy(['id' => $inputType->getIds()]);
+
+        return $this->get('voucher.booklet_service')->generatePdf($booklets);
     }
 
     /**
@@ -166,9 +169,9 @@ class BookletController extends AbstractController
      * @ParamConverter("community", options={"mapping": {"communityId" : "id"}})
      * @ParamConverter("booklet", options={"mapping": {"bookletCode" : "code"}})
      *
-     * @param Assistance  $assistance
-     * @param Community $community
-     * @param Booklet     $booklet
+     * @param Assistance $assistance
+     * @param Community  $community
+     * @param Booklet    $booklet
      *
      * @return JsonResponse
      */
@@ -185,9 +188,9 @@ class BookletController extends AbstractController
      * @ParamConverter("institution", options={"mapping": {"institutionId" : "id"}})
      * @ParamConverter("booklet", options={"mapping": {"bookletCode" : "code"}})
      *
-     * @param Assistance $assistance
-     * @param Institution  $institution
-     * @param Booklet    $booklet
+     * @param Assistance  $assistance
+     * @param Institution $institution
+     * @param Booklet     $booklet
      *
      * @return JsonResponse
      */
