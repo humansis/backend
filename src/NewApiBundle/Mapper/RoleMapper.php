@@ -34,6 +34,11 @@ class RoleMapper implements MapperInterface
         throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Role::class.', '.get_class($object).' given.');
     }
 
+    public function getCode(): string
+    {
+        return $this->object->getCode();
+    }
+
     public function getName(): string
     {
         return $this->object->getName();

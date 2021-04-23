@@ -20,7 +20,7 @@ class AclControllerTest extends BMSServiceTestCase
         $this->client = self::$container->get('test.client');
     }
 
-    public function testCreate()
+    public function testDetail()
     {
         $this->request('GET', '/api/basic/acl/roles/ROLE_ADMIN');
 
@@ -29,8 +29,25 @@ class AclControllerTest extends BMSServiceTestCase
             'Request failed: '.$this->client->getResponse()->getContent()
         );
         $this->assertJsonFragment('{
-            "name": "ROLE_ADMIN",
+            "name": "Admin",
+            "code": "ROLE_ADMIN",
             "privileges": "*"
+        }', $this->client->getResponse()->getContent());
+    }
+
+    public function testList()
+    {
+        $this->request('GET', '/api/basic/acl/roles');
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{
+            "totalCount": "*",
+            "data": [
+                "*"
+             ]
         }', $this->client->getResponse()->getContent());
     }
 }
