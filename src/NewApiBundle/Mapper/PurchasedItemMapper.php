@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
+use NewApiBundle\Entity\PurchasedItem;
 use NewApiBundle\Serializer\MapperInterface;
-use TransactionBundle\Entity\PurchasedItem;
 
 class PurchasedItemMapper implements MapperInterface
 {
@@ -39,9 +39,69 @@ class PurchasedItemMapper implements MapperInterface
         return $this->object->getBeneficiary()->getId();
     }
 
+    public function getBeneficiaryType(): string
+    {
+        return $this->object->getBeneficiaryType();
+    }
+
+    public function getProjectId(): int
+    {
+        return $this->object->getProject()->getId();
+    }
+
+    public function getAssistanceId(): int
+    {
+        return $this->object->getAssistance()->getId();
+    }
+
+    public function getLocationId(): int
+    {
+        return $this->object->getLocation()->getId();
+    }
+
+    public function getAdm1Id(): ?int
+    {
+        return $this->object->getLocation()->getAdm1Id();
+    }
+
+    public function getAdm2Id(): ?int
+    {
+        return $this->object->getLocation()->getAdm2Id();
+    }
+
+    public function getAdm3Id(): ?int
+    {
+        return $this->object->getLocation()->getAdm3Id();
+    }
+
+    public function getAdm4Id(): ?int
+    {
+        return $this->object->getLocation()->getAdm4Id();
+    }
+
+    public function getDatePurchase(): string
+    {
+        return $this->object->getDateDistribution()->format(\DateTimeInterface::ISO8601);
+    }
+
+    public function getCommodityId(): int
+    {
+        return $this->object->getCommodity()->getId();
+    }
+
+    public function getCarrierNumber(): string
+    {
+        return $this->object->getCarrierNumber();
+    }
+
     public function getProductId(): int
     {
         return $this->object->getProduct()->getId();
+    }
+
+    public function getUnit(): string
+    {
+        return (string) $this->object->getProduct()->getUnit();
     }
 
     public function getValue(): string
@@ -54,18 +114,13 @@ class PurchasedItemMapper implements MapperInterface
         return $this->object->getCurrency();
     }
 
-    public function getQuantity(): string
+    public function getVendorId(): int
     {
-        return (string) $this->object->getQuantity();
+        return $this->object->getVendor()->getId();
     }
 
-    public function getSource(): string
+    public function getContractNumber(): ?string
     {
-        return $this->object->getSource();
-    }
-
-    public function getDate(): string
-    {
-        return $this->object->getUsedAt()->format(\DateTime::ISO8601);
+        return $this->object->getVendor()->getContractNo();
     }
 }

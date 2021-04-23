@@ -50,4 +50,19 @@ class PurchasedItemController extends AbstractController
 
         return $this->json(new Paginator($data));
     }
+
+    /**
+     * @Rest\Get("/purchased-items")
+     *
+     * @return JsonResponse
+     */
+    public function list(): JsonResponse
+    {
+        /** @var \NewApiBundle\Repository\PurchasedItemRepository $repository */
+        $repository = $this->getDoctrine()->getRepository(\NewApiBundle\Entity\PurchasedItem::class);
+
+        $data = $repository->findAll();
+
+        return $this->json(new Paginator($data));
+    }
 }
