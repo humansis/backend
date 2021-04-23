@@ -63,6 +63,18 @@ class BookletController extends AbstractController
     }
 
     /**
+     * @Rest\Get("/booklets/{id}/exports")
+     *
+     * @param Booklet $booklet
+     *
+     * @return Response
+     */
+    public function bookletExports(Booklet $booklet): Response
+    {
+        return $this->get('voucher.booklet_service')->generatePdf([$booklet]);
+    }
+
+    /**
      * @Rest\Get("/booklets/{id}")
      *
      * @param Booklet $object
