@@ -74,16 +74,19 @@ class DistributedItemController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/projects/{id}/distributed-items/exports")
+     * @Rest\Get("/distributed-items/exports")
      *
-     * @param Project $project
      * @param Request $request
      *
      * @return Response
      */
-    public function summaryExports(Project $project, Request $request): Response
+    public function summaryExports(Request $request): Response
     {
-        $filename = $this->get('export.distributed_summary.spreadsheet')->export($project, $request->get('type'));
+        if (!$request->headers->has('country')) {
+            throw $this->createNotFoundException('Missing header attribute country');
+        }
+
+        $filename = $this->get('export.distributed_summary.spreadsheet')->export($request->headers->get('country'), $request->get('type'));
 
         $response = new BinaryFileResponse($filename);
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
