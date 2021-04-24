@@ -20,7 +20,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         "end_date" => "01-05-2019",
         "target" => 5,
         "notes" => "This is a note",
-        "sectors" => [SectorEnum::EDUCATION, SectorEnum::WASH],
+        "sectors" => [SectorEnum::EDUCATION_TVET, SectorEnum::WASH],
         "donors" => [1, 2],
     ];
 

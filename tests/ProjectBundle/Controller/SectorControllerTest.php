@@ -73,7 +73,7 @@ class SectorControllerTest extends BMSServiceTestCase
             $this->markTestIncomplete("Warning: there is no project $projectId to complete test ".__METHOD__);
         }
 
-        $project->setSectors([SectorEnum::EDUCATION]);
+        $project->setSectors([SectorEnum::EDUCATION_TVET]);
         $this->em->persist($project);
         $this->em->flush();
 
