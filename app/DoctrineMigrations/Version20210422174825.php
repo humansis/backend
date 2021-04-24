@@ -41,6 +41,7 @@ final class Version20210422174825 extends AbstractMigration
     {
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
+        $this->addSql('DROP INDEX UNIQ_57698A6A5E237E06 ON role');
         $this->addSql('ALTER TABLE role
                             RENAME COLUMN name TO code,
                             ADD name VARCHAR(255) NOT NULL');
