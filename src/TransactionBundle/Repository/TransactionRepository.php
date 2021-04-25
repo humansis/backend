@@ -2,9 +2,8 @@
 
 namespace TransactionBundle\Repository;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use DistributionBundle\Entity\Assistance;
-use TransactionBundle\Entity\Transaction;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\TransactionFilterInputType;
 
 /**
  * TransactionRepository
@@ -14,4 +13,22 @@ use TransactionBundle\Entity\Transaction;
  */
 class TransactionRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * @param TransactionFilterInputType|null $filter
+     *
+     * @return Paginator
+     */
+    public function findByParams(?TransactionFilterInputType $filter = null): Paginator
+    {
+        $qb = $this->createQueryBuilder('t');
+
+        if ($filter) {
+            if ($filter->hasIds()) {
+                $qb->andWhere('t.id IN (:ids)');
+                $qb->setParameter('ids', $filter->getIds());
+            }
+        }
+
+        return new Paginator($qb);
+    }
 }
