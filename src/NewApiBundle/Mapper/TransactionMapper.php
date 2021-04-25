@@ -48,7 +48,7 @@ class TransactionMapper implements MapperInterface
         return $this->object->getSentBy()->getId();
     }
 
-    public function amountSent(): string
+    public function getAmountSent(): string
     {
         return $this->object->getAmountSent();
     }
