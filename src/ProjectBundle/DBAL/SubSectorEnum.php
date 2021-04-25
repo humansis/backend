@@ -71,6 +71,69 @@ class SubSectorEnum extends AbstractEnum
         self::DEFAULT_EARLY_RECOVERY,
     ];
 
+    private const TRANSLATIONS = [
+        self::IN_KIND_FOOD => 'In-kind Food',
+        self::CASH_TRANSFERS => 'Cash Transfers',
+        self::FOOD_VOUCHERS => 'Food Vouchers',
+        self::FOOD_CASH_FOR_WORK => 'Cash for Work',
+
+        self::SKILLS_TRAINING => 'Skills Training',
+        self::TECHNICAL_SUPPORT => 'Technical Support',
+        self::PROVISION_OF_INPUTS => 'Provision of inputs',
+        self::BUSINESS_GRANTS => 'Business Grants',
+        self::AGRICULTURAL_VOUCHERS => 'Agricultural Vouchers',
+        self::LIVELIHOOD_CASH_FOR_WORK => 'Cash for Work',
+
+        self::MULTI_PURPOSE_CASH_ASSISTANCE => 'Multi Purpose Cash Assistance',
+
+        self::REHABILITATION => 'Rehabilitation (Light, Medium, Heavy)',
+        self::CONSTRUCTION => 'Construction (Light, Medium, Heavy)',
+        self::SETTLEMENT_UPGRADES => 'Settlement Upgrades',
+        self::WINTERIZATION_KITS => 'Winterization Kits or Materials',
+        self::WINTERIZATION_UPGRADES => 'Winterization Upgrades',
+        self::SHELTER_KITS => 'Shelter Kits',
+        self::NFI_KITS => 'NFI Kits',
+        self::CASH_FOR_SHELTER => 'Cash for Shelter',
+
+        self::WATER_POINT_REHABILITATION => 'Water Point Rehabilitation',
+        self::WATER_POINT_CONSTRUCTION => 'Water Point Construction',
+        self::WATER_TRUCKING => 'Water Trucking',
+        self::WATER_TREATMENT => 'Water Treatment',
+
+        self::VECTOR_CONTROL => 'Vector Control',
+
+        self::SOLID_WASTE_MANAGEMENT => 'Solid Waste Management',
+        self::SANITATION => 'Sanitation',
+        self::HYGIENE_PROMOTION => 'Hygiene Promotion',
+        self::HYGIENE_KITS => 'Hygiene Kits',
+        self::OPERATIONAL_SUPPLIES => 'Operational Supplies',
+
+        self::PROTECTION_PSYCHOSOCIAL_SUPPORT => 'Psychosocial Support',
+        self::INDIVIDUAL_PROTECTION_ASSISTANCE => 'Individual Protection Assistance',
+        self::COMMUNITY_BASED_INTERVENTIONS => 'Community Based Interventions',
+        self::PROTECTION_ADVOCACY => 'Protection Advocacy',
+        self::CHILD_PROTECTION => 'Child Protection',
+        self::GENDER_BASED_VIOLENCE_ACTIVITIES => 'Gender Based Violence Activities',
+
+        self::TEACHER_INCENTIVE_PAYMENTS => 'Teacher Incentive Payments',
+        self::TEACHER_TRAINING => 'Teacher Training',
+        self::LEARNING_MATERIALS => 'Learning Materials',
+        self::EDUCATION_PSYCHOSOCIAL_SUPPORT => 'Psychosocial Support',
+        self::LEARNING_SUPPORT => 'Learning Support',
+        self::EDUCATION_CASH_FOR_WORK => 'Cash for Work',
+        self::PARENT_SESSIONS => 'Sessions for Parents and Caregivers',
+
+        self::DEFAULT_EMERGENCY_TELCO => 'Default Emergency Telecomms',
+        self::DEFAULT_HEALTH => 'Default Health',
+        self::DEFAULT_LOGISTICS => 'Default Logistics',
+        self::DEFAULT_NUTRITION => 'Default Nutrition',
+        self::DEFAULT_MINE => 'Default Mine Action',
+        self::DEFAULT_DRR_RESILIENCE => 'Default DRR & Resilience',
+        self::DEFAULT_NON_SECTOR => 'Default Non-Sector Specific',
+        self::DEFAULT_CAMP_MANAGEMENT => 'Default Camp Coordination and Management',
+        self::DEFAULT_EARLY_RECOVERY => 'Default Early Recovery',
+    ];
+
     const IN_KIND_FOOD = 'in_kind_food';
     const FOOD_VOUCHERS = 'food_vouchers';
     const CASH_TRANSFERS = 'food_cash_transfers';
@@ -139,5 +202,14 @@ class SubSectorEnum extends AbstractEnum
     public static function all(): array
     {
         return self::$values;
+    }
+
+    public static function translate(string $livelihood): string
+    {
+        if (!array_key_exists($livelihood, self::TRANSLATIONS)) {
+            throw new \InvalidArgumentException("$livelihood is not valid Livelihood value.");
+        }
+
+        return self::TRANSLATIONS[$livelihood];
     }
 }
