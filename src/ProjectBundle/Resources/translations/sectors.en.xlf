@@ -2,22 +2,22 @@
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="en" datatype="plaintext" original="file_sectors.ext">
     <body>
-      <trans-unit id="label_sector_food_security"><source>label_sector_food_security</source><target>Food security</target></trans-unit>
-      <trans-unit id="label_sector_livelihoods"><source>label_sector_livelihoods</source><target>Livelihoods</target></trans-unit>
-      <trans-unit id="label_sector_multipurpose_cash"><source>label_sector_multipurpose_cash</source><target>Multi Purpose Cash Assistance</target></trans-unit>
-      <trans-unit id="label_sector_shelter"><source>label_sector_shelter</source><target>Shelter</target></trans-unit>
-      <trans-unit id="label_sector_wash"><source>label_sector_wash</source><target>WASH</target></trans-unit>
-      <trans-unit id="label_sector_protection"><source>label_sector_protection</source><target>Protection</target></trans-unit>
-      <trans-unit id="label_sector_education_tvet"><source>label_sector_education_tvet</source><target>Education &amp; TVET</target></trans-unit>
-      <trans-unit id="label_sector_emergency_telco"><source>label_sector_emergency_telco</source><target>Emergency Telecomms</target></trans-unit>
-      <trans-unit id="label_sector_health"><source>label_sector_health</source><target>Health</target></trans-unit>
-      <trans-unit id="label_sector_logistics"><source>label_sector_logistics</source><target>Logistics</target></trans-unit>
-      <trans-unit id="label_sector_nutrition"><source>label_sector_nutrition</source><target>Nutrition</target></trans-unit>
-      <trans-unit id="label_sector_mine"><source>label_sector_mine</source><target>Mine Action</target></trans-unit>
-      <trans-unit id="label_sector_drr_resilience"><source>label_sector_drr_resilience</source><target>DRR &amp; Resilience</target></trans-unit>
-      <trans-unit id="label_sector_non_sector"><source>label_sector_non_sector</source><target>Non-Sector Specific</target></trans-unit>
-      <trans-unit id="label_sector_camp_management"><source>label_sector_camp_management</source><target>Camp Coordination and Management</target></trans-unit>
-      <trans-unit id="label_sector_early_recovery"><source>label_sector_early_recovery</source><target>Early Recovery</target></trans-unit>
+      <trans-unit id="label_sector_food_security"><source>Food security</source><target>Food security</target></trans-unit>
+      <trans-unit id="label_sector_livelihoods"><source>Livelihoods</source><target>Livelihoods</target></trans-unit>
+      <trans-unit id="label_sector_multipurpose_cash"><source>Multi Purpose Cash Assistance</source><target>Multi Purpose Cash Assistance</target></trans-unit>
+      <trans-unit id="label_sector_shelter"><source>Shelter</source><target>Shelter</target></trans-unit>
+      <trans-unit id="label_sector_wash"><source>WASH</source><target>WASH</target></trans-unit>
+      <trans-unit id="label_sector_protection"><source>Protection</source><target>Protection</target></trans-unit>
+      <trans-unit id="label_sector_education_tvet"><source>Education &amp; TVET</source><target>Education &amp; TVET</target></trans-unit>
+      <trans-unit id="label_sector_emergency_telco"><source>Emergency Telecomms</source><target>Emergency Telecomms</target></trans-unit>
+      <trans-unit id="label_sector_health"><source>Health</source><target>Health</target></trans-unit>
+      <trans-unit id="label_sector_logistics"><source>Logistics</source><target>Logistics</target></trans-unit>
+      <trans-unit id="label_sector_nutrition"><source>Nutrition</source><target>Nutrition</target></trans-unit>
+      <trans-unit id="label_sector_mine"><source>Mine Action</source><target>Mine Action</target></trans-unit>
+      <trans-unit id="label_sector_drr_resilience"><source>DRR &amp; Resilience</source><target>DRR &amp; Resilience</target></trans-unit>
+      <trans-unit id="label_sector_non_sector"><source>Non-Sector Specific</source><target>Non-Sector Specific</target></trans-unit>
+      <trans-unit id="label_sector_camp_management"><source>Camp Coordination and Management</source><target>Camp Coordination and Management</target></trans-unit>
+      <trans-unit id="label_sector_early_recovery"><source>Early Recovery</source><target>Early Recovery</target></trans-unit>
 
       <trans-unit id="label_sector_in-kind-food"><source>label_sector_in-kind-food</source><target>In-kind Food</target></trans-unit>
       <trans-unit id="label_sector_food_vouchers"><source>label_sector_food_vouchers</source><target>Food Vouchers</target></trans-unit>
