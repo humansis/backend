@@ -4,19 +4,37 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Codelist\CodeLists;
+use NewApiBundle\InputType\TransactionFilterInputType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use TransactionBundle\Entity\Transaction;
+use TransactionBundle\Repository\TransactionRepository;
 
 class TransactionController extends AbstractController
 {
+    /**
+     * @Rest\Get("/transactions")
+     *
+     * @param Request                    $request
+     * @param TransactionFilterInputType $filter
+     *
+     * @return JsonResponse
+     */
+    public function list(Request $request, TransactionFilterInputType $filter): JsonResponse
+    {
+        /** @var TransactionRepository $repository */
+        $repository = $this->getDoctrine()->getRepository(Transaction::class);
+        $data = $repository->findByParams($filter);
+
+        return $this->json($data);
+    }
+
     /**
      * @Rest\Post("/assistances/{id}/transactions")
      *
