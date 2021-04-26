@@ -284,4 +284,28 @@ class CommunityControllerTest extends BMSServiceTestCase
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }
+
+    public function testGetCommunitiesByProject()
+    {
+        try {
+            /** @var Community $institution */
+            $institution = $this->em->getRepository(Community::class)->createQueryBuilder('i')
+                ->setMaxResults(1)
+                ->getQuery()
+                ->getSingleResult();
+        } catch (NoResultException $exception) {
+            $this->markTestSkipped('There is no Community to be tested');
+        }
+
+        $this->request('GET', '/api/basic/projects/'.$institution->getProjects()[0]->getId().'/communities');
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{
+            "totalCount": "*", 
+            "data": "*"
+        }', $this->client->getResponse()->getContent());
+    }
 }

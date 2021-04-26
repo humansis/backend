@@ -395,4 +395,20 @@ class CommunityRepository extends EntityRepository
             }
         }
     }
+
+    /**
+     * @param Project $project
+     *
+     * @return Paginator
+     */
+    public function findByProject(Project $project)
+    {
+        $qbr = $this->createQueryBuilder('c');
+        $qbr->leftJoin('c.projects', 'p')
+            ->where('p = :project')
+            ->setParameter('project', $project)
+            ->andWhere('c.archived = 0');
+
+        return new Paginator($qbr);
+    }
 }
