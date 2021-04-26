@@ -81,7 +81,7 @@ class PurchasedItemMapper implements MapperInterface
 
     public function getDatePurchase(): string
     {
-        return $this->object->getDateDistribution()->format(\DateTimeInterface::ISO8601);
+        return $this->object->getDatePurchase()->format(\DateTimeInterface::ISO8601);
     }
 
     public function getCommodityId(): int

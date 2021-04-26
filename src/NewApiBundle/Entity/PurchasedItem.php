@@ -45,7 +45,7 @@ class PurchasedItem
     /**
      * @var string
      *
-     * @ORM\Column(name="beneficiary_type", type="string")
+     * @ORM\Column(name="bnf_type", type="string")
      */
     private $beneficiaryType;
 
@@ -55,13 +55,6 @@ class PurchasedItem
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Assistance")
      */
     private $assistance;
-
-    // /**
-    //  * @var Location
-    //  *
-    //  * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
-    //  */
-    // private $location;
 
     /**
      * @var Product
@@ -92,16 +85,9 @@ class PurchasedItem
     private $commodity;
 
     /**
-     * @var float
+     * @var \DateTimeInterface|null
      *
-     * @ORM\Column(type="decimal", precision=10, scale=2)
-     */
-    private $amount;
-
-    /**
-     * @var \DateTimeInterface
-     *
-     * @ORM\Column(name="date_distribution", type="datetime")
+     * @ORM\Column(name="date_distribution", type="datetime", nullable=true)
      */
     private $dateDistribution;
 
@@ -170,15 +156,6 @@ class PurchasedItem
     }
 
     /**
-     * @return Location
-     */
-    public function getLocation(): Location
-    {
-        return $this->getVendor()->getLocation();
-        // return $this->location;
-    }
-
-    /**
      * @return Product
      */
     public function getProduct(): Product
@@ -211,22 +188,6 @@ class PurchasedItem
     }
 
     /**
-     * @return float
-     */
-    public function getAmount(): float
-    {
-        return $this->amount;
-    }
-
-    /**
-     * @return string
-     */
-    public function getModalityType(): string
-    {
-        return $this->modalityType;
-    }
-
-    /**
      * @return \DateTimeInterface|null
      */
     public function getDateDistribution(): ?\DateTimeInterface
@@ -235,9 +196,9 @@ class PurchasedItem
     }
 
     /**
-     * @return \DateTimeInterface|null
+     * @return \DateTimeInterface
      */
-    public function getDatePurchase(): ?\DateTimeInterface
+    public function getDatePurchase(): \DateTimeInterface
     {
         return $this->datePurchase;
     }
