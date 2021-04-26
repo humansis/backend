@@ -48,7 +48,7 @@ class SmartcardPurchaseControllerTest extends BMSServiceTestCase
             ->setMaxResults(1)
             ->getSingleScalarResult();
 
-        $this->request('GET', '/api/basic/smartcard-redemption-batches/'.$batchId.'/purchases');
+        $this->request('GET', '/api/basic/smartcard-redemption-batches/'.$batchId.'/smartcard-purchases');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
