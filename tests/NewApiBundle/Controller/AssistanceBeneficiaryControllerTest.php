@@ -102,7 +102,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             "data": [
                 {
                     "id": "*",
-                    "beneficiaryId": "*",
+                    "institutionId": "*",
                     "removed": "*",
                     "justification": "*",
                     "generalReliefItemIds": "*",
@@ -144,7 +144,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             "data": [
                 {
                     "id": "*",
-                    "beneficiaryId": "*",
+                    "communityId": "*",
                     "removed": "*",
                     "justification": "*",
                     "generalReliefItemIds": "*",
