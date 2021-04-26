@@ -315,6 +315,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     public function setLanguage($language)
     {
         $this->language = $language;
+        return $this;
     }
 
     /**

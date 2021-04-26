@@ -776,6 +776,7 @@ class UserService
             ->setEmailCanonical($inputType->getEmail())
             ->setEnabled(true)
             ->setRoles($inputType->getRoles())
+            ->setLanguage($inputType->getLanguage())
             ->setChangePassword($inputType->isChangePassword())
             ->setPhonePrefix($inputType->getPhonePrefix())
             ->setPhoneNumber($inputType->getPhoneNumber() ? (int) $inputType->getPhoneNumber() : null)
@@ -835,6 +836,7 @@ class UserService
             ->setUsername($inputType->getUsername())
             ->setUsernameCanonical($inputType->getUsername())
             ->setEnabled(true)
+            ->setLanguage($inputType->getLanguage())
             ->setRoles($inputType->getRoles())
             ->setPhonePrefix($inputType->getPhonePrefix())
             ->setPhoneNumber($inputType->getPhoneNumber() ? (int) $inputType->getPhoneNumber() : null);
