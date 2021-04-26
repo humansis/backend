@@ -227,5 +227,9 @@ class PurchasedItem
         return $this->currency;
     }
 
+    public function getLocation(): Location
+    {
+        return $this->getVendor()->getLocation();
+    }
 
 }
