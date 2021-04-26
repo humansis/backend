@@ -26,12 +26,7 @@ final class Version20210421113520 extends AbstractMigration
 
                  CASE WHEN db.removed=0 THEN 1 END AS beneficiary,
 
-                 CASE
-                     WHEN db.removed=0 AND sd.id IS NOT NULL  THEN sd.value
-                     WHEN db.removed=0 AND gri.id IS NOT NULL THEN c.value
-                     WHEN db.removed=0 AND t.id IS NOT NULL   THEN CAST(SUBSTRING_INDEX(t.amount_sent, " ", -1) AS decimal(10, 2))
-                     WHEN db.removed=0 AND b.id IS NOT NULL   THEN c.value
-                 END AS amountTotal,
+                 CASE WHEN db.removed=0 THEN c.value END AS amountTotal,
 
                  CASE
                      WHEN db.removed=0 AND sd.id IS NOT NULL                                    THEN sd.value
