@@ -270,4 +270,20 @@ class InstitutionRepository extends \Doctrine\ORM\EntityRepository
             }
         }
     }
+
+    /**
+     * @param Project $project
+     *
+     * @return Paginator
+     */
+    public function findByProject(Project $project)
+    {
+        $qbr = $this->createQueryBuilder('i');
+        $qbr->leftJoin('i.projects', 'p')
+            ->where('p = :project')
+            ->setParameter('project', $project)
+            ->andWhere('i.archived = 0');
+
+        return new Paginator($qbr);
+    }
 }

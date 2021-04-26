@@ -11,6 +11,7 @@ use NewApiBundle\InputType\InstitutionFilterInputType;
 use NewApiBundle\InputType\InstitutionOrderInputType;
 use NewApiBundle\InputType\InstitutionUpdateInputType;
 use NewApiBundle\Request\Pagination;
+use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -96,5 +97,19 @@ class InstitutionController extends AbstractController
         $this->get('beneficiary.institution_service')->remove($institution);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Rest\Get("/projects/{id}/institutions")
+     *
+     * @param Project $project
+     *
+     * @return JsonResponse
+     */
+    public function institutionsByProject(Project $project): JsonResponse
+    {
+        $institutions = $this->getDoctrine()->getRepository(Institution::class)->findByProject($project);
+
+        return $this->json($institutions);
     }
 }
