@@ -132,6 +132,11 @@ class InstitutionRepository extends \Doctrine\ORM\EntityRepository
         }
 
         if ($filter) {
+            if ($filter->hasIds()) {
+                $qb->andWhere('i.id IN (:ids)')
+                    ->setParameter('ids', $filter->getIds());
+            }
+
             if ($filter->hasProjects()) {
                 $qb->leftJoin('i.projects', 'pro')
                     ->andWhere('pro.id IN (:ids)')

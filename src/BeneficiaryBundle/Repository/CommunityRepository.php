@@ -262,6 +262,11 @@ class CommunityRepository extends EntityRepository
         $this->whereCommunityInCountry($q, $countryIso3);
 
         if (!is_null($filter)) {
+            if ($filter->hasIds()) {
+                $qb->andWhere('comm.id IN (:ids)')
+                    ->setParameter('ids', $filter->getIds());
+            }
+
             if ($filter->hasFulltext()) {
                 $qb->leftJoin('comm.contact', 'per');
 
