@@ -5,7 +5,7 @@ namespace NewApiBundle\Request;
 
 class Pagination
 {
-    const DEFAULT_SIZE = 20;
+    const DEFAULT_SIZE = PHP_INT_MAX;
 
     /** @var int|null */
     private $page;
