@@ -258,6 +258,11 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
             $qb->setFirstResult($pagination->getOffset());
         }
 
+        if ($filter->hasIds()) {
+            $qb->andWhere('b.id IN (:ids)')
+                ->setParameter('ids', $filter->getIds());
+        }
+
         if ($filter->hasFulltext()) {
             $subQueryForName = $this->_em->createQueryBuilder()
                 ->select('p.id')
