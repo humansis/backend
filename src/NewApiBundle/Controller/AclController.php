@@ -10,6 +10,18 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AclController extends AbstractController
 {
+    // list of roles to be processed by FE
+    private const ROLES = [
+        'ROLE_ADMIN',
+        'ROLE_REGIONAL_MANAGER',
+        'ROLE_COUNTRY_MANAGER',
+        'ROLE_PROJECT_MANAGER',
+        'ROLE_PROJECT_OFFICER',
+        'ROLE_FIELD_OFFICER',
+        'ROLE_ENUMERATOR',
+        'ROLE_VENDOR',
+    ];
+
     /**
      * @Rest\Get("/acl/roles")
      *
@@ -21,7 +33,7 @@ class AclController extends AbstractController
 
         $filtered = [];
         foreach ($roles as $role) {
-            if ($role->getPrivileges()->isEmpty()) {
+            if (!in_array($role->getCode(), self::ROLES)) {
                 continue;
             }
 
