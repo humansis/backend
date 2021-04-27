@@ -17,6 +17,7 @@ use NewApiBundle\InputType\BookletExportFilterInputType;
 use NewApiBundle\InputType\BookletFilterInputType;
 use NewApiBundle\InputType\BookletOrderInputType;
 use NewApiBundle\InputType\BookletPrintFilterInputType;
+use NewApiBundle\InputType\BookletUpdateInputType;
 use NewApiBundle\Request\Pagination;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -86,6 +87,26 @@ class BookletController extends AbstractController
      */
     public function item(Booklet $object): JsonResponse
     {
+        return $this->json($object);
+    }
+
+    /**
+     * @Rest\Put("/booklets/{id}")
+     *
+     * @param Booklet                $object
+     * @param BookletUpdateInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function update(Booklet $object, BookletUpdateInputType $inputType): JsonResponse
+    {
+        $this->get('voucher.booklet_service')->update($object, [
+            'currency' => $inputType->getCurrency(),
+            'number_vouchers' => $inputType->getQuantityOfVouchers(),
+            'password' => $inputType->getPassword(),
+            'individual_values' => $inputType->getValues(),
+        ]);
+
         return $this->json($object);
     }
 

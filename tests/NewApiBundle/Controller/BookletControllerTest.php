@@ -46,6 +46,23 @@ class BookletControllerTest extends BMSServiceTestCase
         );
     }
 
+    public function testUpdate()
+    {
+        $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([])[0];
+
+        $this->request('PUT', '/api/basic/booklets/'.$booklet->getId(), [
+            'quantityOfVouchers' => 2,
+            'values' => [333],
+            'password' => null,
+            'currency' => 'CZK',
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+    }
+
     /**
      * @depends testCreate
      */

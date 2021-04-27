@@ -240,7 +240,7 @@ class BookletService
             $values = array_key_exists('individual_values', $bookletData) ? $bookletData['individual_values'] : [];
             foreach ($vouchers as $index => $voucher) {
                 $password = array_key_exists('password', $bookletData) ? $bookletData['password'] : null;
-                $value = $values[$index] ?: null;
+                $value = $values[$index] ?? null;
                 $this->updateVoucherCode($voucher, $password, $value, $bookletData['currency']);
             }
 
