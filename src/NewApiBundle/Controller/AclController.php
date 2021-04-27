@@ -19,7 +19,6 @@ class AclController extends AbstractController
         'ROLE_PROJECT_OFFICER',
         'ROLE_FIELD_OFFICER',
         'ROLE_ENUMERATOR',
-        'ROLE_VENDOR',
     ];
 
     /**
