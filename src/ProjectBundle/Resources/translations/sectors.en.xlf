@@ -2,7 +2,7 @@
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="en" datatype="plaintext" original="file_sectors.ext">
     <body>
-      <trans-unit id="label_sector_food_security"><source>Food security</source><target>Food security</target></trans-unit>
+      <trans-unit id="label_sector_food_security"><source>Food Security</source><target>Food Security</target></trans-unit>
       <trans-unit id="label_sector_livelihoods"><source>Livelihoods</source><target>Livelihoods</target></trans-unit>
       <trans-unit id="label_sector_multipurpose_cash"><source>Multi Purpose Cash Assistance</source><target>Multi Purpose Cash Assistance</target></trans-unit>
       <trans-unit id="label_sector_shelter"><source>Shelter</source><target>Shelter</target></trans-unit>
@@ -26,7 +26,7 @@
 
       <trans-unit id="label_sector_skills_training"><source>Skills Training</source><target>Skills Training</target></trans-unit>
       <trans-unit id="label_sector_technical_support"><source>Technical Support</source><target>Technical Support</target></trans-unit>
-      <trans-unit id="label_sector_provision_of_inputs"><source>Provision of inputs</source><target>Provision of inputs</target></trans-unit>
+      <trans-unit id="label_sector_provision_of_inputs"><source>Provision of Inputs</source><target>Provision of Inputs</target></trans-unit>
       <trans-unit id="label_sector_business_grants"><source>Business Grants</source><target>Business Grants</target></trans-unit>
       <trans-unit id="label_sector_agricultural_vouchers"><source>Agricultural Vouchers</source><target>Agricultural Vouchers</target></trans-unit>
       <trans-unit id="label_sector_livelihood_cash_for_work"><source>Cash for Work</source><target>Cash for Work</target></trans-unit>
@@ -44,7 +44,7 @@
 
       <trans-unit id="label_sector_water_point_rehabilitation"><source>Water Point Rehabilitation</source><target>Water Point Rehabilitation</target></trans-unit>
       <trans-unit id="label_sector_water_point_construction"><source>Water Point Construction</source><target>Water Point Construction</target></trans-unit>
-      <trans-unit id="label_sector_water_trucking"><source>label_sector_water_trucking</source><target>Water Trucking</target></trans-unit>
+      <trans-unit id="label_sector_water_trucking"><source>Water Trucking</source><target>Water Trucking</target></trans-unit>
       <trans-unit id="label_sector_water_treatment"><source>Water Treatment</source><target>Water Treatment</target></trans-unit>
       <trans-unit id="label_sector_vector_control"><source>Vector Control</source><target>Vector Control</target></trans-unit>
       <trans-unit id="label_sector_solid_waste_management"><source>Solid Waste Management</source><target>Solid Waste Management</target></trans-unit>

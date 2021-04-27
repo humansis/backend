@@ -27,7 +27,7 @@ class SectorEnum extends AbstractEnum
         self::EARLY_RECOVERY,
     ];
 
-    const FOOD_SECURITY = 'Food security';
+    const FOOD_SECURITY = 'Food Security';
     const LIVELIHOODS = 'Livelihoods';
     const MULTIPURPOSE_CASH = 'Multi Purpose Cash Assistance';
     const SHELTER = 'Shelter';
