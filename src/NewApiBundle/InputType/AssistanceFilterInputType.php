@@ -25,6 +25,11 @@ class AssistanceFilterInputType extends AbstractFilterInputType
     protected $upcoming;
 
     /**
+     * @Assert\Choice(callback={"DistributionBundle\Enum\AssistanceType", "values"})
+     */
+    protected $type;
+
+    /**
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
@@ -75,6 +80,16 @@ class AssistanceFilterInputType extends AbstractFilterInputType
     public function getUpcomingOnly(): bool
     {
         return $this->upcoming;
+    }
+
+    public function hasType(): bool
+    {
+        return $this->has('type');
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
     }
 
     public function hasProjects(): bool
