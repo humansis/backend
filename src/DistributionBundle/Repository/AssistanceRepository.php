@@ -312,6 +312,10 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                 $qb->andWhere('p.startDate > :now')
                     ->setParameter('now', new DateTime('now'));
             }
+            if ($filter->hasType()) {
+                $qb->andWhere('dd.assistanceType = :assistanceType')
+                    ->setParameter('assistanceType', $filter->getType());
+            }
             if ($filter->hasProjects()) {
                 $qb->andWhere('dd.project IN (:projects)')
                     ->setParameter('projects', $filter->getProjects());

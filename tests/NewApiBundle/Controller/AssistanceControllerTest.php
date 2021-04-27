@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\Community;
 use CommonBundle\Entity\Location;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
+use DistributionBundle\Enum\AssistanceType;
 use Exception;
 use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
@@ -65,7 +66,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var Location $location */
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
-        $this->request('GET', '/api/basic/assistances?filter[modalityTypes][]=Smartcard&filter[projects][]='.$project->getId().'&filter[locations][]='.$location->getId());
+        $this->request('GET', '/api/basic/assistances?filter[type]='.AssistanceType::DISTRIBUTION.
+                                                    '&filter[modalityTypes][]=Smartcard'.
+                                                    '&filter[projects][]='.$project->getId().
+                                                    '&filter[locations][]='.$location->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -113,7 +117,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'dateDistribution' => '2021-03-10T13:45:32.988Z',
             'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
             'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
-            'type' => \DistributionBundle\Enum\AssistanceType::DISTRIBUTION,
+            'type' => AssistanceType::DISTRIBUTION,
             'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
@@ -167,7 +171,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'dateDistribution' => '2000-12-01T01:01:01+00:00',
             'sector' => \ProjectBundle\DBAL\SectorEnum::LIVELIHOODS,
             'subsector' => \ProjectBundle\DBAL\SubSectorEnum::SKILLS_TRAINING,
-            'type' => \DistributionBundle\Enum\AssistanceType::ACTIVITY,
+            'type' => AssistanceType::ACTIVITY,
             'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'selectionCriteria' => [
@@ -222,7 +226,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'dateDistribution' => '2000-12-01T01:01:01+0000',
             'sector' => \ProjectBundle\DBAL\SectorEnum::SHELTER,
             'subsector' => \ProjectBundle\DBAL\SubSectorEnum::CONSTRUCTION,
-            'type' => \DistributionBundle\Enum\AssistanceType::ACTIVITY,
+            'type' => AssistanceType::ACTIVITY,
             'target' => \DistributionBundle\Enum\AssistanceTargetType::COMMUNITY,
             'communities' => [$community->getId()],
             'description' => 'test construction activity',
