@@ -29,6 +29,10 @@ class DistributedItemRepository extends EntityRepository
             ->setParameter('iso3', $countryIso3);
 
         if ($filter) {
+            if ($filter->hasBeneficiaryTypes()) {
+                $qbr->andWhere('di.beneficiaryType IN (:bnfType)')
+                    ->setParameter('bnfType', $filter->getBeneficiaryTypes());
+            }
             if ($filter->hasFulltext()) {
                 $qbr->join('di.beneficiary', 'b')
                     ->join('b.person', 'p')
@@ -60,6 +64,14 @@ class DistributedItemRepository extends EntityRepository
             if ($filter->hasModalityTypes()) {
                 $qbr->andWhere('di.modalityType IN (:modalityTypes)')
                     ->setParameter('modalityTypes', $filter->getModalityTypes());
+            }
+            if ($filter->hasDateFrom()) {
+                $qbr->andWhere('di.dateDistribution >= :dateFrom')
+                    ->setParameter('dateFrom', $filter->getDateFrom());
+            }
+            if ($filter->hasDateTo()) {
+                $qbr->andWhere('di.dateDistribution <= :dateTo')
+                    ->setParameter('dateTo', $filter->getDateTo());
             }
         }
 

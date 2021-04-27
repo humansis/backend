@@ -8,6 +8,7 @@ use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use NewApiBundle\Enum\BeneficiaryType;
 use NewApiBundle\Enum\PhoneTypes;
 use Tests\BMSServiceTestCase;
 
@@ -24,6 +25,29 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
 
         // Get a Client instance for simulate a browser
         $this->client = self::$container->get('test.client');
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetBeneficiaryTypes()
+    {
+        $this->request('GET', '/api/basic/beneficiaries/types');
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{
+            "totalCount": '.count(BeneficiaryType::values()).', 
+            "data": [
+                {"code": "'.BeneficiaryType::HOUSEHOLD.'", "value": "'.BeneficiaryType::HOUSEHOLD.'"},
+                {"code": "'.BeneficiaryType::BENEFICIARY.'", "value": "'.BeneficiaryType::BENEFICIARY.'"},
+                {"code": "'.BeneficiaryType::COMMUNITY.'", "value": "'.BeneficiaryType::COMMUNITY.'"},
+                {"code": "'.BeneficiaryType::INSTITUTION.'", "value": "'.BeneficiaryType::INSTITUTION.'"}
+             ]
+        }', $this->client->getResponse()->getContent(),
+        );
     }
 
     /**

@@ -11,6 +11,7 @@ use BeneficiaryBundle\Enum\ResidencyStatus;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Codelist\CodeLists;
+use NewApiBundle\Enum\BeneficiaryType;
 use NewApiBundle\Enum\PhoneTypes;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,6 +21,18 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  */
 class BeneficiaryCodelistController extends AbstractController
 {
+    /**
+     * @Rest\Get("/beneficiaries/types")
+     *
+     * @return JsonResponse
+     */
+    public function getTypes(): JsonResponse
+    {
+        $data = CodeLists::mapEnum(BeneficiaryType::values());
+
+        return $this->json(new Paginator($data));
+    }
+
     /**
      * @Rest\Get("/beneficiaries/referral-types")
      *
