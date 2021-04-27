@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Component\Codelist;
 
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\DTO\Sector;
 
 class CodeLists
@@ -35,7 +36,7 @@ class CodeLists
 
         /** @var Sector $subSector */
         foreach ($subSectors as $subSector) {
-            $data[] = new CodeItem($subSector->getSubSectorName(), $subSector->getSubSectorName());
+            $data[] = new CodeItem($subSector->getSubSectorName(), SubSectorEnum::translate($subSector->getSubSectorName()));
         }
 
         return $data;
