@@ -44,12 +44,6 @@ class RequestListener
         $disableListener = $event->getRequest()->attributes->get('disable-common-request-listener');
 
         if ($disableListener) {
-            $isAdmin = $this->container->get('security.authorization_checker')->isGranted('ROLE_ADMIN');
-            if (!$isAdmin) {
-                $response = new Response('You need to be admin.', Response::HTTP_FORBIDDEN);
-                $event->setResponse($response);
-            }
-
             return;
         }
 
