@@ -23,6 +23,11 @@ class UserFilterInputType extends AbstractFilterInputType
      */
     protected $fulltext;
 
+    /**
+     * @Assert\Choice({"true", "false"})
+     */
+    protected $showVendors;
+
     public function hasIds(): bool
     {
         return $this->has('id');
@@ -44,5 +49,21 @@ class UserFilterInputType extends AbstractFilterInputType
     public function hasFulltext(): bool
     {
         return $this->has('fulltext');
+    }
+
+    /**
+     * @return bool
+     */
+    public function getShowVendors()
+    {
+        return "true" === $this->showVendors;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasShowVendors(): bool
+    {
+        return $this->has('showVendors');
     }
 }

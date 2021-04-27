@@ -70,6 +70,14 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
                     $qb->setParameter('ids', $filter->getIds());
                 }
             }
+
+            if ($filter->hasShowVendors()) {
+                if ($filter->getShowVendors()) {
+                    $qb->andWhere('u.vendor IS NOT NULL');
+                } else {
+                    $qb->andWhere('u.vendor IS NULL');
+                }
+            }
         }
 
         if (null !== $pagination) {
