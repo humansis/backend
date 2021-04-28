@@ -16,7 +16,7 @@ final class Version20210425094651 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $mapping = [
-            'food_security' => 'Food security',
+            'food_security' => 'Food Security',
             'livelihoods' => 'Livelihoods',
             'multipurpose_cash' => 'Multi Purpose Cash Assistance',
             'shelter' => 'Shelter',
