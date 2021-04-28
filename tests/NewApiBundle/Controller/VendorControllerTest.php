@@ -190,7 +190,7 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        $this->request('GET', '/api/basic/vendors?sort[]=name.asc');
+        $this->request('GET', '/api/basic/vendors?filter[id][]=1&sort[]=name.asc');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
