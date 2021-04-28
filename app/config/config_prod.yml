@@ -20,3 +20,8 @@ monolog:
         console:
             type: console
             process_psr_3_messages: false
+        graylog:
+            type: service
+            id: monolog.gelf_handler
+            level: notice
+            channels: ['!event', '!doctrine', '!console']

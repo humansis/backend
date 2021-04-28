@@ -26,3 +26,6 @@ parameters:
     mobile_app_id: "1A1234"
 
     jwt_passphrase: '%env(JWT_PASSPHRASE)%'
+
+    gelf_host: '%env(GELF_HOST)%'
+    gelf_port: '%env(GELF_PORT)%'
