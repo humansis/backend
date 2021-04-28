@@ -22,7 +22,7 @@ final class Version20210421113520 extends AbstractMigration
             CAST(SUM(amountPickedUp) AS decimal(15, 2))    AS amount_picked_up
         FROM (
              SELECT
-                 db.assistance_id,
+                 a.id as assistance_id,
 
                  CASE WHEN db.removed=0 THEN 1 END AS beneficiary,
 
@@ -53,11 +53,12 @@ final class Version20210421113520 extends AbstractMigration
                      WHEN db.removed=0 AND sd.id IS NOT NULL                                    THEN sd.value
                      WHEN db.removed=0 AND gri.id IS NOT NULL AND gri.distributedAt IS NOT NULL THEN c.value
                      WHEN db.removed=0 AND t.id IS NOT NULL AND t.pickup_date IS NOT NULL       THEN CAST(SUBSTRING_INDEX(t.amount_sent, " ", -1) AS decimal(10, 2))
-                     WHEN db.removed=0 AND b.id IS NOT NULL                                     THEN b.value
+                     WHEN db.removed=0 AND ;b.id IS NOT NULL                                     THEN b.value
                  END AS amountPickedUp
 
-            FROM distribution_beneficiary db
-            JOIN commodity c ON db.assistance_id=c.assistance_id
+            FROM assistance a
+            LEFT JOIN distribution_beneficiary db on a.id = db.assistance_id
+            LEFT JOIN commodity c ON db.assistance_id=c.assistance_id
             -- smartcards
             LEFT JOIN smartcard_deposit sd ON sd.distribution_beneficiary_id=db.id
             -- mobile money
