@@ -89,6 +89,11 @@ class PurchasedItemMapper implements MapperInterface
         return $this->object->getCommodity()->getId();
     }
 
+    public function getModalityType(): string
+    {
+        return $this->object->getModalityType();
+    }
+
     public function getCarrierNumber(): string
     {
         return $this->object->getCarrierNumber();
@@ -112,6 +117,11 @@ class PurchasedItemMapper implements MapperInterface
     public function getCurrency(): string
     {
         return $this->object->getCurrency();
+    }
+
+    public function getInvoiceNumber(): ?string
+    {
+        return $this->object->getInvoiceNumber();
     }
 
     public function getVendorId(): int

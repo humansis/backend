@@ -85,6 +85,13 @@ class PurchasedItem
     private $commodity;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string")
+     */
+    private $modalityType;
+
+    /**
      * @var \DateTimeInterface|null
      *
      * @ORM\Column(name="date_distribution", type="datetime", nullable=true)
@@ -185,6 +192,14 @@ class PurchasedItem
     public function getCommodity(): Commodity
     {
         return $this->commodity;
+    }
+
+    /**
+     * @return string
+     */
+    public function getModalityType(): string
+    {
+        return $this->modalityType;
     }
 
     /**
