@@ -13,8 +13,8 @@ use NewApiBundle\Request\Pagination;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use TransactionBundle\Entity\PurchasedItem;
-use TransactionBundle\Repository\PurchasedItemRepository;
+use NewApiBundle\Entity\PurchasedItem;
+use NewApiBundle\Repository\PurchasedItemRepository;
 
 class PurchasedItemController extends AbstractController
 {
@@ -31,9 +31,9 @@ class PurchasedItemController extends AbstractController
         /** @var PurchasedItemRepository $repository */
         $repository = $this->getDoctrine()->getRepository(PurchasedItem::class);
 
-        $data = $repository->getPurchases($beneficiary);
+        $data = $repository->findByBeneficiary($beneficiary);
 
-        return $this->json(new Paginator($data));
+        return $this->json($data);
     }
 
     /**
@@ -49,9 +49,9 @@ class PurchasedItemController extends AbstractController
         /** @var PurchasedItemRepository $repository */
         $repository = $this->getDoctrine()->getRepository(PurchasedItem::class);
 
-        $data = $repository->getHouseholdPurchases($household);
+        $data = $repository->findByHousehold($household);
 
-        return $this->json(new Paginator($data));
+        return $this->json($data);
     }
 
     /**
@@ -65,8 +65,8 @@ class PurchasedItemController extends AbstractController
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        /** @var \NewApiBundle\Repository\PurchasedItemRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(\NewApiBundle\Entity\PurchasedItem::class);
+        /** @var PurchasedItemRepository $repository */
+        $repository = $this->getDoctrine()->getRepository(PurchasedItem::class);
 
         $data = $repository->findByParams($request->headers->get('country'), $filterInputType, $pagination);
 
