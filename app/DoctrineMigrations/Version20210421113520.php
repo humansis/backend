@@ -53,7 +53,7 @@ final class Version20210421113520 extends AbstractMigration
                      WHEN db.removed=0 AND sd.id IS NOT NULL                                    THEN sd.value
                      WHEN db.removed=0 AND gri.id IS NOT NULL AND gri.distributedAt IS NOT NULL THEN c.value
                      WHEN db.removed=0 AND t.id IS NOT NULL AND t.pickup_date IS NOT NULL       THEN CAST(SUBSTRING_INDEX(t.amount_sent, " ", -1) AS decimal(10, 2))
-                     WHEN db.removed=0 AND ;b.id IS NOT NULL                                     THEN b.value
+                     WHEN db.removed=0 AND b.id IS NOT NULL                                     THEN b.value
                  END AS amountPickedUp
 
             FROM assistance a
