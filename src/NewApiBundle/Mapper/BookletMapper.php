@@ -98,7 +98,13 @@ class BookletMapper implements MapperInterface
 
     public function getDeletable(): bool
     {
-        return 0 === count($this->object->getVouchers());
+        foreach ($this->object->getVouchers() as $voucher) {
+            if (null !== $voucher->getVoucherPurchase()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function getDistributed(): bool
