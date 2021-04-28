@@ -119,6 +119,11 @@ class PurchasedItemMapper implements MapperInterface
         return $this->object->getCurrency();
     }
 
+    public function getInvoiceNumber(): ?string
+    {
+        return $this->object->getInvoiceNumber();
+    }
+
     public function getVendorId(): int
     {
         return $this->object->getVendor()->getId();
