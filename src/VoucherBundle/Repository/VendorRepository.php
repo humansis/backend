@@ -73,6 +73,10 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
         $locationRepository->whereCountry($qb, $iso3);
 
         if ($filter) {
+            if ($filter->hasIds()) {
+                $qb->andWhere('v.id IN (:ids)')
+                    ->setParameter('ids', $filter->getIds());
+            }
             if ($filter->hasFulltext()) {
                 $qb->andWhere('(v.id = :fulltextId OR
                                 v.shop LIKE :fulltext OR
