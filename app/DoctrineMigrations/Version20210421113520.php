@@ -62,7 +62,7 @@ final class Version20210421113520 extends AbstractMigration
             -- smartcards
             LEFT JOIN smartcard_deposit sd ON sd.distribution_beneficiary_id=db.id
             -- mobile money
-            LEFT JOIN transaction t ON t.distribution_beneficiary_id=db.id
+            LEFT JOIN transaction t ON t.distribution_beneficiary_id=db.id AND t.transaction_status=1
             -- general reliefs
             LEFT JOIN general_relief_item gri ON gri.distribution_beneficiary_id=db.id
             -- booklets
