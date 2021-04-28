@@ -50,8 +50,8 @@ class PurchasedItemRepository extends EntityRepository
                     ->setParameter('projects', $filter->getProjects());
             }
             if ($filter->hasAssistances()) {
-                $qbr->join('pi.assistance', 'as')
-                    ->andWhere('as.id IN (:assistances)')
+                $qbr->join('pi.assistance', 'ass')
+                    ->andWhere('ass.id IN (:assistances)')
                     ->setParameter('assistances', $filter->getAssistances());
             }
             if ($filter->hasLocations()) {
@@ -71,6 +71,14 @@ class PurchasedItemRepository extends EntityRepository
             if ($filter->hasVendors()) {
                 $qbr->andWhere('pi.vendor IN (:vendors)')
                     ->setParameter('vendors', $filter->getVendors());
+            }
+            if ($filter->hasDateFrom()) {
+                $qbr->andWhere('pi.dateDistribution >= :dateFrom')
+                    ->setParameter('dateFrom', $filter->getDateFrom());
+            }
+            if ($filter->hasDateTo()) {
+                $qbr->andWhere('pi.dateDistribution <= :dateTo')
+                    ->setParameter('dateTo', $filter->getDateTo());
             }
         }
 

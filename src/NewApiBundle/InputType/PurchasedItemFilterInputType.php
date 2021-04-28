@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\InputType;
 
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
+use NewApiBundle\Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -81,6 +82,16 @@ class PurchasedItemFilterInputType extends AbstractFilterInputType
      * )
      */
     protected $beneficiaryTypes;
+
+    /**
+     * @Iso8601
+     */
+    protected $dateFrom;
+
+    /**
+     * @Iso8601
+     */
+    protected $dateTo;
 
     public function hasProjects(): bool
     {
@@ -160,6 +171,31 @@ class PurchasedItemFilterInputType extends AbstractFilterInputType
         return $this->beneficiaryTypes;
     }
 
+    /**
+     * @return string
+     */
+    public function getDateFrom(): string
+    {
+        return $this->dateFrom;
+    }
+
+    public function hasDateFrom(): bool
+    {
+        return $this->has('dateFrom');
+    }
+
+    /**
+     * @return string
+     */
+    public function getDateTo(): string
+    {
+        return $this->dateTo;
+    }
+
+    public function hasDateTo(): bool
+    {
+        return $this->has('dateTo');
+    }
 
     public function hasFulltext(): bool
     {
