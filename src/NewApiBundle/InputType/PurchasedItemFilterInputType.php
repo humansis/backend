@@ -75,7 +75,7 @@ class PurchasedItemFilterInputType extends AbstractFilterInputType
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *         @Assert\Type("string", groups={"Strict"})
+     *         @Assert\Choice(callback={"NewApiBundle\Enum\BeneficiaryType", "values"})
      *     },
      *     groups={"Strict"}
      * )
