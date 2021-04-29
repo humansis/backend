@@ -6,15 +6,19 @@ namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
-use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\PurchasedItemFilterInputType;
 use NewApiBundle\Request\Pagination;
+use ProjectBundle\Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use NewApiBundle\Entity\PurchasedItem;
 use NewApiBundle\Repository\PurchasedItemRepository;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+
 
 class PurchasedItemController extends AbstractController
 {
@@ -71,5 +75,26 @@ class PurchasedItemController extends AbstractController
         $data = $repository->findByParams($request->headers->get('country'), $filterInputType, $pagination);
 
         return $this->json($data);
+    }
+
+    /**
+     * @Rest\Get("/purchased-items/exports")
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function summaryExports(Request $request): Response
+    {
+        if (!$request->headers->has('country')) {
+            throw $this->createNotFoundException('Missing header attribute country');
+        }
+
+        $filename = $this->get('export.purchased_summary.spreadsheet')->export($request->headers->get('country'), $request->get('type'));
+
+        $response = new BinaryFileResponse($filename);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
+
+        return $response;
     }
 }

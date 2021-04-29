@@ -44,6 +44,14 @@ services:
             - "@=service('doctrine.orm.entity_manager').getRepository('NewApiBundle:DistributedItem')"
         public: true
 
+    export.purchased_summary.spreadsheet:
+        class: TransactionBundle\Export\PurchasedSummarySpreadsheetExport
+        arguments:
+            - '@translator'
+            - '@NewApiBundle\Component\Country\Countries'
+            - "@=service('doctrine.orm.entity_manager').getRepository('NewApiBundle:PurchasedItem')"
+        public: true
+
     export.spreadsheet:
         class: TransactionBundle\Export\AssistanceSpreadsheetExport
         arguments: [ '@translator' ]
