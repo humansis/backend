@@ -84,6 +84,7 @@ security:
         - { path: ^/register,  role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/jwt/login, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/jwt/users/salt/, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/jwt,       role: IS_AUTHENTICATED_FULLY }
 
     access_decision_manager:
