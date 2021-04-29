@@ -17,6 +17,7 @@ class AssistanceOrderInputType extends AbstractSortInputType
     const SORT_BY_NUMBER_OF_BENEFICIARIES = 'bnfCount';
     const SORT_BY_VALUE = 'value';
     const SORT_BY_UNIT = 'unit';
+    const SORT_BY_TYPE = 'type';
 
     protected function getValidNames(): array
     {
