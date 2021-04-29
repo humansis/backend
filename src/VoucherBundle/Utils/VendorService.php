@@ -133,9 +133,8 @@ class VendorService
             throw new EntityNotFoundException('Location with ID #'.$inputType->getLocationId().' does not exists.');
         }
 
-        $vendor = $this->em->getRepository(Vendor::class)->findOneBy(['name' => $inputType->getName()]);
-        if (null !== $vendor) {
-            throw new NotUniqueException($inputType->getName(), 'name');
+        if (null !== $user->getVendor()) {
+            throw new \InvalidArgumentException('User with ID #'.$inputType->getUserId().' is already defined as vendor.');
         }
 
         $vendor = new Vendor();
