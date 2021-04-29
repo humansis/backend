@@ -5,6 +5,7 @@ namespace NewApiBundle\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use UserBundle\Entity\User;
 
 class AuthController extends AbstractController
 {
@@ -17,10 +18,12 @@ class AuthController extends AbstractController
      */
     public function getTokenUser(JWTTokenManagerInterface $JWTManager)
     {
+        /** @var User $user */
         $user = $this->getUser();
 
         return $this->json([
             'token' => $JWTManager->create($user),
+            'userId' => $user->getId(),
         ]);
     }
 }
