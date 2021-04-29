@@ -2,6 +2,8 @@
 
 namespace NewApiBundle\Mapper;
 
+use NewApiBundle\Component\Country\Countries;
+use NewApiBundle\Component\Country\Country;
 use NewApiBundle\Serializer\MapperInterface;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
@@ -11,6 +13,14 @@ class UserMapper implements MapperInterface
 {
     /** @var User */
     private $object;
+
+    /** @var Countries */
+    private $countries;
+
+    public function __construct(Countries $countries)
+    {
+        $this->countries = $countries;
+    }
 
     /**
      * {@inheritdoc}
@@ -61,6 +71,13 @@ class UserMapper implements MapperInterface
 
     public function getCountries(): array
     {
+        // user without related countries should have access to all countries
+        if ($this->object->getCountries()->isEmpty()) {
+            return array_map(function (Country $item) {
+                return $item->getIso3();
+            }, $this->countries->getAll());
+        }
+
         return array_map(function (UserCountry $item) {
             return $item->getIso3();
         }, $this->object->getCountries()->toArray());

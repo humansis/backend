@@ -74,6 +74,10 @@ services:
             - '@beneficiary.repository'
         tags: [ 'app.mapper' ]
 
+    NewApiBundle\Mapper\UserMapper:
+        arguments: [ '@NewApiBundle\Component\Country\Countries' ]
+        tags: [ 'app.mapper' ]
+
     NewApiBundle\Controller\AssistanceController:
 
     NewApiBundle\Controller\CommonController:
