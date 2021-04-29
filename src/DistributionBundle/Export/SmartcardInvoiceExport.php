@@ -408,8 +408,9 @@ class SmartcardInvoiceExport
             $worksheet->mergeCells("B$lineStart:C$lineStart");
             $worksheet->mergeCells("G$lineStart:H$lineStart");
             self::sidetranslated($worksheet, $translator, $purchasedProduct['name'], "B", $lineStart);
-            $worksheet->setCellValue('D'.$lineStart, $purchasedProduct['quantity']);
-            self::sidetranslated($worksheet, $translator, $purchasedProduct['unit'], "E", $lineStart);
+            // temporary removed because PIN-1651: current data are incorrect, distributed by Qty 1 for everything
+            // $worksheet->setCellValue('D'.$lineStart, $purchasedProduct['quantity']);
+            // self::sidetranslated($worksheet, $translator, $purchasedProduct['unit'], "E", $lineStart);
             $worksheet->setCellValue('F'.$lineStart, '');
             $worksheet->setCellValue('G'.$lineStart, sprintf('%.2f', $purchasedProduct['value']));
             $worksheet->setCellValue('I'.$lineStart, $purchasedProduct['currency']);
