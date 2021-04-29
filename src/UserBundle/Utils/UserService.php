@@ -842,7 +842,7 @@ class UserService
             ->setPhoneNumber($inputType->getPhoneNumber() ? (int) $inputType->getPhoneNumber() : null);
 
         if (null !== $inputType->getPassword()) {
-            $user->setPassword($this->hashPassword($inputType->getPassword(), $user->getSalt()));
+            $user->setPassword($inputType->getPassword());
         }
 
         /** @var UserProject $userProject */
@@ -903,19 +903,5 @@ class UserService
     private function generateSalt()
     {
         return rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
-    }
-
-    public function hashPassword(string $password, string $salt): string
-    {
-        $saltedPassword = $password.'{'.$salt.'}';
-
-        $digest = hash('sha512', $saltedPassword);
-
-        for ($i = 1; $i < 5000; $i++) {
-            $newInput = hex2bin($digest).$saltedPassword;
-            $digest = hash('sha512', $newInput);
-        }
-
-        return base64_encode(hex2bin($digest));
     }
 }
