@@ -5,6 +5,8 @@ namespace NewApiBundle\Mapper;
 use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Component\Country\Country;
 use NewApiBundle\Serializer\MapperInterface;
+use ProjectBundle\Entity\Project;
+use ProjectBundle\Repository\ProjectRepository;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
 use UserBundle\Entity\UserProject;
@@ -17,9 +19,13 @@ class UserMapper implements MapperInterface
     /** @var Countries */
     private $countries;
 
-    public function __construct(Countries $countries)
+    /** @var ProjectRepository */
+    private $projectRepository;
+
+    public function __construct(Countries $countries, ProjectRepository $projectRepository)
     {
         $this->countries = $countries;
+        $this->projectRepository = $projectRepository;
     }
 
     /**
@@ -95,6 +101,13 @@ class UserMapper implements MapperInterface
 
     public function getProjectIds(): array
     {
+        // user without related projects should have access to all projects
+        if ($this->object->getProjects()->isEmpty()) {
+            return array_map(function (Project $item) {
+                return $item->getId();
+            }, $this->projectRepository->findByCountries($this->getCountries()));
+        }
+
         return array_map(function (UserProject $item) {
             return $item->getProject()->getId();
         }, $this->object->getProjects()->toArray());

@@ -52,6 +52,15 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
+    public function findByCountries(array $iso3) {
+        $qbr = $this->createQueryBuilder('p')
+            ->andWhere('p.iso3 IN (:iso3)')
+            ->andWhere('p.archived = 0')
+            ->setParameter('iso3', $iso3);
+
+        return $qbr->getQuery()->getResult();
+    }
+
     /**
      * @param string|null                 $iso3
      * @param ProjectFilterInputType|null $filter
