@@ -72,11 +72,11 @@ class PurchasedItemRepository extends EntityRepository
                     ->setParameter('vendors', $filter->getVendors());
             }
             if ($filter->hasDateFrom()) {
-                $qbr->andWhere('pi.dateDistribution >= :dateFrom')
+                $qbr->andWhere('pi.datePurchase >= :dateFrom')
                     ->setParameter('dateFrom', $filter->getDateFrom());
             }
             if ($filter->hasDateTo()) {
-                $qbr->andWhere('pi.dateDistribution <= :dateTo')
+                $qbr->andWhere('pi.datePurchase <= :dateTo')
                     ->setParameter('dateTo', $filter->getDateTo());
             }
         }
