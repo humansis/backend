@@ -1085,9 +1085,6 @@ class AssistanceController extends Controller
      */
     public function setGeneralReliefItemsAsDistributedAction(Request $request)
     {
-        $this->container->get('logger')->error('headers', $request->headers->all());
-        $this->container->get('logger')->error('content', [$request->getContent()]);
-
         $griIds = $request->request->get('ids');
 
         try {
