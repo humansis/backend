@@ -128,7 +128,7 @@ services:
             - { name: kernel.event_listener, event: kernel.request }
 
     NewApiBundle\Listener\ErrorResponseListener:
-        arguments: [ '%kernel.debug%' ]
+        arguments: [ '@monolog.logger.exception', '%kernel.debug%' ]
         tags:
             - { name: kernel.event_listener, event: kernel.exception, priority: -100 }
 
