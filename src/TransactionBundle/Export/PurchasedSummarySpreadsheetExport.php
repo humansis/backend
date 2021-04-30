@@ -82,9 +82,12 @@ class PurchasedSummarySpreadsheetExport
         $worksheet->getColumnDimension('O')->setWidth(14.423);
         $worksheet->getColumnDimension('P')->setWidth(14.423);
         $worksheet->getColumnDimension('Q')->setWidth(08.837);
-        $worksheet->getColumnDimension('R')->setWidth(28.997);
-        $worksheet->getColumnDimension('S')->setWidth(28.997);
-        $worksheet->getColumnDimension('T')->setWidth(50.090);
+        $worksheet->getColumnDimension('R')->setWidth(14.423);
+        $worksheet->getColumnDimension('S')->setWidth(14.423);
+        $worksheet->getColumnDimension('T')->setWidth(28.080);
+        $worksheet->getColumnDimension('U')->setWidth(14.423);
+        $worksheet->getColumnDimension('V')->setWidth(14.423);
+        $worksheet->getColumnDimension('W')->setWidth(28.080);
         $worksheet->getRowDimension(1)->setRowHeight(28.705);
         $worksheet->setRightToLeft('right-to-left' === \Punic\Misc::getCharacterOrder($this->translator->getLocale()));
         $worksheet->getStyle('A1:T1')->applyFromArray([
@@ -121,6 +124,9 @@ class PurchasedSummarySpreadsheetExport
         $worksheet->setCellValue('R1', $this->translator->trans('Total Cost'));
         $worksheet->setCellValue('S1', $this->translator->trans('Currency'));
         $worksheet->setCellValue('T1', $this->translator->trans('Vendor Name'));
+        $worksheet->setCellValue('U1', $this->translator->trans('Vendor Humansis ID'));
+        $worksheet->setCellValue('V1', $this->translator->trans('Vendor Nr.'));
+        $worksheet->setCellValue('W1', $this->translator->trans('Humansis Invoice Nr.'));
 
         $i = 1;
         foreach ($this->repository->findByParams($country->getIso3()) as $purchasedItem) {
@@ -150,6 +156,9 @@ class PurchasedSummarySpreadsheetExport
             $worksheet->setCellValue('R'.$i, $purchasedItem->getValue());
             $worksheet->setCellValue('S'.$i, $purchasedItem->getCurrency());
             $worksheet->setCellValue('T'.$i, $purchasedItem->getVendor()->getName() ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('U'.$i, $purchasedItem->getVendor()->getId());
+            $worksheet->setCellValue('V'.$i, $purchasedItem->getVendor()->getVendorNo() ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('W'.$i, $purchasedItem->getInvoiceNumber() ?? $this->translator->trans('N/A'));
         }
     }
 
