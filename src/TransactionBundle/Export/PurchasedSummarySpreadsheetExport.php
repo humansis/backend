@@ -90,7 +90,7 @@ class PurchasedSummarySpreadsheetExport
         $worksheet->getColumnDimension('W')->setWidth(28.080);
         $worksheet->getRowDimension(1)->setRowHeight(28.705);
         $worksheet->setRightToLeft('right-to-left' === \Punic\Misc::getCharacterOrder($this->translator->getLocale()));
-        $worksheet->getStyle('A1:T1')->applyFromArray([
+        $worksheet->getStyle('A1:W1')->applyFromArray([
             'alignment' => [
                 'horizontal' => Alignment::HORIZONTAL_CENTER,
                 'vertical' => Alignment::VERTICAL_CENTER,
