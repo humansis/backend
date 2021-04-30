@@ -112,4 +112,9 @@ class UserMapper implements MapperInterface
             return $item->getProject()->getId();
         }, $this->object->getProjects()->toArray());
     }
+
+    public function get2fa(): bool
+    {
+        return $this->object->getTwoFactorAuthentication();
+    }
 }
