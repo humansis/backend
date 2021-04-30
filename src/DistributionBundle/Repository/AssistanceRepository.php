@@ -259,6 +259,9 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                     case AssistanceOrderInputType::SORT_BY_NUMBER_OF_BENEFICIARIES:
                         $qb->orderBy('SIZE(dd.distributionBeneficiaries)', $direction);
                         break;
+                    case AssistanceOrderInputType::SORT_BY_TYPE:
+                        $qb->orderBy('dd.assistanceType', $direction);
+                        break;
                     default:
                         throw new \InvalidArgumentException('Invalid order by directive '.$name);
                 }
@@ -370,6 +373,9 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                         break;
                     case AssistanceOrderInputType::SORT_BY_UNIT:
                         $qb->orderBy('c.unit', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_TYPE:
+                        $qb->orderBy('dd.assistanceType', $direction);
                         break;
                     default:
                         throw new \InvalidArgumentException('Invalid order by directive '.$name);

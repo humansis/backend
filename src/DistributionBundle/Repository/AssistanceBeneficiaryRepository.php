@@ -203,12 +203,21 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
                         $qb->orderBy('b.id', $direction);
                         break;
                     case BeneficiaryOrderInputType::SORT_BY_LOCAL_FAMILY_NAME:
+                        if (!in_array('p', $qb->getAllAliases())) {
+                            $qb->leftJoin('b.person', 'p');
+                        }
                         $qb->orderBy('p.localFamilyName', $direction);
                         break;
                     case BeneficiaryOrderInputType::SORT_BY_LOCAL_GIVEN_NAME:
+                        if (!in_array('p', $qb->getAllAliases())) {
+                            $qb->leftJoin('b.person', 'p');
+                        }
                         $qb->orderBy('p.localGivenName', $direction);
                         break;
                     case BeneficiaryOrderInputType::SORT_BY_NATIONAL_ID:
+                        if (!in_array('p', $qb->getAllAliases())) {
+                            $qb->leftJoin('b.person', 'p');
+                        }
                         $qb->leftJoin('p.nationalIds', 'n', 'WITH', 'n.idType = :type')
                             ->setParameter('type', \BeneficiaryBundle\Entity\NationalId::TYPE_NATIONAL_ID)
                             ->orderBy('n.idNumber', $direction);
@@ -247,19 +256,19 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
             }
 
             if ($filter->hasFulltext()) {
-                $qb->leftJoin('i.contact', 'per');
+                $qb->leftJoin('i.contact', 'c');
                 $qb->andWhere('(
                     i.id LIKE :fulltextId OR
                     i.name LIKE :fulltext OR
                     i.latitude LIKE :fulltext OR
                     i.longitude LIKE :fulltext OR
-                    per.localGivenName LIKE :fulltext OR 
-                    per.localFamilyName LIKE :fulltext OR
-                    per.localParentsName LIKE :fulltext OR
-                    per.enGivenName LIKE :fulltext OR
-                    per.enFamilyName LIKE :fulltext OR
-                    per.enParentsName LIKE :fulltext OR
-                    per.enParentsName LIKE :fulltext
+                    c.localGivenName LIKE :fulltext OR 
+                    c.localFamilyName LIKE :fulltext OR
+                    c.localParentsName LIKE :fulltext OR
+                    c.enGivenName LIKE :fulltext OR
+                    c.enFamilyName LIKE :fulltext OR
+                    c.enParentsName LIKE :fulltext OR
+                    c.enParentsName LIKE :fulltext
                 )');
                 $qb->setParameter('fulltextId', $filter->getFulltext());
                 $qb->setParameter('fulltext', '%'.$filter->getFulltext().'%');
