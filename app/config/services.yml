@@ -15,6 +15,8 @@ services:
         arguments:
             - "@gelf.publisher"
             - 'debug' #monolog config is ignored with custom service level has to be redefined here (default : debug), you should probably use parameters eg: '%gelf_level%'
+        calls:
+            - [ 'setFormatter', [ '@gelf.formatter' ]]
 
     gelf.publisher:
         class: Gelf\Publisher
@@ -27,3 +29,7 @@ services:
     gelf.transport:
         class: Gelf\Transport\UdpTransport
         arguments: [ "%gelf_host%", "%gelf_port%", 1024 ]
+
+    gelf.formatter:
+        class: Monolog\Formatter\GelfMessageFormatter
+        arguments: [ "%gelf_server_name%" ]

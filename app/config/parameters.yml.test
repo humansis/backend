@@ -27,5 +27,6 @@ parameters:
 
     jwt_passphrase: '%env(JWT_PASSPHRASE)%'
 
+    gelf_server_name: '%env(GELF_SERVER_NAME)%'
     gelf_host: '%env(GELF_HOST)%'
     gelf_port: '%env(GELF_PORT)%'
