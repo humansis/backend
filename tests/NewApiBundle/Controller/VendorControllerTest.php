@@ -108,7 +108,6 @@ class VendorControllerTest extends BMSServiceTestCase
             'addressNumber' => $vendor['addressNumber'],
             'addressPostcode' => '0000',
             'locationId' => $vendor['locationId'],
-            'userId' => $vendor['userId'],
             'vendorNo' => 'v-10-changed',
             'contractNo' => 'c-10-changed',
         ];
