@@ -45,12 +45,6 @@ class VendorUpdateInputType implements InputTypeInterface
     private $locationId;
 
     /**
-     * @Assert\Type("integer")
-     * @Assert\NotNull
-     */
-    private $userId;
-
-    /**
      * @Assert\Type("string")
      * @Assert\Length(max=255)
      */
@@ -156,22 +150,6 @@ class VendorUpdateInputType implements InputTypeInterface
     public function setLocationId($locationId)
     {
         $this->locationId = $locationId;
-    }
-
-    /**
-     * @return int
-     */
-    public function getUserId()
-    {
-        return $this->userId;
-    }
-
-    /**
-     * @param int $userId
-     */
-    public function setUserId($userId)
-    {
-        $this->userId = $userId;
     }
 
     /**

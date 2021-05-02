@@ -220,21 +220,10 @@ class VendorService
      */
     public function update(Vendor $vendor, VendorUpdateInputType $inputType): Vendor
     {
-        $user = $this->em->getRepository(User::class)->find($inputType->getUserId());
-
-        if (!$user instanceof User) {
-            throw new EntityNotFoundException('User with ID #'.$inputType->getUserId().' does not exists.');
-        }
-
         $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
 
         if (!$location instanceof Location) {
             throw new EntityNotFoundException('Location with ID #'.$inputType->getLocationId().' does not exists.');
-        }
-
-        $vendorOrig = $this->em->getRepository(Vendor::class)->findOneBy(['name' => $inputType->getName()]);
-        if ($vendor->getId() !== $vendorOrig->getId()) {
-            throw new NotUniqueException($inputType->getName(), 'name');
         }
 
         $vendor->setShop($inputType->getShop())
@@ -243,7 +232,6 @@ class VendorService
             ->setAddressNumber($inputType->getAddressNumber())
             ->setAddressPostcode($inputType->getAddressPostcode())
             ->setLocation($location)
-            ->setUser($user)
             ->setVendorNo($inputType->getVendorNo())
             ->setContractNo($inputType->getContractNo());
 
