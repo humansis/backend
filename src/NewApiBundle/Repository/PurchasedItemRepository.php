@@ -6,6 +6,7 @@ namespace NewApiBundle\Repository;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\NationalId;
+use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Entity\DistributedItem;
@@ -54,10 +55,15 @@ class PurchasedItemRepository extends EntityRepository
                     ->setParameter('assistances', $filter->getAssistances());
             }
             if ($filter->hasLocations()) {
+                $locationIds = [];
+                foreach ($filter->getLocations() as $location) {
+                    $locationIds = array_merge($locationIds, $this->_em->getRepository(Location::class)->findDescendantLocations($location));
+                }
+
                 $qbr->join('pi.vendor', 'v');
                 $qbr->join('v.location', 'l')
                     ->andWhere('l.id IN (:locations)')
-                    ->setParameter('locations', $filter->getLocations());
+                    ->setParameter('locations', $locationIds);
             }
             if ($filter->hasModalityTypes()) {
                 $qbr->andWhere('pi.modalityType IN (:modalityTypes)')
