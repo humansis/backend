@@ -112,4 +112,22 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
 
         return new Paginator($qbr);
     }
+
+    /**
+     * @param mixed $locationId
+     *
+     * @return int[]
+     */
+    public function findDescendantLocations($locationId): iterable
+    {
+        return $this->_em->getConnection()
+            ->executeQuery('
+                WITH RECURSIVE loc (loc_id, loc_parent_id) AS (
+                    SELECT location_id, parent_location_id FROM view_location_recursive WHERE location_id=?         
+                    UNION ALL 
+                    SELECT location_id, parent_location_id FROM view_location_recursive JOIN loc ON parent_location_id=loc_id
+                )
+                SELECT DISTINCT loc_id FROM loc', [$locationId])
+            ->fetchFirstColumn();
+    }
 }
