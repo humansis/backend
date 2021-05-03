@@ -161,5 +161,8 @@ services:
     NewApiBundle\Validator\Constraints\SelectionCriterionFieldValidator:
         arguments: [ '@service.selection_criterion' ]
 
+    NewApiBundle\Validator\Constraints\CountryValidator:
+        arguments: [ '@NewApiBundle\Component\Country\Countries' ]
+
     NewApiBundle\Component\File\UploadService:
         arguments: [ '@knp_gaufrette.filesystem_map', '%aws_s3_bucket_name%', '%aws_s3_region%' ]
