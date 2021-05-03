@@ -286,6 +286,7 @@ class SectorService
             case SubSectorEnum::LEARNING_SUPPORT:
             case SubSectorEnum::EDUCATION_CASH_FOR_WORK:
             case SubSectorEnum::PARENT_SESSIONS:
+            case SubSectorEnum::SCHOOL_OPERATIONAL_SUPPORT:
                 return new Sector(SectorEnum::EDUCATION_TVET, $subSectorName);
 
             case SubSectorEnum::DEFAULT_EMERGENCY_TELCO:

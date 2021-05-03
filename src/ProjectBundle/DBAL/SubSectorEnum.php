@@ -59,6 +59,7 @@ class SubSectorEnum extends AbstractEnum
         self::LEARNING_SUPPORT,
         self::EDUCATION_CASH_FOR_WORK,
         self::PARENT_SESSIONS,
+        self::SCHOOL_OPERATIONAL_SUPPORT,
 
         self::DEFAULT_EMERGENCY_TELCO,
         self::DEFAULT_HEALTH,
@@ -122,6 +123,7 @@ class SubSectorEnum extends AbstractEnum
         self::LEARNING_SUPPORT => 'Learning Support',
         self::EDUCATION_CASH_FOR_WORK => 'Cash for Work',
         self::PARENT_SESSIONS => 'Sessions for Parents and Caregivers',
+        self::SCHOOL_OPERATIONAL_SUPPORT => 'School Operational Support',
 
         self::DEFAULT_EMERGENCY_TELCO => 'Default Emergency Telecomms',
         self::DEFAULT_HEALTH => 'Default Health',
