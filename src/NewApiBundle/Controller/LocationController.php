@@ -14,10 +14,14 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\InputType\AdmFilterInputType;
 use NewApiBundle\InputType\LocationFilterInputType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
+/**
+ * @Cache(expires="+5 days", public=true)
+ */
 class LocationController extends AbstractController
 {
     /** @var Countries */

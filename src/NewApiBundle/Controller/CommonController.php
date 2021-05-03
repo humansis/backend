@@ -8,6 +8,7 @@ use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Country\Countries;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -70,6 +71,7 @@ class CommonController extends AbstractController
 
     /**
      * @Rest\Get("/icons")
+     * @Cache(expires="+5 days", public=true)
      *
      * @return JsonResponse
      */
@@ -94,6 +96,7 @@ class CommonController extends AbstractController
 
     /**
      * @Rest\Get("/languages")
+     * @Cache(expires="+5 days", public=true)
      *
      * @return JsonResponse
      */
@@ -113,6 +116,7 @@ class CommonController extends AbstractController
 
     /**
      * @Rest\Get("/currencies")
+     * @Cache(expires="+5 days", public=true)
      *
      * @return JsonResponse
      */
@@ -132,6 +136,7 @@ class CommonController extends AbstractController
 
     /**
      * @Rest\Get("/translations/{language}")
+     * @Cache(expires="+5 days", public=true)
      *
      * @param string $language
      *
