@@ -104,7 +104,7 @@ class CommonController extends AbstractController
         foreach ($this->getParameter('app.locales') as $locale) {
             $data[] = [
                 'code' => $locale,
-                'value' => $this->get('translator')->trans($locale, [], null, $locale),
+                'value' => \Punic\Language::getName($locale),
             ];
         }
 
