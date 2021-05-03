@@ -34,6 +34,24 @@ class ModalityCodelistController extends AbstractController
     }
 
     /**
+     * @Rest\Get("/modalities/types")
+     *
+     * @return JsonResponse
+     */
+    public function allTypes(): JsonResponse
+    {
+        $data = [];
+
+        /** @var ModalityType[] $types */
+        $types = $this->getDoctrine()->getRepository(ModalityType::class)->findBy(['internal' => false]);
+        foreach ($types as $type) {
+            $data[] = new CodeItem($type->getName(), $type->getName());
+        }
+
+        return $this->json(new Paginator($data));
+    }
+
+    /**
      * @Rest\Get("/modalities/{code}/types")
      *
      * @param string $code
