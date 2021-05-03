@@ -3,6 +3,7 @@
 namespace CommonBundle\DataFixtures;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -43,9 +44,6 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
 
         /** @var AssistanceBeneficiary $ab */
         foreach ($this->getAssistanceBeneficiaries($manager) as $ab) {
-            if (!$ab->getAssistance()->getValidated()) {
-                $ab->getAssistance()->setValidated(true);
-            }
 
             for ($j = 0; $j < rand(0, 2); ++$j) {
                 $this->generateNoPhoneTransaction($ab, $manager);
@@ -138,9 +136,9 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
 
     private function getAssistanceBeneficiaries(ObjectManager $manager): array
     {
-        $beneficiaries = $manager->getRepository(Beneficiary::class)->findBy([], [], 100);
+        $validatedAssists = $manager->getRepository(Assistance::class)->findBy(['validated' => true]);
 
-        return $manager->getRepository(AssistanceBeneficiary::class)->findBy(['beneficiary' => $beneficiaries]);
+        return $manager->getRepository(AssistanceBeneficiary::class)->findBy(['assistance' => $validatedAssists], [], 100);
     }
 
     public function getDependencies()
@@ -149,6 +147,7 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
             BeneficiaryTestFixtures::class,
             AssistanceFixtures::class,
             UserFixtures::class,
+            AssistanceValidationFixtures::class,
         ];
     }
 }
