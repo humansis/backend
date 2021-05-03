@@ -104,7 +104,7 @@ class CommonControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: '.$this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{"active": "Active"}', $this->client->getResponse()->getContent());
+        $this->assertJsonFragment('{"Assistance": "*"}', $this->client->getResponse()->getContent());
     }
 
     /**
