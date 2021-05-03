@@ -78,7 +78,12 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
                     ->setParameter('ids', $filter->getIds());
             }
             if ($filter->hasFulltext()) {
+                $qb->leftJoin('v.user', 'u');
+
                 $qb->andWhere('(v.id = :fulltextId OR
+                                u.username LIKE :fulltext OR
+                                v.vendorNo LIKE :fulltext OR
+                                v.contractNo LIKE :fulltext OR
                                 v.shop LIKE :fulltext OR
                                 v.name LIKE :fulltext OR
                                 v.addressNumber LIKE :fulltext OR
@@ -107,8 +112,11 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
                         $qb->orderBy('v.shop', $direction);
                         break;
                     case VendorOrderInputType::SORT_BY_USERNAME:
-                        $qb->leftJoin('v.user', 'u')
-                            ->orderBy('u.username', $direction);
+                        if (!in_array('u', $qb->getAllAliases())) {
+                            $qb->leftJoin('v.user', 'u');
+                        }
+
+                        $qb->orderBy('u.username', $direction);
                         break;
                     case VendorOrderInputType::SORT_BY_ADDRESS_STREET:
                         $qb->orderBy('v.addressStreet', $direction);
