@@ -180,8 +180,6 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
-        $this->assertSame(1, $result['totalCount']);
-        $this->assertSame($id, $result['data'][0]['id']);
 
         return $id;
     }
