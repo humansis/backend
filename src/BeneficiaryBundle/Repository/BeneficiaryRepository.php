@@ -765,20 +765,4 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
 
         return new Paginator($qbr);
     }
-
-    /**
-     * @param Project $project
-     *
-     * @return Paginator
-     */
-    public function findByProject(Project $project)
-    {
-        $qbr = $this->createQueryBuilder('bnf');
-        $qbr->leftJoin('bnf.projects', 'p')
-            ->where('p = :project')
-            ->setParameter('project', $project)
-            ->andWhere('bnf.archived = 0');
-
-        return new Paginator($qbr);
-    }
 }

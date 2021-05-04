@@ -6,7 +6,9 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
 use CommonBundle\Controller\ExportController;
+use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Enum\AssistanceTargetType;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\BenefciaryPatchInputType;
@@ -191,16 +193,21 @@ class BeneficiaryController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/projects/{id}/beneficiaries")
+     * @Rest\Get("/projects/{id}/targets/{target}/beneficiaries")
      *
      * @param Project $project
+     * @param string  $target
      *
      * @return JsonResponse
      */
-    public function getBeneficiaries(Project $project): JsonResponse
+    public function getBeneficiaries(Project $project, string $target): JsonResponse
     {
-        $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByProject($project);
+        if (!in_array($target, AssistanceTargetType::values())){
+            throw $this->createNotFoundException('Invalid target. Allowed are '.implode(', ', AssistanceTargetType::values()));
+        }
 
-        return $this->json($beneficiaries);
+        $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->getAllOfProject($project->getId(), $target);
+
+        return $this->json(new Paginator($beneficiaries));
     }
 }

@@ -5,6 +5,7 @@ namespace Tests\NewApiBundle\Controller;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
+use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use ProjectBundle\Entity\Project;
@@ -225,7 +226,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
             'archived' => false,
         ]);
 
-        $this->request('GET', '/api/basic/projects/'.$project->getId().'/beneficiaries');
+        $this->request('GET', '/api/basic/projects/'.$project->getId().'/targets/'.AssistanceTargetType::INDIVIDUAL.'/beneficiaries');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
