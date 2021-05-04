@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\SelectionCriteria\Generator;
 
+use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;
 use BeneficiaryBundle\Repository\VulnerabilityCriterionRepository;
 use NewApiBundle\Component\SelectionCriteria\FieldGeneratorInterface;
@@ -29,7 +30,7 @@ class BeneficiaryFieldGenerator implements FieldGeneratorInterface
         yield new Field('hasNotBeenInDistributionsSince', 'Has Not Been In Distribution Since', ['='], 'boolean');
 
         foreach ($this->vulnerabilityCriterionRepository->findAllActive() as $vulnerabilityCriterion) {
-            yield new Field($vulnerabilityCriterion->getFieldString(), $vulnerabilityCriterion->getFieldString(), ['='], 'boolean');
+            yield new Field($vulnerabilityCriterion->getFieldString(), VulnerabilityCriterion::all()[$vulnerabilityCriterion->getFieldString()], ['='], 'boolean');
         }
     }
 
