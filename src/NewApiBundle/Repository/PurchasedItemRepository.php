@@ -4,10 +4,13 @@ declare(strict_types=1);
 namespace NewApiBundle\Repository;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Entity\NationalId;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Entity\DistributedItem;
 use NewApiBundle\Entity\PurchasedItem;
@@ -32,18 +35,77 @@ class PurchasedItemRepository extends EntityRepository
 
         if ($filter) {
             if ($filter->hasFulltext()) {
-                $qbr->join('pi.beneficiary', 'b')
-                    ->join('b.person', 'p')
-                    ->leftJoin('p.nationalIds', 'ni')
-                    ->andWhere('(b.id = :fulltext OR
-                                p.localGivenName LIKE :fulltextLike OR 
-                                p.localFamilyName LIKE :fulltextLike OR
-                                p.localParentsName LIKE :fulltextLike OR
-                                p.enParentsName LIKE :fulltextLike OR
-                                (ni.idNumber LIKE :fulltextLike AND ni.idType = :niType))')
-                    ->setParameter('niType', NationalId::TYPE_NATIONAL_ID)
+                $subQueryForBNFFulltext = $this->_em->createQueryBuilder()
+                    ->select("beneficiary.id")
+                    ->from(Beneficiary::class, 'beneficiary')
+                    ->leftJoin("beneficiary.person", 'p1')
+                    ->leftJoin('p1.nationalIds', 'ni1')
+                    ->andWhere("beneficiary.id = IDENTITY(pi.beneficiary)")
+                    ->andWhere("(p1.localGivenName LIKE :fulltextLike OR 
+                                p1.localFamilyName LIKE :fulltextLike OR
+                                p1.localParentsName LIKE :fulltextLike OR
+                                p1.enParentsName LIKE :fulltextLike OR
+                                (ni1.idNumber LIKE :fulltextLike AND ni1.idType = :niType))")
+                    ->getDQL()
+                ;
+
+                $subQueryForHHFulltext = $this->_em->createQueryBuilder()
+                    ->select("hhm.id")
+                    ->from(Beneficiary::class, 'hhm')
+                    ->leftJoin("hhm.person", 'p2')
+                    ->leftJoin("hhm.household", 'hh')
+                    ->leftJoin('p2.nationalIds', 'ni2')
+                    ->andWhere("hh.id = IDENTITY(pi.beneficiary)")
+                    ->andWhere("(p2.localGivenName LIKE :fulltextLike OR 
+                                p2.localFamilyName LIKE :fulltextLike OR
+                                p2.localParentsName LIKE :fulltextLike OR
+                                p2.enParentsName LIKE :fulltextLike OR
+                                (ni2.idNumber LIKE :fulltextLike AND ni2.idType = :niType))")
+                    ->getDQL()
+                ;
+
+                $subQueryForCommunityFulltext = $this->_em->createQueryBuilder()
+                    ->select("community.id")
+                    ->from(Community::class, 'community')
+                    ->leftJoin("community.contact", 'p3')
+                    ->leftJoin('p3.nationalIds', 'ni3')
+                    ->andWhere("community.id = IDENTITY(pi.beneficiary)")
+                    ->andWhere("(p3.localGivenName LIKE :fulltextLike OR 
+                                p3.localFamilyName LIKE :fulltextLike OR
+                                p3.localParentsName LIKE :fulltextLike OR
+                                p3.enParentsName LIKE :fulltextLike OR
+                                (ni3.idNumber LIKE :fulltextLike AND ni3.idType = :niType))")
+                    ->getDQL()
+                ;
+
+                $subQueryForInstitutionFulltext = $this->_em->createQueryBuilder()
+                    ->select("institution.id")
+                    ->from(Institution::class, 'institution')
+                    ->leftJoin("institution.contact", 'p4')
+                    ->leftJoin('p4.nationalIds', 'ni4')
+                    ->andWhere("institution.id = IDENTITY(pi.beneficiary)")
+                    ->andWhere("(p4.localGivenName LIKE :fulltextLike OR 
+                                p4.localFamilyName LIKE :fulltextLike OR
+                                p4.localParentsName LIKE :fulltextLike OR
+                                p4.enParentsName LIKE :fulltextLike OR
+                                (ni4.idNumber LIKE :fulltextLike AND ni4.idType = :niType))")
+                    ->getDQL()
+                ;
+
+                $qbr->join('pi.vendor', 'v');
+                $qbr->andWhere("IDENTITY(pi.beneficiary) = :fulltext 
+                        OR (pi.beneficiaryType = 'Beneficiary' AND EXISTS($subQueryForBNFFulltext))
+                        OR (pi.beneficiaryType = 'Household' AND EXISTS($subQueryForHHFulltext))
+                        OR (pi.beneficiaryType = 'Community' AND EXISTS($subQueryForCommunityFulltext))
+                        OR (pi.beneficiaryType = 'Institution' AND EXISTS($subQueryForInstitutionFulltext))
+                        OR pi.carrierNumber LIKE :fulltextLike
+                        OR v.vendorNo LIKE :fulltextLike
+                        OR pi.invoiceNumber LIKE :fulltextLike
+                        ")
                     ->setParameter('fulltext', $filter->getFulltext())
-                    ->setParameter('fulltextLike', '%'.$filter->getFulltext().'%');
+                    ->setParameter('fulltextLike', '%'.$filter->getFulltext().'%')
+                    ->setParameter('niType', NationalId::TYPE_NATIONAL_ID)
+                ;
             }
             if ($filter->hasProjects()) {
                 $qbr->andWhere('pr.id IN (:projects)')
@@ -60,9 +122,8 @@ class PurchasedItemRepository extends EntityRepository
                     $locationIds = array_merge($locationIds, $this->_em->getRepository(Location::class)->findDescendantLocations($location));
                 }
 
-                $qbr->join('pi.vendor', 'v');
-                $qbr->join('v.location', 'l')
-                    ->andWhere('l.id IN (:locations)')
+                $qbr
+                    ->andWhere('IDENTITY(pi.location) IN (:locations)')
                     ->setParameter('locations', $locationIds);
             }
             if ($filter->hasModalityTypes()) {
