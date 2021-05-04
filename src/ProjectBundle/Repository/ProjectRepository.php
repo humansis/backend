@@ -81,7 +81,7 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
         $qb = $this->createQueryBuilder('p')
             ->andWhere('p.archived = 0');
 
-        if ($user) {
+        if ($user && !$user->getProjects()->isEmpty()) {
             $qb->leftJoin('p.usersProject', 'up')
                 ->andWhere('up.user = :user')
                 ->setParameter('user', $user);
