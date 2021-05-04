@@ -36,6 +36,13 @@ class PurchasedItem
     private $project;
 
     /**
+     * @var Location
+     *
+     * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
+     */
+    private $location;
+
+    /**
      * @var AbstractBeneficiary
      *
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\AbstractBeneficiary")
@@ -139,6 +146,15 @@ class PurchasedItem
     }
 
     /**
+     * @return Location
+     */
+    public function getLocation(): Location
+    {
+        return $this->location;
+    }
+
+
+    /**
      * @return AbstractBeneficiary
      */
     public function getBeneficiary(): AbstractBeneficiary
@@ -240,11 +256,6 @@ class PurchasedItem
     public function getCurrency()
     {
         return $this->currency;
-    }
-
-    public function getLocation(): Location
-    {
-        return $this->getVendor()->getLocation();
     }
 
 }

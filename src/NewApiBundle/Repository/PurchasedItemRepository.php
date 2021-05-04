@@ -122,9 +122,8 @@ class PurchasedItemRepository extends EntityRepository
                     $locationIds = array_merge($locationIds, $this->_em->getRepository(Location::class)->findDescendantLocations($location));
                 }
 
-                $qbr->join('pi.vendor', 'v');
-                $qbr->join('v.location', 'l')
-                    ->andWhere('l.id IN (:locations)')
+                $qbr
+                    ->andWhere('IDENTITY(pi.location) IN (:locations)')
                     ->setParameter('locations', $locationIds);
             }
             if ($filter->hasModalityTypes()) {
