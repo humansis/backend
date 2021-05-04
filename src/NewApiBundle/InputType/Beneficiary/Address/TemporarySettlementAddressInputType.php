@@ -12,21 +12,21 @@ class TemporarySettlementAddressInputType implements InputTypeInterface
     /**
      * @Assert\Type("string")
      * @Assert\Length(max="45")
-     * @Assert\NotBlank
+     * @Assert\NotBlank(allowNull=true)
      */
     private $number;
 
     /**
      * @Assert\Type("string")
      * @Assert\Length(max="255")
-     * @Assert\NotBlank
+     * @Assert\NotBlank(allowNull=true)
      */
     private $street;
 
     /**
      * @Assert\Type("string")
      * @Assert\Length(max="45")
-     * @Assert\NotBlank
+     * @Assert\NotBlank(allowNull=true)
      */
     private $postcode;
 
