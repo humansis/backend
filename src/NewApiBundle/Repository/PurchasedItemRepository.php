@@ -92,12 +92,16 @@ class PurchasedItemRepository extends EntityRepository
                     ->getDQL()
                 ;
 
-                $qbr->andWhere("(IDENTITY(pi.beneficiary) = :fulltext 
+                $qbr->join('pi.vendor', 'v');
+                $qbr->andWhere("IDENTITY(pi.beneficiary) = :fulltext 
                         OR (pi.beneficiaryType = 'Beneficiary' AND EXISTS($subQueryForBNFFulltext))
                         OR (pi.beneficiaryType = 'Household' AND EXISTS($subQueryForHHFulltext))
                         OR (pi.beneficiaryType = 'Community' AND EXISTS($subQueryForCommunityFulltext))
                         OR (pi.beneficiaryType = 'Institution' AND EXISTS($subQueryForInstitutionFulltext))
-                        )")
+                        OR pi.carrierNumber LIKE :fulltextLike
+                        OR v.vendorNo LIKE :fulltextLike
+                        OR pi.invoiceNumber LIKE :fulltextLike
+                        ")
                     ->setParameter('fulltext', $filter->getFulltext())
                     ->setParameter('fulltextLike', '%'.$filter->getFulltext().'%')
                     ->setParameter('niType', NationalId::TYPE_NATIONAL_ID)
