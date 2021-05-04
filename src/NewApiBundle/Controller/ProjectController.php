@@ -98,7 +98,7 @@ class ProjectController extends AbstractController
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $projects = $this->getDoctrine()->getRepository(Project::class)->findByParams($countryIso3, $filter, $orderBy, $pagination);
+        $projects = $this->getDoctrine()->getRepository(Project::class)->findByParams($this->getUser(), $countryIso3, $filter, $orderBy, $pagination);
 
         return $this->json($projects);
     }
