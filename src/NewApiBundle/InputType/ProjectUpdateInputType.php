@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace NewApiBundle\InputType;
 
 use NewApiBundle\Request\InputTypeInterface;
+use NewApiBundle\Validator\Constraints\Country;
 use NewApiBundle\Validator\Constraints\DateGreaterThan;
+use NewApiBundle\Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -28,7 +30,7 @@ class ProjectUpdateInputType implements InputTypeInterface
     private $internalId;
 
     /**
-     * @Assert\Choice({"KHM", "SYR", "UKR", "ETH", "MNG", "ARM"})
+     * @Country
      * @Assert\NotBlank
      * @Assert\NotNull
      */
@@ -48,14 +50,14 @@ class ProjectUpdateInputType implements InputTypeInterface
     private $target;
 
     /**
-     * @Assert\Date
+     * @Iso8601
      * @Assert\NotBlank
      * @Assert\NotNull
      */
     private $startDate;
 
     /**
-     * @Assert\Date
+     * @Iso8601
      * @Assert\NotBlank
      * @Assert\NotNull
      * @DateGreaterThan(propertyPath="startDate", groups={"Strict"})

@@ -23,7 +23,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
 
@@ -33,13 +33,8 @@ class OrganizationControllerTest extends BMSServiceTestCase
      */
     public function testGet()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Organization|null $organization */
-        $organization = $this->container->get('doctrine')->getRepository(Organization::class)->findBy([])[0];
+        $organization = self::$container->get('doctrine')->getRepository(Organization::class)->findBy([])[0];
 
         if (null === $organization) {
             $this->markTestSkipped('There needs to be at least one organization in system to complete this test');
@@ -66,13 +61,8 @@ class OrganizationControllerTest extends BMSServiceTestCase
 
     public function testUpdate()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Organization|null $organization */
-        $organization = $this->container->get('doctrine')->getRepository(Organization::class)->findBy([])[0];
+        $organization = self::$container->get('doctrine')->getRepository(Organization::class)->findBy([])[0];
 
         $this->request('PUT', '/api/basic/organizations/'.$organization->getId(), [
             'logo' => 'http://www.example.org/image.jpg',
@@ -106,11 +96,6 @@ class OrganizationControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/organizations');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -130,13 +115,8 @@ class OrganizationControllerTest extends BMSServiceTestCase
      */
     public function testListServices()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Organization[] $service */
-        $services = $this->container->get('doctrine')->getRepository(OrganizationServices::class)->findBy([]);
+        $services = self::$container->get('doctrine')->getRepository(OrganizationServices::class)->findBy([]);
 
         if (empty($services)) {
             $this->markTestSkipped('There needs to be at least one service in system to complete this test');
@@ -162,13 +142,8 @@ class OrganizationControllerTest extends BMSServiceTestCase
      */
     public function testUpdateServices()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Organization[] $service */
-        $services = $this->container->get('doctrine')->getRepository(OrganizationServices::class)->findBy([]);
+        $services = self::$container->get('doctrine')->getRepository(OrganizationServices::class)->findBy([]);
 
         if (empty($services)) {
             $this->markTestSkipped('There needs to be at least one service in system to complete this test');
@@ -191,6 +166,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('name', $result);
         $this->assertArrayHasKey('iso3', $result);
         $this->assertArrayHasKey('enabled', $result);
+        $this->assertArrayHasKey('parameters', $result);
 
         $this->assertEquals($data['enabled'], $result['enabled']);
     }

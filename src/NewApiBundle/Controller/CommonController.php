@@ -7,13 +7,28 @@ namespace NewApiBundle\Controller;
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\Country\Countries;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Intl\Intl;
+use Symfony\Component\Intl\Currencies;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class CommonController extends AbstractController
 {
+    /** @var Countries */
+    private $countries;
+
+    /** @var TranslatorInterface */
+    private $translator;
+
+    public function __construct(Countries $countries, TranslatorInterface $translator)
+    {
+        $this->countries = $countries;
+        $this->translator = $translator;
+    }
+
     /**
      * @Rest\Get("/summaries")
      *
@@ -56,6 +71,7 @@ class CommonController extends AbstractController
 
     /**
      * @Rest\Get("/icons")
+     * @Cache(expires="+5 days", public=true)
      *
      * @return JsonResponse
      */
@@ -71,11 +87,16 @@ class CommonController extends AbstractController
             $data[] = ['key' => $key, 'svg' => $svg];
         }
 
+        foreach ($this->getParameter('icons_vulnerability_criteria') as $key => $svg) {
+            $data[] = ['key' => $key, 'svg' => $svg];
+        }
+
         return $this->json($data);
     }
 
     /**
      * @Rest\Get("/languages")
+     * @Cache(expires="+5 days", public=true)
      *
      * @return JsonResponse
      */
@@ -86,7 +107,7 @@ class CommonController extends AbstractController
         foreach ($this->getParameter('app.locales') as $locale) {
             $data[] = [
                 'code' => $locale,
-                'value' => $this->get('translator')->trans($locale, [], null, $locale),
+                'value' => \Punic\Language::getName($locale),
             ];
         }
 
@@ -95,6 +116,7 @@ class CommonController extends AbstractController
 
     /**
      * @Rest\Get("/currencies")
+     * @Cache(expires="+5 days", public=true)
      *
      * @return JsonResponse
      */
@@ -105,7 +127,7 @@ class CommonController extends AbstractController
         foreach ($this->getParameter('app.currencies') as $currency) {
             $data[] = [
                 'code' => $currency,
-                'value' => Intl::getCurrencyBundle()->getCurrencyName($currency),
+                'value' => Currencies::getName($currency),
             ];
         }
 
@@ -114,6 +136,7 @@ class CommonController extends AbstractController
 
     /**
      * @Rest\Get("/translations/{language}")
+     * @Cache(expires="+5 days", public=true)
      *
      * @param string $language
      *
@@ -132,5 +155,32 @@ class CommonController extends AbstractController
         }
 
         return $this->json($data);
+    }
+
+    /**
+     * @Rest\Get("/adms")
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function adms(Request $request): JsonResponse
+    {
+        $countryIso3 = $request->headers->get('country', false);
+        if (!$countryIso3) {
+            throw new BadRequestHttpException('Missing country header');
+        }
+
+        $country = $this->countries->getCountry($countryIso3);
+        if (null === $country) {
+            throw $this->createNotFoundException('Country '.$countryIso3.' does not exists.');
+        }
+
+        return $this->json([
+            'adm1' => $this->translator->trans($country->getAdm1Name()),
+            'adm2' => $this->translator->trans($country->getAdm2Name()),
+            'adm3' => $this->translator->trans($country->getAdm3Name()),
+            'adm4' => $this->translator->trans($country->getAdm4Name()),
+        ]);
     }
 }

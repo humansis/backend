@@ -820,7 +820,15 @@ class SmartcardController extends Controller
         // todo find organisation by relation to smartcard
         $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
 
-        $filename = $this->get('distribution.export.smartcard_invoice')->export($batch, $organization, $this->getUser());
+        $language = 'en';
+        foreach ($this->getParameter('app.countries') as $country) {
+            if ($country['iso3'] === $batch->getProject()->getIso3() && isset($country['language'])) {
+                $language = $country['language'];
+                break;
+            }
+        }
+
+        $filename = $this->get('distribution.export.smartcard_invoice')->export($batch, $organization, $this->getUser(), $language);
 
         $response = new BinaryFileResponse(getcwd().'/'.$filename);
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);

@@ -23,7 +23,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
 
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -345,8 +345,8 @@ class SmartcardControllerTest extends BMSServiceTestCase
         ]]);
         $purchase->setVendorId($vendorId);
         $purchase->setCreatedAt(new \DateTime());
-        $purchaseService = $this->container->get('voucher.purchase_service');
-        $smartcardService = $this->container->get('smartcard_service');
+        $purchaseService = self::$container->get('voucher.purchase_service');
+        $smartcardService = self::$container->get('smartcard_service');
         $purchaseService->purchaseSmartcard($smartcard, $purchase);
         /** @var SmartcardPurchase $p2 */
         $p2 = $purchaseService->purchaseSmartcard($smartcard, $purchase);
@@ -548,7 +548,6 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'createdAt' => '2020-02-02T12:00:00+0001',
             'distributionId' => $distribution->getId(),
         ]);
-        echo "\n".$this->client->getResponse()->getContent();
 
         /** @var Smartcard $smartcard */
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($nonexistentSmarcard);

@@ -18,4 +18,13 @@ interface SortInputTypeInterface
      * @return array
      */
     public function toArray(): array;
+
+    /**
+     * Checks if sort name is requested
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function has(string $name): bool;
 }

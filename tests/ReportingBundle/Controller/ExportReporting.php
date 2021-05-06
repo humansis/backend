@@ -37,7 +37,7 @@ class ExportReporting extends BMSServiceTestCase
             ["Graph type", 'line'],
         ];
 
-        $exportservice = new ExportService($this->em, $this->container);
+        $exportservice = new ExportService($this->em, self::$container);
 
         $indicator = $this->em->getRepository(ReportingIndicator::class)->find(1);
 

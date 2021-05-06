@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use NewApiBundle\Exception\NotUniqueException;
 use NewApiBundle\InputType\VendorCreateInputType;
 use NewApiBundle\InputType\VendorUpdateInputType;
 use RuntimeException;
@@ -116,6 +117,7 @@ class VendorService
      * @param VendorCreateInputType $inputType
      * @return Vendor
      * @throws EntityNotFoundException
+     * @throws NotUniqueException
      */
     public function create(VendorCreateInputType $inputType): Vendor
     {
@@ -131,6 +133,10 @@ class VendorService
             throw new EntityNotFoundException('Location with ID #'.$inputType->getLocationId().' does not exists.');
         }
 
+        if (null !== $user->getVendor()) {
+            throw new \InvalidArgumentException('User with ID #'.$inputType->getUserId().' is already defined as vendor.');
+        }
+
         $vendor = new Vendor();
         $vendor->setName($inputType->getName())
             ->setShop($inputType->getShop())
@@ -139,7 +145,9 @@ class VendorService
             ->setAddressPostcode($inputType->getAddressPostcode())
             ->setLocation($location)
             ->setArchived(false)
-            ->setUser($user);
+            ->setUser($user)
+            ->setVendorNo($inputType->getVendorNo())
+            ->setContractNo($inputType->getContractNo());
 
         $this->em->persist($vendor);
         $this->em->flush();
@@ -194,7 +202,7 @@ class VendorService
                     $vendor->setLocation($location);
                 }
             }
-            $this->em->merge($vendor);
+            $this->em->persist($vendor);
             $this->em->flush();
         } catch (\Exception $e) {
             throw new \Exception('Error updating Vendor');
@@ -208,15 +216,10 @@ class VendorService
      * @param VendorUpdateInputType $inputType
      * @return Vendor
      * @throws EntityNotFoundException
+     * @throws NotUniqueException
      */
     public function update(Vendor $vendor, VendorUpdateInputType $inputType): Vendor
     {
-        $user = $this->em->getRepository(User::class)->find($inputType->getUserId());
-
-        if (!$user instanceof User) {
-            throw new EntityNotFoundException('User with ID #'.$inputType->getUserId().' does not exists.');
-        }
-
         $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
 
         if (!$location instanceof Location) {
@@ -229,7 +232,8 @@ class VendorService
             ->setAddressNumber($inputType->getAddressNumber())
             ->setAddressPostcode($inputType->getAddressPostcode())
             ->setLocation($location)
-            ->setUser($user);
+            ->setVendorNo($inputType->getVendorNo())
+            ->setContractNo($inputType->getContractNo());
 
         $this->em->persist($vendor);
         $this->em->flush();
@@ -249,7 +253,7 @@ class VendorService
     {
         try {
             $vendor->setArchived($archiveVendor);
-            $this->em->merge($vendor);
+            $this->em->persist($vendor);
             $this->em->flush();
         } catch (\Exception $exception) {
             throw new \Exception('Error archiving Vendor');
@@ -344,6 +348,8 @@ class VendorService
                         'addressStreet'  => $vendor->getAddressStreet(),
                         'addressPostcode'  => $vendor->getAddressPostcode(),
                         'addressNumber'  => $vendor->getAddressNumber(),
+                        'vendorNo' => $vendor->getVendorNo(),
+                        'contractNo' => $vendor->getContractNo(),
                         'addressVillage' => $village ? $village->getName() : null,
                         'addressCommune' => $commune ? $commune->getName() : null,
                         'addressDistrict' => $district ? $district->getName() : null,

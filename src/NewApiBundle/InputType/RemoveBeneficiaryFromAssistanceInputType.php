@@ -7,9 +7,9 @@ use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @Assert\GroupSequence({"AddBeneficiaryToAssistanceInputType", "Strict"})
+ * @Assert\GroupSequence({"RemoveBeneficiaryFromAssistanceInputType", "Strict"})
  */
-class AddBeneficiaryToAssistanceInputType implements InputTypeInterface
+class RemoveBeneficiaryFromAssistanceInputType implements InputTypeInterface
 {
     /**
      * @Assert\Type("array")

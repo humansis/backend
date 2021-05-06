@@ -16,16 +16,11 @@ class LocationControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
     public function testGetCountries()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/countries');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -50,11 +45,6 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetCountry($iso3)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/countries/'.$iso3);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -74,11 +64,6 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetListOfAdm1()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/adm1');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -101,15 +86,34 @@ class LocationControllerTest extends BMSServiceTestCase
     }
 
     /**
+     * @throws Exception
+     */
+    public function testGetListOfAdm1Filtered()
+    {
+        $this->request('GET', '/api/basic/adm1?filter[id][]=1');
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertIsArray($result['data']);
+        $this->assertArrayHasKey('id', $result['data'][0]);
+        $this->assertArrayHasKey('name', $result['data'][0]);
+        $this->assertArrayHasKey('code', $result['data'][0]);
+        $this->assertArrayHasKey('countryIso3', $result['data'][0]);
+        $this->assertArrayHasKey('locationId', $result['data'][0]);
+    }
+
+    /**
      * @depends testGetListOfAdm1
      */
     public function testGetDetailOfAdm1($id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/adm1/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -131,11 +135,6 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetListOfAdm2($id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/adm1/'.$id.'/adm2');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -157,16 +156,32 @@ class LocationControllerTest extends BMSServiceTestCase
         return $result['data'][0]['id'];
     }
 
+    public function testGetListOfAdm2Filtered()
+    {
+        $this->request('GET', '/api/basic/adm2?filter[id][]=1');
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertIsArray($result['data']);
+        $this->assertArrayHasKey('id', $result['data'][0]);
+        $this->assertArrayHasKey('name', $result['data'][0]);
+        $this->assertArrayHasKey('code', $result['data'][0]);
+        $this->assertArrayHasKey('locationId', $result['data'][0]);
+        $this->assertArrayHasKey('adm1Id', $result['data'][0]);
+    }
+
     /**
      * @depends testGetListOfAdm2
      */
     public function testGetDetailOfAdm2($id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/adm2/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -188,11 +203,6 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetListOfAdm3($id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/adm2/'.$id.'/adm3');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -214,16 +224,32 @@ class LocationControllerTest extends BMSServiceTestCase
         return $result['data'][0]['id'];
     }
 
+    public function testGetListOfAdm3Filtered()
+    {
+        $this->request('GET', '/api/basic/adm3?filter[id][]=1');
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertIsArray($result['data']);
+        $this->assertArrayHasKey('id', $result['data'][0]);
+        $this->assertArrayHasKey('name', $result['data'][0]);
+        $this->assertArrayHasKey('code', $result['data'][0]);
+        $this->assertArrayHasKey('locationId', $result['data'][0]);
+        $this->assertArrayHasKey('adm2Id', $result['data'][0]);
+    }
+
     /**
      * @depends testGetListOfAdm3
      */
     public function testGetDetailOfAdm3($id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/adm3/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -245,11 +271,6 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetListOfAdm4($id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/adm3/'.$id.'/adm4');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -271,16 +292,32 @@ class LocationControllerTest extends BMSServiceTestCase
         return $result['data'][0]['id'];
     }
 
+    public function testGetListOfAdm4Filtered()
+    {
+        $this->request('GET', '/api/basic/adm4?filter[id][]=1');
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertIsArray($result['data']);
+        $this->assertArrayHasKey('id', $result['data'][0]);
+        $this->assertArrayHasKey('name', $result['data'][0]);
+        $this->assertArrayHasKey('code', $result['data'][0]);
+        $this->assertArrayHasKey('locationId', $result['data'][0]);
+        $this->assertArrayHasKey('adm3Id', $result['data'][0]);
+    }
+
     /**
      * @depends testGetListOfAdm4
      */
     public function testGetDetailOfAdm4($id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/adm4/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -302,11 +339,6 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetLocations()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $location = $em->getRepository(Location::class)->findBy([])[0];

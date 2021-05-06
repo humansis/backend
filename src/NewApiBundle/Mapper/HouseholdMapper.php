@@ -51,12 +51,14 @@ class HouseholdMapper implements MapperInterface
      */
     public function getAssets(): iterable
     {
-        return $this->object->getAssets();
+        return array_map(function ($item) {
+            return (string) $item;
+        }, $this->object->getAssets());
     }
 
-    public function getShelterStatus(): ?int
+    public function getShelterStatus(): ?string
     {
-        return $this->object->getShelterStatus();
+        return $this->object->getShelterStatus() ? (string) $this->object->getShelterStatus() : null;
     }
 
     /**
@@ -135,15 +137,17 @@ class HouseholdMapper implements MapperInterface
 
     public function getSupportDateReceived(): ?string
     {
-        return $this->object->getSupportDateReceived() ? $this->object->getSupportDateReceived()->format('Y-m-d') : null;
+        return $this->object->getSupportDateReceived() ? $this->object->getSupportDateReceived()->format(\DateTime::ISO8601) : null;
     }
 
     /**
-     * @return int[]
+     * @return string[]
      */
     public function getSupportReceivedTypes(): iterable
     {
-        return $this->object->getSupportReceivedTypes();
+        return array_map(function ($item) {
+            return (string) $item;
+        }, $this->object->getSupportReceivedTypes());
     }
 
     public function getSupportOrganizationName(): ?string
@@ -195,5 +199,85 @@ class HouseholdMapper implements MapperInterface
         }
 
         return null;
+    }
+
+    public function getProxyEnGivenName(): ?string
+    {
+        if (null === $this->object->getProxy()) {
+            return null;
+        }
+
+        return $this->object->getProxy()->getEnGivenName();
+    }
+
+    public function getProxyEnFamilyName(): ?string
+    {
+        if (null === $this->object->getProxy()) {
+            return null;
+        }
+
+        return $this->object->getProxy()->getEnFamilyName();
+    }
+
+    public function getProxyEnParentsName(): ?string
+    {
+        if (null === $this->object->getProxy()) {
+            return null;
+        }
+
+        return $this->object->getProxy()->getEnParentsName();
+    }
+
+    public function getProxyLocalGivenName(): ?string
+    {
+        if (null === $this->object->getProxy()) {
+            return null;
+        }
+
+        return $this->object->getProxy()->getLocalGivenName();
+    }
+
+    public function getProxyLocalFamilyName(): ?string
+    {
+        if (null === $this->object->getProxy()) {
+            return null;
+        }
+
+        return $this->object->getProxy()->getLocalFamilyName();
+    }
+
+    public function getProxyLocalParentsName(): ?string
+    {
+        if (null === $this->object->getProxy()) {
+            return null;
+        }
+
+        return $this->object->getProxy()->getLocalParentsName();
+    }
+
+    public function getProxyNationalIdCardId(): ?int
+    {
+        if (null === $this->object->getProxy()) {
+            return null;
+        }
+
+        if ($this->object->getProxy()->getNationalIds()->count() === 0) {
+            return null;
+        }
+
+        return $this->object->getProxy()->getNationalIds()->current()->getId();
+    }
+
+    public function getProxyPhoneId(): ?int
+    {
+        if (null === $this->object->getProxy()) {
+            return null;
+        }
+
+        if ($this->object->getProxy()->getPhones()->count() === 0) {
+            return null;
+        }
+
+        return $this->object->getProxy()->getPhones()->current()->getId();
     }
 }

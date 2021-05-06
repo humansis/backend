@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
+use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use DateTimeInterface;
 use InvalidArgumentException;
 use NewApiBundle\Serializer\MapperInterface;
@@ -19,9 +20,13 @@ class ProjectMapper implements MapperInterface
     /** @var ProjectService */
     private $projectService;
 
-    public function __construct(ProjectService $projectService)
+    /** @var BeneficiaryRepository */
+    private $beneficiaryRepository;
+
+    public function __construct(ProjectService $projectService, BeneficiaryRepository $beneficiaryRepository)
     {
         $this->projectService = $projectService;
+        $this->beneficiaryRepository = $beneficiaryRepository;
     }
 
     /**
@@ -108,5 +113,10 @@ class ProjectMapper implements MapperInterface
     public function getDeletable(): bool
     {
         return $this->projectService->isDeletable($this->object);
+    }
+
+    public function getBeneficiariesReached(): int
+    {
+        return $this->beneficiaryRepository->countAllInProject($this->object);
     }
 }

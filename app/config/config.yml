@@ -10,7 +10,7 @@ parameters:
     email: support@humansis.org
 
     # allowed languages in application
-    app.locales: [ en, ar, ru ]
+    app.locales: [ en, ar, ru, am, fr, hy, km, mn ]
 
     # allowed currencies in application - it contains all circulating currencies
     app.currencies: [ AED, AFN, ALL, AMD, ANG, AOA, ARS, AUD, AWG, AZN, BAM, BBD, BDT, BGN, BHD, BIF, BMD, BND, BOB, BRL,
@@ -21,6 +21,39 @@ parameters:
                       NOK, NPR, NZD, OMR, PAB, PEN, PGK, PHP, PKR, PLN, PYG, QAR, RON, RSD, RUB, RWF, SAR, SBD, SCR, SDG,
                       SEK, SGD, SHP, SLL, SOS, SRD, SSP, STN, SYP, SZL, THB, TJS, TMT, TND, TOP, TRY, TTD, TWD, TZS, UAH,
                       UGX, USD, UYU, UZS, VES, VND, VUV, WST, XAF, XCD, XOF, XPF, YER, ZAR, ZMW ]
+
+    # countries supported in the application
+    app.countries:
+        - name: Cambodia
+          iso3: KHM
+          currency: KHR
+          adms: [ Province, District, Commune, Village ]
+
+        - name: Syria
+          iso3: SYR
+          currency: SYP
+          adms: [ Governorate, District, Sub-District, Block ]
+          language: ar # remove in 3.0
+
+        - name: Ukraine
+          iso3: UKR
+          currency: UAH
+          adms: [ Region, District, Community, Settlement ]
+
+        - name: Ethiopia
+          iso3: ETH
+          currency: ETB
+          adms: [ Region, Zone, Woreda, Village ]
+
+        - name: Mongolia
+          iso3: MNG
+          currency: MNT
+          adms: [ Province, District, Commune, Village ]
+
+        - name: Armenia
+          iso3: ARM
+          currency: AMD
+          adms: [ Province, District, Commune, Village ]
 
 framework:
     #esi: ~
@@ -72,6 +105,7 @@ doctrine:
         server_version: '8.0'
         mapping_types:
             enum: string
+        schema_filter: ~^(?!view_)~ # support views with prefix "view_"
         types:
             enum_assistance_type: DistributionBundle\DBAL\AssistanceTypeEnum
             enum_assistance_target_type: DistributionBundle\DBAL\AssistanceTargetTypeEnum
@@ -95,11 +129,11 @@ doctrine:
                 levenshtein:        Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinFunction
                 levenshtein_ratio:  Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinRatioFunction
         metadata_cache_driver:
-            type: apcu
+            type: array
         result_cache_driver:
-            type: apcu
+            type: array
         query_cache_driver:
-            type: apcu
+            type: array
         hydrators:
             plain_values_hydrator: CommonBundle\Hydration\PlainValuesHydrator
 
@@ -139,14 +173,8 @@ fos_rest:
         view_response_listener: 'force'
         formats:
             json : true
-        templating_formats:
-            html: true
-        force_redirects:
-            html: true
         failed_validation: HTTP_BAD_REQUEST
-        default_engine: twig
-    routing_loader:
-        default_format: json
+    routing_loader: false
     serializer:
         serialize_null: true
 
@@ -318,3 +346,9 @@ knp_gaufrette:
         donors:
             adapter:    donors
             alias:      donors_filesystem
+
+lexik_jwt_authentication:
+    secret_key: '%kernel.project_dir%/app/config/jwt/private.pem'
+    public_key: '%kernel.project_dir%/app/config/jwt/public.pem'
+    pass_phrase: '%jwt_passphrase%'
+    token_ttl: 36000 # = 10 hours

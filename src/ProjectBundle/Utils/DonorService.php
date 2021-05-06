@@ -143,7 +143,7 @@ class DonorService
             throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
-        $this->em->merge($donor);
+        $this->em->persist($donor);
         $this->em->flush();
 
         return $donor;

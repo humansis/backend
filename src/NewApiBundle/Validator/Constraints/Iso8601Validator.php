@@ -27,7 +27,7 @@ class Iso8601Validator extends \Symfony\Component\Validator\Constraints\DateTime
 
         $value = (string) $value;
 
-        foreach ([\DateTime::ISO8601, \DateTime::ATOM, 'Y-m-d\TH:i:s.u\Z'] as $format) {
+        foreach ([\DateTime::ISO8601, \DateTime::ATOM, 'Y-m-d\TH:i:s.u\Z', 'Y-m-d'] as $format) {
             $date = \DateTime::createFromFormat($format, $value);
 
             $errors = \DateTime::getLastErrors();

@@ -52,7 +52,17 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
+    public function findByCountries(array $iso3) {
+        $qbr = $this->createQueryBuilder('p')
+            ->andWhere('p.iso3 IN (:iso3)')
+            ->andWhere('p.archived = 0')
+            ->setParameter('iso3', $iso3);
+
+        return $qbr->getQuery()->getResult();
+    }
+
     /**
+     * @param User|null                   $user
      * @param string|null                 $iso3
      * @param ProjectFilterInputType|null $filter
      * @param ProjectOrderInputType|null  $orderBy
@@ -61,6 +71,7 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
      * @return Paginator
      */
     public function findByParams(
+        ?User $user,
         ?string $iso3,
         ?ProjectFilterInputType $filter,
         ?ProjectOrderInputType $orderBy = null,
@@ -69,6 +80,12 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
     {
         $qb = $this->createQueryBuilder('p')
             ->andWhere('p.archived = 0');
+
+        if ($user && !$user->getProjects()->isEmpty()) {
+            $qb->leftJoin('p.usersProject', 'up')
+                ->andWhere('up.user = :user')
+                ->setParameter('user', $user);
+        }
 
         if ($iso3) {
             $qb->andWhere('p.iso3 = :iso3');

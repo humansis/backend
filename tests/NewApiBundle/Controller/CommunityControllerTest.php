@@ -2,10 +2,14 @@
 
 namespace Tests\NewApiBundle\Controller;
 
+use BeneficiaryBundle\Entity\Community;
 use CommonBundle\Entity\Location;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Exception;
+use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
 
 class CommunityControllerTest extends BMSServiceTestCase
@@ -20,7 +24,7 @@ class CommunityControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
 
@@ -32,13 +36,8 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testCreate()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Location|null $location */
-        $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
         if (null === $location) {
             $this->markTestSkipped('There needs to be at least one location in system to complete this test');
@@ -49,6 +48,7 @@ class CommunityControllerTest extends BMSServiceTestCase
             'latitude' => 'test latitude',
             'contactGivenName' => 'test contactGivenName',
             'contactFamilyName' => 'test contactFamilyName',
+            'projectIds' => [],
             'address' => [
                 'type' => 'test type',
                 'locationGroup' => 'test locationGroup',
@@ -77,6 +77,50 @@ class CommunityControllerTest extends BMSServiceTestCase
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
+        $this->assertArrayHasKey('name', $result);
+        $this->assertArrayHasKey('longitude', $result);
+        $this->assertArrayHasKey('latitude', $result);
+        $this->assertArrayHasKey('contactGivenName', $result);
+        $this->assertArrayHasKey('contactFamilyName', $result);
+        $this->assertArrayHasKey('addressId', $result);
+        $this->assertArrayHasKey('nationalId', $result);
+        $this->assertArrayHasKey('phoneId', $result);
+        $this->assertArrayHasKey('projectIds', $result);
+
+        return $result['id'];
+    }
+
+    /**
+     * @return mixed
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws Exception
+     */
+    public function testCreate2()
+    {
+        /** @var Location|null $location */
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+
+        $this->request('POST', '/api/basic/communities', [
+            'address' => [
+                'type' => 'test type',
+                'locationGroup' => 'test locationGroup',
+                'number' => 'test number',
+                'street' => 'test street',
+                'postcode' => 'test postcode',
+                'locationId' => $location->getId(),
+            ],
+        ]);
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('id', $result);
+        $this->assertArrayHasKey('name', $result);
         $this->assertArrayHasKey('longitude', $result);
         $this->assertArrayHasKey('latitude', $result);
         $this->assertArrayHasKey('contactGivenName', $result);
@@ -98,19 +142,17 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Location|null $location */
-        $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        /** @var Project $project */
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
         $data = [
             'longitude' => 'test CHANGED',
             'latitude' => 'test latitude',
             'contactGivenName' => 'test contactGivenName',
             'contactFamilyName' => 'test contactFamilyName',
+            'projectIds' => [$project->getId()],
             'address' => [
                 'type' => 'test type',
                 'locationGroup' => 'test locationGroup',
@@ -142,6 +184,7 @@ class CommunityControllerTest extends BMSServiceTestCase
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
+        $this->assertArrayHasKey('name', $result);
         $this->assertArrayHasKey('longitude', $result);
         $this->assertArrayHasKey('latitude', $result);
         $this->assertArrayHasKey('contactGivenName', $result);
@@ -149,6 +192,7 @@ class CommunityControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('addressId', $result);
         $this->assertArrayHasKey('nationalId', $result);
         $this->assertArrayHasKey('phoneId', $result);
+        $this->assertArrayHasKey('projectIds', $result);
 
         $this->assertEquals($data['longitude'], $result['longitude']);
 
@@ -165,11 +209,6 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/communities/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -181,6 +220,7 @@ class CommunityControllerTest extends BMSServiceTestCase
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
+        $this->assertArrayHasKey('name', $result);
         $this->assertArrayHasKey('longitude', $result);
         $this->assertArrayHasKey('latitude', $result);
         $this->assertArrayHasKey('contactGivenName', $result);
@@ -188,6 +228,7 @@ class CommunityControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('addressId', $result);
         $this->assertArrayHasKey('nationalId', $result);
         $this->assertArrayHasKey('phoneId', $result);
+        $this->assertArrayHasKey('projectIds', $result);
 
         return $id;
     }
@@ -200,11 +241,6 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/communities?sort[]=id.asc&filter[fulltext]=test');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -228,11 +264,6 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('DELETE', '/api/basic/communities/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
@@ -249,13 +280,32 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/communities/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
+    }
+
+    public function testGetCommunitiesByProject()
+    {
+        try {
+            /** @var Community $institution */
+            $institution = $this->em->getRepository(Community::class)->createQueryBuilder('i')
+                ->setMaxResults(1)
+                ->getQuery()
+                ->getSingleResult();
+        } catch (NoResultException $exception) {
+            $this->markTestSkipped('There is no Community to be tested');
+        }
+
+        $this->request('GET', '/api/basic/projects/'.$institution->getProjects()[0]->getId().'/communities');
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{
+            "totalCount": "*", 
+            "data": "*"
+        }', $this->client->getResponse()->getContent());
     }
 }

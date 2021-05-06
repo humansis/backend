@@ -18,18 +18,13 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
     public function testStatistics()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Assistance $assistance */
-        $assistance = $this->container->get('doctrine')->getRepository(Assistance::class)->findBy([])[0];
+        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy([])[0];
 
         $this->request('GET', '/api/basic/assistances/'.$assistance->getId().'/statistics');
 
@@ -40,21 +35,18 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
         $this->assertJsonFragment('{
             "id": '.$assistance->getId().',
             "numberOfBeneficiaries": "*",
-            "summaryOfTotalItems": "*",
-            "summaryOfDistributedItems": "*",
-            "summaryOfUsedItems": "*"
+            "amountTotal": "*",
+            "amountDistributed": "*",
+            "amountUsed": "*",
+            "amountSent": "*",
+            "amountPickedUp": "*"
         }', $this->client->getResponse()->getContent());
     }
 
     public function testList()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Assistance $assistance */
-        $assistance = $this->container->get('doctrine')->getRepository(Assistance::class)->findBy(['archived' => false])[0];
+        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy(['archived' => false])[0];
 
         $this->request('GET', '/api/basic/assistances/statistics?filter[id][]='.$assistance->getId(), ['country' => 'KHM']);
 

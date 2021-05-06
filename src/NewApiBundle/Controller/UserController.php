@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
+use CommonBundle\Controller\ExportController;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Exception\ConstraintViolationException;
 use NewApiBundle\InputType\UserCreateInputType;
 use NewApiBundle\InputType\UserUpdateInputType;
 use NewApiBundle\InputType\UserFilterInputType;
@@ -13,13 +15,29 @@ use NewApiBundle\InputType\UserInitializeInputType;
 use NewApiBundle\InputType\UserOrderInputType;
 use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\ConstraintViolation;
 use UserBundle\Entity\User;
 use UserBundle\Repository\UserRepository;
 use UserBundle\Utils\UserService;
 
 class UserController extends AbstractController
 {
+    /**
+     * @Rest\Get("/users/exports")
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function exports(Request $request): Response
+    {
+        $request->query->add(['users' => true]);
+
+        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
+    }
+
     /**
      * @Rest\Get("/users/{id}")
      *
@@ -100,6 +118,44 @@ class UserController extends AbstractController
         $updatedUser = $userService->update($user, $inputType);
 
         return $this->json($updatedUser);
+    }
+
+    /**
+     * @Rest\Patch("/users/{id}")
+     *
+     * @param User    $user
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function patch(User $user, Request $request): JsonResponse
+    {
+        if ($request->request->has('password')) {
+            $user->setPassword($request->request->get('password'));
+        }
+
+        if ($request->request->has('phoneNumber')) {
+            $user->setPhoneNumber($request->request->get('phoneNumber'));
+
+            if ($request->request->has('phonePrefix')) {
+                $user->setPhonePrefix($request->request->get('phonePrefix'));
+            }
+        }
+
+        if ($request->request->has('2fa')) {
+            if (!$user->getPhoneNumber() && $request->request->getBoolean('2fa')) {
+                throw new ConstraintViolationException(
+                    new ConstraintViolation('Unable to enable 2FA. There is no phone number.', null, [], '2fa', '2fa', true)
+                );
+            }
+
+            $user->setTwoFactorAuthentication($request->request->getBoolean('2fa'));
+        }
+
+        $this->getDoctrine()->getManager()->persist($user);
+        $this->getDoctrine()->getManager()->flush();
+
+        return $this->json($user);
     }
 
     /**

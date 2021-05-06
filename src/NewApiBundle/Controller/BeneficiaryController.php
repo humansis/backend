@@ -5,67 +5,90 @@ namespace NewApiBundle\Controller;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
+use CommonBundle\Controller\ExportController;
+use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Utils\AssistanceBeneficiaryService;
+use DistributionBundle\Enum\AssistanceTargetType;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\InputType\AddBeneficiaryToAssistanceInputType;
+use NewApiBundle\InputType\AssistanceCreateInputType;
+use NewApiBundle\InputType\BenefciaryPatchInputType;
+use NewApiBundle\InputType\BeneficiaryExportFilterInputType;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
-use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\InputType\NationalIdFilterInputType;
 use NewApiBundle\InputType\PhoneFilterInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class BeneficiaryController extends AbstractController
 {
     /**
-     * @Rest\Get("/assistances/{id}/beneficiaries")
+     * @Rest\Post("/assistances/beneficiaries")
      *
-     * @param Assistance                 $assistance
-     * @param BeneficiaryFilterInputType $filter
-     * @param BeneficiaryOrderInputType  $orderBy
-     * @param Pagination                 $pagination
+     * @param AssistanceCreateInputType $inputType
+     * @param Pagination $paginationF
      *
      * @return JsonResponse
      */
-    public function beneficiariesByAssistance(
-        Assistance $assistance,
-        BeneficiaryFilterInputType $filter,
-        BeneficiaryOrderInputType $orderBy,
-        Pagination $pagination
-    ): JsonResponse
+    public function precalculateBeneficiaries(AssistanceCreateInputType $inputType, Pagination $pagination): JsonResponse
     {
-        if ($assistance->getArchived()) {
-            throw $this->createNotFoundException();
-        }
-
-        $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByAssistance($assistance, $filter, $orderBy, $pagination);
+        $beneficiaries = $this->get('distribution.assistance_service')->findByCriteria($inputType, $pagination);
 
         return $this->json($beneficiaries);
     }
 
     /**
-     * @Rest\Put("/assistances/{id}/beneficiaries")
+     * @Rest\Get("/beneficiaries/exports")
      *
-     * @param Assistance                          $assistance
-     * @param AddBeneficiaryToAssistanceInputType $inputType
+     * @param Request                          $request
+     * @param BeneficiaryExportFilterInputType $inputType
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function addBeneficiaryToAssistance(Assistance $assistance, AddBeneficiaryToAssistanceInputType $inputType): JsonResponse
+    public function exports(Request $request, BeneficiaryExportFilterInputType $inputType): Response
     {
-        $data = ['beneficiaries' => [], 'justification' => $inputType->getJustification()];
-        foreach ($inputType->getBeneficiaryIds() as $id) {
-            $data['beneficiaries'][] = ['id' => $id];
+        $sample = [];
+        if ($inputType->hasIds()) {
+            foreach ($inputType->getIds() as $id) {
+                $bnf = $this->getDoctrine()->getRepository(Beneficiary::class)->find($id);
+                if (!$bnf) {
+                    throw new \Doctrine\ORM\EntityNotFoundException('Beneficiary with ID #'.$id.' does not exists.');
+                }
+
+                $sample[] = [
+                    'gender' => (string) $bnf->getGender(),
+                    'en_given_name' => $bnf->getEnGivenName(),
+                    'en_family_name' => $bnf->getEnFamilyName(),
+                    'local_given_name' => $bnf->getLocalGivenName(),
+                    'local_family_name' => $bnf->getLocalFamilyName(),
+                    'status' => (string) $bnf->getStatus(),
+                    'residency_status' => $bnf->getResidencyStatus(),
+                    'date_of_birth' => $bnf->getDateOfBirth(),
+                ];
+            }
         }
 
-        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
-        $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
-        $assistanceBeneficiaryService->addBeneficiaries($assistance, $data);
+        $request->query->add(['distributionSample' => true]);
+        $request->request->add(['sample' => $sample]);
 
-        return $this->json(null, Response::HTTP_NO_CONTENT);
+        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
+    }
+
+    /**
+     * @Rest\Get("/assistances/{id}/beneficiaries/exports")
+     *
+     * @param Assistance $assistance
+     * @param Request    $request
+     *
+     * @return Response
+     */
+    public function exportsByAssistance(Assistance $assistance, Request $request): Response
+    {
+        $request->query->add(['beneficiariesInDistribution' => $assistance->getId()]);
+
+        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
     }
 
     /**
@@ -137,6 +160,25 @@ class BeneficiaryController extends AbstractController
     }
 
     /**
+     * @Rest\Patch("/beneficiaries/{id}")
+     *
+     * @param Beneficiary              $beneficiary
+     * @param BenefciaryPatchInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function update(Beneficiary $beneficiary, BenefciaryPatchInputType $inputType): JsonResponse
+    {
+        if ($beneficiary->getArchived()) {
+            throw $this->createNotFoundException();
+        }
+
+        $this->get('beneficiary.beneficiary_service')->patch($beneficiary, $inputType);
+
+        return $this->json($beneficiary);
+    }
+
+    /**
      * @Rest\Get("/beneficiaries")
      *
      * @param BeneficiaryFilterInputType $filter
@@ -151,18 +193,21 @@ class BeneficiaryController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/projects/{id}/beneficiaries")
+     * @Rest\Get("/projects/{id}/targets/{target}/beneficiaries")
      *
-     * @param Project                    $project
-     *
-     * @param BeneficiaryFilterInputType $filter
+     * @param Project $project
+     * @param string  $target
      *
      * @return JsonResponse
      */
-    public function getBeneficiaries(Project $project, BeneficiaryFilterInputType $filter): JsonResponse
+    public function getBeneficiaries(Project $project, string $target): JsonResponse
     {
-        $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByProject($project, $filter);
+        if (!in_array($target, AssistanceTargetType::values())){
+            throw $this->createNotFoundException('Invalid target. Allowed are '.implode(', ', AssistanceTargetType::values()));
+        }
 
-        return $this->json($beneficiaries);
+        $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->getAllOfProject($project->getId(), $target);
+
+        return $this->json(new Paginator($beneficiaries));
     }
 }

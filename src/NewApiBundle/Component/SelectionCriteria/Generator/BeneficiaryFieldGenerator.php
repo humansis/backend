@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\SelectionCriteria\Generator;
 
+use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;
 use BeneficiaryBundle\Repository\VulnerabilityCriterionRepository;
 use NewApiBundle\Component\SelectionCriteria\FieldGeneratorInterface;
@@ -23,13 +24,13 @@ class BeneficiaryFieldGenerator implements FieldGeneratorInterface
      */
     public function generate(?string $countryIso3)
     {
-        yield new Field('gender', ['='], 'gender', [self::class, 'validateGender']);
-        yield new Field('dateOfBirth', ['=', '<', '>', '<=', '>='], 'date', [self::class, 'validateDate']);
-        yield new Field('residency_status', ['='], 'residencyStatus', [self::class, 'validateResidencyStatus']);
-        yield new Field('hasNotBeenInDistributionsSince', ['='], 'boolean');
+        yield new Field('gender', 'Gender', ['='], 'gender', [self::class, 'validateGender']);
+        yield new Field('dateOfBirth', 'Date of Birth', ['=', '<', '>', '<=', '>='], 'date', [self::class, 'validateDate']);
+        yield new Field('residencyStatus', 'Residency Status', ['='], 'residencyStatus', [self::class, 'validateResidencyStatus']);
+        yield new Field('hasNotBeenInDistributionsSince', 'Has Not Been In Distribution Since', ['='], 'boolean');
 
         foreach ($this->vulnerabilityCriterionRepository->findAllActive() as $vulnerabilityCriterion) {
-            yield new Field($vulnerabilityCriterion->getFieldString(), ['='], 'boolean');
+            yield new Field($vulnerabilityCriterion->getFieldString(), VulnerabilityCriterion::all()[$vulnerabilityCriterion->getFieldString()], ['='], 'boolean');
         }
     }
 

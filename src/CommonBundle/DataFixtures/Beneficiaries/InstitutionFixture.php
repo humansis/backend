@@ -5,7 +5,6 @@ use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\InputType\NewInstitutionType;
 use BeneficiaryBundle\Utils\InstitutionService;
-use CommonBundle\Controller\CountryController;
 use CommonBundle\DataFixtures\LocationFixtures;
 use CommonBundle\DataFixtures\ProjectFixtures;
 use CommonBundle\InputType\Country;
@@ -108,16 +107,22 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
     private $environment;
     /** @var InstitutionService */
     private $institutionService;
+    /** @var array */
+    private $countries = [];
 
     /**
      * InstitutionFixture constructor.
      * @param string $environment
      * @param InstitutionService $institutionService
      */
-    public function __construct(string $environment, InstitutionService $institutionService)
+    public function __construct(string $environment, array $countries, InstitutionService $institutionService)
     {
         $this->environment = $environment;
         $this->institutionService = $institutionService;
+
+        foreach ($countries as $country) {
+            $this->countries[$country['iso3']] = $country;
+        }
     }
 
     public function load(ObjectManager $manager)
@@ -126,7 +131,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
             echo "Cannot run on production environment";
             return;
         }
-        foreach (CountryController::COUNTRIES as $COUNTRY) {
+        foreach ($this->countries as $COUNTRY) {
             $projects = $manager->getRepository(Project::class)->findBy(['iso3' => $COUNTRY['iso3']]);
             $projectIds = array_map(function (Project $project) {
                 return $project->getId();

@@ -5,6 +5,7 @@ namespace CommonBundle\Listener;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,10 +21,14 @@ class RequestListener
     /** @var ContainerInterface $container */
     private $container;
 
-    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
+    /** @var LoggerInterface */
+    private $logger;
+
+    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container, LoggerInterface $logger)
     {
         $this->em = $entityManager;
         $this->container = $container;
+        $this->logger = $logger;
     }
 
     /**
@@ -39,12 +44,6 @@ class RequestListener
         $disableListener = $event->getRequest()->attributes->get('disable-common-request-listener');
 
         if ($disableListener) {
-            $isAdmin = $this->container->get('security.authorization_checker')->isGranted('ROLE_ADMIN');
-            if (!$isAdmin) {
-                $response = new Response('You need to be admin.', Response::HTTP_FORBIDDEN);
-                $event->setResponse($response);
-            }
-
             return;
         }
 
@@ -94,7 +93,7 @@ class RequestListener
                     $event->getRequest()->request->add(["__country" => $countryISO3]);
                 } else {
                     if ($fallbackCountry === $countryISO3) {
-                        $this->container->get('logger')->error("You are not allowed to access data for this country", [$countryISO3]);
+                        $this->logger->error("You are not allowed to access data for this country", [$countryISO3]);
                         $response = new Response("You are not allowed to access data for this country", Response::HTTP_FORBIDDEN);
                         $event->setResponse($response);
                     } else {
@@ -108,7 +107,7 @@ class RequestListener
         // return error response if api request (i.e. not profiler or doc) or login routes (for api tester)
         elseif (preg_match('/api/', $event->getRequest()->getPathInfo()) &&
                 !preg_match('/api\/wsse\/(login|salt)/', $event->getRequest()->getPathInfo())) {
-            $this->container->get('logger')->error("'country' header missing from request (iso3 code).", [$event->getRequest()->getPathInfo()]);
+            $this->container->logger->error("'country' header missing from request (iso3 code).", [$event->getRequest()->getPathInfo()]);
             $response = new Response("'country' header missing from request (iso3 code).", Response::HTTP_BAD_REQUEST);
             $event->setResponse($response);
         }

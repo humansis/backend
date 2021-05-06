@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use CommonBundle\Pagination\Paginator;
-use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Enum\AssistanceTargetType;
+use DistributionBundle\Enum\AssistanceType;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\Codelist\CodeLists;
 use NewApiBundle\InputType\AssistanceTargetFilterInputType;
 use NewApiBundle\InputType\AssistanceTypeFilterInputType;
-use NewApiBundle\Utils\CodeLists;
 use ProjectBundle\Utils\SectorService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * @Cache(expires="+5 days", public=true)
@@ -47,12 +46,12 @@ class AssistanceCodelistController extends AbstractController
     public function getTargets(AssistanceTargetFilterInputType $targetTypeFilterType): JsonResponse
     {
         if (!$targetTypeFilterType->hasType()) {
-            $data = CodeLists::mapArray(AssistanceTargetType::values());
-
-            return $this->json(new Paginator($data));
+            $data = AssistanceTargetType::values();
+        } else {
+            $data = $this->sectorService->findTargetsByType($targetTypeFilterType->getType());
         }
 
-        $targets = $this->sectorService->findTargetsByType($targetTypeFilterType->getType());
+        $targets = CodeLists::mapEnum($data);
 
         return $this->json(new Paginator($targets));
     }
@@ -66,22 +65,21 @@ class AssistanceCodelistController extends AbstractController
     public function getTypes(AssistanceTypeFilterInputType $typeSubsectorInputType): JsonResponse
     {
         if (!$typeSubsectorInputType->hasSubsector()) {
-            $data = AssistanceTypeEnum::all();
+            $data = AssistanceType::values();
+        } else {
+            $sector = $this->sectorService->findBySubSector($typeSubsectorInputType->getSubsector());
+            if (is_null($sector)) {
+                $data = [];
+            } else {
+                $fn = function ($value) use ($sector) {
+                    return $sector->isAssistanceTypeAllowed($value);
+                };
 
-            return $this->json(new Paginator($data));
+                $data = array_filter(AssistanceType::values(), $fn);
+            }
         }
 
-        $sector = $this->sectorService->findBySubSector($typeSubsectorInputType->getSubsector());
-
-        if (is_null($sector)) {
-            throw new BadRequestHttpException('Provided sector for provided subsector does not exist');
-        }
-
-        $fn = function ($value) use ($sector) {
-            return $sector->isAssistanceTypeAllowed($value);
-        };
-
-        $assistanceTypes = array_filter(AssistanceTypeEnum::all(), $fn);
+        $assistanceTypes = CodeLists::mapEnum($data);
 
         return $this->json(new Paginator($assistanceTypes));
     }

@@ -2,16 +2,13 @@
 
 namespace BeneficiaryBundle\Controller;
 
-use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;
-use BeneficiaryBundle\Utils\BeneficiaryService;
-
 use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Utils\CriteriaAssistanceService;
-use NewApiBundle\Utils\CodeLists;
+use NewApiBundle\Component\Codelist\CodeLists;
 use ProjectBundle\Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;

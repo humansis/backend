@@ -73,13 +73,24 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
         $locationRepository->whereCountry($qb, $iso3);
 
         if ($filter) {
+            if ($filter->hasIds()) {
+                $qb->andWhere('v.id IN (:ids)')
+                    ->setParameter('ids', $filter->getIds());
+            }
             if ($filter->hasFulltext()) {
-                $qb->andWhere('v.shop LIKE :fulltext OR
-                               v.name LIKE :fulltext OR
-                               v.addressNumber LIKE :fulltext OR
-                               v.addressPostcode LIKE :fulltext OR
-                               v.addressStreet LIKE :fulltext')
-                    ->setParameter('fulltext', $filter->getFulltext());
+                $qb->leftJoin('v.user', 'u');
+
+                $qb->andWhere('(v.id = :fulltextId OR
+                                u.username LIKE :fulltext OR
+                                v.vendorNo LIKE :fulltext OR
+                                v.contractNo LIKE :fulltext OR
+                                v.shop LIKE :fulltext OR
+                                v.name LIKE :fulltext OR
+                                v.addressNumber LIKE :fulltext OR
+                                v.addressPostcode LIKE :fulltext OR
+                                v.addressStreet LIKE :fulltext)')
+                    ->setParameter('fulltextId', $filter->getFulltext())
+                    ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
             }
         }
 
@@ -101,8 +112,11 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
                         $qb->orderBy('v.shop', $direction);
                         break;
                     case VendorOrderInputType::SORT_BY_USERNAME:
-                        $qb->leftJoin('v.user', 'u')
-                            ->orderBy('u.username', $direction);
+                        if (!in_array('u', $qb->getAllAliases())) {
+                            $qb->leftJoin('v.user', 'u');
+                        }
+
+                        $qb->orderBy('u.username', $direction);
                         break;
                     case VendorOrderInputType::SORT_BY_ADDRESS_STREET:
                         $qb->orderBy('v.addressStreet', $direction);

@@ -18,16 +18,11 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
     public function testCreate()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('POST', '/api/basic/country-specifics', [
             'field' => 'Country specific field',
             'type' => 'number',
@@ -54,11 +49,6 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('PUT', '/api/basic/country-specifics/'.$id, [
             'field' => 'Country specific field',
             'type' => 'text',
@@ -85,11 +75,6 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/country-specifics/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -112,11 +97,6 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('DELETE', '/api/basic/country-specifics/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
@@ -129,11 +109,6 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/country-specifics/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
@@ -141,13 +116,8 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
 
     public function testGetAnswer()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var CountrySpecificAnswer $answer */
-        $answer = $this->container->get('doctrine')->getRepository(CountrySpecificAnswer::class)->findBy([])[0];
+        $answer = self::$container->get('doctrine')->getRepository(CountrySpecificAnswer::class)->findBy([])[0];
 
         $this->request('GET', '/api/basic/country-specifics/answers/'.$answer->getId());
 

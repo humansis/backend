@@ -238,7 +238,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
         }
 
         if ($filter->hasVulnerabilities()) {
-            $qb->andWhere('vb.id IN (:vulnerabilities)')
+            $qb->andWhere('vb.fieldString IN (:vulnerabilities)')
                 ->setParameter('vulnerabilities', $filter->getVulnerabilities());
         }
 

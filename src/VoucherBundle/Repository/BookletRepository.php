@@ -3,6 +3,7 @@
 namespace VoucherBundle\Repository;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -19,7 +20,7 @@ use VoucherBundle\Entity\Booklet;
  */
 class BookletRepository extends \Doctrine\ORM\EntityRepository
 {
-    /**
+     /**
      * Finds booklets with same code prefix and return latest
      *
      * @param string $prefix
@@ -255,6 +256,11 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
         if ($pagination) {
             $qb->setMaxResults($pagination->getLimit());
             $qb->setFirstResult($pagination->getOffset());
+        }
+
+        if ($filter->hasIds()) {
+            $qb->andWhere('b.id IN (:ids)')
+                ->setParameter('ids', $filter->getIds());
         }
 
         if ($filter->hasFulltext()) {

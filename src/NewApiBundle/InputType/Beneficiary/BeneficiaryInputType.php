@@ -7,6 +7,7 @@ namespace NewApiBundle\InputType\Beneficiary;
 use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Entity\Referral;
 use NewApiBundle\Request\InputTypeInterface;
+use NewApiBundle\Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -15,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class BeneficiaryInputType implements InputTypeInterface
 {
     /**
-     * @Assert\Date
+     * @Iso8601
      * @Assert\NotBlank
      * @Assert\NotNull
      */
@@ -88,7 +89,7 @@ class BeneficiaryInputType implements InputTypeInterface
     private $residencyStatus;
 
     /**
-     * @Assert\Choice(callback="referralTypes")
+     * @Assert\Choice(callback={"BeneficiaryBundle\Entity\Referral", "types"})
      * @Assert\Length(max="255")
      */
     private $referralType;
@@ -109,16 +110,16 @@ class BeneficiaryInputType implements InputTypeInterface
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *         @Assert\Type("integer")
+     *         @Assert\Choice(callback="vulnerabilities", strict=true, groups={"Strict"})
      *     },
      *     groups={"Strict"}
      * )
      */
-    private $vulnerabilityCriteriaIds = [];
+    private $vulnerabilityCriteria = [];
 
-    final public static function referralTypes()
+    public static function vulnerabilities(): array
     {
-        return array_keys(Referral::REFERRALTYPES);
+        return array_keys(\BeneficiaryBundle\Entity\VulnerabilityCriterion::all());
     }
 
     /**
@@ -362,18 +363,18 @@ class BeneficiaryInputType implements InputTypeInterface
     }
 
     /**
-     * @return int[]
+     * @return string[]
      */
-    public function getVulnerabilityCriteriaIds()
+    public function getVulnerabilityCriteria()
     {
-        return $this->vulnerabilityCriteriaIds;
+        return $this->vulnerabilityCriteria;
     }
 
     /**
-     * @param int[] $vulnerabilityCriteriaIds
+     * @param string[] $vulnerabilityCriteria
      */
-    public function setVulnerabilityCriteriaIds($vulnerabilityCriteriaIds)
+    public function setVulnerabilityCriteria($vulnerabilityCriteria)
     {
-        $this->vulnerabilityCriteriaIds = $vulnerabilityCriteriaIds;
+        $this->vulnerabilityCriteria = $vulnerabilityCriteria;
     }
 }

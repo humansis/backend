@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use CommonBundle\Pagination\Paginator;
+use DistributionBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\Codelist\CodeLists;
+use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
 use NewApiBundle\Enum\SelectionCriteriaTarget;
-use NewApiBundle\Utils\CodeLists;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -18,6 +21,14 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  */
 class SelectionCriterionController extends AbstractController
 {
+    /** @var FieldDbTransformer */
+    private $fieldDbTransformer;
+
+    public function __construct(FieldDbTransformer $fieldDbTransformer)
+    {
+        $this->fieldDbTransformer = $fieldDbTransformer;
+    }
+
     /**
      * @Rest\Get("/selection-criteria/targets")
      *
@@ -75,6 +86,22 @@ class SelectionCriterionController extends AbstractController
         }
 
         $data = CodeLists::mapEnum($data);
+
+        return $this->json(new Paginator($data));
+    }
+
+    /**
+     * @Rest\Get("/assistances/{id}/selection-criteria")
+     * @ParamConverter("assistance")
+     *
+     * @return JsonResponse
+     */
+    public function selectionCriteriaByAssistance(Assistance $assistance): JsonResponse
+    {
+        $data = [];
+        foreach ($assistance->getSelectionCriteria() as $selectionCriterion) {
+            $data[] = $this->fieldDbTransformer->toResponseArray($selectionCriterion);
+        }
 
         return $this->json(new Paginator($data));
     }

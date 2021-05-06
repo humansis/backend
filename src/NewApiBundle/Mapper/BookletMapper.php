@@ -58,6 +58,29 @@ class BookletMapper implements MapperInterface
         return $this->object->getTotalValue();
     }
 
+    public function getIndividualValues(): array
+    {
+        $fn = function (\VoucherBundle\Entity\Voucher $item) {
+            return $item->getValue();
+        };
+
+        return array_map($fn, $this->object->getVouchers()->toArray());
+    }
+
+    public function getQuantityOfVouchers(): int
+    {
+        return $this->object->getNumberVouchers();
+    }
+
+    public function getQuantityOfUsedVouchers(): int
+    {
+        $fn = function ($ax, \VoucherBundle\Entity\Voucher $dx) {
+            return $ax + ($dx->getUsedAt() ? 1 : 0);
+        };
+
+        return array_reduce($this->object->getVouchers()->toArray(), $fn, 0);
+    }
+
     public function getProjectId(): ?int
     {
         return $this->object->getProject() ? $this->object->getProject()->getId() : null;
@@ -75,6 +98,17 @@ class BookletMapper implements MapperInterface
 
     public function getDeletable(): bool
     {
-        return 0 === count($this->object->getVouchers());
+        foreach ($this->object->getVouchers() as $voucher) {
+            if (null !== $voucher->getVoucherPurchase()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function getDistributed(): bool
+    {
+        return Booklet::DISTRIBUTED === $this->object->getStatus();
     }
 }

@@ -8,6 +8,7 @@ use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Modality;
 use DistributionBundle\Entity\ModalityType;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\Codelist\CodeItem;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -24,12 +25,30 @@ class ModalityCodelistController extends AbstractController
     public function modalities(): JsonResponse
     {
         $fn = function (Modality $modality) {
-            return ['code' => $modality->getName(), 'value' => $modality->getName()];
+            return new CodeItem($modality->getName(), $modality->getName());
         };
 
         $modalities = $this->getDoctrine()->getRepository(Modality::class)->findAll();
 
         return $this->json(new Paginator(array_map($fn, $modalities)));
+    }
+
+    /**
+     * @Rest\Get("/modalities/types")
+     *
+     * @return JsonResponse
+     */
+    public function allTypes(): JsonResponse
+    {
+        $data = [];
+
+        /** @var ModalityType[] $types */
+        $types = $this->getDoctrine()->getRepository(ModalityType::class)->findBy(['internal' => false]);
+        foreach ($types as $type) {
+            $data[] = new CodeItem($type->getName(), $type->getName());
+        }
+
+        return $this->json(new Paginator($data));
     }
 
     /**
@@ -50,7 +69,7 @@ class ModalityCodelistController extends AbstractController
         foreach ($modality->getModalityTypes() as $type) {
             /** @var ModalityType $type */
             if (!$type->isInternal()) {
-                $data[] = ['code' => $type->getName(), 'value' => $type->getName()];
+                $data[] = new CodeItem($type->getName(), $type->getName());
             }
         }
 

@@ -12,8 +12,20 @@ use VoucherBundle\Entity\Booklet;
  */
 class BookletFilterInputType extends AbstractFilterInputType
 {
+
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("array")
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Type("int", groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
+     */
+    protected $id;
+
+    /**
+     * @Assert\Type("scalar")
      */
     protected $fulltext;
 
@@ -21,7 +33,7 @@ class BookletFilterInputType extends AbstractFilterInputType
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *         @Assert\Choice(callback={"NewApiBundle\InputType\BookletFilterInputType", "bookletStatuses"}, strict=true)
+     *         @Assert\Choice(callback="bookletStatuses", strict=true)
      *     },
      *     groups={"Strict"}
      * )
@@ -61,9 +73,19 @@ class BookletFilterInputType extends AbstractFilterInputType
      */
     protected $beneficiaries;
 
-    private static function bookletStatuses()
+    public static function bookletStatuses()
     {
         return array_keys(Booklet::statuses());
+    }
+
+    public function hasIds(): bool
+    {
+        return $this->has('id');
+    }
+
+    public function getIds(): array
+    {
+        return $this->id;
     }
 
     public function hasFulltext(): bool
@@ -71,7 +93,7 @@ class BookletFilterInputType extends AbstractFilterInputType
         return $this->has('fulltext');
     }
 
-    public function getFulltext(): string
+    public function getFulltext()
     {
         return $this->fulltext;
     }

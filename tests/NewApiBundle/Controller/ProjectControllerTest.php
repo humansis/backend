@@ -28,23 +28,18 @@ class ProjectControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
     public function testCreate()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('POST', '/api/basic/projects', [
             'name' => $this->projectName,
             'internalId' => 'PT23',
             'iso3' => 'KHM',
             'target' => 10,
-            'startDate' => '2010-10-10',
-            'endDate' => '2011-10-10',
+            'startDate' => '2010-10-10T00:00:00+0000',
+            'endDate' => '2011-10-10T00:00:00+0000',
             'sectors' => [SectorEnum::FOOD_SECURITY],
         ]);
 
@@ -78,11 +73,6 @@ class ProjectControllerTest extends BMSServiceTestCase
      */
     public function testSummaries($id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/projects/'.$id.'/summaries?code[]=reached_beneficiaries');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -108,18 +98,13 @@ class ProjectControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('PUT', '/api/basic/projects/'.$id, [
             'name' => $this->projectName,
             'internalId' => 'TPX',
             'iso3' => 'KHM',
             'target' => 10,
-            'startDate' => '2010-10-10',
-            'endDate' => '2011-10-10',
+            'startDate' => '2010-10-10T00:00:00+0000',
+            'endDate' => '2011-10-10T00:00:00+0000',
             'sectors' => [SectorEnum::EARLY_RECOVERY, SectorEnum::CAMP_MANAGEMENT],
         ]);
 
@@ -154,11 +139,6 @@ class ProjectControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/projects/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -189,11 +169,6 @@ class ProjectControllerTest extends BMSServiceTestCase
      */
     public function testGetList($id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/projects?filter[id][]='.$id.'&filter[fulltext]='.$this->projectName);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -205,8 +180,6 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
-        $this->assertSame(1, $result['totalCount']);
-        $this->assertSame($id, $result['data'][0]['id']);
 
         return $id;
     }
@@ -216,11 +189,6 @@ class ProjectControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('DELETE', '/api/basic/projects/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
@@ -233,11 +201,6 @@ class ProjectControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/projects/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());

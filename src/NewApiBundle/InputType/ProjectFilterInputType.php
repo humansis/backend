@@ -23,7 +23,7 @@ class ProjectFilterInputType extends AbstractFilterInputType
     protected $id;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      */
     protected $fulltext;
 
@@ -42,7 +42,7 @@ class ProjectFilterInputType extends AbstractFilterInputType
         return $this->has('fulltext');
     }
 
-    public function getFulltext(): string
+    public function getFulltext()
     {
         return $this->fulltext;
     }

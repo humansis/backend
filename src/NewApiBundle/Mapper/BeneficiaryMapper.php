@@ -41,7 +41,7 @@ class BeneficiaryMapper implements MapperInterface
 
     public function getDateOfBirth(): string
     {
-        return $this->object->getPerson()->getDateOfBirth()->format('Y-m-d');
+        return $this->object->getPerson()->getDateOfBirth()->format(\DateTime::ISO8601);
     }
 
     public function getLocalFamilyName(): string
@@ -119,7 +119,7 @@ class BeneficiaryMapper implements MapperInterface
 
         foreach ($this->object->getVulnerabilityCriteria() as $criterion) {
             if ($criterion->isActive()) {
-                $data[] = $criterion->getFieldString();
+                $data[] = (string) $criterion->getFieldString();
             }
         }
 

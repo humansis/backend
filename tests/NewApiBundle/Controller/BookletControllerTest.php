@@ -2,6 +2,10 @@
 
 namespace Tests\NewApiBundle\Controller;
 
+use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Community;
+use BeneficiaryBundle\Entity\Institution;
+use Doctrine\ORM\NoResultException;
 use Exception;
 use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
@@ -19,17 +23,12 @@ class BookletControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
     public function testCreate()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
         $this->request('POST', '/api/basic/booklets/batches', [
             'iso3' => 'KHM',
@@ -47,17 +46,29 @@ class BookletControllerTest extends BMSServiceTestCase
         );
     }
 
+    public function testUpdate()
+    {
+        $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([])[0];
+
+        $this->request('PUT', '/api/basic/booklets/'.$booklet->getId(), [
+            'quantityOfVouchers' => 2,
+            'values' => [333],
+            'password' => null,
+            'currency' => 'CZK',
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+    }
+
     /**
      * @depends testCreate
      */
     public function testGet()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        $booklet = $this->container->get('doctrine')->getRepository(Booklet::class)->findBy([])[0];
+        $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([])[0];
 
         $this->request('GET', '/api/basic/booklets/'.$booklet->getId());
 
@@ -76,7 +87,10 @@ class BookletControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('beneficiaryId', $result);
         $this->assertArrayHasKey('assistanceId', $result);
         $this->assertArrayHasKey('totalValue', $result);
+        $this->assertArrayHasKey('individualValues', $result);
+        $this->assertArrayHasKey('quantityOfVouchers', $result);
         $this->assertArrayHasKey('deletable', $result);
+        $this->assertArrayHasKey('distributed', $result);
     }
 
     /**
@@ -84,11 +98,6 @@ class BookletControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/booklets?sort[]=value.asc&filter[fulltext]=KHM');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -107,15 +116,110 @@ class BookletControllerTest extends BMSServiceTestCase
      */
     public function testDelete()
     {
+        $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([], ['id' => 'desc'], 1)[0];
+
+        $this->request('DELETE', '/api/basic/booklets/'.$booklet->getId());
+
+        $this->assertTrue($this->client->getResponse()->isEmpty());
+    }
+
+    public function testAssignToBeneficiary()
+    {
+        $doctrine = self::$container->get('doctrine');
+
+        try {
+            $result = $this->em->createQueryBuilder()
+                ->select('b.id AS beneficiaryId')
+                ->addSelect('a.id AS assistanceId')
+                ->from(Beneficiary::class, 'b')
+                ->join('b.assistanceBeneficiary', 'ab')
+                ->join('ab.assistance', 'a')
+                ->getQuery()
+                ->setMaxResults(1)
+                ->getSingleResult();
+        } catch (NoResultException $e) {
+            $this->markTestSkipped('There needs to be at least one beneficiary assigned to an assistance to complete this test');
+            return;
+        }
+
+        $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED])[0];
+
+        $this->request('PUT', '/api/basic/assistances/'.$result['assistanceId'].'/beneficiaries/'.$result['beneficiaryId'].'/booklets/'.$booklet->getCode());
+
+        $this->assertTrue(
+            $this->client->getResponse()->isEmpty(),
+            'Request failed: '.$this->client->getResponse()->getStatusCode()
+        );
+        $this->assertEquals(Booklet::DISTRIBUTED, $doctrine->getRepository(Booklet::class)->find(['id' => $booklet->getId()])->getStatus());
+    }
+
+    public function testAssignToCommunity()
+    {
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $booklet = $this->container->get('doctrine')->getRepository(Booklet::class)->findBy([], ['id' => 'desc'], 1)[0];
+        $doctrine = self::$container->get('doctrine');
 
-        $this->request('DELETE', '/api/basic/booklets/'.$booklet->getId());
+        try {
+            $result = $this->em->createQueryBuilder()
+                ->select('c.id AS communityId')
+                ->addSelect('a.id AS assistanceId')
+                ->from(Community::class, 'c')
+                ->join('c.assistanceBeneficiary', 'ab')
+                ->join('ab.assistance', 'a')
+                ->getQuery()
+                ->setMaxResults(1)
+                ->getSingleResult();
+        } catch (NoResultException $e) {
+            $this->markTestSkipped('There needs to be at least one community assigned to an assistance to complete this test');
+            return;
+        }
 
-        $this->assertTrue($this->client->getResponse()->isEmpty());
+        $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED])[0];
+
+        $this->request('PUT', '/api/basic/assistances/'.$result['assistanceId'].'/communities/'.$result['communityId'].'/booklets/'.$booklet->getCode());
+
+        $this->assertTrue(
+            $this->client->getResponse()->isEmpty(),
+            'Request failed: '.$this->client->getResponse()->getStatusCode()
+        );
+        $this->assertEquals(Booklet::DISTRIBUTED, $doctrine->getRepository(Booklet::class)->find(['id' => $booklet->getId()])->getStatus());
+    }
+
+    public function testAssignToInstitution()
+    {
+        // Log a user in order to go through the security firewall
+        $user = $this->getTestUser(self::USER_TESTER);
+        $token = $this->getUserToken($user);
+        $this->tokenStorage->setToken($token);
+
+        $doctrine = self::$container->get('doctrine');
+
+        try {
+            $result = $this->em->createQueryBuilder()
+                ->select('i.id AS institutionId')
+                ->addSelect('a.id AS assistanceId')
+                ->from(Institution::class, 'i')
+                ->join('i.assistanceBeneficiary', 'ab')
+                ->join('ab.assistance', 'a')
+                ->getQuery()
+                ->setMaxResults(1)
+                ->getSingleResult();
+        } catch (NoResultException $e) {
+            $this->markTestSkipped('There needs to be at least one institution assigned to an assistance to complete this test');
+            return;
+        }
+
+        $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED])[0];
+
+        $this->request('PUT', '/api/basic/assistances/'.$result['assistanceId'].'/institutions/'.$result['institutionId'].'/booklets/'.$booklet->getCode());
+
+        $this->assertTrue(
+            $this->client->getResponse()->isEmpty(),
+            'Request failed: '.$this->client->getResponse()->getStatusCode()
+        );
+        $this->assertEquals(Booklet::DISTRIBUTED, $doctrine->getRepository(Booklet::class)->find(['id' => $booklet->getId()])->getStatus());
     }
 }

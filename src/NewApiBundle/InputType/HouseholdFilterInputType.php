@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
-use BeneficiaryBundle\Entity\Referral;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -13,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class HouseholdFilterInputType extends AbstractFilterInputType
 {
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      */
     protected $fulltext;
 
@@ -37,7 +36,7 @@ class HouseholdFilterInputType extends AbstractFilterInputType
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *         @Assert\Type("integer", groups={"Strict"})
+     *         @Assert\Choice(callback="vulnerabilities", strict=true, groups={"Strict"})
      *     },
      *     groups={"Strict"}
      * )
@@ -70,7 +69,7 @@ class HouseholdFilterInputType extends AbstractFilterInputType
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *         @Assert\Choice(callback="referralTypes")
+     *         @Assert\Choice(callback={"BeneficiaryBundle\Entity\Referral", "types"})
      *     },
      *     groups={"Strict"}
      * )
@@ -99,9 +98,9 @@ class HouseholdFilterInputType extends AbstractFilterInputType
      */
     protected $locations;
 
-    final public static function referralTypes()
+    public static function vulnerabilities(): array
     {
-        return array_keys(Referral::REFERRALTYPES);
+        return array_keys(\BeneficiaryBundle\Entity\VulnerabilityCriterion::all());
     }
 
     public function hasFulltext(): bool

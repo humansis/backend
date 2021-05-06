@@ -18,7 +18,7 @@ class SectorsCodelistControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
     /**
@@ -26,11 +26,6 @@ class SectorsCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetSectors()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/sectors');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -52,11 +47,6 @@ class SectorsCodelistControllerTest extends BMSServiceTestCase
     public function testGetSubSectors()
     {
         $testSector = SectorEnum::all()[0];
-
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
 
         $this->request('GET', '/api/basic/sectors/'.$testSector.'/subsectors');
 

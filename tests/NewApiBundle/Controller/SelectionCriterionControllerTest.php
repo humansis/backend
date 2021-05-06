@@ -18,7 +18,7 @@ class SelectionCriterionControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
     /**
@@ -26,11 +26,6 @@ class SelectionCriterionControllerTest extends BMSServiceTestCase
      */
     public function testGetTargets()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/selection-criteria/targets');
 
         $this->assertTrue(
@@ -52,11 +47,6 @@ class SelectionCriterionControllerTest extends BMSServiceTestCase
      */
     public function testGetFields()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/selection-criteria/targets/'.SelectionCriteriaTarget::BENEFICIARY.'/fields', ['country' => 'KHM']);
 
         $this->assertTrue(
@@ -66,9 +56,9 @@ class SelectionCriterionControllerTest extends BMSServiceTestCase
         $this->assertJsonFragment('{
             "totalCount": "*",
             "data": [
-                {"code": "gender", "type": "gender"},
-                {"code": "dateOfBirth", "type": "date"},
-                {"code": "hasNotBeenInDistributionsSince", "type": "boolean"}
+                {"code": "gender", "type": "gender", "value": "Gender"},
+                {"code": "dateOfBirth", "type": "date", "value": "Date of Birth"},
+                {"code": "hasNotBeenInDistributionsSince", "type": "boolean", "value": "Has Not Been in a Distribution Since"}
             ]
         }', $this->client->getResponse()->getContent());
     }
@@ -78,11 +68,6 @@ class SelectionCriterionControllerTest extends BMSServiceTestCase
      */
     public function testGetConditions()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/selection-criteria/targets/'.SelectionCriteriaTarget::BENEFICIARY.'/fields/gender/conditions', ['country' => 'KHM']);
 
         $this->assertTrue(

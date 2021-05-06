@@ -10,6 +10,8 @@ parameters:
     mailer_host: 127.0.0.1
     mailer_user: ~
     mailer_password: ~
+    mailer_port: 587
+    mailer_encryption: tls
 
     secret: ThisTokenIsNotSoSecretChangeIt
     aws_access_key_id: ""
@@ -22,3 +24,5 @@ parameters:
     mobile_app_master_key: "123456789ABCDEF"
     mobile_app_version: "1"
     mobile_app_id: "1A1234"
+
+    jwt_passphrase: '%env(JWT_PASSPHRASE)%'

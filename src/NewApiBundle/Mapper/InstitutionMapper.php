@@ -34,6 +34,13 @@ class InstitutionMapper implements MapperInterface
         return $this->object->getId();
     }
 
+    public function getProjectIds(): array
+    {
+        return array_map(function ($item) {
+            return $item->getId();
+        }, $this->object->getProjects()->toArray());
+    }
+
     public function getLongitude(): ?string
     {
         return $this->object->getLongitude();

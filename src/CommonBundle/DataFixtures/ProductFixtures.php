@@ -3,7 +3,6 @@
 
 namespace CommonBundle\DataFixtures;
 
-use CommonBundle\Controller\CountryController;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use VoucherBundle\Entity\Product;
@@ -24,6 +23,16 @@ class ProductFixtures extends Fixture
 
     ];
 
+    private $countries = [];
+
+    public function __construct(array $countries)
+    {
+        $this->countries = [];
+        foreach ($countries as $country) {
+            $this->countries[$country['iso3']] = $country;
+        }
+    }
+
     /**
      * Load data fixtures with the passed EntityManager
      *
@@ -43,7 +52,7 @@ class ProductFixtures extends Fixture
                 $product->setCountryISO3($datum[4]);
                 $manager->persist($product);
             } else {
-                foreach (CountryController::COUNTRIES as $country) {
+                foreach ($this->countries as $country) {
                     $p = clone $product;
                     $p->setCountryISO3($country['iso3']);
                     $manager->persist($p);

@@ -4,18 +4,14 @@ declare(strict_types=1);
 
 namespace DistributionBundle\Export;
 
-use CommonBundle\Controller\CountryController;
 use CommonBundle\Entity\Organization;
 use CommonBundle\Mapper\LocationMapper;
-use CommonBundle\Utils\StringUtils;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -55,10 +51,10 @@ class SmartcardInvoiceExport
         $this->purchaseRepository = $purchaseRepository;
     }
 
-    public function export(SmartcardRedemptionBatch $batch, Organization $organization, User $user)
+    public function export(SmartcardRedemptionBatch $batch, Organization $organization, User $user, string $language)
     {
         $countryIso3 = self::extractCountryIso3($batch->getVendor());
-        $language = CountryController::COUNTRIES[$countryIso3]['language'] ?? 'en';
+
         $this->translator->setLocale($language);
 
         $spreadsheet = new Spreadsheet();
@@ -97,8 +93,6 @@ class SmartcardInvoiceExport
         $worksheet->getColumnDimension('I')->setWidth(12.425);
         $worksheet->getColumnDimension('J')->setWidth(10.996);
         $worksheet->getColumnDimension('K')->setWidth(02.429);
-
-        $worksheet->getRowDimension('A1:A10000')->setRowHeight(4.064);
 
         $worksheet->getStyle('A1:K10000')->getFont()
             ->setBold(true)
@@ -217,11 +211,13 @@ class SmartcardInvoiceExport
         self::undertranslatedSmallHeadline($worksheet, $translator, "Supplier", "B", $row1);
         $worksheet->setCellValue("C$row1", $batch->getVendor()->getName());
         self::undertranslatedSmallHeadline($worksheet, $translator, "Vendor No.", "H", $row1);
+        $worksheet->setCellValue("I$row1", $batch->getVendor()->getVendorNo());
         // style
         $worksheet->getRowDimension($row1)->setRowHeight(20);
         $worksheet->getRowDimension($row2)->setRowHeight(20);
         $worksheet->getStyle("H$row1")->getAlignment()->setWrapText(true);
         self::setImportantFilledInfo($worksheet, "C$row1");
+        self::setImportantFilledInfo($worksheet, "I$row1");
         $worksheet->getStyle("C$row1:G$row2")->getBorders()
             ->getOutline()
             ->setBorderStyle(Border::BORDER_THIN);
@@ -241,6 +237,7 @@ class SmartcardInvoiceExport
         $worksheet->mergeCells("C$row1:C$row3");
         // data
         $worksheet->setCellValue("B$row1", self::addTrans($translator, 'Contract No.', self::EOL));
+        $worksheet->setCellValue("C$row1", $batch->getContractNo());
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Period Start', 'D', $row1);
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Period End', 'E', $row1);
         $worksheet->setCellValue("F$row1", self::addTrans($translator, 'Payment Method', self::EOL));
@@ -269,6 +266,7 @@ class SmartcardInvoiceExport
         self::setSmallHeadline($worksheet, "B$row3:J$row3");
         self::setSmallHeadline($worksheet, "B$row1");
         self::setSmallHeadline($worksheet, "F$row1");
+        self::setImportantFilledInfo($worksheet, "C$row1");
         self::setImportantFilledInfo($worksheet, "H$row3");
         self::setImportantFilledInfo($worksheet, "I$row3");
         self::setImportantFilledInfo($worksheet, "J$row3");
@@ -410,8 +408,9 @@ class SmartcardInvoiceExport
             $worksheet->mergeCells("B$lineStart:C$lineStart");
             $worksheet->mergeCells("G$lineStart:H$lineStart");
             self::sidetranslated($worksheet, $translator, $purchasedProduct['name'], "B", $lineStart);
-            $worksheet->setCellValue('D'.$lineStart, $purchasedProduct['quantity']);
-            self::sidetranslated($worksheet, $translator, $purchasedProduct['unit'], "E", $lineStart);
+            // temporary removed because PIN-1651: current data are incorrect, distributed by Qty 1 for everything
+            // $worksheet->setCellValue('D'.$lineStart, $purchasedProduct['quantity']);
+            // self::sidetranslated($worksheet, $translator, $purchasedProduct['unit'], "E", $lineStart);
             $worksheet->setCellValue('F'.$lineStart, '');
             $worksheet->setCellValue('G'.$lineStart, sprintf('%.2f', $purchasedProduct['value']));
             $worksheet->setCellValue('I'.$lineStart, $purchasedProduct['currency']);

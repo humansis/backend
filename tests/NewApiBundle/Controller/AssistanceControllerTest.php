@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\Community;
 use CommonBundle\Entity\Location;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
+use DistributionBundle\Enum\AssistanceType;
 use Exception;
 use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
@@ -22,18 +23,13 @@ class AssistanceControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
     public function testGetItem()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Assistance $assistance */
-        $assistance = $this->container->get('doctrine')->getRepository(Assistance::class)->findBy([])[0];
+        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy([])[0];
         $commodityIds = array_map(function (\DistributionBundle\Entity\Commodity $commodity) {
             return $commodity->getId();
         }, $assistance->getCommodities()->toArray());
@@ -47,11 +43,16 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertJsonFragment('{
             "id": '.$assistance->getId().',
             "name": "'.$assistance->getName().'",
-            "dateDistribution": "'.$assistance->getDateDistribution()->format('Y-m-d').'",
+            "dateDistribution": "'.$assistance->getDateDistribution()->format(\DateTime::ISO8601).'",
             "projectId": '.$assistance->getProject()->getId().',
             "locationId": '.$assistance->getLocation()->getId().',
             "target": "'.$assistance->getTargetType().'",
             "type": "'.$assistance->getAssistanceType().'",
+            "sector": "'.$assistance->getSector().'",
+            "subsector": "*",
+            "householdsTargeted": '.($assistance->getHouseholdsTargeted() ?: 'null').',
+            "individualsTargeted": '.($assistance->getIndividualsTargeted() ?: 'null').',
+            "description": "*",
             "commodityIds": ['.implode(',', $commodityIds).'],
             "validated": '.($assistance->getValidated() ? 'true' : 'false').',
             "completed": '.($assistance->getCompleted() ? 'true' : 'false').'
@@ -60,12 +61,15 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     public function testList()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
+        /** @var Project $project */
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        /** @var Location $location */
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
-        $this->request('GET', '/api/basic/assistances');
+        $this->request('GET', '/api/basic/assistances?filter[type]='.AssistanceType::DISTRIBUTION.
+                                                    '&filter[modalityTypes][]=Smartcard'.
+                                                    '&filter[projects][]='.$project->getId().
+                                                    '&filter[locations][]='.$location->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -80,12 +84,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     public function testAsisstancesByProject()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
         $this->request('GET', '/api/basic/projects/'.$project->getId().'/assistances');
 
@@ -102,19 +101,14 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     public function testCreateDistribution()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Project $project */
-        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
         /** @var Location $location */
-        $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
         /** @var ModalityType $modalityType */
-        $modalityType = $this->container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Cash'])[0];
+        $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Cash'])[0];
 
         $this->request('POST', '/api/basic/assistances', [
             'iso3' => 'KHM',
@@ -123,7 +117,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'dateDistribution' => '2021-03-10T13:45:32.988Z',
             'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
             'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
-            'type' => \DistributionBundle\Enum\AssistanceType::DISTRIBUTION,
+            'type' => AssistanceType::DISTRIBUTION,
             'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
@@ -153,22 +147,22 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "locationId": "*",
             "target": "*",
             "type": "*",
+            "sector": "*",
+            "subsector": "*",
+            "householdsTargeted": "*",
+            "individualsTargeted": "*",
+            "description": "*",
             "commodityIds": ["*"]
         }', $this->client->getResponse()->getContent());
     }
 
     public function testCreateActivity()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Project $project */
-        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
         /** @var Location $location */
-        $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
         $this->request('POST', '/api/basic/assistances', [
             'iso3' => 'KHM',
@@ -177,7 +171,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'dateDistribution' => '2000-12-01T01:01:01+00:00',
             'sector' => \ProjectBundle\DBAL\SectorEnum::LIVELIHOODS,
             'subsector' => \ProjectBundle\DBAL\SubSectorEnum::SKILLS_TRAINING,
-            'type' => \DistributionBundle\Enum\AssistanceType::ACTIVITY,
+            'type' => AssistanceType::ACTIVITY,
             'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'selectionCriteria' => [
@@ -205,25 +199,25 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "locationId": "*",
             "target": "*",
             "type": "*",
-            "commodityIds": ["*"]
+            "sector": "*",
+            "subsector": "*",
+            "householdsTargeted": "*",
+            "individualsTargeted": "*",
+            "description": "*",
+            "commodityIds": "*"
         }', $this->client->getResponse()->getContent());
     }
 
     public function testCreateCommunityActivity()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Project $project */
-        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
         /** @var Location $location */
-        $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
         /** @var Community $community */
-        $community = $this->container->get('doctrine')->getRepository(Community::class)->findBy([])[0];
+        $community = self::$container->get('doctrine')->getRepository(Community::class)->findBy([])[0];
 
         $this->request('POST', '/api/basic/assistances', [
             'iso3' => 'KHM',
@@ -232,7 +226,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'dateDistribution' => '2000-12-01T01:01:01+0000',
             'sector' => \ProjectBundle\DBAL\SectorEnum::SHELTER,
             'subsector' => \ProjectBundle\DBAL\SubSectorEnum::CONSTRUCTION,
-            'type' => \DistributionBundle\Enum\AssistanceType::ACTIVITY,
+            'type' => AssistanceType::ACTIVITY,
             'target' => \DistributionBundle\Enum\AssistanceTargetType::COMMUNITY,
             'communities' => [$community->getId()],
             'description' => 'test construction activity',
@@ -252,6 +246,11 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "locationId": "*",
             "target": "*",
             "type": "*",
+            "sector": "*",
+            "subsector": "*",
+            "householdsTargeted": "*",
+            "individualsTargeted": "*",
+            "description": "*",
             "commodityIds": []
         }', $this->client->getResponse()->getContent());
     }

@@ -2,7 +2,12 @@
 
 namespace DistributionBundle\Repository;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Entity\GeneralReliefItem;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\GeneralReliefFilterInputType;
+use NewApiBundle\Request\Pagination;
 
 /**
  * GeneralReliefItemRepository
@@ -16,12 +21,35 @@ class GeneralReliefItemRepository extends \Doctrine\ORM\EntityRepository
     {
         $qb = $this->createQueryBuilder("gri");
         $q = $qb->select("COUNT(DISTINCT gri)")
-                ->leftJoin("gri.assistanceBeneficiary", "db")
-                ->leftJoin("db.assistance", "dd")
-                ->where("dd = :distribution")
-                ->setParameter("distribution", $assistance)
-                ->andWhere("gri.distributedAt is NULL");
-        
+            ->leftJoin("gri.assistanceBeneficiary", "db")
+            ->leftJoin("db.assistance", "dd")
+            ->where("dd = :distribution")
+            ->setParameter("distribution", $assistance)
+            ->andWhere("gri.distributedAt is NULL");
+
         return $q->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * @param GeneralReliefFilterInputType $filter
+     * @param Pagination|null              $pagination
+     *
+     * @return Paginator|GeneralReliefItem[]
+     */
+    public function findByParams(GeneralReliefFilterInputType $filter, ?Pagination $pagination = null): Paginator
+    {
+        $qbr = $this->createQueryBuilder('gri');
+
+        if ($pagination) {
+            $qbr->setMaxResults($pagination->getLimit())
+                ->setFirstResult($pagination->getOffset());
+        }
+
+        if ($filter->hasIds()) {
+            $qbr->andWhere('gri.id IN (:ids)')
+                ->setParameter('ids', $filter->getIds());
+        }
+
+        return new Paginator($qbr);
     }
 }

@@ -19,9 +19,6 @@ class SmartcardServiceTest extends KernelTestCase
 {
     const VENDOR_USERNAME = 'one-purpose-vendor@example.org';
 
-    /** @var \Symfony\Component\DependencyInjection\ContainerInterface|null */
-    private $container;
-
     /** @var ObjectManager|null */
     private $em;
 
@@ -38,16 +35,14 @@ class SmartcardServiceTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->container = static::$kernel->getContainer();
-
         //Preparing the EntityManager
-        $this->em = $this->container
+        $this->em = static::$kernel->getContainer()
             ->get('doctrine')
             ->getManager();
 
-        $this->smartcardService = $this->container->get('smartcard_service');
+        $this->smartcardService = static::$kernel->getContainer()->get('smartcard_service');
 
-        $this->createTempVendor();
+        $this->createTempVendor($this->em);
         $this->em->persist($this->vendor);
 
         $this->smartcardNumber = substr(md5((uniqid())), 0, 7);
@@ -229,20 +224,21 @@ class SmartcardServiceTest extends KernelTestCase
         }
     }
 
-    private function createTempVendor(): void
+    private function createTempVendor(\Doctrine\ORM\EntityManagerInterface $em): void
     {
         $id = substr(md5(uniqid()), 0, 5)."_";
         $adm1 = $this->em->getRepository(Adm1::class)->findOneBy(['countryISO3' => 'SYR']);
         $adm2 = $this->em->getRepository(Adm2::class)->findOneBy(['adm1' => $adm1]);
 
         $user = new User();
+        $user->injectObjectManager($em);
         $user->setEnabled(1)
             ->setEmail($id.self::VENDOR_USERNAME)
             ->setEmailCanonical($id.self::VENDOR_USERNAME)
             ->setUsername($id.self::VENDOR_USERNAME)
             ->setUsernameCanonical($id.self::VENDOR_USERNAME)
             ->setSalt('')
-            ->setRoles([])
+            ->setRoles(['ROLE_ADMIN'])
             ->setChangePassword(0);
         $user->setPassword('');
 

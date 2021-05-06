@@ -3,10 +3,9 @@
 namespace Tests\NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
-use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use ProjectBundle\Entity\Project;
@@ -24,7 +23,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
     /**
@@ -32,11 +31,6 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
      */
     public function testGetBeneficiary()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $beneficiary = $em->getRepository(Beneficiary::class)->findBy([])[0];
@@ -73,11 +67,6 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
      */
     public function testGetBeneficiaries()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $beneficiary = $em->getRepository(Beneficiary::class)->findBy([])[0];
@@ -96,50 +85,45 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $this->assertSame(1, $result['totalCount']);
     }
 
-    public function testGetBeneficiariesByAssistance()
+    public function testAddReferral()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
+        $bnfId = $this->em->createQueryBuilder()
+            ->select('b.id')
+            ->from(Beneficiary::class, 'b')
+            ->join('b.person', 'p')
+            ->leftJoin('p.referral', 'r')
+            ->where('r.id IS NULL')
+            ->getQuery()
+            ->setMaxResults(1)
+            ->getSingleScalarResult();
 
-        /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $assistance = $em->getRepository(\DistributionBundle\Entity\Assistance::class)->findOneBy([
-            'validated' => true,
+        $this->request('PATCH', '/api/basic/beneficiaries/'.$bnfId, [
+            'referralType' => \BeneficiaryBundle\Entity\Referral::types()[0],
+            'referralComment' => 'test status',
         ]);
-        $assistanceBeneficiary = $em->getRepository(\DistributionBundle\Entity\AssistanceBeneficiary::class)->findOneBy([
-            'assistance' => $assistance,
-        ]);
-
-        $this->request('GET', '/api/basic/assistances/'.$assistanceBeneficiary->getAssistance()->getId().'/beneficiaries?sort[]=nationalId');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
             'Request failed: '.$this->client->getResponse()->getContent()
         );
         $this->assertJsonFragment('{
-            "totalCount": "*", 
-            "data": [
-                {
-                    "id": "*",
-                    "dateOfBirth": "*",
-                    "localFamilyName": "*",
-                    "localGivenName": "*",
-                    "localParentsName": "*",
-                    "enFamilyName": "*",
-                    "enGivenName": "*",
-                    "enParentsName": "*",
-                    "gender": "*",
-                    "nationalIds": "*",
-                    "phoneIds": "*",
-                    "referralType": "*",
-                    "referralComment": "*",
-                    "residencyStatus": "*",
-                    "isHead": "*",
-                    "vulnerabilityCriteria": "*"
-                }
-            ]}', $this->client->getResponse()->getContent());
+            "id": "*",
+            "dateOfBirth": "*",
+            "localFamilyName": "*",
+            "localGivenName": "*",
+            "localParentsName": "*",
+            "enFamilyName": "*",
+            "enGivenName": "*",
+            "enParentsName": "*",
+            "gender": "*",
+            "nationalIds": "*",
+            "phoneIds": "*",
+            "referralType": "1",
+            "referralComment": "test status",
+            "residencyStatus": "*",
+            "isHead": "*",
+            "vulnerabilityCriteria": "*"
+        }', $this->client->getResponse()->getContent());
     }
 
     /**
@@ -147,11 +131,6 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
      */
     public function testGetNationalId()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $nationalId = $em->getRepository(NationalId::class)->findBy([])[0];
@@ -175,11 +154,6 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
      */
     public function testGetNationalIds()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $nationalId = $em->getRepository(NationalId::class)->findBy([])[0];
@@ -198,11 +172,6 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
      */
     public function testGetPhone()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $phone = $em->getRepository(Phone::class)->findBy([])[0];
@@ -228,11 +197,6 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
      */
     public function testGetPhones()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $phone1 = $em->getRepository(Phone::class)->findBy([])[0];
@@ -251,53 +215,18 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @throws Exception
-     */
-    public function testAddBeneficiaryToAssistance()
-    {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $assistance = $em->getRepository(Assistance::class)->findOneBy([
-            'validated' => true,
-            'completed' => false,
-            'archived' => false,
-        ]);
-        $beneficiary = $em->getRepository(Beneficiary::class)->findOneBy([], ['id'=>'desc']);
-
-        $this->request('PUT', '/api/basic/assistances/'.$assistance->getId().'/beneficiaries', [
-            'beneficiaryIds' => [$beneficiary->getId()],
-            'justification' => 'test',
-        ]);
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
-    }
-
-    /**
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function testGetBeneficiariesByProject()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $project = $em->getRepository(Project::class)->findOneBy([
             'archived' => false,
         ]);
 
-        $this->request('GET', '/api/basic/projects/'.$project->getId().'/beneficiaries?filter[assistanceTarget]=household');
+        $this->request('GET', '/api/basic/projects/'.$project->getId().'/targets/'.AssistanceTargetType::INDIVIDUAL.'/beneficiaries');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

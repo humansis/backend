@@ -41,7 +41,6 @@ class SelectionCriterionInputType implements InputTypeInterface
     private $condition;
 
     /**
-     * @Assert\NotBlank
      * @Assert\NotNull
      */
     private $value;

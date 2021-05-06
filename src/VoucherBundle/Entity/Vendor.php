@@ -3,7 +3,6 @@
 namespace VoucherBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
@@ -89,6 +88,20 @@ class Vendor implements ExportableInterface
      * @SymfonyGroups({"FullVendor"})
      */
     private $user;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="vendor_no", type="string", nullable=true)
+     */
+    private $vendorNo;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="contract_no", type="string", nullable=true)
+     */
+    private $contractNo;
 
     public function __construct()
     {
@@ -315,10 +328,52 @@ class Vendor implements ExportableInterface
             "Address number" => $this->getAddressNumber(),
             "Address street" => $this->getAddressStreet(),
             "Address postcode" => $this->getAddressPostcode(),
+            'Contract No.' => $this->getContractNo(),
+            'Vendor No.'=> $this->getVendorNo(),
             "adm1" => $adm1,
             "adm2" =>$adm2,
             "adm3" =>$adm3,
             "adm4" =>$adm4,
         ];
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getVendorNo(): ?string
+    {
+        return $this->vendorNo;
+    }
+
+    /**
+     * @param string|null $vendorNo
+     *
+     * @return Vendor
+     */
+    public function setVendorNo(?string $vendorNo): self
+    {
+        $this->vendorNo = $vendorNo;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getContractNo(): ?string
+    {
+        return $this->contractNo;
+    }
+
+    /**
+     * @param string|null $contractNo
+     *
+     * @return Vendor
+     */
+    public function setContractNo(?string $contractNo): self
+    {
+        $this->contractNo = $contractNo;
+
+        return $this;
     }
 }

@@ -76,6 +76,13 @@ class SmartcardRedemptionBatch implements JsonSerializable
     private $currency;
 
     /**
+     * @var string|null
+     *
+     * @ORM\Column(name="contract_no", type="string", nullable=true)
+     */
+    private $contractNo;
+
+    /**
      * @var Collection|SmartcardPurchase[]
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardPurchase", mappedBy="redemptionBatch", cascade={"persist"}, orphanRemoval=false)
@@ -91,10 +98,19 @@ class SmartcardRedemptionBatch implements JsonSerializable
      * @param User         $redeemedBy
      * @param mixed        $value
      * @param string       $currency
+     * @param string|null  $contractNo
      * @param iterable     $purchases
      */
-    public function __construct(Vendor $vendor, ?Project $project, DateTime $redeemedAt, User $redeemedBy, $value, string $currency,
-                                iterable $purchases)
+    public function __construct(
+        Vendor $vendor,
+        ?Project $project,
+        DateTime $redeemedAt,
+        User $redeemedBy,
+        $value,
+        string $currency,
+        ?string $contractNo,
+        iterable $purchases
+    )
     {
         $this->vendor = $vendor;
         $this->project = $project;
@@ -103,6 +119,7 @@ class SmartcardRedemptionBatch implements JsonSerializable
         $this->value = $value;
         $this->currency = $currency;
         $this->purchases = new ArrayCollection($purchases);
+        $this->contractNo = $contractNo;
     }
 
     /**
@@ -211,6 +228,14 @@ class SmartcardRedemptionBatch implements JsonSerializable
         $this->purchases = $purchases;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getContractNo(): ?string
+    {
+        return $this->contractNo;
+    }
+
     public function jsonSerialize()
     {
         return [
@@ -220,6 +245,7 @@ class SmartcardRedemptionBatch implements JsonSerializable
             'count' => $this->purchases->count(),
             'value' => (float) $this->value,
             'currency' => $this->currency,
+            'contract_no' => $this->contractNo,
             'project_id' => $this->getProject() ? $this->getProject()->getId() : null,
             'project_name' => $this->getProject() ? $this->getProject()->getName() : null,
         ];

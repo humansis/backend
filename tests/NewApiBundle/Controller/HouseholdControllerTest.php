@@ -3,10 +3,12 @@
 namespace Tests\NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Camp;
+use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;
 use CommonBundle\Entity\Location;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Enum\Livelihood;
@@ -24,25 +26,20 @@ class HouseholdControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
     public function testCreate()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        $project = $this->container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
-        $vulnerabilityCriterion = $this->container->get('doctrine')->getRepository(VulnerabilityCriterion::class)->findBy([])[0];
-        $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $vulnerabilityCriterion = self::$container->get('doctrine')->getRepository(VulnerabilityCriterion::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
         $this->request('POST', '/api/basic/households', [
             'livelihood' => Livelihood::DAILY_LABOUR,
             'iso3' => 'KHM',
-            'assets' => [1],
-            'shelterStatus' => 1,
+            'assets' => ['1'],
+            'shelterStatus' => '1',
             'projectIds' => [$project->getId()],
             'notes' => 'some notes',
             'longitude' => null,
@@ -81,7 +78,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             'copingStrategiesIndex' => 0,
             'debtLevel' => 0,
             'supportDateReceived' => '2020-01-01',
-            'supportReceivedTypes' => [0],
+            'supportReceivedTypes' => ['0'],
             'supportOrganizationName' => 'some organisation',
             'incomeSpentOnFood' => 0,
             'houseIncome' => null,
@@ -98,6 +95,22 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'name' => 'string',
                     'locationId' => $location->getId(),
                 ],
+            ],
+            'proxyLocalFamilyName' => 'Bond',
+            'proxyLocalGivenName' => 'James',
+            'proxyLocalParentsName' => 'Jones',
+            'proxyEnFamilyName' => null,
+            'proxyEnGivenName' => null,
+            'proxyEnParentsName' => null,
+            'proxyNationalIdCard' => [
+                'number' => '022-33-1547',
+                'type' => NationalId::TYPE_NATIONAL_ID,
+            ],
+            'proxyPhone' => [
+                'prefix' => '420',
+                'number' => '123456789',
+                'type' => 'Landline',
+                'proxy' => true,
             ],
         ]);
 
@@ -131,6 +144,14 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('campAddressId', $result);
         $this->assertArrayHasKey('residenceAddressId', $result);
         $this->assertArrayHasKey('temporarySettlementAddressId', $result);
+        $this->assertArrayHasKey('proxyLocalFamilyName', $result);
+        $this->assertArrayHasKey('proxyLocalGivenName', $result);
+        $this->assertArrayHasKey('proxyLocalParentsName', $result);
+        $this->assertArrayHasKey('proxyEnFamilyName', $result);
+        $this->assertArrayHasKey('proxyEnGivenName', $result);
+        $this->assertArrayHasKey('proxyEnParentsName', $result);
+        $this->assertArrayHasKey('proxyNationalIdCardId', $result);
+        $this->assertArrayHasKey('proxyPhoneId', $result);
 
         return $result['id'];
     }
@@ -140,20 +161,15 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        $vulnerabilityCriterion = $this->container->get('doctrine')->getRepository(VulnerabilityCriterion::class)->findBy([])[0];
-        $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
-        $camp = $this->container->get('doctrine')->getRepository(Camp::class)->findBy([])[0];
+        $vulnerabilityCriterion = self::$container->get('doctrine')->getRepository(VulnerabilityCriterion::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $camp = self::$container->get('doctrine')->getRepository(Camp::class)->findBy([])[0];
 
         $this->request('PUT', '/api/basic/households/'.$id, [
             'livelihood' => Livelihood::FARMING_AGRICULTURE,
             'iso3' => 'KHM',
-            'assets' => [1, 2],
-            'shelterStatus' => 1,
+            'assets' => ['1', '2'],
+            'shelterStatus' => '1',
             'projectIds' => [],
             'notes' => 'some notes',
             'longitude' => null,
@@ -192,7 +208,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             'copingStrategiesIndex' => 0,
             'debtLevel' => 0,
             'supportDateReceived' => '2020-01-01',
-            'supportReceivedTypes' => [0],
+            'supportReceivedTypes' => ['0'],
             'supportOrganizationName' => 'some organisation',
             'incomeSpentOnFood' => 0,
             'houseIncome' => null,
@@ -206,6 +222,22 @@ class HouseholdControllerTest extends BMSServiceTestCase
             'campAddress' => [
                 'tentNumber' => 'string',
                 'campId' => $camp->getId(),
+            ],
+            'proxyLocalFamilyName' => 'Bond',
+            'proxyLocalGivenName' => 'James',
+            'proxyLocalParentsName' => 'Jones',
+            'proxyEnFamilyName' => null,
+            'proxyEnGivenName' => null,
+            'proxyEnParentsName' => null,
+            'proxyNationalIdCard' => [
+                'number' => '022-33-1547',
+                'type' => NationalId::TYPE_NATIONAL_ID,
+            ],
+            'proxyPhone' => [
+                'prefix' => '420',
+                'number' => '123456789',
+                'type' => 'Landline',
+                'proxy' => true,
             ],
         ]);
 
@@ -240,6 +272,14 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('campAddressId', $result);
         $this->assertArrayHasKey('residenceAddressId', $result);
         $this->assertArrayHasKey('temporarySettlementAddressId', $result);
+        $this->assertArrayHasKey('proxyLocalFamilyName', $result);
+        $this->assertArrayHasKey('proxyLocalGivenName', $result);
+        $this->assertArrayHasKey('proxyLocalParentsName', $result);
+        $this->assertArrayHasKey('proxyEnFamilyName', $result);
+        $this->assertArrayHasKey('proxyEnGivenName', $result);
+        $this->assertArrayHasKey('proxyEnParentsName', $result);
+        $this->assertArrayHasKey('proxyNationalIdCardId', $result);
+        $this->assertArrayHasKey('proxyPhoneId', $result);
 
         return $id;
     }
@@ -249,11 +289,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/households/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -287,6 +322,14 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('campAddressId', $result);
         $this->assertArrayHasKey('residenceAddressId', $result);
         $this->assertArrayHasKey('temporarySettlementAddressId', $result);
+        $this->assertArrayHasKey('proxyLocalFamilyName', $result);
+        $this->assertArrayHasKey('proxyLocalGivenName', $result);
+        $this->assertArrayHasKey('proxyLocalParentsName', $result);
+        $this->assertArrayHasKey('proxyEnFamilyName', $result);
+        $this->assertArrayHasKey('proxyEnGivenName', $result);
+        $this->assertArrayHasKey('proxyEnParentsName', $result);
+        $this->assertArrayHasKey('proxyNationalIdCardId', $result);
+        $this->assertArrayHasKey('proxyPhoneId', $result);
 
         return $id;
     }
@@ -296,11 +339,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/households?sort[]=localFirstName.asc&filter[gender]=F');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -319,11 +357,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('DELETE', '/api/basic/households/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
@@ -336,13 +369,28 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/households/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testAddHouseholdToProject()
+    {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $project = $em->getRepository(Project::class)->findOneBy([]);
+        $household = $em->getRepository(Household::class)->findOneBy([], ['id'=>'desc']);
+
+        $this->request('PUT', '/api/basic/projects/'.$project->getId().'/households', [
+            'householdIds' => [$household->getId()],
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
     }
 }

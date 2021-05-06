@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Read only entity.
  *
- * @ORM\MappedSuperclass()
+ * @ORM\MappedSuperclass(repositoryClass="DistributionBundle\Repository\DistributedItemRepository")
  */
 class DistributedItem implements \JsonSerializable
 {
@@ -54,6 +54,33 @@ class DistributedItem implements \JsonSerializable
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary")
      */
     private $beneficiary;
+
+    /**
+     * @var Assistance
+     *
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Assistance")
+     */
+    private $assistance;
+
+    public function getAssistance(): Assistance
+    {
+        return $this->assistance;
+    }
+
+    public function getBeneficiary(): Beneficiary
+    {
+        return $this->beneficiary;
+    }
+
+    public function getCommodities()
+    {
+        return $this->commodities;
+    }
+
+    public function getDateOfDistribution(): ?\DateTimeInterface
+    {
+        return $this->dateDistribution;
+    }
 
     /**
      * {@inheritdoc}

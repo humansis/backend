@@ -99,6 +99,10 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
 
     /** @var string */
     private $environment;
+
+    /** @var array */
+    private $countries;
+
     /** @var CommunityService */
     private $communityService;
 
@@ -107,8 +111,9 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
      * @param string $environment
      * @param CommunityService $communityService
      */
-    public function __construct(string $environment, CommunityService $communityService)
+    public function __construct(string $environment, array $countries, CommunityService $communityService)
     {
+        $this->countries = $countries;
         $this->environment = $environment;
         $this->communityService = $communityService;
     }
@@ -120,7 +125,7 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
             echo "Cannot run on production environment";
             return;
         }
-        foreach (CountryController::COUNTRIES as $COUNTRY) {
+        foreach ($this->countries as $COUNTRY) {
             $projects = $manager->getRepository(Project::class)->findBy(['iso3' => $COUNTRY['iso3']]);
             $projectIds = array_map(function (Project $project) {
                 return $project->getId();

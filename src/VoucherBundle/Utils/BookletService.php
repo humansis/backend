@@ -2,6 +2,7 @@
 
 namespace VoucherBundle\Utils;
 
+use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
@@ -233,13 +234,13 @@ class BookletService
             if (array_key_exists('password', $bookletData) && !empty($bookletData['password'])) {
                 $booklet->setPassword($bookletData['password']);
             }
-            $this->em->merge($booklet);
+            $this->em->persist($booklet);
 
             $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $booklet->getId()]);
             $values = array_key_exists('individual_values', $bookletData) ? $bookletData['individual_values'] : [];
             foreach ($vouchers as $index => $voucher) {
                 $password = array_key_exists('password', $bookletData) ? $bookletData['password'] : null;
-                $value = $values[$index] ?: null;
+                $value = $values[$index] ?? null;
                 $this->updateVoucherCode($voucher, $password, $value, $bookletData['currency']);
             }
 
@@ -254,10 +255,10 @@ class BookletService
     {
         $qrCode = $voucher->getCode();
         // To know if we need to add a new password or replace an existant one
-        preg_match('/^([A-Z]+)(\d+)\*[^_]+_[^_]+_[^_]+_batch[\d]+-[\d]+(-[\dA-Z=+-\/]+)$/i', $qrCode, $matches);
+        preg_match('/^([A-Z]+)(\d+)\*[^_]+_[^_]+_[^_]+_((batch)|(booklet))[\d]+-[\d]+(-[\dA-Z=+-\/]+)$/i', $qrCode, $matches);
 
         if ($matches === null || count($matches) < 3) {
-            preg_match('/^([A-Z]+)(\d+)\*[^_]+_[^_]+_[^_]+_batch[\d]+-[\d]+$/i', $qrCode, $matches);
+            preg_match('/^([A-Z]+)(\d+)\*[^_]+_[^_]+_[^_]+_((batch)|(booklet))[\d]+-[\d]+$/i', $qrCode, $matches);
             if (!empty($password)) {
                 $qrCode .= '-' . $password;
             }
@@ -278,7 +279,7 @@ class BookletService
         }
         $voucher->setCode($qrCode);
 
-        $this->em->merge($voucher);
+        $this->em->persist($voucher);
     }
 
 
@@ -292,7 +293,7 @@ class BookletService
     {
         $booklet->setStatus(Booklet::DEACTIVATED);
 
-        $this->em->merge($booklet);
+        $this->em->persist($booklet);
         $this->em->flush();
 
         return "Booklet has been deactivated";
@@ -309,7 +310,7 @@ class BookletService
         foreach ($bookletCodes as $bookletCode) {
             $booklet = $this->em->getRepository(Booklet::class)->findOneByCode($bookletCode);
             $booklet->setStatus(Booklet::DEACTIVATED);
-            $this->em->merge($booklet);
+            $this->em->persist($booklet);
         }
 
         $this->em->flush();
@@ -338,7 +339,7 @@ class BookletService
         foreach ($vouchers as $voucher) {
             $this->updateVoucherCode($voucher, $password, null, null);
         }
-        $this->em->merge($booklet);
+        $this->em->persist($booklet);
         $this->em->flush();
 
         return "Password has been set";
@@ -348,24 +349,30 @@ class BookletService
      * Assign the booklet to a beneficiary
      *
      * @param Booklet $booklet
-     * @param Beneficiary $beneficiary
+     * @param AbstractBeneficiary $abstractBeneficiary
      * @param Assistance $assistance
      * @return string
      * @throws \Exception
      *
      */
-    public function assign(Booklet $booklet, Assistance $assistance, Beneficiary $beneficiary)
+    public function assign(Booklet $booklet, Assistance $assistance, AbstractBeneficiary $abstractBeneficiary)
     {
         if ($booklet->getStatus() === Booklet::DEACTIVATED || $booklet->getStatus() === Booklet::USED || $booklet->getStatus() === Booklet::DISTRIBUTED) {
             throw new \Exception("This booklet has already been distributed, used or is actually deactivated");
         }
 
+        /** @var AssistanceBeneficiary|null $assistanceBeneficiary */
         $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy(
-            ['beneficiary' => $beneficiary, "assistance" => $assistance]
+            ['beneficiary' => $abstractBeneficiary, "assistance" => $assistance]
         );
+
+        if (!$assistanceBeneficiary instanceof AssistanceBeneficiary) {
+            throw new \InvalidArgumentException('Beneficiary with id '.$abstractBeneficiary->getId().' does not belong to assistance with id '.$assistance->getId());
+        }
+
         $booklet->setAssistanceBeneficiary($assistanceBeneficiary)
             ->setStatus(Booklet::DISTRIBUTED);
-        $this->em->merge($booklet);
+        $this->em->persist($booklet);
 
         $this->em->flush();
 

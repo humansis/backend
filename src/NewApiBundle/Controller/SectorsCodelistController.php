@@ -6,7 +6,7 @@ namespace NewApiBundle\Controller;
 
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Utils\CodeLists;
+use NewApiBundle\Component\Codelist\CodeLists;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\Utils\SectorService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;

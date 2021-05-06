@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\InputType;
 
 use NewApiBundle\Request\InputTypeInterface;
+use NewApiBundle\Validator\Constraints\Country;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
@@ -14,7 +15,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 class BookletBatchCreateInputType implements InputTypeInterface
 {
     /**
-     * @Assert\Choice({"KHM", "SYR", "UKR", "ETH", "MNG", "ARM"})
+     * @Country
      * @Assert\NotBlank
      * @Assert\NotNull
      */
@@ -70,7 +71,7 @@ class BookletBatchCreateInputType implements InputTypeInterface
      */
     private $currency;
 
-    public function validateIndividualValues($array, ExecutionContextInterface $context, $payload)
+    public static function validateIndividualValues($array, ExecutionContextInterface $context, $payload)
     {
         if (count($array) > $context->getObject()->getQuantityOfVouchers()) {
             $context->buildViolation('Too many individual values')

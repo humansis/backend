@@ -20,7 +20,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         "end_date" => "01-05-2019",
         "target" => 5,
         "notes" => "This is a note",
-        "sectors" => [SectorEnum::EDUCATION, SectorEnum::WASH],
+        "sectors" => [SectorEnum::EDUCATION_TVET, SectorEnum::WASH],
         "donors" => [1, 2],
     ];
 
@@ -35,7 +35,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
     /**
@@ -219,7 +219,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->em->clear();
         $project = $this->em->getRepository(Project::class)->findOneByName($projectName);
         if ($project instanceof Project) {
-            $this->container->get('project.project_service')->delete($project);
+            self::$container->get('project.project_service')->delete($project);
         }
     }
 }

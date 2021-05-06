@@ -1,4 +1,14 @@
 services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    TransactionBundle\Controller\:
+        resource: '../../Controller'
+        public: true
+        tags: [ 'app.controller' ]
+
     transaction.transaction_service:
         class: TransactionBundle\Utils\TransactionService
         public: true
@@ -17,10 +27,29 @@ services:
     transaction.khm_financial_provider:
         class: TransactionBundle\Utils\Provider\KHMFinancialProvider
         parent: transaction.default_financial_provider
+        autowire: false
+        autoconfigure: false
+        public: true
 
     TransactionBundle\Mapper\TransactionMapper:
         arguments:
             - "@serializer"
+        public: true
+
+    export.distributed_summary.spreadsheet:
+        class: TransactionBundle\Export\DistributedSummarySpreadsheetExport
+        arguments:
+            - '@translator'
+            - '@NewApiBundle\Component\Country\Countries'
+            - "@=service('doctrine.orm.entity_manager').getRepository('NewApiBundle:DistributedItem')"
+        public: true
+
+    export.purchased_summary.spreadsheet:
+        class: TransactionBundle\Export\PurchasedSummarySpreadsheetExport
+        arguments:
+            - '@translator'
+            - '@NewApiBundle\Component\Country\Countries'
+            - "@=service('doctrine.orm.entity_manager').getRepository('NewApiBundle:PurchasedItem')"
         public: true
 
     export.spreadsheet:

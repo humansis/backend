@@ -70,6 +70,14 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
                     $qb->setParameter('ids', $filter->getIds());
                 }
             }
+
+            if ($filter->hasShowVendors()) {
+                if ($filter->getShowVendors()) {
+                    $qb->andWhere('u.vendor IS NOT NULL');
+                } else {
+                    $qb->andWhere('u.vendor IS NULL');
+                }
+            }
         }
 
         if (null !== $pagination) {
@@ -87,7 +95,9 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
                         $qb->orderBy('u.email', $direction);
                         break;
                     case UserOrderInputType::SORT_BY_RIGHTS:
-                        $qb->orderBy('u.roles', $direction); //TODO edit after decision about roles and authorization will be made
+                        $qb
+                            ->join('u.roles', 'r')
+                            ->orderBy('r.name', $direction);
                         break;
                     case UserOrderInputType::SORT_BY_PREFIX:
                         $qb->orderBy('u.phonePrefix', $direction);

@@ -8,8 +8,11 @@ use CommonBundle\Entity\Location;
 use CommonBundle\InputType\Country;
 use CommonBundle\InputType\DataTableFilterType;
 use CommonBundle\InputType\DataTableSorterType;
+use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use InvalidArgumentException;
+use NewApiBundle\InputType\AssistanceInstitutionsFilterInputType;
 use NewApiBundle\InputType\InstitutionFilterInputType;
 use NewApiBundle\InputType\InstitutionOrderInputType;
 use NewApiBundle\Request\Pagination;
@@ -129,6 +132,11 @@ class InstitutionRepository extends \Doctrine\ORM\EntityRepository
         }
 
         if ($filter) {
+            if ($filter->hasIds()) {
+                $qb->andWhere('i.id IN (:ids)')
+                    ->setParameter('ids', $filter->getIds());
+            }
+
             if ($filter->hasProjects()) {
                 $qb->leftJoin('i.projects', 'pro')
                     ->andWhere('pro.id IN (:ids)')
@@ -161,41 +169,121 @@ class InstitutionRepository extends \Doctrine\ORM\EntityRepository
         }
 
         if ($orderBy) {
-            foreach ($orderBy->toArray() as $name => $direction) {
-                switch ($name) {
-                    case InstitutionOrderInputType::SORT_BY_ID:
-                        $qb->orderBy('i.id', $direction);
-                        break;
-                    case InstitutionOrderInputType::SORT_BY_NAME:
-                        $qb->orderBy('i.name', $direction);
-                        break;
-                    case InstitutionOrderInputType::SORT_BY_LONGITUDE:
-                        $qb->orderBy('i.longitude', $direction);
-                        break;
-                    case InstitutionOrderInputType::SORT_BY_LATITUDE:
-                        $qb->orderBy('i.latitude', $direction);
-                        break;
-                    case InstitutionOrderInputType::SORT_BY_CONTACT_GIVEN_NAME:
-                        if (!in_array('c', $qb->getAllAliases())) {
-                            $qb->leftJoin('i.contact', 'c');
-                        }
-                        $qb->orderBy('c.enGivenName', $direction);
-                        break;
-                    case InstitutionOrderInputType::SORT_BY_CONTACT_FAMILY_NAME:
-                        if (!in_array('c', $qb->getAllAliases())) {
-                            $qb->leftJoin('i.contact', 'c');
-                        }
-                        $qb->orderBy('c.enFamilyName', $direction);
-                        break;
-                    case InstitutionOrderInputType::SORT_BY_TYPE:
-                        $qb->orderBy('i.type', $direction);
-                        break;
-                    default:
-                        throw new \InvalidArgumentException('Invalid order by directive '.$name);
-                }
-            }
+            $this->addOrderByCommonOrderInputType($qb, $orderBy);
         }
 
         return new Paginator($qb);
+    }
+
+    /**
+     * @param Assistance                                 $assistance
+     * @param AssistanceInstitutionsFilterInputType|null $filter
+     * @param InstitutionOrderInputType|null             $orderBy
+     * @param Pagination|null                            $pagination
+     *
+     * @return Paginator|Assistance[]
+     */
+    public function findByAssistance(
+        Assistance $assistance,
+        ?AssistanceInstitutionsFilterInputType $filter,
+        ?InstitutionOrderInputType $orderBy = null,
+        ?Pagination $pagination = null
+    ): Paginator
+    {
+        $qb = $this->createQueryBuilder('i')
+            ->join('i.assistanceBeneficiary', 'ab')
+            ->leftJoin('i.contact', 'c')
+            ->andWhere('i.archived = 0')
+            ->andWhere('ab.assistance = :assistance')
+            ->setParameter('assistance', $assistance);
+
+        if ($pagination) {
+            $qb->setMaxResults($pagination->getLimit());
+            $qb->setFirstResult($pagination->getOffset());
+        }
+
+        if ($filter) {
+            if ($filter->hasFulltext()) {
+                $qb->andWhere('(
+                    i.id LIKE :fulltextId OR
+                    i.name LIKE :fulltext OR
+                    i.latitude LIKE :fulltext OR
+                    i.longitude LIKE :fulltext OR
+                    c.localGivenName LIKE :fulltext OR 
+                    c.localFamilyName LIKE :fulltext OR
+                    c.localParentsName LIKE :fulltext OR
+                    c.enGivenName LIKE :fulltext OR
+                    c.enFamilyName LIKE :fulltext OR
+                    c.enParentsName LIKE :fulltext OR
+                    c.enParentsName LIKE :fulltext
+                )');
+                $qb->setParameter('fulltextId', $filter->getFulltext());
+                $qb->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+            }
+
+            if ($filter->hasIds()) {
+                $qb->andWhere('i.id IN (:ids)')
+                    ->setParameter('ids', $filter->getIds());
+            }
+        }
+
+        if ($orderBy) {
+            $this->addOrderByCommonOrderInputType($qb, $orderBy);
+        }
+
+        return new Paginator($qb);
+    }
+
+    private function addOrderByCommonOrderInputType(QueryBuilder $qb, InstitutionOrderInputType $orderBy)
+    {
+        foreach ($orderBy->toArray() as $name => $direction) {
+            switch ($name) {
+                case InstitutionOrderInputType::SORT_BY_ID:
+                    $qb->orderBy('i.id', $direction);
+                    break;
+                case InstitutionOrderInputType::SORT_BY_NAME:
+                    $qb->orderBy('i.name', $direction);
+                    break;
+                case InstitutionOrderInputType::SORT_BY_LONGITUDE:
+                    $qb->orderBy('i.longitude', $direction);
+                    break;
+                case InstitutionOrderInputType::SORT_BY_LATITUDE:
+                    $qb->orderBy('i.latitude', $direction);
+                    break;
+                case InstitutionOrderInputType::SORT_BY_CONTACT_GIVEN_NAME:
+                    if (!in_array('c', $qb->getAllAliases())) {
+                        $qb->leftJoin('i.contact', 'c');
+                    }
+                    $qb->orderBy('c.enGivenName', $direction);
+                    break;
+                case InstitutionOrderInputType::SORT_BY_CONTACT_FAMILY_NAME:
+                    if (!in_array('c', $qb->getAllAliases())) {
+                        $qb->leftJoin('i.contact', 'c');
+                    }
+                    $qb->orderBy('c.enFamilyName', $direction);
+                    break;
+                case InstitutionOrderInputType::SORT_BY_TYPE:
+                    $qb->orderBy('i.type', $direction);
+                    break;
+                default:
+                    throw new InvalidArgumentException('Invalid order by directive '.$name);
+            }
+        }
+    }
+
+    /**
+     * @param Project $project
+     *
+     * @return Paginator
+     */
+    public function findByProject(Project $project)
+    {
+        $qbr = $this->createQueryBuilder('i');
+        $qbr->leftJoin('i.projects', 'p')
+            ->where('p = :project')
+            ->setParameter('project', $project)
+            ->andWhere('i.archived = 0');
+
+        return new Paginator($qbr);
     }
 }

@@ -51,7 +51,7 @@ class TemporarySettlementAddressMapper implements MapperInterface
         return $this->object->getLocationGroup();
     }
 
-    public function getNumber(): string
+    public function getNumber(): ?string
     {
         return $this->object->getAddress()->getNumber();
     }

@@ -23,15 +23,9 @@ class BeneficiaryFilterInputType extends AbstractFilterInputType
     protected $id;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      */
     protected $fulltext;
-
-    /**
-     * @Assert\Type("string")
-     * @Assert\Choice(callback={"DistributionBundle\Enum\AssistanceTargetType", "values"})
-     */
-    protected $assistanceTarget;
 
     public function hasIds(): bool
     {
@@ -51,15 +45,5 @@ class BeneficiaryFilterInputType extends AbstractFilterInputType
     public function getFulltext()
     {
         return $this->fulltext;
-    }
-
-    public function hasAssistanceTarget()
-    {
-        return $this->has('assistanceTarget');
-    }
-
-    public function getAssistanceTarget()
-    {
-        return $this->assistanceTarget;
     }
 }

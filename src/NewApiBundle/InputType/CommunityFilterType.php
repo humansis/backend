@@ -8,14 +8,24 @@ use Symfony\Component\Validator\Constraints as Assert;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 
 /**
- * Class CommunityFilterType
- * @package NewApiBundle\InputType
+ * @Assert\GroupSequence({"CommunityFilterType", "Strict"})
  */
 class CommunityFilterType extends AbstractFilterInputType
 {
     /**
+     * @Assert\Type("array")
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Type("int", groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
+     */
+    protected $id;
+
+    /**
      * @var string
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      */
     protected $fulltext;
 
@@ -30,10 +40,20 @@ class CommunityFilterType extends AbstractFilterInputType
      */
     protected $projects;
 
+    public function hasIds(): bool
+    {
+        return $this->has('id');
+    }
+
+    public function getIds(): array
+    {
+        return $this->id;
+    }
+
     /**
      * @return string
      */
-    public function getFulltext(): string
+    public function getFulltext()
     {
         return $this->fulltext;
     }

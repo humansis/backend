@@ -82,7 +82,7 @@ class Booklet implements ExportableInterface
     public $password;
 
     /**
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="booklet", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="booklet", cascade={"persist"}, orphanRemoval=true)
      * @SymfonyGroups({"FullBooklet", "ValidatedAssistance"})
      */
     private $vouchers;
@@ -104,10 +104,10 @@ class Booklet implements ExportableInterface
     public static function statuses(): array
     {
         return [
-            self::UNASSIGNED => 'unassigned',
-            self::DISTRIBUTED => 'distributed',
-            self::USED => 'used',
-            self::DEACTIVATED => 'deactivated',
+            self::UNASSIGNED => 'Unassigned',
+            self::DISTRIBUTED => 'Distributed',
+            self::USED => 'Used',
+            self::DEACTIVATED => 'Deactivated',
         ];
     }
 

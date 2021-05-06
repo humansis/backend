@@ -22,7 +22,7 @@ class AssistanceCodelistControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
     /**
@@ -30,12 +30,7 @@ class AssistanceCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetTargets()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        $this->request('GET', '/api/basic/assistances/targets?filter[type]=' . AssistanceTargetType::INDIVIDUAL);
+        $this->request('GET', '/api/basic/assistances/targets?filter[type]=' . AssistanceType::ACTIVITY);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -54,11 +49,6 @@ class AssistanceCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetAssistanceTypes()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/assistances/types?filter[subsector]=' . SubSectorEnum::FOOD_CASH_FOR_WORK);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);

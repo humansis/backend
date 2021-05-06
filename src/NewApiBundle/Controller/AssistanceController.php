@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
+use CommonBundle\Controller\ExportController;
 use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Repository\AssistanceRepository;
@@ -134,7 +135,8 @@ class AssistanceController extends AbstractController
         }
 
         if ($request->request->get('dateDistribution')) {
-            $this->get('distribution.assistance_service')->updateDateDistribution($assistance, new \DateTime($request->request->get('dateDistribution')));
+            $this->get('distribution.assistance_service')->updateDateDistribution($assistance,
+                new \DateTime($request->request->get('dateDistribution')));
         }
 
         return $this->json($assistance);
@@ -155,17 +157,18 @@ class AssistanceController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/assistances/summaries")
+     * @Rest\Get("/projects/{id}/assistances/exports")
      *
-     * @param AssistanceCreateInputType $inputType
+     * @param Project $project
+     * @param Request $request
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function summaries(AssistanceCreateInputType $inputType): JsonResponse
+    public function exports(Project $project, Request $request): Response
     {
-        $number = $this->get('distribution.criteria_assistance_service')->count($inputType);
+        $request->query->add(['officialDistributions' => $project->getId()]);
 
-        return $this->json(['number' => (int) $number]);
+        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
     }
 
     /**

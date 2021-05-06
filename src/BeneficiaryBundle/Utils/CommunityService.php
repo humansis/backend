@@ -14,6 +14,7 @@ use CommonBundle\Mapper\LocationMapper;
 use CommonBundle\Utils\LocationService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityNotFoundException;
 use InvalidArgumentException;
 use NewApiBundle\InputType\CommunityCreateInputType;
 use NewApiBundle\InputType\CommunityUpdateInputType;
@@ -281,11 +282,19 @@ class CommunityService
     public function create(CommunityCreateInputType $inputType): Community
     {
         $community = new Community();
-        $community->setName($inputType->getContactFamilyName());
         $community->setLongitude($inputType->getLongitude());
         $community->setLatitude($inputType->getLongitude());
         $community->setContactFamilyName($inputType->getContactFamilyName());
         $community->setContactName($inputType->getContactGivenName());
+
+        foreach ($inputType->getProjectIds() as $id) {
+            $project = $this->em->getRepository(Project::class)->find($id);
+            if (!$project) {
+                throw new EntityNotFoundException('project', $id);
+            }
+
+            $community->addProject($project);
+        }
 
         if (!is_null($inputType->getAddress())) {
             $addressType = $inputType->getAddress();
@@ -322,6 +331,12 @@ class CommunityService
             $community->setPhone($phone);
         }
 
+        if ($community->getAddress() && $community->getAddress()->getLocation()) {
+            $community->setName($this->locationMapper->toName($community->getAddress()->getLocation()));
+        } else {
+            $community->setName('global community');
+        }
+
         $this->em->persist($community);
         $this->em->flush();
 
@@ -330,11 +345,20 @@ class CommunityService
 
     public function update(Community $community, CommunityUpdateInputType $inputType)
     {
-        $community->setName($inputType->getContactFamilyName());
         $community->setLongitude($inputType->getLongitude());
         $community->setLatitude($inputType->getLatitude());
         $community->setContactName($inputType->getContactGivenName());
         $community->setContactFamilyName($inputType->getContactFamilyName());
+
+        $community->getProjects()->clear();
+        foreach ($inputType->getProjectIds() as $id) {
+            $project = $this->em->getRepository(Project::class)->find($id);
+            if (!$project) {
+                throw new EntityNotFoundException('project', $id);
+            }
+
+            $community->addProject($project);
+        }
 
         $addressType = $inputType->getAddress();
 
@@ -385,6 +409,12 @@ class CommunityService
             $communityPhone->setNumber($phoneType->getNumber());
             $communityPhone->setType($phoneType->getType());
             $communityPhone->setProxy($phoneType->getProxy());
+        }
+
+        if ($community->getAddress() && $community->getAddress()->getLocation()) {
+            $community->setName($this->locationMapper->toName($community->getAddress()->getLocation()));
+        } else {
+            $community->setName('global community');
         }
 
         $this->em->flush();

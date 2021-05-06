@@ -25,18 +25,18 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
      */
     public function generate(?string $countryIso3)
     {
-        yield new Field('livelihood', ['='], 'livelihood', [self::class, 'validateLivelihood']);
-        yield new Field('foodConsumptionScore', ['=', '<', '>', '<=', '>='], 'double');
-        yield new Field('copingStrategiesIndex', ['=', '<', '>', '<=', '>='], 'double');
-        yield new Field('incomeLevel', ['=', '<', '>', '<=', '>='], 'integer');
-        yield new Field('householdSize', ['=', '<', '>', '<=', '>='], 'integer');
-        yield new Field('location', ['='], 'location', 'is_int');
-        yield new Field('locationType', ['='], 'locationType', [self::class, 'validateLocation']);
+        yield new Field('livelihood', 'Livelihood', ['='], 'livelihood', [self::class, 'validateLivelihood']);
+        yield new Field('foodConsumptionScore', 'Food Consumption Score', ['=', '<', '>', '<=', '>='], 'double');
+        yield new Field('copingStrategiesIndex', 'Coping Strategies Index', ['=', '<', '>', '<=', '>='], 'double');
+        yield new Field('incomeLevel', 'Income Level', ['=', '<', '>', '<=', '>='], 'integer');
+        yield new Field('householdSize', 'Household Size', ['=', '<', '>', '<=', '>='], 'integer');
+        yield new Field('location', 'Location', ['='], 'location', 'is_int');
+        yield new Field('locationType', 'Location Type', ['='], 'locationType', [self::class, 'validateLocation']);
 
         foreach ($this->countrySpecificRepository->findByCountryIso3($countryIso3) as $countrySpecific) {
             $type = $this->transformCountrySpecificType($countrySpecific->getType());
 
-            yield new Field($countrySpecific->getFieldString(), ['='], $type);
+            yield new Field($countrySpecific->getFieldString(), $countrySpecific->getFieldString(), ['='], $type);
         }
     }
 

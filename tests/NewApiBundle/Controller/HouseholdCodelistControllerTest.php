@@ -20,7 +20,7 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
     /**
@@ -28,11 +28,6 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetLivelihoods()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/households/livelihoods');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -50,11 +45,6 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetAssets()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/households/assets');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -72,11 +62,6 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetSupportReceivedTypes()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/households/support-received-types');
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
@@ -91,11 +76,6 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetShelterStatuses()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/households/shelter-statuses');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -113,11 +93,6 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetLocationTypes()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/households/locations/types');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);

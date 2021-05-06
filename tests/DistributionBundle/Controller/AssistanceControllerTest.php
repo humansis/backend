@@ -26,6 +26,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Tests\BeneficiaryBundle\Controller\HouseholdControllerTest;
 use Tests\BMSServiceTestCase;
 use TransactionBundle\Entity\Transaction;
+use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\InputType\VoucherPurchase;
 use VoucherBundle\Model\PurchaseService;
@@ -46,8 +47,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
-        $this->distributionCSVService = $this->container->get('distribution.distribution_csv_service');
+        $this->client = self::$container->get('test.client');
+        $this->distributionCSVService = self::$container->get('distribution.distribution_csv_service');
     }
 
     /**
@@ -58,7 +59,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 //        $this->removeHousehold($this->namefullnameHousehold);
         $this->createHousehold();
 
-        $adm2 = $this->container->get('doctrine')->getRepository(\CommonBundle\Entity\Adm2::class)->findOneBy([]);
+        $adm2 = self::$container->get('doctrine')->getRepository(\CommonBundle\Entity\Adm2::class)->findOneBy([]);
 
         $criteria = array(
             "id" => null,
@@ -120,7 +121,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             ],
             "threshold"=> 1,
             'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
-            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_DISTRIBUTIONS,
+            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::IN_KIND_FOOD,
         );
 
 
@@ -375,7 +376,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
      */
     public function testDistributionBeneficiariesVouchers($distribution)
     {
-        $bookletService = $this->container->get('voucher.booklet_service');
+        $bookletService = self::$container->get('voucher.booklet_service');
         $purchaseService = new PurchaseService($this->em);
 
         // Fake connection with a token for the user tester (ADMIN)
@@ -394,6 +395,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'currency' => 'USD',
             'individual_values' => range(100, 110)
         ]);
+        $booklet = $this->em->getRepository(Booklet::class)->find($booklet->getId());
         $bookletService->assign($booklet, $firstAssistanceBeneficiary->getAssistance(), $firstAssistanceBeneficiary->getBeneficiary());
 
         $bookletBig = $bookletService->create('KHM', [
@@ -403,6 +405,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'currency' => 'EUR',
             'individual_values' => range(200, 220)
         ]);
+        $bookletBig = $this->em->getRepository(Booklet::class)->find($bookletBig->getId());
         $bookletService->assign($bookletBig, $firstAssistanceBeneficiary->getAssistance(), $firstAssistanceBeneficiary->getBeneficiary());
 
         $vendor = $this->em->getRepository(Vendor::class)->findOneBy([]);
@@ -630,13 +633,13 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $distributionCSVService = $this->container->get('distribution.distribution_csv_service');
+        $distributionCSVService = self::$container->get('distribution.distribution_csv_service');
 
         $countryIso3 = 'KHM';
 
         //assistance will be used in the function "parseCSV" to get all the beneficiaries in a project :
         $assistance = $this->em->getRepository(Assistance::class)->findOneById($distribution['id']);
-        $assistanceBeneficiaryService = $this->container->get('distribution.assistance_beneficiary_service');
+        $assistanceBeneficiaryService = self::$container->get('distribution.assistance_beneficiary_service');
 
         //beneficiaries contains all beneficiaries in a distribution :
         $beneficiaries = $assistanceBeneficiaryService->getBeneficiaries($assistance);
@@ -756,7 +759,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('GET', '/api/wsse/transaction/distribution/'. $distribution['id'].'/email');
+        $crawler = $this->request('POST', '/api/wsse/transaction/distribution/'. $distribution['id'].'/email');
         // $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $update = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -862,7 +865,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             ],
             'threshold' => 1,
             'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
-            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_DISTRIBUTIONS,
+            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::IN_KIND_FOOD,
         ];
 
         $user = $this->getTestUser(self::USER_TESTER);
@@ -916,7 +919,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testCreateDistributionForCommunity()
     {
         /** @var \BeneficiaryBundle\Repository\CommunityRepository $communityRepo */
-        $communityRepo = $this->container->get('doctrine')->getRepository(\BeneficiaryBundle\Entity\Community::class);
+        $communityRepo = self::$container->get('doctrine')->getRepository(\BeneficiaryBundle\Entity\Community::class);
         $community = $communityRepo->findBy([])[0];
 
         $body = [
@@ -969,7 +972,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'households_targeted' => 3,
             'individuals_targeted' => 5,
             'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
-            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_DISTRIBUTIONS,
+            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::IN_KIND_FOOD,
         ];
 
         $user = $this->getTestUser(self::USER_TESTER);
@@ -988,7 +991,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testCreateDistributionForInstitution()
     {
         /** @var \BeneficiaryBundle\Repository\InstitutionRepository $institutionRepo */
-        $institutionRepo = $this->container->get('doctrine')->getRepository(\BeneficiaryBundle\Entity\Institution::class);
+        $institutionRepo = self::$container->get('doctrine')->getRepository(\BeneficiaryBundle\Entity\Institution::class);
         $institution = $institutionRepo->findBy([])[0];
 
         $body = [
@@ -1027,7 +1030,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             ],
             'institutions' => [$institution->getId()],
             'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
-            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_DISTRIBUTIONS,
+            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::IN_KIND_FOOD,
         ];
 
         $user = $this->getTestUser(self::USER_TESTER);

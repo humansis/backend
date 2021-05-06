@@ -729,13 +729,13 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
 
         if ($filter) {
             if ($filter->hasFulltext()) {
-                $qbr->andWhere('p.localGivenName LIKE :fulltext OR 
+                $qbr->andWhere('(p.localGivenName LIKE :fulltext OR 
                                 p.localFamilyName LIKE :fulltext OR
                                 p.localParentsName LIKE :fulltext OR
                                 p.enGivenName LIKE :fulltext OR
                                 p.enFamilyName LIKE :fulltext OR
                                 p.enParentsName LIKE :fulltext OR
-                                p.enParentsName LIKE :fulltext')
+                                p.enParentsName LIKE :fulltext)')
                     ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
             }
         }
@@ -760,34 +760,6 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                     default:
                         throw new \InvalidArgumentException('Invalid order by directive '.$name);
                 }
-            }
-        }
-
-        return new Paginator($qbr);
-    }
-
-    /**
-     * @param Project                         $project
-     * @param BeneficiaryFilterInputType|null $filter
-     *
-     * @return Paginator
-     */
-    public function findByProject(
-        Project $project,
-        ?BeneficiaryFilterInputType $filter = null
-    ) {
-        $qbr = $this->createQueryBuilder('bnf');
-        $qbr->leftJoin('bnf.projects', 'p')
-            ->where('p = :project')
-            ->setParameter('project', $project)
-            ->andWhere('bnf.archived = 0');
-
-        if ($filter) {
-            if ($filter->hasAssistanceTarget()) {
-                $qbr->join('bnf.assistanceBeneficiary', 'ab')
-                    ->leftJoin('ab.assistance', 'a')
-                    ->andWhere('a.targetType = :target')
-                    ->setParameter('target', $filter->getAssistanceTarget());
             }
         }
 

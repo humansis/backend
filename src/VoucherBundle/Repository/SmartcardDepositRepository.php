@@ -4,23 +4,28 @@ declare(strict_types=1);
 
 namespace VoucherBundle\Repository;
 
-use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityRepository;
-use VoucherBundle\Entity\SmartcardDeposit;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\SmartcardDepositFilterInputType;
 
 class SmartcardDepositRepository extends EntityRepository
 {
     /**
-     * @param AssistanceBeneficiary $db
+     * @param SmartcardDepositFilterInputType|null $filter
      *
-     * @return SmartcardDeposit|null
+     * @return Paginator
      */
-    public function findByDistributionBeneficiary(AssistanceBeneficiary $db): ?SmartcardDeposit
+    public function findByParams(?SmartcardDepositFilterInputType $filter = null): Paginator
     {
-        $qb = $this->createQueryBuilder('sd')
-            ->andWhere('sd.assistanceBeneficiary = :db')
-            ->setParameter('db', $db);
+        $qb = $this->createQueryBuilder('sd');
 
-        return $qb->getQuery()->getOneOrNullResult();
+        if ($filter) {
+            if ($filter->hasIds()) {
+                $qb->andWhere('sd.id IN (:ids)');
+                $qb->setParameter('ids', $filter->getIds());
+            }
+        }
+
+        return new Paginator($qb);
     }
 }

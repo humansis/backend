@@ -46,4 +46,9 @@ abstract class AbstractSortInputType implements SortInputTypeInterface
     {
         return $this->sort;
     }
+
+    public function has(string $name): bool
+    {
+        return isset($this->sort[$name]);
+    }
 }

@@ -20,7 +20,7 @@ class AddressControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
     /**
@@ -28,11 +28,6 @@ class AddressControllerTest extends BMSServiceTestCase
      */
     public function testGetAddress()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $address = $em->getRepository(Address::class)->findBy([])[0];
@@ -57,11 +52,6 @@ class AddressControllerTest extends BMSServiceTestCase
      */
     public function testGetAddresses()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $address = $em->getRepository(Address::class)->findBy([])[0];
@@ -81,11 +71,6 @@ class AddressControllerTest extends BMSServiceTestCase
     public function testGetCamp()
     {
         $this->markTestSkipped('There is no camp');
-
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
 
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
@@ -119,11 +104,6 @@ class AddressControllerTest extends BMSServiceTestCase
     {
         $this->markTestSkipped('There is no camp');
 
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $campAddress = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_CAMP])[0];
@@ -147,11 +127,6 @@ class AddressControllerTest extends BMSServiceTestCase
      */
     public function testGetResidence()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $residence = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_RESIDENCE])[0];
@@ -183,11 +158,6 @@ class AddressControllerTest extends BMSServiceTestCase
      */
     public function testGetResidences()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $residency = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_RESIDENCE])[0];
@@ -207,11 +177,6 @@ class AddressControllerTest extends BMSServiceTestCase
     public function testGetTemporarySettlement()
     {
         $this->markTestSkipped('There is no temporary settlement');
-
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
 
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
@@ -245,11 +210,6 @@ class AddressControllerTest extends BMSServiceTestCase
     public function testGetTemporarySettlements()
     {
         $this->markTestSkipped('There is no temporary settlement');
-
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
 
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();

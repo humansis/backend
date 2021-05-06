@@ -4,7 +4,7 @@ namespace CommonBundle\DataFixtures;
 
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Institution;
-use CommonBundle\Controller\CountryController;
+use CommonBundle\DataFixtures\Beneficiaries\BeneficiaryFixtures;
 use CommonBundle\Entity\Location;
 use CommonBundle\Mapper\LocationMapper;
 use DistributionBundle\Entity\Modality;
@@ -84,10 +84,16 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
 
     private $kernel;
 
-    public function __construct(Kernel $kernel, AssistanceService $distributionService)
+    private $countries = [];
+
+    public function __construct(Kernel $kernel, array $countries, AssistanceService $distributionService)
     {
         $this->distributionService = $distributionService;
         $this->kernel = $kernel;
+
+        foreach ($countries as $country) {
+            $this->countries[$country['iso3']] = $country;
+        }
     }
 
     /**
@@ -133,6 +139,8 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
     {
         return [
             ProjectFixtures::class,
+            BeneficiaryFixtures::class,
+            BeneficiaryTestFixtures::class,
             ModalityFixtures::class,
         ];
     }
@@ -151,7 +159,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data['date_distribution'] = $this->randomDate();
         $data['selection_criteria'] = [];
 
-        $country = CountryController::COUNTRIES[$project->getIso3()];
+        $country = $this->countries[$project->getIso3()];
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
             $data['commodities'] = [0 => $commodityArray];
             $receivers = $this->distributionService->createFromArray($project->getIso3(), $data)['data'];
@@ -168,7 +176,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data['date_distribution'] = $this->randomDate();
         $data['selection_criteria'] = [];
 
-        $country = CountryController::COUNTRIES[$project->getIso3()];
+        $country = $this->countries[$project->getIso3()];
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
             $data['commodities'] = [0 => $commodityArray];
             $receivers = $this->distributionService->createFromArray($project->getIso3(), $data)['data'];
@@ -193,7 +201,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         }
         $data['institutions'] = array_map(function (Institution $institution) { return $institution->getId(); }, $institutions);
 
-        $country = CountryController::COUNTRIES[$project->getIso3()];
+        $country = $this->countries[$project->getIso3()];
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
             $data['commodities'] = [0 => $commodityArray];
             $receivers = $this->distributionService->createFromArray($project->getIso3(), $data)['data'];
@@ -218,7 +226,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         }
         $data['communities'] = array_map(function (Community $community) { return $community->getId(); }, $communities);
 
-        $country = CountryController::COUNTRIES[$project->getIso3()];
+        $country = $this->countries[$project->getIso3()];
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
             $data['commodities'] = [0 => $commodityArray];
             $receivers = $this->distributionService->createFromArray($project->getIso3(), $data)['data'];

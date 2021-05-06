@@ -35,10 +35,11 @@ class Household extends AbstractBeneficiary
         3 => 'Transitional Shelter',
         4 => 'House/Apartment - Severely Damaged',
         5 => 'House/Apartment - Moderately Damaged',
-        6 => 'House/Apartment - Good Condition',
+        6 => 'House/Apartment - Not Damaged',
         7 => 'Room or Space in Public Building',
         8 => 'Room or Space in Unfinished Building',
         9 => 'Other',
+        10 => 'House/Apartment - Lightly Damaged',
     ];
 
     const SUPPORT_RECIEVED_TYPES = [
@@ -205,6 +206,14 @@ class Household extends AbstractBeneficiary
      * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
      */
     private $enumeratorName = null;
+
+    /**
+     * @var Person|null
+     *
+     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Person")
+     * @ORM\JoinColumn(name="proxy_id")
+     */
+    private $proxy;
 
     /**
      * Constructor
@@ -755,5 +764,21 @@ class Household extends AbstractBeneficiary
         $this->enumeratorName = $enumeratorName;
 
         return $this;
+    }
+
+    /**
+     * @return Person|null
+     */
+    public function getProxy(): ?Person
+    {
+        return $this->proxy;
+    }
+
+    /**
+     * @param Person|null $proxy
+     */
+    public function setProxy(?Person $proxy): void
+    {
+        $this->proxy = $proxy;
     }
 }

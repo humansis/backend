@@ -45,7 +45,7 @@ class AssistanceMapper implements MapperInterface
 
     public function getDateDistribution(): string
     {
-        return $this->object->getDateDistribution()->format('Y-m-d');
+        return $this->object->getDateDistribution()->format(\DateTime::ISO8601);
     }
 
     public function getProjectId(): int
@@ -88,14 +88,43 @@ class AssistanceMapper implements MapperInterface
         return $this->object->getLocation()->getAdm4Id() ?: null;
     }
 
+    public function getSector(): string
+    {
+        return $this->object->getSector();
+    }
+
+    public function getSubsector(): ?string
+    {
+        return $this->object->getSubSector();
+    }
+
     public function getCommodityIds(): array
     {
         $result = [];
         foreach ($this->object->getCommodities() as $commodity) {
+            if ('Activity item' === $commodity->getModalityType()->getName()) {
+                continue;
+            }
+
             $result[] = $commodity->getId();
         }
 
         return $result;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->object->getDescription();
+    }
+
+    public function getHouseholdsTargeted(): ?int
+    {
+        return $this->object->getHouseholdsTargeted();
+    }
+
+    public function getIndividualsTargeted(): ?int
+    {
+        return $this->object->getIndividualsTargeted();
     }
 
     public function getValidated(): bool

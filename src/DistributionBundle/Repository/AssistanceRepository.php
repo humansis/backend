@@ -3,14 +3,11 @@
 namespace DistributionBundle\Repository;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Entity\Location;
-use DistributionBundle\Entity\DistributedItem;
 use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\Query\Expr\Join;
 use \DateTime;
 use DistributionBundle\Entity\Assistance;
-use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\InputType\AssistanceFilterInputType;
 use NewApiBundle\InputType\AssistanceOrderInputType;
@@ -198,50 +195,6 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * Returns list of distributions distributed to given household.
-     *
-     * @param Household $household
-     *
-     * @return DistributedItem[]
-     */
-    public function findDistributedToHousehold(Household $household): iterable
-    {
-        $rsm = new ResultSetMappingBuilder($this->getEntityManager());
-        $rsm->addRootEntityFromClassMetadata(DistributedItem::class, 'di');
-
-        $sql = '
-        SELECT '.$rsm->generateSelectClause().' FROM ( 
-            SELECT
-                ass.id,
-                ass.name,
-                ass.target_type,
-                db.beneficiary_id,
-                CASE
-                    WHEN sd.id IS NOT NULL THEN DATE_FORMAT(sd.used_at, "%Y-%m-%d")
-                    WHEN gri.id IS NOT NULL THEN DATE_FORMAT(gri.distributedAt, "%Y-%m-%d")
-                    WHEN t.id IS NOT NULL THEN DATE_FORMAT(t.date_sent, "%Y-%m-%d")
-                END AS date_distribution
-            FROM assistance ass
-            JOIN distribution_beneficiary db ON ass.id=db.assistance_id
-            JOIN beneficiary b ON b.id=db.beneficiary_id
-            -- smartcards
-            LEFT JOIN smartcard_deposit sd ON sd.distribution_beneficiary_id=db.id
-            -- mobile money
-            LEFT JOIN transaction t ON t.distribution_beneficiary_id=db.id
-            -- general reliefs
-            LEFT JOIN general_relief_item gri ON gri.distribution_beneficiary_id=db.id
-            WHERE b.household_id = :household AND (sd.id IS NOT NULL OR gri.id IS NOT NULL OR t.id IS NOT NULL)
-        ) AS di
-        ORDER BY di.date_distribution ASC
-        ';
-
-        return $this->getEntityManager()
-            ->createNativeQuery($sql, $rsm)
-            ->setParameter('household', $household)
-            ->getResult();
-    }
-
-    /**
      * @param Project|null                           $project
      * @param string|null                            $iso3
      * @param ProjectsAssistanceFilterInputType|null $filter
@@ -271,9 +224,9 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
 
         if ($filter) {
             if ($filter->hasFulltext()) {
-                $qb->andWhere('dd.id = :id OR
+                $qb->andWhere('(dd.id = :id OR
                                dd.name LIKE :fulltext OR
-                               dd.description LIKE :fulltext')
+                               dd.description LIKE :fulltext)')
                     ->setParameter('id', $filter->getFulltext())
                     ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
             }
@@ -305,6 +258,9 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                         break;
                     case AssistanceOrderInputType::SORT_BY_NUMBER_OF_BENEFICIARIES:
                         $qb->orderBy('SIZE(dd.distributionBeneficiaries)', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_TYPE:
+                        $qb->orderBy('dd.assistanceType', $direction);
                         break;
                     default:
                         throw new \InvalidArgumentException('Invalid order by directive '.$name);
@@ -338,6 +294,18 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                 ->setParameter('iso3', $iso3);
         }
 
+        if (($filter && $filter->hasModalityTypes()) ||
+            ($orderBy && (
+                    $orderBy->has(AssistanceOrderInputType::SORT_BY_MODALITY_TYPE) ||
+                    $orderBy->has(AssistanceOrderInputType::SORT_BY_UNIT) ||
+                    $orderBy->has(AssistanceOrderInputType::SORT_BY_VALUE)))) {
+            $qb->leftJoin('dd.commodities', 'c');
+
+            if ($filter->hasModalityTypes() || $orderBy->has(AssistanceOrderInputType::SORT_BY_MODALITY_TYPE)) {
+                $qb->leftJoin('c.modalityType', 'mt');
+            }
+        }
+
         if ($filter) {
             if ($filter->hasIds()) {
                 $qb->andWhere('dd.id IN (:ids)')
@@ -346,6 +314,23 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
             if ($filter->hasUpcomingOnly() && $filter->getUpcomingOnly()) {
                 $qb->andWhere('p.startDate > :now')
                     ->setParameter('now', new DateTime('now'));
+            }
+            if ($filter->hasType()) {
+                $qb->andWhere('dd.assistanceType = :assistanceType')
+                    ->setParameter('assistanceType', $filter->getType());
+            }
+            if ($filter->hasProjects()) {
+                $qb->andWhere('dd.project IN (:projects)')
+                    ->setParameter('projects', $filter->getProjects());
+            }
+            if ($filter->hasLocations()) {
+                $this->createQueryBuilder('l')
+                    ->andWhere('dd.location IN (:locations)')
+                    ->setParameter('locations', $filter->getLocations());
+            }
+            if ($filter->hasModalityTypes()) {
+                $qb->andWhere('mt.name IN (:modalityTypes)')
+                    ->setParameter('modalityTypes', $filter->getModalityTypes());
             }
         }
 
@@ -375,6 +360,22 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                         break;
                     case AssistanceOrderInputType::SORT_BY_NUMBER_OF_BENEFICIARIES:
                         $qb->orderBy('SIZE(dd.distributionBeneficiaries)', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_PROJECT:
+                        $qb->leftJoin('dd.project', 'p')
+                            ->orderBy('p.name', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_MODALITY_TYPE:
+                        $qb->orderBy('mt.name', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_VALUE:
+                        $qb->orderBy('c.value', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_UNIT:
+                        $qb->orderBy('c.unit', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_TYPE:
+                        $qb->orderBy('dd.assistanceType', $direction);
                         break;
                     default:
                         throw new \InvalidArgumentException('Invalid order by directive '.$name);

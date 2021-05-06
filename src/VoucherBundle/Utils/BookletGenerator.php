@@ -27,7 +27,7 @@ class BookletGenerator
         ?string $password = null
     ): void
     {
-        $code = $countryIso3.'_'.$project->getName().'_'.date('d-m-Y').'_batch';
+        $code = $countryIso3.'_'.$project->getName().'_'.date('d-m-Y').'_booklet';
 
         try {
             $this->em->beginTransaction();

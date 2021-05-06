@@ -156,7 +156,7 @@ class UserService
                     $userProject->setRights($roles[0])
                         ->setUser($user)
                         ->setProject($project);
-                    $this->em->merge($userProject);
+                    $this->em->persist($userProject);
                 }
             }
         }
@@ -167,7 +167,7 @@ class UserService
                 $userCountry->setUser($user)
                     ->setIso3($country)
                     ->setRights($roles[0]);
-                $this->em->merge($userCountry);
+                $this->em->persist($userCountry);
             }
         }
 
@@ -193,6 +193,9 @@ class UserService
         $salt = $this->generateSalt();
 
         $user = new User();
+
+        $user->injectObjectManager($this->em);
+
         $user->setUsername($inputType->getUsername())
             ->setUsernameCanonical($inputType->getUsername())
             ->setEmail($inputType->getUsername())
@@ -222,6 +225,9 @@ class UserService
         }
         $salt = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
         $user = new User();
+
+        $user->injectObjectManager($this->em);
+
         $user->setUsername($username)
             ->setUsernameCanonical($username)
             ->setEnabled(0)
@@ -352,7 +358,7 @@ class UserService
         
         $user->setPassword($userData['password']);
 
-        $this->em->merge($user);
+        $this->em->persist($user);
 
         if (key_exists('projects', $userData)) {
             foreach ($userData['projects'] as $project) {
@@ -363,7 +369,7 @@ class UserService
                     $userProject->setRights($roles[0])
                         ->setUser($user)
                         ->setProject($project);
-                    $this->em->merge($userProject);
+                    $this->em->persist($userProject);
                 }
             }
         }
@@ -374,7 +380,7 @@ class UserService
                 $userCountry->setUser($user)
                     ->setIso3($country)
                     ->setRights($roles[0]);
-                $this->em->merge($userCountry);
+                $this->em->persist($userCountry);
             }
         }
 
@@ -406,7 +412,7 @@ class UserService
 
         $user->setPassword($newPassword)
             ->setChangePassword(0);
-        $this->em->merge($user);
+        $this->em->persist($user);
         $this->em->flush();
 
         return $user;
@@ -596,7 +602,7 @@ class UserService
     {
         $user->setLanguage($language);
 
-        $this->em->merge($user);
+        $this->em->persist($user);
         $this->em->flush();
 
         return $user;
@@ -686,6 +692,9 @@ class UserService
             $salt = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
             $password = rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
             $user = new User();
+
+            $user->injectObjectManager($this->em);
+
             $user->setSalt($salt)
                 ->setEmail($email)
                 ->setEmailCanonical($email)
@@ -767,6 +776,7 @@ class UserService
             ->setEmailCanonical($inputType->getEmail())
             ->setEnabled(true)
             ->setRoles($inputType->getRoles())
+            ->setLanguage($inputType->getLanguage())
             ->setChangePassword($inputType->isChangePassword())
             ->setPhonePrefix($inputType->getPhonePrefix())
             ->setPhoneNumber($inputType->getPhoneNumber() ? (int) $inputType->getPhoneNumber() : null)
@@ -826,12 +836,13 @@ class UserService
             ->setUsername($inputType->getUsername())
             ->setUsernameCanonical($inputType->getUsername())
             ->setEnabled(true)
+            ->setLanguage($inputType->getLanguage())
             ->setRoles($inputType->getRoles())
             ->setPhonePrefix($inputType->getPhonePrefix())
             ->setPhoneNumber($inputType->getPhoneNumber() ? (int) $inputType->getPhoneNumber() : null);
 
         if (null !== $inputType->getPassword()) {
-            $user->setPassword($this->hashPassword($inputType->getPassword(), $user->getSalt()));
+            $user->setPassword($inputType->getPassword());
         }
 
         /** @var UserProject $userProject */
@@ -892,19 +903,5 @@ class UserService
     private function generateSalt()
     {
         return rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
-    }
-
-    public function hashPassword(string $password, string $salt): string
-    {
-        $saltedPassword = $password.'{'.$salt.'}';
-
-        $digest = hash('sha512', $saltedPassword);
-
-        for ($i = 1; $i < 5000; $i++) {
-            $newInput = hex2bin($digest).$saltedPassword;
-            $digest = hash('sha512', $newInput);
-        }
-
-        return base64_encode(hex2bin($digest));
     }
 }

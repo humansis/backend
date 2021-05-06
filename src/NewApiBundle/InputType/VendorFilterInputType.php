@@ -6,12 +6,36 @@ namespace NewApiBundle\InputType;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * @Assert\GroupSequence({"VendorFilterInputType", "Strict"})
+ */
 class VendorFilterInputType extends AbstractFilterInputType
 {
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("array")
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Type("int", groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
+     */
+    protected $id;
+
+    /**
+     * @Assert\Type("scalar")
      */
     protected $fulltext;
+
+    public function hasIds(): bool
+    {
+        return $this->has('id');
+    }
+
+    public function getIds(): array
+    {
+        return (array) $this->id;
+    }
 
     public function hasFulltext(): bool
     {

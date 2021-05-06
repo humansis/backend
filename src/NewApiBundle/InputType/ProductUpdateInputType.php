@@ -18,8 +18,6 @@ class ProductUpdateInputType implements InputTypeInterface
     /**
      * @Assert\Type("string")
      * @Assert\Length(max="255")
-     * @Assert\NotBlank
-     * @Assert\NotNull
      */
     private $image;
 

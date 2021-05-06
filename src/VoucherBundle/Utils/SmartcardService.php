@@ -211,6 +211,7 @@ class SmartcardService
             $redeemedBy,
             $repository->countPurchasesValue($purchases),
             $currency,
+            $vendor->getContractNo(),
             $purchases
         );
 

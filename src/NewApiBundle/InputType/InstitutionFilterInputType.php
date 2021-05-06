@@ -7,11 +7,25 @@ namespace NewApiBundle\InputType;
 use Symfony\Component\Validator\Constraints as Assert;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 
+/**
+ * @Assert\GroupSequence({"InstitutionFilterInputType", "Strict"})
+ */
 class InstitutionFilterInputType extends AbstractFilterInputType
 {
     /**
+     * @Assert\Type("array")
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Type("int", groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
+     */
+    protected $id;
+
+    /**
      * @var string
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      */
     protected $fulltext;
 
@@ -25,6 +39,16 @@ class InstitutionFilterInputType extends AbstractFilterInputType
      * )
      */
     protected $projects;
+
+    public function hasIds(): bool
+    {
+        return $this->has('id');
+    }
+
+    public function getIds(): array
+    {
+        return $this->id;
+    }
 
     /**
      * @return string

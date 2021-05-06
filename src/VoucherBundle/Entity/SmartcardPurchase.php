@@ -155,9 +155,9 @@ class SmartcardPurchase
     }
 
     /**
-     * @return SmartcardRedemptionBatch
+     * @return SmartcardRedemptionBatch|null
      */
-    public function getRedemptionBatch(): SmartcardRedemptionBatch
+    public function getRedemptionBatch(): ?SmartcardRedemptionBatch
     {
         return $this->redemptionBatch;
     }

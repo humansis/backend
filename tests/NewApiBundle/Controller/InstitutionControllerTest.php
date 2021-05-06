@@ -2,10 +2,14 @@
 
 namespace Tests\NewApiBundle\Controller;
 
+use BeneficiaryBundle\Entity\Institution;
 use CommonBundle\Entity\Location;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Exception;
+use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
 
 class InstitutionControllerTest extends BMSServiceTestCase
@@ -20,7 +24,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
     /**
@@ -31,13 +35,8 @@ class InstitutionControllerTest extends BMSServiceTestCase
      */
     public function testCreate()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Location|null $location */
-        $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
         if (null === $location) {
             $this->markTestSkipped('There needs to be at least one location in system to complete this test');
@@ -50,6 +49,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
             'contactGivenName' => 'test contactGivenName',
             'contactFamilyName' => 'test contactFamilyName',
             'type' => 'test type',
+            'projectIds' => [],
             'address' => [
                 'type' => 'test type',
                 'locationGroup' => 'test locationGroup',
@@ -87,13 +87,16 @@ class InstitutionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('addressId', $result);
         $this->assertArrayHasKey('nationalId', $result);
         $this->assertArrayHasKey('phoneId', $result);
+        $this->assertArrayHasKey('projectIds', $result);
 
         return $result['id'];
     }
 
     /**
      * @depends testCreate
+     *
      * @param int $id
+     *
      * @return int
      * @throws ORMException
      * @throws OptimisticLockException
@@ -101,13 +104,10 @@ class InstitutionControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         /** @var Location|null $location */
-        $location = $this->container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        /** @var Project $project */
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
         $data = [
             'longitude' => 'test CHANGED',
@@ -116,6 +116,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
             'contactGivenName' => 'test contactGivenName',
             'contactFamilyName' => 'test contactFamilyName',
             'type' => 'test type',
+            'projectIds' => [$project->getId()],
             'address' => [
                 'type' => 'test type',
                 'locationGroup' => 'test locationGroup',
@@ -156,6 +157,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('addressId', $result);
         $this->assertArrayHasKey('nationalId', $result);
         $this->assertArrayHasKey('phoneId', $result);
+        $this->assertArrayHasKey('projectIds', $result);
 
         $this->assertEquals($data['longitude'], $result['longitude']);
 
@@ -166,17 +168,13 @@ class InstitutionControllerTest extends BMSServiceTestCase
      * @depends testUpdate
      *
      * @param int $id
+     *
      * @return int
      * @throws ORMException
      * @throws OptimisticLockException
      */
     public function testGet(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/institutions/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -197,6 +195,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('addressId', $result);
         $this->assertArrayHasKey('nationalId', $result);
         $this->assertArrayHasKey('phoneId', $result);
+        $this->assertArrayHasKey('projectIds', $result);
 
         return $id;
     }
@@ -209,11 +208,6 @@ class InstitutionControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/institutions?sort[]=name.asc&filter[projects][]=1&filter[fulltext]=a');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -231,17 +225,13 @@ class InstitutionControllerTest extends BMSServiceTestCase
      * @depends testGet
      *
      * @param int $id
+     *
      * @return int
      * @throws ORMException
      * @throws OptimisticLockException
      */
     public function testDelete(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('DELETE', '/api/basic/institutions/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
@@ -253,18 +243,38 @@ class InstitutionControllerTest extends BMSServiceTestCase
      * @depends testDelete
      *
      * @param int $id
+     *
      * @throws ORMException
      * @throws OptimisticLockException
      */
     public function testGetNotexists(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/institutions/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
+    }
+
+    public function testGetInstitutionsByProject()
+    {
+        try {
+            /** @var Institution $institution */
+            $institution = $this->em->getRepository(Institution::class)->createQueryBuilder('i')
+                ->setMaxResults(1)
+                ->getQuery()
+                ->getSingleResult();
+        } catch (NoResultException $exception) {
+            $this->markTestSkipped('There is no institution to be tested');
+        }
+
+        $this->request('GET', '/api/basic/projects/'.$institution->getProjects()[0]->getId().'/institutions');
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{
+            "totalCount": "*", 
+            "data": "*"
+        }', $this->client->getResponse()->getContent());
     }
 }

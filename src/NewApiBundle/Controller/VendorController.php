@@ -2,6 +2,7 @@
 
 namespace NewApiBundle\Controller;
 
+use CommonBundle\Controller\ExportController;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\VendorCreateInputType;
@@ -13,11 +14,27 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Repository\VendorRepository;
 
 class VendorController extends AbstractController
 {
+    /**
+     * @Rest\Get("/vendors/exports")
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function exports(Request $request): Response
+    {
+        $request->query->add(['vendors' => true]);
+        $request->request->add(['__country' => $request->headers->get('country')]);
+
+        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
+    }
+
     /**
      * @Rest\Get("/vendors/{id}")
      *
@@ -120,5 +137,25 @@ class VendorController extends AbstractController
     public function invoice(Vendor $vendor): Response
     {
         return $this->get('voucher.vendor_service')->printInvoice($vendor);
+    }
+
+    /**
+     * @Rest\Get("/vendors/{id}/summaries")
+     *
+     * @param Vendor $vendor
+     *
+     * @return Response
+     *
+     * @throws Exception
+     */
+    public function summaries(Vendor $vendor): Response
+    {
+        $summary = $this->getDoctrine()->getRepository(SmartcardPurchase::class)
+            ->countPurchases($vendor);
+
+        return $this->json([
+            'redeemedSmartcardPurchasesTotalCount' => $summary->getCount(),
+            'redeemedSmartcardPurchasesTotalValue' => $summary->getValue(),
+        ]);
     }
 }

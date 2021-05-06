@@ -7,11 +7,14 @@ namespace NewApiBundle\Controller;
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Repository\CommunityRepository;
 use BeneficiaryBundle\Utils\CommunityService;
+use DistributionBundle\Entity\Assistance;
+use NewApiBundle\InputType\AssistanceCommunitiesFilterInputType;
 use NewApiBundle\InputType\CommunityCreateInputType;
 use NewApiBundle\InputType\CommunityFilterType;
 use NewApiBundle\InputType\CommunityOrderInputType;
 use NewApiBundle\InputType\CommunityUpdateInputType;
 use NewApiBundle\Request\Pagination;
+use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -107,5 +110,19 @@ class CommunityController extends AbstractController
         $this->get('beneficiary.community_service')->remove($project);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Rest\Get("/projects/{id}/communities")
+     *
+     * @param Project $project
+     *
+     * @return JsonResponse
+     */
+    public function communitiesByProject(Project $project): JsonResponse
+    {
+        $communities = $this->getDoctrine()->getRepository(Community::class)->findByProject($project);
+
+        return $this->json($communities);
     }
 }

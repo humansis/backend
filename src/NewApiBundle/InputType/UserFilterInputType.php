@@ -19,10 +19,14 @@ class UserFilterInputType extends AbstractFilterInputType
     protected $id;
 
     /**
-     * @var string
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      */
     protected $fulltext;
+
+    /**
+     * @Assert\Choice({"true", "false"})
+     */
+    protected $showVendors;
 
     public function hasIds(): bool
     {
@@ -34,10 +38,7 @@ class UserFilterInputType extends AbstractFilterInputType
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
-    public function getFulltext(): string
+    public function getFulltext()
     {
         return $this->fulltext;
     }
@@ -48,5 +49,21 @@ class UserFilterInputType extends AbstractFilterInputType
     public function hasFulltext(): bool
     {
         return $this->has('fulltext');
+    }
+
+    /**
+     * @return bool
+     */
+    public function getShowVendors()
+    {
+        return "true" === $this->showVendors;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasShowVendors(): bool
+    {
+        return $this->has('showVendors');
     }
 }

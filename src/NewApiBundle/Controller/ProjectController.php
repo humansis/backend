@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use CommonBundle\Controller\ExportController;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\ProjectCreateInputType;
@@ -51,6 +52,20 @@ class ProjectController extends AbstractController
     }
 
     /**
+     * @Rest\Get("/projects/exports")
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function exports(Request $request): Response
+    {
+        $request->query->add(['projects' => $request->headers->get('country')]);
+
+        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
+    }
+
+    /**
      * @Rest\Get("/projects/{id}")
      *
      * @param Project $project
@@ -83,7 +98,7 @@ class ProjectController extends AbstractController
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $projects = $this->getDoctrine()->getRepository(Project::class)->findByParams($countryIso3, $filter, $orderBy, $pagination);
+        $projects = $this->getDoctrine()->getRepository(Project::class)->findByParams($this->getUser(), $countryIso3, $filter, $orderBy, $pagination);
 
         return $this->json($projects);
     }

@@ -8,6 +8,7 @@ use Doctrine\ORM\ORMException;
 use Exception;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\User;
+use VoucherBundle\Entity\Vendor;
 
 class VendorControllerTest extends BMSServiceTestCase
 {
@@ -30,7 +31,7 @@ class VendorControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
+        $this->client = self::$container->get('test.client');
     }
 
     /**
@@ -40,11 +41,6 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testCreate()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $adm1Results = $this->em->getRepository(Adm1::class)->findAll();
 
         if (empty($adm1Results)) {
@@ -60,12 +56,14 @@ class VendorControllerTest extends BMSServiceTestCase
 
         $this->request('POST', '/api/basic/vendors', [
             'shop' => 'test shop',
-            'name' => 'test name',
+            'name' => $this->vendorUsername,
             'addressStreet' => 'test street',
             'addressNumber' => '1234566',
             'addressPostcode' => '039 98',
             'locationId' => $adm1Results[0]->getId(),
             'userId' => $users[0]->getId(),
+            'vendorNo' => 'v-10',
+            'contractNo' => 'c-10',
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -87,6 +85,8 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('adm2Id', $result);
         $this->assertArrayHasKey('adm3Id', $result);
         $this->assertArrayHasKey('adm4Id', $result);
+        $this->assertArrayHasKey('vendorNo', $result);
+        $this->assertArrayHasKey('contractNo', $result);
 
         return $result;
     }
@@ -101,20 +101,18 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(array $vendor)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        $this->request('PUT', '/api/basic/vendors/'.$vendor['id'], [
+        $data = [
             'shop' => 'edited',
-            'name' => $vendor['name'],
+            'name' => $this->vendorUsername,
             'addressStreet' => $vendor['addressStreet'],
             'addressNumber' => $vendor['addressNumber'],
             'addressPostcode' => '0000',
             'locationId' => $vendor['locationId'],
-            'userId' => $vendor['userId'],
-        ]);
+            'vendorNo' => 'v-10-changed',
+            'contractNo' => 'c-10-changed',
+        ];
+
+        $this->request('PUT', '/api/basic/vendors/'.$vendor['id'], $data);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -135,9 +133,13 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('adm2Id', $result);
         $this->assertArrayHasKey('adm3Id', $result);
         $this->assertArrayHasKey('adm4Id', $result);
+        $this->assertArrayHasKey('vendorNo', $result);
+        $this->assertArrayHasKey('contractNo', $result);
 
-        $this->assertEquals('edited', $result['shop']);
-        $this->assertEquals('0000', $result['addressPostcode']);
+        $this->assertEquals($data['shop'], $result['shop']);
+        $this->assertEquals($data['addressPostcode'], $result['addressPostcode']);
+        $this->assertEquals($data['vendorNo'], $result['vendorNo']);
+        $this->assertEquals($data['contractNo'], $result['contractNo']);
 
         return $result['id'];
     }
@@ -152,11 +154,6 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/vendors/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -178,6 +175,8 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('adm2Id', $result);
         $this->assertArrayHasKey('adm3Id', $result);
         $this->assertArrayHasKey('adm4Id', $result);
+        $this->assertArrayHasKey('vendorNo', $result);
+        $this->assertArrayHasKey('contractNo', $result);
 
         return $id;
     }
@@ -190,12 +189,7 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        $this->request('GET', '/api/basic/vendors?sort[]=name.asc');
+        $this->request('GET', '/api/basic/vendors?filter[id][]=1&sort[]=name.asc');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -208,6 +202,22 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('data', $result);
     }
 
+    public function testSummaries()
+    {
+        $vendor = $this->em->getRepository(Vendor::class)->findBy([])[0];
+
+        $this->request('GET', '/api/basic/vendors/'.$vendor->getId().'/summaries');
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{
+            "redeemedSmartcardPurchasesTotalCount": "*",
+            "redeemedSmartcardPurchasesTotalValue": "*"
+        }', $this->client->getResponse()->getContent());
+    }
+
     /**
      * @depends testGet
      *
@@ -218,11 +228,6 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('DELETE', '/api/basic/vendors/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
@@ -239,11 +244,6 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testGetNotExists(int $id)
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $this->request('GET', '/api/basic/vendors/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
