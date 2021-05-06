@@ -29,7 +29,6 @@ class Household extends AbstractBeneficiary
     ];
 
     const SHELTER_STATUSES = [
-        0 => 'Values',
         1 => 'Tent',
         2 => 'Makeshift Shelter',
         3 => 'Transitional Shelter',
