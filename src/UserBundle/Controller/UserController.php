@@ -168,6 +168,10 @@ class UserController extends Controller
             return new Response('You cannot connect on this site, please use the app.', Response::HTTP_FORBIDDEN);
         }
 
+        if ($user->getChangePassword()) {
+            return new Response("You must login to web app and change password", 419);
+        }
+
         $userJson = $this->get('serializer')->serialize($user, 'json', ['groups' => ['FullUser']]);
 
         // add available countries to user
