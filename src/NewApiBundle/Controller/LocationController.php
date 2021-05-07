@@ -124,7 +124,10 @@ class LocationController extends AbstractController
             throw new BadRequestHttpException('Missing header attribute country');
         }
 
-        return $this->json(new Paginator($data));
+        $response = $this->json(new Paginator($data));
+        $response->setVary(['country']);
+
+        return $response;
     }
 
     /**
