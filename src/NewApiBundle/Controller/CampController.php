@@ -3,6 +3,7 @@
 namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Camp;
+use CommonBundle\Entity\Location;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -28,5 +29,19 @@ class CampController extends AbstractController
         $beneficiaries = $this->getDoctrine()->getRepository(Camp::class)->findByCountry($countryIso3);
 
         return $this->json(new Paginator($beneficiaries));
+    }
+
+    /**
+     * @Rest\Get("locations/{id}/camps")
+     *
+     * @param Location $location
+     *
+     * @return JsonResponse
+     */
+    public function campsByLocation(Location $location): JsonResponse
+    {
+        $camps = $this->getDoctrine()->getRepository(Camp::class)->findBy(['location' => $location]);
+
+        return $this->json(new Paginator($camps));
     }
 }
