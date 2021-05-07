@@ -2,6 +2,8 @@
 
 namespace Tests\NewApiBundle\Controller;
 
+use BeneficiaryBundle\Entity\Camp;
+use Doctrine\ORM\NoResultException;
 use Exception;
 use Tests\BMSServiceTestCase;
 
@@ -31,6 +33,44 @@ class CampControllerTest extends BMSServiceTestCase
         $this->assertJsonFragment('{
             "totalCount": "*",
             "data": "*"}', $this->client->getResponse()->getContent()
+        );
+    }
+
+    public function testCampsByLocation()
+    {
+        try {
+            $locationId = $this->em->createQueryBuilder()
+                ->select('l.id')
+                ->from(Camp::class, 'c')
+                ->leftJoin('c.location', 'l')
+                ->andWhere('l.id IS NOT NULL')
+                ->setMaxResults(1)
+                ->getQuery()
+                ->getSingleScalarResult();
+        } catch (NoResultException $e) {
+            $this->markTestSkipped('You need to have at least one camp with location in system');
+            return;
+        }
+
+        $this->request('GET', "/api/basic/locations/$locationId/camps");
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{
+            "totalCount": "*",
+            "data": [
+                {
+                    "id": "*",
+                    "name": "*",
+                    "locationId": "*",
+                    "adm1Id": "*",
+                    "adm2Id": "*",
+                    "adm3Id": "*",
+                    "adm4Id": "*"
+                }
+            ]}', $this->client->getResponse()->getContent()
         );
     }
 
