@@ -14,6 +14,7 @@ use CommonBundle\Entity\Adm4;
 use DistributionBundle\Entity\Assistance;
 use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Component\Country\Country;
+use NewApiBundle\InputType\PurchasedItemFilterInputType;
 use NewApiBundle\Repository\PurchasedItemRepository;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -39,7 +40,7 @@ class PurchasedSummarySpreadsheetExport
         $this->repository = $repository;
     }
 
-    public function export(string $countryIso3, string $filetype)
+    public function export(string $countryIso3, string $filetype, PurchasedItemFilterInputType $filter)
     {
         $country = $this->countries->getCountry($countryIso3);
         if (!$country) {
@@ -55,7 +56,7 @@ class PurchasedSummarySpreadsheetExport
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
 
-        $this->build($worksheet, $country);
+        $this->build($worksheet, $country, $filter);
 
         $writer = IOFactory::createWriter($spreadsheet, ucfirst($filetype));
         $writer->save($filename);
@@ -63,7 +64,7 @@ class PurchasedSummarySpreadsheetExport
         return $filename;
     }
 
-    private function build(Worksheet $worksheet, Country $country)
+    private function build(Worksheet $worksheet, Country $country, PurchasedItemFilterInputType $filter)
     {
         $worksheet->getColumnDimension('A')->setWidth(16.852);
         $worksheet->getColumnDimension('B')->setWidth(14.423);
@@ -129,7 +130,7 @@ class PurchasedSummarySpreadsheetExport
         $worksheet->setCellValue('W1', $this->translator->trans('Humansis Invoice Nr.'));
 
         $i = 1;
-        foreach ($this->repository->findByParams($country->getIso3()) as $purchasedItem) {
+        foreach ($this->repository->findByParams($country->getIso3(), $filter) as $purchasedItem) {
             $beneficiary = $purchasedItem->getBeneficiary();
             $assistance = $purchasedItem->getAssistance();
             $commodity = $purchasedItem->getCommodity();
