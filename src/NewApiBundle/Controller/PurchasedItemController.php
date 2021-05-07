@@ -80,17 +80,18 @@ class PurchasedItemController extends AbstractController
     /**
      * @Rest\Get("/purchased-items/exports")
      *
-     * @param Request $request
+     * @param Request                      $request
+     * @param PurchasedItemFilterInputType $filter
      *
      * @return Response
      */
-    public function summaryExports(Request $request): Response
+    public function summaryExports(Request $request, PurchasedItemFilterInputType $filter): Response
     {
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        $filename = $this->get('export.purchased_summary.spreadsheet')->export($request->headers->get('country'), $request->get('type'));
+        $filename = $this->get('export.purchased_summary.spreadsheet')->export($request->headers->get('country'), $request->get('type'), $filter);
 
         $response = new BinaryFileResponse($filename);
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));

@@ -76,11 +76,12 @@ class DistributedItemController extends AbstractController
     /**
      * @Rest\Get("/distributed-items/exports")
      *
-     * @param Request $request
+     * @param Request                        $request
+     * @param DistributedItemFilterInputType $inputType
      *
      * @return Response
      */
-    public function summaryExports(Request $request): Response
+    public function summaryExports(Request $request, DistributedItemFilterInputType $inputType): Response
     {
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');

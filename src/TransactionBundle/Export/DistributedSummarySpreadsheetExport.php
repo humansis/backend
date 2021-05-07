@@ -14,6 +14,7 @@ use CommonBundle\Entity\Adm4;
 use DistributionBundle\Entity\Assistance;
 use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Component\Country\Country;
+use NewApiBundle\InputType\DistributedItemFilterInputType;
 use NewApiBundle\Repository\DistributedItemRepository;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -39,7 +40,7 @@ class DistributedSummarySpreadsheetExport
         $this->repository = $repository;
     }
 
-    public function export(string $countryIso3, string $filetype)
+    public function export(string $countryIso3, string $filetype, DistributedItemFilterInputType $filter)
     {
         $country = $this->countries->getCountry($countryIso3);
         if (!$country) {
@@ -55,7 +56,7 @@ class DistributedSummarySpreadsheetExport
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
 
-        $this->build($worksheet, $country);
+        $this->build($worksheet, $country, $filter);
 
         $writer = IOFactory::createWriter($spreadsheet, ucfirst($filetype));
         $writer->save($filename);
@@ -63,7 +64,7 @@ class DistributedSummarySpreadsheetExport
         return $filename;
     }
 
-    private function build(Worksheet $worksheet, Country $country)
+    private function build(Worksheet $worksheet, Country $country, DistributedItemFilterInputType $filter)
     {
         $worksheet->getColumnDimension('A')->setWidth(16.852);
         $worksheet->getColumnDimension('B')->setWidth(14.423);
@@ -119,7 +120,7 @@ class DistributedSummarySpreadsheetExport
         $worksheet->setCellValue('R1', $this->translator->trans('Field Officer Email'));
 
         $i = 1;
-        foreach ($this->repository->findByParams($country->getIso3()) as $distributedItem) {
+        foreach ($this->repository->findByParams($country->getIso3(), $filter) as $distributedItem) {
             $beneficiary = $distributedItem->getBeneficiary();
             $assistance = $distributedItem->getAssistance();
             $commodity = $distributedItem->getCommodity();
