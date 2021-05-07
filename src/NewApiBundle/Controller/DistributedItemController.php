@@ -87,7 +87,7 @@ class DistributedItemController extends AbstractController
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        $filename = $this->get('export.distributed_summary.spreadsheet')->export($request->headers->get('country'), $request->get('type'));
+        $filename = $this->get('export.distributed_summary.spreadsheet')->export($request->headers->get('country'), $request->get('type'), $inputType);
 
         $response = new BinaryFileResponse($filename);
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
