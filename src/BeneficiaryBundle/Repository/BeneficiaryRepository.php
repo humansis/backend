@@ -441,7 +441,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     {
         $hhRepository = $this->getEntityManager()->getRepository(Household::class);
         $qb = $hhRepository->getUnarchivedByProject($project);
-
+dump($criteria);die;
         // First we get all the beneficiaries, and we store the headId for later
         $qb->leftJoin('hh.beneficiaries', 'b')
             ->select('DISTINCT b.id AS id')
@@ -468,7 +468,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             }
         }
         $qb->andWhere($userConditionsStatement);
-
+    //SELECT DISTINCT b.id AS id, head.id AS headId, (CASE WHEN prsn.gender= :parameter0 THEN prsn.gender ELSE :null END) AS gender0, (CASE WHEN hhh1.gender= :parameter1 THEN hhh1.gender ELSE :null END) AS gender1 FROM BeneficiaryBundle\Entity\Household hh LEFT JOIN hh.projects p LEFT JOIN hh.beneficiaries b LEFT JOIN hh.beneficiaries head INNER JOIN b.person prsn LEFT JOIN hh.beneficiaries hhh1 INNER JOIN hhh1.person prsn1 WHERE p = :project AND hh.archived = 0 AND head.status = 1 AND hhh1.status = 1 AND (prsn.gender= :parameter0 AND hhh1.gender= :parameter1
         return $qb->getQuery()->getResult();
     }
 
