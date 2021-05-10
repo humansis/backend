@@ -9,6 +9,7 @@ use BeneficiaryBundle\Entity\Household;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Entity\DistributedItem;
 use NewApiBundle\InputType\DistributedItemFilterInputType;
+use NewApiBundle\InputType\DistributedItemOrderInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -57,18 +58,24 @@ class DistributedItemController extends AbstractController
      *
      * @param Request                        $request
      * @param DistributedItemFilterInputType $inputType
+     * @param DistributedItemOrderInputType  $order
      * @param Pagination                     $pagination
      *
      * @return JsonResponse
      */
-    public function distributedItems(Request $request, DistributedItemFilterInputType $inputType, Pagination $pagination): JsonResponse
+    public function distributedItems(
+        Request $request,
+        DistributedItemFilterInputType $inputType,
+        DistributedItemOrderInputType $order,
+        Pagination $pagination
+    ): JsonResponse
     {
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
         $data = $this->getDoctrine()->getRepository(DistributedItem::class)
-            ->findByParams($request->headers->get('country'), $inputType, $pagination);
+            ->findByParams($request->headers->get('country'), $inputType, $order, $pagination);
 
         return $this->json($data);
     }

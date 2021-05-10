@@ -115,7 +115,8 @@ class DistributedItemControllerTest extends BMSServiceTestCase
 
     public function testFindByParams()
     {
-        $this->request('GET', '/api/basic/distributed-items?filter[fulltext]=a&filter[projects][]=1&filter[dateFrom]=2020-01-01&filter[beneficiaryTypes][]=Beneficiary');
+        $this->request('GET', '/api/basic/distributed-items?filter[fulltext]=a&filter[projects][]=1&filter[dateFrom]=2020-01-01&filter[beneficiaryTypes][]=Beneficiary'.
+        '&sort[]=dateDistribution.asc&sort[]=beneficiaryId.asc&sort[]=amount.asc');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

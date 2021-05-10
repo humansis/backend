@@ -15,18 +15,25 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Entity\DistributedItem;
 use NewApiBundle\Entity\PurchasedItem;
 use NewApiBundle\InputType\PurchasedItemFilterInputType;
+use NewApiBundle\InputType\PurchasedItemOrderInputType;
 use NewApiBundle\Request\Pagination;
 
 class PurchasedItemRepository extends EntityRepository
 {
     /**
-     * @param string                              $countryIso3
+     * @param string                            $countryIso3
      * @param PurchasedItemFilterInputType|null $filter
-     * @param Pagination|null                     $pagination
+     * @param PurchasedItemOrderInputType|null  $orderBy
+     * @param Pagination|null                   $pagination
      *
      * @return Paginator|PurchasedItem[]
      */
-    public function findByParams(string $countryIso3, ?PurchasedItemFilterInputType $filter = null, ?Pagination $pagination = null): Paginator
+    public function findByParams(
+        string $countryIso3,
+        ?PurchasedItemFilterInputType $filter = null,
+        ?PurchasedItemOrderInputType $orderBy = null,
+        ?Pagination $pagination = null
+    ): Paginator
     {
         $qbr = $this->createQueryBuilder('pi')
             ->join('pi.project', 'pr')
@@ -145,6 +152,21 @@ class PurchasedItemRepository extends EntityRepository
             if ($filter->hasDateTo()) {
                 $qbr->andWhere('pi.datePurchase <= :dateTo')
                     ->setParameter('dateTo', $filter->getDateTo());
+            }
+        }
+
+        if ($orderBy) {
+            foreach ($orderBy->toArray() as $name => $direction) {
+                switch ($name) {
+                    case PurchasedItemOrderInputType::SORT_BY_DATE_PURCHASE:
+                        $qbr->orderBy('pi.datePurchase', $direction);
+                        break;
+                    case PurchasedItemOrderInputType::SORT_BY_VALUE:
+                        $qbr->orderBy('pi.value', $direction);
+                        break;
+                    default:
+                        throw new \InvalidArgumentException('Invalid order by directive '.$name);
+                }
             }
         }
 

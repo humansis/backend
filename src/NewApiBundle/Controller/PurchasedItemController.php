@@ -8,6 +8,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\PurchasedItemFilterInputType;
+use NewApiBundle\InputType\PurchasedItemOrderInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -18,7 +19,6 @@ use NewApiBundle\Entity\PurchasedItem;
 use NewApiBundle\Repository\PurchasedItemRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-
 
 class PurchasedItemController extends AbstractController
 {
@@ -63,7 +63,12 @@ class PurchasedItemController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function list(Request $request, PurchasedItemFilterInputType $filterInputType, Pagination $pagination): JsonResponse
+    public function list(
+        Request $request,
+        PurchasedItemFilterInputType $filterInputType,
+        PurchasedItemOrderInputType $order,
+        Pagination $pagination
+    ): JsonResponse
     {
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
@@ -72,7 +77,7 @@ class PurchasedItemController extends AbstractController
         /** @var PurchasedItemRepository $repository */
         $repository = $this->getDoctrine()->getRepository(PurchasedItem::class);
 
-        $data = $repository->findByParams($request->headers->get('country'), $filterInputType, $pagination);
+        $data = $repository->findByParams($request->headers->get('country'), $filterInputType, $order, $pagination);
 
         return $this->json($data);
     }
