@@ -8,3 +8,28 @@ imports:
     - { resource: ../../src/TransactionBundle/Resources/config/services.yml }
     - { resource: ../../src/VoucherBundle/Resources/config/services.yml }
     - { resource: ../../src/NewApiBundle/Resources/config/services.yml }
+
+services:
+    monolog.gelf_handler:
+        class: Monolog\Handler\GelfHandler
+        arguments:
+            - "@gelf.publisher"
+            - 'debug' #monolog config is ignored with custom service level has to be redefined here (default : debug), you should probably use parameters eg: '%gelf_level%'
+        calls:
+            - [ 'setFormatter', [ '@gelf.formatter' ]]
+
+    gelf.publisher:
+        class: Gelf\Publisher
+        arguments: [ "@gelf.ignore_error_transport" ]
+
+    gelf.ignore_error_transport:
+        class: Gelf\Transport\IgnoreErrorTransportWrapper
+        arguments: [ "@gelf.transport" ]
+
+    gelf.transport:
+        class: Gelf\Transport\UdpTransport
+        arguments: [ "%gelf_host%", "%gelf_port%", 1024 ]
+
+    gelf.formatter:
+        class: Monolog\Formatter\GelfMessageFormatter
+        arguments: [ "%gelf_server_name%" ]

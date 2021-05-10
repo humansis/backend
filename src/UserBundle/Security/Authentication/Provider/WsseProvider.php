@@ -32,14 +32,6 @@ class WsseProvider implements AuthenticationProviderInterface
             return $authenticatedToken;
         }
 
-        $this->logger->error('wsse authentication failed', [
-            'username' => $token->getUsername(),
-            'password' => $user ? $user->getPassword() : null,
-            'digest' => $token->digest,
-            'nonce' => $token->nonce,
-            'created' => $token->created,
-            'current' => time(),
-        ]);
         throw new AuthenticationException('The WSSE authentication failed.');
     }
 
@@ -53,32 +45,17 @@ class WsseProvider implements AuthenticationProviderInterface
     {
         // Check created time is not so far in the future 5 min (date issue with the api)
         if (strtotime($created) - time() > self::TIME_BOUND) {
-            $this->logger->error('wsse validation failed (created time)', [
-                'token_time' => $created,
-                'server_time' => time(),
-                'conditition_time' => strtotime($created) - time(),
-            ]);
             return false;
         }
 
         // Expire timestamp after 5 minutes
         if (time() - strtotime($created) > self::TIME_BOUND) {
-            $this->logger->error('wsse validation failed (expire time)', [
-                'token_time' => $created,
-                'server_time' => time(),
-                'conditition_time' => time() - strtotime($created),
-            ]);
             return false;
         }
 
         // Validate that the nonce is *not* used in the last 5 minutes
         // if it has, this could be a replay attack
         if (file_exists($this->cacheDir.'/'.$nonce) && file_get_contents($this->cacheDir.'/'.$nonce) + self::TIME_BOUND > time()) {
-            $this->logger->error('wsse validation failed (Previously used nonce detected)', [
-                'token_time' => $created,
-                'server_time' => time(),
-                'conditition_time' => file_get_contents($this->cacheDir.'/'.$nonce) + 300,
-            ]);
             throw new AuthenticationExpiredException('Previously used nonce detected');
         }
         // If cache directory does not exist we create it
@@ -89,12 +66,6 @@ class WsseProvider implements AuthenticationProviderInterface
 
         // Validate Secret
         $expected = base64_encode(sha1(base64_decode($nonce).$created.$secret, true));
-        $this->logger->error('wsse validation ok', [
-            'token_time' => $created,
-            'server_time' => time(),
-            'nonce' => $nonce,
-            'expected' => $expected,
-        ]);
         return Hash_equals($expected, $digest);
     }
 

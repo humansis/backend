@@ -93,9 +93,6 @@ class SmartcardController extends Controller
      */
     public function register(Request $request): Response
     {
-        $this->container->get('logger')->error('headers', $request->headers->all());
-        $this->container->get('logger')->error('content', [$request->getContent()]);
-
         $smartcard = $this->get('smartcard_service')->register(
             strtoupper($request->get('serialNumber')),
             $request->get('beneficiaryId'),
@@ -240,10 +237,6 @@ class SmartcardController extends Controller
      */
     public function change(Smartcard $smartcard, Request $request): Response
     {
-        $this->container->get('logger')->error('Smartcard', [$smartcard->getId()]);
-        $this->container->get('logger')->error('headers', $request->headers->all());
-        $this->container->get('logger')->error('content', [$request->getContent()]);
-
         $newState = $smartcard->getState();
         if ($request->request->has('state')) {
             $newState = $request->request->get('state');
@@ -325,9 +318,6 @@ class SmartcardController extends Controller
      */
     public function depositDeprecated(Request $request): Response
     {
-        $this->container->get('logger')->error('headers', $request->headers->all());
-        $this->container->get('logger')->error('content', [$request->getContent()]);
-
         $deposit = $this->get('smartcard_service')->deposit(
             $request->get('serialNumber'),
             $request->request->getInt('distributionId'),
@@ -401,9 +391,6 @@ class SmartcardController extends Controller
      */
     public function deposit(Request $request): Response
     {
-        $this->container->get('logger')->error('headers', $request->headers->all());
-        $this->container->get('logger')->error('content', [$request->getContent()]);
-
         $deposit = $this->get('smartcard_service')->deposit(
             $request->get('serialNumber'),
             $request->request->getInt('distributionId'),
@@ -460,9 +447,6 @@ class SmartcardController extends Controller
      */
     public function purchaseDeprecated(Request $request): Response
     {
-        $this->container->get('logger')->error('headers', $request->headers->all());
-        $this->container->get('logger')->error('content', [$request->getContent()]);
-
         /** @var SmartcardPurchaseDeprecatedInput $data */
         $data = $this->get('serializer')->deserialize($request->getContent(), SmartcardPurchaseDeprecatedInput::class, 'json');
 
@@ -521,9 +505,6 @@ class SmartcardController extends Controller
      */
     public function purchase(Request $request): Response
     {
-        $this->container->get('logger')->error('headers', $request->headers->all());
-        $this->container->get('logger')->error('content', [$request->getContent()]);
-
         /** @var SmartcardPurchaseInput $data */
         $data = $this->get('serializer')->deserialize($request->getContent(), SmartcardPurchaseInput::class, 'json');
 
