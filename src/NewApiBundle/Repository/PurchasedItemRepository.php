@@ -159,10 +159,10 @@ class PurchasedItemRepository extends EntityRepository
             foreach ($orderBy->toArray() as $name => $direction) {
                 switch ($name) {
                     case PurchasedItemOrderInputType::SORT_BY_DATE_PURCHASE:
-                        $qbr->orderBy('pi.datePurchase', $direction);
+                        $qbr->addOrderBy('pi.datePurchase', $direction);
                         break;
                     case PurchasedItemOrderInputType::SORT_BY_VALUE:
-                        $qbr->orderBy('pi.value', $direction);
+                        $qbr->addOrderBy('pi.value', $direction);
                         break;
                     default:
                         throw new \InvalidArgumentException('Invalid order by directive '.$name);
@@ -175,7 +175,7 @@ class PurchasedItemRepository extends EntityRepository
                 ->setFirstResult($pagination->getOffset());
         }
 
-        $qbr->orderBy('pi.datePurchase', 'ASC');
+        $qbr->addOrderBy('pi.datePurchase', 'ASC');
 
         return new Paginator($qbr);
     }
