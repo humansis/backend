@@ -92,13 +92,16 @@ class DistributedItemRepository extends EntityRepository
             foreach ($orderBy->toArray() as $name => $direction) {
                 switch ($name) {
                     case DistributedItemOrderInputType::SORT_BY_BENEFICIARY_ID:
-                        $qbr->orderBy('di.beneficiaryId', $direction);
+                        if (!in_array('b', $qbr->getAllAliases())) {
+                            $qbr->leftJoin('di.beneficiary', 'b');
+                        }
+                        $qbr->addOrderBy('b.id', $direction);
                         break;
                     case DistributedItemOrderInputType::SORT_BY_DISTRIBUTION_DATE:
-                        $qbr->orderBy('di.dateDistribution', $direction);
+                        $qbr->addOrderBy('di.dateDistribution', $direction);
                         break;
                     case DistributedItemOrderInputType::SORT_BY_AMOUNT:
-                        $qbr->orderBy('di.amount', $direction);
+                        $qbr->addOrderBy('di.amount', $direction);
                         break;
                     default:
                         throw new \InvalidArgumentException('Invalid order by directive '.$name);
@@ -111,7 +114,7 @@ class DistributedItemRepository extends EntityRepository
                 ->setFirstResult($pagination->getOffset());
         }
 
-        $qbr->orderBy('di.dateDistribution', 'ASC');
+        $qbr->addOrderBy('di.dateDistribution', 'ASC');
 
         return new Paginator($qbr);
     }
