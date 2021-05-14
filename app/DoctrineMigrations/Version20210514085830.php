@@ -60,7 +60,7 @@ final class Version20210514085830 extends AbstractMigration
                     WHEN b.id   IS NOT NULL THEN vp.vendor_id
                 END AS vendor_id,
                 CASE
-                    WHEN sd.id  IS NOT NULL THEN sbatch.id
+                    WHEN sd.id  IS NOT NULL THEN LPAD(sbatch.id, 6, 0)
                     WHEN b.id   IS NOT NULL THEN null
                 END AS invoice_number,
                 CASE
