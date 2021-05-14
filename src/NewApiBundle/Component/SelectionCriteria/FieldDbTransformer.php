@@ -44,7 +44,7 @@ class FieldDbTransformer
     {
         if (SelectionCriteriaTarget::BENEFICIARY === $input->getTarget() && ($vulnerability = $this->getVulnerability($input->getField()))) {
             return [
-                'condition_string' => $input->getValue() ? '=' : '!=',
+                'condition_string' => $input->getValue(),
                 'field_string' => $input->getField(),
                 'target' => $input->getTarget(),
                 'table_string' => 'vulnerabilityCriteria',
@@ -158,8 +158,8 @@ class FieldDbTransformer
                 'group' => $criterion->getGroupNumber(),
                 'target' => $criterion->getTarget(),
                 'field' => $criterion->getFieldString(),
-                'condition' => null,
-                'value' => null,
+                'condition' => '=',
+                'value' => $criterion->getConditionString(),
                 'weight' => $criterion->getWeight(),
             ];
         }
