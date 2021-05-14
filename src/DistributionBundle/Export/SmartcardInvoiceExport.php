@@ -133,11 +133,11 @@ class SmartcardInvoiceExport
 
         // Temporary Invoice No. box
         $countryIso3 = self::extractCountryIso3($batch->getVendor());
-        $humansisId = sprintf('%06d', $batch->getId());
+        $humansisInvoiceNo = $batch->getInvoiceNo();
         $vendor = sprintf('%03d', $batch->getVendor()->getId());
         $date = $batch->getRedeemedAt()->format('y');
         $worksheet->setCellValue('B2', 'Temporary Invoice No.');
-        $worksheet->setCellValue('B3', "{$countryIso3}EV{$date}{$humansisId}");
+        $worksheet->setCellValue('B3', "{$countryIso3}EV{$date}{$humansisInvoiceNo}");
         self::setSmallHeadline($worksheet, 'B2:B3');
         self::setSmallBorder($worksheet, 'B2:B3');
 
@@ -145,7 +145,7 @@ class SmartcardInvoiceExport
         $worksheet->mergeCells('E2:F2');
         $worksheet->mergeCells('E3:F3');
         $worksheet->setCellValue('E2', 'Humansis Invoice No.');
-        $worksheet->setCellValue('E3', $humansisId);
+        $worksheet->setCellValue('E3', $humansisInvoiceNo);
         self::setSmallHeadline($worksheet, 'E2:F3');
         self::setSmallBorder($worksheet, 'E2:F3');
 

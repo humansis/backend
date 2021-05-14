@@ -236,6 +236,14 @@ class SmartcardRedemptionBatch implements JsonSerializable
         return $this->contractNo;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getInvoiceNo(): ?string
+    {
+        return $this->getId() ? sprintf('%06d', $this->getId()) : null;
+    }
+
     public function jsonSerialize()
     {
         return [
@@ -246,6 +254,7 @@ class SmartcardRedemptionBatch implements JsonSerializable
             'value' => (float) $this->value,
             'currency' => $this->currency,
             'contract_no' => $this->contractNo,
+            'invoice_number' => $this->getInvoiceNo(),
             'project_id' => $this->getProject() ? $this->getProject()->getId() : null,
             'project_name' => $this->getProject() ? $this->getProject()->getName() : null,
         ];
