@@ -108,4 +108,21 @@ class ImportControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('data', $result);
     }
 
+    /**
+     * @depends testCreate
+     *
+     * @param int $id
+     */
+    public function testStatusChange(int $id)
+    {
+        $this->request('PATCH', '/api/basic/imports/'.$id, [
+            'status' => 'Integrity Checking',
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+    }
+
 }

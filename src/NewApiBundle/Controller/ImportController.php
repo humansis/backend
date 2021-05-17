@@ -7,7 +7,9 @@ use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\InputType\ImportCreateInputType;
+use NewApiBundle\InputType\ImportUpdateStatusInputType;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use UserBundle\Entity\User;
 
 class ImportController extends AbstractController
@@ -52,5 +54,20 @@ class ImportController extends AbstractController
         $institution = $this->get('service.import')->create($inputType, $user);
 
         return $this->json($institution);
+    }
+
+    /**
+     * @Rest\Patch("/imports/{id}")
+     *
+     * @param Import                      $import
+     * @param ImportUpdateStatusInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function updateStatus(Import $import, ImportUpdateStatusInputType $inputType): JsonResponse
+    {
+        $this->get('service.import')->updateStatus($import, $inputType);
+
+        return $this->json(null, Response::HTTP_ACCEPTED);
     }
 }
