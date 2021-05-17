@@ -52,6 +52,9 @@ services:
         autoconfigure: true
         public: false
 
+    Doctrine\Persistence\ObjectManager:
+        alias: doctrine.orm.default_entity_manager
+
     NewApiBundle\Component\Country\Countries:
         arguments: [ '%app.countries%' ]
 
@@ -59,6 +62,11 @@ services:
         resource: '../../Controller'
         public: true
         tags: [ 'app.controller' ]
+
+    NewApiBundle\Command\:
+        resource: '../../Command'
+        public: true
+        tags: [ 'console.command' ]
 
     NewApiBundle\Serializer\MapperNormalizer:
         tags: [ 'serializer.normalizer' ]
