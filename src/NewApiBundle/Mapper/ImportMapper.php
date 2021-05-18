@@ -42,9 +42,7 @@ class ImportMapper implements MapperInterface
 
     public function getDescription(): string
     {
-        //TODO missing description in Import entity
-
-        return '';
+        return $this->object->getNotes();
     }
 
     public function getProjectId(): int
@@ -54,8 +52,6 @@ class ImportMapper implements MapperInterface
 
     public function getStatus(): string
     {
-        //TODO status or state?
-
         return $this->object->getState();
     }
 

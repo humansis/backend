@@ -9,6 +9,7 @@ use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Enum\ImportState;
 use NewApiBundle\InputType\DuplicityResolveInputType;
 use NewApiBundle\InputType\ImportCreateInputType;
 use NewApiBundle\InputType\ImportUpdateStatusInputType;
@@ -107,6 +108,15 @@ class ImportController extends AbstractController
      */
     public function uploadFile(Import $import, Request $request): JsonResponse
     {
+        if (!in_array($import->getState(), [
+            ImportState::NEW,
+            ImportState::INTEGRITY_CHECKING,
+            ImportState::INTEGRITY_CHECK_CORRECT,
+            ImportState::INTEGRITY_CHECK_FAILED,
+        ])) {
+            throw new \InvalidArgumentException('You cannot upload file to this import.');
+        }
+
         /** @var UploadedFile|null $file */
         $file = $request->files->get('files');
 
@@ -131,6 +141,14 @@ class ImportController extends AbstractController
      */
     public function deleteFile(ImportFile $importFile): JsonResponse
     {
+        if (!in_array($importFile->getImport()->getState(), [
+            ImportState::INTEGRITY_CHECKING,
+            ImportState::INTEGRITY_CHECK_CORRECT,
+            ImportState::INTEGRITY_CHECK_FAILED,
+        ])) {
+            throw new \InvalidArgumentException('You cannot delete file from this import.');
+        }
+
         $this->get('service.import')->removeFile($importFile);
 
         return $this->json(null, Response::HTTP_ACCEPTED);
