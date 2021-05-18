@@ -8,6 +8,7 @@ use NewApiBundle\Enum\ImportQueueState;
 
 /**
  * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ImportQueueRepository")
  */
 class ImportQueue
 {
@@ -23,7 +24,7 @@ class ImportQueue
     /**
      * @var Import
      *
-     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Import")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Import", inversedBy="importQueue")
      */
     private $import;
 

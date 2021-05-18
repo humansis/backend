@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Enum\ImportState;
 use ProjectBundle\Entity\Project;
@@ -64,6 +66,13 @@ class Import
      */
     private $createdAt;
 
+    /**
+     * @var ImportQueue[]|Collection
+     *
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportQueue", mappedBy="import")
+     */
+    private $importQueue;
+
     public function __construct(string $title, ?string $notes, Project $project, User $creator)
     {
         $this->title = $title;
@@ -72,6 +81,7 @@ class Import
         $this->state = ImportState::NEW;
         $this->createdBy = $creator;
         $this->createdAt = new \DateTime('now');
+        $this->importQueue = new ArrayCollection();
     }
 
     /**
@@ -140,5 +150,13 @@ class Import
     public function getCreatedAt(): \DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    /**
+     * @return Collection|ImportQueue[]
+     */
+    public function getImportQueue()
+    {
+        return $this->importQueue;
     }
 }
