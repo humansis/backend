@@ -184,4 +184,30 @@ class ImportControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('failed', $result);
     }
 
+    public function testGetQueueItem()
+    {
+        /** @var ImportQueue[] $importQueue */
+        $importQueue = $this->em->getRepository(ImportQueue::class)->findAll();
+
+        if (empty($importQueue)) {
+            $this->markTestSkipped('There needs to be at least one import import with entries in queue in system.');
+        }
+
+        $importQueueId = $importQueue[0]->getId();
+
+        $this->request('GET', "/api/basic/imports/queue/$importQueueId");
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('id', $result);
+        $this->assertArrayHasKey('values', $result);
+        $this->assertArrayHasKey('status', $result);
+    }
+
 }
