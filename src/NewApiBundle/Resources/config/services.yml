@@ -175,3 +175,7 @@ services:
     service.import:
         public: true
         class: NewApiBundle\Component\Import\ImportService
+
+    service.upload_import:
+        public: true
+        class: NewApiBundle\Component\Import\UploadImportService

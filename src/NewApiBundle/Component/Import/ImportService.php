@@ -4,6 +4,7 @@ namespace NewApiBundle\Component\Import;
 
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Entity\Import;
+use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\InputType\ImportCreateInputType;
 use NewApiBundle\InputType\ImportUpdateStatusInputType;
 use ProjectBundle\Entity\Project;
@@ -43,6 +44,13 @@ class ImportService
     public function updateStatus(Import $import, ImportUpdateStatusInputType $inputType): void
     {
         $import->setState($inputType->getStatus());
+
+        $this->em->flush();
+    }
+
+    public function removeFile(ImportFile $importFile)
+    {
+        $this->em->remove($importFile);
 
         $this->em->flush();
     }

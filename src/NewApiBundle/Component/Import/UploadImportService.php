@@ -33,10 +33,11 @@ class UploadImportService
      * @param UploadedFile $uploadedFile
      * @param User         $user
      *
+     * @return ImportFile
      * @throws \Doctrine\DBAL\ConnectionException
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    public function upload(Import $import, UploadedFile $uploadedFile, User $user)
+    public function upload(Import $import, UploadedFile $uploadedFile, User $user): ImportFile
     {
         $list = $this->parser->parse($uploadedFile);
 
@@ -58,6 +59,8 @@ class UploadImportService
             $this->sqlCollection->finish();
 
             $this->em->getConnection()->commit();
+
+            return $importFile;
         } catch (\Exception $ex) {
             $this->em->getConnection()->rollBack();
             throw $ex;
