@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Tests\NewApiBundle\Controller;
 
 use Exception;
+use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
 
@@ -122,6 +123,37 @@ class ImportControllerTest extends BMSServiceTestCase
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
             'Request failed: '.$this->client->getResponse()->getContent()
+        );
+    }
+
+    public function testGetDuplicities()
+    {
+        /** @var ImportBeneficiaryDuplicity[] $duplicities */
+        $duplicities = $this->em->getRepository(ImportBeneficiaryDuplicity::class)->findAll();
+
+        if (empty($duplicities)) {
+            $this->markTestSkipped('There needs to be at least one import duplicity in system.');
+        }
+
+        $importId = $duplicities[0]->getOurs()->getImport()->getId();
+
+        $this->request('GET', "/api/basic/imports/$importId/duplicities");
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        $this->assertJsonFragment('{
+            "totalCount": "*",
+            "data": [
+                {
+                    "id": "*",
+                    "itemId": "*",
+                    "duplicityCandidateId": "*",
+                    "reasons": "*"
+                }
+            ]}', $this->client->getResponse()->getContent()
         );
     }
 

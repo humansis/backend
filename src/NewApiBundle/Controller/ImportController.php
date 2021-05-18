@@ -6,6 +6,7 @@ namespace NewApiBundle\Controller;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Entity\Import;
+use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\InputType\ImportCreateInputType;
 use NewApiBundle\InputType\ImportUpdateStatusInputType;
@@ -132,4 +133,21 @@ class ImportController extends AbstractController
 
         return $this->json(null, Response::HTTP_ACCEPTED);
     }
+
+    /**
+     * @Rest\Get("/imports/{id}/duplicities")
+     *
+     * @param Import $import
+     *
+     * @return JsonResponse
+     */
+    public function duplicities(Import $import): JsonResponse
+    {
+        /** @var ImportBeneficiaryDuplicity[] $duplicities */
+        $duplicities = $this->getDoctrine()->getRepository(ImportBeneficiaryDuplicity::class)
+            ->findByImport($import);
+
+        return $this->json($duplicities);
+    }
+
 }
