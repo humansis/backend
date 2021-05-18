@@ -164,4 +164,13 @@ class ImportController extends AbstractController
         return $this->json($queueProgress);
     }
 
+    /**
+     * @Rest\Get("/imports/{id}/invalid-files")
+     *
+     * @param Import $import
+     */
+    public function invalidFiles(Import $import)
+    {
+        //TODO implement invalid files logic
+    }
 }
