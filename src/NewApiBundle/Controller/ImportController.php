@@ -150,4 +150,18 @@ class ImportController extends AbstractController
         return $this->json($duplicities);
     }
 
+    /**
+     * @Rest\Get("/imports/{id}/queue-progress")
+     *
+     * @param Import $import
+     *
+     * @return JsonResponse
+     */
+    public function queueProgress(Import $import): JsonResponse
+    {
+        $queueProgress = $this->get('service.import')->getQueueProgress($import);
+
+        return $this->json($queueProgress);
+    }
+
 }

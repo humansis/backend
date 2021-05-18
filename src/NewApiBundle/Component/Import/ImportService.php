@@ -1,12 +1,18 @@
 <?php
+declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import;
 
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Component\Import\ValueObject\QueueProgressValueObject;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
+use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Enum\ImportQueueState;
+use NewApiBundle\Enum\ImportState;
 use NewApiBundle\InputType\ImportCreateInputType;
 use NewApiBundle\InputType\ImportUpdateStatusInputType;
+use NewApiBundle\Repository\ImportQueueRepository;
 use ProjectBundle\Entity\Project;
 use UserBundle\Entity\User;
 
@@ -53,6 +59,45 @@ class ImportService
         $this->em->remove($importFile);
 
         $this->em->flush();
+    }
+
+    public function getQueueProgress(Import $import): QueueProgressValueObject
+    {
+        $queueProgress = new QueueProgressValueObject();
+
+        /** @var ImportQueueRepository $repository */
+        $repository = $this->em->getRepository(ImportQueue::class);
+
+        switch ($import->getState()) {
+            case ImportState::INTEGRITY_CHECKING:
+            case ImportState::INTEGRITY_CHECK_CORRECT:
+            case ImportState::INTEGRITY_CHECK_FAILED:
+                $queueProgress->setTotalCount($import->getImportQueue()->count());
+
+                $correct = $repository->getTotalByImportAndStatus($import, ImportQueueState::VALID);
+                $queueProgress->setCorrect($correct);
+
+                $failed = $repository->getTotalByImportAndStatus($import, ImportQueueState::INVALID);
+                $queueProgress->setFailed($failed);
+
+                break;
+            case ImportState::IDENTITY_CHECKING:
+            case ImportState::IDENTITY_CHECK_CORRECT:
+            case ImportState::IDENTITY_CHECK_FAILED:
+            case ImportState::SIMILARITY_CHECKING:
+            case ImportState::SIMILARITY_CHECK_CORRECT:
+            case ImportState::SIMILARITY_CHECK_FAILED:
+                $queueProgress->setTotalCount($import->getImportQueue()->count());
+
+                $correct = $repository->getTotalReadyForSave($import);
+                $queueProgress->setCorrect($correct);
+
+                $failed = $repository->getTotalByImportAndStatus($import, ImportQueueState::SUSPICIOUS);
+                $queueProgress->setFailed($failed);
+                break;
+        }
+
+        return $queueProgress;
     }
 }
 

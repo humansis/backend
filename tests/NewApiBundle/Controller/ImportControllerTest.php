@@ -5,6 +5,7 @@ namespace Tests\NewApiBundle\Controller;
 
 use Exception;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Entity\ImportQueue;
 use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
 
@@ -155,6 +156,32 @@ class ImportControllerTest extends BMSServiceTestCase
                 }
             ]}', $this->client->getResponse()->getContent()
         );
+    }
+
+    public function testGetQueueProgress()
+    {
+        /** @var ImportQueue[] $importQueue */
+        $importQueue = $this->em->getRepository(ImportQueue::class)->findAll();
+
+        if (empty($importQueue)) {
+            $this->markTestSkipped('There needs to be at least one import import with entries in queue in system.');
+        }
+
+        $importId = $importQueue[0]->getImport()->getId();
+
+        $this->request('GET', "/api/basic/imports/$importId/queue-progress");
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertArrayHasKey('correct', $result);
+        $this->assertArrayHasKey('failed', $result);
     }
 
 }
