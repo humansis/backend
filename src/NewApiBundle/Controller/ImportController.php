@@ -8,6 +8,8 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportFile;
+use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\InputType\DuplicityResolveInputType;
 use NewApiBundle\InputType\ImportCreateInputType;
 use NewApiBundle\InputType\ImportUpdateStatusInputType;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -172,5 +174,31 @@ class ImportController extends AbstractController
     public function invalidFiles(Import $import)
     {
         //TODO implement invalid files logic
+    }
+
+    /**
+     * @Rest\Get("/imports/queue/{id}")
+     *
+     * @param ImportQueue $importQueue
+     *
+     * @return JsonResponse
+     */
+    public function queueItem(ImportQueue $importQueue): JsonResponse
+    {
+        return $this->json($importQueue);
+    }
+
+    /**
+     * @Rest\Patch("/imports/queue/{id}")
+     *
+     * @param ImportQueue               $importQueue
+     *
+     * @param DuplicityResolveInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function duplicityResolve(ImportQueue $importQueue, DuplicityResolveInputType $inputType): JsonResponse
+    {
+        //TODO implement
     }
 }
