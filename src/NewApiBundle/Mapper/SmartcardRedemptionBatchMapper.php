@@ -38,9 +38,9 @@ class SmartcardRedemptionBatchMapper implements MapperInterface
         return $this->object->getId();
     }
 
-    public function getProjectId(): int
+    public function getProjectId(): ?int
     {
-        return $this->object->getProject()->getId();
+        return $this->object->getProject() ? $this->object->getProject()->getId() : null;
     }
 
     public function getContractNumber(): ?string

@@ -40,8 +40,8 @@ parameters:
         !php/const BeneficiaryBundle\Entity\VulnerabilityCriterion::CRITERION_SOLO_PARENT: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" fit="" height="100%" width="100%"preserveAspectRatio="xMidYMid meet" focusable="false"><defs><style>.a{fill:#132F30;}.a,.c{fill - rule:evenodd;}.b,.c{fill:#fff;} </style></defs><title>ico-single-parent</title><path className="a"d="M655.2,469.3a156.9,156.9,0,1,0-82.6,0C440.3,489.4,338,604.4,338,742.1v181H889.8v-181C889.8,604.4,787.5,489.4,655.2,469.3Z"></path><circle className="b" cx="315" cy="577" r="143"></circle><path className="c" d="M520,966V810c0-87.4-71.6-159-159-159H256c-87.4,0-159,71.6-159,159V966Z"></path><path className="a"d="M339.8,668.8a92.5,92.5,0,1,0-48.7,0c-78,11.8-138.3,79.6-138.3,160.8V922H478.1V829.6C478.1,748.4,417.8,680.6,339.8,668.8Z"></path><circle className="b" cx="808.7" cy="642.8" r="118.8"></circle><path className="c"d="M979,966V836.4c0-72.7-59.5-132.1-132.1-132.1H759.7c-72.7,0-132.1,59.4-132.1,132.1V966Z"></path><path className="a"d="M829.3,719.1a76.9,76.9,0,1,0-40.5,0c-64.8,9.8-114.9,66.1-114.9,133.6v76.7H944.2V852.7C944.2,785.2,894.1,728.9,829.3,719.1Z"></path></svg>'
         !php/const BeneficiaryBundle\Entity\VulnerabilityCriterion::CRITERION_LACTATING: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" fit="" height="100%" width="100%"preserveAspectRatio="xMidYMid meet" focusable="false"><defs><style>.a{fill:#132F30;} </style></defs><title>ico-lactating</title><path className="a"d="M732.7,308.9H687.8c-18.6-38.4-52.6-65.7-76.8-82.1a20.9,20.9,0,0,1-9.2-17.4V181.9a65.9,65.9,0,0,0-131.8,0v27.5a21.1,21.1,0,0,1-8.9,17.2C435,245,408.7,272,394.7,308.9H351.1a39.1,39.1,0,0,0-39,39v71.3a39.1,39.1,0,0,0,39,39H732.7a39.1,39.1,0,0,0,39-39V347.9A39.1,39.1,0,0,0,732.7,308.9Z"></path><path className="a"d="M368.8,507.2l-4.3-.2V851.7a74.8,74.8,0,0,0,74.7,74.7H653a74.8,74.8,0,0,0,74.7-74.7V507.2ZM477.5,862.5H418.7v-66h58.8Zm0-117H418.7v-66h58.8Z"></path></svg>'
         !php/const BeneficiaryBundle\Entity\VulnerabilityCriterion::CRITERION_PREGNANT: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" fit="" height="100%" width="100%"preserveAspectRatio="xMidYMid meet" focusable="false"><defs><style>.a{fill:#132F30;}.a{fill - rule:evenodd;} </style></defs><title>ico-pregnant</title><path className="a"d="M544.3,743.9a98.7,98.7,0,1,1,46.9-22.6c80.5-24.8,169.9,12.4,207.5,90.5l30.1,62.3v-169c0-137.7-102.3-252.7-234.6-272.8a156.9,156.9,0,1,0-82.6,0C379.3,452.4,277,567.4,277,705.1v181H468.8C469.3,830.3,496.8,776.4,544.3,743.9Z"></path></svg>'
+        !php/const BeneficiaryBundle\Entity\VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL: '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100;" xml:space="preserve"><path d="M9,76h4v6c0,1.1-0.9,2-2,2s-2-0.9-2-2V76z M87,82c0,1.1,0.9,2,2,2s2-0.9,2-2v-6h-4V82z M33,60H9v12h27.1  c-1.9-2.1-3.1-4.9-3.1-8V60z M15,32H9v24h6V32z M26,56c3.9,0,7-3.1,7-7s-3.1-7-7-7s-7,3.1-7,7S22.1,56,26,56z M37,48v16  c0,4.4,3.6,8,8,8h46V48H37z M50,29.1l7.1-7.3c1.2-1.2,1.1-2.7,0.8-3.8c-0.5-1.3-1.6-2.1-2.9-2.1c-0.1,0-0.1,0-0.2,0  c-1.2,0-2.4,0.5-3.3,1.4c-0.8,0.8-2.1,0.8-2.9,0c-0.9-1-2.2-1.4-3.5-1.4s-2.4,0.9-2.9,2.1c-0.1,0.4-0.2,0.8-0.2,1.3  c0,0.8,0.3,1.7,1,2.4L50,29.1z"/></svg>'
         #todo !php/const BeneficiaryBundle\Entity\VulnerabilityCriterion::CRITERION_NUTRITIONAL_ISSUES: ''
-        #todo !php/const BeneficiaryBundle\Entity\VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL: ''
 
 services:
     _defaults:
@@ -127,8 +127,13 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.request }
 
-    NewApiBundle\Listener\ErrorResponseListener:
+    NewApiBundle\Listener\VaryingListener:
         arguments: [ '%kernel.debug%' ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.response }
+
+    NewApiBundle\Listener\ErrorResponseListener:
+        arguments: [ '@monolog.logger.exception', '%kernel.debug%' ]
         tags:
             - { name: kernel.event_listener, event: kernel.exception, priority: -100 }
 

@@ -50,6 +50,9 @@ test:
     SYMFONY_VERSION: "4.4.*"
     DB: db_test
     MYSQL_ROOT_PASSWORD: "root"
+    GELF_SERVER_NAME: "test"
+    GELF_HOST: 10.0.0.1
+    GELF_PORT: 10001
   before_script:
     - sudo composer self-update --1
     - cp app/config/parameters.yml.test app/config/parameters.yml

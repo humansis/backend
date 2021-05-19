@@ -752,7 +752,7 @@ class UserService
 
         $countries = [];
         foreach ($user->getCountries() as $country) {
-            $countries[$country] = true;
+            $countries[$country->getIso3()] = true;
         }
 
         foreach ($user->getProjects() as $userProject) {

@@ -9,6 +9,7 @@
 # $6: mobile app version
 # $7: mobile app id
 # $8: jwt passphrase
+# $9: server hostname
 
 cp app/config/parameters.yml.dist app/config/parameters.yml
 # common
@@ -18,7 +19,9 @@ sed -i -e "s|%env(RDS_PORT)%|${DB_PORT}|g" \
   -e "s|%env(AWS_ACCESS_KEY)%|${aws_access_key_id}|g" \
   -e "s|%env(AWS_SECRET_KEY)%|${aws_secret_access_key}|g" \
   -e "s|%env(HID_SECRET)%|${HID_SECRET}|g" \
-  -e "s|%env(GOOGLE_CLIENT)%|${GOOGLE_CLIENT}|g" app/config/parameters.yml
+  -e "s|%env(GOOGLE_CLIENT)%|${GOOGLE_CLIENT}|g" \
+  -e "s|%env(GELF_HOST)%|${GELF_HOST}|g" \
+  -e "s|%env(GELF_PORT)%|${GELF_PORT}|g" app/config/parameters.yml
 
 # per environment
 sed -i -e "s|%env(RDS_HOSTNAME)%|$1|g" \
@@ -28,6 +31,7 @@ sed -i -e "s|%env(RDS_HOSTNAME)%|$1|g" \
   -e "s|%env(MOBILE_MASTER_KEY)%|$5|g" \
   -e "s|%env(MOBILE_APP_VERSION)%|$6|g" \
   -e "s|%env(MOBILE_APP_ID)%|$7|g" \
-  -e "s|%env(JWT_PASSPHRASE)%|${8}|g" app/config/parameters.yml
+  -e "s|%env(JWT_PASSPHRASE)%|${8}|g" \
+  -e "s|%env(GELF_SERVER_NAME)%|${9}|g" app/config/parameters.yml
 
 sed -i -e "s|%env(RDS_HOSTNAME)%|$1|g" docker-compose.yml

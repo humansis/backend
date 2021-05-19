@@ -212,10 +212,6 @@ class BeneficiaryController extends Controller
      */
     public function updateAction(Request $request, Beneficiary $beneficiary)
     {
-        $this->container->get('logger')->error('beneficiary', [$beneficiary->getId()]);
-        $this->container->get('logger')->error('headers', $request->headers->all());
-        $this->container->get('logger')->error('content', [$request->getContent()]);
-
         $beneficiaryData = $request->request->all();
 
         try {

@@ -6,6 +6,7 @@ namespace NewApiBundle\Listener;
 
 use GuzzleHttp\Psr7\Response;
 use NewApiBundle\Exception\ConstraintViolationException;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
@@ -14,10 +15,14 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
 
 class ErrorResponseListener
 {
+    /** @var LoggerInterface */
+    protected $logger;
+
     protected $debug;
 
-    public function __construct($debug = false)
+    public function __construct(LoggerInterface $logger, $debug = false)
     {
+        $this->logger = $logger;
         $this->debug = $debug;
     }
 
@@ -64,10 +69,13 @@ class ErrorResponseListener
             ];
         }
 
+        $flattenException = FlattenException::create($exception);
+
         if ($this->debug) {
-            $flattenException = FlattenException::create($exception);
             $data['debug'] = $flattenException->toArray();
         }
+
+        $this->logger->error($exception->getMessage(), $flattenException->toArray());
 
         $event->setResponse(JsonResponse::create($data, $data['code']));
     }

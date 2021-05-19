@@ -303,9 +303,6 @@ class VoucherController extends Controller
      */
     public function purchase(Request $request)
     {
-        $this->container->get('logger')->error('headers', $request->headers->all());
-        $this->container->get('logger')->error('content', [$request->getContent()]);
-
         $data = $this->get('serializer')->deserialize($request->getContent(), VoucherPurchase::class.'[]', 'json');
 
         $errors = $this->get('validator')->validate($data, [

@@ -44,7 +44,7 @@ class FieldDbTransformer
     {
         if (SelectionCriteriaTarget::BENEFICIARY === $input->getTarget() && ($vulnerability = $this->getVulnerability($input->getField()))) {
             return [
-                'condition_string' => $input->getValue() ? '=' : '!=',
+                'condition_string' => $input->getValue(),
                 'field_string' => $input->getField(),
                 'target' => $input->getTarget(),
                 'table_string' => 'vulnerabilityCriteria',
@@ -132,13 +132,17 @@ class FieldDbTransformer
         }
 
         $value = $input->getValue();
+        $field = $input->getField();
         if ('gender' === $input->getField()) {
             $value = ('M' === $input->getValue()) ? '1' : '0';
+            if (SelectionCriteriaTarget::HOUSEHOLD_HEAD === $input->getTarget()) {
+                $field = 'headOfHouseholdGender';
+            }
         }
 
         return [
             'condition_string' => $input->getCondition(),
-            'field_string' => $input->getField(),
+            'field_string' => $field,
             'target' => $input->getTarget(),
             'table_string' => 'Personnal',
             'value_string' => $value,
@@ -154,8 +158,8 @@ class FieldDbTransformer
                 'group' => $criterion->getGroupNumber(),
                 'target' => $criterion->getTarget(),
                 'field' => $criterion->getFieldString(),
-                'condition' => null,
-                'value' => null,
+                'condition' => '=',
+                'value' => $criterion->getConditionString(),
                 'weight' => $criterion->getWeight(),
             ];
         }
@@ -218,14 +222,16 @@ class FieldDbTransformer
         }
 
         $value = $criterion->getValueString();
-        if ('gender' === $criterion->getFieldString()) {
+        $field = $criterion->getFieldString();
+        if ('gender' === $criterion->getFieldString() || 'headOfHouseholdGender' === $criterion->getFieldString()) {
             $value = (1 == $criterion->getValueString()) ? 'M' : 'F';
+            $field = 'gender';
         }
 
         return [
             'group' => $criterion->getGroupNumber(),
             'target' => $criterion->getTarget(),
-            'field' => $criterion->getFieldString(),
+            'field' => $field,
             'condition' => $criterion->getConditionString(),
             'value' => $value,
             'weight' => $criterion->getWeight(),

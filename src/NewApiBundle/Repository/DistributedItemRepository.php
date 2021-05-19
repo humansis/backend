@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Entity\DistributedItem;
 use NewApiBundle\InputType\DistributedItemFilterInputType;
+use NewApiBundle\InputType\DistributedItemOrderInputType;
 use NewApiBundle\Request\Pagination;
 
 class DistributedItemRepository extends EntityRepository
@@ -18,11 +19,17 @@ class DistributedItemRepository extends EntityRepository
     /**
      * @param string                              $countryIso3
      * @param DistributedItemFilterInputType|null $filter
+     * @param DistributedItemOrderInputType|null  $orderBy
      * @param Pagination|null                     $pagination
      *
      * @return Paginator|DistributedItem[]
      */
-    public function findByParams(string $countryIso3, ?DistributedItemFilterInputType $filter = null, ?Pagination $pagination = null): Paginator
+    public function findByParams(
+        string $countryIso3,
+        ?DistributedItemFilterInputType $filter = null,
+        ?DistributedItemOrderInputType $orderBy = null,
+        ?Pagination $pagination = null
+    ): Paginator
     {
         $qbr = $this->createQueryBuilder('di')
             ->join('di.project', 'pr')
@@ -81,12 +88,33 @@ class DistributedItemRepository extends EntityRepository
             }
         }
 
+        if ($orderBy) {
+            foreach ($orderBy->toArray() as $name => $direction) {
+                switch ($name) {
+                    case DistributedItemOrderInputType::SORT_BY_BENEFICIARY_ID:
+                        if (!in_array('b', $qbr->getAllAliases())) {
+                            $qbr->leftJoin('di.beneficiary', 'b');
+                        }
+                        $qbr->addOrderBy('b.id', $direction);
+                        break;
+                    case DistributedItemOrderInputType::SORT_BY_DISTRIBUTION_DATE:
+                        $qbr->addOrderBy('di.dateDistribution', $direction);
+                        break;
+                    case DistributedItemOrderInputType::SORT_BY_AMOUNT:
+                        $qbr->addOrderBy('di.amount', $direction);
+                        break;
+                    default:
+                        throw new \InvalidArgumentException('Invalid order by directive '.$name);
+                }
+            }
+        }
+
         if ($pagination) {
             $qbr->setMaxResults($pagination->getLimit())
                 ->setFirstResult($pagination->getOffset());
         }
 
-        $qbr->orderBy('di.dateDistribution', 'ASC');
+        $qbr->addOrderBy('di.dateDistribution', 'ASC');
 
         return new Paginator($qbr);
     }
