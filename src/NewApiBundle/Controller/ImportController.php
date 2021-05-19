@@ -224,6 +224,11 @@ class ImportController extends AbstractController
      */
     public function duplicityResolve(ImportQueue $importQueue, DuplicityResolveInputType $inputType): JsonResponse
     {
-        //TODO implement
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $this->get('service.import')->resolveDuplicity($importQueue, $inputType, $user);
+
+        return $this->json(null, Response::HTTP_ACCEPTED);
     }
 }

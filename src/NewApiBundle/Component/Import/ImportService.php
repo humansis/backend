@@ -3,13 +3,18 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import;
 
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use InvalidArgumentException;
 use NewApiBundle\Component\Import\ValueObject\QueueProgressValueObject;
 use NewApiBundle\Entity\Import;
+use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
+use NewApiBundle\InputType\DuplicityResolveInputType;
 use NewApiBundle\InputType\ImportCreateInputType;
 use NewApiBundle\InputType\ImportUpdateStatusInputType;
 use NewApiBundle\Repository\ImportQueueRepository;
@@ -31,7 +36,7 @@ class ImportService
         $project = $this->em->getRepository(Project::class)->find($inputType->getProjectId());
 
         if (!$project instanceof Project) {
-            throw new \InvalidArgumentException('Project with ID '.$inputType->getProjectId().' not found');
+            throw new InvalidArgumentException('Project with ID '.$inputType->getProjectId().' not found');
         }
 
         $import = new Import(
@@ -98,6 +103,38 @@ class ImportService
         }
 
         return $queueProgress;
+    }
+
+    public function resolveDuplicity(ImportQueue $importQueue, DuplicityResolveInputType $inputType, User $user)
+    {
+        $importQueue->setState($inputType->getStatus());
+
+        /** @var ImportBeneficiaryDuplicity[] $duplicities */
+        $duplicities = $this->em->getRepository(ImportBeneficiaryDuplicity::class)->findBy([
+            'ours' => $importQueue,
+        ]);
+
+        foreach ($duplicities as $duplicity) {
+            if ($duplicity->getId() === $inputType->getAcceptedDuplicityId()) {
+
+                switch ($inputType->getStatus()) {
+                    case ImportQueueState::TO_UPDATE:
+                        $duplicity->setState(ImportDuplicityState::DUPLICITY_KEEP_OURS);
+                        break;
+                    case ImportQueueState::TO_LINK:
+                        $duplicity->setState(ImportDuplicityState::DUPLICITY_KEEP_THEIRS);
+                        break;
+                }
+
+            } else {
+                $duplicity->setState(ImportDuplicityState::NO_DUPLICITY);
+            }
+
+            $duplicity->setDecideBy($user);
+            $duplicity->setDecideAt(new DateTime());
+        }
+
+        $this->em->flush();
     }
 }
 

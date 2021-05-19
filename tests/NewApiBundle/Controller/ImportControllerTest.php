@@ -210,4 +210,24 @@ class ImportControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('status', $result);
     }
 
+    public function testResolveDuplicity()
+    {
+        /** @var ImportBeneficiaryDuplicity|null $importQueue */
+        $duplicity = $this->em->getRepository(ImportBeneficiaryDuplicity::class)->findOneBy([]);
+
+        if (is_null($duplicity)) {
+            $this->markTestSkipped('There needs to be at least one duplicity with entries in queue in system.');
+        }
+
+        $this->request('PATCH', '/api/basic/imports/queue/'.$duplicity->getOurs()->getId(), [
+            'status' => 'To Update',
+            'acceptedDuplicityId' => $duplicity->getId(),
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+    }
+
 }
