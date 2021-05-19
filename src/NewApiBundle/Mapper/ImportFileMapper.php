@@ -44,6 +44,6 @@ class ImportFileMapper implements MapperInterface
 
     public function getUploadedDate(): string
     {
-        return $this->object->getCreatedAt()->format(\DateTime::ISO8601);
+        return $this->object->getCreatedAt()->format(\DateTimeInterface::ISO8601);
     }
 }
