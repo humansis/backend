@@ -174,4 +174,12 @@ services:
 
     NewApiBundle\Component\Import\ImportService:
 
-    NewApiBundle\Component\Import\UploadImportService:
+    service.upload_import:
+        public: true
+        class: NewApiBundle\Component\Import\UploadImportService
+
+    service.import_invalid_file:
+        public: true
+        class: NewApiBundle\Component\Import\ImportInvalidFileService
+        arguments:
+            - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:ImportQueue")'
