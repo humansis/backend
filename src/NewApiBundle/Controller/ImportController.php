@@ -12,7 +12,10 @@ use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\InputType\DuplicityResolveInputType;
 use NewApiBundle\InputType\ImportCreateInputType;
+use NewApiBundle\InputType\ImportFilterInputType;
+use NewApiBundle\InputType\ImportOrderInputType;
 use NewApiBundle\InputType\ImportUpdateStatusInputType;
+use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,14 +39,18 @@ class ImportController extends AbstractController
     /**
      * @Rest\Get("/imports")
      *
+     * @param Pagination            $pagination
+     * @param ImportFilterInputType $filterInputType
+     * @param ImportOrderInputType  $orderInputType
+     *
      * @return JsonResponse
      */
-    public function list(): JsonResponse
+    public function list(Pagination $pagination, ImportFilterInputType $filterInputType, ImportOrderInputType $orderInputType): JsonResponse
     {
         $data = $this->getDoctrine()->getRepository(Import::class)
-            ->findAll();
+            ->findByParams($pagination, $filterInputType, $orderInputType);
 
-        return $this->json(New Paginator($data));
+        return $this->json($data);
     }
 
     /**

@@ -12,6 +12,7 @@ use UserBundle\Entity\User;
 
 /**
  * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ImportRepository")
  */
 class Import
 {
