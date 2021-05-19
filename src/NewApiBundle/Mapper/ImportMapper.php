@@ -40,7 +40,7 @@ class ImportMapper implements MapperInterface
         return $this->object->getTitle();
     }
 
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->object->getNotes();
     }
@@ -62,6 +62,6 @@ class ImportMapper implements MapperInterface
 
     public function getCreatedAt(): string
     {
-        return $this->object->getCreatedAt()->format(\DateTime::ISO8601);
+        return $this->object->getCreatedAt()->format(\DateTimeInterface::ISO8601);
     }
 }

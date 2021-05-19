@@ -30,17 +30,17 @@ class ImportControllerTest extends BMSServiceTestCase
      */
     public function testCreate()
     {
-        /** @var Project[] $projects */
-        $projects = self::$container->get('doctrine')->getRepository(Project::class)->findBy([]);
+        /** @var Project|null $projects */
+        $projects = self::$container->get('doctrine')->getRepository(Project::class)->findOneBy([]);
 
-        if (empty($projects)) {
+        if (is_null($projects)) {
             $this->markTestSkipped('There needs to be at least one project in system to complete this test');
         }
 
         $this->request('POST', '/api/basic/imports', [
             'title' => 'test',
             'description' => 'test',
-            'projectId' => $projects[0]->getId(),
+            'projectId' => $projects->getId(),
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -129,14 +129,14 @@ class ImportControllerTest extends BMSServiceTestCase
 
     public function testGetDuplicities()
     {
-        /** @var ImportBeneficiaryDuplicity[] $duplicities */
-        $duplicities = $this->em->getRepository(ImportBeneficiaryDuplicity::class)->findAll();
+        /** @var ImportBeneficiaryDuplicity|null $duplicity */
+        $duplicity = $this->em->getRepository(ImportBeneficiaryDuplicity::class)->findOneBy([]);
 
-        if (empty($duplicities)) {
+        if (is_null($duplicity)) {
             $this->markTestSkipped('There needs to be at least one import duplicity in system.');
         }
 
-        $importId = $duplicities[0]->getOurs()->getImport()->getId();
+        $importId = $duplicity->getOurs()->getImport()->getId();
 
         $this->request('GET', "/api/basic/imports/$importId/duplicities");
 
@@ -160,14 +160,14 @@ class ImportControllerTest extends BMSServiceTestCase
 
     public function testGetQueueProgress()
     {
-        /** @var ImportQueue[] $importQueue */
-        $importQueue = $this->em->getRepository(ImportQueue::class)->findAll();
+        /** @var ImportQueue|null $importQueue */
+        $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy([]);
 
-        if (empty($importQueue)) {
-            $this->markTestSkipped('There needs to be at least one import import with entries in queue in system.');
+        if (is_null($importQueue)) {
+            $this->markTestSkipped('There needs to be at least one import with entries in queue in system.');
         }
 
-        $importId = $importQueue[0]->getImport()->getId();
+        $importId = $importQueue->getImport()->getId();
 
         $this->request('GET', "/api/basic/imports/$importId/queue-progress");
 
@@ -186,14 +186,14 @@ class ImportControllerTest extends BMSServiceTestCase
 
     public function testGetQueueItem()
     {
-        /** @var ImportQueue[] $importQueue */
-        $importQueue = $this->em->getRepository(ImportQueue::class)->findAll();
+        /** @var ImportQueue|null $importQueue */
+        $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy([]);
 
-        if (empty($importQueue)) {
+        if (is_null($importQueue)) {
             $this->markTestSkipped('There needs to be at least one import import with entries in queue in system.');
         }
 
-        $importQueueId = $importQueue[0]->getId();
+        $importQueueId = $importQueue->getId();
 
         $this->request('GET', "/api/basic/imports/queue/$importQueueId");
 
