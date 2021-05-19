@@ -18,10 +18,13 @@ use NewApiBundle\InputType\ImportFilterInputType;
 use NewApiBundle\InputType\ImportOrderInputType;
 use NewApiBundle\InputType\ImportUpdateStatusInputType;
 use NewApiBundle\Request\Pagination;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 use UserBundle\Entity\User;
 
 class ImportController extends AbstractController
@@ -213,10 +216,25 @@ class ImportController extends AbstractController
      * @Rest\Get("/imports/{id}/invalid-files")
      *
      * @param Import $import
+     *
+     * @return BinaryFileResponse
      */
-    public function invalidFiles(Import $import)
+    public function invalidFiles(Import $import): BinaryFileResponse
     {
-        //TODO implement invalid files logic
+        $filepath = $this->get('service.import_invalid_file')->generateFile($import);
+
+        $response = new BinaryFileResponse($filepath);
+
+        $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
+        if ($mimeTypeGuesser->isGuesserSupported()) {
+            $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType($filepath));
+        } else {
+            $response->headers->set('Content-Type', 'text/plain');
+        }
+
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $import->getTitle().'-invalid-entries.xlsx');
+
+        return $response;
     }
 
     /**
