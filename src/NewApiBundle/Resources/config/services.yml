@@ -1,3 +1,6 @@
+imports:
+    - { resource: parameters.yml }
+
 parameters:
 
     icons_modality_types:
@@ -174,12 +177,13 @@ services:
 
     NewApiBundle\Component\Import\ImportService:
 
-    service.upload_import:
-        public: true
-        class: NewApiBundle\Component\Import\UploadImportService
+    NewApiBundle\Component\Import\UploadImportService:
 
-    service.import_invalid_file:
-        public: true
-        class: NewApiBundle\Component\Import\ImportInvalidFileService
+    NewApiBundle\Component\Import\ImportInvalidFileService:
         arguments:
             - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:ImportQueue")'
+            - '@NewApiBundle\Component\Import\ImportTemplate'
+            - '%importInvalidFilesDirectory%'
+
+    NewApiBundle\Component\Import\ImportTemplate:
+        arguments: ['@beneficiary.household_export_csv_service']

@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import;
 
-use InvalidArgumentException;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Repository\ImportQueueRepository;
@@ -12,88 +11,88 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ImportInvalidFileService
 {
-    private const FIRST_ENTRY_ROW = 6;
-
-    /**
-     * @var integer
-     */
-    private $currentRow = 1;
-
-    /**
-     * @var integer
-     */
-    private $currentColumn = 1;
-
     /**
      * @var ImportQueueRepository
      */
     private $importQueueRepository;
 
-    public function __construct(ImportQueueRepository $importQueueRepository)
+    /**
+     * @var ImportTemplate
+     */
+    private $importTemplate;
+
+    /**
+     * @var string
+     */
+    private $importInvalidFilesDirectory;
+
+    public function __construct(ImportQueueRepository $importQueueRepository, ImportTemplate $importTemplate, string $importInvalidFilesDirectory)
     {
+        $this->importTemplate = $importTemplate;
         $this->importQueueRepository = $importQueueRepository;
+        $this->importInvalidFilesDirectory = $importInvalidFilesDirectory;
     }
 
-    public function generateFile(Import $import): string
+    public function generateFile(Import $import): void
     {
         $invalidEntries = $this->importQueueRepository->getInvalidEntries($import);
-
-        if (empty($invalidEntries)) {
-            throw new InvalidArgumentException('There are no invalid entries in this import.');
-        }
+        $spreadsheet = $this->importTemplate->generateTemplateSpreadsheet($import->getProject()->getIso3());
 
         //TODO id column
-        //TODO write header information
 
-        $spreadsheet = new Spreadsheet();
+        $header = $this->importTemplate->getTemplateHeader($import->getProject()->getIso3());
+        $this->writeEntries($spreadsheet, $invalidEntries, $header);
 
-        $header = $this->getHeader(current($invalidEntries));
-        $this->writeHeader($spreadsheet, $header);
+        $path = $this->generateInvalidFilePath($import);
 
-        $this->currentRow = self::FIRST_ENTRY_ROW;
+        $this->saveToFile($spreadsheet, $path);
+    }
 
-        foreach ($invalidEntries as $invalidEntry) {
-            $this->writeEntry($spreadsheet, $invalidEntry, $header);
+    public function generateInvalidFilePath(Import $import): string
+    {
+        return $this->importInvalidFilesDirectory.'/'.$import->getTitle().'-'.$import->getId().'-import-invalid-entries.xlsx';
+    }
+
+    private function saveToFile(Spreadsheet $spreadsheet, string $path): void
+    {
+        if (!is_dir($this->importInvalidFilesDirectory)) {
+            mkdir($this->importInvalidFilesDirectory, 0775, true);
         }
 
-        return $this->saveToFile($spreadsheet);
-    }
-
-    private function saveToFile(Spreadsheet $spreadsheet): string
-    {
         $writer = new Xlsx($spreadsheet);
 
-        $tempPath = tempnam(sys_get_temp_dir(), 'importInvalidFile');
-        $writer->save($tempPath);
+        if (file_exists($path)) {
+            unlink($path);
+        }
 
-        return $tempPath;
+        $writer->save($path);
     }
 
-    private function getHeader(ImportQueue $importQueue): array
+    private function writeEntries(Spreadsheet $template, array $entries, array $header)
     {
-        return array_keys(current($importQueue->getContent()));
-    }
+        $sheet = $template->getActiveSheet();
 
-    private function writeHeader(Spreadsheet $spreadsheet, array $header)
-    {
-        $spreadsheet->getActiveSheet()->fromArray($header);
-    }
+        /** @var ImportQueue $entry */
+        foreach ($entries as $entry) {
+            $currentRow = ImportTemplate::FIRST_ENTRY_ROW;
+            $currentColumn = 1;
 
-    private function writeEntry(Spreadsheet $spreadsheet, ImportQueue $entry, array $header)
-    {
-        $sheet = $spreadsheet->getActiveSheet();
+            foreach ($entry->getContent() as $row) {
+                foreach ($header as $column) {
+                    if (isset($row[$column])) {
+                        $cellValue = $row[$column];
+                    } else {
+                        $cellValue = '';
+                    }
 
-        foreach ($entry->getContent() as $row) {
-            foreach ($header as $headerValue) {
-                $cell = $row[$headerValue];
+                    $sheet->setCellValueByColumnAndRow($currentColumn, $currentRow, $cellValue);
+                    //TODO yellow background if invalid
 
-                $sheet->setCellValueByColumnAndRow($this->currentColumn, $this->currentRow, $cell);
-                //TODO yellow background if invalid
-
-                ++$this->currentColumn;
+                    ++$currentColumn;
+                }
+                $currentColumn = 1;
+                ++$currentRow;
             }
-            $this->currentColumn = 1;
-            ++$this->currentRow;
         }
     }
 }
