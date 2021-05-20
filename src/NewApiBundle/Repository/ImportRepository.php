@@ -33,6 +33,20 @@ class ImportRepository extends EntityRepository
                 $qb->setParameter('fulltextId', $filter->getFulltext());
                 $qb->setParameter('fulltext', '%'.$filter->getFulltext().'%');
             }
+
+            if ($filter->hasStatus()) {
+                $qb->andWhere('i.state = :state')
+                ->setParameter('state', $filter->getStatus());
+            }
+
+            if ($filter->hasProjects()) {
+                if (!in_array('p', $qb->getAllAliases())) {
+                    $qb->leftJoin('i.project', 'p');
+                }
+
+                $qb->andWhere('p.id IN (:projectIds)')
+                    ->setParameter('projectIds', $filter->getProjects());
+            }
         }
 
         if ($orderBy) {
