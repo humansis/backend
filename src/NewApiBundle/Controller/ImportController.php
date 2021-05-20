@@ -5,6 +5,7 @@ namespace NewApiBundle\Controller;
 
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\Import\ImportInvalidFileService;
 use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Component\Import\UploadImportService;
 use NewApiBundle\Entity\Import;
@@ -39,10 +40,16 @@ class ImportController extends AbstractController
      */
     private $uploadImportService;
 
-    public function __construct(ImportService $importService, UploadImportService $uploadImportService)
+    /**
+     * @var ImportInvalidFileService
+     */
+    private $importInvalidFileService;
+
+    public function __construct(ImportService $importService, UploadImportService $uploadImportService, ImportInvalidFileService $importInvalidFileService)
     {
         $this->importService = $importService;
         $this->uploadImportService = $uploadImportService;
+        $this->importInvalidFileService = $importInvalidFileService;
     }
 
     /**
@@ -221,7 +228,11 @@ class ImportController extends AbstractController
      */
     public function invalidFiles(Import $import): BinaryFileResponse
     {
-        $filepath = $this->get('service.import_invalid_file')->generateFile($import);
+        $filepath = $this->importInvalidFileService->generateInvalidFilePath($import);
+
+        if (!file_exists($filepath)) {
+            throw $this->createNotFoundException();
+        }
 
         $response = new BinaryFileResponse($filepath);
 
