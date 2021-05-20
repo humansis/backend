@@ -5,6 +5,8 @@ namespace NewApiBundle\Controller;
 
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\Import\ImportService;
+use NewApiBundle\Component\Import\UploadImportService;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportFile;
@@ -24,6 +26,22 @@ use UserBundle\Entity\User;
 
 class ImportController extends AbstractController
 {
+    /**
+     * @var ImportService
+     */
+    private $importService;
+
+    /**
+     * @var UploadImportService
+     */
+    private $uploadImportService;
+
+    public function __construct(ImportService $importService, UploadImportService $uploadImportService)
+    {
+        $this->importService = $importService;
+        $this->uploadImportService = $uploadImportService;
+    }
+
     /**
      * @Rest\Get("/imports/{id}")
      *
@@ -65,7 +83,7 @@ class ImportController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        $institution = $this->get('service.import')->create($inputType, $user);
+        $institution = $this->importService->create($inputType, $user);
 
         return $this->json($institution);
     }
@@ -80,7 +98,7 @@ class ImportController extends AbstractController
      */
     public function updateStatus(Import $import, ImportUpdateStatusInputType $inputType): JsonResponse
     {
-        $this->get('service.import')->updateStatus($import, $inputType);
+        $this->importService->updateStatus($import, $inputType);
 
         return $this->json(null, Response::HTTP_ACCEPTED);
     }
@@ -134,7 +152,7 @@ class ImportController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        $importFile = $this->get('service.upload_import')->upload($import, $file, $user);
+        $importFile = $this->uploadImportService->upload($import, $file, $user);
 
         return $this->json($importFile);
     }
@@ -156,7 +174,7 @@ class ImportController extends AbstractController
             throw new \InvalidArgumentException('You cannot delete file from this import.');
         }
 
-        $this->get('service.import')->removeFile($importFile);
+        $this->importService->removeFile($importFile);
 
         return $this->json(null, Response::HTTP_ACCEPTED);
     }
@@ -186,7 +204,7 @@ class ImportController extends AbstractController
      */
     public function queueProgress(Import $import): JsonResponse
     {
-        $queueProgress = $this->get('service.import')->getQueueProgress($import);
+        $queueProgress = $this->importService->getQueueProgress($import);
 
         return $this->json($queueProgress);
     }
@@ -227,7 +245,7 @@ class ImportController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        $this->get('service.import')->resolveDuplicity($importQueue, $inputType, $user);
+        $this->importService->resolveDuplicity($importQueue, $inputType, $user);
 
         return $this->json(null, Response::HTTP_ACCEPTED);
     }
