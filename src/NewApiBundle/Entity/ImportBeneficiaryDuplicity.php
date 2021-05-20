@@ -13,6 +13,7 @@ use UserBundle\Entity\User;
  * Imformation about duplicity between queue record and beneficiary.
  *
  * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ImportBeneficiaryDuplicityRepository")
  */
 class ImportBeneficiaryDuplicity
 {
@@ -54,6 +55,13 @@ class ImportBeneficiaryDuplicity
     private $decideBy;
 
     /**
+     * @var string[]
+     *
+     * @ORM\Column(type="array", nullable=true)
+     */
+    private $reasons;
+
+    /**
      * @var \DateTimeInterface
      *
      * @ORM\Column(name="decide_at", type="datetimetz", nullable=false)
@@ -65,6 +73,7 @@ class ImportBeneficiaryDuplicity
         $this->ours = $ours;
         $this->theirs = $theirs;
         $this->state = ImportDuplicityState::NEW;
+        $this->reasons = [];
     }
 
     /**
@@ -141,5 +150,29 @@ class ImportBeneficiaryDuplicity
     public function getDecideAt(): \DateTimeInterface
     {
         return $this->decideAt;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getReasons(): array
+    {
+        return $this->reasons;
+    }
+
+    /**
+     * @param string[] $reasons
+     */
+    public function setReasons(array $reasons): void
+    {
+        $this->reasons = $reasons;
+    }
+
+    /**
+     * @param string $reason
+     */
+    public function addReason(string $reason): void
+    {
+        $this->reasons[] = $reason;
     }
 }
