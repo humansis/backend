@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Entity;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
@@ -34,9 +35,9 @@ class ImportBeneficiaryDuplicity
     private $ours;
 
     /**
-     * @var Beneficiary
+     * @var Household
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary")
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household")
      */
     private $theirs;
 
@@ -93,9 +94,9 @@ class ImportBeneficiaryDuplicity
     }
 
     /**
-     * @return Beneficiary
+     * @return Household
      */
-    public function getTheirs(): Beneficiary
+    public function getTheirs(): Household
     {
         return $this->theirs;
     }
