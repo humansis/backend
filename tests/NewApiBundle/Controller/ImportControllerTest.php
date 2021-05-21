@@ -158,7 +158,7 @@ class ImportControllerTest extends BMSServiceTestCase
         );
     }
 
-    public function testGetQueueProgress()
+    public function testGetImportStatistics()
     {
         /** @var ImportQueue|null $importQueue */
         $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy([]);
@@ -169,7 +169,7 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $importId = $importQueue->getImport()->getId();
 
-        $this->request('GET', "/api/basic/imports/$importId/queue-progress");
+        $this->request('GET', "/api/basic/imports/$importId/statistics");
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -179,9 +179,12 @@ class ImportControllerTest extends BMSServiceTestCase
         );
 
         $this->assertIsArray($result);
-        $this->assertArrayHasKey('totalCount', $result);
-        $this->assertArrayHasKey('correct', $result);
-        $this->assertArrayHasKey('failed', $result);
+        $this->assertArrayHasKey('totalEntries', $result);
+        $this->assertArrayHasKey('amountIntegrityCorrect', $result);
+        $this->assertArrayHasKey('amountIntegrityFailed', $result);
+        $this->assertArrayHasKey('amountDuplicities', $result);
+        $this->assertArrayHasKey('amountDuplicitiesResolved', $result);
+        $this->assertArrayHasKey('amountEntriesToImport', $result);
     }
 
     public function testGetQueueItem()
