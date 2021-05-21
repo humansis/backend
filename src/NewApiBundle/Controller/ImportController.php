@@ -206,7 +206,7 @@ class ImportController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/imports/{id}/queue-progress")
+     * @Rest\Get("/imports/{id}/statistics")
      *
      * @param Import $import
      *
@@ -214,9 +214,9 @@ class ImportController extends AbstractController
      */
     public function queueProgress(Import $import): JsonResponse
     {
-        $queueProgress = $this->importService->getQueueProgress($import);
+        $statistics = $this->importService->getStatistics($import);
 
-        return $this->json($queueProgress);
+        return $this->json($statistics);
     }
 
     /**

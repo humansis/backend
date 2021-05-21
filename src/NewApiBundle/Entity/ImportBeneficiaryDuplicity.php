@@ -29,7 +29,7 @@ class ImportBeneficiaryDuplicity
     /**
      * @var ImportQueue
      *
-     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ImportQueue")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ImportQueue", inversedBy="importBeneficiaryDuplicities")
      */
     private $ours;
 
