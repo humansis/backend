@@ -116,6 +116,7 @@ class ImportQueue
                 return $duplicityCandidate;
             }
         }
+        return null;
     }
 
     /**
