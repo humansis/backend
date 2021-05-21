@@ -105,6 +105,14 @@ class UserUpdateInputType implements InputTypeInterface
     private $projectIds;
 
     /**
+     * @var boolean $changePassword
+     *
+     * @Assert\Type("boolean")
+     * @Assert\NotNull
+     */
+    private $changePassword;
+
+    /**
      * @return string
      */
     public function getUsername()
@@ -247,4 +255,13 @@ class UserUpdateInputType implements InputTypeInterface
     {
         $this->projectIds = $projectIds;
     }
+
+    /**
+     * @return bool
+     */
+    public function isChangePassword(): bool
+    {
+        return $this->changePassword;
+    }
+
 }
