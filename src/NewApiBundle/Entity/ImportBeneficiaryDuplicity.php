@@ -69,7 +69,7 @@ class ImportBeneficiaryDuplicity
      */
     private $decideAt;
 
-    public function __construct(ImportQueue $ours, Beneficiary $theirs)
+    public function __construct(ImportQueue $ours, Household $theirs)
     {
         $this->ours = $ours;
         $this->theirs = $theirs;

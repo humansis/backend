@@ -122,6 +122,9 @@ class ImportService
         if (!in_array($import->getState(), [ImportState::SIMILARITY_CHECK_CORRECT, ImportState::IMPORTING])) {
             throw new InvalidArgumentException('Wrong import status');
         }
+        $import->setState(ImportState::IMPORTING);
+        $this->em->persist($import);
+        $this->em->flush();
 
         $queueRepo = $this->em->getRepository(ImportQueue::class);
 
@@ -139,7 +142,7 @@ class ImportService
             } else {
                 $this->linkHouseholdToQueue($import, $household, $import->getCreatedBy());
             }
-            $this->em->remove($item);
+            $this->removeFinishedQueue($item);
         }
 
         foreach ($queueRepo->findBy([
@@ -153,14 +156,14 @@ class ImportService
             // TODO: update
 
             $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
-            $this->em->remove($item);
+            $this->removeFinishedQueue($item);
         }
 
         foreach ($queueRepo->findBy([
             'import' => $import,
             'state' => ImportQueueState::TO_IGNORE,
         ]) as $item) {
-            $this->em->remove($item);
+            $this->removeFinishedQueue($item);
         }
 
         foreach ($queueRepo->findBy([
@@ -172,8 +175,12 @@ class ImportService
             if (null == $acceptedDuplicity) continue;
 
             $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
-            $this->em->remove($item);
+            $this->removeFinishedQueue($item);
         }
+
+        $import->setState(ImportState::FINISHED);
+        $this->em->persist($import);
+        $this->em->flush();
     }
 
     private function linkHouseholdToQueue(Import $import, Household $household, User $decide): void
@@ -182,6 +189,14 @@ class ImportService
             $beneficiaryInImport = new ImportBeneficiary($import, $beneficiary, $decide);
             $this->em->persist($beneficiaryInImport);
         }
+    }
+
+    private function removeFinishedQueue(ImportQueue $queue): void
+    {
+        foreach ($queue->getDuplicities() as $duplicity) {
+            $this->em->remove($duplicity);
+        }
+        $this->em->remove($queue);
     }
 }
 
