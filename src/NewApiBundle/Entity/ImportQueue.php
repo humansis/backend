@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
 
 /**
- * @ORM\Entity()
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ImportQueueRepository")
  */
 class ImportQueue
@@ -27,6 +29,13 @@ class ImportQueue
      * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Import", inversedBy="importQueue")
      */
     private $import;
+
+    /**
+     * @var ImportBeneficiaryDuplicity[]
+     *
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiaryDuplicity", mappedBy="ours")
+     */
+    private $duplicities;
 
     /**
      * @var ImportFile
@@ -69,6 +78,7 @@ class ImportQueue
         $this->file = $file;
         $this->content = $content;
         $this->state = ImportQueueState::NEW;
+        $this->duplicities = new ArrayCollection();
     }
 
     /**
@@ -85,6 +95,27 @@ class ImportQueue
     public function getImport(): Import
     {
         return $this->import;
+    }
+
+    /**
+     * @return ImportBeneficiaryDuplicity[]
+     */
+    public function getDuplicities(): Collection
+    {
+        return $this->duplicities;
+    }
+
+    /**
+     * @return ImportBeneficiaryDuplicity|null
+     */
+    public function getAcceptedDuplicity(): ?ImportBeneficiaryDuplicity
+    {
+        foreach ($this->getDuplicities() as $duplicityCandidate) {
+            if (ImportDuplicityState::DUPLICITY_KEEP_THEIRS === $duplicityCandidate->getState()
+            || ImportDuplicityState::DUPLICITY_KEEP_OURS === $duplicityCandidate->getState()) {
+                return $duplicityCandidate;
+            }
+        }
     }
 
     /**
