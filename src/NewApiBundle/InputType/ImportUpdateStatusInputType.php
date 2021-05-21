@@ -14,7 +14,7 @@ class ImportUpdateStatusInputType implements InputTypeInterface
      *
      * @Assert\Type("string")
      * @Assert\NotNull
-     * @Assert\Choice(callback=allowedStates)
+     * @Assert\Choice(callback="allowedStates")
      */
     private $status;
 
