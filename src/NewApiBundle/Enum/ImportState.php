@@ -15,6 +15,7 @@ final class ImportState
     const SIMILARITY_CHECKING = 'Similarity Checking';
     const SIMILARITY_CHECK_CORRECT = 'Similarity Check Correct';
     const SIMILARITY_CHECK_FAILED = 'Similarity Check Failed';
+    const IMPORTING = 'Importing';
     const FINISHED = 'Finished';
     const CANCELED = 'Canceled';
 
@@ -31,6 +32,7 @@ final class ImportState
             self::SIMILARITY_CHECKING,
             self::SIMILARITY_CHECK_CORRECT,
             self::SIMILARITY_CHECK_FAILED,
+            self::IMPORTING,
             self::FINISHED,
             self::CANCELED,
         ];
