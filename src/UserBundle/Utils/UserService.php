@@ -837,6 +837,7 @@ class UserService
             ->setUsernameCanonical($inputType->getUsername())
             ->setEnabled(true)
             ->setLanguage($inputType->getLanguage())
+            ->setChangePassword($inputType->isChangePassword())
             ->setRoles($inputType->getRoles())
             ->setPhonePrefix($inputType->getPhonePrefix())
             ->setPhoneNumber($inputType->getPhoneNumber() ? (int) $inputType->getPhoneNumber() : null);
