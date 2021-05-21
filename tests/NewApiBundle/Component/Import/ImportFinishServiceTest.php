@@ -7,6 +7,7 @@ use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Entity\Import;
+use NewApiBundle\Entity\ImportBeneficiary;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
@@ -30,6 +31,9 @@ class ImportFinishServiceTest extends KernelTestCase
 
     /** @var Import */
     private $import;
+
+    /** @var Household */
+    private $originHousehold;
 
     /** @var ImportFile */
     private $importFile;
@@ -56,7 +60,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager->persist($this->project);
         $this->entityManager->flush();
 
-        $this->createBlankHousehold($this->project);
+        $this->originHousehold = $this->createBlankHousehold($this->project);
 
         $this->import = new Import('unit test', 'note', $this->project,$testUser);
         $this->import->setState(ImportState::SIMILARITY_CHECK_CORRECT);
@@ -76,6 +80,16 @@ class ImportFinishServiceTest extends KernelTestCase
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(2, $bnfCount, "Wrong number of created beneficiaries");
+
+        $originLinks = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
+            'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
+        ]);
+        $this->assertEmpty($originLinks, "Origin beneficiary shouldn't have any import link");
+
+        $links = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
+            'import' => $this->import->getId()
+        ]);
+        $this->assertCount(1, $links, "There should be only one link");
     }
 
     public function testUpdate()
@@ -88,6 +102,11 @@ class ImportFinishServiceTest extends KernelTestCase
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
+
+        $originLinks = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
+            'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
+        ]);
+        $this->assertCount(1, $originLinks, "Origin beneficiary should have one import link");
     }
 
     public function testLink()
@@ -100,6 +119,11 @@ class ImportFinishServiceTest extends KernelTestCase
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
+
+        $originLinks = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
+            'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
+        ]);
+        $this->assertCount(1, $originLinks, "Origin beneficiary should have one import link");
     }
 
     public function testIgnore()
@@ -112,15 +136,20 @@ class ImportFinishServiceTest extends KernelTestCase
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
+
+        $originLinks = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
+            'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
+        ]);
+        $this->assertEmpty($originLinks, "Origin beneficiary shouldn't have any import link");
     }
 
     protected function tearDown()
     {
         $this->assertEquals(ImportState::FINISHED, $this->import->getState(), "Wrong import state");
-        $queueSize = $this->entityManager->getRepository(ImportQueue::class)->countBy([
-            'import' => $this->import,
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy([
+            'import' => $this->import->getId(),
         ]);
-        $this->assertEquals(0, $queueSize, "Queue wasn't cleaned");
+        $this->assertEquals(0, count($queue), "Queue wasn't cleaned");
     }
 
     private function createBlankHousehold(Project $project): Household
