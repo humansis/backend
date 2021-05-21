@@ -3,6 +3,7 @@
 namespace Tests\NewApiBundle\Component\Import;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Entity\Import;
@@ -53,6 +54,9 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->project->setEndDate(new \DateTime());
         $this->project->setIso3(self::TEST_COUNTRY);
         $this->entityManager->persist($this->project);
+        $this->entityManager->flush();
+
+        $this->createBlankHousehold($this->project);
 
         $this->import = new Import('unit test', 'note', $this->project,$testUser);
         $this->import->setState(ImportState::SIMILARITY_CHECK_CORRECT);
@@ -117,6 +121,39 @@ class ImportFinishServiceTest extends KernelTestCase
             'import' => $this->import,
         ]);
         $this->assertEquals(0, $queueSize, "Queue wasn't cleaned");
+    }
+
+    private function createBlankHousehold(Project $project): Household
+    {
+        $hh = new Household();
+
+        $hh->setLongitude('empty');
+        $hh->setLatitude('empty');
+        $hh->setCopingStrategiesIndex(0);
+        $hh->setDebtLevel(0);
+        $hh->setFoodConsumptionScore(0);
+        $hh->setIncomeLevel(0);
+
+        $hhh = new Beneficiary();
+        $hhh->setHousehold($hh);
+        $birthDate = new \DateTime();
+        $birthDate->modify("-30 year");
+        $hhh->getPerson()->setDateOfBirth($birthDate);
+        $hhh->getPerson()->setEnFamilyName('empty');
+        $hhh->getPerson()->setEnGivenName('empty');
+        $hhh->getPerson()->setLocalFamilyName('empty');
+        $hhh->getPerson()->setLocalGivenName('empty');
+        $hhh->getPerson()->setGender(0);
+        $hhh->setHead(true);
+        $hhh->setResidencyStatus('empty');
+
+        $hh->addBeneficiary($hhh);
+        $hh->addProject($project);
+        $hhh->addProject($project);
+        $this->entityManager->persist($hh);
+        $this->entityManager->persist($hhh);
+        $this->entityManager->flush();
+        return $hh;
     }
 
 }
