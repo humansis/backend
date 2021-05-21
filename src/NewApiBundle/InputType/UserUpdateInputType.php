@@ -264,4 +264,12 @@ class UserUpdateInputType implements InputTypeInterface
         return $this->changePassword;
     }
 
+    /**
+     * @param bool $changePassword
+     */
+    public function setChangePassword(bool $changePassword): void
+    {
+        $this->changePassword = $changePassword;
+    }
+
 }
