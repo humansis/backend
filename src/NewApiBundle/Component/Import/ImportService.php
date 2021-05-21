@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import;
 
+use BeneficiaryBundle\Entity\Household;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use NewApiBundle\Component\Import\ValueObject\ImportStatisticsValueObject;
 use NewApiBundle\Entity\Import;
+use NewApiBundle\Entity\ImportBeneficiary;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueue;
@@ -114,6 +116,73 @@ class ImportService
         }
 
         $this->em->flush();
+    }
+
+    public function finish(Import $import): void
+    {
+        if (!in_array($import->getState(), [ImportState::SIMILARITY_CHECK_CORRECT, ImportState::IMPORTING])) {
+            throw new InvalidArgumentException('Wrong import status');
+        }
+
+        $queueRepo = $this->em->getRepository(ImportQueue::class);
+
+        foreach ($queueRepo->findBy([
+            'import' => $import,
+            'state' => ImportQueueState::TO_CREATE,
+        ]) as $item) {
+            $household = new Household();
+            // TODO: fill new HH
+
+            /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
+            $acceptedDuplicity = $item->getAcceptedDuplicity();
+            if (null !== $acceptedDuplicity) {
+                $this->linkHouseholdToQueue($import, $household, $acceptedDuplicity->getDecideBy());
+            } else {
+                $this->linkHouseholdToQueue($import, $household, $import->getCreatedBy());
+            }
+            $this->em->remove($item);
+        }
+
+        foreach ($queueRepo->findBy([
+            'import' => $import,
+            'state' => ImportQueueState::TO_UPDATE,
+        ]) as $item) {
+            /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
+            $acceptedDuplicity = $item->getAcceptedDuplicity();
+            if (null == $acceptedDuplicity) continue;
+
+            // TODO: update
+
+            $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
+            $this->em->remove($item);
+        }
+
+        foreach ($queueRepo->findBy([
+            'import' => $import,
+            'state' => ImportQueueState::TO_IGNORE,
+        ]) as $item) {
+            $this->em->remove($item);
+        }
+
+        foreach ($queueRepo->findBy([
+            'import' => $import,
+            'state' => ImportQueueState::TO_LINK,
+        ]) as $item) {
+            /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
+            $acceptedDuplicity = $item->getAcceptedDuplicity();
+            if (null == $acceptedDuplicity) continue;
+
+            $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
+            $this->em->remove($item);
+        }
+    }
+
+    private function linkHouseholdToQueue(Import $import, Household $household, User $decide): void
+    {
+        foreach ($household->getBeneficiaries() as $beneficiary) {
+            $beneficiaryInImport = new ImportBeneficiary($import, $beneficiary, $decide);
+            $this->em->persist($beneficiaryInImport);
+        }
     }
 }
 
