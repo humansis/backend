@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -13,7 +14,7 @@ class DuplicityResolveInputType implements InputTypeInterface
      *
      * @Assert\Type("string")
      * @Assert\NotNull()
-     * @Assert\Choice(callback={"NewApiBundle\Enum\ImportQueueState", "values"})
+     * @Assert\Choice(callback="allowedStatuses")
      */
     private $status;
 
@@ -24,6 +25,16 @@ class DuplicityResolveInputType implements InputTypeInterface
      * @Assert\NotNull()
      */
     private $acceptedDuplicityId;
+
+    public static function allowedStatuses(): array
+    {
+        return [
+            ImportQueueState::TO_CREATE,
+            ImportQueueState::TO_UPDATE,
+            ImportQueueState::TO_LINK,
+            ImportQueueState::TO_IGNORE,
+        ];
+    }
 
     /**
      * @return string
