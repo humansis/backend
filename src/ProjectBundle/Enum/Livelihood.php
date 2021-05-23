@@ -14,7 +14,7 @@ final class Livelihood
     const OWN_BUSINESS = 'own_business';
     const TEXTILES = 'textiles';
 
-    private const TRANSLATIONS = [
+    public const TRANSLATIONS = [
         self::DAILY_LABOUR => 'Daily Labour',
         self::FARMING_AGRICULTURE => 'Farming - Agriculture',
         self::FARMING_LIVESTOCK => 'Farming - Livestock',
