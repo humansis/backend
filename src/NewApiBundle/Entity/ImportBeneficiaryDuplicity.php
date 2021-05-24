@@ -72,7 +72,7 @@ class ImportBeneficiaryDuplicity
     {
         $this->ours = $ours;
         $this->theirs = $theirs;
-        $this->state = ImportDuplicityState::NEW;
+        $this->state = ImportDuplicityState::DUPLICITY_CANDIDATE;
         $this->reasons = [];
     }
 

@@ -59,11 +59,11 @@ class ImportQueueDuplicity
      */
     private $decideAt;
 
-    public function __construct(ImportQueue $ours, ImportQueueState $theirs)
+    public function __construct(ImportQueue $ours, ImportQueue $theirs)
     {
         $this->ours = $ours;
         $this->theirs = $theirs;
-        $this->state = ImportDuplicityState::NEW;
+        $this->state = ImportDuplicityState::DUPLICITY_CANDIDATE;
     }
 
     /**
