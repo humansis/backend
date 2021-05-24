@@ -56,6 +56,13 @@ class ImportQueue
      */
     private $message;
 
+    /**
+     * @var ImportBeneficiaryDuplicity
+     *
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiaryDuplicity", mappedBy="ours")
+     */
+    private $importBeneficiaryDuplicities;
+
     public function __construct(Import $import, ImportFile $file, $content)
     {
         $this->import = $import;
@@ -130,5 +137,21 @@ class ImportQueue
     public function setMessage(?string $message): void
     {
         $this->message = $message;
+    }
+
+    /**
+     * @return ImportBeneficiaryDuplicity
+     */
+    public function getImportBeneficiaryDuplicities(): ImportBeneficiaryDuplicity
+    {
+        return $this->importBeneficiaryDuplicities;
+    }
+
+    /**
+     * @param ImportBeneficiaryDuplicity $importBeneficiaryDuplicities
+     */
+    public function setImportBeneficiaryDuplicities(ImportBeneficiaryDuplicity $importBeneficiaryDuplicities): void
+    {
+        $this->importBeneficiaryDuplicities = $importBeneficiaryDuplicities;
     }
 }

@@ -27,4 +27,14 @@ final class ImportQueueState
             self::TO_IGNORE,
         ];
     }
+
+    public static function readyToImportStates(): array
+    {
+        return [
+            self::TO_CREATE,
+            self::TO_UPDATE,
+            self::TO_LINK,
+            self::TO_IGNORE,
+        ];
+    }
 }

@@ -6,7 +6,7 @@ namespace NewApiBundle\Component\Import;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
-use NewApiBundle\Component\Import\ValueObject\QueueProgressValueObject;
+use NewApiBundle\Component\Import\ValueObject\ImportStatisticsValueObject;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportFile;
@@ -66,43 +66,21 @@ class ImportService
         $this->em->flush();
     }
 
-    public function getQueueProgress(Import $import): QueueProgressValueObject
+    public function getStatistics(Import $import): ImportStatisticsValueObject
     {
-        $queueProgress = new QueueProgressValueObject();
+        $statistics = new ImportStatisticsValueObject();
 
         /** @var ImportQueueRepository $repository */
         $repository = $this->em->getRepository(ImportQueue::class);
 
-        switch ($import->getState()) {
-            case ImportState::INTEGRITY_CHECKING:
-            case ImportState::INTEGRITY_CHECK_CORRECT:
-            case ImportState::INTEGRITY_CHECK_FAILED:
-                $queueProgress->setTotalCount($import->getImportQueue()->count());
+        $statistics->setTotalEntries($import->getImportQueue()->count());
+        $statistics->setAmountIntegrityCorrect($repository->getTotalByImportAndStatus($import, ImportQueueState::VALID));
+        $statistics->setAmountIntegrityFailed($repository->getTotalByImportAndStatus($import, ImportQueueState::INVALID));
+        $statistics->setAmountDuplicities($repository->getTotalByImportAndStatus($import, ImportQueueState::SUSPICIOUS));
+        $statistics->setAmountDuplicitiesResolved($repository->getTotalReadyForSave($import));
+        $statistics->setAmountEntriesToImport($repository->getTotalReadyForSave($import));
 
-                $correct = $repository->getTotalByImportAndStatus($import, ImportQueueState::VALID);
-                $queueProgress->setCorrect($correct);
-
-                $failed = $repository->getTotalByImportAndStatus($import, ImportQueueState::INVALID);
-                $queueProgress->setFailed($failed);
-
-                break;
-            case ImportState::IDENTITY_CHECKING:
-            case ImportState::IDENTITY_CHECK_CORRECT:
-            case ImportState::IDENTITY_CHECK_FAILED:
-            case ImportState::SIMILARITY_CHECKING:
-            case ImportState::SIMILARITY_CHECK_CORRECT:
-            case ImportState::SIMILARITY_CHECK_FAILED:
-                $queueProgress->setTotalCount($import->getImportQueue()->count());
-
-                $correct = $repository->getTotalReadyForSave($import);
-                $queueProgress->setCorrect($correct);
-
-                $failed = $repository->getTotalByImportAndStatus($import, ImportQueueState::SUSPICIOUS);
-                $queueProgress->setFailed($failed);
-                break;
-        }
-
-        return $queueProgress;
+        return $statistics;
     }
 
     public function resolveDuplicity(ImportQueue $importQueue, DuplicityResolveInputType $inputType, User $user)
