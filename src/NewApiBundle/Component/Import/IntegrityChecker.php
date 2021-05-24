@@ -29,6 +29,10 @@ class IntegrityChecker
 
     public function check(Import $import): ConstraintViolationListInterface
     {
+        if (ImportState::INTEGRITY_CHECKING !== $import->getState()) {
+            throw new \BadMethodCallException('Unable to execute checker. Import is not ready to integrity check.');
+        }
+
         foreach ($this->getItemsToCheck($import) as $i => $item) {
             $this->checkOne($item);
 
@@ -42,7 +46,7 @@ class IntegrityChecker
         $queue = $this->getItemsToCheck($import);
         if (0 === count($queue)) {
             $isInvalid = $this->isImportQueueInvalid($import);
-            $import->setState($isInvalid ? ImportState::IDENTITY_CHECK_FAILED : ImportState::IDENTITY_CHECK_CORRECT);
+            $import->setState($isInvalid ? ImportState::INTEGRITY_CHECK_FAILED : ImportState::INTEGRITY_CHECK_CORRECT);
 
             $this->entityManager->persist($import);
             $this->entityManager->flush();
