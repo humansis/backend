@@ -113,6 +113,11 @@ class UserMapper implements MapperInterface
         }, $this->object->getProjects()->toArray());
     }
 
+    public function getChangePassword(): bool
+    {
+        return $this->object->getChangePassword();
+    }
+
     public function get2fa(): bool
     {
         return $this->object->getTwoFactorAuthentication();

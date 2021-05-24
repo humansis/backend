@@ -199,6 +199,7 @@ class UserControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('language', $result);
         $this->assertArrayHasKey('roles', $result);
         $this->assertArrayHasKey('projectIds', $result);
+        $this->assertArrayHasKey('changePassword', $result);
 
         $this->assertEquals($data['phoneNumber'], $result['phoneNumber']);
 
