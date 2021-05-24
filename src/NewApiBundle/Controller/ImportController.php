@@ -152,19 +152,22 @@ class ImportController extends AbstractController
             throw new \InvalidArgumentException('You cannot upload file to this import.');
         }
 
-        /** @var UploadedFile|null $file */
-        $file = $request->files->get('files');
+        /** @var UploadedFile[] $files */
+        $files = $request->files->all();
 
-        if (is_null($file)) {
-            throw new \InvalidArgumentException('Missing upload file');
+        if (empty($files)) {
+            throw new \InvalidArgumentException('Missing at least one upload file.');
         }
 
         /** @var User $user */
         $user = $this->getUser();
 
-        $importFile = $this->uploadImportService->upload($import, $file, $user);
+        $importFiles = [];
+        foreach ($files as $file) {
+            $importFiles[] = $this->uploadImportService->upload($import, $file, $user);
+        }
 
-        return $this->json($importFile);
+        return $this->json(new Paginator($importFiles));
     }
 
     /**
