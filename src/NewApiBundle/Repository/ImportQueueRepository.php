@@ -24,19 +24,25 @@ class ImportQueueRepository extends EntityRepository
 
     public function getTotalReadyForSave(Import $import): int
     {
-        $readyToSaveStates = [
-            ImportQueueState::TO_CREATE,
-            ImportQueueState::TO_UPDATE,
-            ImportQueueState::TO_LINK,
-            ImportQueueState::TO_IGNORE,
-        ];
-
         return (int) $this->createQueryBuilder('iq')
             ->select('COUNT(iq)')
             ->andWhere('iq.import = :import')
             ->andWhere('iq.state IN (:states)')
             ->setParameter('import', $import)
-            ->setParameter('states', $readyToSaveStates)
+            ->setParameter('states', ImportQueueState::readyToImportStates())
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function getTotalResolvedDuplicities(Import $import)
+    {
+        return (int) $this->createQueryBuilder('iq')
+            ->select('COUNT(iq)')
+            ->join('iq.importBeneficiaryDuplicities', 'ibd')
+            ->andWhere('iq.import = :import')
+            ->andWhere('iq.state IN (:states)')
+            ->setParameter('import', $import)
+            ->setParameter('states', ImportQueueState::readyToImportStates())
             ->getQuery()
             ->getSingleScalarResult();
     }

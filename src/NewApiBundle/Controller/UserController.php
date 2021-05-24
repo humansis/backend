@@ -132,6 +132,7 @@ class UserController extends AbstractController
     {
         if ($request->request->has('password')) {
             $user->setPassword($request->request->get('password'));
+            $user->setChangePassword(false);
         }
 
         if ($request->request->has('phoneNumber')) {

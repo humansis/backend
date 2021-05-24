@@ -35,8 +35,8 @@ class ImportRepository extends EntityRepository
             }
 
             if ($filter->hasStatus()) {
-                $qb->andWhere('i.state = :state')
-                ->setParameter('state', $filter->getStatus());
+                $qb->andWhere('i.state IN (:states)')
+                ->setParameter('states', $filter->getStatus());
             }
 
             if ($filter->hasProjects()) {
