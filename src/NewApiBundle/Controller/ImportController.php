@@ -5,11 +5,13 @@ namespace NewApiBundle\Controller;
 
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\Import\ImportInvalidFileService;
 use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Component\Import\UploadImportService;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportFile;
+use NewApiBundle\Entity\ImportInvalidFile;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\InputType\DuplicityResolveInputType;
@@ -18,10 +20,13 @@ use NewApiBundle\InputType\ImportFilterInputType;
 use NewApiBundle\InputType\ImportOrderInputType;
 use NewApiBundle\InputType\ImportUpdateStatusInputType;
 use NewApiBundle\Request\Pagination;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 use UserBundle\Entity\User;
 
 class ImportController extends AbstractController
@@ -36,10 +41,22 @@ class ImportController extends AbstractController
      */
     private $uploadImportService;
 
-    public function __construct(ImportService $importService, UploadImportService $uploadImportService)
+    /**
+     * @var ImportInvalidFileService
+     */
+    private $importInvalidFileService;
+
+    /**
+     * @var string
+     */
+    private $importInvalidFilesDirectory;
+
+    public function __construct(ImportService $importService, UploadImportService $uploadImportService, ImportInvalidFileService $importInvalidFileService, string $importInvalidFilesDirectory)
     {
         $this->importService = $importService;
         $this->uploadImportService = $uploadImportService;
+        $this->importInvalidFileService = $importInvalidFileService;
+        $this->importInvalidFilesDirectory = $importInvalidFilesDirectory;
     }
 
     /**
@@ -126,7 +143,7 @@ class ImportController extends AbstractController
      * @param Import  $import
      *
      * @param Request $request
-     *
+     *BinaryFileResponse
      * @return JsonResponse
      * @throws \Doctrine\DBAL\ConnectionException
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
@@ -213,13 +230,52 @@ class ImportController extends AbstractController
     }
 
     /**
+     * @Rest\Get("/imports/invalid-files/{id}")
+     *
+     * @param ImportInvalidFile $importInvalidFile
+     *
+     * @return BinaryFileResponse
+     */
+    public function getInvalidFile(ImportInvalidFile $importInvalidFile): BinaryFileResponse
+    {
+        $filename = $importInvalidFile->getFilename();
+        $path = $this->importInvalidFilesDirectory.'/'.$filename;
+
+        if (!file_exists($path)) {
+            throw new \RuntimeException('Requested file does not exist on server.');
+        }
+
+        $response = new BinaryFileResponse($path);
+
+        $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
+        if ($mimeTypeGuesser->isGuesserSupported()) {
+            $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType($path));
+        } else {
+            $response->headers->set('Content-Type', 'text/plain');
+        }
+
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
+
+        return $response;
+    }
+
+    /**
      * @Rest\Get("/imports/{id}/invalid-files")
      *
      * @param Import $import
+     *
+     * @return JsonResponse
      */
-    public function invalidFiles(Import $import)
+    public function listInvalidFiles(Import $import): JsonResponse
     {
-        //TODO implement invalid files logic
+        $this->importInvalidFileService->generateFile($import);
+
+        $invalidFiles = $this->getDoctrine()->getRepository(ImportInvalidFile::class)
+            ->findBy([
+                'import' => $import,
+            ]);
+
+        return $this->json(new Paginator($invalidFiles));
     }
 
     /**
