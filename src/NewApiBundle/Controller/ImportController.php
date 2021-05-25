@@ -11,6 +11,7 @@ use NewApiBundle\Component\Import\UploadImportService;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportFile;
+use NewApiBundle\Entity\ImportInvalidFile;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\InputType\DuplicityResolveInputType;
@@ -45,11 +46,17 @@ class ImportController extends AbstractController
      */
     private $importInvalidFileService;
 
-    public function __construct(ImportService $importService, UploadImportService $uploadImportService, ImportInvalidFileService $importInvalidFileService)
+    /**
+     * @var string
+     */
+    private $importInvalidFilesDirectory;
+
+    public function __construct(ImportService $importService, UploadImportService $uploadImportService, ImportInvalidFileService $importInvalidFileService, string $importInvalidFilesDirectory)
     {
         $this->importService = $importService;
         $this->uploadImportService = $uploadImportService;
         $this->importInvalidFileService = $importInvalidFileService;
+        $this->importInvalidFilesDirectory = $importInvalidFilesDirectory;
     }
 
     /**
@@ -136,7 +143,7 @@ class ImportController extends AbstractController
      * @param Import  $import
      *
      * @param Request $request
-     *
+     *BinaryFileResponse
      * @return JsonResponse
      * @throws \Doctrine\DBAL\ConnectionException
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
@@ -220,32 +227,52 @@ class ImportController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/imports/{id}/invalid-files")
+     * @Rest\Get("/imports/invalid-files/{id}")
      *
-     * @param Import $import
+     * @param ImportInvalidFile $importInvalidFile
      *
      * @return BinaryFileResponse
      */
-    public function invalidFiles(Import $import): BinaryFileResponse
+    public function getInvalidFile(ImportInvalidFile $importInvalidFile): BinaryFileResponse
     {
-        $filepath = $this->importInvalidFileService->generateInvalidFilePath($import);
+        $filename = $importInvalidFile->getFilename();
+        $path = $this->importInvalidFilesDirectory.'/'.$filename;
 
-        if (!file_exists($filepath)) {
-            throw $this->createNotFoundException();
+        if (!file_exists($path)) {
+            throw new \RuntimeException('Requested file does not exist on server.');
         }
 
-        $response = new BinaryFileResponse($filepath);
+        $response = new BinaryFileResponse($path);
 
         $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
         if ($mimeTypeGuesser->isGuesserSupported()) {
-            $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType($filepath));
+            $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType($path));
         } else {
             $response->headers->set('Content-Type', 'text/plain');
         }
 
-        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $import->getTitle().'-invalid-entries.xlsx');
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
 
         return $response;
+    }
+
+    /**
+     * @Rest\Get("/imports/{id}/invalid-files")
+     *
+     * @param Import $import
+     *
+     * @return JsonResponse
+     */
+    public function listInvalidFiles(Import $import): JsonResponse
+    {
+        $this->importInvalidFileService->generateFile($import);
+
+        $invalidFiles = $this->getDoctrine()->getRepository(ImportInvalidFile::class)
+            ->findBy([
+                'import' => $import,
+            ]);
+
+        return $this->json(new Paginator($invalidFiles));
     }
 
     /**
