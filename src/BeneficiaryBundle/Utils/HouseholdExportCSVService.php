@@ -265,7 +265,7 @@ class HouseholdExportCSVService
         'Gender' => 'Male / Female*',
         'Head' => 'String [true-false]*',
         'Residency status' => 'Refugee / IDP / Resident / Returnee*',
-        'Date of birth' => 'DD-MM-YYYY',
+        'Date of birth' => 'DD-MM-YYYY*',
         'Vulnerability criteria' => 'String',
         'Type phone 1' => 'Mobile / Landline',
         'Prefix phone 1' => "'+X",
