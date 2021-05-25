@@ -5,6 +5,7 @@ namespace Tests\NewApiBundle\Controller;
 
 use Exception;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Entity\ImportInvalidFile;
 use NewApiBundle\Entity\ImportQueue;
 use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
@@ -233,4 +234,50 @@ class ImportControllerTest extends BMSServiceTestCase
         );
     }
 
+    public function testListInvalidFiles(): int
+    {
+        /** @var ImportInvalidFile|null $importInvalidFile */
+        $importInvalidFile = $this->em->getRepository(ImportInvalidFile::class)->findOneBy([]);
+
+        if (is_null($importInvalidFile)) {
+            $this->markTestSkipped('There needs to be at least one import invalid file in system.');
+        }
+
+        $importId = $importInvalidFile->getImport()->getId();
+
+        $this->request('GET', "/api/basic/imports/$importId/invalid-files");
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        $this->assertJsonFragment('{
+            "totalCount": "*",
+            "data": [
+                {
+                    "id": "*",
+                    "name": "*",
+                    "createdAt": "*"
+                }
+            ]}', $this->client->getResponse()->getContent()
+        );
+
+        return $importInvalidFile->getId();
+    }
+
+    /**
+     * @depends testListInvalidFiles
+     *
+     * @param int $id
+     */
+    public function testGetInvalidFile(int $id)
+    {
+        $this->request('GET', "/api/basic/imports/invalid-files/$id");
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+    }
 }
