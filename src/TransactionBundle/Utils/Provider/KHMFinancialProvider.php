@@ -157,12 +157,8 @@ class KHMFinancialProvider extends DefaultFinancialProvider
      */
     public function updateStatusTransaction(Transaction $transaction): Transaction
     {
-        try {
-            $response = $this->getStatus($transaction->getAssistanceBeneficiary()->getAssistance(), $transaction->getTransactionId());
-        } catch (\Exception $e) {
-            throw $e;
-        }
-        
+        $response = $this->getStatus($transaction->getAssistanceBeneficiary()->getAssistance(), $transaction->getTransactionId());
+
         if (property_exists($response, 'cashout_status') && $response->cashout_status === "Complete") {
             $transaction->setMoneyReceived(true);
             $transaction->setPickupDate(new \DateTime());
@@ -187,13 +183,8 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         $body = array(
             "transaction_id" => $transaction_id
         );
-        
-        try {
-            $sent = $this->sendRequest($assistance, "POST", $route, $body);
-        } catch (Exception $e) {
-            throw $e;
-        }
-        return $sent;
+
+        return $this->sendRequest($assistance, "POST", $route, $body);
     }
 
     /**

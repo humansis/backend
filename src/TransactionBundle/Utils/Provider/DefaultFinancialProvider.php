@@ -192,12 +192,8 @@ abstract class DefaultFinancialProvider
                 ]
             );
             if ($successfulTransaction) {
-                try {
-                    $this->updateStatusTransaction($successfulTransaction);
-                    array_push($response, $assistanceBeneficiary);
-                } catch (\Exception $e) {
-                    throw $e;
-                }
+                $this->updateStatusTransaction($successfulTransaction);
+                array_push($response, $assistanceBeneficiary);
             }
         }
         return $response;

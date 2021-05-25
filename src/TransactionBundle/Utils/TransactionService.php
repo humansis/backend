@@ -53,12 +53,8 @@ class TransactionService
      */
     public function sendMoney(string $countryISO3, Assistance $assistance, User $user)
     {
-        try {
-            $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
-        } catch (\Exception $e) {
-            throw $e;
-        }
-        
+        $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
+
         if ($assistance->getCommodities()[0]->getModalityType()->getName() === "Mobile Money") {
             $amountToSend = $assistance->getCommodities()[0]->getValue();
             $currencyToSend = $assistance->getCommodities()[0]->getUnit();
@@ -68,11 +64,7 @@ class TransactionService
         
         $from = $user->getId();
         
-        try {
-            return $this->financialProvider->sendMoneyToAll($assistance, $amountToSend, $currencyToSend, $from);
-        } catch (\Exception $e) {
-            throw $e;
-        }
+        return $this->financialProvider->sendMoneyToAll($assistance, $amountToSend, $currencyToSend, $from);
     }
     
     /**
@@ -218,17 +210,9 @@ class TransactionService
      */
     public function updateTransactionStatus(string $countryISO3, Assistance $assistance): array
     {
-        try {
-            $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
-        } catch (\Exception $e) {
-            throw $e;
-        }
-        
-        try {
-            return $this->financialProvider->updateStatusDistribution($assistance);
-        } catch (\Exception $e) {
-            throw $e;
-        }
+        $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
+
+        return $this->financialProvider->updateStatusDistribution($assistance);
     }
 
     /**
@@ -240,17 +224,9 @@ class TransactionService
      */
     public function testConnection(string $countryISO3, Assistance $assistance)
     {
-        try {
-            $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
-        } catch (\Exception $e) {
-            throw $e;
-        }
-        
-        try {
-            return $this->financialProvider->getToken($assistance);
-        } catch (\Exception $e) {
-            throw $e;
-        }
+        $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
+
+        return $this->financialProvider->getToken($assistance);
     }
 
     /**
