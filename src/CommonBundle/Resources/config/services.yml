@@ -205,6 +205,11 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
+    CommonBundle\DataFixtures\ImportFixtures:
+        public: true
+        tags:
+            - { name: doctrine.fixture.orm }
+
     CommonBundle\DataFixtures\Beneficiaries\AssistanceBeneficiaryFixtures:
         public: true
         arguments:
