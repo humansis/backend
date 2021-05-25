@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import;
 
+use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Entity\Import;
+use NewApiBundle\Entity\ImportInvalidFile;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Repository\ImportQueueRepository;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -26,35 +28,49 @@ class ImportInvalidFileService
      */
     private $importInvalidFilesDirectory;
 
-    public function __construct(ImportQueueRepository $importQueueRepository, ImportTemplate $importTemplate, string $importInvalidFilesDirectory)
+    /**
+     * @var EntityManagerInterface
+     */
+    private $em;
+
+    public function __construct(ImportQueueRepository $importQueueRepository, ImportTemplate $importTemplate, string $importInvalidFilesDirectory, EntityManagerInterface $em)
     {
         $this->importTemplate = $importTemplate;
         $this->importQueueRepository = $importQueueRepository;
         $this->importInvalidFilesDirectory = $importInvalidFilesDirectory;
+        $this->em = $em;
     }
 
-    public function generateFile(Import $import): void
+    public function generateFile(Import $import): ImportInvalidFile
     {
         $invalidEntries = $this->importQueueRepository->getInvalidEntries($import);
         $spreadsheet = $this->importTemplate->generateTemplateSpreadsheet($import->getProject()->getIso3());
 
-        //TODO id column
-
         $header = $this->importTemplate->getTemplateHeader($import->getProject()->getIso3());
         $this->writeEntries($spreadsheet, $invalidEntries, $header);
 
-        $path = $this->generateInvalidFilePath($import);
+        $fileName = $this->generateInvalidFileName($import);
+        $this->saveToFile($spreadsheet, $fileName);
 
-        $this->saveToFile($spreadsheet, $path);
+        $importInvalidFile = new ImportInvalidFile();
+        $importInvalidFile->setFilename($fileName);
+        $importInvalidFile->setImport($import);
+
+        $this->em->persist($importInvalidFile);
+        $this->em->flush();
+
+        return $importInvalidFile;
     }
 
-    public function generateInvalidFilePath(Import $import): string
+    private function generateInvalidFileName(Import $import): string
     {
-        return $this->importInvalidFilesDirectory.'/'.$import->getTitle().'-'.$import->getId().'-import-invalid-entries.xlsx';
+        return $import->getTitle().'-'.$import->getId().'-invalid-entries_'.time().'.xlsx';
     }
 
-    private function saveToFile(Spreadsheet $spreadsheet, string $path): void
+    private function saveToFile(Spreadsheet $spreadsheet, string $name): void
     {
+        $path = $this->importInvalidFilesDirectory.'/' . $name;
+
         if (!is_dir($this->importInvalidFilesDirectory)) {
             mkdir($this->importInvalidFilesDirectory, 0775, true);
         }
@@ -93,6 +109,8 @@ class ImportInvalidFileService
                 $currentColumn = 1;
                 ++$currentRow;
             }
+
+            $this->em->remove($entry);
         }
     }
 }
