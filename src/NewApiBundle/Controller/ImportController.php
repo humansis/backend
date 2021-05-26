@@ -308,4 +308,21 @@ class ImportController extends AbstractController
 
         return $this->json(null, Response::HTTP_ACCEPTED);
     }
+
+    /**
+     * @Rest\Get("/imports/{id}/queue")
+     *
+     * @param Import $import
+     *
+     * @return JsonResponse
+     */
+    public function listQueue(Import $import): JsonResponse
+    {
+        $importQueue = $this->getDoctrine()->getRepository(ImportQueue::class)
+            ->findBy([
+                'import' => $import,
+            ]);
+
+        return $this->json(new Paginator($importQueue));
+    }
 }
