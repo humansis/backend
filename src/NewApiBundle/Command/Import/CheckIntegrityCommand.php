@@ -33,6 +33,7 @@ class CheckIntegrityCommand extends AbstractImportQueueCommand
 
     protected function configure()
     {
+        parent::configure();
         $this
             ->setName('app:import:integrity')
             ->setDescription('Run integrity check on loaded queue')
