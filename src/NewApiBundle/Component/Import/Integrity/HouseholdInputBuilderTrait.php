@@ -6,6 +6,7 @@ namespace NewApiBundle\Component\Import\Integrity;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 use NewApiBundle\InputType\HouseholdCreateInputType;
+use NewApiBundle\InputType\HouseholdUpdateInputType;
 
 trait HouseholdInputBuilderTrait
 {
@@ -15,12 +16,31 @@ trait HouseholdInputBuilderTrait
             return null;
         }
         $household = new HouseholdCreateInputType();
+        $this->fillHousehold($household);
+        return $household;
+    }
+
+    public function buildHouseholdUpdateType(): ?HouseholdUpdateInputType
+    {
+        if (false === $this->head) {
+            return null;
+        }
+        $household = new HouseholdUpdateInputType();
+        $this->fillHousehold($household);
+        return $household;
+    }
+
+    /**
+     * @param HouseholdUpdateInputType $household
+     */
+    private function fillHousehold(HouseholdUpdateInputType $household): void
+    {
         $household->setCopingStrategiesIndex($this->copingStrategiesIndex);
         $household->setDebtLevel($this->debtLevel);
         $household->setFoodConsumptionScore($this->foodConsumptionScore);
         $household->setIncomeLevel($this->incomeLevel);
         $household->setIso3($this->countryIso3);
-        $household->setNotes('');
+        $household->setNotes($this->notes);
         $household->setLatitude('');
         $household->setLongitude('');
 
@@ -32,9 +52,9 @@ trait HouseholdInputBuilderTrait
         $household->setResidenceAddress($address);
 
         $head = $this->buildBeneficiaryInputType();
+        $head->setIsHead(true);
 
         $household->addBeneficiary($head);
-        return $household;
     }
 
     public function buildBeneficiaryInputType(): BeneficiaryInputType
@@ -49,4 +69,6 @@ trait HouseholdInputBuilderTrait
         $beneficiary->setResidencyStatus($this->residencyStatus);
         return $beneficiary;
     }
+
+
 }
