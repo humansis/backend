@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Component\Import;
 
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Utils\HouseholdService;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
@@ -28,9 +29,13 @@ class ImportService
     /** @var EntityManagerInterface $em */
     private $em;
 
-    public function __construct(EntityManagerInterface $em)
+    /** @var HouseholdService */
+    private $householdService;
+
+    public function __construct(EntityManagerInterface $em, HouseholdService $householdService)
     {
         $this->em = $em;
+        $this->householdService = $householdService;
     }
 
     public function create(ImportCreateInputType $inputType, User $user): Import
@@ -133,8 +138,18 @@ class ImportService
             'import' => $import,
             'state' => ImportQueueState::TO_CREATE,
         ]) as $item) {
-            $household = new Household();
-            // TODO: fill new HH
+            $headContent = $item->getContent()[0];
+            $memberContents = array_slice($item->getContent(), 1);
+            $hhh = new Integrity\HouseholdHead((array)$headContent, $import->getProject()->getIso3(), $this->em);
+            $householdCreationInputType = $hhh->buildHouseholdInputType();
+            $householdCreationInputType->setProjectIds([$import->getProject()->getId()]);
+
+            foreach ($memberContents as $memberContent) {
+                $hhm = new Integrity\HouseholdMember($memberContent, $import->getProject()->getIso3(), $this->em);
+                $householdCreationInputType->addBeneficiary($hhm->buildBeneficiaryInputType());
+            }
+
+            $household = $this->householdService->create($householdCreationInputType);
 
             /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
             $acceptedDuplicity = $item->getAcceptedDuplicity();
