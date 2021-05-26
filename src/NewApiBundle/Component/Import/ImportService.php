@@ -141,22 +141,22 @@ class ImportService
             $headContent = $item->getContent()[0];
             $memberContents = array_slice($item->getContent(), 1);
             $hhh = new Integrity\HouseholdHead((array)$headContent, $import->getProject()->getIso3(), $this->em);
-            $householdCreationInputType = $hhh->buildHouseholdInputType();
-            $householdCreationInputType->setProjectIds([$import->getProject()->getId()]);
+            $householdUpdateInputType = $hhh->buildHouseholdInputType();
+            $householdUpdateInputType->setProjectIds([$import->getProject()->getId()]);
 
             foreach ($memberContents as $memberContent) {
                 $hhm = new Integrity\HouseholdMember($memberContent, $import->getProject()->getIso3(), $this->em);
-                $householdCreationInputType->addBeneficiary($hhm->buildBeneficiaryInputType());
+                $householdUpdateInputType->addBeneficiary($hhm->buildBeneficiaryInputType());
             }
 
-            $household = $this->householdService->create($householdCreationInputType);
+            $updatedHousehold = $this->householdService->create($householdUpdateInputType);
 
             /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
             $acceptedDuplicity = $item->getAcceptedDuplicity();
             if (null !== $acceptedDuplicity) {
-                $this->linkHouseholdToQueue($import, $household, $acceptedDuplicity->getDecideBy());
+                $this->linkHouseholdToQueue($import, $updatedHousehold, $acceptedDuplicity->getDecideBy());
             } else {
-                $this->linkHouseholdToQueue($import, $household, $import->getCreatedBy());
+                $this->linkHouseholdToQueue($import, $updatedHousehold, $import->getCreatedBy());
             }
             $this->removeFinishedQueue($item);
         }
@@ -169,9 +169,21 @@ class ImportService
             $acceptedDuplicity = $item->getAcceptedDuplicity();
             if (null == $acceptedDuplicity) continue;
 
-            // TODO: update
+            $headContent = $item->getContent()[0];
+            $memberContents = array_slice($item->getContent(), 1);
+            $hhh = new Integrity\HouseholdHead((array)$headContent, $import->getProject()->getIso3(), $this->em);
+            $householdUpdateInputType = $hhh->buildHouseholdUpdateType();
+            $householdUpdateInputType->setProjectIds([$import->getProject()->getId()]);
 
-            $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
+            foreach ($memberContents as $memberContent) {
+                $hhm = new Integrity\HouseholdMember($memberContent, $import->getProject()->getIso3(), $this->em);
+                $householdUpdateInputType->addBeneficiary($hhm->buildBeneficiaryInputType());
+            }
+
+            $updatedHousehold = $acceptedDuplicity->getTheirs();
+            $this->householdService->update($updatedHousehold, $householdUpdateInputType);
+
+            $this->linkHouseholdToQueue($import, $updatedHousehold, $acceptedDuplicity->getDecideBy());
             $this->removeFinishedQueue($item);
         }
 
