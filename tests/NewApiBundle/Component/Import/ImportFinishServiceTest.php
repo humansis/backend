@@ -179,7 +179,6 @@ class ImportFinishServiceTest extends KernelTestCase
     {
         $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM));
         $queueItem->setState(ImportQueueState::TO_IGNORE);
-        // TODO: add queue duplicity to resolve
         $this->entityManager->persist($queueItem);
         $this->entityManager->flush();
 
