@@ -196,6 +196,9 @@ services:
             - "@validator"
             - "@doctrine.orm.entity_manager"
 
+    NewApiBundle\Component\Import\IdentityChecker:
+        arguments: ["@doctrine.orm.entity_manager"]
+
     NewApiBundle\Component\Import\ImportInvalidFileService:
         public: true
         arguments:
