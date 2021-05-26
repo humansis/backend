@@ -280,4 +280,34 @@ class ImportControllerTest extends BMSServiceTestCase
             'Request failed: '.$this->client->getResponse()->getContent()
         );
     }
+
+    public function testListQueue()
+    {
+        /** @var ImportQueue|null $importQueue */
+        $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy([]);
+
+        if (is_null($importQueue)) {
+            $this->markTestSkipped('There needs to be at least one import with items in queue in system.');
+        }
+
+        $importId = $importQueue->getImport()->getId();
+
+        $this->request('GET', "/api/basic/imports/$importId/queue");
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        $this->assertJsonFragment('{
+            "totalCount": "*",
+            "data": [
+                {
+                    "id": "*",
+                    "values": "*",
+                    "status": "*"
+                }
+            ]}', $this->client->getResponse()->getContent()
+        );
+    }
 }
