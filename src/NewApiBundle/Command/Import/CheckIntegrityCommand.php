@@ -62,10 +62,6 @@ class CheckIntegrityCommand extends AbstractImportQueueCommand
         foreach ($imports as $import) {
             $this->integrityChecker->check($import);
             $this->importInvalidFileService->generateFile($import);
-
-            $import->setState(ImportState::INTEGRITY_CHECK_CORRECT);
-
-            //TODO ImportState::INTEGRITY_CHECK_FAILED ???
         }
 
         $output->writeln('Integrity check completed');
