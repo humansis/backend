@@ -13,10 +13,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractImportQueueCommand extends Command
 {
-    /** @var Import */
-    private $import;
+    /** @var Import|null */
+    protected $import;
     /** @var ObjectManager */
-    private $manager;
+    protected $manager;
 
     /**
      * AbstractImportQueueCommand constructor.
