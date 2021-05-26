@@ -62,4 +62,20 @@ class ImportQueueRepository extends EntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @param string $string
+     *
+     * @return ImportQueue[]
+     */
+    public function findInContent(Import $import, string $string)
+    {
+        return $this->createQueryBuilder('iq')
+            ->andWhere('iq.import = :import')
+            ->andWhere('iq.content LIKE :string')
+            ->setParameter('import', $import)
+            ->setParameter('string', '%'.$string.'%')
+            ->getQuery()->getResult();
+
+    }
 }
