@@ -19,10 +19,9 @@ class DuplicityResolveInputType implements InputTypeInterface
     private $status;
 
     /**
-     * @var integer
+     * @var integer|null
      *
      * @Assert\Type("integer")
-     * @Assert\NotNull()
      */
     private $acceptedDuplicityId;
 
@@ -53,7 +52,7 @@ class DuplicityResolveInputType implements InputTypeInterface
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getAcceptedDuplicityId()
     {
@@ -61,7 +60,7 @@ class DuplicityResolveInputType implements InputTypeInterface
     }
 
     /**
-     * @param int $acceptedDuplicityId
+     * @param int|null $acceptedDuplicityId
      */
     public function setAcceptedDuplicityId($acceptedDuplicityId)
     {
