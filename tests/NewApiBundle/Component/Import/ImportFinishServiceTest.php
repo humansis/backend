@@ -21,6 +21,8 @@ use UserBundle\Entity\User;
 class ImportFinishServiceTest extends KernelTestCase
 {
     const TEST_COUNTRY = 'KHM';
+    // json copied from Import.ods
+    const TEST_QUEUE_ITEM = '[{"Adm1": "Battambang", "Adm2": null, "Adm3": null, "Adm4": null, "Head": "true", "F 65+": null, "M 65+": null, "Notes": null, "Assets": null, "Gender": "Male", "F 0 - 2": null, "F 2 - 5": null, "ID Type": "National ID", "M 0 - 2": null, "M 2 - 5": null, "F 6 - 17": null, "Latitude": null, "M 6 - 17": null, "Camp name": null, "F 18 - 64": 1, "ID Number": 98349834, "Longitude": null, "M 18 - 64": 1, "Debt Level": 3, "Livelihood": "Education", "Tent number": null, "Income level": null, "Type phone 1": "Mobile", "Type phone 2": null, "Date of birth": "31-12-2000", "Proxy phone 1": null, "Proxy phone 2": null, "Address number": 123, "Address street": "Fake St", "Number phone 1": "10834243", "Number phone 2": null, "Prefix phone 1": "+855", "Prefix phone 2": null, "Shelter status": null, "Address postcode": 90210, "Local given name": "John", "Residency status": "Resident", "Local family name": "Smith", "English given name": null, "English family name": null, "Food Consumption Score": 3, "Support Received Types": "MPCA", "Vulnerability criteria": "disabled", "Coping Strategies Index": 2}]';
 
     /** @var EntityManagerInterface */
     private $entityManager;
@@ -50,7 +52,10 @@ class ImportFinishServiceTest extends KernelTestCase
             ->get('doctrine')
             ->getManager();
 
-        $this->importService = new ImportService($this->entityManager);
+        $this->importService = new ImportService(
+            $this->entityManager,
+            $kernel->getContainer()->get('beneficiary.household_service')
+        );
 
         $this->project = new Project();
         $this->project->setName(uniqid());
@@ -72,7 +77,7 @@ class ImportFinishServiceTest extends KernelTestCase
 
     public function testPlainCreate()
     {
-        $queueItem = new ImportQueue($this->import, $this->importFile, '');
+        $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM));
         $queueItem->setState(ImportQueueState::TO_CREATE);
         $this->entityManager->persist($queueItem);
         $this->entityManager->flush();
@@ -95,7 +100,7 @@ class ImportFinishServiceTest extends KernelTestCase
 
     public function testDecidedCreate()
     {
-        $queueItem = new ImportQueue($this->import, $this->importFile, '');
+        $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM));
         $queueItem->setState(ImportQueueState::TO_CREATE);
         $duplicity = new ImportBeneficiaryDuplicity($queueItem, $this->originHousehold);
         $duplicity->setState(ImportDuplicityState::NO_DUPLICITY);
@@ -124,7 +129,7 @@ class ImportFinishServiceTest extends KernelTestCase
 
     public function testUpdate()
     {
-        $queueItem = new ImportQueue($this->import, $this->importFile, '');
+        $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM));
         $queueItem->setState(ImportQueueState::TO_UPDATE);
         $duplicity = new ImportBeneficiaryDuplicity($queueItem, $this->originHousehold);
         $duplicity->setState(ImportDuplicityState::DUPLICITY_KEEP_OURS);
@@ -148,7 +153,7 @@ class ImportFinishServiceTest extends KernelTestCase
 
     public function testLink()
     {
-        $queueItem = new ImportQueue($this->import, $this->importFile, '');
+        $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM));
         $queueItem->setState(ImportQueueState::TO_LINK);
         $duplicity = new ImportBeneficiaryDuplicity($queueItem, $this->originHousehold);
         $duplicity->setState(ImportDuplicityState::DUPLICITY_KEEP_THEIRS);
@@ -172,7 +177,7 @@ class ImportFinishServiceTest extends KernelTestCase
 
     public function testIgnore()
     {
-        $queueItem = new ImportQueue($this->import, $this->importFile, '');
+        $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM));
         $queueItem->setState(ImportQueueState::TO_IGNORE);
         // TODO: add queue duplicity to resolve
         $this->entityManager->persist($queueItem);
