@@ -3,12 +3,34 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Command\Import;
 
-use NewApiBundle\Enum\ImportQueueState;
+use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Component\Import\ImportInvalidFileService;
+use NewApiBundle\Component\Import\IntegrityChecker;
+use NewApiBundle\Entity\Import;
+use NewApiBundle\Enum\ImportState;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CheckIntegrityCommand extends AbstractImportQueueCommand
 {
+    /**
+     * @var IntegrityChecker
+     */
+    private $integrityChecker;
+
+    /**
+     * @var ImportInvalidFileService
+     */
+    private $importInvalidFileService;
+
+    public function __construct(ObjectManager $manager, IntegrityChecker $integrityChecker, ImportInvalidFileService $importInvalidFileService)
+    {
+        parent::__construct($manager);
+
+        $this->integrityChecker = $integrityChecker;
+        $this->importInvalidFileService = $importInvalidFileService;
+    }
+
     protected function configure()
     {
         $this
@@ -21,11 +43,32 @@ class CheckIntegrityCommand extends AbstractImportQueueCommand
     {
         parent::execute($input, $output);
 
-        $queue = $this->getQueue([ImportQueueState::NEW]);
+        if (is_null($this->import)) {
+            $imports = [$this->import];
+        } else {
+            $imports = $this->manager->getRepository(Import::class)
+                ->findBy([
+                    'state' => ImportState::INTEGRITY_CHECKING,
+                ]);
+        }
+
         $output->writeln([
             "Integrity check",
-            count($queue)." items in queue",
+            count($imports)." imports in queue",
+
         ]);
+
+        /** @var Import $import */
+        foreach ($imports as $import) {
+            $this->integrityChecker->check($import);
+            $this->importInvalidFileService->generateFile($import);
+
+            $import->setState(ImportState::INTEGRITY_CHECK_CORRECT);
+
+            //TODO ImportState::INTEGRITY_CHECK_FAILED ???
+        }
+
+        $output->writeln('Integrity check completed');
     }
 
 }
