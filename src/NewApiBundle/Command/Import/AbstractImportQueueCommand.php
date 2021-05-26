@@ -46,7 +46,8 @@ abstract class AbstractImportQueueCommand extends Command
             }
             if ($byTitle) {
                 $this->import = $byTitle;
-            } else {
+            }
+            if (!$byId && !$byTitle) {
                 throw new \InvalidArgumentException('Argument Import must be ID or title of existing Import. No such found.');
             }
         }

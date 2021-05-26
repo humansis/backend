@@ -11,6 +11,7 @@ class FinishImportCommand extends AbstractImportQueueCommand
 {
     protected function configure()
     {
+        parent::configure();
         $this
             ->setName('app:import:finish')
             ->setDescription('Save finished imports into DB')

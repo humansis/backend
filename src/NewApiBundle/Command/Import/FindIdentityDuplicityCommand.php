@@ -26,6 +26,7 @@ class FindIdentityDuplicityCommand extends AbstractImportQueueCommand
 
     protected function configure()
     {
+        parent::configure();
         $this
             ->setName('app:import:identity')
             ->setDescription('Run identity duplicity check on import')

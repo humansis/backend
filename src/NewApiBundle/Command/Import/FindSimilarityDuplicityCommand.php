@@ -12,6 +12,7 @@ class FindSimilarityDuplicityCommand extends AbstractImportQueueCommand
 {
     protected function configure()
     {
+        parent::configure();
         $this
             ->setName('app:import:similarity')
             ->setDescription('Run similarity duplicity check on import')
