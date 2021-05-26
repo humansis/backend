@@ -176,6 +176,9 @@ services:
         arguments: [ '@knp_gaufrette.filesystem_map', '%aws_s3_bucket_name%', '%aws_s3_region%' ]
 
     NewApiBundle\Component\Import\ImportService:
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@beneficiary.household_service"
 
     NewApiBundle\Component\Import\UploadImportService:
         public: true

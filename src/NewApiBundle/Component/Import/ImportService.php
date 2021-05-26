@@ -3,11 +3,14 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import;
 
+use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Utils\HouseholdService;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use NewApiBundle\Component\Import\ValueObject\ImportStatisticsValueObject;
 use NewApiBundle\Entity\Import;
+use NewApiBundle\Entity\ImportBeneficiary;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueue;
@@ -26,9 +29,13 @@ class ImportService
     /** @var EntityManagerInterface $em */
     private $em;
 
-    public function __construct(EntityManagerInterface $em)
+    /** @var HouseholdService */
+    private $householdService;
+
+    public function __construct(EntityManagerInterface $em, HouseholdService $householdService)
     {
         $this->em = $em;
+        $this->householdService = $householdService;
     }
 
     public function create(ImportCreateInputType $inputType, User $user): Import
@@ -114,6 +121,136 @@ class ImportService
         }
 
         $this->em->flush();
+    }
+
+    public function finish(Import $import): void
+    {
+        if (!in_array($import->getState(), [ImportState::SIMILARITY_CHECK_CORRECT, ImportState::IMPORTING])) {
+            throw new InvalidArgumentException('Wrong import status');
+        }
+        $import->setState(ImportState::IMPORTING);
+        $this->em->persist($import);
+        $this->em->flush();
+
+        $queueRepo = $this->em->getRepository(ImportQueue::class);
+
+        foreach ($queueRepo->findBy([
+            'import' => $import,
+            'state' => ImportQueueState::TO_CREATE,
+        ]) as $item) {
+            $this->finishCreationQueue($item, $import);
+        }
+
+        foreach ($queueRepo->findBy([
+            'import' => $import,
+            'state' => ImportQueueState::TO_UPDATE,
+        ]) as $item) {
+            $this->finishUpdateQueue($item, $import);
+        }
+
+        foreach ($queueRepo->findBy([
+            'import' => $import,
+            'state' => ImportQueueState::TO_IGNORE,
+        ]) as $item) {
+            $this->removeFinishedQueue($item);
+        }
+
+        foreach ($queueRepo->findBy([
+            'import' => $import,
+            'state' => ImportQueueState::TO_LINK,
+        ]) as $item) {
+            /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
+            $acceptedDuplicity = $item->getAcceptedDuplicity();
+            if (null == $acceptedDuplicity) continue;
+
+            $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
+            $this->removeFinishedQueue($item);
+        }
+
+        $import->setState(ImportState::FINISHED);
+        $this->em->persist($import);
+        $this->em->flush();
+    }
+
+    private function linkHouseholdToQueue(Import $import, Household $household, User $decide): void
+    {
+        foreach ($household->getBeneficiaries() as $beneficiary) {
+            $beneficiaryInImport = new ImportBeneficiary($import, $beneficiary, $decide);
+            $this->em->persist($beneficiaryInImport);
+        }
+    }
+
+    private function removeFinishedQueue(ImportQueue $queue): void
+    {
+        foreach ($queue->getDuplicities() as $duplicity) {
+            $this->em->remove($duplicity);
+        }
+        $this->em->remove($queue);
+    }
+
+    /**
+     * @param ImportQueue $item
+     * @param Import      $import
+     */
+    private function finishCreationQueue(ImportQueue $item, Import $import): void
+    {
+        if (ImportQueueState::TO_CREATE !== $item->getState()) {
+            throw new InvalidArgumentException("Wrong ImportQueue state");
+        }
+
+        $headContent = $item->getContent()[0];
+        $memberContents = array_slice($item->getContent(), 1);
+        $hhh = new Integrity\HouseholdHead((array) $headContent, $import->getProject()->getIso3(), $this->em);
+        $householdUpdateInputType = $hhh->buildHouseholdInputType();
+        $householdUpdateInputType->setProjectIds([$import->getProject()->getId()]);
+
+        foreach ($memberContents as $memberContent) {
+            $hhm = new Integrity\HouseholdMember($memberContent, $import->getProject()->getIso3(), $this->em);
+            $householdUpdateInputType->addBeneficiary($hhm->buildBeneficiaryInputType());
+        }
+
+        $updatedHousehold = $this->householdService->create($householdUpdateInputType);
+
+        /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
+        $acceptedDuplicity = $item->getAcceptedDuplicity();
+        if (null !== $acceptedDuplicity) {
+            $this->linkHouseholdToQueue($import, $updatedHousehold, $acceptedDuplicity->getDecideBy());
+        } else {
+            $this->linkHouseholdToQueue($import, $updatedHousehold, $import->getCreatedBy());
+        }
+        $this->removeFinishedQueue($item);
+    }
+
+    /**
+     * @param ImportQueue $item
+     * @param Import      $import
+     */
+    private function finishUpdateQueue(ImportQueue $item, Import $import): void
+    {
+        if (ImportQueueState::TO_UPDATE !== $item->getState()) {
+            throw new InvalidArgumentException("Wrong ImportQueue state");
+        }
+
+        /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
+        $acceptedDuplicity = $item->getAcceptedDuplicity();
+        if (null == $acceptedDuplicity) return;
+
+        $headContent = $item->getContent()[0];
+        $memberContents = array_slice($item->getContent(), 1);
+        $hhh = new Integrity\HouseholdHead((array)$headContent, $import->getProject()->getIso3(), $this->em);
+        $householdUpdateInputType = $hhh->buildHouseholdUpdateType();
+        $householdUpdateInputType->setProjectIds([$import->getProject()->getId()]);
+
+        foreach ($memberContents as $memberContent) {
+            $hhm = new Integrity\HouseholdMember($memberContent, $import->getProject()->getIso3(), $this->em);
+            $householdUpdateInputType->addBeneficiary($hhm->buildBeneficiaryInputType());
+        }
+
+        $updatedHousehold = $acceptedDuplicity->getTheirs();
+        $this->householdService->update($updatedHousehold, $householdUpdateInputType);
+
+        $this->linkHouseholdToQueue($import, $updatedHousehold, $acceptedDuplicity->getDecideBy());
+        $this->removeFinishedQueue($item);
     }
 }
 

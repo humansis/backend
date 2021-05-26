@@ -14,6 +14,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class HouseholdMember
 {
+    use HouseholdInputBuilderTrait;
+
     /**
      * @Assert\Type("string")
      */
