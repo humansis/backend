@@ -79,6 +79,7 @@ class ImportService
         $statistics->setAmountDuplicities($repository->getTotalByImportAndStatus($import, ImportQueueState::SUSPICIOUS));
         $statistics->setAmountDuplicitiesResolved($repository->getTotalReadyForSave($import));
         $statistics->setAmountEntriesToImport($repository->getTotalReadyForSave($import));
+        $statistics->setStatus($import->getState());
 
         return $statistics;
     }

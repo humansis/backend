@@ -36,6 +36,11 @@ class ImportStatisticsValueObject
     private $amountEntriesToImport = 0;
 
     /**
+     * @var string
+     */
+    private $status;
+
+    /**
      * @return int
      */
     public function getTotalEntries(): int
@@ -129,5 +134,21 @@ class ImportStatisticsValueObject
     public function setAmountEntriesToImport(int $amountEntriesToImport): void
     {
         $this->amountEntriesToImport = $amountEntriesToImport;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param string $status
+     */
+    public function setStatus(string $status): void
+    {
+        $this->status = $status;
     }
 }

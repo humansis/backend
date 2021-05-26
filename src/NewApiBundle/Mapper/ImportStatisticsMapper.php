@@ -62,4 +62,9 @@ class ImportStatisticsMapper implements MapperInterface
     {
         return $this->object->getAmountEntriesToImport();
     }
+
+    public function getStatus(): string
+    {
+        return $this->object->getStatus();
+    }
 }
