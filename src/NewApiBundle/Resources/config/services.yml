@@ -191,6 +191,11 @@ services:
     NewApiBundle\Component\Import\UploadImportService:
         public: true
 
+    NewApiBundle\Component\Import\IntegrityChecker:
+        arguments:
+            - "@validator"
+            - "@doctrine.orm.entity_manager"
+
     NewApiBundle\Component\Import\ImportInvalidFileService:
         public: true
         arguments:
