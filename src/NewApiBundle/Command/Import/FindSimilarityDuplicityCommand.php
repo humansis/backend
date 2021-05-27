@@ -32,6 +32,12 @@ class FindSimilarityDuplicityCommand extends AbstractImportQueueCommand
                 ]);
         }
 
+        if (!empty($this->imports)) {
+            $this->logAffectedImports($this->imports, 'app:import:similarity');
+        } else {
+            $this->logger->debug('app:import:similarity affects no imports');
+        }
+
         $output->writeln([
             "Similarity check",
             count($imports)." imports in queue",
@@ -42,6 +48,13 @@ class FindSimilarityDuplicityCommand extends AbstractImportQueueCommand
             //TODO similarty check
 
             $import->setState(ImportState::SIMILARITY_CHECK_CORRECT);
+
+            if (ImportState::SIMILARITY_CHECK_CORRECT === $import->getState()) {
+                $this->logImportDebug($import, "Similarity check found no duplicities");
+            } else {
+                $duplicities = -1;
+                $this->logImportInfo($import, "Similarity check found $duplicities duplicities");
+            }
         }
 
         $this->manager->flush();

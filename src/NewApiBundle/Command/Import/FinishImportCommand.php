@@ -8,6 +8,7 @@ use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -16,9 +17,9 @@ class FinishImportCommand extends AbstractImportQueueCommand
     /** @var ImportService */
     private $importService;
 
-    public function __construct(ObjectManager $manager, ImportService $importService)
+    public function __construct(ObjectManager $manager, LoggerInterface $importLogger, ImportService $importService)
     {
-        parent::__construct($manager);
+        parent::__construct($manager, $importLogger);
         $this->importService = $importService;
     }
 
@@ -42,6 +43,12 @@ class FinishImportCommand extends AbstractImportQueueCommand
                 ]);
         }
 
+        if (!empty($this->imports)) {
+            $this->logAffectedImports($this->imports, 'app:import:finish');
+        } else {
+            $this->logger->debug('app:import:finish affects no imports');
+        }
+
         $output->writeln([
             "Finishing of ".count($this->imports)." imports",
         ]);
@@ -50,6 +57,8 @@ class FinishImportCommand extends AbstractImportQueueCommand
         foreach ($this->imports as $import) {
             $output->writeln($import->getTitle());
             $this->importService->finish($import);
+
+            $this->logImportDebug($import, "Finished");
         }
         $output->writeln('Imports finishing completed');
     }

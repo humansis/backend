@@ -12,7 +12,7 @@ web_profiler:
     intercept_redirects: false
 
 monolog:
-    channels: [ 'exception' ]
+    channels: [ 'exception', 'import' ]
     handlers:
         main:
             type: stream
@@ -34,6 +34,11 @@ monolog:
             id: monolog.gelf_handler
             level: info
             channels: ['!event', '!doctrine', '!console']
+        import:
+            type: stream
+            path: '%kernel.logs_dir%/imports.log'
+            level: debug
+            channels: [ import ]
         # uncomment to get logging in your browser
         # you may have to allow bigger header sizes in your Web server configuration
         #firephp:

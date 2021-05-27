@@ -6,6 +6,7 @@ namespace NewApiBundle\Command\Import;
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,16 +18,19 @@ abstract class AbstractImportQueueCommand extends Command
     protected $imports = [];
     /** @var ObjectManager */
     protected $manager;
+    /** @var LoggerInterface */
+    protected $logger;
 
     /**
      * AbstractImportQueueCommand constructor.
      *
      * @param ObjectManager $manager
      */
-    public function __construct(ObjectManager $manager)
+    public function __construct(ObjectManager $manager, LoggerInterface $importLogger)
     {
         parent::__construct();
         $this->manager = $manager;
+        $this->logger = $importLogger;
     }
 
     protected function configure()
@@ -53,23 +57,31 @@ abstract class AbstractImportQueueCommand extends Command
         }
     }
 
-    protected function getQueue(array $statuses): iterable
+    /**
+     * @param Import[] $imports
+     * @param string   $commandType
+     */
+    protected function logAffectedImports(iterable $imports, string $commandType): void
     {
-        if ($this->imports) {
-            return $this->manager->getRepository(ImportQueue::class)->findBy([
-                'state' => $statuses,
-                'import' => $this->imports->getId(),
-            ], [
-                'id' => 'asc',
-            ]);
-        } else {
-            return $this->manager->getRepository(ImportQueue::class)->findBy([
-                'state' => $statuses,
-            ], [
-                'id' => 'asc',
-            ]);
+        $importsByCountry = [];
+        foreach ($imports as $import) {
+            $importsByCountry[$import->getProject()->getIso3()][] = '#'.$import->getId();
         }
+        $countryList = [];
+        foreach ($importsByCountry as $country => $ids) {
+            $countryList[] = $country.'('.implode(', ', $ids).')';
+        }
+        $this->logger->info("$commandType will affect imports: ".implode(' ', $countryList));
+    }
 
+    protected function logImportInfo(Import $import, string $message): void
+    {
+        $this->logger->info("[Import #{$import->getId()}] ({$import->getTitle()}) $message");
+    }
+
+    protected function logImportDebug(Import $import, string $message): void
+    {
+        $this->logger->debug("[Import #{$import->getId()}] ({$import->getTitle()}) $message");
     }
 
 }
