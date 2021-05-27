@@ -9,6 +9,7 @@ use NewApiBundle\Entity\ImportInvalidFile;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Repository\ImportQueueRepository;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ImportInvalidFileService
@@ -93,7 +94,10 @@ class ImportInvalidFileService
             $currentRow = ImportTemplate::FIRST_ENTRY_ROW;
             $currentColumn = 1;
 
+            $invalidColumns = $this->parseInvalidColumns($entry->getMessage());
+
             foreach ($entry->getContent() as $row) {
+
                 foreach ($header as $column) {
                     if (isset($row[$column])) {
                         $cellValue = $row[$column];
@@ -102,7 +106,14 @@ class ImportInvalidFileService
                     }
 
                     $sheet->setCellValueByColumnAndRow($currentColumn, $currentRow, $cellValue);
-                    //TODO yellow background if invalid
+
+                    if (in_array($column, $invalidColumns)) {
+                        $sheet->getStyleByColumnAndRow($currentColumn, $currentRow)
+                            ->getFill()
+                            ->setFillType(Fill::FILL_SOLID)
+                            ->getStartColor()
+                            ->setRGB('ffff00');
+                    }
 
                     ++$currentColumn;
                 }
@@ -112,5 +123,19 @@ class ImportInvalidFileService
 
             $this->em->remove($entry);
         }
+    }
+
+    private function parseInvalidColumns(?string $messageJson): array
+    {
+        try {
+            //dept=512 is default value
+            $messages = json_decode($messageJson, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            return [];
+        }
+
+        return array_map(function (array $messages) {
+            return $messages['column'];
+        }, $messages);
     }
 }
