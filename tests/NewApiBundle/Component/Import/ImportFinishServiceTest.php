@@ -69,7 +69,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->originHousehold = $this->createBlankHousehold($this->project);
 
         $this->import = new Import('unit test', 'note', $this->project, $this->getUser());
-        $this->import->setState(ImportState::SIMILARITY_CHECK_CORRECT);
+        $this->import->setState(ImportState::IMPORTING);
         $this->entityManager->persist($this->import);
 
         $this->importFile = new ImportFile('unit-test.xlsx', $this->import, $this->getUser());
