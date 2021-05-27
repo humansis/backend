@@ -1,2 +1,2 @@
 parameters:
-    importInvalidFilesDirectory:  '%kernel.project_dir%/src/NewApiBundle/Resources/importInvalidFiles'
+    importInvalidFilesDirectory:  '%kernel.project_dir%/var/imports/invalid'
