@@ -22,6 +22,7 @@ use NewApiBundle\InputType\ImportCreateInputType;
 use NewApiBundle\InputType\ImportUpdateStatusInputType;
 use NewApiBundle\Repository\ImportQueueRepository;
 use ProjectBundle\Entity\Project;
+use Psr\Log\LoggerInterface;
 use UserBundle\Entity\User;
 
 class ImportService
@@ -32,10 +33,14 @@ class ImportService
     /** @var HouseholdService */
     private $householdService;
 
-    public function __construct(EntityManagerInterface $em, HouseholdService $householdService)
+    /** @var LoggerInterface */
+    private $logger;
+
+    public function __construct(EntityManagerInterface $em, HouseholdService $householdService, LoggerInterface $importLogger)
     {
         $this->em = $em;
         $this->householdService = $householdService;
+        $this->logger = $importLogger;
     }
 
     public function create(ImportCreateInputType $inputType, User $user): Import
@@ -56,12 +61,17 @@ class ImportService
         $this->em->persist($import);
         $this->em->flush();
 
+        $this->logInfo($import, "Was created");
+
         return $import;
     }
 
     public function updateStatus(Import $import, ImportUpdateStatusInputType $inputType): void
     {
+        $before = $import->getState();
         $import->setState($inputType->getStatus());
+
+        $this->logInfo($import, "Changed state from '$before' to '{$import->getState()}'");
 
         $this->em->flush();
     }
@@ -69,8 +79,9 @@ class ImportService
     public function removeFile(ImportFile $importFile)
     {
         $this->em->remove($importFile);
-
         $this->em->flush();
+
+        $this->logInfo($importFile->getImport(), "Removed file '{$importFile->getFilename()}'");
     }
 
     public function getStatistics(Import $import): ImportStatisticsValueObject
@@ -100,25 +111,34 @@ class ImportService
             'ours' => $importQueue,
         ]);
 
+        $updates = [];
+        $links = [];
+        $uniques = [];
         foreach ($duplicities as $duplicity) {
             if ($duplicity->getId() === $inputType->getAcceptedDuplicityId()) {
 
                 switch ($inputType->getStatus()) {
                     case ImportQueueState::TO_UPDATE:
                         $duplicity->setState(ImportDuplicityState::DUPLICITY_KEEP_OURS);
+                        $updates[] = '#'.$duplicity->getId();
                         break;
                     case ImportQueueState::TO_LINK:
                         $duplicity->setState(ImportDuplicityState::DUPLICITY_KEEP_THEIRS);
+                        $links[] = '#'.$duplicity->getId();
                         break;
                 }
 
             } else {
                 $duplicity->setState(ImportDuplicityState::NO_DUPLICITY);
+                $uniques[] = '#'.$duplicity->getId();
             }
 
             $duplicity->setDecideBy($user);
             $duplicity->setDecideAt(new DateTime());
         }
+        $this->logInfo($importQueue->getImport(), "[Queue #{$importQueue->getId()}] Duplicity suspect(s) [".implode(', ', $updates)."] was resolved as more current duplicity");
+        $this->logInfo($importQueue->getImport(), "[Queue #{$importQueue->getId()}] Duplicity suspect(s) [".implode(', ', $links)."] was resolved as older duplicity");
+        $this->logInfo($importQueue->getImport(), "[Queue #{$importQueue->getId()}] Duplicity suspect(s) [".implode(', ', $uniques)."] was resolved as mistake");
 
         $this->em->flush();
     }
@@ -165,6 +185,7 @@ class ImportService
 
             $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
             $this->removeFinishedQueue($item);
+            $this->logInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
         }
 
         $import->setState(ImportState::FINISHED);
@@ -209,16 +230,17 @@ class ImportService
             $householdUpdateInputType->addBeneficiary($hhm->buildBeneficiaryInputType());
         }
 
-        $updatedHousehold = $this->householdService->create($householdUpdateInputType);
+        $creaedHousehold = $this->householdService->create($householdUpdateInputType);
 
         /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
         $acceptedDuplicity = $item->getAcceptedDuplicity();
         if (null !== $acceptedDuplicity) {
-            $this->linkHouseholdToQueue($import, $updatedHousehold, $acceptedDuplicity->getDecideBy());
+            $this->linkHouseholdToQueue($import, $creaedHousehold, $acceptedDuplicity->getDecideBy());
         } else {
-            $this->linkHouseholdToQueue($import, $updatedHousehold, $import->getCreatedBy());
+            $this->linkHouseholdToQueue($import, $creaedHousehold, $import->getCreatedBy());
         }
         $this->removeFinishedQueue($item);
+        $this->logInfo($import, "Created Household #{$creaedHousehold->getId()}");
     }
 
     /**
@@ -251,6 +273,12 @@ class ImportService
 
         $this->linkHouseholdToQueue($import, $updatedHousehold, $acceptedDuplicity->getDecideBy());
         $this->removeFinishedQueue($item);
+        $this->logInfo($import, "Updated Household #{$updatedHousehold->getId()}");
+    }
+
+    private function logInfo(Import $import, string $message): void
+    {
+        $this->logger->info("[Import #{$import->getId()}] ({$import->getTitle()}) $message");
     }
 }
 

@@ -61,7 +61,8 @@ class ImportTest extends KernelTestCase
 
         $this->importService = new ImportService(
             $this->entityManager,
-            $kernel->getContainer()->get('beneficiary.household_service')
+            $kernel->getContainer()->get('beneficiary.household_service'),
+            $kernel->getContainer()->get('monolog.logger.import')
         );
 
         $this->uploadService = new UploadImportService($this->entityManager);
