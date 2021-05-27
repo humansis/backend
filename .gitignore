@@ -40,3 +40,5 @@ phpcs.xml
 
 #Visual Studio
 .vscode*
+
+/var/imports/*
