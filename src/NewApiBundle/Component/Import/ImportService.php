@@ -196,6 +196,22 @@ class ImportService
         $import->setState(ImportState::FINISHED);
         $this->em->persist($import);
         $this->em->flush();
+
+        $importConflicts = $this->em->getRepository(Import::class)->getConflictingImports($import);
+        $this->logInfo($import, count($importConflicts)." conflicting imports to reset duplicity checks.");
+        foreach ($importConflicts as $conflictImport) {
+            $conflictImport->setState(ImportState::IDENTITY_CHECKING);
+            $conflictQueue = $queueRepo->findBy([
+                'import' => $conflictImport,
+            ]);
+            foreach ($conflictQueue as $item) {
+                $item->setState(ImportQueueState::VALID);
+                $this->em->persist($item);
+            }
+            $this->em->persist($conflictImport);
+            $this->em->flush();
+            $this->logInfo($conflictImport, "Duplicity checks of ".count($conflictQueue)." queue items reset because finish Import #{$import->getId()} ({$import->getTitle()})");
+        }
     }
 
     private function linkHouseholdToQueue(Import $import, Household $household, User $decide): void

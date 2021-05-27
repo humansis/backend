@@ -79,7 +79,18 @@ class ImportTest extends KernelTestCase
         $this->originHousehold = $this->createBlankHousehold($this->project);
     }
 
-    public function testMinimalWorkflow()
+    public function correctFiles(): array
+    {
+        return [
+            'minimal ods' => ['Import.ods'],
+            'minimal xlsx' => ['CorrectImport.xlsx'],
+        ];
+    }
+
+    /**
+     * @dataProvider correctFiles
+     */
+    public function testMinimalWorkflow($filename)
     {
         // create import
         $createImportInput = new ImportCreateInputType();
@@ -92,7 +103,7 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(ImportState::NEW, $import->getState());
 
         // add file into import
-        $file = new UploadedFile(__DIR__.'/../../Resources/Import.ods', 'Import.ods');
+        $file = new UploadedFile(__DIR__.'/../../Resources/'.$filename, 'Import.ods');
         $importFile = $this->uploadService->upload($import, $file, $this->getUser());
 
         $this->assertNotNull($importFile->getId(), "ImportFile wasn't saved to DB");
