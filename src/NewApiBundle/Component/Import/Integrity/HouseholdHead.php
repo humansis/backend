@@ -404,7 +404,7 @@ class HouseholdHead
         $adm1 = $this->entityManager->getRepository(Adm1::class)->findOneBy(['name' => $this->adm1, 'countryISO3' => $this->countryIso3]);
         $adm2 = $this->entityManager->getRepository(Adm2::class)->findOneBy(['name' => $this->adm2, 'adm1' => $adm1]);
         $adm3 = $this->entityManager->getRepository(Adm3::class)->findOneBy(['name' => $this->adm3, 'adm2' => $adm2]);
-        $adm4 = $this->entityManager->getRepository(Adm4::class)->findOneBy(['name' => $this->adm4, 'adm2' => $adm3]);
+        $adm4 = $this->entityManager->getRepository(Adm4::class)->findOneBy(['name' => $this->adm4, 'adm3' => $adm3]);
 
         return null !== $adm4;
     }
