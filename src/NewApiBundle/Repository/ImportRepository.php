@@ -6,6 +6,7 @@ namespace NewApiBundle\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use InvalidArgumentException;
+use NewApiBundle\Enum\ImportState;
 use NewApiBundle\InputType\ImportFilterInputType;
 use NewApiBundle\InputType\ImportOrderInputType;
 use NewApiBundle\Request\Pagination;
@@ -93,5 +94,19 @@ class ImportRepository extends EntityRepository
         }
 
         return new Paginator($qb);
+    }
+
+    public function isCountryFreeFromImporting(string $countryIso3): bool
+    {
+        $qb = $this->createQueryBuilder('i');
+        $qb->select('count(id)')
+            ->innerJoin('i.project', 'p')
+            ->where('i.state = :importingState')
+            ->andWhere('p.iso3 = :country')
+            ->setParameter('importingState', ImportState::IMPORTING)
+            ->setParameter('country', $countryIso3)
+            ;
+
+        return $qb->getQuery()->getSingleScalarResult() > 0 ? false : true;
     }
 }

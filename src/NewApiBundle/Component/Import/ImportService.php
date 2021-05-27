@@ -23,6 +23,7 @@ use NewApiBundle\InputType\ImportUpdateStatusInputType;
 use NewApiBundle\Repository\ImportQueueRepository;
 use ProjectBundle\Entity\Project;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use UserBundle\Entity\User;
 
 class ImportService
@@ -68,6 +69,13 @@ class ImportService
 
     public function updateStatus(Import $import, ImportUpdateStatusInputType $inputType): void
     {
+        // there can be only one running import in country in one time
+        if (ImportState::IMPORTING === $inputType->getStatus()
+            && !$this->em->getRepository(Import::class)
+                ->isCountryFreeFromImporting($import->getProject()->getIso3())) {
+            throw new BadRequestHttpException("There can be only one finishing import in country in single time.");
+        }
+
         $before = $import->getState();
         $import->setState($inputType->getStatus());
 
@@ -145,12 +153,9 @@ class ImportService
 
     public function finish(Import $import): void
     {
-        if (!in_array($import->getState(), [ImportState::SIMILARITY_CHECK_CORRECT, ImportState::IMPORTING])) {
+        if (!in_array($import->getState(), [ImportState::IMPORTING])) {
             throw new InvalidArgumentException('Wrong import status');
         }
-        $import->setState(ImportState::IMPORTING);
-        $this->em->persist($import);
-        $this->em->flush();
 
         $queueRepo = $this->em->getRepository(ImportQueue::class);
 
