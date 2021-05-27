@@ -110,10 +110,10 @@ class ImportTest extends KernelTestCase
         ]);
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:integrity failed");
 
-        // start duplicity check
-        $userStartedDuplicityCheck = new ImportUpdateStatusInputType();
-        $userStartedDuplicityCheck->setStatus(ImportState::IDENTITY_CHECKING);
-        $this->importService->updateStatus($import, $userStartedDuplicityCheck);
+        // start identity check
+        $userStartedIdentityCheck = new ImportUpdateStatusInputType();
+        $userStartedIdentityCheck->setStatus(ImportState::IDENTITY_CHECKING);
+        $this->importService->updateStatus($import, $userStartedIdentityCheck);
 
         $this->assertEquals(ImportState::IDENTITY_CHECKING, $import->getState());
 
@@ -126,6 +126,13 @@ class ImportTest extends KernelTestCase
 
         $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
 
+        // start similarity check
+        $userStartedSimilarityCheck = new ImportUpdateStatusInputType();
+        $userStartedSimilarityCheck->setStatus(ImportState::SIMILARITY_CHECKING);
+        $this->importService->updateStatus($import, $userStartedSimilarityCheck);
+
+        $this->assertEquals(ImportState::SIMILARITY_CHECKING, $import->getState());
+
         $checkSimilarityCommand = $this->application->find('app:import:similarity');
         $commandTester = new CommandTester($checkSimilarityCommand);
         $commandTester->execute([
@@ -136,9 +143,9 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
 
         // save to DB
-        $userStartedSaving = new ImportUpdateStatusInputType();
-        $userStartedSaving->setStatus(ImportState::IMPORTING);
-        $this->importService->updateStatus($import, $userStartedSaving);
+        $userStartedSimilarityCheck = new ImportUpdateStatusInputType();
+        $userStartedSimilarityCheck->setStatus(ImportState::IMPORTING);
+        $this->importService->updateStatus($import, $userStartedSimilarityCheck);
 
         $this->assertEquals(ImportState::IMPORTING, $import->getState());
 
