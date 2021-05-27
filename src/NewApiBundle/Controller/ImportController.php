@@ -268,8 +268,6 @@ class ImportController extends AbstractController
      */
     public function listInvalidFiles(Import $import): JsonResponse
     {
-        $this->importInvalidFileService->generateFile($import);
-
         $invalidFiles = $this->getDoctrine()->getRepository(ImportInvalidFile::class)
             ->findBy([
                 'import' => $import,
