@@ -159,6 +159,40 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(ImportState::FINISHED, $import->getState());
     }
 
+    public function testErrorInIntegrityCheck()
+    {
+        // create import
+        $createImportInput = new ImportCreateInputType();
+        $createImportInput->setTitle('unit test '.__CLASS__);
+        $createImportInput->setDescription('unit test description '.__METHOD__);
+        $createImportInput->setProjectId($this->project->getId());
+        $import = $this->importService->create($createImportInput, $this->getUser());
+
+        $this->assertNotNull($import->getId(), "Import wasn't saved to DB");
+        $this->assertEquals(ImportState::NEW, $import->getState());
+
+        // add file into import
+        $file = new UploadedFile(__DIR__.'/../../Resources/ImportWithWrongDateFormat.xlsx', 'ImportWithWrongDateFormat.xlsx');
+        $importFile = $this->uploadService->upload($import, $file, $this->getUser());
+
+        $this->assertNotNull($importFile->getId(), "ImportFile wasn't saved to DB");
+
+        // start integrity check
+        $userStartedIntegrityCheck = new ImportUpdateStatusInputType();
+        $userStartedIntegrityCheck->setStatus(ImportState::INTEGRITY_CHECKING);
+        $this->importService->updateStatus($import, $userStartedIntegrityCheck);
+
+        $this->assertEquals(ImportState::INTEGRITY_CHECKING, $import->getState());
+
+        $checkIntegrityCommand = $this->application->find('app:import:integrity');
+        $commandTester = new CommandTester($checkIntegrityCommand);
+        $commandTester->execute([
+            'import' => $import->getId(),
+        ]);
+        $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:integrity failed");
+        $this->assertEquals(ImportState::INTEGRITY_CHECK_FAILED, $import->getState());
+    }
+
     private function createBlankHousehold(Project $project): Household
     {
         $hh = new Household();
