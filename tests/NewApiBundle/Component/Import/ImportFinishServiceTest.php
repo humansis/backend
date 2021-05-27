@@ -54,7 +54,8 @@ class ImportFinishServiceTest extends KernelTestCase
 
         $this->importService = new ImportService(
             $this->entityManager,
-            $kernel->getContainer()->get('beneficiary.household_service')
+            $kernel->getContainer()->get('beneficiary.household_service'),
+            $kernel->getContainer()->get('monolog.logger.import')
         );
 
         $this->project = new Project();
