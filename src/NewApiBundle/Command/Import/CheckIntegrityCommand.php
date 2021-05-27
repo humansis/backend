@@ -44,23 +44,20 @@ class CheckIntegrityCommand extends AbstractImportQueueCommand
     {
         parent::execute($input, $output);
 
-        if (is_null($this->import)) {
-            $imports = [$this->import];
-        } else {
-            $imports = $this->manager->getRepository(Import::class)
+        if (empty($this->imports)) {
+            $this->imports = $this->manager->getRepository(Import::class)
                 ->findBy([
                     'state' => ImportState::INTEGRITY_CHECKING,
                 ]);
         }
 
         $output->writeln([
-            "Integrity check",
-            count($imports)." imports in queue",
-
+            "Integrity check of ".count($this->imports)." imports",
         ]);
 
         /** @var Import $import */
-        foreach ($imports as $import) {
+        foreach ($this->imports as $import) {
+            $output->writeln($import->getTitle());
             $this->integrityChecker->check($import);
             $this->importInvalidFileService->generateFile($import);
         }
