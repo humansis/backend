@@ -174,6 +174,42 @@ class AssistanceService
         return new \CommonBundle\Pagination\Paginator($beneficiaries, $count);
     }
 
+    /**
+     * @param AssistanceCreateInputType $inputType
+     * @param Pagination                $pagination
+     *
+     * @return \CommonBundle\Pagination\Paginator|\DistributionBundle\DTO\VulnerabilityScore[]
+     * @throws EntityNotFoundException
+     * @throws \BeneficiaryBundle\Exception\CsvParserException
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public function findVulnerabilityScores(AssistanceCreateInputType $inputType, Pagination $pagination)
+    {
+        $project = $this->em->getRepository(Project::class)->find($inputType->getProjectId());
+        if (!$project) {
+            throw new \Doctrine\ORM\EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
+        }
+
+        $filters = $this->mapping($inputType);
+        $filters['criteria'] = $filters['selection_criteria'];
+
+        $result = $this->criteriaAssistanceService->load($filters, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false);
+        $ids = array_keys($result['finalArray']);
+        $count = count($ids);
+
+        $ids = array_slice($ids, $pagination->getOffset(), $pagination->getSize());
+
+        $list = [];
+        foreach ($ids as $id) {
+            $beneficiary = $this->em->getRepository(\BeneficiaryBundle\Entity\AbstractBeneficiary::class)->find($id);
+            $list[] = new \DistributionBundle\DTO\VulnerabilityScore($beneficiary, $result['finalArray'][$id]);
+        }
+
+        return new \CommonBundle\Pagination\Paginator($list, $count);
+    }
+
     public function create(AssistanceCreateInputType $inputType)
     {
         $distributionArray = $this->mapping($inputType);
