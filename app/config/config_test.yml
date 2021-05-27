@@ -14,3 +14,12 @@ web_profiler:
 
 swiftmailer:
     disable_delivery: true
+
+monolog:
+    channels: [ 'import' ]
+    handlers:
+        import:
+            type: stream
+            path: '%kernel.logs_dir%/imports.log'
+            level: debug
+            channels: [import]

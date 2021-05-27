@@ -27,7 +27,7 @@ class IntegrityChecker
         $this->entityManager = $entityManager;
     }
 
-    public function check(Import $import): ConstraintViolationListInterface
+    public function check(Import $import): void
     {
         if (ImportState::INTEGRITY_CHECKING !== $import->getState()) {
             throw new \BadMethodCallException('Unable to execute checker. Import is not ready to integrity check.');
