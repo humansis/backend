@@ -117,12 +117,23 @@ class ImportTest extends KernelTestCase
 
         $this->assertEquals(ImportState::IDENTITY_CHECKING, $import->getState());
 
-        $checkDuplicityCommand = $this->application->find('app:import:duplicity');
-        $commandTester = new CommandTester($checkDuplicityCommand);
+        $checkIdentityCommand = $this->application->find('app:import:identity');
+        $commandTester = new CommandTester($checkIdentityCommand);
         $commandTester->execute([
             'import' => $import->getId(),
         ]);
-        $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:duplicity failed");
+        $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:identity failed");
+
+        $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
+
+        $checkSimilarityCommand = $this->application->find('app:import:similarity');
+        $commandTester = new CommandTester($checkSimilarityCommand);
+        $commandTester->execute([
+            'import' => $import->getId(),
+        ]);
+        $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:similarity failed");
+
+        $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
 
         // save to DB
         $userStartedSaving = new ImportUpdateStatusInputType();
