@@ -37,23 +37,20 @@ class FindIdentityDuplicityCommand extends AbstractImportQueueCommand
     {
         parent::execute($input, $output);
 
-        if (is_null($this->import)) {
-            $imports = [$this->import];
-        } else {
-            $imports = $this->manager->getRepository(Import::class)
+        if (empty($this->imports)) {
+            $this->imports = $this->manager->getRepository(Import::class)
                 ->findBy([
                     'state' => ImportState::IDENTITY_CHECKING,
                 ]);
         }
 
         $output->writeln([
-            "Identity check",
-            count($imports)." imports in queue",
-
+            "Identity check of ".count($this->imports)." imports",
         ]);
 
         /** @var Import $import */
-        foreach ($imports as $import) {
+        foreach ($this->imports as $import) {
+            $output->writeln($import->getTitle());
             $this->identityChecker->check($import);
         }
 

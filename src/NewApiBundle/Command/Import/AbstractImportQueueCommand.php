@@ -13,8 +13,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractImportQueueCommand extends Command
 {
-    /** @var Import|null */
-    protected $import;
+    /** @var Import[] */
+    protected $imports = [];
     /** @var ObjectManager */
     protected $manager;
 
@@ -36,16 +36,16 @@ abstract class AbstractImportQueueCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if ($input->hasArgument('import')) {
+        if ($input->hasArgument('import') && !empty($input->getArgument('import'))) {
             $byId = $this->manager->getRepository(Import::class)->find($input->getArgument('import'));
             $byTitle = $this->manager->getRepository(Import::class)->findOneBy([
                 'title' => $input->getArgument('import'),
             ]);
             if ($byId) {
-                $this->import = $byId;
+                $this->imports = [$byId];
             }
             if ($byTitle) {
-                $this->import = $byTitle;
+                $this->imports = [$byTitle];
             }
             if (!$byId && !$byTitle) {
                 throw new \InvalidArgumentException('Argument Import must be ID or title of existing Import. No such found.');
@@ -55,10 +55,10 @@ abstract class AbstractImportQueueCommand extends Command
 
     protected function getQueue(array $statuses): iterable
     {
-        if ($this->import) {
+        if ($this->imports) {
             return $this->manager->getRepository(ImportQueue::class)->findBy([
                 'state' => $statuses,
-                'import' => $this->import->getId(),
+                'import' => $this->imports->getId(),
             ], [
                 'id' => 'asc',
             ]);

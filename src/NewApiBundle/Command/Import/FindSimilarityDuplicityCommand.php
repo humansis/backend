@@ -23,8 +23,8 @@ class FindSimilarityDuplicityCommand extends AbstractImportQueueCommand
     {
         parent::execute($input, $output);
 
-        if (is_null($this->import)) {
-            $imports = [$this->import];
+        if (is_null($this->imports)) {
+            $imports = [$this->imports];
         } else {
             $imports = $this->manager->getRepository(Import::class)
                 ->findBy([
