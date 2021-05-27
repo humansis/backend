@@ -1,5 +1,5 @@
 #!/bin/bash
-#cd /var/www/html/bms_api
+cd /var/www/html/bms_api
 docker-compose exec -T php bash -c 'php bin/console app:import:finish' || true
 
 #docker-compose exec -T php bash -c 'php bin/console app:import:load' || true
