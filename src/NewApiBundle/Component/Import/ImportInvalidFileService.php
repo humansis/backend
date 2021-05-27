@@ -121,7 +121,7 @@ class ImportInvalidFileService
                 ++$currentRow;
             }
 
-            //$this->em->remove($entry);
+            $this->em->remove($entry);
         }
     }
 
