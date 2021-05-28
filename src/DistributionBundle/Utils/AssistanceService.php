@@ -23,6 +23,7 @@ use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\GeneralReliefItemUpdateInputType;
+use NewApiBundle\InputType\GeneralReliefPatchInputType;
 use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
@@ -757,6 +758,30 @@ class AssistanceService
         $numberIncomplete = $this->em->getRepository(GeneralReliefItem::class)->countNonDistributed($assistance);
 
         return array($successArray, $errorArray, $numberIncomplete);
+    }
+
+    /**
+     * Set general relief item attributes
+     *
+     * @param GeneralReliefItem           $gri
+     * @param GeneralReliefPatchInputType $input
+     */
+    public function patchGeneralReliefItem(GeneralReliefItem $gri, GeneralReliefPatchInputType $input)
+    {
+        if ($input->isDistributedSet()) {
+            if ($input->getDistributed()) {
+                $gri->setDistributedAt(new \DateTime($input->getDateOfDistribution()));
+            } else {
+                $gri->setDistributedAt(null);
+            }
+        }
+
+        if ($input->isNoteSet()) {
+            $gri->setNotes($input->getNote());
+        }
+
+        $this->em->persist($gri);
+        $this->em->flush();
     }
 
     /**
