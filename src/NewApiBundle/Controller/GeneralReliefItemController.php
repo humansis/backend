@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use CommonBundle\Pagination\Paginator;
-use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\GeneralReliefItem;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\GeneralReliefFilterInputType;
+use NewApiBundle\InputType\GeneralReliefPatchInputType;
 use NewApiBundle\Request\Pagination;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -31,12 +28,43 @@ class GeneralReliefItemController extends AbstractController
     }
 
     /**
+     * @Rest\Patch("/offline-app/v2/general-relief-items/{id}")
+     *
+     * @param GeneralReliefItem           $object
+     * @param GeneralReliefPatchInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function patchOfflineApp(GeneralReliefItem $object, GeneralReliefPatchInputType $inputType): JsonResponse
+    {
+        $this->get('distribution.assistance_service')->patchGeneralReliefItem($object, $inputType);
+
+        return $this->json($object);
+    }
+
+    /**
+     * @Rest\Patch("/web-app/v2/general-relief-items/{id}")
+     *
+     * @param GeneralReliefItem           $object
+     * @param GeneralReliefPatchInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function patchV2(GeneralReliefItem $object, GeneralReliefPatchInputType $inputType): JsonResponse
+    {
+        $this->get('distribution.assistance_service')->patchGeneralReliefItem($object, $inputType);
+
+        return $this->json($object);
+    }
+
+    /**
      * @Rest\Patch("/general-relief-items/{id}")
      *
      * @param Request           $request
      * @param GeneralReliefItem $object
      *
      * @return JsonResponse
+     * @deprecated Use self::patchV2() instead
      */
     public function patch(Request $request, GeneralReliefItem $object): JsonResponse
     {
