@@ -317,6 +317,51 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(ImportState::INTEGRITY_CHECK_FAILED, $import->getState());
     }
 
+    /**
+     * @dataProvider correctFiles
+     */
+    public function testWrongCountryIntegrityCheck(string $filename)
+    {
+        // SYR project
+        $project = new Project();
+        $project->setName(uniqid());
+        $project->setNotes(get_class($this));
+        $project->setStartDate(new \DateTime());
+        $project->setEndDate(new \DateTime());
+        $project->setIso3('SYR');
+        $this->entityManager->persist($project);
+        $this->entityManager->flush();
+
+        // create import
+        $createImportInput = new ImportCreateInputType();
+        $createImportInput->setTitle('integrity failed unit test');
+        $createImportInput->setDescription('KHM into SYR '.__METHOD__);
+        $createImportInput->setProjectId($project->getId());
+        $import = $this->importService->create($createImportInput, $this->getUser());
+
+        $this->assertNotNull($import->getId(), "Import wasn't saved to DB");
+        $this->assertEquals(ImportState::NEW, $import->getState());
+
+        // add file into import
+        $file = new UploadedFile(__DIR__.'/../../Resources/'.$filename, $filename);
+        $importFile = $this->uploadService->upload($import, $file, $this->getUser());
+
+        $this->assertNotNull($importFile->getId(), "ImportFile wasn't saved to DB");
+
+        // start integrity check
+        $this->importService->updateStatus($import, ImportState::INTEGRITY_CHECKING);
+
+        $this->assertEquals(ImportState::INTEGRITY_CHECKING, $import->getState());
+
+        $checkIntegrityCommand = $this->application->find('app:import:integrity');
+        $commandTester = new CommandTester($checkIntegrityCommand);
+        $commandTester->execute([
+            'import' => $import->getId(),
+        ]);
+        $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:integrity failed");
+        $this->assertEquals(ImportState::INTEGRITY_CHECK_FAILED, $import->getState());
+    }
+
     private function createBlankHousehold(Project $project): Household
     {
         $hh = new Household();
