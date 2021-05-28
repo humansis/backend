@@ -141,3 +141,14 @@ echo "Clearing cache"
 cache_clear="bash /var/www/html/bms_api/clear_cache.sh $4"
 ssh $ec2_user@$ec2_host "$cache_clear" || exit 1
 echo "...done"
+
+if [[ $1 == "dev" || $1 == "test" ]]; then
+  if [[ $CRONTAB =~ ^(((([0-9]+,)+[0-9]+|([0-9]+(\/|-)[0-9]+)|[0-9]+|\*|(\*\/[0-9]+)) ?){5,7}) ]]; then
+    echo "$CRONTAB" > crontab
+    scp crontab $ec2_user@$ec2_host:/tmp
+    add_cron="export CRONTAB=\"\$(cat /tmp/crontab)\" && envsubst < /opt/pin-import-template > /tmp/pin-import && sudo cp /tmp/pin-import /etc/cron.d/"
+    ssh $ec2_user@$ec2_host $add_cron
+  else
+    echo "Wrong CRONTAB time format."
+  fi
+fi
