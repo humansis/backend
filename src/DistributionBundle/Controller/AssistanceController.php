@@ -1119,6 +1119,8 @@ class AssistanceController extends Controller
      *
      * @param  Request  $request
      * @return Response
+     *
+     * @deprecated see for PATCH /offline-app/v2/general-relief-items/{id}
      */
     public function offlineSetGeneralReliefItemsAsDistributedAction(Request $request)
     {
