@@ -24,7 +24,7 @@ class ImportUpdateStatusInputType implements InputTypeInterface
             ImportState::INTEGRITY_CHECKING,
             ImportState::IDENTITY_CHECKING,
             ImportState::SIMILARITY_CHECKING,
-            ImportState::FINISHED,
+            ImportState::IMPORTING,
             ImportState::CANCELED,
         ];
     }
