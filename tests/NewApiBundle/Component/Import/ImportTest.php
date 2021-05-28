@@ -86,20 +86,20 @@ class ImportTest extends KernelTestCase
     public function correctFiles(): array
     {
         return [
-            'minimal ods' => ['Import.ods'],
-            'minimal xlsx' => ['CorrectImport.xlsx'],
+            'minimal ods' => ['Import.ods', 2],
+            'minimal xlsx' => ['CorrectImport.xlsx', 4],
         ];
     }
 
     /**
      * @dataProvider correctFiles
      */
-    public function testMinimalWorkflow($filename)
+    public function testMinimalWorkflow($filename, $householdCount)
     {
         // create import
         $createImportInput = new ImportCreateInputType();
-        $createImportInput->setTitle('unit test '.__CLASS__);
-        $createImportInput->setDescription('unit test description '.__METHOD__);
+        $createImportInput->setTitle('unit test');
+        $createImportInput->setDescription(__METHOD__);
         $createImportInput->setProjectId($this->project->getId());
         $import = $this->importService->create($createImportInput, $this->getUser());
 
@@ -117,6 +117,8 @@ class ImportTest extends KernelTestCase
         $this->uploadService->load($importFile);
 
         $this->assertNotNull($importFile->getId(), "ImportFile wasn't saved to DB");
+        $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import]);
+        $this->assertCount($householdCount, $queue);
 
         // start integrity check
         $userStartedIntegrityCheck = new ImportUpdateStatusInputType();
@@ -131,6 +133,10 @@ class ImportTest extends KernelTestCase
             'import' => $import->getId(),
         ]);
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:integrity failed");
+
+        $this->assertEquals(ImportState::INTEGRITY_CHECK_CORRECT, $import->getState());
+        $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import]);
+        $this->assertCount($householdCount, $queue);
 
         // start identity check
         $userStartedIdentityCheck = new ImportUpdateStatusInputType();
@@ -147,6 +153,8 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:identity failed");
 
         $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
+        $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import]);
+        $this->assertCount($householdCount, $queue);
 
         // start similarity check
         $userStartedSimilarityCheck = new ImportUpdateStatusInputType();
@@ -163,6 +171,8 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:similarity failed");
 
         $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
+        $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import]);
+        $this->assertCount($householdCount, $queue);
 
         // save to DB
         $userStartedSimilarityCheck = new ImportUpdateStatusInputType();
@@ -179,6 +189,9 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:finish failed");
 
         $this->assertEquals(ImportState::FINISHED, $import->getState());
+
+        $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import]);
+        $this->assertCount($householdCount, $queue);
     }
 
     /**
