@@ -181,6 +181,81 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(ImportState::FINISHED, $import->getState());
     }
 
+    /**
+     * @dataProvider correctFiles
+     */
+    public function testRepeatedUploadSameFile(string $filename)
+    {
+        $imports = [];
+        foreach (['first', 'second'] as $runName) {
+            // create import
+            $createImportInput = new ImportCreateInputType();
+            $createImportInput->setTitle($runName.' call of unit test');
+            $createImportInput->setDescription(__METHOD__);
+            $createImportInput->setProjectId($this->project->getId());
+            $import = $this->importService->create($createImportInput, $this->getUser());
+
+            $this->assertNotNull($import->getId(), "Import wasn't saved to DB");
+            $this->assertEquals(ImportState::NEW, $import->getState());
+
+            // add file into import
+            $file = new UploadedFile(__DIR__.'/../../Resources/'.$filename, $filename);
+            $importFile = $this->uploadService->upload($import, $file, $this->getUser());
+
+            // start integrity check
+            $this->importService->updateStatus($import, new ImportUpdateStatusInputType(ImportState::INTEGRITY_CHECKING));
+
+            $checkIntegrityCommand = $this->application->find('app:import:integrity');
+            (new CommandTester($checkIntegrityCommand))->execute(['import' => $import->getId()]);
+
+            // start identity check
+            $this->importService->updateStatus($import, new ImportUpdateStatusInputType(ImportState::IDENTITY_CHECKING));
+
+            $this->assertEquals(ImportState::IDENTITY_CHECKING, $import->getState());
+
+            $checkIdentityCommand = $this->application->find('app:import:identity');
+            (new CommandTester($checkIdentityCommand))->execute(['import' => $import->getId()]);
+
+            $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
+
+            // start similarity check
+            $this->importService->updateStatus($import, new ImportUpdateStatusInputType(ImportState::SIMILARITY_CHECKING));
+
+            $this->assertEquals(ImportState::SIMILARITY_CHECKING, $import->getState());
+
+            $checkSimilarityCommand = $this->application->find('app:import:similarity');
+            (new CommandTester($checkSimilarityCommand))->execute(['import' => $import->getId()]);
+
+            $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
+
+            $imports[$runName] = $import;
+        }
+
+        // finish first
+        $import = $imports['first'];
+        // save to DB
+        $this->importService->updateStatus($import, new ImportUpdateStatusInputType(ImportState::IMPORTING));
+
+        $this->assertEquals(ImportState::IMPORTING, $import->getState());
+
+        $finishCommand = $this->application->find('app:import:finish');
+        (new CommandTester($finishCommand))->execute(['import' => $import->getId()]);
+
+        $this->assertEquals(ImportState::FINISHED, $import->getState());
+
+        $import = $imports['second'];
+
+        $this->assertEquals(ImportState::IDENTITY_CHECKING, $import->getState());
+
+        $checkIdentityCommand = $this->application->find('app:import:identity');
+        (new CommandTester($checkIdentityCommand))->execute(['import' => $import->getId()]);
+
+        $this->assertEquals(ImportState::IDENTITY_CHECK_FAILED, $import->getState());
+        foreach ($import->getImportQueue() as $item) {
+            $this->assertCount(1, $item->getDuplicities());
+        }
+    }
+
     public function testErrorInIntegrityCheck()
     {
         // create import

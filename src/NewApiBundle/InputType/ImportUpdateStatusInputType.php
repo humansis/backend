@@ -18,6 +18,16 @@ class ImportUpdateStatusInputType implements InputTypeInterface
      */
     private $status;
 
+    /**
+     * ImportUpdateStatusInputType constructor.
+     *
+     * @param string|null $status
+     */
+    public function __construct(?string $status = null)
+    {
+        $this->status = $status;
+    }
+
     public static function allowedStates(): array
     {
         return [
