@@ -3,14 +3,15 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import;
 
+use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\Integrity;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
+use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class IntegrityChecker
@@ -75,7 +76,7 @@ class IntegrityChecker
         if ($violationList->count() > 1) {
             $message = [];
             foreach ($violationList as $violation) {
-                $message[] = ['column' => $violation->getPropertyPath(), 'violation' => $violation->getMessage()];
+                $message[] = $this->buildErrorMessage($violation);
             }
 
             $item->setMessage(json_encode($message));
@@ -109,5 +110,17 @@ class IntegrityChecker
             ->findBy(['import' => $import, 'state' => ImportQueueState::INVALID]);
 
         return count($queue) > 0;
+    }
+
+    private function buildErrorMessage(ConstraintViolationInterface $violation)
+    {
+        $property = $violation->getConstraint()->payload['propertyPath'] ?? $violation->getPropertyPath();
+
+        static $mapping;
+        if (null === $mapping) {
+            $mapping = array_flip(HouseholdExportCSVService::MAPPING_PROPERTIES);
+        }
+
+        return ['column' => $mapping[$property], 'violation' => $violation->getMessage()];
     }
 }
