@@ -38,6 +38,20 @@ class BeneficiaryController extends AbstractController
 
         return $this->json($beneficiaries);
     }
+    /**
+     * @Rest\Post("/assistances/vulnerability-scores")
+     *
+     * @param AssistanceCreateInputType $inputType
+     * @param Pagination $pagination
+     *
+     * @return JsonResponse
+     */
+    public function vulnerabilityScores(AssistanceCreateInputType $inputType, Pagination $pagination): JsonResponse
+    {
+        $vulnerabilities = $this->get('distribution.assistance_service')->findVulnerabilityScores($inputType, $pagination);
+
+        return $this->json($vulnerabilities);
+    }
 
     /**
      * @Rest\Get("/beneficiaries/exports")
