@@ -48,6 +48,7 @@ class IdentityChecker
     {
         $found = false;
 
+        /* probably works but we have bad testing data
         $ids = $this->findInQueue($item);
         foreach ($ids as $id) {
             $importDuplicity = new ImportQueueDuplicity($item, $id);
@@ -58,6 +59,7 @@ class IdentityChecker
             $this->entityManager->persist($item);
             $found = true;
         }
+        */
 
         $bnfs = $this->findInBeneficiaries($item);
         foreach ($bnfs as $bnf) {
