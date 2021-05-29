@@ -94,10 +94,11 @@ class ImportInvalidFileService
         foreach ($entries as $entry) {
             $currentRow = ImportTemplate::FIRST_ENTRY_ROW;
             $currentColumn = 1;
+            echo "Errors = {$entry->getMessage()}\n";
 
-            $invalidColumns = $this->parseInvalidColumns($entry->getMessage());
-
-            foreach ($entry->getContent() as $row) {
+            foreach ($entry->getContent() as $i => $row) {
+                echo "row $i\n";
+                $invalidColumns = $this->parseInvalidColumns($entry->getMessage(), $i);
 
                 foreach ($header as $column) {
                     if (isset($row[$column])) {
@@ -122,11 +123,11 @@ class ImportInvalidFileService
                 ++$currentRow;
             }
 
-            $this->em->remove($entry);
+            // $this->em->remove($entry);
         }
     }
 
-    private function parseInvalidColumns(?string $messageJson): array
+    private function parseInvalidColumns(?string $messageJson, $rowNumber): array
     {
         try {
             //dept=512 is default value
@@ -137,7 +138,7 @@ class ImportInvalidFileService
 
         return array_map(function (array $messages) {
             return $messages['column'];
-        }, $messages);
+        }, $messages[$rowNumber]);
     }
 
     public function removeInvalidFiles(Import $import): void
