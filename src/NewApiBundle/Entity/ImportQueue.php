@@ -72,7 +72,7 @@ class ImportQueue
      */
     private $importBeneficiaryDuplicities;
 
-    public function __construct(Import $import, ImportFile $file, $content)
+    public function __construct(Import $import, ImportFile $file, array $content)
     {
         $this->import = $import;
         $this->file = $file;
@@ -133,6 +133,22 @@ class ImportQueue
     public function getContent(): array
     {
         return $this->content;
+    }
+
+    /**
+     * @return array json object representation
+     */
+    public function getHeadContent(): array
+    {
+        return $this->content[0];
+    }
+
+    /**
+     * @return array json object representation
+     */
+    public function getMemberContents(): array
+    {
+        return array_slice($this->content, 1);
     }
 
     /**
