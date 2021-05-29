@@ -1,2 +1,3 @@
 parameters:
     importInvalidFilesDirectory:  '%kernel.project_dir%/var/imports/invalid'
+    importUploadedFilesDirectory: '%kernel.project_dir%/var/imports/uploaded'

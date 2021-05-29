@@ -28,6 +28,13 @@ class ImportFile
     private $filename;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_loaded", type="boolean")
+     */
+    private $isLoaded;
+
+    /**
      * @var Import
      *
      * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Import")
@@ -94,5 +101,21 @@ class ImportFile
     public function getCreatedAt(): \DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLoaded(): bool
+    {
+        return $this->isLoaded;
+    }
+
+    /**
+     * @param bool $isLoaded
+     */
+    public function setIsLoaded(bool $isLoaded): void
+    {
+        $this->isLoaded = $isLoaded;
     }
 }

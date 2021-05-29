@@ -66,4 +66,9 @@ class UploadImportService
             throw $ex;
         }
     }
+
+    public function uploadFile(Import $import, UploadedFile $uploadedFile, User $user): ImportFile
+    {
+        $uploadedFile->move();
+    }
 }
