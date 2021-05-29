@@ -155,7 +155,7 @@ class HouseholdHead
     protected $residencyStatus;
 
     /**
-     * @ ImportDate()
+     * @ImportDate()
      * @Assert\Type("string")
      * @Assert\NotBlank()
      */
