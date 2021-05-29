@@ -84,7 +84,6 @@ class HouseholdMember
 
     /**
      * @Assert\Type("string")
-     * @Assert\NotBlank
      */
     protected $adm1;
 
@@ -312,6 +311,9 @@ class HouseholdMember
      */
     public function isValidAdm1(): bool
     {
+        if (!$this->adm1) {
+            return true;
+        }
         $adm = $this->entityManager->getRepository(Adm1::class)->findOneBy(['countryISO3' => $this->countryIso3, 'name' => $this->adm1]);
 
         return null !== $adm;

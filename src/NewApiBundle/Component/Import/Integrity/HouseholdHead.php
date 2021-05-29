@@ -172,7 +172,7 @@ class HouseholdHead
     protected $typePhone1;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      */
     protected $prefixPhone1;
 
