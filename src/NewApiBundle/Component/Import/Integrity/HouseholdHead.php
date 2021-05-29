@@ -23,12 +23,12 @@ class HouseholdHead
     protected $addressStreet;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      */
     protected $addressNumber;
 
     /**
-     * @Assert\Type("numeric")
+     * @Assert\Type("scalar")
      */
     protected $addressPostcode;
 
@@ -155,8 +155,9 @@ class HouseholdHead
     protected $residencyStatus;
 
     /**
-     * @ImportDate(),
-     * @Assert\NotBlank(),
+     * @ ImportDate()
+     * @Assert\Type("string")
+     * @Assert\NotBlank()
      */
     protected $dateOfBirth;
 
@@ -206,12 +207,12 @@ class HouseholdHead
     protected $proxyPhone2;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      */
     protected $idType;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      */
     protected $idNumber;
 
