@@ -72,9 +72,9 @@ class ImportFile
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -109,6 +109,11 @@ class ImportFile
     public function getCreatedAt(): \DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    public function __toString()
+    {
+        return "ImportFile#{$this->getId()} ({$this->getFilename()})";
     }
 
     /**

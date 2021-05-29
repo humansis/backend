@@ -102,9 +102,9 @@ class Import
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -192,4 +192,10 @@ class Import
     {
         return $this->invalidFiles;
     }
+
+    public function __toString()
+    {
+        return "Import#{$this->getId()} ({$this->getTitle()})";
+    }
+
 }

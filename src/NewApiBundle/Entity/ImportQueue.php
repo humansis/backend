@@ -82,9 +82,9 @@ class ImportQueue
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -201,5 +201,10 @@ class ImportQueue
     public function setImportBeneficiaryDuplicities(ImportBeneficiaryDuplicity $importBeneficiaryDuplicities): void
     {
         $this->importBeneficiaryDuplicities = $importBeneficiaryDuplicities;
+    }
+
+    public function __toString()
+    {
+        return "ImportQueue#{$this->getId()}";
     }
 }
