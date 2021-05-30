@@ -67,6 +67,13 @@ class Import
      */
     private $createdAt;
 
+	/**
+	 * @var ImportFile[]|Collection
+	 *
+	 * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportFile", mappedBy="import")
+	 */
+    private $files;
+
     /**
      * @var ImportQueue[]|Collection
      *
@@ -83,6 +90,7 @@ class Import
         $this->createdBy = $creator;
         $this->createdAt = new \DateTime('now');
         $this->importQueue = new ArrayCollection();
+        $this->files = new ArrayCollection();
     }
 
     /**
@@ -160,4 +168,12 @@ class Import
     {
         return $this->importQueue;
     }
+
+	/**
+	 * @return Collection|ImportFile[]
+	 */
+	public function getFiles()
+	{
+		return $this->files;
+	}
 }

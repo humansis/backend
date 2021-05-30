@@ -73,6 +73,8 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager->persist($this->import);
 
         $this->importFile = new ImportFile('unit-test.xlsx', $this->import, $this->getUser());
+        $this->importFile->setIsLoaded(true);
+
         $this->entityManager->persist($this->importFile);
     }
 

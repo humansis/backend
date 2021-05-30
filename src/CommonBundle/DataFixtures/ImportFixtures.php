@@ -25,6 +25,7 @@ class ImportFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($import);
 
         $file = new ImportFile('fake_file.xlsx', $import, $this->getUser($manager));
+        $file->setIsLoaded(true);
         $manager->persist($file);
 
         $item = new ImportQueue($import, $file, [

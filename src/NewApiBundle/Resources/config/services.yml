@@ -189,6 +189,9 @@ services:
             - "@beneficiary.household_service"
 
     NewApiBundle\Component\Import\UploadImportService:
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '%import.uploadedFilesDirectory%'
         public: true
 
     NewApiBundle\Component\Import\IntegrityChecker:
@@ -204,7 +207,7 @@ services:
         arguments:
             - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:ImportQueue")'
             - '@NewApiBundle\Component\Import\ImportTemplate'
-            - '%importInvalidFilesDirectory%'
+            - '%import.invalidFilesDirectory%'
 
     NewApiBundle\Component\Import\ImportTemplate:
         arguments: ['@beneficiary.household_export_csv_service']
@@ -213,5 +216,5 @@ services:
         arguments:
             - '@NewApiBundle\Component\Import\ImportService'
             - '@NewApiBundle\Component\Import\UploadImportService'
-            - '@NewApiBundle\Component\Import\ImportInvalidFileService'
-            - '%importInvalidFilesDirectory%'
+            - '%import.invalidFilesDirectory%'
+            - '%import.maxFileSizeToLoad%'
