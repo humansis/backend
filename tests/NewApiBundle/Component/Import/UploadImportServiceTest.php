@@ -8,6 +8,7 @@ use NewApiBundle\Component\Import\UploadImportService;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Enum\ImportQueueState;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UploadImportServiceTest extends KernelTestCase
@@ -28,7 +29,10 @@ class UploadImportServiceTest extends KernelTestCase
             ->get('doctrine')
             ->getManager();
 
-        $this->uploadService = new UploadImportService($this->entityManager);
+        $this->uploadService = new UploadImportService(
+        	$this->entityManager,
+			$kernel->getContainer()->getParameter('import.uploadedFilesDirectory')
+		);
     }
 
     protected function tearDown(): void
@@ -48,9 +52,15 @@ class UploadImportServiceTest extends KernelTestCase
         $this->entityManager->persist($import);
         $this->entityManager->flush();
 
-        $file = new UploadedFile(__DIR__.'/../../Resources/Import.ods', 'Import.ods');
+        $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
 
-        $this->uploadService->upload($import, $file, $user);
+        $fs = new Filesystem();
+        $fs->copy(__DIR__.'/../../Resources/Import.ods', $uploadedFilePath, true);
+
+        $file = new UploadedFile($uploadedFilePath, 'Import.ods', null, null, true);
+
+        $importFile = $this->uploadService->uploadFile($import, $file, $user);
+        $this->uploadService->load($importFile);
 
         $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import]);
 

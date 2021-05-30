@@ -1,3 +1,4 @@
 parameters:
-    importInvalidFilesDirectory:  '%kernel.project_dir%/var/imports/invalid'
-    importUploadedFilesDirectory: '%kernel.project_dir%/var/imports/uploaded'
+        import.invalidFilesDirectory: '%kernel.project_dir%/var/imports/invalid'
+        import.uploadedFilesDirectory: '%kernel.project_dir%/var/imports/uploaded'
+        import.maxFileSizeToLoad: 1 #in MB

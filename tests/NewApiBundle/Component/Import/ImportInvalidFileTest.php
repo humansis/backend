@@ -9,6 +9,7 @@ use NewApiBundle\Component\Import\UploadImportService;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use UserBundle\Entity\User;
 
@@ -34,7 +35,7 @@ class ImportInvalidFileTest extends KernelTestCase
 
         self::$entityManager = $kernel->getContainer()->get('doctrine')->getManager();
         self::$importInvalidFileService = $kernel->getContainer()->get(ImportInvalidFileService::class);
-        self::$invalidFilesDirectory = $kernel->getContainer()->getParameter('importInvalidFilesDirectory');
+        self::$invalidFilesDirectory = $kernel->getContainer()->getParameter('import.invalidFilesDirectory');
         self::$importUploadService = $kernel->getContainer()->get(UploadImportService::class);
     }
 
@@ -52,9 +53,15 @@ class ImportInvalidFileTest extends KernelTestCase
 
         $invalidFilePath = self::$importInvalidFileService->generateFile($import);
 
-        $uploadFile = new UploadedFile(self::$invalidFilesDirectory.'/'.$invalidFilePath->getFilename(), $invalidFilePath->getFilename());
+		$uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
 
-        self::$importUploadService->upload($import, $uploadFile, $user);
+		$fs = new Filesystem();
+		$fs->copy(self::$invalidFilesDirectory.'/'.$invalidFilePath->getFilename(), $uploadedFilePath, true);
+
+        $uploadFile = new UploadedFile($uploadedFilePath, $invalidFilePath->getFilename(), null, null, true);
+
+        $importFile = self::$importUploadService->uploadFile($import, $uploadFile, $user);
+        self::$importUploadService->load($importFile);
 
         $importedFile = self::$entityManager->getRepository(ImportFile::class)
             ->findOneBy([
