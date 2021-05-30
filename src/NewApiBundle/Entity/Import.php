@@ -81,6 +81,13 @@ class Import
      */
     private $importQueue;
 
+	/**
+	 * @var ImportInvalidFile[]|Collection
+	 *
+	 * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportInvalidFile", mappedBy="import")
+	 */
+    private $invalidFiles;
+
     public function __construct(string $title, ?string $notes, Project $project, User $creator)
     {
         $this->title = $title;
@@ -91,6 +98,7 @@ class Import
         $this->createdAt = new \DateTime('now');
         $this->importQueue = new ArrayCollection();
         $this->files = new ArrayCollection();
+        $this->invalidFiles = new ArrayCollection();
     }
 
     /**
@@ -175,5 +183,13 @@ class Import
 	public function getFiles()
 	{
 		return $this->files;
+	}
+
+	/**
+	 * @return Collection|ImportInvalidFile[]
+	 */
+	public function getInvalidFiles()
+	{
+		return $this->invalidFiles;
 	}
 }
