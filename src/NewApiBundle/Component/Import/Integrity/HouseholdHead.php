@@ -328,7 +328,7 @@ class HouseholdHead
     }
 
     /**
-     * @Assert\IsTrue(message="Camp must have defined both Tent number and Camp name")
+     * @Assert\IsTrue(message="Camp must have defined both Tent number and Camp name", payload={"propertyPath"="campName"})
      */
     public function isCampValid(): bool
     {
@@ -336,7 +336,7 @@ class HouseholdHead
     }
 
     /**
-     * @Assert\IsTrue(message="Address have defined street, number and postcode")
+     * @Assert\IsTrue(message="Address must have defined street, number and postcode", payload={"propertyPath"="addressStreet"})
      */
     public function isAddressValid(): bool
     {
@@ -344,7 +344,7 @@ class HouseholdHead
     }
 
     /**
-     * @Assert\IsTrue(message="There is no valid address")
+     * @Assert\IsTrue(message="Camp or address must be fully defined", payload={"propertyPath"="addressStreet"})
      */
     public function isAddressExists(): bool
     {
@@ -352,7 +352,7 @@ class HouseholdHead
     }
 
     /**
-     * @Assert\IsTrue(message="There is no Adm1 like this")
+     * @Assert\IsTrue(message="There is no Adm1 like this", payload={"propertyPath"="adm1"})
      */
     public function isValidAdm1(): bool
     {
@@ -362,7 +362,7 @@ class HouseholdHead
     }
 
     /**
-     * @Assert\IsTrue(message="There is no Adm2 in this location")
+     * @Assert\IsTrue(message="There is no Adm2 in this location", payload={"propertyPath"="adm2"})
      */
     public function isValidAdm2(): bool
     {
@@ -377,7 +377,7 @@ class HouseholdHead
     }
 
     /**
-     * @Assert\IsTrue(message="There is no Adm3 in this location")
+     * @Assert\IsTrue(message="There is no Adm3 in this location", payload={"propertyPath"="adm3"})
      */
     public function isValidAdm3(): bool
     {
@@ -393,7 +393,7 @@ class HouseholdHead
     }
 
     /**
-     * @Assert\IsTrue(message="There is no Adm4 in this location")
+     * @Assert\IsTrue(message="There is no Adm4 in this location", payload={"propertyPath"="adm4"})
      */
     public function isValidAdm4(): bool
     {
