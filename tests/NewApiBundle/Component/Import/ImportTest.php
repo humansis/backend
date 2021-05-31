@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Component\Import;
 
+use NewApiBundle\Enum\ImportQueueState;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
@@ -86,6 +87,7 @@ class ImportTest extends KernelTestCase
     public function correctFiles(): array
     {
         return [
+            'minimal csv' => ['Import.csv', 2],
             'minimal ods' => ['Import.ods', 2],
             'minimal xlsx' => ['CorrectImport.xlsx', 4],
         ];
@@ -125,6 +127,8 @@ class ImportTest extends KernelTestCase
         $userStartedIntegrityCheck->setStatus(ImportState::INTEGRITY_CHECKING);
         $this->importService->updateStatus($import, $userStartedIntegrityCheck);
 
+        $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import]);
+        $this->assertCount($householdCount, $queue);
         $this->assertEquals(ImportState::INTEGRITY_CHECKING, $import->getState());
 
         $checkIntegrityCommand = $this->application->find('app:import:integrity');
@@ -134,9 +138,8 @@ class ImportTest extends KernelTestCase
         ]);
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:integrity failed");
 
-        $this->assertEquals(ImportState::INTEGRITY_CHECK_CORRECT, $import->getState());
-        $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import]);
         $this->assertCount($householdCount, $queue);
+        $this->assertEquals(ImportState::INTEGRITY_CHECK_CORRECT, $import->getState());
 
         // start identity check
         $userStartedIdentityCheck = new ImportUpdateStatusInputType();
@@ -172,6 +175,9 @@ class ImportTest extends KernelTestCase
 
         $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
         $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import]);
+        $this->assertCount($householdCount, $queue);
+
+        $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_CREATE]);
         $this->assertCount($householdCount, $queue);
 
         // save to DB
