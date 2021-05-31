@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
  */
 class ImportDateValidator extends \Symfony\Component\Validator\Constraints\DateValidator
 {
-    public const PATTERN = '/^(\d{2}).(\d{2}).(\d{4})$/';
+    public const PATTERN = '/^(\d{2})-(\d{2})-(\d{4})$/';
 
     /**
      * @inheritDoc

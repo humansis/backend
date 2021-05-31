@@ -224,6 +224,7 @@ class ImportService
 
     private function removeFinishedQueue(ImportQueue $queue): void
     {
+        return;
         foreach ($queue->getDuplicities() as $duplicity) {
             $this->em->remove($duplicity);
         }

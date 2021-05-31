@@ -3,13 +3,27 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Command\Import;
 
+use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Component\Import\SimilarityChecker;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Enum\ImportState;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class FindSimilarityDuplicityCommand extends AbstractImportQueueCommand
 {
+    /** @var SimilarityChecker */
+    private $similarityChecker;
+
+    public function __construct(ObjectManager $manager, LoggerInterface $importLogger,
+                                SimilarityChecker $similarityChecker
+    )
+    {
+        parent::__construct($manager, $importLogger);
+        $this->similarityChecker = $similarityChecker;
+    }
+
     protected function configure()
     {
         parent::configure();
@@ -45,9 +59,7 @@ class FindSimilarityDuplicityCommand extends AbstractImportQueueCommand
 
         /** @var Import $import */
         foreach ($imports as $import) {
-            //TODO similarty check
-
-            $import->setState(ImportState::SIMILARITY_CHECK_CORRECT);
+            $this->similarityChecker->check($import);
 
             if (ImportState::SIMILARITY_CHECK_CORRECT === $import->getState()) {
                 $this->logImportDebug($import, "Similarity check found no duplicities");

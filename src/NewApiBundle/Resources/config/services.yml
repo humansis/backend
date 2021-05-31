@@ -203,6 +203,11 @@ services:
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@monolog.logger.import"
+            -
+    NewApiBundle\Component\Import\SimilarityChecker:
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@monolog.logger.import"
 
     NewApiBundle\Component\Import\ImportInvalidFileService:
         public: true

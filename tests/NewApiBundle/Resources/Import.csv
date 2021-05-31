@@ -4,7 +4,7 @@ Thompson Drive,4943,94801,Some Camp,10,Education,3,3,2,Greatest city,"38,018234"
 ,,,,,,,,,,,,,,,,James,Smith,James,Smith,Male,false,Resident,25-07-2001,,Mobile,'+855,'145678323,Y,Landline,'+855,'265348764,Y,,,,,,,,,,,,,,,,,,[Member],     -->,'*' means that the property is needed -- An adm must be filled among Adm1/Adm2/Adm3/Adm4.
 String*,Number*,Number*,String*,Number*,String,Number [1-5],Number,Number,String,Float,Float,String/empty,String/empty,String/empty,String/empty,String*,String*,String,String,Male / Female*,String [true-false]*,Refugee / IDP / Resident*,DD-MM-YYYY,String,Mobile / Landline,'+X,Number,Y / N (Proxy),Mobile / Landline,'+X,Number,Y / N (Proxy),"""TypeAsString""",Number,Number,Number,Number,Number,Number,Number,Number,Number,Number,Number,String,Comma separated strings,Number,Comma separated strings,DD-MM-YYYY,,     -->,'*' means that the property is needed -- An adm must be filled among Adm1/Adm2/Adm3/Adm4.
 Fake St,123,90210,,,Government,,3,2,,,,Battambang,,,,John,Smith,,,Male,true,Resident,31-12-2020,disabled,Mobile,+855,10834243,,,,,,National ID,98349834,,,,1,,,,,1,,,,3,MPCA,12/12/2020,,,
-Evergreen Terrace,742,12345,,,,,,,,,,Battambang,,,,Homer,Simpson,,,Male,true,Resident,05/12/1956,,,,,,,,,,,,1,,,,,,,,,1,,,,,,,,
-,,,,,,,,,,,,,,,,Marge,Simpson,,,Female,false,Resident,01/01/1958,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,Bart,Simpson,,,Male,false,Resident,01/01/1977,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Evergreen Terrace,742,12345,,,,,,,,,,Battambang,,,,Homer,Simpson,,,Male,true,Resident,05-12-1956,,,,,,,,,,,,1,,,,,,,,,1,,,,,,,,
+,,,,,,,,,,,,,,,,Marge,Simpson,,,Female,false,Resident,01-01-1958,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,Bart,Simpson,,,Male,false,Resident,01-01-1977,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,Lisa,Simpson,,,Female,false,Resident,31-12-2020,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
