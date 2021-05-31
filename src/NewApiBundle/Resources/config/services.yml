@@ -200,7 +200,9 @@ services:
             - "@doctrine.orm.entity_manager"
 
     NewApiBundle\Component\Import\IdentityChecker:
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@monolog.logger.import"
 
     NewApiBundle\Component\Import\ImportInvalidFileService:
         public: true

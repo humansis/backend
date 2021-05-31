@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Command\Import;
 
 use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Component\Import\ImportLoggerTrait;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
 use Psr\Log\LoggerInterface;
@@ -14,12 +15,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractImportQueueCommand extends Command
 {
+    use ImportLoggerTrait;
+
     /** @var Import[] */
     protected $imports = [];
     /** @var ObjectManager */
     protected $manager;
-    /** @var LoggerInterface */
-    protected $logger;
 
     /**
      * AbstractImportQueueCommand constructor.
