@@ -173,12 +173,13 @@ class ImportService
             $this->finishUpdateQueue($item, $import);
         }
 
-        foreach ($queueRepo->findBy([
+        // will be removed in clean command
+        /*foreach ($queueRepo->findBy([
             'import' => $import,
             'state' => ImportQueueState::TO_IGNORE,
         ]) as $item) {
             $this->removeFinishedQueue($item);
-        }
+        }*/
 
         foreach ($queueRepo->findBy([
             'import' => $import,
@@ -189,16 +190,17 @@ class ImportService
             if (null == $acceptedDuplicity) continue;
 
             $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
-            $this->removeFinishedQueue($item);
+            //$this->removeFinishedQueue($item);
             $this->logInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
         }
 
-        foreach ($queueRepo->findBy([
+        // will be removed in clean command
+        /*foreach ($queueRepo->findBy([
             'import' => $import,
             'state' => ImportQueueState::INVALID_EXPORTED,
         ]) as $item) {
             $this->removeFinishedQueue($item);
-        }
+        }*/
 
         $import->setState(ImportState::FINISHED);
         $this->em->persist($import);
@@ -267,7 +269,7 @@ class ImportService
         } else {
             $this->linkHouseholdToQueue($import, $creaedHousehold, $import->getCreatedBy());
         }
-        $this->removeFinishedQueue($item);
+        //$this->removeFinishedQueue($item);
         $this->logInfo($import, "Created Household #{$creaedHousehold->getId()}");
     }
 
@@ -300,7 +302,7 @@ class ImportService
         $this->householdService->update($updatedHousehold, $householdUpdateInputType);
 
         $this->linkHouseholdToQueue($import, $updatedHousehold, $acceptedDuplicity->getDecideBy());
-        $this->removeFinishedQueue($item);
+        //$this->removeFinishedQueue($item);
         $this->logInfo($import, "Updated Household #{$updatedHousehold->getId()}");
     }
 

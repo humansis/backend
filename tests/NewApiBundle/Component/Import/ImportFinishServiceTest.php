@@ -199,10 +199,6 @@ class ImportFinishServiceTest extends KernelTestCase
     protected function tearDown()
     {
         $this->assertEquals(ImportState::FINISHED, $this->import->getState(), "Wrong import state");
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy([
-            'import' => $this->import->getId(),
-        ]);
-        $this->assertEquals(0, count($queue), "Queue wasn't cleaned");
     }
 
     private function createBlankHousehold(Project $project): Household
