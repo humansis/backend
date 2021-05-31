@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportInvalidFile;
 use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Repository\ImportQueueRepository;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
@@ -123,7 +124,7 @@ class ImportInvalidFileService
                 ++$currentRow;
             }
 
-            // $this->em->remove($entry);
+            $entry->setState(ImportQueueState::INVALID_EXPORTED);
         }
     }
 

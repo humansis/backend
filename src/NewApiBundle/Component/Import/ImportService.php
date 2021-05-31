@@ -193,6 +193,13 @@ class ImportService
             $this->logInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
         }
 
+        foreach ($queueRepo->findBy([
+            'import' => $import,
+            'state' => ImportQueueState::INVALID_EXPORTED,
+        ]) as $item) {
+            $this->removeFinishedQueue($item);
+        }
+
         $import->setState(ImportState::FINISHED);
         $this->em->persist($import);
         $this->em->flush();
@@ -224,7 +231,6 @@ class ImportService
 
     private function removeFinishedQueue(ImportQueue $queue): void
     {
-        return;
         foreach ($queue->getDuplicities() as $duplicity) {
             $this->em->remove($duplicity);
         }
