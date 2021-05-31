@@ -67,11 +67,11 @@ class Import
      */
     private $createdAt;
 
-	/**
-	 * @var ImportFile[]|Collection
-	 *
-	 * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportFile", mappedBy="import")
-	 */
+    /**
+     * @var ImportFile[]|Collection
+     *
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportFile", mappedBy="import")
+     */
     private $files;
 
     /**
@@ -81,11 +81,11 @@ class Import
      */
     private $importQueue;
 
-	/**
-	 * @var ImportInvalidFile[]|Collection
-	 *
-	 * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportInvalidFile", mappedBy="import")
-	 */
+    /**
+     * @var ImportInvalidFile[]|Collection
+     *
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportInvalidFile", mappedBy="import")
+     */
     private $invalidFiles;
 
     public function __construct(string $title, ?string $notes, Project $project, User $creator)
@@ -177,19 +177,19 @@ class Import
         return $this->importQueue;
     }
 
-	/**
-	 * @return Collection|ImportFile[]
-	 */
-	public function getFiles()
-	{
-		return $this->files;
-	}
+    /**
+     * @return Collection|ImportFile[]
+     */
+    public function getFiles()
+    {
+        return $this->files;
+    }
 
-	/**
-	 * @return Collection|ImportInvalidFile[]
-	 */
-	public function getInvalidFiles()
-	{
-		return $this->invalidFiles;
-	}
+    /**
+     * @return Collection|ImportInvalidFile[]
+     */
+    public function getInvalidFiles()
+    {
+        return $this->invalidFiles;
+    }
 }
