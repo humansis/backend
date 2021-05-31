@@ -18,6 +18,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use UserBundle\Entity\User;
 
 /**
  * @Cache(expires="+5 days", public=true)
@@ -47,6 +48,33 @@ class LocationController extends AbstractController
         }
 
         throw $this->createNotFoundException();
+    }
+
+    /**
+     * @Rest\Get("/web-app/v1/users/{id}/countries")
+     *
+     * @param User$user
+     *
+     * @return JsonResponse
+     */
+    public function userCountries(User $user)
+    {
+        if (0 === $user->getCountries()->count()) {
+            return $this->json(new Paginator($this->getParameter('app.countries')));
+        }
+
+        $data = [];
+
+        /** @var \UserBundle\Entity\UserCountry $userCountry */
+        foreach ($user->getCountries() as $userCountry) {
+            foreach ($this->getParameter('app.countries') as $country) {
+                if ($userCountry->getIso3() === $country['iso3']) {
+                    $data[] = $country;
+                }
+            }
+        }
+
+        return $this->json(new Paginator($data));
     }
 
     /**
