@@ -39,17 +39,13 @@ class FinishImportCommand extends AbstractImportQueueCommand
             $this->logger->debug('app:import:finish affects no imports');
         }
 
-        $output->writeln([
-            "Finishing of ".count($this->imports)." imports",
-        ]);
+        $output->write($this->getName()." finishing ".count($this->imports)." imports ");
 
         /** @var Import $import */
         foreach ($this->imports as $import) {
-            $output->writeln($import->getTitle());
             $this->importService->finish($import);
-
             $this->logImportDebug($import, "Finished");
         }
-        $output->writeln('Imports finishing completed');
+        $output->writeln('Done');
     }
 }

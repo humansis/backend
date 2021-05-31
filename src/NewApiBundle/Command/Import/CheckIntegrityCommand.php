@@ -59,9 +59,7 @@ class CheckIntegrityCommand extends AbstractImportQueueCommand
             $this->logger->debug('app:import:integrity affects no imports');
         }
 
-        $output->writeln([
-            "Integrity check of ".count($this->imports)." imports",
-        ]);
+        $output->write($this->getName()." checking integrity of ".count($this->imports)." imports ");
 
         /** @var Import $import */
         foreach ($this->imports as $import) {
@@ -77,7 +75,7 @@ class CheckIntegrityCommand extends AbstractImportQueueCommand
             }
         }
 
-        $output->writeln('Integrity check completed');
+        $output->writeln('Done');
     }
 
 }

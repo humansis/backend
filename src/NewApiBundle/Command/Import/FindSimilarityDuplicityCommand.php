@@ -53,10 +53,7 @@ class FindSimilarityDuplicityCommand extends AbstractImportQueueCommand
             $this->logger->debug('app:import:similarity affects no imports');
         }
 
-        $output->writeln([
-            "Similarity check",
-            count($imports)." imports in queue",
-        ]);
+        $output->write($this->getName()." finding duplicities in ".count($this->imports)." imports ");
 
         /** @var Import $import */
         foreach ($imports as $import) {
@@ -72,6 +69,6 @@ class FindSimilarityDuplicityCommand extends AbstractImportQueueCommand
 
         $this->manager->flush();
 
-        $output->writeln('Similarity check completed');
+        $output->writeln('Done');
     }
 }

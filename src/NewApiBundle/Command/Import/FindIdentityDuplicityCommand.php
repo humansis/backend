@@ -54,9 +54,7 @@ class FindIdentityDuplicityCommand extends AbstractImportQueueCommand
             $this->logger->debug('app:import:integrity affects no imports');
         }
 
-        $output->writeln([
-            "Identity check of ".count($this->imports)." imports",
-        ]);
+        $output->write($this->getName()." finding identical duplicities in ".count($this->imports)." imports ");
 
         /** @var Import $import */
         foreach ($this->imports as $import) {
@@ -71,6 +69,6 @@ class FindIdentityDuplicityCommand extends AbstractImportQueueCommand
             }
         }
 
-        $output->writeln('Identity check completed');
+        $output->writeln('Done');
     }
 }
