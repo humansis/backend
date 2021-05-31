@@ -82,14 +82,27 @@ class IdentityChecker
 
     private function preCheck(Import $import)
     {
-        $this->entityManager->createQueryBuilder()
+        //does not work - doctrine won't arrange queries in proper order
+        /*$this->entityManager->createQueryBuilder()
             ->update(ImportQueue::class, 'iq')
             ->set('iq.state', '?1')
             ->andWhere('iq.import = ?2')
             ->setParameter('1', ImportQueueState::NEW)
             ->setParameter('2', $import->getId())
             ->getQuery()
-            ->execute();
+            ->execute();*/
+
+        $importQueues = $this->entityManager->getRepository(ImportQueue::class)
+            ->findBy([
+                'import' => $import,
+            ]);
+
+        /** @var ImportQueue $importQueue */
+        foreach ($importQueues as $importQueue) {
+            $importQueue->setState(ImportQueueState::NEW);
+        }
+
+        $this->entityManager->flush();
     }
 
     private function postCheck(Import $import)
