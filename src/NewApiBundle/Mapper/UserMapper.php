@@ -77,13 +77,6 @@ class UserMapper implements MapperInterface
 
     public function getCountries(): array
     {
-        // user without related countries should have access to all countries
-        if ($this->object->getCountries()->isEmpty()) {
-            return array_map(function (Country $item) {
-                return $item->getIso3();
-            }, $this->countries->getAll());
-        }
-
         return array_map(function (UserCountry $item) {
             return $item->getIso3();
         }, $this->object->getCountries()->toArray());
