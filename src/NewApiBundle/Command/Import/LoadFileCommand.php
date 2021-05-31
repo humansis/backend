@@ -68,7 +68,7 @@ class LoadFileCommand extends AbstractImportQueueCommand
         if (!empty($affectedImports)) {
             $this->logAffectedImports($affectedImports, 'app:import:load');
         } else {
-            $this->logger->debug('app:import:integrity affects no imports');
+            $this->logger->debug('app:import:load affects no imports');
         }
 
         $output->writeln([
