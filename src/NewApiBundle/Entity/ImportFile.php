@@ -34,11 +34,11 @@ class ImportFile
      */
     private $isLoaded;
 
-	/**
-	 * @var string|null
-	 *
-	 * @ORM\Column(name="saved_as_filename", type="string", nullable=true)
-	 */
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="saved_as_filename", type="string", nullable=true)
+     */
     private $savedAsFilename;
 
     /**
@@ -127,19 +127,19 @@ class ImportFile
         $this->isLoaded = $isLoaded;
     }
 
-	/**
-	 * @return string|null
-	 */
-	public function getSavedAsFilename(): ?string
-	{
-		return $this->savedAsFilename;
-	}
+    /**
+     * @return string|null
+     */
+    public function getSavedAsFilename(): ?string
+    {
+        return $this->savedAsFilename;
+    }
 
-	/**
-	 * @param string|null $savedAsFilename
-	 */
-	public function setSavedAsFilename(?string $savedAsFilename): void
-	{
-		$this->savedAsFilename = $savedAsFilename;
-	}
+    /**
+     * @param string|null $savedAsFilename
+     */
+    public function setSavedAsFilename(?string $savedAsFilename): void
+    {
+        $this->savedAsFilename = $savedAsFilename;
+    }
 }

@@ -137,14 +137,14 @@ class ImportRepository extends EntityRepository
     }
 
     public function getFinishedWithInvalidFiles(): array
-	{
-		return $this->createQueryBuilder('i')
-			->join('i.invalidFiles', 'if')
-			->where('i.state IN (:states)')
-			->setParameter('states',  [
-				ImportState::FINISHED,
-				ImportState::CANCELED,
-			])
-			->getQuery()->getResult();
-	}
+    {
+        return $this->createQueryBuilder('i')
+            ->join('i.invalidFiles', 'if')
+            ->where('i.state IN (:states)')
+            ->setParameter('states',  [
+                ImportState::FINISHED,
+                ImportState::CANCELED,
+            ])
+            ->getQuery()->getResult();
+    }
 }

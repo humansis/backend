@@ -24,7 +24,7 @@ class UploadImportService
     /** @var InsertQueryCollection */
     private $sqlCollection;
 
-	/** @var string */
+    /** @var string */
     private $uploadDirectory;
 
     public function __construct(EntityManagerInterface $em, string $uploadDirectory)
@@ -35,20 +35,20 @@ class UploadImportService
         $this->uploadDirectory = $uploadDirectory;
     }
 
-	/**
-	 * @param ImportFile $importFile
-	 *
-	 * @return ImportFile
-	 * @throws \Doctrine\DBAL\ConnectionException
-	 * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
-	 */
+    /**
+     * @param ImportFile $importFile
+     *
+     * @return ImportFile
+     * @throws \Doctrine\DBAL\ConnectionException
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     */
     public function load(ImportFile $importFile): ImportFile
     {
-    	if ($importFile->isLoaded()) {
-			throw new InvalidArgumentException('This import file is already loaded in database.');
-		}
+        if ($importFile->isLoaded()) {
+            throw new InvalidArgumentException('This import file is already loaded in database.');
+        }
 
-    	$fileToImport = new File($this->uploadDirectory.'/'.$importFile->getSavedAsFilename());
+        $fileToImport = new File($this->uploadDirectory.'/'.$importFile->getSavedAsFilename());
         $list = $this->parser->parse($fileToImport);
 
         $this->em->getConnection()->beginTransaction();
@@ -69,40 +69,40 @@ class UploadImportService
 
             $this->em->flush();
 
-			$fs = new Filesystem();
-			$fs->remove($fileToImport->getRealPath());
+            $fs = new Filesystem();
+            $fs->remove($fileToImport->getRealPath());
 
-			$this->em->getConnection()->commit();
+            $this->em->getConnection()->commit();
 
             return $importFile;
         } catch (\Exception $ex) {
-        	if ($this->em->getConnection()->isTransactionActive()) {
-				$this->em->getConnection()->rollBack();
-			}
+            if ($this->em->getConnection()->isTransactionActive()) {
+                $this->em->getConnection()->rollBack();
+            }
 
             throw $ex;
         }
     }
 
-	/**
-	 * @param Import       $import
-	 * @param UploadedFile $uploadedFile
-	 * @param User         $user
-	 *
-	 * @return ImportFile
-	 */
+    /**
+     * @param Import       $import
+     * @param UploadedFile $uploadedFile
+     * @param User         $user
+     *
+     * @return ImportFile
+     */
     public function uploadFile(Import $import, UploadedFile $uploadedFile, User $user): ImportFile
     {
-    	$savedAsFilename = time().'-'.$uploadedFile->getClientOriginalName();
+        $savedAsFilename = time().'-'.$uploadedFile->getClientOriginalName();
 
         $uploadedFile->move($this->uploadDirectory, $savedAsFilename);
 
-		$importFile = new ImportFile($uploadedFile->getClientOriginalName(), $import, $user);
-		$importFile->setSavedAsFilename($savedAsFilename);
+        $importFile = new ImportFile($uploadedFile->getClientOriginalName(), $import, $user);
+        $importFile->setSavedAsFilename($savedAsFilename);
 
-		$this->em->persist($importFile);
-		$this->em->flush();
+        $this->em->persist($importFile);
+        $this->em->flush();
 
-		return $importFile;
+        return $importFile;
     }
 }

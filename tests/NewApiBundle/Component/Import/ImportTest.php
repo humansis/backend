@@ -67,9 +67,9 @@ class ImportTest extends KernelTestCase
         );
 
         $this->uploadService = new UploadImportService(
-        	$this->entityManager,
-			$kernel->getContainer()->getParameter('import.uploadedFilesDirectory'),
-		);
+            $this->entityManager,
+            $kernel->getContainer()->getParameter('import.uploadedFilesDirectory'),
+        );
 
 
         $this->project = new Project();
@@ -107,10 +107,10 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(ImportState::NEW, $import->getState());
 
         // add file into import
-		$uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
+        $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
 
-		$fs = new Filesystem();
-		$fs->copy(__DIR__.'/../../Resources/'.$filename, $uploadedFilePath, true);
+        $fs = new Filesystem();
+        $fs->copy(__DIR__.'/../../Resources/'.$filename, $uploadedFilePath, true);
 
         $file = new UploadedFile($uploadedFilePath, 'Import.ods', null, null, true);
         $importFile = $this->uploadService->uploadFile($import, $file, $this->getUser());
@@ -194,10 +194,10 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(ImportState::NEW, $import->getState());
 
         // add file into import
-		$uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
+        $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
 
-		$fs = new Filesystem();
-		$fs->copy(__DIR__.'/../../Resources/ImportWithWrongDateFormat.xlsx', $uploadedFilePath, true);
+        $fs = new Filesystem();
+        $fs->copy(__DIR__.'/../../Resources/ImportWithWrongDateFormat.xlsx', $uploadedFilePath, true);
 
         $file = new UploadedFile($uploadedFilePath, 'ImportWithWrongDateFormat.xlsx', null, null, true);
         $importFile = $this->uploadService->uploadFile($import, $file, $this->getUser());

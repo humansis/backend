@@ -30,9 +30,9 @@ class UploadImportServiceTest extends KernelTestCase
             ->getManager();
 
         $this->uploadService = new UploadImportService(
-        	$this->entityManager,
-			$kernel->getContainer()->getParameter('import.uploadedFilesDirectory')
-		);
+            $this->entityManager,
+            $kernel->getContainer()->getParameter('import.uploadedFilesDirectory')
+        );
     }
 
     protected function tearDown(): void

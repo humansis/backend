@@ -13,59 +13,59 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CleanCommand extends AbstractImportQueueCommand
 {
-	/**
-	 * @var ImportInvalidFileService
-	 */
-	private $importInvalidFileService;
+    /**
+     * @var ImportInvalidFileService
+     */
+    private $importInvalidFileService;
 
-	public function __construct(ObjectManager $manager, LoggerInterface $importLogger, ImportInvalidFileService $importInvalidFileService)
-	{
-		parent::__construct($manager, $importLogger);
+    public function __construct(ObjectManager $manager, LoggerInterface $importLogger, ImportInvalidFileService $importInvalidFileService)
+    {
+        parent::__construct($manager, $importLogger);
 
-		$this->importInvalidFileService = $importInvalidFileService;
-	}
+        $this->importInvalidFileService = $importInvalidFileService;
+    }
 
 
-	protected function configure()
-	{
-		parent::configure();
-		$this
-			->setName('app:import:clean')
-			->setDescription('Clean data of finished import')
-		;
-	}
+    protected function configure()
+    {
+        parent::configure();
+        $this
+            ->setName('app:import:clean')
+            ->setDescription('Clean data of finished import')
+        ;
+    }
 
-	protected function execute(InputInterface $input, OutputInterface $output): int
-	{
-		parent::execute($input, $output);
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        parent::execute($input, $output);
 
-		if (empty($this->imports)) {
-			/** @var ImportRepository $importRepository */
-			$importRepository = $this->manager->getRepository(Import::class);
+        if (empty($this->imports)) {
+            /** @var ImportRepository $importRepository */
+            $importRepository = $this->manager->getRepository(Import::class);
 
-			$this->imports = $importRepository->getFinishedWithInvalidFiles();
-		}
+            $this->imports = $importRepository->getFinishedWithInvalidFiles();
+        }
 
-		if (!empty($this->imports)) {
-			$this->logAffectedImports($this->imports, 'app:import:clean');
-		} else {
-			$this->logger->debug('app:import:clean affects no imports');
-		}
+        if (!empty($this->imports)) {
+            $this->logAffectedImports($this->imports, 'app:import:clean');
+        } else {
+            $this->logger->debug('app:import:clean affects no imports');
+        }
 
-		$output->writeln([
-			"Clean of ".count($this->imports)." imports",
-		]);
+        $output->writeln([
+            "Clean of ".count($this->imports)." imports",
+        ]);
 
-		foreach ($this->imports as $import) {
-			$this->importInvalidFileService->removeInvalidFiles($import);
+        foreach ($this->imports as $import) {
+            $this->importInvalidFileService->removeInvalidFiles($import);
 
-			$this->logImportInfo($import, 'Invalid files removed');
-		}
+            $this->logImportInfo($import, 'Invalid files removed');
+        }
 
-		$output->writeln('Clean completed');
+        $output->writeln('Clean completed');
 
-		//TODO what data should we keep for canceled imports?
+        //TODO what data should we keep for canceled imports?
 
-		return 0;
-	}
+        return 0;
+    }
 }

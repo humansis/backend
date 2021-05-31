@@ -48,7 +48,7 @@ class ImportFileMapper implements MapperInterface
     }
 
     public function getIsLoaded(): bool
-	{
-		return $this->object->isLoaded();
-	}
+    {
+        return $this->object->isLoaded();
+    }
 }

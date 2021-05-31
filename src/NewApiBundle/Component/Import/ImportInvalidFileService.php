@@ -140,16 +140,16 @@ class ImportInvalidFileService
         }, $messages);
     }
 
-	public function removeInvalidFiles(Import $import): void
-	{
-		$fs = new Filesystem();
+    public function removeInvalidFiles(Import $import): void
+    {
+        $fs = new Filesystem();
 
-		foreach ($import->getInvalidFiles() as $invalidFile) {
-			$fs->remove($this->importInvalidFilesDirectory.'/'.$invalidFile->getFilename());
+        foreach ($import->getInvalidFiles() as $invalidFile) {
+            $fs->remove($this->importInvalidFilesDirectory.'/'.$invalidFile->getFilename());
 
-			$this->em->remove($invalidFile);
-		};
+            $this->em->remove($invalidFile);
+        };
 
-		$this->em->flush();
-	}
+        $this->em->flush();
+    }
 }

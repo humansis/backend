@@ -53,10 +53,10 @@ class ImportInvalidFileTest extends KernelTestCase
 
         $invalidFilePath = self::$importInvalidFileService->generateFile($import);
 
-		$uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
+        $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
 
-		$fs = new Filesystem();
-		$fs->copy(self::$invalidFilesDirectory.'/'.$invalidFilePath->getFilename(), $uploadedFilePath, true);
+        $fs = new Filesystem();
+        $fs->copy(self::$invalidFilesDirectory.'/'.$invalidFilePath->getFilename(), $uploadedFilePath, true);
 
         $uploadFile = new UploadedFile($uploadedFilePath, $invalidFilePath->getFilename(), null, null, true);
 
