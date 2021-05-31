@@ -6,7 +6,6 @@ namespace NewApiBundle\Command\Import;
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Entity\Import;
-use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;

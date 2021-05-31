@@ -28,9 +28,23 @@ class ImportFile
     private $filename;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_loaded", type="boolean")
+     */
+    private $isLoaded;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="saved_as_filename", type="string", nullable=true)
+     */
+    private $savedAsFilename;
+
+    /**
      * @var Import
      *
-     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Import")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Import", inversedBy="files")
      */
     private $import;
 
@@ -44,7 +58,7 @@ class ImportFile
     /**
      * @var string
      *
-     * @ORM\Column(name="created_at", type="datetimetz", nullable=false)
+     * @ORM\Column(name="created_at", type="datetimetz", nullable=true)
      */
     private $createdAt;
 
@@ -54,6 +68,7 @@ class ImportFile
         $this->import = $import;
         $this->user = $user;
         $this->createdAt = new \DateTime('now');
+        $this->isLoaded = false;
     }
 
     /**
@@ -94,5 +109,37 @@ class ImportFile
     public function getCreatedAt(): \DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLoaded(): bool
+    {
+        return $this->isLoaded;
+    }
+
+    /**
+     * @param bool $isLoaded
+     */
+    public function setIsLoaded(bool $isLoaded): void
+    {
+        $this->isLoaded = $isLoaded;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSavedAsFilename(): ?string
+    {
+        return $this->savedAsFilename;
+    }
+
+    /**
+     * @param string|null $savedAsFilename
+     */
+    public function setSavedAsFilename(?string $savedAsFilename): void
+    {
+        $this->savedAsFilename = $savedAsFilename;
     }
 }

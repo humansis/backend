@@ -4,9 +4,12 @@ declare(strict_types=1);
 namespace NewApiBundle\Component\Import;
 
 use Doctrine\ORM\EntityManagerInterface;
+use InvalidArgumentException;
 use NewApiBundle\Component\Import\DBAL\InsertQueryCollection;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use UserBundle\Entity\User;
 
@@ -21,32 +24,35 @@ class UploadImportService
     /** @var InsertQueryCollection */
     private $sqlCollection;
 
-    public function __construct(EntityManagerInterface $em)
+    /** @var string */
+    private $uploadDirectory;
+
+    public function __construct(EntityManagerInterface $em, string $uploadDirectory)
     {
         $this->parser = new ImportParser();
         $this->em = $em;
         $this->sqlCollection = new InsertQueryCollection($em);
+        $this->uploadDirectory = $uploadDirectory;
     }
 
     /**
-     * @param Import       $import
-     * @param UploadedFile $uploadedFile
-     * @param User         $user
+     * @param ImportFile $importFile
      *
      * @return ImportFile
      * @throws \Doctrine\DBAL\ConnectionException
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    public function upload(Import $import, UploadedFile $uploadedFile, User $user): ImportFile
+    public function load(ImportFile $importFile): ImportFile
     {
-        $list = $this->parser->parse($uploadedFile);
+        if ($importFile->isLoaded()) {
+            throw new InvalidArgumentException('This import file is already loaded in database.');
+        }
+
+        $fileToImport = new File($this->uploadDirectory.'/'.$importFile->getSavedAsFilename());
+        $list = $this->parser->parse($fileToImport);
 
         $this->em->getConnection()->beginTransaction();
         try {
-            $importFile = new ImportFile($uploadedFile->getFilename(), $import, $user);
-            $this->em->persist($importFile);
-            $this->em->flush();
-
             foreach ($list as $hhData) {
                 // Original doctrine insert is too slow, do not use it.
                 //
@@ -58,12 +64,45 @@ class UploadImportService
             }
             $this->sqlCollection->finish();
 
+            $importFile->setSavedAsFilename(null);
+            $importFile->setIsLoaded(true);
+
+            $this->em->flush();
+
+            $fs = new Filesystem();
+            $fs->remove($fileToImport->getRealPath());
+
             $this->em->getConnection()->commit();
 
             return $importFile;
         } catch (\Exception $ex) {
-            $this->em->getConnection()->rollBack();
+            if ($this->em->getConnection()->isTransactionActive()) {
+                $this->em->getConnection()->rollBack();
+            }
+
             throw $ex;
         }
+    }
+
+    /**
+     * @param Import       $import
+     * @param UploadedFile $uploadedFile
+     * @param User         $user
+     *
+     * @return ImportFile
+     */
+    public function uploadFile(Import $import, UploadedFile $uploadedFile, User $user): ImportFile
+    {
+        $savedAsFilename = time().'-'.$uploadedFile->getClientOriginalName();
+
+        $uploadedFile->move($this->uploadDirectory, $savedAsFilename);
+
+        $importFile = new ImportFile($uploadedFile->getClientOriginalName(), $import, $user);
+        $importFile->setSavedAsFilename($savedAsFilename);
+
+        $this->em->persist($importFile);
+        $this->em->flush();
+
+        return $importFile;
     }
 }

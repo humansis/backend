@@ -84,4 +84,9 @@ abstract class AbstractImportQueueCommand extends Command
         $this->logger->debug("[Import #{$import->getId()}] ({$import->getTitle()}) $message");
     }
 
+    protected function logImportError(Import $import, string $message): void
+    {
+        $this->logger->error("[Import #{$import->getId()}] ({$import->getTitle()}) $message");
+    }
+
 }

@@ -30,7 +30,6 @@ class ImportRepository extends EntityRepository
                     i.state LIKE :fulltext OR
                     u.email LIKE :fulltext OR
                     i.createdAt LIKE :fulltext
-                    
                 )');
                 $qb->setParameter('fulltextId', $filter->getFulltext());
                 $qb->setParameter('fulltext', '%'.$filter->getFulltext().'%');
@@ -135,5 +134,17 @@ class ImportRepository extends EntityRepository
         ;
 
         return $qb->getQuery()->getResult();
+    }
+
+    public function getFinishedWithInvalidFiles(): array
+    {
+        return $this->createQueryBuilder('i')
+            ->join('i.invalidFiles', 'if')
+            ->where('i.state IN (:states)')
+            ->setParameter('states',  [
+                ImportState::FINISHED,
+                ImportState::CANCELED,
+            ])
+            ->getQuery()->getResult();
     }
 }

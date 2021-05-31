@@ -17,6 +17,7 @@ use NewApiBundle\InputType\ImportUpdateStatusInputType;
 use ProjectBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use UserBundle\Entity\User;
 
@@ -65,7 +66,10 @@ class ImportTest extends KernelTestCase
             $kernel->getContainer()->get('monolog.logger.import')
         );
 
-        $this->uploadService = new UploadImportService($this->entityManager);
+        $this->uploadService = new UploadImportService(
+            $this->entityManager,
+            $kernel->getContainer()->getParameter('import.uploadedFilesDirectory'),
+        );
 
 
         $this->project = new Project();
@@ -103,8 +107,14 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(ImportState::NEW, $import->getState());
 
         // add file into import
-        $file = new UploadedFile(__DIR__.'/../../Resources/'.$filename, 'Import.ods');
-        $importFile = $this->uploadService->upload($import, $file, $this->getUser());
+        $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
+
+        $fs = new Filesystem();
+        $fs->copy(__DIR__.'/../../Resources/'.$filename, $uploadedFilePath, true);
+
+        $file = new UploadedFile($uploadedFilePath, 'Import.ods', null, null, true);
+        $importFile = $this->uploadService->uploadFile($import, $file, $this->getUser());
+        $this->uploadService->load($importFile);
 
         $this->assertNotNull($importFile->getId(), "ImportFile wasn't saved to DB");
 
@@ -184,8 +194,14 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(ImportState::NEW, $import->getState());
 
         // add file into import
-        $file = new UploadedFile(__DIR__.'/../../Resources/ImportWithWrongDateFormat.xlsx', 'ImportWithWrongDateFormat.xlsx');
-        $importFile = $this->uploadService->upload($import, $file, $this->getUser());
+        $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
+
+        $fs = new Filesystem();
+        $fs->copy(__DIR__.'/../../Resources/ImportWithWrongDateFormat.xlsx', $uploadedFilePath, true);
+
+        $file = new UploadedFile($uploadedFilePath, 'ImportWithWrongDateFormat.xlsx', null, null, true);
+        $importFile = $this->uploadService->uploadFile($import, $file, $this->getUser());
+        $this->uploadService->load($importFile);
 
         $this->assertNotNull($importFile->getId(), "ImportFile wasn't saved to DB");
 

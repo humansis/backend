@@ -42,21 +42,21 @@ class ImportController extends AbstractController
     private $uploadImportService;
 
     /**
-     * @var ImportInvalidFileService
-     */
-    private $importInvalidFileService;
-
-    /**
      * @var string
      */
     private $importInvalidFilesDirectory;
 
-    public function __construct(ImportService $importService, UploadImportService $uploadImportService, ImportInvalidFileService $importInvalidFileService, string $importInvalidFilesDirectory)
+    /**
+     * @var int
+     */
+    private $maxFileSizeToLoad;
+
+    public function __construct(ImportService $importService, UploadImportService $uploadImportService, string $importInvalidFilesDirectory, int $maxFileSizeToLoad)
     {
         $this->importService = $importService;
         $this->uploadImportService = $uploadImportService;
-        $this->importInvalidFileService = $importInvalidFileService;
         $this->importInvalidFilesDirectory = $importInvalidFilesDirectory;
+        $this->maxFileSizeToLoad = $maxFileSizeToLoad;
     }
 
     /**
@@ -171,7 +171,13 @@ class ImportController extends AbstractController
 
         $importFiles = [];
         foreach ($files as $file) {
-            $importFiles[] = $this->uploadImportService->upload($import, $file, $user);
+            $fileSize = $file->getSize();
+
+            $importFiles[] = $uploadedFile = $this->uploadImportService->uploadFile($import, $file, $user);
+
+            if ($fileSize < $this->maxFileSizeToLoad * 1024 * 1024) {
+                $this->uploadImportService->load($uploadedFile);
+            }
         }
 
         return $this->json(new Paginator($importFiles));

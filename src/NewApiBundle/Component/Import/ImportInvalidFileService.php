@@ -11,6 +11,7 @@ use NewApiBundle\Repository\ImportQueueRepository;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\Filesystem\Filesystem;
 
 class ImportInvalidFileService
 {
@@ -137,5 +138,18 @@ class ImportInvalidFileService
         return array_map(function (array $messages) {
             return $messages['column'];
         }, $messages);
+    }
+
+    public function removeInvalidFiles(Import $import): void
+    {
+        $fs = new Filesystem();
+
+        foreach ($import->getInvalidFiles() as $invalidFile) {
+            $fs->remove($this->importInvalidFilesDirectory.'/'.$invalidFile->getFilename());
+
+            $this->em->remove($invalidFile);
+        };
+
+        $this->em->flush();
     }
 }

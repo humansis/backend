@@ -46,4 +46,9 @@ class ImportFileMapper implements MapperInterface
     {
         return $this->object->getCreatedAt()->format(\DateTimeInterface::ISO8601);
     }
+
+    public function getIsLoaded(): bool
+    {
+        return $this->object->isLoaded();
+    }
 }
