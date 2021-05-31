@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Command\Import;
 
 use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Component\Import\SimilarityChecker;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Enum\ImportState;
@@ -16,11 +17,11 @@ class FindSimilarityDuplicityCommand extends AbstractImportQueueCommand
     /** @var SimilarityChecker */
     private $similarityChecker;
 
-    public function __construct(ObjectManager $manager, LoggerInterface $importLogger,
+    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger,
                                 SimilarityChecker $similarityChecker
     )
     {
-        parent::__construct($manager, $importLogger);
+        parent::__construct($manager, $importService, $importLogger);
         $this->similarityChecker = $similarityChecker;
     }
 
@@ -64,8 +65,8 @@ class FindSimilarityDuplicityCommand extends AbstractImportQueueCommand
             if (ImportState::SIMILARITY_CHECK_CORRECT === $import->getState()) {
                 $this->logImportDebug($import, "Similarity check found no duplicities");
             } else {
-                $duplicities = -1;
-                $this->logImportInfo($import, "Similarity check found $duplicities duplicities");
+                $statistics = $this->importService->getStatistics($import);
+                $this->logImportInfo($import, "Similarity check found {$statistics->getAmountDuplicities()} duplicities");
             }
         }
 

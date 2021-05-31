@@ -5,6 +5,7 @@ namespace NewApiBundle\Command\Import;
 
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Component\Import\ImportInvalidFileService;
+use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Component\Import\IntegrityChecker;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Enum\ImportState;
@@ -24,9 +25,9 @@ class CheckIntegrityCommand extends AbstractImportQueueCommand
      */
     private $importInvalidFileService;
 
-    public function __construct(ObjectManager $manager, LoggerInterface $importLogger, IntegrityChecker $integrityChecker, ImportInvalidFileService $importInvalidFileService)
+    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger, IntegrityChecker $integrityChecker, ImportInvalidFileService $importInvalidFileService)
     {
-        parent::__construct($manager, $importLogger);
+        parent::__construct($manager, $importService, $importLogger);
 
         $this->integrityChecker = $integrityChecker;
         $this->importInvalidFileService = $importInvalidFileService;
@@ -68,12 +69,11 @@ class CheckIntegrityCommand extends AbstractImportQueueCommand
             $this->integrityChecker->check($import);
             $invalidFile = $this->importInvalidFileService->generateFile($import);
 
+            $statistics = $this->importService->getStatistics($import);
             if (ImportState::INTEGRITY_CHECK_CORRECT === $import->getState()) {
-                $corrects = $import->getImportQueue()->count();
-                $this->logImportInfo($import, "Integrity check was successful: $corrects correct records");
+                $this->logImportInfo($import, "Integrity check was successful: {$statistics->getAmountIntegrityCorrect()} correct records");
             } else {
-                $failed = -1;
-                $this->logImportInfo($import, "Integrity check wasn't successful: there was $failed incorrect and {$invalidFile->getFilename()} was generated");
+                $this->logImportInfo($import, "Integrity check found {$statistics->getAmountIntegrityFailed()} integrity errors");
             }
         }
 

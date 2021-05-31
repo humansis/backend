@@ -6,6 +6,7 @@ namespace NewApiBundle\Command\Import;
 use BeneficiaryBundle\Entity\Person;
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Component\Import\IdentityChecker;
+use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Enum\ImportState;
 use Psr\Log\LoggerInterface;
@@ -19,11 +20,11 @@ class FindIdentityDuplicityCommand extends AbstractImportQueueCommand
      */
     private $identityChecker;
 
-    public function __construct(ObjectManager $manager, LoggerInterface $importLogger,
+    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger,
                                 IdentityChecker $identityChecker
     )
     {
-        parent::__construct($manager, $importLogger);
+        parent::__construct($manager, $importService, $importLogger);
         $this->identityChecker = $identityChecker;
     }
 
@@ -65,8 +66,8 @@ class FindIdentityDuplicityCommand extends AbstractImportQueueCommand
             if (ImportState::IDENTITY_CHECK_CORRECT === $import->getState()) {
                 $this->logImportDebug($import, "Identity check found no duplicities");
             } else {
-                $duplicities = -1;
-                $this->logImportInfo($import, "Identity check found $duplicities duplicities");
+                $statistics = $this->importService->getStatistics($import);
+                $this->logImportInfo($import, "Identity check found {$statistics->getAmountDuplicities()} duplicities");
             }
         }
 

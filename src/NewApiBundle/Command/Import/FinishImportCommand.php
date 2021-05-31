@@ -13,15 +13,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class FinishImportCommand extends AbstractImportQueueCommand
 {
-    /** @var ImportService */
-    private $importService;
-
-    public function __construct(ObjectManager $manager, LoggerInterface $importLogger, ImportService $importService)
-    {
-        parent::__construct($manager, $importLogger);
-        $this->importService = $importService;
-    }
-
     protected function configure()
     {
         parent::configure();
