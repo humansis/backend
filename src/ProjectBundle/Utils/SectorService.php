@@ -8,6 +8,8 @@ use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
+use NewApiBundle\Component\Codelist\CodeItem;
+use ProjectBundle\Entity\Project;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
@@ -41,6 +43,20 @@ class SectorService
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->validator = $validator;
+    }
+
+    /**
+     * @param Project $project
+     * @return CodeItem[]
+     */
+    public function getSectorsInProject(Project $project)
+    {
+        $data = [];
+        foreach ($project->getSectors() as $sector) {
+            $data[] = new CodeItem($sector, $sector->getSector());
+        }
+
+        return $data;
     }
 
     public function findBySubSector($subSectorName): ?Sector
