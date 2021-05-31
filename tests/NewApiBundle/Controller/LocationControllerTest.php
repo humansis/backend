@@ -40,6 +40,26 @@ class LocationControllerTest extends BMSServiceTestCase
         return $result['data'][0]['iso3'];
     }
 
+    public function testGetUserCountries()
+    {
+        $this->request('GET', '/api/basic/web-app/v1/users/'.$this->getTestUser(self::USER_TESTER)->getId().'/countries');
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertSame($this->getTestUser(self::USER_TESTER)->getCountries()->count(), $result['totalCount']);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertIsArray($result['data']);
+        $this->assertArrayHasKey('name', $result['data'][0]);
+        $this->assertArrayHasKey('iso3', $result['data'][0]);
+        $this->assertArrayHasKey('currency', $result['data'][0]);
+    }
+
     /**
      * @depends testGetCountries
      */
