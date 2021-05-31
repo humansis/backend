@@ -9,18 +9,21 @@ use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportQueue;
-use NewApiBundle\Entity\ImportQueueDuplicity;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
+use Psr\Log\LoggerInterface;
 
 class IdentityChecker
 {
+    use ImportLoggerTrait;
+
     /** @var EntityManagerInterface */
     private $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->entityManager = $entityManager;
+        $this->logger = $logger;
     }
 
     public function check(Import $import)
@@ -63,12 +66,13 @@ class IdentityChecker
 
         $bnfs = $this->findInBeneficiaries($item);
         foreach ($bnfs as $bnf) {
-            $importDuplicity = new ImportBeneficiaryDuplicity($item, $bnf);
+            $importDuplicity = new ImportBeneficiaryDuplicity($item, $bnf->getHousehold());
             $importDuplicity->setDecideAt(new \DateTime('now'));
             $this->entityManager->persist($importDuplicity);
 
             $item->setState(ImportQueueState::SUSPICIOUS);
             $this->entityManager->persist($item);
+            $this->logImportInfo("Found duplicity with existing records: Queue#{$item->getId()} <=> Household#{$bnf->getHousehold()->getId()}");
             $found = true;
         }
 
@@ -90,14 +94,12 @@ class IdentityChecker
 
     private function postCheck(Import $import)
     {
-        $queue = $this->getItemsToCheck($import);
-        if (0 === count($queue)) {
-            $isInvalid = $this->isImportQueueInvalid($import);
-            $import->setState($isInvalid ? ImportState::IDENTITY_CHECK_FAILED : ImportState::IDENTITY_CHECK_CORRECT);
+        $isInvalid = $this->isImportQueueInvalid($import);
+        $import->setState($isInvalid ? ImportState::IDENTITY_CHECK_FAILED : ImportState::IDENTITY_CHECK_CORRECT);
 
-            $this->entityManager->persist($import);
-            $this->entityManager->flush();
-        }
+        $this->entityManager->persist($import);
+        $this->entityManager->flush();
+        $this->logImportDebug($import, "Ended with status ".$import->getState());
     }
 
     /**
