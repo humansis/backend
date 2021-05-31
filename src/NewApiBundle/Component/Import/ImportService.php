@@ -72,7 +72,7 @@ class ImportService
         // there can be only one running import in country in one time
         if (ImportState::IMPORTING === $inputType->getStatus()
             && !$this->em->getRepository(Import::class)
-                ->isCountryFreeFromImporting($import->getProject()->getIso3())) {
+                ->isCountryFreeFromImporting($import, $import->getProject()->getIso3())) {
             throw new BadRequestHttpException("There can be only one finishing import in country in single time.");
         }
 

@@ -96,14 +96,16 @@ class ImportRepository extends EntityRepository
         return new Paginator($qb);
     }
 
-    public function isCountryFreeFromImporting(string $countryIso3): bool
+    public function isCountryFreeFromImporting(Import $importCandidate, string $countryIso3): bool
     {
         $qb = $this->createQueryBuilder('i');
         $qb->select('count(i.id)')
             ->innerJoin('i.project', 'p')
             ->where('i.state = :importingState')
+            ->andWhere('i <> :importCandidate')
             ->andWhere('p.iso3 = :country')
             ->setParameter('importingState', ImportState::IMPORTING)
+            ->setParameter('importCandidate', $importCandidate)
             ->setParameter('country', $countryIso3)
             ;
 
