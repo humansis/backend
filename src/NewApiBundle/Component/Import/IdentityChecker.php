@@ -72,7 +72,7 @@ class IdentityChecker
 
             $item->setState(ImportQueueState::SUSPICIOUS);
             $this->entityManager->persist($item);
-            $this->logImportInfo("Found duplicity with existing records: Queue#{$item->getId()} <=> Household#{$bnf->getHousehold()->getId()}");
+            $this->logImportInfo($item->getImport(), "Found duplicity with existing records: Queue#{$item->getId()} <=> Household#{$bnf->getHousehold()->getId()}");
             $found = true;
         }
 

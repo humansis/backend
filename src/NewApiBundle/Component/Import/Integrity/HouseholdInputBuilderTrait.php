@@ -5,9 +5,12 @@ namespace NewApiBundle\Component\Import\Integrity;
 
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
+use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
+use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\InputType\HouseholdCreateInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
 
+//TODO many unused parameters in HouseholdHead / HouseholdMember ($f0, $f2 F.E.)
 trait HouseholdInputBuilderTrait
 {
     public function buildHouseholdInputType(): ?HouseholdCreateInputType
@@ -61,12 +64,40 @@ trait HouseholdInputBuilderTrait
     {
         $beneficiary = new BeneficiaryInputType();
         $beneficiary->setDateOfBirth($this->dateOfBirth);
-        $beneficiary->setEnFamilyName($this->englishFamilyName);
-        $beneficiary->setEnGivenName($this->englishGivenName);
         $beneficiary->setLocalFamilyName($this->localFamilyName);
         $beneficiary->setLocalGivenName($this->localGivenName);
+        $beneficiary->setLocalParentsName($this->localParentsName);
+        $beneficiary->setEnFamilyName($this->englishFamilyName);
+        $beneficiary->setEnGivenName($this->englishGivenName);
+        $beneficiary->setEnParentsName($this->englishParentsName);
         $beneficiary->setGender($this->gender == 'Male' ? 'M' : 'F');
         $beneficiary->setResidencyStatus($this->residencyStatus);
+
+        if (!is_null($this->idType)) { //TODO check, that id card is filled completely
+            $nationalId = new NationalIdCardInputType();
+            $nationalId->setType($this->idType);
+            $nationalId->setNumber((string) $this->idNumber);
+            $beneficiary->addNationalIdCard($nationalId);
+        }
+
+        if (!is_null($this->numberPhone1)) { //TODO check, that phone is filled completely in import
+            $phone1 = new PhoneInputType();
+            $phone1->setNumber((string) $this->numberPhone1);
+            $phone1->setType($this->typePhone1);
+            $phone1->setPrefix((string) $this->prefixPhone1);
+            $phone1->setProxy($this->proxyPhone1 === 'Y');
+            $beneficiary->addPhone($phone1);
+        }
+
+        if (!is_null($this->numberPhone2)) { //TODO check, that phone is filled completely in import
+            $phone2 = new PhoneInputType();
+            $phone2->setNumber((string) $this->numberPhone2);
+            $phone2->setType($this->typePhone2);
+            $phone2->setPrefix((string) $this->prefixPhone2);
+            $phone2->setProxy($this->proxyPhone2  === 'Y');
+            $beneficiary->addPhone($phone2);
+        }
+
         return $beneficiary;
     }
 
