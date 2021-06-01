@@ -2,6 +2,7 @@
 
 namespace Tests\NewApiBundle\Component\Import;
 
+use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,6 +16,7 @@ use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use ProjectBundle\Entity\Project;
+use ProjectBundle\Utils\ProjectService;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use UserBundle\Entity\User;
 
@@ -42,6 +44,9 @@ class ImportFinishServiceTest extends KernelTestCase
     /** @var ImportFile */
     private $importFile;
 
+    /** @var ProjectService */
+    private $projectService;
+
     protected function setUp()
     {
         parent::setUp();
@@ -57,9 +62,19 @@ class ImportFinishServiceTest extends KernelTestCase
             $kernel->getContainer()->get('beneficiary.household_service'),
             $kernel->getContainer()->get('monolog.logger.import')
         );
+        $this->projectService = $kernel->getContainer()->get('project.project_service');
+
+        // clean all import
+        foreach ($this->entityManager->getRepository(Import::class)->findAll() as $import) {
+            foreach ($this->entityManager->getRepository(Beneficiary::class)->getImported($import) as $bnf) {
+                $this->entityManager->remove($bnf);
+            }
+            $this->entityManager->remove($import);
+        }
 
         $this->project = new Project();
         $this->project->setName(uniqid());
+        $this->project->setNotes(get_class($this));
         $this->project->setStartDate(new \DateTime());
         $this->project->setEndDate(new \DateTime());
         $this->project->setIso3(self::TEST_COUNTRY);

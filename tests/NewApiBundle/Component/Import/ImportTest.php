@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Tests\NewApiBundle\Component\Import;
 
 use NewApiBundle\Enum\ImportQueueState;
+use ProjectBundle\Utils\ProjectService;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
@@ -49,6 +50,8 @@ class ImportTest extends KernelTestCase
 
     /** @var ImportFile */
     private $importFile;
+    /** @var ProjectService */
+    private $projectService;
 
     protected function setUp()
     {
@@ -71,17 +74,18 @@ class ImportTest extends KernelTestCase
             $this->entityManager,
             $kernel->getContainer()->getParameter('import.uploadedFilesDirectory'),
         );
+        $this->projectService = $kernel->getContainer()->get('project.project_service');
 
-        $imports = $this->entityManager->getRepository(Import::class)
-            ->findAll();
-
-        /** @var Import $import */
-        foreach ($imports as $import) {
+        foreach ($this->entityManager->getRepository(Import::class)->findAll() as $import) {
+            foreach ($this->entityManager->getRepository(Beneficiary::class)->getImported($import) as $bnf) {
+                $this->entityManager->remove($bnf);
+            }
             $this->entityManager->remove($import);
         }
 
         $this->project = new Project();
         $this->project->setName(uniqid());
+        $this->project->setNotes(get_class($this));
         $this->project->setStartDate(new \DateTime());
         $this->project->setEndDate(new \DateTime());
         $this->project->setIso3(self::TEST_COUNTRY);
@@ -320,6 +324,12 @@ class ImportTest extends KernelTestCase
         ]);
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:integrity failed");
         $this->assertEquals(ImportState::INTEGRITY_CHECK_FAILED, $import->getState());
+    }
+
+    protected function tearDown()
+    {
+        parent::tearDown();
+        if ($this->project->getId()) $this->projectService->delete($this->project);
     }
 
     private function createBlankHousehold(Project $project): Household
