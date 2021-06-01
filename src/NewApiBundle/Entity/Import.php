@@ -56,7 +56,7 @@ class Import
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="imports")
      */
     private $createdBy;
 
@@ -68,25 +68,32 @@ class Import
     private $createdAt;
 
     /**
-     * @var ImportFile[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportFile", mappedBy="import")
-     */
-    private $files;
-
-    /**
      * @var ImportQueue[]|Collection
      *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportQueue", mappedBy="import")
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportQueue", mappedBy="import", cascade={"remove"})
      */
     private $importQueue;
 
     /**
+     * @var ImportFile[]|Collection
+     *
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportFile", mappedBy="import", cascade={"remove"})
+     */
+    private $importFiles;
+
+    /**
+     * @var ImportBeneficiary[]|Collection
+     *
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiary", mappedBy="import", cascade={"remove"})
+     */
+    private $importBeneficiaries;
+
+    /**
      * @var ImportInvalidFile[]|Collection
      *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportInvalidFile", mappedBy="import")
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportInvalidFile", mappedBy="import", cascade={"remove"})
      */
-    private $invalidFiles;
+    private $importInvalidFiles;
 
     public function __construct(string $title, ?string $notes, Project $project, User $creator)
     {
@@ -97,8 +104,9 @@ class Import
         $this->createdBy = $creator;
         $this->createdAt = new \DateTime('now');
         $this->importQueue = new ArrayCollection();
-        $this->files = new ArrayCollection();
-        $this->invalidFiles = new ArrayCollection();
+        $this->importFiles = new ArrayCollection();
+        $this->importBeneficiaries = new ArrayCollection();
+        $this->importInvalidFiles = new ArrayCollection();
     }
 
     /**
@@ -177,25 +185,32 @@ class Import
         return $this->importQueue;
     }
 
-    /**
-     * @return Collection|ImportFile[]
-     */
-    public function getFiles()
-    {
-        return $this->files;
-    }
-
-    /**
-     * @return Collection|ImportInvalidFile[]
-     */
-    public function getInvalidFiles()
-    {
-        return $this->invalidFiles;
-    }
-
     public function __toString()
     {
         return "Import#{$this->getId()} ({$this->getTitle()})";
     }
 
+    /**
+     * @return Collection|ImportFile[]
+     */
+    public function getImportFiles()
+    {
+        return $this->importFiles;
+    }
+
+    /**
+     * @return Collection|ImportBeneficiary[]
+     */
+    public function getImportBeneficiaries()
+    {
+        return $this->importBeneficiaries;
+    }
+
+    /**
+     * @return Collection|ImportInvalidFile[]
+     */
+    public function getImportInvalidFiles()
+    {
+        return $this->importInvalidFiles;
+    }
 }

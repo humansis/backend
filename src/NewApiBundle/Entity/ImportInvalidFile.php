@@ -30,7 +30,7 @@ class ImportInvalidFile
     /**
      * @var Import
      *
-     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Import", inversedBy="invalidFiles")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Import", inversedBy="importInvalidFiles")
      */
     private $import;
 

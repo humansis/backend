@@ -37,7 +37,7 @@ class ImportBeneficiaryDuplicity
     /**
      * @var Household
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household")
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household", inversedBy="importBeneficiaryDuplicities")
      */
     private $theirs;
 
@@ -51,7 +51,7 @@ class ImportBeneficiaryDuplicity
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="importBeneficiaryDuplicities")
      */
     private $decideBy;
 

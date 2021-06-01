@@ -72,6 +72,13 @@ class ImportTest extends KernelTestCase
             $kernel->getContainer()->getParameter('import.uploadedFilesDirectory'),
         );
 
+        $imports = $this->entityManager->getRepository(Import::class)
+            ->findAll();
+
+        /** @var Import $import */
+        foreach ($imports as $import) {
+            $this->entityManager->remove($import);
+        }
 
         $this->project = new Project();
         $this->project->setName(uniqid());
