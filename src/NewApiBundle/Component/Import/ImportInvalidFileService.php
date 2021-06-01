@@ -12,6 +12,7 @@ use NewApiBundle\Repository\ImportQueueRepository;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Filesystem\Filesystem;
 
 class ImportInvalidFileService
@@ -67,7 +68,8 @@ class ImportInvalidFileService
 
     private function generateInvalidFileName(Import $import): string
     {
-        return $import->getTitle().'-'.$import->getId().'-invalid-entries_'.time().'.xlsx';
+        $slugger = new AsciiSlugger();
+        return $slugger->slug($import->getTitle()).'-'.$import->getId().'-invalid-entries_'.time().'.xlsx';
     }
 
     private function saveToFile(Spreadsheet $spreadsheet, string $name): void
