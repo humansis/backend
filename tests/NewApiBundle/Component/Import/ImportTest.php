@@ -77,10 +77,11 @@ class ImportTest extends KernelTestCase
         $this->projectService = $kernel->getContainer()->get('project.project_service');
 
         foreach ($this->entityManager->getRepository(Import::class)->findAll() as $import) {
-            foreach ($this->entityManager->getRepository(Beneficiary::class)->getImported($import) as $bnf) {
-                $this->entityManager->remove($bnf);
-            }
             $this->entityManager->remove($import);
+            foreach ($this->entityManager->getRepository(Beneficiary::class)->getImported($import) as $bnf) {
+                $kernel->getContainer()->get('beneficiary.household_service')->remove($bnf->getHousehold());
+                $kernel->getContainer()->get('beneficiary.beneficiary_service')->remove($bnf);
+            }
         }
 
         $this->project = new Project();
@@ -324,12 +325,6 @@ class ImportTest extends KernelTestCase
         ]);
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:integrity failed");
         $this->assertEquals(ImportState::INTEGRITY_CHECK_FAILED, $import->getState());
-    }
-
-    protected function tearDown()
-    {
-        parent::tearDown();
-        if ($this->project->getId()) $this->projectService->delete($this->project);
     }
 
     private function createBlankHousehold(Project $project): Household

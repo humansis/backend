@@ -66,13 +66,14 @@ class IdentityChecker
 
         $bnfs = $this->findInBeneficiaries($item);
         foreach ($bnfs as $bnf) {
+            if ($bnf->getHousehold()->getArchived()) continue;
             $importDuplicity = new ImportBeneficiaryDuplicity($item, $bnf->getHousehold());
             $importDuplicity->setDecideAt(new \DateTime('now'));
             $this->entityManager->persist($importDuplicity);
 
             $item->setState(ImportQueueState::SUSPICIOUS);
             $this->entityManager->persist($item);
-            $this->logImportInfo($item->getImport(), "Found duplicity with existing records: Queue#{$item->getId()} <=> Household#{$bnf->getHousehold()->getId()}");
+            $this->logImportInfo($item->getImport(), "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
             $found = true;
         }
 
