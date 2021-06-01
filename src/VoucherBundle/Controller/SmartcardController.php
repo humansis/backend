@@ -736,46 +736,6 @@ class SmartcardController extends Controller
     }
 
     /**
-     * @Rest\Get("/smartcards/batch/{id}/legacy-export")
-     *
-     * @SWG\Tag(name="Export")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="streamed file"
-     * )
-     *
-     * @SWG\Response(
-     *     response=404,
-     *     description="invalid redeemed batch"
-     * )
-     *
-     * @param SmartcardRedemptionBatch $batch
-     *
-     * @return Response
-     *
-     * @throws
-     */
-    public function exportLegacy(SmartcardRedemptionBatch $batch): Response
-    {
-        // todo find organisation by relation to smartcard
-        $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
-
-        $filename = $this->get('distribution.export_legacy.smartcard_invoice')->export($batch, $organization, $this->getUser());
-
-        $response = new BinaryFileResponse(getcwd().'/'.$filename);
-        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
-        $response->deleteFileAfterSend(true);
-
-        $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
-        if ($mimeTypeGuesser->isSupported()) {
-            $response->headers->set('Content-Type', $mimeTypeGuesser->guess(getcwd().'/'.$filename));
-        }
-
-        return $response;
-    }
-
-    /**
      * @Rest\Get("/smartcards/batch/{id}/export")
      *
      * @SWG\Tag(name="Export")
