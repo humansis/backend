@@ -1,13 +1,138 @@
 <?xml version="1.0"?>
 <adm0 name="Zambia" code="ZM">
-    <adm1 code="ZM10" name="Central"/>
-    <adm1 code="ZM20" name="Copperbelt"/>
-    <adm1 code="ZM30" name="Eastern"/>
-    <adm1 code="ZM40" name="Luapula"/>
-    <adm1 code="ZM50" name="Lusaka"/>
-    <adm1 code="ZM11" name="Muchinga"/>
-    <adm1 code="ZM70" name="North-Western"/>
-    <adm1 code="ZM60" name="Northern"/>
-    <adm1 code="ZM80" name="Southern"/>
-    <adm1 code="ZM90" name="Western"/>
+    <adm1 code="ZM10" name="Central">
+        <adm2 code="ZM1001" name="Chibombo"/>
+        <adm2 code="ZM1007" name="Chisamba"/>
+        <adm2 code="ZM1008" name="Chitambo"/>
+        <adm2 code="ZM1009" name="Itezhi-tezhi"/>
+        <adm2 code="ZM1002" name="Kabwe"/>
+        <adm2 code="ZM1010" name="Luano"/>
+        <adm2 code="ZM1004" name="Mkushi"/>
+        <adm2 code="ZM1005" name="Mumbwa"/>
+        <adm2 code="ZM1011" name="Ngabwe"/>
+        <adm2 code="ZM1006" name="Serenje"/>
+        <adm2 code="ZM1003" name="Kapiri Mposhi"/>
+    </adm1>
+    <adm1 code="ZM20" name="Copperbelt">
+        <adm2 code="ZM2001" name="Chililabombwe"/>
+        <adm2 code="ZM2002" name="Chingola"/>
+        <adm2 code="ZM2003" name="Kalulushi"/>
+        <adm2 code="ZM2004" name="Kitwe"/>
+        <adm2 code="ZM2005" name="Luanshya"/>
+        <adm2 code="ZM2006" name="Lufwanyama"/>
+        <adm2 code="ZM2007" name="Masaiti"/>
+        <adm2 code="ZM2008" name="Mpongwe"/>
+        <adm2 code="ZM2009" name="Mufulira"/>
+        <adm2 code="ZM2010" name="Ndola"/>
+    </adm1>
+    <adm1 code="ZM30" name="Eastern">
+        <adm2 code="ZM3001" name="Chadiza"/>
+        <adm2 code="ZM3002" name="Chasefu"/>
+        <adm2 code="ZM3009" name="Chipangali"/>
+        <adm2 code="ZM3003" name="Chipata"/>
+        <adm2 code="ZM3010" name="Kasenengwa"/>
+        <adm2 code="ZM3004" name="Katete"/>
+        <adm2 code="ZM3011" name="Lumezi"/>
+        <adm2 code="ZM3005" name="Lundazi"/>
+        <adm2 code="ZM3006" name="Mambwe"/>
+        <adm2 code="ZM3007" name="Nyimba"/>
+        <adm2 code="ZM3008" name="Petauke"/>
+        <adm2 code="ZM3012" name="Sinda"/>
+        <adm2 code="ZM3013" name="Vubwi"/>
+    </adm1>
+    <adm1 code="ZM40" name="Luapula">
+        <adm2 code="ZM4008" name="Chembe"/>
+        <adm2 code="ZM4001" name="Chiengi"/>
+        <adm2 code="ZM4009" name="Chifunabuli"/>
+        <adm2 code="ZM4010" name="Chipili"/>
+        <adm2 code="ZM4002" name="Kawambwa"/>
+        <adm2 code="ZM4011" name="Lunga"/>
+        <adm2 code="ZM4003" name="Mansa"/>
+        <adm2 code="ZM4004" name="Milenge"/>
+        <adm2 code="ZM4012" name="Mwansabombwe"/>
+        <adm2 code="ZM4005" name="Mwense"/>
+        <adm2 code="ZM4007" name="Samfya"/>
+        <adm2 code="ZM4006" name="Nchelenge"/>
+    </adm1>
+    <adm1 code="ZM50" name="Lusaka">
+        <adm2 code="ZM5005" name="Chilanga"/>
+        <adm2 code="ZM5006" name="Chirundu"/>
+        <adm2 code="ZM5001" name="Chongwe"/>
+        <adm2 code="ZM5002" name="Kafue"/>
+        <adm2 code="ZM5003" name="Luangwa"/>
+        <adm2 code="ZM5004" name="Lusaka"/>
+        <adm2 code="ZM5007" name="Rufunsa"/>
+        <adm2 code="ZM5008" name="Shibuyunji"/>
+    </adm1>
+    <adm1 code="ZM11" name="Muchinga">
+        <adm2 code="ZM1112" name="Chama"/>
+        <adm2 code="ZM1114" name="Chinsali"/>
+        <adm2 code="ZM1113" name="Isoka"/>
+        <adm2 code="ZM1116" name="Kanchibiya"/>
+        <adm2 code="ZM1117" name="Lavushimanda"/>
+        <adm2 code="ZM1115" name="Mafinga"/>
+        <adm2 code="ZM1118" name="Mpika"/>
+        <adm2 code="ZM1111" name="Nakonde"/>
+        <adm2 code="ZM1119" name="Shiwang'andu"/>
+    </adm1>
+    <adm1 code="ZM70" name="North-Western">
+        <adm2 code="ZM7001" name="Chavuma"/>
+        <adm2 code="ZM7008" name="Ikelenge"/>
+        <adm2 code="ZM7002" name="Kabompo"/>
+        <adm2 code="ZM7009" name="Kalumbila"/>
+        <adm2 code="ZM7003" name="Kasempa"/>
+        <adm2 code="ZM7010" name="Manyinga"/>
+        <adm2 code="ZM7004" name="Mufumbwe"/>
+        <adm2 code="ZM7011" name="Mushindano"/>
+        <adm2 code="ZM7005" name="Mwinilunga"/>
+        <adm2 code="ZM7006" name="Solwezi"/>
+        <adm2 code="ZM7007" name="Zambezi"/>
+    </adm1>
+    <adm1 code="ZM60" name="Northern">
+        <adm2 code="ZM6001" name="Chilubi"/>
+        <adm2 code="ZM6004" name="Kaputa"/>
+        <adm2 code="ZM6005" name="Kasama"/>
+        <adm2 code="ZM6002" name="Lunte District"/>
+        <adm2 code="ZM6003" name="Lupososhi"/>
+        <adm2 code="ZM6006" name="Luwingu"/>
+        <adm2 code="ZM6007" name="Mbala"/>
+        <adm2 code="ZM6010" name="Mpulungu"/>
+        <adm2 code="ZM6011" name="Mungwi"/>
+        <adm2 code="ZM6008" name="Nsama"/>
+        <adm2 code="ZM6012" name="Senga Hill"/>
+        <adm2 code="ZM6009" name="Mporokoso"/>
+    </adm1>
+    <adm1 code="ZM80" name="Southern">
+        <adm2 code="ZM8003" name="Chikankanta"/>
+        <adm2 code="ZM8001" name="Choma"/>
+        <adm2 code="ZM8002" name="Gwembe"/>
+        <adm2 code="ZM8004" name="Kalomo"/>
+        <adm2 code="ZM8005" name="Kazungula"/>
+        <adm2 code="ZM8006" name="Livingstone"/>
+        <adm2 code="ZM8007" name="Mazabuka"/>
+        <adm2 code="ZM8008" name="Monze"/>
+        <adm2 code="ZM8009" name="Namwala"/>
+        <adm2 code="ZM8012" name="Pemba"/>
+        <adm2 code="ZM8010" name="Siavonga"/>
+        <adm2 code="ZM8011" name="Sinazongwe"/>
+        <adm2 code="ZM8013" name="Zimba"/>
+    </adm1>
+    <adm1 code="ZM90" name="Western">
+        <adm2 code="ZM9001" name="Kalabo"/>
+        <adm2 code="ZM9002" name="Kaoma"/>
+        <adm2 code="ZM9006" name="Limulunga"/>
+        <adm2 code="ZM9008" name="Luampa"/>
+        <adm2 code="ZM9003" name="Lukulu"/>
+        <adm2 code="ZM9009" name="Mitete"/>
+        <adm2 code="ZM9004" name="Mongu"/>
+        <adm2 code="ZM9010" name="Mulobezi"/>
+        <adm2 code="ZM9011" name="Mwandi"/>
+        <adm2 code="ZM9013" name="Nalolo"/>
+        <adm2 code="ZM9014" name="Nkeyema"/>
+        <adm2 code="ZM9005" name="Senanga"/>
+        <adm2 code="ZM9012" name="Sesheke"/>
+        <adm2 code="ZM9007" name="Shang'ombo"/>
+        <adm2 code="ZM9015" name="Sikongo"/>
+        <adm2 code="ZM9016" name="Sioma"/>
+    </adm1>
 </adm0>
