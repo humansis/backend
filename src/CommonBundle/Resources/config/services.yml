@@ -10,6 +10,11 @@ services:
         tags:
             - { name: 'console.command' }
 
+    CommonBundle\Command\AdmCSV2XMLCommand:
+        public: true
+        tags:
+            - { name: 'console.command' }
+
     CommonBundle\Command\ClearCacheImportCommand:
         public: true
         tags:
