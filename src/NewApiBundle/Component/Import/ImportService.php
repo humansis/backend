@@ -19,7 +19,7 @@ use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\InputType\DuplicityResolveInputType;
 use NewApiBundle\InputType\ImportCreateInputType;
-use NewApiBundle\InputType\ImportUpdateStatusInputType;
+use NewApiBundle\InputType\ImportPatchInputType;
 use NewApiBundle\Repository\ImportQueueRepository;
 use ProjectBundle\Entity\Project;
 use Psr\Log\LoggerInterface;
@@ -67,17 +67,30 @@ class ImportService
         return $import;
     }
 
-    public function updateStatus(Import $import, ImportUpdateStatusInputType $inputType): void
+    public function patch(Import $import, ImportPatchInputType $inputType): void
+    {
+        if (!is_null($inputType->getDescription())) {
+            $import->setNotes($inputType->getDescription());
+        }
+
+        if (!is_null($inputType->getStatus())) {
+            $this->updateStatus($import, $inputType->getStatus());
+        }
+
+        $this->em->flush();
+    }
+
+    public function updateStatus(Import $import, string $status): void
     {
         // there can be only one running import in country in one time
-        if (ImportState::IMPORTING === $inputType->getStatus()
+        if (ImportState::IMPORTING === $status
             && !$this->em->getRepository(Import::class)
                 ->isCountryFreeFromImporting($import, $import->getProject()->getIso3())) {
             throw new BadRequestHttpException("There can be only one finishing import in country in single time.");
         }
 
         $before = $import->getState();
-        $import->setState($inputType->getStatus());
+        $import->setState($status);
 
         $this->logInfo($import, "Changed state from '$before' to '{$import->getState()}'");
 

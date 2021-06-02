@@ -15,7 +15,7 @@ use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\InputType\ImportCreateInputType;
-use NewApiBundle\InputType\ImportUpdateStatusInputType;
+use NewApiBundle\InputType\ImportPatchInputType;
 use ProjectBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -135,9 +135,7 @@ class ImportTest extends KernelTestCase
         $this->assertCount($householdCount, $queue);
 
         // start integrity check
-        $userStartedIntegrityCheck = new ImportUpdateStatusInputType();
-        $userStartedIntegrityCheck->setStatus(ImportState::INTEGRITY_CHECKING);
-        $this->importService->updateStatus($import, $userStartedIntegrityCheck);
+        $this->importService->updateStatus($import, ImportState::INTEGRITY_CHECKING);
 
         $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import]);
         $this->assertCount($householdCount, $queue);
@@ -154,9 +152,7 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(ImportState::INTEGRITY_CHECK_CORRECT, $import->getState());
 
         // start identity check
-        $userStartedIdentityCheck = new ImportUpdateStatusInputType();
-        $userStartedIdentityCheck->setStatus(ImportState::IDENTITY_CHECKING);
-        $this->importService->updateStatus($import, $userStartedIdentityCheck);
+        $this->importService->updateStatus($import, ImportState::IDENTITY_CHECKING);
 
         $this->assertEquals(ImportState::IDENTITY_CHECKING, $import->getState());
 
@@ -172,9 +168,7 @@ class ImportTest extends KernelTestCase
         $this->assertCount($householdCount, $queue);
 
         // start similarity check
-        $userStartedSimilarityCheck = new ImportUpdateStatusInputType();
-        $userStartedSimilarityCheck->setStatus(ImportState::SIMILARITY_CHECKING);
-        $this->importService->updateStatus($import, $userStartedSimilarityCheck);
+        $this->importService->updateStatus($import, ImportState::SIMILARITY_CHECKING);
 
         $this->assertEquals(ImportState::SIMILARITY_CHECKING, $import->getState());
 
@@ -193,9 +187,7 @@ class ImportTest extends KernelTestCase
         $this->assertCount($householdCount, $queue);
 
         // save to DB
-        $userStartedSimilarityCheck = new ImportUpdateStatusInputType();
-        $userStartedSimilarityCheck->setStatus(ImportState::IMPORTING);
-        $this->importService->updateStatus($import, $userStartedSimilarityCheck);
+        $this->importService->updateStatus($import, ImportState::IMPORTING);
 
         $this->assertEquals(ImportState::IMPORTING, $import->getState());
 
@@ -234,13 +226,13 @@ class ImportTest extends KernelTestCase
             $importFile = $this->uploadService->upload($import, $file, $this->getUser());
 
             // start integrity check
-            $this->importService->updateStatus($import, new ImportUpdateStatusInputType(ImportState::INTEGRITY_CHECKING));
+            $this->importService->updateStatus($import, ImportState::INTEGRITY_CHECKING);
 
             $checkIntegrityCommand = $this->application->find('app:import:integrity');
             (new CommandTester($checkIntegrityCommand))->execute(['import' => $import->getId()]);
 
             // start identity check
-            $this->importService->updateStatus($import, new ImportUpdateStatusInputType(ImportState::IDENTITY_CHECKING));
+            $this->importService->updateStatus($import, ImportState::IDENTITY_CHECKING);
 
             $this->assertEquals(ImportState::IDENTITY_CHECKING, $import->getState());
 
@@ -250,7 +242,7 @@ class ImportTest extends KernelTestCase
             $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
 
             // start similarity check
-            $this->importService->updateStatus($import, new ImportUpdateStatusInputType(ImportState::SIMILARITY_CHECKING));
+            $this->importService->updateStatus($import,ImportState::SIMILARITY_CHECKING);
 
             $this->assertEquals(ImportState::SIMILARITY_CHECKING, $import->getState());
 
@@ -265,7 +257,7 @@ class ImportTest extends KernelTestCase
         // finish first
         $import = $imports['first'];
         // save to DB
-        $this->importService->updateStatus($import, new ImportUpdateStatusInputType(ImportState::IMPORTING));
+        $this->importService->updateStatus($import,ImportState::IMPORTING);
 
         $this->assertEquals(ImportState::IMPORTING, $import->getState());
 
@@ -312,9 +304,7 @@ class ImportTest extends KernelTestCase
         $this->assertNotNull($importFile->getId(), "ImportFile wasn't saved to DB");
 
         // start integrity check
-        $userStartedIntegrityCheck = new ImportUpdateStatusInputType();
-        $userStartedIntegrityCheck->setStatus(ImportState::INTEGRITY_CHECKING);
-        $this->importService->updateStatus($import, $userStartedIntegrityCheck);
+        $this->importService->updateStatus($import, ImportState::INTEGRITY_CHECKING);
 
         $this->assertEquals(ImportState::INTEGRITY_CHECKING, $import->getState());
 

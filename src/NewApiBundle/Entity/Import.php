@@ -33,7 +33,7 @@ class Import
     private $title;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(name="notes", type="string", nullable=true)
      */
@@ -212,5 +212,13 @@ class Import
     public function getImportInvalidFiles()
     {
         return $this->importInvalidFiles;
+    }
+
+    /**
+     * @param string|null $notes
+     */
+    public function setNotes(?string $notes): void
+    {
+        $this->notes = $notes;
     }
 }

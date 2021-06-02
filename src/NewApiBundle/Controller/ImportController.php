@@ -18,7 +18,7 @@ use NewApiBundle\InputType\DuplicityResolveInputType;
 use NewApiBundle\InputType\ImportCreateInputType;
 use NewApiBundle\InputType\ImportFilterInputType;
 use NewApiBundle\InputType\ImportOrderInputType;
-use NewApiBundle\InputType\ImportUpdateStatusInputType;
+use NewApiBundle\InputType\ImportPatchInputType;
 use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -108,14 +108,14 @@ class ImportController extends AbstractController
     /**
      * @Rest\Patch("/imports/{id}")
      *
-     * @param Import                      $import
-     * @param ImportUpdateStatusInputType $inputType
+     * @param Import               $import
+     * @param ImportPatchInputType $inputType
      *
      * @return JsonResponse
      */
-    public function updateStatus(Import $import, ImportUpdateStatusInputType $inputType): JsonResponse
+    public function updateStatus(Import $import, ImportPatchInputType $inputType): JsonResponse
     {
-        $this->importService->updateStatus($import, $inputType);
+        $this->importService->patch($import, $inputType);
 
         return $this->json(null, Response::HTTP_ACCEPTED);
     }

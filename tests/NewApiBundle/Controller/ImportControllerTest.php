@@ -7,6 +7,7 @@ use Exception;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportInvalidFile;
 use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Enum\ImportState;
 use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
 
@@ -111,15 +112,32 @@ class ImportControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('data', $result);
     }
 
+    public function patchDataProvider(): array
+    {
+        return [
+            'status change' => [
+                'status',
+                ImportState::INTEGRITY_CHECKING,
+            ],
+            'description change' => [
+                'description',
+                'Lorem ipsum dolor sit amet',
+            ]
+        ];
+    }
+
     /**
      * @depends testCreate
+     * @dataProvider patchDataProvider
      *
-     * @param int $id
+     * @param int    $id
+     * @param string $parameter
+     * @param        $value
      */
-    public function testStatusChange(int $id)
+    public function testPatch(string $parameter, $value, int $id)
     {
         $this->request('PATCH', '/api/basic/imports/'.$id, [
-            'status' => 'Integrity Checking',
+            $parameter => $value,
         ]);
 
         $this->assertTrue(
