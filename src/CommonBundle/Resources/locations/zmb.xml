@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<adm0 name="Zambia" code="ZM">
+    <adm1 code="ZM10" name="Central"/>
+    <adm1 code="ZM20" name="Copperbelt"/>
+    <adm1 code="ZM30" name="Eastern"/>
+    <adm1 code="ZM40" name="Luapula"/>
+    <adm1 code="ZM50" name="Lusaka"/>
+    <adm1 code="ZM11" name="Muchinga"/>
+    <adm1 code="ZM70" name="North-Western"/>
+    <adm1 code="ZM60" name="Northern"/>
+    <adm1 code="ZM80" name="Southern"/>
+    <adm1 code="ZM90" name="Western"/>
+</adm0>
