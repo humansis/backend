@@ -747,7 +747,7 @@ class UserService
     public function getCountries(User $user)
     {
         if (in_array('ROLE_ADMIN', $user->getRoles())) {
-            return ['KHM', 'SYR', 'UKR', 'ETH', 'MNG', 'ARM'];
+            return ['KHM', 'SYR', 'UKR', "ETH", "MNG", "ARM", "ZMB"];
         }
 
         $countries = [];
