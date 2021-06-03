@@ -42,7 +42,7 @@ class LocationControllerTest extends BMSServiceTestCase
 
     public function testGetUserCountries()
     {
-        $this->request('GET', '/api/basic/web-app/v1/users/'.$this->getTestUser(self::USER_TESTER)->getId().'/countries');
+        $this->request('GET', '/api/basic/users/'.$this->getTestUser(self::USER_TESTER)->getId().'/countries');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

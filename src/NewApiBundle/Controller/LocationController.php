@@ -51,7 +51,7 @@ class LocationController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/web-app/v1/users/{id}/countries")
+     * @Rest\Get("/users/{id}/countries")
      *
      * @param User$user
      *
