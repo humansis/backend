@@ -26,7 +26,7 @@ use Symfony\Component\HttpFoundation\Response;
 class AssistanceBeneficiaryController extends AbstractController
 {
     /**
-     * @Rest\Get("/assistances/{id}/assistances-beneficiaries")
+     * @Rest\Get("/web-app/v1/assistances/{id}/assistances-beneficiaries")
      *
      * @param Assistance                 $assistance
      * @param BeneficiaryFilterInputType $filter
@@ -52,7 +52,7 @@ class AssistanceBeneficiaryController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/assistances/{id}/assistances-institutions")
+     * @Rest\Get("/web-app/v1/assistances/{id}/assistances-institutions")
      *
      * @param Assistance                 $assistance
      * @param InstitutionFilterInputType $filter
@@ -78,7 +78,7 @@ class AssistanceBeneficiaryController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/assistances/{id}/assistances-communities")
+     * @Rest\Get("/web-app/v1/assistances/{id}/assistances-communities")
      *
      * @param Assistance              $assistance
      * @param CommunityFilterType     $filter
@@ -104,7 +104,7 @@ class AssistanceBeneficiaryController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/assistances/{id}/assistances-beneficiaries")
+     * @Rest\Put("/web-app/v1/assistances/{id}/assistances-beneficiaries")
      *
      * @param Assistance                                $assistance
      * @param AddRemoveBeneficiaryToAssistanceInputType $inputType
@@ -136,7 +136,7 @@ class AssistanceBeneficiaryController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/assistances/{id}/assistances-institutions")
+     * @Rest\Put("/web-app/v1/assistances/{id}/assistances-institutions")
      *
      * @param Assistance                                $assistance
      * @param AddRemoveInstitutionToAssistanceInputType $inputType
@@ -168,7 +168,7 @@ class AssistanceBeneficiaryController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/assistances/{id}/assistances-communities")
+     * @Rest\Put("/web-app/v1/assistances/{id}/assistances-communities")
      *
      * @param Assistance                              $assistance
      * @param AddRemoveCommunityToAssistanceInputType $inputType

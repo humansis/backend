@@ -25,7 +25,7 @@ use UserBundle\Utils\UserService;
 class UserController extends AbstractController
 {
     /**
-     * @Rest\Get("/users/exports")
+     * @Rest\Get("/web-app/v1/users/exports")
      *
      * @param Request $request
      *
@@ -39,7 +39,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/users/{id}")
+     * @Rest\Get("/web-app/v1/users/{id}")
      *
      * @param User $object
      *
@@ -51,7 +51,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/users")
+     * @Rest\Get("/web-app/v1/users")
      *
      * @param UserOrderInputType $userOderInputType
      * @param UserFilterInputType $userFilterInputType
@@ -70,7 +70,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/users/initialize")
+     * @Rest\Post("/web-app/v1/users/initialize")
      *
      * @param UserInitializeInputType $inputType
      *
@@ -85,7 +85,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/users/{id}")
+     * @Rest\Post("/web-app/v1/users/{id}")
      *
      * @param User                $user
      * @param UserCreateInputType $inputType
@@ -103,7 +103,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/users/{id}")
+     * @Rest\Put("/web-app/v1/users/{id}")
      *
      * @param User                $user
      * @param UserUpdateInputType $inputType
@@ -121,7 +121,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Rest\Patch("/users/{id}")
+     * @Rest\Patch("/web-app/v1/users/{id}")
      *
      * @param User    $user
      * @param Request $request
@@ -160,7 +160,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Rest\Delete("/users/{id}")
+     * @Rest\Delete("/web-app/v1/users/{id}")
      *
      * @param User $user
      *
@@ -174,7 +174,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/users/salt/{username}")
+     * @Rest\Get("/web-app/v1/users/salt/{username}")
      *
      * @param string $username
      *

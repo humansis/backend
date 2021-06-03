@@ -16,7 +16,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class GeneralReliefItemController extends AbstractController
 {
     /**
-     * @Rest\Get("/general-relief-items/{id}")
+     * @Rest\Get("/web-app/v1/general-relief-items/{id}")
      *
      * @param GeneralReliefItem $object
      *
@@ -58,7 +58,7 @@ class GeneralReliefItemController extends AbstractController
     }
 
     /**
-     * @Rest\Patch("/general-relief-items/{id}")
+     * @Rest\Patch("/web-app/v1/general-relief-items/{id}")
      *
      * @param Request           $request
      * @param GeneralReliefItem $object
@@ -81,7 +81,7 @@ class GeneralReliefItemController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/general-relief-items")
+     * @Rest\Get("/web-app/v1/general-relief-items")
      *
      * @param Request                      $request
      * @param GeneralReliefFilterInputType $filter

@@ -32,7 +32,7 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetBeneficiaryTypes()
     {
-        $this->request('GET', '/api/basic/beneficiaries/types');
+        $this->request('GET', '/api/basic/web-app/v1/beneficiaries/types');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -55,7 +55,7 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetReferralTypes()
     {
-        $this->request('GET', '/api/basic/beneficiaries/referral-types');
+        $this->request('GET', '/api/basic/web-app/v1/beneficiaries/referral-types');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -72,7 +72,7 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetResidencyStatuses()
     {
-        $this->request('GET', '/api/basic/beneficiaries/residency-statuses');
+        $this->request('GET', '/api/basic/web-app/v1/beneficiaries/residency-statuses');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -95,7 +95,7 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
 
-        $this->request('GET', '/api/basic/beneficiaries/vulnerability-criteria');
+        $this->request('GET', '/api/basic/web-app/v1/beneficiaries/vulnerability-criteria');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -117,7 +117,7 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetNationalIdsTypes()
     {
-        $this->request('GET', '/api/basic/beneficiaries/national-ids/types');
+        $this->request('GET', '/api/basic/web-app/v1/beneficiaries/national-ids/types');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -137,7 +137,7 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetPhoneTypes()
     {
-        $this->request('GET', '/api/basic/beneficiaries/phones/types');
+        $this->request('GET', '/api/basic/web-app/v1/beneficiaries/phones/types');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

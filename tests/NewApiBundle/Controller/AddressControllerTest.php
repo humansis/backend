@@ -32,7 +32,7 @@ class AddressControllerTest extends BMSServiceTestCase
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $address = $em->getRepository(Address::class)->findBy([])[0];
 
-        $this->request('GET', '/api/basic/addresses/'.$address->getId());
+        $this->request('GET', '/api/basic/web-app/v1/addresses/'.$address->getId());
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -56,7 +56,7 @@ class AddressControllerTest extends BMSServiceTestCase
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $address = $em->getRepository(Address::class)->findBy([])[0];
 
-        $this->request('GET', '/api/basic/addresses?filter[id][]='.$address->getId());
+        $this->request('GET', '/api/basic/web-app/v1/addresses?filter[id][]='.$address->getId());
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -76,7 +76,7 @@ class AddressControllerTest extends BMSServiceTestCase
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $camp = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_CAMP])[0];
 
-        $this->request('GET', '/api/basic/addresses/camps/'.$camp->getId());
+        $this->request('GET', '/api/basic/web-app/v1/addresses/camps/'.$camp->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -108,7 +108,7 @@ class AddressControllerTest extends BMSServiceTestCase
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $campAddress = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_CAMP])[0];
 
-        $this->request('GET', '/api/basic/addresses/camps?filter[id][]='.$campAddress->getId());
+        $this->request('GET', '/api/basic/web-app/v1/addresses/camps?filter[id][]='.$campAddress->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -131,7 +131,7 @@ class AddressControllerTest extends BMSServiceTestCase
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $residence = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_RESIDENCE])[0];
 
-        $this->request('GET', '/api/basic/addresses/residencies/'.$residence->getId());
+        $this->request('GET', '/api/basic/web-app/v1/addresses/residencies/'.$residence->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -162,7 +162,7 @@ class AddressControllerTest extends BMSServiceTestCase
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $residency = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_RESIDENCE])[0];
 
-        $this->request('GET', '/api/basic/addresses/residencies?filter[id][]='.$residency->getId());
+        $this->request('GET', '/api/basic/web-app/v1/addresses/residencies?filter[id][]='.$residency->getId());
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -182,7 +182,7 @@ class AddressControllerTest extends BMSServiceTestCase
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $settlement = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_SETTLEMENT]);
 
-        $this->request('GET', '/api/basic/addresses/temporary-settlements/'.$settlement->getId());
+        $this->request('GET', '/api/basic/web-app/v1/addresses/temporary-settlements/'.$settlement->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -215,7 +215,7 @@ class AddressControllerTest extends BMSServiceTestCase
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $settlement = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_SETTLEMENT])[0];
 
-        $this->request('GET', '/api/basic/addresses/temporary-settlements?filter[id][]='.$settlement->getId());
+        $this->request('GET', '/api/basic/web-app/v1/addresses/temporary-settlements?filter[id][]='.$settlement->getId());
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

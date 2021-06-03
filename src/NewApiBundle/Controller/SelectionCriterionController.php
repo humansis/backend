@@ -30,7 +30,7 @@ class SelectionCriterionController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/selection-criteria/targets")
+     * @Rest\Get("/web-app/v1/selection-criteria/targets")
      *
      * @return JsonResponse
      */
@@ -42,7 +42,7 @@ class SelectionCriterionController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/selection-criteria/targets/{targetCode}/fields")
+     * @Rest\Get("/web-app/v1/selection-criteria/targets/{targetCode}/fields")
      *
      * @param Request $request
      * @param string  $targetCode
@@ -66,7 +66,7 @@ class SelectionCriterionController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/selection-criteria/targets/{targetCode}/fields/{fieldCode}/conditions")
+     * @Rest\Get("/web-app/v1/selection-criteria/targets/{targetCode}/fields/{fieldCode}/conditions")
      * @param Request $request
      * @param string  $targetCode
      * @param string  $fieldCode
@@ -91,7 +91,7 @@ class SelectionCriterionController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/assistances/{id}/selection-criteria")
+     * @Rest\Get("/web-app/v1/assistances/{id}/selection-criteria")
      * @ParamConverter("assistance")
      *
      * @return JsonResponse

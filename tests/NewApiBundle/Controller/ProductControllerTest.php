@@ -22,7 +22,7 @@ class ProductControllerTest extends BMSServiceTestCase
 
     public function testCreate()
     {
-        $this->request('POST', '/api/basic/products', [
+        $this->request('POST', '/api/basic/web-app/v1/products', [
             'name' => 'Test product',
             'unit' => 'Kg',
             'image' => 'http://example.org/image.jpg',
@@ -50,7 +50,7 @@ class ProductControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        $this->request('PUT', '/api/basic/products/'.$id, [
+        $this->request('PUT', '/api/basic/web-app/v1/products/'.$id, [
             'image' => 'http://example.org/image2.jpg',
         ]);
 
@@ -76,7 +76,7 @@ class ProductControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/products/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/products/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -100,7 +100,7 @@ class ProductControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        $this->request('GET', '/api/basic/products?sort[]=name.asc&filter[id][]=1');
+        $this->request('GET', '/api/basic/web-app/v1/products?sort[]=name.asc&filter[id][]=1');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -118,7 +118,7 @@ class ProductControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        $this->request('DELETE', '/api/basic/products/'.$id);
+        $this->request('DELETE', '/api/basic/web-app/v1/products/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
 
@@ -130,7 +130,7 @@ class ProductControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        $this->request('GET', '/api/basic/products/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/products/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }

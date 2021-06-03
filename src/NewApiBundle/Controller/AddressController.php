@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class AddressController extends AbstractController
 {
     /**
-     * @Rest\Get("/addresses/camps")
+     * @Rest\Get("/web-app/v1/addresses/camps")
      *
      * @param CampAddressFilterInputType $filter
      *
@@ -28,7 +28,7 @@ class AddressController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/addresses/camps/{id}")
+     * @Rest\Get("/web-app/v1/addresses/camps/{id}")
      *
      * @param HouseholdLocation $campAddress
      *
@@ -44,7 +44,7 @@ class AddressController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/addresses/residencies")
+     * @Rest\Get("/web-app/v1/addresses/residencies")
      *
      * @param ResidenceAddressFilterInputType $filter
      *
@@ -58,7 +58,7 @@ class AddressController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/addresses/residencies/{id}")
+     * @Rest\Get("/web-app/v1/addresses/residencies/{id}")
      *
      * @param HouseholdLocation $residence
      *
@@ -74,7 +74,7 @@ class AddressController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/addresses/temporary-settlements")
+     * @Rest\Get("/web-app/v1/addresses/temporary-settlements")
      *
      * @param TemporarySettlementAddressFilterInputType $filter
      *
@@ -88,7 +88,7 @@ class AddressController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/addresses/temporary-settlements/{id}")
+     * @Rest\Get("/web-app/v1/addresses/temporary-settlements/{id}")
      *
      * @param HouseholdLocation $temporarySettlement
      *
@@ -104,7 +104,7 @@ class AddressController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/addresses")
+     * @Rest\Get("/web-app/v1/addresses")
      *
      * @param AddressFilterInputType $filter
      *
@@ -118,7 +118,7 @@ class AddressController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/addresses/{id}")
+     * @Rest\Get("/web-app/v1/addresses/{id}")
      *
      * @param Address $address
      *

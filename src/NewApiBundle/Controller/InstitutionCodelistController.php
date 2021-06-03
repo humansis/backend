@@ -18,7 +18,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 class InstitutionCodelistController extends Controller
 {
     /**
-     * @Rest\Get("/institutions/types")
+     * @Rest\Get("/web-app/v1/institutions/types")
      *
      * @return JsonResponse
      */

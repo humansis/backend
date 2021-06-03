@@ -29,7 +29,7 @@ use VoucherBundle\Entity\Booklet;
 class BookletController extends AbstractController
 {
     /**
-     * @Rest\Get("/booklets/statuses")
+     * @Rest\Get("/web-app/v1/booklets/statuses")
      *
      * @return JsonResponse
      */
@@ -41,7 +41,7 @@ class BookletController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/booklets/exports")
+     * @Rest\Get("/web-app/v1/booklets/exports")
      *
      * @param Request                      $request
      * @param BookletExportFilterInputType $inputType
@@ -65,7 +65,7 @@ class BookletController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/booklets/prints")
+     * @Rest\Get("/web-app/v1/booklets/prints")
      *
      * @param BookletPrintFilterInputType $inputType
      *
@@ -79,7 +79,7 @@ class BookletController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/booklets/{id}")
+     * @Rest\Get("/web-app/v1/booklets/{id}")
      *
      * @param Booklet $object
      *
@@ -91,7 +91,7 @@ class BookletController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/booklets/{id}")
+     * @Rest\Put("/web-app/v1/booklets/{id}")
      *
      * @param Booklet                $object
      * @param BookletUpdateInputType $inputType
@@ -111,7 +111,7 @@ class BookletController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/booklets")
+     * @Rest\Get("/web-app/v1/booklets")
      *
      * @param Request                $request
      * @param BookletFilterInputType $filter
@@ -134,7 +134,7 @@ class BookletController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/booklets/batches")
+     * @Rest\Post("/web-app/v1/booklets/batches")
      *
      * @param BookletBatchCreateInputType $inputType
      *
@@ -148,7 +148,7 @@ class BookletController extends AbstractController
     }
 
     /**
-     * @Rest\Delete("/booklets/{id}")
+     * @Rest\Delete("/web-app/v1/booklets/{id}")
      *
      * @param Booklet $object
      *
@@ -166,7 +166,7 @@ class BookletController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/assistances/{assistanceId}/beneficiaries/{beneficiaryId}/booklets/{bookletCode}")
+     * @Rest\Put("/web-app/v1/assistances/{assistanceId}/beneficiaries/{beneficiaryId}/booklets/{bookletCode}")
      * @ParamConverter("assistance", options={"mapping": {"assistanceId" : "id"}})
      * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId" : "id"}})
      * @ParamConverter("booklet", options={"mapping": {"bookletCode" : "code"}})
@@ -185,7 +185,7 @@ class BookletController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/assistances/{assistanceId}/communities/{communityId}/booklets/{bookletCode}")
+     * @Rest\Put("/web-app/v1/assistances/{assistanceId}/communities/{communityId}/booklets/{bookletCode}")
      * @ParamConverter("assistance", options={"mapping": {"assistanceId" : "id"}})
      * @ParamConverter("community", options={"mapping": {"communityId" : "id"}})
      * @ParamConverter("booklet", options={"mapping": {"bookletCode" : "code"}})
@@ -204,7 +204,7 @@ class BookletController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/assistances/{assistanceId}/institutions/{institutionId}/booklets/{bookletCode}")
+     * @Rest\Put("/web-app/v1/assistances/{assistanceId}/institutions/{institutionId}/booklets/{bookletCode}")
      * @ParamConverter("assistance", options={"mapping": {"assistanceId" : "id"}})
      * @ParamConverter("institution", options={"mapping": {"institutionId" : "id"}})
      * @ParamConverter("booklet", options={"mapping": {"bookletCode" : "code"}})

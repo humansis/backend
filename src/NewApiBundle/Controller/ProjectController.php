@@ -23,7 +23,7 @@ use UserBundle\Entity\User;
 class ProjectController extends AbstractController
 {
     /**
-     * @Rest\Get("/projects/{id}/summaries")
+     * @Rest\Get("/web-app/v1/projects/{id}/summaries")
      *
      * @param Request $request
      * @param Project $project
@@ -53,7 +53,7 @@ class ProjectController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/projects/exports")
+     * @Rest\Get("/web-app/v1/projects/exports")
      *
      * @param Request $request
      *
@@ -67,7 +67,7 @@ class ProjectController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/projects/{id}")
+     * @Rest\Get("/web-app/v1/projects/{id}")
      *
      * @param Project $project
      *
@@ -83,7 +83,7 @@ class ProjectController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/projects")
+     * @Rest\Get("/web-app/v1/projects")
      *
      * @param Request                $request
      * @param ProjectFilterInputType $filter
@@ -105,7 +105,7 @@ class ProjectController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/projects")
+     * @Rest\Post("/web-app/v1/projects")
      *
      * @param ProjectCreateInputType $inputType
      *
@@ -119,7 +119,7 @@ class ProjectController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/projects/{id}")
+     * @Rest\Put("/web-app/v1/projects/{id}")
      *
      * @param Project                $project
      * @param ProjectUpdateInputType $inputType
@@ -138,7 +138,7 @@ class ProjectController extends AbstractController
     }
 
     /**
-     * @Rest\Delete("/projects/{id}")
+     * @Rest\Delete("/web-app/v1/projects/{id}")
      *
      * @param Project $project
      *
@@ -152,7 +152,7 @@ class ProjectController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/users/{id}/projects")
+     * @Rest\Get("/web-app/v1/users/{id}/projects")
      *
      * @param User $user
      *

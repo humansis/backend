@@ -27,7 +27,7 @@ class SectorsCodelistController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/sectors")
+     * @Rest\Get("/web-app/v1/sectors")
      *
      * @return JsonResponse
      * @deprecated use /projects/{id}/sectors instead
@@ -54,7 +54,7 @@ class SectorsCodelistController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/sectors/{code}/subsectors")
+     * @Rest\Get("/web-app/v1/sectors/{code}/subsectors")
      *
      * @param string $code
      *

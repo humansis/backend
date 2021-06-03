@@ -26,7 +26,7 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
         /** @var GeneralReliefItem $item */
         $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy([])[0];
 
-        $this->request('GET', '/api/basic/general-relief-items/'.$item->getId());
+        $this->request('GET', '/api/basic/web-app/v1/general-relief-items/'.$item->getId());
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -42,7 +42,7 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
 
     public function testList()
     {
-        $this->request('GET', '/api/basic/general-relief-items?&filter[id][]=1');
+        $this->request('GET', '/api/basic/web-app/v1/general-relief-items?&filter[id][]=1');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

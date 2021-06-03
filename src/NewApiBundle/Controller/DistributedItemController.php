@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 class DistributedItemController extends AbstractController
 {
     /**
-     * @Rest\Get("/beneficiaries/{id}/distributed-items")
+     * @Rest\Get("/web-app/v1/beneficiaries/{id}/distributed-items")
      * @ParamConverter("beneficiary")
      *
      * @param Beneficiary $beneficiary
@@ -38,7 +38,7 @@ class DistributedItemController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/households/{id}/distributed-items")
+     * @Rest\Get("/web-app/v1/households/{id}/distributed-items")
      * @ParamConverter("household")
      *
      * @param Household $household
@@ -54,7 +54,7 @@ class DistributedItemController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/distributed-items")
+     * @Rest\Get("/web-app/v1/distributed-items")
      *
      * @param Request                        $request
      * @param DistributedItemFilterInputType $inputType
@@ -81,7 +81,7 @@ class DistributedItemController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/distributed-items/exports")
+     * @Rest\Get("/web-app/v1/distributed-items/exports")
      *
      * @param Request                        $request
      * @param DistributedItemFilterInputType $inputType

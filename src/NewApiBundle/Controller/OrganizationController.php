@@ -28,7 +28,7 @@ class OrganizationController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/organizations/{id}")
+     * @Rest\Get("/web-app/v1/organizations/{id}")
      *
      * @param Organization $organization
      *
@@ -40,7 +40,7 @@ class OrganizationController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/organizations/{id}")
+     * @Rest\Put("/web-app/v1/organizations/{id}")
      *
      * @param Organization                $organization
      * @param OrganizationUpdateInputType $inputType
@@ -55,7 +55,7 @@ class OrganizationController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/organizations")
+     * @Rest\Get("/web-app/v1/organizations")
      *
      * @param Pagination $pagination
      *
@@ -72,7 +72,7 @@ class OrganizationController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/organizations/{id}/services")
+     * @Rest\Get("/web-app/v1/organizations/{id}/services")
      *
      * @param Organization $organization
      * @param Pagination   $pagination
@@ -90,7 +90,7 @@ class OrganizationController extends AbstractController
     }
 
     /**
-     * @Rest\Patch("/organizations/services/{id}")
+     * @Rest\Patch("/web-app/v1/organizations/services/{id}")
      *
      * @param Request              $request
      * @param OrganizationServices $organizationServices
@@ -114,7 +114,7 @@ class OrganizationController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/organizations/{id}/images")
+     * @Rest\Post("/web-app/v1/organizations/{id}/images")
      *
      * @param Organization $organization
      * @param Request $request

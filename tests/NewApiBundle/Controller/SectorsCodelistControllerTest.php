@@ -52,7 +52,7 @@ class SectorsCodelistControllerTest extends BMSServiceTestCase
     {
         $testSector = SectorEnum::all()[0];
 
-        $this->request('GET', '/api/basic/sectors/'.$testSector.'/subsectors');
+        $this->request('GET', '/api/basic/web-app/v1/sectors/'.$testSector.'/subsectors');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

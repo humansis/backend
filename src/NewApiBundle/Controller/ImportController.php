@@ -60,7 +60,7 @@ class ImportController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/imports/{id}")
+     * @Rest\Get("/web-app/v1/imports/{id}")
      *
      * @param Import $institution
      *
@@ -72,7 +72,7 @@ class ImportController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/imports")
+     * @Rest\Get("/web-app/v1/imports")
      *
      * @param Pagination            $pagination
      * @param ImportFilterInputType $filterInputType
@@ -89,7 +89,7 @@ class ImportController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/imports")
+     * @Rest\Post("/web-app/v1/imports")
      *
      * @param ImportCreateInputType $inputType
      *
@@ -106,7 +106,7 @@ class ImportController extends AbstractController
     }
 
     /**
-     * @Rest\Patch("/imports/{id}")
+     * @Rest\Patch("/web-app/v1/imports/{id}")
      *
      * @param Import               $import
      * @param ImportPatchInputType $inputType
@@ -121,7 +121,7 @@ class ImportController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/imports/{id}/files")
+     * @Rest\Get("/web-app/v1/imports/{id}/files")
      *
      * @param Import $import
      *
@@ -138,7 +138,7 @@ class ImportController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/imports/{id}/files")
+     * @Rest\Post("/web-app/v1/imports/{id}/files")
      *
      * @param Import  $import
      *
@@ -184,7 +184,7 @@ class ImportController extends AbstractController
     }
 
     /**
-     * @Rest\Delete("/imports/files/{id}")
+     * @Rest\Delete("/web-app/v1/imports/files/{id}")
      *
      * @param ImportFile $importFile
      *
@@ -206,7 +206,7 @@ class ImportController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/imports/{id}/duplicities")
+     * @Rest\Get("/web-app/v1/imports/{id}/duplicities")
      *
      * @param Import $import
      *
@@ -222,7 +222,7 @@ class ImportController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/imports/{id}/statistics")
+     * @Rest\Get("/web-app/v1/imports/{id}/statistics")
      *
      * @param Import $import
      *
@@ -236,7 +236,7 @@ class ImportController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/imports/invalid-files/{id}")
+     * @Rest\Get("/web-app/v1/imports/invalid-files/{id}")
      *
      * @param ImportInvalidFile $importInvalidFile
      *
@@ -266,7 +266,7 @@ class ImportController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/imports/{id}/invalid-files")
+     * @Rest\Get("/web-app/v1/imports/{id}/invalid-files")
      *
      * @param Import $import
      *
@@ -283,7 +283,7 @@ class ImportController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/imports/queue/{id}")
+     * @Rest\Get("/web-app/v1/imports/queue/{id}")
      *
      * @param ImportQueue $importQueue
      *
@@ -295,7 +295,7 @@ class ImportController extends AbstractController
     }
 
     /**
-     * @Rest\Patch("/imports/queue/{id}")
+     * @Rest\Patch("/web-app/v1/imports/queue/{id}")
      *
      * @param ImportQueue               $importQueue
      *
@@ -314,7 +314,7 @@ class ImportController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/imports/{id}/queue")
+     * @Rest\Get("/web-app/v1/imports/{id}/queue")
      *
      * @param Import $import
      *

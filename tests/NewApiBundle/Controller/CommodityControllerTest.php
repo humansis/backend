@@ -32,7 +32,7 @@ class CommodityControllerTest extends BMSServiceTestCase
         $commodity1 = $em->getRepository(Commodity::class)->findBy([])[0];
         $commodity2 = $em->getRepository(Commodity::class)->findBy([])[1];
 
-        $this->request('GET', '/api/basic/assistances/commodities?filter[id][]='.$commodity1->getId().'&filter[id][]='.$commodity2->getId());
+        $this->request('GET', '/api/basic/web-app/v1/assistances/commodities?filter[id][]='.$commodity1->getId().'&filter[id][]='.$commodity2->getId());
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -67,7 +67,7 @@ class CommodityControllerTest extends BMSServiceTestCase
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $assistance = $em->getRepository(\DistributionBundle\Entity\Assistance::class)->findBy(['archived' => 0])[0];
 
-        $this->request('GET', '/api/basic/assistances/'.$assistance->getId().'/commodities');
+        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/commodities');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
