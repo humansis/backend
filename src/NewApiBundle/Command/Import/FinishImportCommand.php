@@ -10,6 +10,7 @@ use NewApiBundle\Enum\ImportState;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
 class FinishImportCommand extends AbstractImportQueueCommand
 {
@@ -43,8 +44,12 @@ class FinishImportCommand extends AbstractImportQueueCommand
 
         /** @var Import $import */
         foreach ($this->imports as $import) {
-            $this->importService->finish($import);
-            $this->logImportDebug($import, "Finished");
+            try {
+                $this->importService->finish($import);
+                $this->logImportDebug($import, "Finished");
+            } catch (Throwable $e) {
+                $this->logImportWarning($import, 'Unknown Exception in finishing occurred. Exception message: '.$e->getMessage()); //TODO Error
+            }
         }
         $output->writeln('Done');
     }

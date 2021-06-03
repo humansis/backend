@@ -11,6 +11,7 @@ use NewApiBundle\Enum\ImportState;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
 class FindSimilarityDuplicityCommand extends AbstractImportQueueCommand
 {
@@ -57,14 +58,19 @@ class FindSimilarityDuplicityCommand extends AbstractImportQueueCommand
 
         /** @var Import $import */
         foreach ($imports as $import) {
-            $this->similarityChecker->check($import);
+            try {
+                $this->similarityChecker->check($import);
 
-            if (ImportState::SIMILARITY_CHECK_CORRECT === $import->getState()) {
-                $this->logImportDebug($import, "Similarity check found no duplicities");
-            } else {
-                $statistics = $this->importService->getStatistics($import);
-                $this->logImportInfo($import, "Similarity check found {$statistics->getAmountDuplicities()} duplicities");
+                if (ImportState::SIMILARITY_CHECK_CORRECT === $import->getState()) {
+                    $this->logImportDebug($import, "Similarity check found no duplicities");
+                } else {
+                    $statistics = $this->importService->getStatistics($import);
+                    $this->logImportInfo($import, "Similarity check found {$statistics->getAmountDuplicities()} duplicities");
+                }
+            } catch (Throwable $e) {
+                $this->logImportWarning($import, 'Unknown Exception in similarity check occurred. Exception message: '.$e->getMessage()); //TODO Error
             }
+
         }
 
         $this->manager->flush();

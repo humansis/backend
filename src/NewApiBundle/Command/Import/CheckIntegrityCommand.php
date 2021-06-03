@@ -12,6 +12,7 @@ use NewApiBundle\Enum\ImportState;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
 class CheckIntegrityCommand extends AbstractImportQueueCommand
 {
@@ -64,14 +65,19 @@ class CheckIntegrityCommand extends AbstractImportQueueCommand
         /** @var Import $import */
         foreach ($this->imports as $import) {
             $output->writeln($import->getTitle());
-            $this->integrityChecker->check($import);
-            $invalidFile = $this->importInvalidFileService->generateFile($import);
 
-            $statistics = $this->importService->getStatistics($import);
-            if (ImportState::INTEGRITY_CHECK_CORRECT === $import->getState()) {
-                $this->logImportInfo($import, "Integrity check was successful: {$statistics->getAmountIntegrityCorrect()} correct records");
-            } else {
-                $this->logImportInfo($import, "Integrity check found {$statistics->getAmountIntegrityFailed()} integrity errors");
+            try {
+                $this->integrityChecker->check($import);
+                $this->importInvalidFileService->generateFile($import);
+
+                $statistics = $this->importService->getStatistics($import);
+                if (ImportState::INTEGRITY_CHECK_CORRECT === $import->getState()) {
+                    $this->logImportInfo($import, "Integrity check was successful: {$statistics->getAmountIntegrityCorrect()} correct records");
+                } else {
+                    $this->logImportInfo($import, "Integrity check found {$statistics->getAmountIntegrityFailed()} integrity errors");
+                }
+            } catch (Throwable $e) {
+                $this->logImportWarning($import, 'Unknown Exception in integrity check occurred. Exception message: '.$e->getMessage()); //TODO Error
             }
         }
 
