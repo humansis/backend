@@ -14,9 +14,17 @@ use NewApiBundle\Request\Pagination;
 
 class ImportRepository extends EntityRepository
 {
-    public function findByParams(?Pagination $pagination = null, ?ImportFilterInputType $filter = null, ?ImportOrderInputType $orderBy = null): Paginator
+    public function findByParams(?string $countryIso3, ?Pagination $pagination = null, ?ImportFilterInputType $filter = null, ?ImportOrderInputType $orderBy = null): Paginator
     {
         $qb = $this->createQueryBuilder('i');
+        $qb->leftJoin('i.project', 'p');
+
+        if (null !== $countryIso3) {
+            $qb
+                ->andWhere('p.iso3 = :country')
+                ->setParameter('country', $countryIso3)
+            ;
+        }
 
         if ($filter) {
             if ($filter->hasFulltext()) {
@@ -41,10 +49,6 @@ class ImportRepository extends EntityRepository
             }
 
             if ($filter->hasProjects()) {
-                if (!in_array('p', $qb->getAllAliases())) {
-                    $qb->leftJoin('i.project', 'p');
-                }
-
                 $qb->andWhere('p.id IN (:projectIds)')
                     ->setParameter('projectIds', $filter->getProjects());
             }
@@ -63,10 +67,6 @@ class ImportRepository extends EntityRepository
                         $qb->orderBy('i.notes', $direction);
                         break;
                     case ImportOrderInputType::SORT_BY_PROJECT:
-                        if (!in_array('p', $qb->getAllAliases())) {
-                            $qb->leftJoin('i.project', 'p');
-                        }
-
                         $qb->orderBy('p.name', $direction);
                         break;
                     case ImportOrderInputType::SORT_BY_STATUS:

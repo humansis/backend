@@ -80,10 +80,10 @@ class ImportController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function list(Pagination $pagination, ImportFilterInputType $filterInputType, ImportOrderInputType $orderInputType): JsonResponse
+    public function list(Pagination $pagination, ImportFilterInputType $filterInputType, ImportOrderInputType $orderInputType, Request $request): JsonResponse
     {
         $data = $this->getDoctrine()->getRepository(Import::class)
-            ->findByParams($pagination, $filterInputType, $orderInputType);
+            ->findByParams($request->headers->get('country'), $pagination, $filterInputType, $orderInputType);
 
         return $this->json($data);
     }
