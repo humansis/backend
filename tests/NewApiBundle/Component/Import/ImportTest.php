@@ -295,9 +295,9 @@ class ImportTest extends KernelTestCase
         $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
 
         $fs = new Filesystem();
-        $fs->copy(__DIR__.'/../../Resources/SYR-WrongDatedImport-5HH.xlsx', $uploadedFilePath, true);
+        $fs->copy(__DIR__.'/../../Resources/KHM-WrongDateImport-2HH-3HHM.csv', $uploadedFilePath, true);
 
-        $file = new UploadedFile($uploadedFilePath, 'ImportWithWrongDateFormat.xlsx', null, null, true);
+        $file = new UploadedFile($uploadedFilePath, 'KHM-WrongDateImport-2HH-3HHM.csv', null, null, true);
         $importFile = $this->uploadService->uploadFile($import, $file, $this->getUser());
         $this->uploadService->load($importFile);
 
