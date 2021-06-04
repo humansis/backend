@@ -98,17 +98,17 @@ class ImportTest extends KernelTestCase
 
     public function correctFiles(): array
     {
-        return [
-            'minimal csv' => ['KHM-Import-2HH-3HHM.csv', 2],
-            'minimal ods' => ['KHM-Import-2HH-3HHM.ods', 2],
-            'minimal xlsx' => ['KHM-Import-4HH-0HHM.xlsx', 4],
+        return [ // filename, HH count, duplicity in reimport
+            'minimal csv' => ['KHM-Import-2HH-3HHM.csv', 2, 1],
+            'minimal ods' => ['KHM-Import-2HH-3HHM.ods', 2, 2],
+            'minimal xlsx' => ['KHM-Import-4HH-0HHM.xlsx', 4, 4],
         ];
     }
 
     /**
      * @dataProvider correctFiles
      */
-    public function testMinimalWorkflow($filename, $householdCount)
+    public function testMinimalWorkflow(string $filename, int $householdCount)
     {
         // create import
         $createImportInput = new ImportCreateInputType();
@@ -207,7 +207,7 @@ class ImportTest extends KernelTestCase
     /**
      * @dataProvider correctFiles
      */
-    public function testRepeatedUploadSameFile(string $filename)
+    public function testRepeatedUploadSameFile(string $filename, int $householdCount, int $expectedDuplicities)
     {
         $imports = [];
         foreach (['first', 'second'] as $runName) {
@@ -272,11 +272,12 @@ class ImportTest extends KernelTestCase
 
         $checkIdentityCommand = $this->application->find('app:import:identity');
         (new CommandTester($checkIdentityCommand))->execute(['import' => $import->getId()]);
+        $this->entityManager->refresh($import);
 
         $this->assertEquals(ImportState::IDENTITY_CHECK_FAILED, $import->getState());
-        foreach ($import->getImportQueue() as $item) {
-            $this->assertCount(1, $item->getDuplicities());
-        }
+
+        $stats = $this->importService->getStatistics($import);
+        $this->assertEquals($expectedDuplicities, $stats->getAmountDuplicities());
     }
 
     public function testErrorInIntegrityCheck()

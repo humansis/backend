@@ -66,7 +66,10 @@ class IdentityChecker
 
         $bnfs = $this->findInBeneficiaries($item);
         foreach ($bnfs as $bnf) {
-            if ($bnf->getHousehold()->getArchived()) continue;
+            if ($bnf->getHousehold()->getArchived()) {
+                $this->logImportDebug($item->getImport(), "Found duplicity with archived records: Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
+                continue;
+            }
             $importDuplicity = new ImportBeneficiaryDuplicity($item, $bnf->getHousehold());
             $importDuplicity->setDecideAt(new \DateTime('now'));
             $this->entityManager->persist($importDuplicity);
@@ -178,7 +181,14 @@ class IdentityChecker
     {
         $founded = [];
 
+        $index = -1;
         foreach ($current->getContent() as $c) {
+            $index++;
+            if (empty($c['ID Type']) || empty($c['ID Number'])) {
+                $this->logImportDebug($current->getImport(), "[Queue#{$current->getId()}|line#$index] Duplicity ignored because of missing ID information");
+                continue;
+            }
+
             /** @var NationalId[] $ids */
             $ids = $this->entityManager->getRepository(NationalId::class)->findBy([
                 'idType' => $c['ID Type'],
