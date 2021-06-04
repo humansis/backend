@@ -13,7 +13,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
-class FindSimilarityDuplicityCommand extends AbstractImportQueueCommand
+class SimilarityCheckCommand extends AbstractImportQueueCommand
 {
     /** @var SimilarityChecker */
     private $similarityChecker;

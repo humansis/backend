@@ -13,7 +13,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
-class FindIdentityDuplicityCommand extends AbstractImportQueueCommand
+class IdentityCheckCommand extends AbstractImportQueueCommand
 {
     /**
      * @var IdentityChecker

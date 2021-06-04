@@ -14,7 +14,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
-class CheckIntegrityCommand extends AbstractImportQueueCommand
+class IntegrityCheckCommand extends AbstractImportQueueCommand
 {
     /**
      * @var IntegrityChecker
