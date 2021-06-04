@@ -462,7 +462,7 @@ class AssistanceService
             throw new NotFoundHttpException("Project #$projectId missing");
         }
 
-        $assistances = $this->em->getRepository(Assistance::class)->findBy(['project' => $projectId]);
+        $assistances = $this->em->getRepository(Assistance::class)->findBy(['project' => $projectId, 'archived' => 0]);
         $exportableTable = [];
 
         $donors = implode(', ',
