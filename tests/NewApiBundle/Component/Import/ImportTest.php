@@ -99,9 +99,9 @@ class ImportTest extends KernelTestCase
     public function correctFiles(): array
     {
         return [
-            'minimal csv' => ['Import.csv', 2],
-            'minimal ods' => ['Import.ods', 2],
-            'minimal xlsx' => ['CorrectImport.xlsx', 4],
+            'minimal csv' => ['KHM-Import-2HH-3HHM.csv', 2],
+            'minimal ods' => ['KHM-Import-2HH-3HHM.ods', 2],
+            'minimal xlsx' => ['KHM-Import-4HH-0HHM.xlsx', 4],
         ];
     }
 
@@ -295,7 +295,7 @@ class ImportTest extends KernelTestCase
         $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
 
         $fs = new Filesystem();
-        $fs->copy(__DIR__.'/../../Resources/ImportWithWrongDateFormat.xlsx', $uploadedFilePath, true);
+        $fs->copy(__DIR__.'/../../Resources/SYR-WrongDatedImport-5HH.xlsx', $uploadedFilePath, true);
 
         $file = new UploadedFile($uploadedFilePath, 'ImportWithWrongDateFormat.xlsx', null, null, true);
         $importFile = $this->uploadService->uploadFile($import, $file, $this->getUser());

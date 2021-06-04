@@ -55,7 +55,7 @@ class UploadImportServiceTest extends KernelTestCase
         $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
 
         $fs = new Filesystem();
-        $fs->copy(__DIR__.'/../../Resources/Import.ods', $uploadedFilePath, true);
+        $fs->copy(__DIR__.'/../../Resources/KHM-Import-2HH-3HHM.ods', $uploadedFilePath, true);
 
         $file = new UploadedFile($uploadedFilePath, 'Import.ods', null, null, true);
 
@@ -66,7 +66,7 @@ class UploadImportServiceTest extends KernelTestCase
 
         $this->assertCount(2, $queue);
         $this->assertSame(ImportQueueState::NEW, $queue[0]->getState());
-        $this->assertSame('Import.ods', $queue[0]->getFile()->getFilename());
+        $this->assertSame('KHM-Import-2HH-3HHM.ods', $queue[0]->getFile()->getFilename());
         $this->assertSame($import->getId(), $queue[0]->getImport()->getId());
         $this->assertIsArray($queue[0]->getContent());
     }

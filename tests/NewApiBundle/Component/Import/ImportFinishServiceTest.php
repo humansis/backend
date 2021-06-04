@@ -23,7 +23,7 @@ use UserBundle\Entity\User;
 class ImportFinishServiceTest extends KernelTestCase
 {
     const TEST_COUNTRY = 'KHM';
-    // json copied from Import.ods
+    // json copied from KHM-Import-2HH-3HHM.ods
     const TEST_QUEUE_ITEM = '[{"Adm1": "Banteay Meanchey", "Adm2": null, "Adm3": null, "Adm4": null, "Head": "true", "F 65+": null, "M 65+": null, "Notes": "import from unittest", "Assets": null, "Gender": "Male", "F 0 - 2": null, "F 2 - 5": null, "ID Type": "National ID", "M 0 - 2": null, "M 2 - 5": null, "F 6 - 17": null, "Latitude": null, "M 6 - 17": null, "Camp name": null, "F 18 - 64": 1, "ID Number": 98349834, "Longitude": null, "M 18 - 64": 1, "Debt Level": 3, "Livelihood": "Government", "Tent number": null, "Income level": null, "Type phone 1": "Mobile", "Type phone 2": null, "Date of birth": "31-12-2000", "Proxy phone 1": null, "Proxy phone 2": null, "Address number": 123, "Address street": "Fake St", "Number phone 1": "10834243", "Number phone 2": null, "Prefix phone 1": "+855", "Prefix phone 2": null, "Shelter status": null, "Address postcode": 90210, "Local given name": "John", "Residency status": "Resident", "Local family name": "Smith", "English given name": null, "English family name": null, "Food Consumption Score": 3, "Support Received Types": "MPCA", "Vulnerability criteria": "disabled", "Coping Strategies Index": 2}]';
 
     /** @var EntityManagerInterface */

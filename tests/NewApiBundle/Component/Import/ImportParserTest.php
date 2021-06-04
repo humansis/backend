@@ -16,7 +16,7 @@ class ImportParserTest extends TestCase
     {
         parent::setUpBeforeClass();
 
-        self::$file = new File(__DIR__.'/../../Resources/Import.ods');
+        self::$file = new File(__DIR__.'/../../Resources/KHM-Import-2HH-3HHM.ods');
     }
 
     public function testParse()
