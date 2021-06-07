@@ -277,11 +277,6 @@ class HouseholdRepository extends AbstractCriteriaRepository
                 ->setParameter('locations', $filter->getLocations());
         }
 
-        if ($filter->hasId()) {
-            $qb->andWhere('hh.id IN (:ids)')
-                ->setParameter('ids', $filter->getId());
-        }
-
         if ($orderBy) {
             foreach ($orderBy->toArray() as $name => $direction) {
                 switch ($name) {

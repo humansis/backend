@@ -109,17 +109,6 @@ class HouseholdFilterInputType extends AbstractFilterInputType
      */
     protected $locations;
 
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("int", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $id;
-
     public static function vulnerabilities(): array
     {
         return array_keys(\BeneficiaryBundle\Entity\VulnerabilityCriterion::all());
@@ -223,18 +212,5 @@ class HouseholdFilterInputType extends AbstractFilterInputType
     public function getLocations()
     {
         return $this->locations;
-    }
-
-    public function hasId(): bool
-    {
-        return $this->has('id');
-    }
-
-    /**
-     * @return int[]
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 }
