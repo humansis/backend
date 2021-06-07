@@ -98,6 +98,10 @@ services:
         arguments:
             - '@NewApiBundle\Export\VulnerabilityScoreExport'
 
+    NewApiBundle\Controller\AssistanceSelectionController:
+        arguments:
+            - "@transformer.selection_criterion_field"
+
     NewApiBundle\Controller\CommonController:
         arguments:
             - '@NewApiBundle\Component\Country\Countries'

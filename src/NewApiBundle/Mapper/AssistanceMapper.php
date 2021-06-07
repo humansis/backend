@@ -146,4 +146,9 @@ class AssistanceMapper implements MapperInterface
     {
         return !$this->object->getValidated();
     }
+
+    public function getSelectionId(): int
+    {
+        return $this->object->getAssistanceSelection()->getId();
+    }
 }
