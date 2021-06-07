@@ -55,6 +55,11 @@ parameters:
           currency: AMD
           adms: [ Province, District, Commune, Village ]
 
+        - name: Zambia
+          iso3: ZMB
+          currency: ZMW
+          adms: [ Region, District, Ward, Constituency ]
+
 framework:
     #esi: ~
     translator:
