@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Command\Import;
 
 use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Component\Import\UploadImportService;
 use NewApiBundle\Entity\ImportFile;
 use Psr\Log\LoggerInterface;
@@ -17,9 +18,9 @@ class LoadFileCommand extends AbstractImportQueueCommand
      */
     private $uploadImportService;
 
-    public function __construct(ObjectManager $manager, LoggerInterface $importLogger, UploadImportService $uploadImportService)
+    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger, UploadImportService $uploadImportService)
     {
-        parent::__construct($manager, $importLogger);
+        parent::__construct($manager, $importService, $importLogger);
 
         $this->uploadImportService = $uploadImportService;
     }

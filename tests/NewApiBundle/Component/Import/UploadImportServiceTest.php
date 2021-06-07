@@ -57,7 +57,7 @@ class UploadImportServiceTest extends KernelTestCase
         $fs = new Filesystem();
         $fs->copy(__DIR__.'/../../Resources/KHM-Import-2HH-3HHM.ods', $uploadedFilePath, true);
 
-        $file = new UploadedFile($uploadedFilePath, 'Import.ods', null, null, true);
+        $file = new UploadedFile($uploadedFilePath, 'KHM-Import-2HH-3HHM.ods', null, null, true);
 
         $importFile = $this->uploadService->uploadFile($import, $file, $user);
         $this->uploadService->load($importFile);

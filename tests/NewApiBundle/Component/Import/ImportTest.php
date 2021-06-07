@@ -126,7 +126,7 @@ class ImportTest extends KernelTestCase
         $fs = new Filesystem();
         $fs->copy(__DIR__.'/../../Resources/'.$filename, $uploadedFilePath, true);
 
-        $file = new UploadedFile($uploadedFilePath, 'Import.ods', null, null, true);
+        $file = new UploadedFile($uploadedFilePath, $filename, null, null, true);
         $importFile = $this->uploadService->uploadFile($import, $file, $this->getUser());
         $this->uploadService->load($importFile);
 
@@ -222,8 +222,14 @@ class ImportTest extends KernelTestCase
             $this->assertEquals(ImportState::NEW, $import->getState());
 
             // add file into import
-            $file = new UploadedFile(__DIR__.'/../../Resources/'.$filename, $filename);
-            $importFile = $this->uploadService->upload($import, $file, $this->getUser());
+            $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
+
+            $fs = new Filesystem();
+            $fs->copy(__DIR__.'/../../Resources/'.$filename, $uploadedFilePath, true);
+
+            $file = new UploadedFile($uploadedFilePath, $filename, null, null, true);
+            $importFile = $this->uploadService->uploadFile($import, $file, $this->getUser());
+            $this->uploadService->load($importFile);
 
             // start integrity check
             $this->importService->updateStatus($import, ImportState::INTEGRITY_CHECKING);
@@ -344,8 +350,14 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(ImportState::NEW, $import->getState());
 
         // add file into import
-        $file = new UploadedFile(__DIR__.'/../../Resources/'.$filename, $filename);
-        $importFile = $this->uploadService->upload($import, $file, $this->getUser());
+        $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
+
+        $fs = new Filesystem();
+        $fs->copy(__DIR__.'/../../Resources/'.$filename, $uploadedFilePath, true);
+
+        $file = new UploadedFile($uploadedFilePath, $filename, null, null, true);
+        $importFile = $this->uploadService->uploadFile($import, $file, $this->getUser());
+        $this->uploadService->load($importFile);
 
         $this->assertNotNull($importFile->getId(), "ImportFile wasn't saved to DB");
 

@@ -5,6 +5,7 @@ namespace NewApiBundle\Command\Import;
 
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Component\Import\ImportInvalidFileService;
+use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Repository\ImportRepository;
 use Psr\Log\LoggerInterface;
@@ -18,9 +19,9 @@ class CleanCommand extends AbstractImportQueueCommand
      */
     private $importInvalidFileService;
 
-    public function __construct(ObjectManager $manager, LoggerInterface $importLogger, ImportInvalidFileService $importInvalidFileService)
+    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger, ImportInvalidFileService $importInvalidFileService)
     {
-        parent::__construct($manager, $importLogger);
+        parent::__construct($manager, $importService, $importLogger);
 
         $this->importInvalidFileService = $importInvalidFileService;
     }
