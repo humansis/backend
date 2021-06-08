@@ -3,27 +3,28 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Command\Import;
 
-use BeneficiaryBundle\Entity\Person;
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Component\Import\IdentityChecker;
+use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Enum\ImportState;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
-class FindIdentityDuplicityCommand extends AbstractImportQueueCommand
+class IdentityCheckCommand extends AbstractImportQueueCommand
 {
     /**
      * @var IdentityChecker
      */
     private $identityChecker;
 
-    public function __construct(ObjectManager $manager, LoggerInterface $importLogger,
+    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger,
                                 IdentityChecker $identityChecker
     )
     {
-        parent::__construct($manager, $importLogger);
+        parent::__construct($manager, $importService, $importLogger);
         $this->identityChecker = $identityChecker;
     }
 
@@ -53,23 +54,26 @@ class FindIdentityDuplicityCommand extends AbstractImportQueueCommand
             $this->logger->debug('app:import:integrity affects no imports');
         }
 
-        $output->writeln([
-            "Identity check of ".count($this->imports)." imports",
-        ]);
+        $output->write($this->getName()." finding identical duplicities in ".count($this->imports)." imports ");
 
         /** @var Import $import */
         foreach ($this->imports as $import) {
             $output->writeln($import->getTitle());
-            $this->identityChecker->check($import);
 
-            if (ImportState::IDENTITY_CHECK_CORRECT === $import->getState()) {
-                $this->logImportDebug($import, "Identity check found no duplicities");
-            } else {
-                $duplicities = -1;
-                $this->logImportInfo($import, "Identity check found $duplicities duplicities");
+            try {
+                $this->identityChecker->check($import);
+
+                if (ImportState::IDENTITY_CHECK_CORRECT === $import->getState()) {
+                    $this->logImportDebug($import, "Identity check found no duplicities");
+                } else {
+                    $statistics = $this->importService->getStatistics($import);
+                    $this->logImportInfo($import, "Identity check found {$statistics->getAmountDuplicities()} duplicities");
+                }
+            } catch (Throwable $e) {
+                $this->logImportWarning($import, 'Unknown Exception in identity check occurred. Exception message: '.$e->getMessage()); //TODO Error
             }
         }
 
-        $output->writeln('Identity check completed');
+        $output->writeln('Done');
     }
 }

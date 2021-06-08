@@ -8,6 +8,7 @@ final class ImportQueueState
     const NEW = 'New';
     const VALID = 'Valid';
     const INVALID = 'Invalid';
+    const INVALID_EXPORTED = 'Invalid Exported';
     const SUSPICIOUS = 'Suspicious';
     const TO_CREATE = 'To Create';
     const TO_UPDATE = 'To Update';
@@ -20,6 +21,7 @@ final class ImportQueueState
             self::NEW,
             self::VALID,
             self::INVALID,
+            self::INVALID_EXPORTED,
             self::SUSPICIOUS,
             self::TO_CREATE,
             self::TO_UPDATE,

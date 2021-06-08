@@ -19,7 +19,7 @@ use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\InputType\DuplicityResolveInputType;
 use NewApiBundle\InputType\ImportCreateInputType;
-use NewApiBundle\InputType\ImportUpdateStatusInputType;
+use NewApiBundle\InputType\ImportPatchInputType;
 use NewApiBundle\Repository\ImportQueueRepository;
 use ProjectBundle\Entity\Project;
 use Psr\Log\LoggerInterface;
@@ -67,17 +67,30 @@ class ImportService
         return $import;
     }
 
-    public function updateStatus(Import $import, ImportUpdateStatusInputType $inputType): void
+    public function patch(Import $import, ImportPatchInputType $inputType): void
+    {
+        if (!is_null($inputType->getDescription())) {
+            $import->setNotes($inputType->getDescription());
+        }
+
+        if (!is_null($inputType->getStatus())) {
+            $this->updateStatus($import, $inputType->getStatus());
+        }
+
+        $this->em->flush();
+    }
+
+    public function updateStatus(Import $import, string $status): void
     {
         // there can be only one running import in country in one time
-        if (ImportState::IMPORTING === $inputType->getStatus()
+        if (ImportState::IMPORTING === $status
             && !$this->em->getRepository(Import::class)
-                ->isCountryFreeFromImporting($import->getProject()->getIso3())) {
+                ->isCountryFreeFromImporting($import, $import->getProject()->getIso3())) {
             throw new BadRequestHttpException("There can be only one finishing import in country in single time.");
         }
 
         $before = $import->getState();
-        $import->setState($inputType->getStatus());
+        $import->setState($status);
 
         $this->logInfo($import, "Changed state from '$before' to '{$import->getState()}'");
 
@@ -101,7 +114,10 @@ class ImportService
 
         $statistics->setTotalEntries($import->getImportQueue()->count());
         $statistics->setAmountIntegrityCorrect($repository->getTotalByImportAndStatus($import, ImportQueueState::VALID));
-        $statistics->setAmountIntegrityFailed($repository->getTotalByImportAndStatus($import, ImportQueueState::INVALID));
+        $statistics->setAmountIntegrityFailed(
+            $repository->getTotalByImportAndStatus($import, ImportQueueState::INVALID)
+            + $repository->getTotalByImportAndStatus($import, ImportQueueState::INVALID_EXPORTED)
+        );
         $statistics->setAmountDuplicities($repository->getTotalByImportAndStatus($import, ImportQueueState::SUSPICIOUS));
         $statistics->setAmountDuplicitiesResolved($repository->getTotalReadyForSave($import));
         $statistics->setAmountEntriesToImport($repository->getTotalReadyForSave($import));
@@ -173,12 +189,13 @@ class ImportService
             $this->finishUpdateQueue($item, $import);
         }
 
-        foreach ($queueRepo->findBy([
+        // will be removed in clean command
+        /*foreach ($queueRepo->findBy([
             'import' => $import,
             'state' => ImportQueueState::TO_IGNORE,
         ]) as $item) {
             $this->removeFinishedQueue($item);
-        }
+        }*/
 
         foreach ($queueRepo->findBy([
             'import' => $import,
@@ -189,9 +206,17 @@ class ImportService
             if (null == $acceptedDuplicity) continue;
 
             $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
-            $this->removeFinishedQueue($item);
+            //$this->removeFinishedQueue($item);
             $this->logInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
         }
+
+        // will be removed in clean command
+        /*foreach ($queueRepo->findBy([
+            'import' => $import,
+            'state' => ImportQueueState::INVALID_EXPORTED,
+        ]) as $item) {
+            $this->removeFinishedQueue($item);
+        }*/
 
         $import->setState(ImportState::FINISHED);
         $this->em->persist($import);
@@ -260,7 +285,7 @@ class ImportService
         } else {
             $this->linkHouseholdToQueue($import, $creaedHousehold, $import->getCreatedBy());
         }
-        $this->removeFinishedQueue($item);
+        //$this->removeFinishedQueue($item);
         $this->logInfo($import, "Created Household #{$creaedHousehold->getId()}");
     }
 
@@ -293,7 +318,7 @@ class ImportService
         $this->householdService->update($updatedHousehold, $householdUpdateInputType);
 
         $this->linkHouseholdToQueue($import, $updatedHousehold, $acceptedDuplicity->getDecideBy());
-        $this->removeFinishedQueue($item);
+        //$this->removeFinishedQueue($item);
         $this->logInfo($import, "Updated Household #{$updatedHousehold->getId()}");
     }
 

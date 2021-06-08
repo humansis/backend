@@ -57,27 +57,36 @@ class IntegrityChecker
     protected function checkOne(ImportQueue $item)
     {
         $iso3 = $item->getImport()->getProject()->getIso3();
-        $content = $item->getContent();
 
-        $headContent = $content[0];
-        $memberContents = array_slice($content, 1);
-
+        $message = [];
         $violationList = new ConstraintViolationList();
         $violationList->addAll(
-            $this->validator->validate(new Integrity\HouseholdHead($headContent, $iso3, $this->entityManager))
+            $this->validator->validate(new Integrity\HouseholdHead($item->getHeadContent(), $iso3, $this->entityManager))
         );
+        $anyViolation = false;
+        $message[0] = [];
+        foreach ($violationList as $violation) {
+            $message[0][] = $this->buildErrorMessage($violation);
+            $anyViolation = true;
+        }
 
-        foreach ($memberContents as $memberContent) {
+        $index = 1;
+        foreach ($item->getMemberContents() as $memberContent) {
+            $message[$index] = [];
+            $violationList = new ConstraintViolationList();
             $violationList->addAll(
                 $this->validator->validate(new Integrity\HouseholdMember($memberContent, $iso3, $this->entityManager))
             );
+
+            foreach ($violationList as $violation) {
+                $message[$index][] = $this->buildErrorMessage($violation);
+                $anyViolation = true;
+            }
+            $index++;
         }
 
-        if ($violationList->count() > 1) {
-            $message = [];
-            foreach ($violationList as $violation) {
-                $message[] = $this->buildErrorMessage($violation);
-            }
+        if ($anyViolation) {
+            $message['raw'] = $item->getContent();
 
             $item->setMessage(json_encode($message));
             $item->setState(ImportQueueState::INVALID);
@@ -121,6 +130,6 @@ class IntegrityChecker
             $mapping = array_flip(HouseholdExportCSVService::MAPPING_PROPERTIES);
         }
 
-        return ['column' => $mapping[$property], 'violation' => $violation->getMessage()];
+        return ['column' => $mapping[$property], 'violation' => $violation->getMessage(), 'value' => $violation->getInvalidValue()];
     }
 }

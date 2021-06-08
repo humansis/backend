@@ -7,10 +7,12 @@ use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportInvalidFile;
 use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Repository\ImportQueueRepository;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Filesystem\Filesystem;
 
 class ImportInvalidFileService
@@ -66,7 +68,8 @@ class ImportInvalidFileService
 
     private function generateInvalidFileName(Import $import): string
     {
-        return $import->getTitle().'-'.$import->getId().'-invalid-entries_'.time().'.xlsx';
+        $slugger = new AsciiSlugger();
+        return $slugger->slug($import->getTitle()).'-'.$import->getId().'-invalid-entries_'.time().'.xlsx';
     }
 
     private function saveToFile(Spreadsheet $spreadsheet, string $name): void
@@ -94,10 +97,11 @@ class ImportInvalidFileService
         foreach ($entries as $entry) {
             $currentRow = ImportTemplate::FIRST_ENTRY_ROW;
             $currentColumn = 1;
+            echo "Errors = {$entry->getMessage()}\n";
 
-            $invalidColumns = $this->parseInvalidColumns($entry->getMessage());
-
-            foreach ($entry->getContent() as $row) {
+            foreach ($entry->getContent() as $i => $row) {
+                echo "row $i\n";
+                $invalidColumns = $this->parseInvalidColumns($entry->getMessage(), $i);
 
                 foreach ($header as $column) {
                     if (isset($row[$column])) {
@@ -122,11 +126,11 @@ class ImportInvalidFileService
                 ++$currentRow;
             }
 
-            $this->em->remove($entry);
+            $entry->setState(ImportQueueState::INVALID_EXPORTED);
         }
     }
 
-    private function parseInvalidColumns(?string $messageJson): array
+    private function parseInvalidColumns(?string $messageJson, $rowNumber): array
     {
         try {
             //dept=512 is default value
@@ -137,7 +141,7 @@ class ImportInvalidFileService
 
         return array_map(function (array $messages) {
             return $messages['column'];
-        }, $messages);
+        }, $messages[$rowNumber]);
     }
 
     public function removeInvalidFiles(Import $import): void

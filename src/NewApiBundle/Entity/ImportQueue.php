@@ -31,7 +31,7 @@ class ImportQueue
     private $import;
 
     /**
-     * @var ImportBeneficiaryDuplicity[]
+     * @var ImportBeneficiaryDuplicity[]|Collection
      *
      * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiaryDuplicity", mappedBy="ours")
      */
@@ -40,7 +40,7 @@ class ImportQueue
     /**
      * @var ImportFile
      *
-     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ImportFile")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ImportFile", inversedBy="importQueues")
      */
     private $file;
 
@@ -66,25 +66,42 @@ class ImportQueue
     private $message;
 
     /**
-     * @var ImportBeneficiaryDuplicity
+     * @var ImportBeneficiaryDuplicity[]|Collection
      *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiaryDuplicity", mappedBy="ours")
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiaryDuplicity", mappedBy="ours", cascade={"remove"})
      */
     private $importBeneficiaryDuplicities;
 
-    public function __construct(Import $import, ImportFile $file, $content)
+    /**
+     * @var ImportQueueDuplicity
+     *
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportQueueDuplicity", mappedBy="ours", cascade={"remove"})
+     */
+    private $importQueueDuplicitiesOurs;
+
+    /**
+     * @var ImportQueueDuplicity
+     *
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportQueueDuplicity", mappedBy="theirs", cascade={"remove"})
+     */
+    private $importQueueDuplicitiesTheirs;
+
+    public function __construct(Import $import, ImportFile $file, array $content)
     {
         $this->import = $import;
         $this->file = $file;
         $this->content = $content;
         $this->state = ImportQueueState::NEW;
         $this->duplicities = new ArrayCollection();
+        $this->importBeneficiaryDuplicities = new ArrayCollection();
+        $this->importQueueDuplicitiesOurs = new ArrayCollection();
+        $this->importQueueDuplicitiesTheirs = new ArrayCollection();
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -136,6 +153,22 @@ class ImportQueue
     }
 
     /**
+     * @return array json object representation
+     */
+    public function getHeadContent(): array
+    {
+        return $this->content[0];
+    }
+
+    /**
+     * @return array json object representation
+     */
+    public function getMemberContents(): array
+    {
+        return array_slice($this->content, 1);
+    }
+
+    /**
      * @return string one of ImportQueueState::* values
      */
     public function getState(): string
@@ -171,19 +204,32 @@ class ImportQueue
         $this->message = $message;
     }
 
-    /**
-     * @return ImportBeneficiaryDuplicity
-     */
-    public function getImportBeneficiaryDuplicities(): ImportBeneficiaryDuplicity
+    public function __toString()
     {
-        return $this->importBeneficiaryDuplicities;
+        return "ImportQueue#{$this->getId()}";
     }
 
     /**
-     * @param ImportBeneficiaryDuplicity $importBeneficiaryDuplicities
+     * @return ImportQueueDuplicity
      */
-    public function setImportBeneficiaryDuplicities(ImportBeneficiaryDuplicity $importBeneficiaryDuplicities): void
+    public function getImportQueueDuplicitiesOurs(): ImportQueueDuplicity
     {
-        $this->importBeneficiaryDuplicities = $importBeneficiaryDuplicities;
+        return $this->importQueueDuplicitiesOurs;
+    }
+
+    /**
+     * @return ImportQueueDuplicity
+     */
+    public function getImportQueueDuplicitiesTheirs()
+    {
+        return $this->importQueueDuplicitiesTheirs;
+    }
+
+    /**
+     * @return Collection|ImportBeneficiaryDuplicity[]
+     */
+    public function getImportBeneficiaryDuplicities()
+    {
+        return $this->importBeneficiaryDuplicities;
     }
 }

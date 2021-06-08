@@ -26,21 +26,21 @@ class ImportBeneficiary
     /**
      * @var Import
      *
-     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Import")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Import", inversedBy="importBeneficiaries")
      */
     private $import;
 
     /**
      * @var Beneficiary
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary")
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary", inversedBy="importBeneficiaries")
      */
     private $beneficiary;
 
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="importBeneficiaries")
      */
     private $createdBy;
 

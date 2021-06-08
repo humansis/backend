@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use UserBundle\Entity\User;
 
@@ -44,14 +45,14 @@ class ImportFile
     /**
      * @var Import
      *
-     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Import", inversedBy="files")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Import", inversedBy="importFiles")
      */
     private $import;
 
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="importFiles")
      */
     private $user;
 
@@ -61,6 +62,13 @@ class ImportFile
      * @ORM\Column(name="created_at", type="datetimetz", nullable=true)
      */
     private $createdAt;
+
+    /**
+     * @var ImportQueue[]|Collection
+     *
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportQueue", mappedBy="file", cascade={"remove"})
+     */
+    private $importQueues;
 
     public function __construct(string $filename, Import $import, User $user)
     {
@@ -72,9 +80,9 @@ class ImportFile
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -109,6 +117,27 @@ class ImportFile
     public function getCreatedAt(): \DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    public function __toString()
+    {
+        return "ImportFile#{$this->getId()} ({$this->getFilename()})";
+    }
+
+    /**
+     * @return Collection|ImportQueue[]
+     */
+    public function getImportQueues()
+    {
+        return $this->importQueues;
+    }
+
+    /**
+     * @param Collection|ImportQueue[] $importQueues
+     */
+    public function setImportQueues($importQueues): void
+    {
+        $this->importQueues = $importQueues;
     }
 
     /**

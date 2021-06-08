@@ -18,7 +18,7 @@ use NewApiBundle\InputType\DuplicityResolveInputType;
 use NewApiBundle\InputType\ImportCreateInputType;
 use NewApiBundle\InputType\ImportFilterInputType;
 use NewApiBundle\InputType\ImportOrderInputType;
-use NewApiBundle\InputType\ImportUpdateStatusInputType;
+use NewApiBundle\InputType\ImportPatchInputType;
 use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -80,10 +80,10 @@ class ImportController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function list(Pagination $pagination, ImportFilterInputType $filterInputType, ImportOrderInputType $orderInputType): JsonResponse
+    public function list(Pagination $pagination, ImportFilterInputType $filterInputType, ImportOrderInputType $orderInputType, Request $request): JsonResponse
     {
         $data = $this->getDoctrine()->getRepository(Import::class)
-            ->findByParams($pagination, $filterInputType, $orderInputType);
+            ->findByParams($request->headers->get('country'), $pagination, $filterInputType, $orderInputType);
 
         return $this->json($data);
     }
@@ -108,14 +108,14 @@ class ImportController extends AbstractController
     /**
      * @Rest\Patch("/imports/{id}")
      *
-     * @param Import                      $import
-     * @param ImportUpdateStatusInputType $inputType
+     * @param Import               $import
+     * @param ImportPatchInputType $inputType
      *
      * @return JsonResponse
      */
-    public function updateStatus(Import $import, ImportUpdateStatusInputType $inputType): JsonResponse
+    public function updateStatus(Import $import, ImportPatchInputType $inputType): JsonResponse
     {
-        $this->importService->updateStatus($import, $inputType);
+        $this->importService->patch($import, $inputType);
 
         return $this->json(null, Response::HTTP_ACCEPTED);
     }

@@ -13,6 +13,7 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\Entity\Import;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\Request\Pagination;
@@ -147,6 +148,16 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $q = $qb->leftJoin('b.assistanceBeneficiary', 'db')
             ->where('db.assistance = :assistance')
             ->setParameter('assistance', $assistance);
+
+        return $q->getQuery()->getResult();
+    }
+
+    public function getImported(Import $import)
+    {
+        $qb = $this->createQueryBuilder('b');
+        $q = $qb->leftJoin('b.importBeneficiaries', 'ib')
+            ->where('ib.import = :import')
+            ->setParameter('import', $import);
 
         return $q->getQuery()->getResult();
     }

@@ -9,18 +9,21 @@ use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportQueue;
-use NewApiBundle\Entity\ImportQueueDuplicity;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
+use Psr\Log\LoggerInterface;
 
 class IdentityChecker
 {
+    use ImportLoggerTrait;
+
     /** @var EntityManagerInterface */
     private $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->entityManager = $entityManager;
+        $this->logger = $logger;
     }
 
     public function check(Import $import)
@@ -48,6 +51,7 @@ class IdentityChecker
     {
         $found = false;
 
+        /* probably works but we have bad testing data
         $ids = $this->findInQueue($item);
         foreach ($ids as $id) {
             $importDuplicity = new ImportQueueDuplicity($item, $id);
@@ -58,15 +62,21 @@ class IdentityChecker
             $this->entityManager->persist($item);
             $found = true;
         }
+        */
 
         $bnfs = $this->findInBeneficiaries($item);
         foreach ($bnfs as $bnf) {
-            $importDuplicity = new ImportBeneficiaryDuplicity($item, $bnf);
+            if ($bnf->getHousehold()->getArchived()) {
+                $this->logImportDebug($item->getImport(), "Found duplicity with archived records: Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
+                continue;
+            }
+            $importDuplicity = new ImportBeneficiaryDuplicity($item, $bnf->getHousehold());
             $importDuplicity->setDecideAt(new \DateTime('now'));
             $this->entityManager->persist($importDuplicity);
 
             $item->setState(ImportQueueState::SUSPICIOUS);
             $this->entityManager->persist($item);
+            $this->logImportInfo($item->getImport(), "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
             $found = true;
         }
 
@@ -76,26 +86,37 @@ class IdentityChecker
 
     private function preCheck(Import $import)
     {
-        $this->entityManager->createQueryBuilder()
+        //does not work - doctrine won't arrange queries in proper order
+        /*$this->entityManager->createQueryBuilder()
             ->update(ImportQueue::class, 'iq')
             ->set('iq.state', '?1')
             ->andWhere('iq.import = ?2')
             ->setParameter('1', ImportQueueState::NEW)
             ->setParameter('2', $import->getId())
             ->getQuery()
-            ->execute();
+            ->execute();*/
+
+        $importQueues = $this->entityManager->getRepository(ImportQueue::class)
+            ->findBy([
+                'import' => $import,
+            ]);
+
+        /** @var ImportQueue $importQueue */
+        foreach ($importQueues as $importQueue) {
+            $importQueue->setState(ImportQueueState::NEW);
+        }
+
+        $this->entityManager->flush();
     }
 
     private function postCheck(Import $import)
     {
-        $queue = $this->getItemsToCheck($import);
-        if (0 === count($queue)) {
-            $isInvalid = $this->isImportQueueInvalid($import);
-            $import->setState($isInvalid ? ImportState::IDENTITY_CHECK_FAILED : ImportState::IDENTITY_CHECK_CORRECT);
+        $isInvalid = $this->isImportQueueInvalid($import);
+        $import->setState($isInvalid ? ImportState::IDENTITY_CHECK_FAILED : ImportState::IDENTITY_CHECK_CORRECT);
 
-            $this->entityManager->persist($import);
-            $this->entityManager->flush();
-        }
+        $this->entityManager->persist($import);
+        $this->entityManager->flush();
+        $this->logImportDebug($import, "Ended with status ".$import->getState());
     }
 
     /**
@@ -160,7 +181,14 @@ class IdentityChecker
     {
         $founded = [];
 
+        $index = -1;
         foreach ($current->getContent() as $c) {
+            $index++;
+            if (empty($c['ID Type']) || empty($c['ID Number'])) {
+                $this->logImportDebug($current->getImport(), "[Queue#{$current->getId()}|line#$index] Duplicity ignored because of missing ID information");
+                continue;
+            }
+
             /** @var NationalId[] $ids */
             $ids = $this->entityManager->getRepository(NationalId::class)->findBy([
                 'idType' => $c['ID Type'],

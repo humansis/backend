@@ -7,16 +7,32 @@ use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class ImportUpdateStatusInputType implements InputTypeInterface
+class ImportPatchInputType implements InputTypeInterface
 {
     /**
-     * @var string
+     * @var string|null
      *
      * @Assert\Type("string")
-     * @Assert\NotNull
      * @Assert\Choice(callback="allowedStates")
      */
     private $status;
+
+    /**
+     * @var string|null
+     *
+     * @Assert\Type("string")
+     */
+    private $description;
+
+    /**
+     * ImportUpdateStatusInputType constructor.
+     *
+     * @param string|null $status
+     */
+    public function __construct(?string $status = null)
+    {
+        $this->status = $status;
+    }
 
     public static function allowedStates(): array
     {
@@ -30,7 +46,7 @@ class ImportUpdateStatusInputType implements InputTypeInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getStatus()
     {
@@ -38,10 +54,26 @@ class ImportUpdateStatusInputType implements InputTypeInterface
     }
 
     /**
-     * @param string $status
+     * @param string|null $status
      */
     public function setStatus($status)
     {
         $this->status = $status;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string|null $description
+     */
+    public function setDescription(?string $description): void
+    {
+        $this->description = $description;
     }
 }

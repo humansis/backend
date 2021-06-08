@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace NewApiBundle\Command\Import;
 
 use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Component\Import\ImportLoggerTrait;
+use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
 use Psr\Log\LoggerInterface;
@@ -14,23 +16,26 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractImportQueueCommand extends Command
 {
+    use ImportLoggerTrait;
+
     /** @var Import[] */
     protected $imports = [];
     /** @var ObjectManager */
     protected $manager;
-    /** @var LoggerInterface */
-    protected $logger;
+    /** @var ImportService */
+    protected $importService;
 
     /**
      * AbstractImportQueueCommand constructor.
      *
      * @param ObjectManager $manager
      */
-    public function __construct(ObjectManager $manager, LoggerInterface $importLogger)
+    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger)
     {
         parent::__construct();
         $this->manager = $manager;
         $this->logger = $importLogger;
+        $this->importService = $importService;
     }
 
     protected function configure()
@@ -63,15 +68,17 @@ abstract class AbstractImportQueueCommand extends Command
      */
     protected function logAffectedImports(iterable $imports, string $commandType): void
     {
+        $count = 0;
         $importsByCountry = [];
         foreach ($imports as $import) {
             $importsByCountry[$import->getProject()->getIso3()][] = '#'.$import->getId();
+            $count++;
         }
         $countryList = [];
         foreach ($importsByCountry as $country => $ids) {
             $countryList[] = $country.'('.implode(', ', $ids).')';
         }
-        $this->logger->info("$commandType will affect imports: ".implode(' ', $countryList));
+        $this->logger->info("$commandType will affect $count imports: ".implode(' ', $countryList));
     }
 
     protected function logImportInfo(Import $import, string $message): void

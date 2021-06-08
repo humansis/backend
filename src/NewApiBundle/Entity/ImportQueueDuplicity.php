@@ -27,14 +27,14 @@ class ImportQueueDuplicity
     /**
      * @var ImportQueue
      *
-     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ImportQueue")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ImportQueue", inversedBy="importQueueDuplicitiesOurs")
      */
     private $ours;
 
     /**
      * @var ImportQueue
      *
-     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ImportQueue")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ImportQueue", inversedBy="importQueueDuplicitiesTheirs")
      */
     private $theirs;
 
@@ -48,7 +48,7 @@ class ImportQueueDuplicity
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="importQueueDuplicities")
      */
     private $decideBy;
 
