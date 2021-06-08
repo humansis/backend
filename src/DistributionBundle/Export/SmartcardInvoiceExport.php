@@ -158,7 +158,7 @@ class SmartcardInvoiceExport
 
         // wide header "Invoice"
         $worksheet->mergeCells('B5:J5');
-        $worksheet->setCellValue("B5", "Invoice".' '.$translator->trans("Invoice", [], 'invoice'));
+        $worksheet->setCellValue("B5", "Invoice");
         $worksheet->getStyle('B5')->getFont()
             ->setBold(true)
             ->setSize(22)
