@@ -97,10 +97,8 @@ class ImportInvalidFileService
         foreach ($entries as $entry) {
             $currentRow = ImportTemplate::FIRST_ENTRY_ROW;
             $currentColumn = 1;
-            echo "Errors = {$entry->getMessage()}\n";
 
             foreach ($entry->getContent() as $i => $row) {
-                echo "row $i\n";
                 $invalidColumns = $this->parseInvalidColumns($entry->getMessage(), $i);
 
                 foreach ($header as $column) {
