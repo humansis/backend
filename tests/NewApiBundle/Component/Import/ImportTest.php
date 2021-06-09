@@ -373,6 +373,13 @@ class ImportTest extends KernelTestCase
         ]);
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:integrity failed");
         $this->assertEquals(ImportState::INTEGRITY_CHECK_FAILED, $import->getState());
+
+        $cleanCommand = $this->application->find('app:import:clean');
+        $commandTester = new CommandTester($cleanCommand);
+        $commandTester->execute([
+            'import' => $import->getId(),
+        ]);
+        $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:clean failed");
     }
 
     private function createBlankHousehold(Project $project): Household

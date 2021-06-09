@@ -148,7 +148,7 @@ class ImportInvalidFileService
     {
         $fs = new Filesystem();
 
-        foreach ($import->getInvalidFiles() as $invalidFile) {
+        foreach ($import->getImportInvalidFiles() as $invalidFile) {
             $fs->remove($this->importInvalidFilesDirectory.'/'.$invalidFile->getFilename());
 
             $this->em->remove($invalidFile);
