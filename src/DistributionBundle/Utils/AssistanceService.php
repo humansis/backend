@@ -877,4 +877,57 @@ class AssistanceService
 
         return $distributionArray;
     }
+
+    /**
+     * @param Assistance $assistance
+     * @param string $type
+     * @return mixed
+     */
+    public function exportGeneralReliefDistributionToCsv(Assistance $assistance, string $type)
+    {
+        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findByAssistance($assistance);
+
+        $generalreliefs = array();
+        $exportableTable = array();
+        foreach ($distributionBeneficiaries as $db) {
+            $generalrelief = $this->em->getRepository(GeneralReliefItem::class)->findOneByAssistanceBeneficiary($db);
+
+            if ($generalrelief) {
+                array_push($generalreliefs, $generalrelief);
+            }
+        }
+
+        foreach ($generalreliefs as $generalrelief) {
+            $beneficiary = $generalrelief->getAssistanceBeneficiary()->getBeneficiary();
+            $commodityNames = implode(', ',
+                array_map(
+                    function($commodity) { return  $commodity->getModalityType()->getName(); },
+                    $assistance->getCommodities()->toArray()
+                )
+            );
+
+
+            $commodityValues = implode(', ',
+                array_map(
+                    function($commodity) { return  $commodity->getValue() . ' ' . $commodity->getUnit(); },
+                    $assistance->getCommodities()->toArray()
+                )
+            );
+
+            $commonFields = $beneficiary->getCommonExportFields();
+
+            array_push($exportableTable,
+                array_merge($commonFields, array(
+                    "Commodity" => $commodityNames,
+                    "Value" => $commodityValues,
+                    "Distributed At" => $generalrelief->getDistributedAt(),
+                    "Notes Distribution" => $generalrelief->getNotes(),
+                    "Removed" => $generalrelief->getAssistanceBeneficiary()->getRemoved() ? 'Yes' : 'No',
+                    "Justification for adding/removing" => $generalrelief->getAssistanceBeneficiary()->getJustification(),
+                ))
+            );
+        }
+
+        return $this->container->get('export_csv_service')->export($exportableTable, 'generalrelief', $type);
+    }
 }

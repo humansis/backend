@@ -18,9 +18,12 @@ use NewApiBundle\InputType\NationalIdFilterInputType;
 use NewApiBundle\InputType\PhoneFilterInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 
 class BeneficiaryController extends AbstractController
 {
@@ -89,6 +92,32 @@ class BeneficiaryController extends AbstractController
         $request->query->add(['beneficiariesInDistribution' => $assistance->getId()]);
 
         return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
+    }
+
+    /**
+     * @Rest\Get("/assistances/{id}/beneficiaries/exports-raw")
+     *
+     * @param Assistance $assistance
+     * @param Request    $request
+     *
+     * @return Response
+     */
+    public function exportsByAssistanceRaw(Assistance $assistance, Request $request): Response
+    {
+        $file = $this->get('distribution.assistance_service')->exportGeneralReliefDistributionToCsv($assistance, $request->query->get('type'));
+
+        $response = new BinaryFileResponse(getcwd() . '/' . $file);
+
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $file);
+        $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
+        if ($mimeTypeGuesser->isGuesserSupported()) {
+            $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType(getcwd() . '/' . $file));
+        } else {
+            $response->headers->set('Content-Type', 'text/plain');
+        }
+        $response->deleteFileAfterSend(true);
+
+        return $response;
     }
 
     /**
