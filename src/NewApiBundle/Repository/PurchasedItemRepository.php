@@ -107,7 +107,7 @@ class PurchasedItemRepository extends EntityRepository
                         OR (pi.beneficiaryType = 'Institution' AND EXISTS($subQueryForInstitutionFulltext))
                         OR pi.carrierNumber LIKE :fulltextLike
                         OR v.vendorNo LIKE :fulltextLike
-                        OR pi.invoiceNumber LIKE :fulltextLike
+                        OR pi.invoiceNumber LIKE :fulltext
                         ")
                     ->setParameter('fulltext', $filter->getFulltext())
                     ->setParameter('fulltextLike', '%'.$filter->getFulltext().'%')
