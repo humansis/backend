@@ -16,22 +16,10 @@ use Throwable;
 
 class IntegrityCheckCommand extends AbstractImportQueueCommand
 {
-    /**
-     * @var IntegrityChecker
-     */
-    private $integrityChecker;
 
-    /**
-     * @var ImportInvalidFileService
-     */
-    private $importInvalidFileService;
-
-    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger, IntegrityChecker $integrityChecker, ImportInvalidFileService $importInvalidFileService)
+    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger)
     {
         parent::__construct($manager, $importService, $importLogger);
-
-        $this->integrityChecker = $integrityChecker;
-        $this->importInvalidFileService = $importInvalidFileService;
     }
 
     protected function configure()
@@ -67,8 +55,7 @@ class IntegrityCheckCommand extends AbstractImportQueueCommand
             $output->writeln($import->getTitle());
 
             try {
-                $this->integrityChecker->check($import);
-                $this->importInvalidFileService->generateFile($import);
+                $this->importService->checkIntegrity($import);
 
                 $statistics = $this->importService->getStatistics($import);
                 if (ImportState::INTEGRITY_CHECK_CORRECT === $import->getState()) {
