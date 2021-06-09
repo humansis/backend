@@ -211,7 +211,7 @@ class SmartcardInvoiceExport
         self::undertranslatedSmallHeadline($worksheet, $translator, "Supplier", "B", $row1);
         $worksheet->setCellValue("C$row1", $batch->getVendor()->getName());
         self::undertranslatedSmallHeadline($worksheet, $translator, "Vendor No.", "H", $row1);
-        $worksheet->setCellValue("I$row1", $batch->getVendor()->getVendorNo());
+        $worksheet->setCellValue("I$row1", $batch->getVendorNo());
         // style
         $worksheet->getRowDimension($row1)->setRowHeight(20);
         $worksheet->getRowDimension($row2)->setRowHeight(20);
