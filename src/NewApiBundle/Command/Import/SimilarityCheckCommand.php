@@ -15,15 +15,9 @@ use Throwable;
 
 class SimilarityCheckCommand extends AbstractImportQueueCommand
 {
-    /** @var SimilarityChecker */
-    private $similarityChecker;
-
-    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger,
-                                SimilarityChecker $similarityChecker
-    )
+    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger)
     {
         parent::__construct($manager, $importService, $importLogger);
-        $this->similarityChecker = $similarityChecker;
     }
 
     protected function configure()
@@ -59,7 +53,7 @@ class SimilarityCheckCommand extends AbstractImportQueueCommand
         /** @var Import $import */
         foreach ($imports as $import) {
             try {
-                $this->similarityChecker->check($import);
+                $this->importService->checkSimilarity($import);
 
                 if (ImportState::SIMILARITY_CHECK_CORRECT === $import->getState()) {
                     $this->logImportDebug($import, "Similarity check found no duplicities");

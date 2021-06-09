@@ -51,6 +51,7 @@ class CleanCommand extends AbstractImportQueueCommand
             $this->logAffectedImports($this->imports, 'app:import:clean');
         } else {
             $this->logger->debug('app:import:clean affects no imports');
+            return 0;
         }
 
         $output->writeln([

@@ -141,7 +141,7 @@ class ImportRepository extends EntityRepository
     public function getFinishedWithInvalidFiles(): array
     {
         return $this->createQueryBuilder('i')
-            ->join('i.invalidFiles', 'if')
+            ->join('i.importInvalidFilessdfs', 'if')
             ->where('i.state IN (:states)')
             ->setParameter('states',  [
                 ImportState::FINISHED,

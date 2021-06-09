@@ -15,17 +15,9 @@ use Throwable;
 
 class IdentityCheckCommand extends AbstractImportQueueCommand
 {
-    /**
-     * @var IdentityChecker
-     */
-    private $identityChecker;
-
-    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger,
-                                IdentityChecker $identityChecker
-    )
+    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger)
     {
         parent::__construct($manager, $importService, $importLogger);
-        $this->identityChecker = $identityChecker;
     }
 
     protected function configure()
@@ -61,7 +53,7 @@ class IdentityCheckCommand extends AbstractImportQueueCommand
             $output->writeln($import->getTitle());
 
             try {
-                $this->identityChecker->check($import);
+                $this->importService->checkIdentity($import);
 
                 if (ImportState::IDENTITY_CHECK_CORRECT === $import->getState()) {
                     $this->logImportDebug($import, "Identity check found no duplicities");

@@ -184,9 +184,15 @@ services:
         arguments: [ '@knp_gaufrette.filesystem_map', '%aws_s3_bucket_name%', '%aws_s3_region%' ]
 
     NewApiBundle\Component\Import\ImportService:
+        public: true
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@beneficiary.household_service"
+            - '@monolog.logger.import'
+            - '@NewApiBundle\Component\Import\IntegrityChecker'
+            - '@NewApiBundle\Component\Import\ImportInvalidFileService'
+            - '@NewApiBundle\Component\Import\IdentityChecker'
+            - '@NewApiBundle\Component\Import\SimilarityChecker'
 
     NewApiBundle\Component\Import\UploadImportService:
         arguments:

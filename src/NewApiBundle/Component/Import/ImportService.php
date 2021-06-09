@@ -28,6 +28,8 @@ use UserBundle\Entity\User;
 
 class ImportService
 {
+    const ASAP_LIMIT = 1000;
+
     /** @var EntityManagerInterface $em */
     private $em;
 
@@ -37,11 +39,35 @@ class ImportService
     /** @var LoggerInterface */
     private $logger;
 
-    public function __construct(EntityManagerInterface $em, HouseholdService $householdService, LoggerInterface $importLogger)
+    /** @var IntegrityChecker */
+    private $integrityChecker;
+
+    /** @var ImportInvalidFileService */
+    private $importInvalidFileService;
+
+    /** @var IdentityChecker */
+    private $identityChecker;
+
+    /** @var SimilarityChecker */
+    private $similarityChecker;
+
+    public function __construct(
+        EntityManagerInterface $em,
+        HouseholdService $householdService,
+        LoggerInterface $importLogger,
+        IntegrityChecker $integrityChecker,
+        ImportInvalidFileService $importInvalidFileService,
+        IdentityChecker $identityChecker,
+        SimilarityChecker $similarityChecker
+    )
     {
         $this->em = $em;
         $this->householdService = $householdService;
         $this->logger = $importLogger;
+        $this->integrityChecker = $integrityChecker;
+        $this->importInvalidFileService = $importInvalidFileService;
+        $this->identityChecker = $identityChecker;
+        $this->similarityChecker = $similarityChecker;
     }
 
     public function create(ImportCreateInputType $inputType, User $user): Import
@@ -75,6 +101,26 @@ class ImportService
 
         if (!is_null($inputType->getStatus())) {
             $this->updateStatus($import, $inputType->getStatus());
+
+            if (count($import->getImportQueue()) < self::ASAP_LIMIT) {
+                $this->em->flush();
+                $this->logInfo($import, "Because of small import, it will be processed immediately");
+
+                switch ($import->getState()) {
+                    case ImportState::INTEGRITY_CHECKING:
+                        $this->checkIntegrity($import);
+                        break;
+                    case ImportState::IDENTITY_CHECKING:
+                        $this->checkIdentity($import);
+                        break;
+                    case ImportState::SIMILARITY_CHECKING:
+                        $this->checkSimilarity($import);
+                        break;
+                    case ImportState::IMPORTING:
+                        $this->finish($import);
+                        break;
+                }
+            }
         }
 
         $this->em->flush();
@@ -165,6 +211,22 @@ class ImportService
         $this->logInfo($importQueue->getImport(), "[Queue #{$importQueue->getId()}] Duplicity suspect(s) [".implode(', ', $uniques)."] was resolved as mistake");
 
         $this->em->flush();
+    }
+
+    public function checkIntegrity(Import $import): void
+    {
+        $this->integrityChecker->check($import);
+        $this->importInvalidFileService->generateFile($import);
+    }
+
+    public function checkIdentity(Import $import): void
+    {
+        $this->identityChecker->check($import);
+    }
+
+    public function checkSimilarity(Import $import): void
+    {
+        $this->similarityChecker->check($import);
     }
 
     public function finish(Import $import): void
