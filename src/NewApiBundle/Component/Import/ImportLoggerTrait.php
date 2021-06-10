@@ -11,29 +11,18 @@ trait ImportLoggerTrait
     /** @var LoggerInterface */
     protected $logger;
 
-    protected function logImportInfo(Import $import, string $message, bool $printOnStdout = false): void
+    protected function logImportInfo(Import $import, string $message): void
     {
-        if ($printOnStdout) {
-            echo "[Import #{$import->getId()}] ({$import->getTitle()}) $message\n";
-        }
         $this->logger->info("[Import #{$import->getId()}] ({$import->getTitle()}) $message");
     }
 
-    protected function logImportDebug(Import $import, string $message, bool $printOnStdout = false): void
+    protected function logImportDebug(Import $import, string $message): void
     {
-        if ($printOnStdout) {
-            echo "[Import #{$import->getId()}] ({$import->getTitle()}) $message\n";
-        }
-
         $this->logger->debug("[Import #{$import->getId()}] ({$import->getTitle()}) $message");
     }
 
-    protected function logImportWarning(Import $import, string $message, bool $printOnStdout = false): void
+    protected function logImportWarning(Import $import, string $message): void
     {
-        if ($printOnStdout) {
-            echo "[Import #{$import->getId()}] ({$import->getTitle()}) $message\n";
-        }
-
         $this->logger->warning("[Import #{$import->getId()}] ({$import->getTitle()}) $message");
     }
 }
