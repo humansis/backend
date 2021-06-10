@@ -4,6 +4,8 @@ namespace CommonBundle\Controller;
 
 use CommonBundle\Entity\Organization;
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Enum\AssistanceTargetType;
+use DistributionBundle\Export\SmartcardExport;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
@@ -13,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
+use TransactionBundle\Export\TransactionExport;
 
 /**
  * Class ExportController
@@ -108,7 +111,27 @@ class ExportController extends Controller
                 if ($type === 'pdf') {
                     return $this->get('export.pdf')->export($distribution, $organization);
                 }
-                $filename = $this->get('export.spreadsheet')->export($distribution, $organization, $type);
+                // raw export for legacy purpose
+                if ($type === 'xlsx' && in_array($distribution->getTargetType(), [AssistanceTargetType::HOUSEHOLD, AssistanceTargetType::INDIVIDUAL])) { // hack to enable raw export, will be forgotten with FE switch
+                    if ($request->query->has('transactionDistribution')) {
+                        $filename = $this->get('transaction.transaction_service')->exportToCsv($distribution, 'xlsx');
+                    }
+                    if ($request->query->has('smartcardDistribution')) {
+                        $smartcardExporter = new SmartcardExport($this->container->get('export_csv_service'), $this->getDoctrine()->getManager());
+                        $filename = $smartcardExporter->exportSpreadsheet($distribution, $type);
+                    }
+                    if ($request->query->has('voucherDistribution')) {
+                        $filename = $this->get('distribution.assistance_service')->exportVouchersDistributionToCsv($distribution, $type);
+                    }
+                    if ($request->query->has('generalreliefDistribution')) {
+                        $filename = $this->get('distribution.assistance_service')->exportGeneralReliefDistributionToCsv($distribution, 'xlsx');
+                    }
+                    if ($request->query->has('beneficiariesInDistribution')) {
+                        $filename = $this->get('distribution.assistance_service')->exportToCsvBeneficiariesInDistribution($distribution, $type);
+                    }
+                } else {
+                    $filename = $this->get('export.spreadsheet')->export($distribution, $organization, $type);
+                }
             } elseif ($request->query->get('bookletCodes')) {
                 $ids = $request->request->get('ids');
                 $countryIso3 = $request->request->get("__country");
@@ -206,6 +229,6 @@ class ExportController extends Controller
 
         $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
 
-        return $this->get('transaction.export.pdf')->export($distribution, $organization);
+        return $this->get('export.pdf')->export($distribution, $organization);
     }
 }

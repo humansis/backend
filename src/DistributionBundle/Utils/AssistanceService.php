@@ -32,6 +32,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
+use VoucherBundle\Entity\Voucher;
 
 /**
  * Class AssistanceService
@@ -876,5 +877,131 @@ class AssistanceService
         }
 
         return $distributionArray;
+    }
+
+    /**
+     * @deprecated old form of exports, will be removed after export system refactoring
+     * @param Assistance $assistance
+     * @param string $type
+     * @return mixed
+     */
+    public function exportGeneralReliefDistributionToCsv(Assistance $assistance, string $type)
+    {
+        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findByAssistance($assistance);
+
+        $generalreliefs = array();
+        $exportableTable = array();
+        foreach ($distributionBeneficiaries as $db) {
+            $generalrelief = $this->em->getRepository(GeneralReliefItem::class)->findOneByAssistanceBeneficiary($db);
+
+            if ($generalrelief) {
+                array_push($generalreliefs, $generalrelief);
+            }
+        }
+
+        foreach ($generalreliefs as $generalrelief) {
+            $beneficiary = $generalrelief->getAssistanceBeneficiary()->getBeneficiary();
+            $commodityNames = implode(', ',
+                array_map(
+                    function($commodity) { return  $commodity->getModalityType()->getName(); },
+                    $assistance->getCommodities()->toArray()
+                )
+            );
+
+
+            $commodityValues = implode(', ',
+                array_map(
+                    function($commodity) { return  $commodity->getValue() . ' ' . $commodity->getUnit(); },
+                    $assistance->getCommodities()->toArray()
+                )
+            );
+
+            $commonFields = $beneficiary->getCommonExportFields();
+
+            array_push($exportableTable,
+                array_merge($commonFields, array(
+                    "Commodity" => $commodityNames,
+                    "Value" => $commodityValues,
+                    "Distributed At" => $generalrelief->getDistributedAt(),
+                    "Notes Distribution" => $generalrelief->getNotes(),
+                    "Removed" => $generalrelief->getAssistanceBeneficiary()->getRemoved() ? 'Yes' : 'No',
+                    "Justification for adding/removing" => $generalrelief->getAssistanceBeneficiary()->getJustification(),
+                ))
+            );
+        }
+
+        return $this->container->get('export_csv_service')->export($exportableTable, 'generalrelief', $type);
+    }
+
+    /**
+     * @deprecated old form of exports, will be removed after export system refactoring
+     * @param Assistance $assistance
+     * @param string $type
+     * @return mixed
+     */
+    public function exportVouchersDistributionToCsv(Assistance $assistance, string $type)
+    {
+        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)
+            ->findByAssistance($assistance);
+
+        $beneficiaries = array();
+        $exportableTable = array();
+        foreach ($distributionBeneficiaries as $assistanceBeneficiary) {
+            $beneficiary = $assistanceBeneficiary->getBeneficiary();
+            $booklets = $assistanceBeneficiary->getBooklets();
+            $transactionBooklet = null;
+            if (count($booklets) > 0) {
+                foreach ($booklets as $booklet) {
+                    if ($booklet->getStatus() !== 3) {
+                        $transactionBooklet = $booklet;
+                    }
+                }
+                if ($transactionBooklet === null) {
+                    $transactionBooklet = $booklets[0];
+                }
+            }
+
+            $commonFields = $beneficiary->getCommonExportFields();
+
+            $products = [];
+            if ($transactionBooklet) {
+                /** @var Voucher $voucher */
+                foreach ($transactionBooklet->getVouchers() as $voucher) {
+                    if ($voucher->getVoucherPurchase()) {
+                        foreach ($voucher->getVoucherPurchase()->getRecords() as $record) {
+                            array_push($products, $record->getProduct()->getName());
+                        }
+                    }
+                }
+            }
+            $products = implode(', ', array_unique($products));
+
+            array_push(
+                $exportableTable,
+                array_merge($commonFields, array(
+                    "Booklet" => $transactionBooklet ? $transactionBooklet->getCode() : null,
+                    "Status" => $transactionBooklet ? $transactionBooklet->getStatus() : null,
+                    "Value" => $transactionBooklet ? $transactionBooklet->getTotalValue() . ' ' . $transactionBooklet->getCurrency() : null,
+                    "Used At" => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
+                    "Purchased items" => $products,
+                    "Removed" => $assistanceBeneficiary->getRemoved() ? 'Yes' : 'No',
+                    "Justification for adding/removing" => $assistanceBeneficiary->getJustification(),
+                ))
+            );
+        }
+
+        return $this->container->get('export_csv_service')->export($exportableTable, 'qrVouchers', $type);
+    }
+
+    /**
+     * @deprecated old form of exports, will be removed after export system refactoring
+     * @param Assistance $assistance
+     * @param string $type
+     * @return mixed
+     */
+    public function exportToCsvBeneficiariesInDistribution(Assistance $assistance, string $type)
+    {
+        $beneficiaries = $this->em->getRepository(Beneficiary::class)->getNotRemovedofDistribution($assistance);
+        return $this->container->get('export_csv_service')->export($beneficiaries, 'beneficiaryInDistribution', $type);
     }
 }

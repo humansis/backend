@@ -48,9 +48,9 @@ class DistributedItemMapper implements MapperInterface
         return $this->object->getAssistance()->getId();
     }
 
-    public function getDateDistribution(): string
+    public function getDateDistribution(): ?string
     {
-        return $this->object->getDateDistribution()->format(\DateTimeInterface::ISO8601);
+        return $this->object->getDateDistribution() ? $this->object->getDateDistribution()->format(\DateTimeInterface::ISO8601) : null;
     }
 
     public function getCommodityId(): int
