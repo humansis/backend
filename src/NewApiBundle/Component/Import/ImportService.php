@@ -214,12 +214,12 @@ class ImportService
 
         switch ($import->getState()) {
             case ImportState::IDENTITY_CHECK_FAILED:
-                if ($this->identityChecker->isImportQueueInvalid($import)) {
+                if (!$this->identityChecker->isImportQueueInvalid($import)) {
                     $import->setState(ImportState::IDENTITY_CHECK_CORRECT);
                 }
                 break;
             case ImportState::SIMILARITY_CHECK_FAILED:
-                if ($this->similarityChecker->isImportQueueInvalid($import)) {
+                if (!$this->similarityChecker->isImportQueueInvalid($import)) {
                     $import->setState(ImportState::SIMILARITY_CHECK_CORRECT);
                 }
         }
