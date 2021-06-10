@@ -210,6 +210,20 @@ class ImportService
         $this->logInfo($importQueue->getImport(), "[Queue #{$importQueue->getId()}] Duplicity suspect(s) [".implode(', ', $links)."] was resolved as older duplicity");
         $this->logInfo($importQueue->getImport(), "[Queue #{$importQueue->getId()}] Duplicity suspect(s) [".implode(', ', $uniques)."] was resolved as mistake");
 
+        $import = $importQueue->getImport();
+
+        switch ($import->getState()) {
+            case ImportState::IDENTITY_CHECK_FAILED:
+                if ($this->identityChecker->isImportQueueInvalid($import)) {
+                    $import->setState(ImportState::IDENTITY_CHECK_CORRECT);
+                }
+                break;
+            case ImportState::SIMILARITY_CHECK_FAILED:
+                if ($this->similarityChecker->isImportQueueInvalid($import)) {
+                    $import->setState(ImportState::SIMILARITY_CHECK_CORRECT);
+                }
+        }
+
         $this->em->flush();
     }
 
