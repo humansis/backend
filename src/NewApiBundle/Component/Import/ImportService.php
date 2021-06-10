@@ -212,6 +212,8 @@ class ImportService
 
         $import = $importQueue->getImport();
 
+        $this->em->flush();
+
         switch ($import->getState()) {
             case ImportState::IDENTITY_CHECK_FAILED:
                 if (!$this->identityChecker->isImportQueueInvalid($import)) {
