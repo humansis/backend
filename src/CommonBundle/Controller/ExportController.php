@@ -114,7 +114,7 @@ class ExportController extends Controller
                 // raw export for legacy purpose
                 if ($type === 'xlsx' && in_array($distribution->getTargetType(), [AssistanceTargetType::HOUSEHOLD, AssistanceTargetType::INDIVIDUAL])) { // hack to enable raw export, will be forgotten with FE switch
                     if ($request->query->has('transactionDistribution')) {
-                        $filename = $this->get('export.spreadsheet')->export($distribution, $organization, $type);
+                        $filename = $this->get('transaction.transaction_service')->exportToCsv($distribution, 'xlsx');
                     }
                     if ($request->query->has('smartcardDistribution')) {
                         $smartcardExporter = new SmartcardExport($this->container->get('export_csv_service'), $this->getDoctrine()->getManager());
