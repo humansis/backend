@@ -229,6 +229,6 @@ class ExportController extends Controller
 
         $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
 
-        return $this->get('transaction.export.pdf')->export($distribution, $organization);
+        return $this->get('export.pdf')->export($distribution, $organization);
     }
 }
