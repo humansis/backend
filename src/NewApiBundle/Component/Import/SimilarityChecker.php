@@ -96,7 +96,7 @@ class SimilarityChecker
      *
      * @return bool
      */
-    private function isImportQueueInvalid(Import $import): bool
+    public function isImportQueueInvalid(Import $import): bool
     {
         $queue = $this->entityManager->getRepository(ImportQueue::class)
             ->findBy(['import' => $import, 'state' => ImportQueueState::SUSPICIOUS]);
