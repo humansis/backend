@@ -26,4 +26,21 @@ class NationalIdRepository extends \Doctrine\ORM\EntityRepository
 
         return new Paginator($qbr);
     }
+
+    public function findDuplicitiesByCountry(string $type, string $number, string $iso3): array
+    {
+        return $this->createQueryBuilder('ni')
+            ->join('ni.person', 'per')
+            ->join('per.beneficiary', 'b')
+            ->join('b.household', 'h')
+            ->join('h.projects', 'proj')
+            ->andWhere('ni.idType = :type')
+            ->andWhere('ni.idNumber = :number')
+            ->andWhere('proj.iso3 = :iso3')
+            ->setParameter('type', $type)
+            ->setParameter('number', $number)
+            ->setParameter('iso3', $iso3)
+            ->getQuery()
+            ->getResult();
+    }
 }

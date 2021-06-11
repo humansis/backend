@@ -23,7 +23,7 @@ use VoucherBundle\Entity\Smartcard;
 class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 {
     /**
-     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Person", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Person", cascade={"persist", "remove"}, inversedBy="beneficiary")
      */
     private $person;
 
