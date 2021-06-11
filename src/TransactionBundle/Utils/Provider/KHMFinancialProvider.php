@@ -55,6 +55,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         $organizationWINGCashTransfer = $this->em->getRepository(OrganizationServices::class)->findOneByService("WING Cash Transfer");
 
         if (! $organizationWINGCashTransfer->getEnabled()) {
+            $this->logger->error("Missing enabled configuration for Wing money service in DB", [$assistance]);
             throw new \Exception("This service is not enabled for the organization");
         }
 
@@ -63,6 +64,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         $this->production = $organizationWINGCashTransfer->getParameterValue('production') ? $organizationWINGCashTransfer->getParameterValue('production') : false;
 
         if (!$this->password || !$this->username) {
+            $this->logger->error("Missing credentials for Wing money service in DB", [$assistance]);
             throw new \Exception("This service has no parameters specified");
         }
 
@@ -79,13 +81,9 @@ class KHMFinancialProvider extends DefaultFinancialProvider
             "scope"         => "trust"
         );
         
-        try {
-            $this->token = $this->sendRequest($assistance, "POST", $route, $body);
-            $this->lastTokenDate = new \DateTime();
-            return $this->token;
-        } catch (Exception $e) {
-            throw $e;
-        }
+        $this->token = $this->sendRequest($assistance, "POST", $route, $body);
+        $this->lastTokenDate = new \DateTime();
+        return $this->token;
     }
     
     /**
@@ -113,30 +111,22 @@ class KHMFinancialProvider extends DefaultFinancialProvider
             "sms_to"          => "PAYEE"
         );
         
-        try {
-            $sent = $this->sendRequest($assistance, "POST", $route, $body);
-            if (property_exists($sent, 'error_code')) {
-                $transaction = $this->createTransaction(
-                    $assistanceBeneficiary,
-                    '',
-                    new \DateTime(),
-                    $currency . ' ' . $amount,
-                    0,
-                    $sent->message ?: ''
-                );
-                
-                return $transaction;
-            }
-        } catch (Exception $e) {
-            throw $e;
+        $sent = $this->sendRequest($assistance, "POST", $route, $body);
+        if (property_exists($sent, 'error_code')) {
+            $transaction = $this->createTransaction(
+                $assistanceBeneficiary,
+                '',
+                new \DateTime(),
+                $currency . ' ' . $amount,
+                0,
+                $sent->message ?: ''
+            );
+
+            return $transaction;
         }
-        
-        try {
-            $response = $this->getStatus($assistance, $sent->transaction_id);
-        } catch (\Exception $e) {
-            throw $e;
-        }
-        
+
+        $response = $this->getStatus($assistance, $sent->transaction_id);
+
         $transaction = $this->createTransaction(
             $assistanceBeneficiary,
             $response->transaction_id,
@@ -232,11 +222,26 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         ));
         
         $info = curl_getinfo($curl);
-        
-        $response = curl_exec($curl);
+
+        $this->logger->debug("Request route: ".($this->production ? $this->url_prod : $this->url) . $route . "[".($this->production ? "8443": "9443")."]", [$assistance]);
+
+        try {
+            $response = curl_exec($curl);
+        } catch (\Exception $exception) {
+            $err = curl_error($curl);
+            $this->logger->error("Request fails: ".$exception->getMessage(). " | ".$err);
+            throw $exception;
+        }
+
         $err = curl_error($curl);
-        
+        $duration = curl_getinfo($curl, CURLINFO_TOTAL_TIME);
+
         curl_close($curl);
+
+        if (!empty($err)) {
+            $this->logger->error("Request fails: ".$err);
+        }
+        $this->logger->debug("Request time $duration s");
 
         $bodyString = '';
         // Record request
