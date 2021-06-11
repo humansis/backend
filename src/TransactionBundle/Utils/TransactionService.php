@@ -261,7 +261,7 @@ class TransactionService
      */
     public function getFinancialCredential(string $country)
     {
-        $FP = $this->em->getRepository(FinancialProvider::class)->findByCountry($country);
+        $FP = $this->em->getRepository(DefaultFinancialProvider::class)->findByCountry($country);
 
         return $FP;
     }
@@ -272,7 +272,7 @@ class TransactionService
      */
     public function updateFinancialCredential(array $data)
     {
-        $FP = $this->em->getRepository(FinancialProvider::class)->findOneByCountry($data['__country']);
+        $FP = $this->em->getRepository(DefaultFinancialProvider::class)->findOneByCountry($data['__country']);
 
         if ($FP) {
             $FP->setUsername($data['username'])
