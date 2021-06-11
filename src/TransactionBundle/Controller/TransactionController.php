@@ -7,6 +7,7 @@ use DistributionBundle\Entity\Assistance;
 use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Mapper\AssistanceBeneficiaryMapper;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Swagger\Annotations as SWG;
@@ -56,16 +57,24 @@ class TransactionController extends Controller
         $code = $request->request->get('code');
         $user = $this->getUser();
 
+        /** @var LoggerInterface $logger */
+        $logger = $this->get('monolog.logger.mobile');
+        $logger->info('Sending money requested', [$countryISO3, $user, $assistance]);
+
         $code = trim(preg_replace('/\s+/', ' ', $code));
 
         $validatedTransaction = $this->get('transaction.transaction_service')->verifyCode($code, $user, $assistance);
         if (! $validatedTransaction) {
+            $logger->warning('Code: did not match');
             return new Response("The supplied code did not match. The transaction cannot be executed", Response::HTTP_BAD_REQUEST);
+        } else {
+            $logger->debug('Code: verified');
         }
         
         try {
             $response = $this->get('transaction.transaction_service')->sendMoney($countryISO3, $assistance, $user);
         } catch (\Exception $exception) {
+            $logger->error('Sending money failed: '.$exception->getMessage());
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         

@@ -7,6 +7,7 @@ use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use TransactionBundle\Entity\Transaction;
@@ -31,6 +32,9 @@ class TransactionService
     /** @var DefaultFinancialProvider $financialProvider */
     private $financialProvider;
 
+    /** @var LoggerInterface */
+    private $logger;
+
     /**
      * TransactionService constructor.
      * @param EntityManagerInterface $entityManager
@@ -41,6 +45,7 @@ class TransactionService
         $this->em = $entityManager;
         $this->container = $container;
         $this->email = $this->container->getParameter('email');
+        $this->logger = $container->get('monolog.logger.mobile');
     }
 
     /**
@@ -53,26 +58,19 @@ class TransactionService
      */
     public function sendMoney(string $countryISO3, Assistance $assistance, User $user)
     {
-        try {
-            $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
-        } catch (\Exception $e) {
-            throw $e;
-        }
-        
+        $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
+
         if ($assistance->getCommodities()[0]->getModalityType()->getName() === "Mobile Money") {
             $amountToSend = $assistance->getCommodities()[0]->getValue();
             $currencyToSend = $assistance->getCommodities()[0]->getUnit();
         } else {
+            $this->logger->error('Assistance has no Mobile money commodity');
             throw new \Exception("The commodity of the distribution does not allow this operation.");
         }
         
         $from = $user->getId();
         
-        try {
-            return $this->financialProvider->sendMoneyToAll($assistance, $amountToSend, $currencyToSend, $from);
-        } catch (\Exception $e) {
-            throw $e;
-        }
+        return $this->financialProvider->sendMoneyToAll($assistance, $amountToSend, $currencyToSend, $from);
     }
     
     /**
@@ -90,8 +88,10 @@ class TransactionService
         }
         
         if (! ($provider instanceof DefaultFinancialProvider)) {
+            $this->logger->error("Country $countryISO3 has no defined financial provider");
             throw new \Exception("The financial provider for " . $countryISO3 . " is not properly defined");
         }
+        $this->logger->debug("Financial provider for country $countryISO3: ".get_class($provider));
         return $provider;
     }
 
@@ -133,6 +133,7 @@ class TransactionService
             );
 
         $this->container->get('mailer')->send($message);
+        $this->logger->info("Code for verify assistance was sent to ".$user->getEmail(), [$assistance]);
     }
 
     /**
@@ -218,17 +219,9 @@ class TransactionService
      */
     public function updateTransactionStatus(string $countryISO3, Assistance $assistance): array
     {
-        try {
-            $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
-        } catch (\Exception $e) {
-            throw $e;
-        }
-        
-        try {
-            return $this->financialProvider->updateStatusDistribution($assistance);
-        } catch (\Exception $e) {
-            throw $e;
-        }
+        $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
+
+        return $this->financialProvider->updateStatusDistribution($assistance);
     }
 
     /**
@@ -240,17 +233,9 @@ class TransactionService
      */
     public function testConnection(string $countryISO3, Assistance $assistance)
     {
-        try {
-            $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
-        } catch (\Exception $e) {
-            throw $e;
-        }
-        
-        try {
-            return $this->financialProvider->getToken($assistance);
-        } catch (\Exception $e) {
-            throw $e;
-        }
+        $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
+
+        return $this->financialProvider->getToken($assistance);
     }
 
     /**
@@ -276,7 +261,7 @@ class TransactionService
      */
     public function getFinancialCredential(string $country)
     {
-        $FP = $this->em->getRepository(FinancialProvider::class)->findByCountry($country);
+        $FP = $this->em->getRepository(DefaultFinancialProvider::class)->findByCountry($country);
 
         return $FP;
     }
@@ -287,7 +272,7 @@ class TransactionService
      */
     public function updateFinancialCredential(array $data)
     {
-        $FP = $this->em->getRepository(FinancialProvider::class)->findOneByCountry($data['__country']);
+        $FP = $this->em->getRepository(DefaultFinancialProvider::class)->findOneByCountry($data['__country']);
 
         if ($FP) {
             $FP->setUsername($data['username'])

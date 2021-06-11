@@ -111,14 +111,14 @@ class ExportController extends Controller
                 if ($type === 'pdf') {
                     return $this->get('export.pdf')->export($distribution, $organization);
                 }
+                $filename = $this->get('export.spreadsheet')->export($distribution, $organization, $type);
                 // raw export for legacy purpose
                 if ($type === 'xlsx' && in_array($distribution->getTargetType(), [AssistanceTargetType::HOUSEHOLD, AssistanceTargetType::INDIVIDUAL])) { // hack to enable raw export, will be forgotten with FE switch
                     if ($request->query->has('transactionDistribution')) {
                         $filename = $this->get('transaction.transaction_service')->exportToCsv($distribution, 'xlsx');
                     }
                     if ($request->query->has('smartcardDistribution')) {
-                        $smartcardExporter = new SmartcardExport($this->container->get('export_csv_service'), $this->getDoctrine()->getManager());
-                        $filename = $smartcardExporter->exportSpreadsheet($distribution, $type);
+                        // no change
                     }
                     if ($request->query->has('voucherDistribution')) {
                         $filename = $this->get('distribution.assistance_service')->exportVouchersDistributionToCsv($distribution, $type);
@@ -129,8 +129,6 @@ class ExportController extends Controller
                     if ($request->query->has('beneficiariesInDistribution')) {
                         $filename = $this->get('distribution.assistance_service')->exportToCsvBeneficiariesInDistribution($distribution, $type);
                     }
-                } else {
-                    $filename = $this->get('export.spreadsheet')->export($distribution, $organization, $type);
                 }
             } elseif ($request->query->get('bookletCodes')) {
                 $ids = $request->request->get('ids');
