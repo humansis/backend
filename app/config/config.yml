@@ -32,7 +32,7 @@ parameters:
         - name: Syria
           iso3: SYR
           currency: SYP
-          adms: [ Governorate, District, Sub-District, Block ]
+          adms: [ Governorate, District, Sub-District, Village/Neighbourhood ]
           language: ar # remove in 3.0
 
         - name: Ukraine
