@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Component\Import\Integrity;
 
 use BeneficiaryBundle\Entity\Household;
+use CommonBundle\Entity\Location;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 use NewApiBundle\InputType\Beneficiary\CountrySpecificsAnswerInputType;
@@ -85,12 +86,16 @@ trait HouseholdInputBuilderTrait
             $household->addCountrySpecificAnswer($specificAnswer);
         }
 
-        $address = new ResidenceAddressInputType();
-        $address->setNumber($this->addressStreet);
-        $address->setPostcode($this->addressPostcode);
-        $address->setNumber($this->addressNumber);
-        $address->setLocationId(1); // FIXME
-        $household->setResidenceAddress($address);
+        $locationRepository = $this->entityManager->getRepository(Location::class);
+        $locationByAdms = $locationRepository->getByNames($this->adm1, $this->adm2, $this->adm3, $this->adm4);
+        if (null !== $locationByAdms) {
+            $address = new ResidenceAddressInputType();
+            $address->setNumber($this->addressStreet);
+            $address->setPostcode($this->addressPostcode);
+            $address->setNumber($this->addressNumber);
+            $address->setLocationId($locationByAdms->getId());
+            $household->setResidenceAddress($address);
+        }
 
         $head = $this->buildBeneficiaryInputType();
         $head->setIsHead(true);
