@@ -10,7 +10,18 @@ use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\InputType\HouseholdCreateInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
 
-//TODO many unused parameters in HouseholdHead / HouseholdMember ($f0, $f2 F.E.)
+/* TODO many unused parameters in HouseholdHead / HouseholdMember:
+    $campName
+    tentNumber
+    $livelihood
+    $enumeratorName
+    $vulnerabilityCriteria
+    $shelterStatus
+    $assets
+    $supportReceivedTypes
+    $supportDateReceived
+    $countrySpecifics
+*/
 trait HouseholdInputBuilderTrait
 {
     public function buildHouseholdInputType(): ?HouseholdCreateInputType
@@ -58,6 +69,11 @@ trait HouseholdInputBuilderTrait
         $head->setIsHead(true);
 
         $household->addBeneficiary($head);
+
+        foreach ($this->buildNamelessMembers() as $namelessMember) {
+            $namelessMember->setResidencyStatus($this->residencyStatus); // not sure if it is correct but residency status is mandatory
+            $household->addBeneficiary($namelessMember);
+        }
     }
 
     public function buildBeneficiaryInputType(): BeneficiaryInputType
@@ -101,5 +117,34 @@ trait HouseholdInputBuilderTrait
         return $beneficiary;
     }
 
+    /**
+     * @return BeneficiaryInputType[]
+     */
+    private function buildNamelessMembers(): iterable
+    {
+        foreach ($this->buildMembersByAgeAndGender('F', 1, $this->f0 ?? 0) as $bnf) { yield $bnf; }
+        foreach ($this->buildMembersByAgeAndGender('M', 1, $this->m0 ?? 0) as $bnf) { yield $bnf; }
+        foreach ($this->buildMembersByAgeAndGender('F', 3, $this->f2 ?? 0) as $bnf) { yield $bnf; }
+        foreach ($this->buildMembersByAgeAndGender('M', 3, $this->m2 ?? 0) as $bnf) { yield $bnf; }
+        foreach ($this->buildMembersByAgeAndGender('F', 7, $this->f6 ?? 0) as $bnf) { yield $bnf; }
+        foreach ($this->buildMembersByAgeAndGender('M', 7, $this->m6 ?? 0) as $bnf) { yield $bnf; }
+        foreach ($this->buildMembersByAgeAndGender('F', 19, $this->f18 ?? 0) as $bnf) { yield $bnf; }
+        foreach ($this->buildMembersByAgeAndGender('M', 19, $this->m18 ?? 0) as $bnf) { yield $bnf; }
+        foreach ($this->buildMembersByAgeAndGender('F', 66, $this->f60 ?? 0) as $bnf) { yield $bnf; }
+        foreach ($this->buildMembersByAgeAndGender('M', 66, $this->m60 ?? 0) as $bnf) { yield $bnf; }
+    }
+
+    private function buildMembersByAgeAndGender(string $gender, int $age, int $count): iterable
+    {
+        $today = new \DateTime();
+
+        foreach (range(0, $count) as $i) {
+            $beneficiary = new BeneficiaryInputType();
+            $beneficiary->setDateOfBirth($today->modify("-$age year")->format('d-m-Y'));
+            $beneficiary->setGender($gender);
+            $beneficiary->setIsHead(false);
+            yield $beneficiary;
+        }
+    }
 
 }
