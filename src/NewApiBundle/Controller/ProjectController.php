@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use UserBundle\Entity\User;
 
 class ProjectController extends AbstractController
 {
@@ -148,5 +149,34 @@ class ProjectController extends AbstractController
         $this->get('project.project_service')->delete($project);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Rest\Get("/users/{id}/projects")
+     *
+     * @param User $user
+     *
+     * @return JsonResponse
+     */
+    public function userProjects(User $user): JsonResponse
+    {
+        if ($user->getProjects()->count() > 0) {
+            return $this->json(new Paginator($user->getProjects()));
+        }
+
+        if ($user->getCountries()->count() > 0) {
+            $countries = array_map(function (\UserBundle\Entity\UserCountry $item) {
+                return $item->getId();
+            }, $user->getCountries()->toArray());
+
+            $data = $this->getDoctrine()->getRepository(Project::class)->findByCountries($countries);
+
+            return $this->json(new Paginator($data));
+        }
+
+        // user without related projects should have access to all projects
+        $data = $this->getDoctrine()->getRepository(Project::class)->findBy(['archived' => false]);
+
+        return $this->json(new Paginator($data));
     }
 }

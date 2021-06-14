@@ -94,13 +94,6 @@ class UserMapper implements MapperInterface
 
     public function getProjectIds(): array
     {
-        // user without related projects should have access to all projects
-        if ($this->object->getProjects()->isEmpty()) {
-            return array_map(function (Project $item) {
-                return $item->getId();
-            }, $this->projectRepository->findByCountries($this->getCountries()));
-        }
-
         return array_map(function (UserProject $item) {
             return $item->getProject()->getId();
         }, $this->object->getProjects()->toArray());
