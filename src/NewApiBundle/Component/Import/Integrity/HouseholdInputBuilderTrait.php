@@ -3,24 +3,19 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import\Integrity;
 
+use BeneficiaryBundle\Entity\Household;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
+use NewApiBundle\InputType\Beneficiary\CountrySpecificsAnswerInputType;
 use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\InputType\HouseholdCreateInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
+use ProjectBundle\Enum\Livelihood;
 
 /* TODO many unused parameters in HouseholdHead / HouseholdMember:
     $campName
-    tentNumber
-    $livelihood
-    $enumeratorName
-    $vulnerabilityCriteria
-    $shelterStatus
-    $assets
-    $supportReceivedTypes
-    $supportDateReceived
-    $countrySpecifics
+    $tentNumber
 */
 trait HouseholdInputBuilderTrait
 {
@@ -57,6 +52,38 @@ trait HouseholdInputBuilderTrait
         $household->setNotes($this->notes);
         $household->setLatitude('');
         $household->setLongitude('');
+        $household->setLivelihood($this->livelihood);
+        $household->setEnumeratorName($this->enumeratorName);
+        $household->setShelterStatus($this->shelterStatus);
+        $household->setSupportDateReceived($this->supportDateReceived);
+
+        if (null !== $this->livelihood) {
+            $hoodKey = array_search($this->livelihood, Livelihood::TRANSLATIONS);
+            $household->setLivelihood($hoodKey);
+        }
+
+        if (null !== $this->supportReceivedTypes) {
+            $receivedTypes = [];
+            foreach (explode(',', $this->supportReceivedTypes) as $typeName) {
+                $receivedTypes[] = array_search($typeName, Household::SUPPORT_RECIEVED_TYPES);
+            }
+            $household->setSupportReceivedTypes($receivedTypes);
+        }
+
+        if (null !== $this->assets) {
+            $assets = [];
+            foreach (explode(',', $this->assets) as $assetName) {
+                $assets[] = array_search($assetName, Household::ASSETS);
+            }
+            $household->setAssets($assets);
+        }
+
+        foreach ($this->countrySpecifics as $id => $answer) {
+            $specificAnswer = new CountrySpecificsAnswerInputType();
+            $specificAnswer->setCountrySpecificId($id);
+            $specificAnswer->setAnswer($answer);
+            $household->addCountrySpecificAnswer($specificAnswer);
+        }
 
         $address = new ResidenceAddressInputType();
         $address->setNumber($this->addressStreet);
