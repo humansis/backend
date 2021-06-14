@@ -158,7 +158,7 @@ class ProjectController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function userCountries(User $user): JsonResponse
+    public function userProjects(User $user): JsonResponse
     {
         if ($user->getProjects()->count() > 0) {
             return $this->json(new Paginator($user->getProjects()));
