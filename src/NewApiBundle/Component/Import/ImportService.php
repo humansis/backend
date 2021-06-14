@@ -232,7 +232,9 @@ class ImportService
     public function checkIntegrity(Import $import): void
     {
         $this->integrityChecker->check($import);
-        $this->importInvalidFileService->generateFile($import);
+        if (ImportState::INTEGRITY_CHECK_FAILED === $import->getState()) {
+            $this->importInvalidFileService->generateFile($import);
+        }
     }
 
     public function checkIdentity(Import $import): void
