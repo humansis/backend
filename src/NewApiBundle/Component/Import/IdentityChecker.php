@@ -189,14 +189,14 @@ class IdentityChecker
                 continue;
             }
 
-            /** @var NationalId[] $ids */
-            $ids = $this->entityManager->getRepository(NationalId::class)->findBy([
-                'idType' => $c['ID Type'],
-                'idNumber' => $c['ID Number'],
-            ]);
-
-            foreach ($ids as $id) {
-                $founded[] = $this->entityManager->getRepository(Beneficiary::class)->findOneBy(['person' => $id->getPerson()]);
+            $duplicities = $this->entityManager->getRepository(Beneficiary::class)->findIdentityByNationalId(
+                $current->getImport()->getProject()->getIso3(),
+                $c['ID Type'],
+                $c['ID Number']
+            );
+            $this->logImportInfo($current->getImport(), "Found ".count($duplicities)." duplicities");
+            foreach($duplicities as $duplicity) {
+                $founded[] = $duplicity;
             }
         }
 
