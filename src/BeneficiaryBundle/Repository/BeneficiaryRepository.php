@@ -146,7 +146,8 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     {
         return $this->createQueryBuilder('b')
             ->join('b.person', 'p')
-            ->join('b.projects', 'project')
+            ->join('b.household', 'hh')
+            ->join('hh.projects', 'project')
             ->join('p.nationalIds', 'id')
             ->andWhere('b.archived = 0')
             ->andWhere('id.idNumber = :idNumber')

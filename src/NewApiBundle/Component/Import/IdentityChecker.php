@@ -191,8 +191,8 @@ class IdentityChecker
 
             $duplicities = $this->entityManager->getRepository(Beneficiary::class)->findIdentityByNationalId(
                 $current->getImport()->getProject()->getIso3(),
-                $c['ID Type'],
-                $c['ID Number']
+                (string) $c['ID Type'],
+                (string) $c['ID Number']
             );
             $this->logImportInfo($current->getImport(), "Found ".count($duplicities)." duplicities");
             foreach($duplicities as $duplicity) {
