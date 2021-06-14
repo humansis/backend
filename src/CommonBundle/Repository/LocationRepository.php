@@ -31,6 +31,35 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
         $this->whereCountry($qb, $country);
         return $qb->getQuery()->getResult();
     }
+    
+    public function getByNames(string $adm1, ?string $adm2, ?string $adm3, ?string $adm4): ?Location
+    {
+        $qb = $this->createQueryBuilder('l');
+        $qb->setMaxResults(1);
+        $qb->join('l.adm1', 'adm1')
+            ->andWhere('adm1.name = :adm1')
+            ->setParameter('adm1', $adm1);
+        
+        if (null !== $adm2) {
+            $qb->join('l.adm2', 'adm2')
+                ->andWhere('adm2.name = :adm2')
+                ->setParameter('adm2', $adm2);
+        }
+
+        if (null !== $adm3) {
+            $qb->join('l.adm3', 'adm3')
+                ->andWhere('adm3.name = :adm3')
+                ->setParameter('adm3', $adm3);
+        }
+
+        if (null !== $adm4) {
+            $qb->join('l.adm4', 'adm4')
+                ->andWhere('adm4.name = :adm4')
+                ->setParameter('adm4', $adm4);
+        }
+
+        return $qb->getQuery()->getSingleResult();
+    }
 
     /**
      * Create sub request to get the adm1 of a location

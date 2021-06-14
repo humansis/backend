@@ -3,14 +3,21 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import\Integrity;
 
+use BeneficiaryBundle\Entity\Household;
+use CommonBundle\Entity\Location;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
+use NewApiBundle\InputType\Beneficiary\CountrySpecificsAnswerInputType;
 use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\InputType\HouseholdCreateInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
+use ProjectBundle\Enum\Livelihood;
 
-//TODO many unused parameters in HouseholdHead / HouseholdMember ($f0, $f2 F.E.)
+/* TODO many unused parameters in HouseholdHead / HouseholdMember:
+    $campName
+    $tentNumber
+*/
 trait HouseholdInputBuilderTrait
 {
     public function buildHouseholdInputType(): ?HouseholdCreateInputType
@@ -46,18 +53,59 @@ trait HouseholdInputBuilderTrait
         $household->setNotes($this->notes);
         $household->setLatitude('');
         $household->setLongitude('');
+        $household->setLivelihood($this->livelihood);
+        $household->setEnumeratorName($this->enumeratorName);
+        $household->setShelterStatus($this->shelterStatus);
+        $household->setSupportDateReceived($this->supportDateReceived);
 
-        $address = new ResidenceAddressInputType();
-        $address->setNumber($this->addressStreet);
-        $address->setPostcode($this->addressPostcode);
-        $address->setNumber($this->addressNumber);
-        $address->setLocationId(1); // FIXME
-        $household->setResidenceAddress($address);
+        if (null !== $this->livelihood) {
+            $hoodKey = array_search($this->livelihood, Livelihood::TRANSLATIONS);
+            $household->setLivelihood($hoodKey);
+        }
+
+        if (null !== $this->supportReceivedTypes) {
+            $receivedTypes = [];
+            foreach (explode(',', $this->supportReceivedTypes) as $typeName) {
+                $receivedTypes[] = array_search($typeName, Household::SUPPORT_RECIEVED_TYPES);
+            }
+            $household->setSupportReceivedTypes($receivedTypes);
+        }
+
+        if (null !== $this->assets) {
+            $assets = [];
+            foreach (explode(',', $this->assets) as $assetName) {
+                $assets[] = array_search($assetName, Household::ASSETS);
+            }
+            $household->setAssets($assets);
+        }
+
+        foreach ($this->countrySpecifics as $id => $answer) {
+            $specificAnswer = new CountrySpecificsAnswerInputType();
+            $specificAnswer->setCountrySpecificId($id);
+            $specificAnswer->setAnswer($answer);
+            $household->addCountrySpecificAnswer($specificAnswer);
+        }
+
+        $locationRepository = $this->entityManager->getRepository(Location::class);
+        $locationByAdms = $locationRepository->getByNames($this->adm1, $this->adm2, $this->adm3, $this->adm4);
+        if (null !== $locationByAdms) {
+            $address = new ResidenceAddressInputType();
+            $address->setNumber($this->addressStreet);
+            $address->setPostcode($this->addressPostcode);
+            $address->setNumber($this->addressNumber);
+            $address->setLocationId($locationByAdms->getId());
+            $household->setResidenceAddress($address);
+        }
 
         $head = $this->buildBeneficiaryInputType();
         $head->setIsHead(true);
 
         $household->addBeneficiary($head);
+
+        foreach ($this->buildNamelessMembers() as $namelessMember) {
+            $namelessMember->setResidencyStatus($this->residencyStatus); // not sure if it is correct but residency status is mandatory
+            $household->addBeneficiary($namelessMember);
+        }
     }
 
     public function buildBeneficiaryInputType(): BeneficiaryInputType
@@ -101,5 +149,35 @@ trait HouseholdInputBuilderTrait
         return $beneficiary;
     }
 
+    /**
+     * @return BeneficiaryInputType[]
+     */
+    private function buildNamelessMembers(): iterable
+    {
+        foreach ($this->buildMembersByAgeAndGender('F', 1, $this->f0 ?? 0) as $bnf) { yield $bnf; }
+        foreach ($this->buildMembersByAgeAndGender('M', 1, $this->m0 ?? 0) as $bnf) { yield $bnf; }
+        foreach ($this->buildMembersByAgeAndGender('F', 3, $this->f2 ?? 0) as $bnf) { yield $bnf; }
+        foreach ($this->buildMembersByAgeAndGender('M', 3, $this->m2 ?? 0) as $bnf) { yield $bnf; }
+        foreach ($this->buildMembersByAgeAndGender('F', 7, $this->f6 ?? 0) as $bnf) { yield $bnf; }
+        foreach ($this->buildMembersByAgeAndGender('M', 7, $this->m6 ?? 0) as $bnf) { yield $bnf; }
+        foreach ($this->buildMembersByAgeAndGender('F', 19, $this->f18 ?? 0) as $bnf) { yield $bnf; }
+        foreach ($this->buildMembersByAgeAndGender('M', 19, $this->m18 ?? 0) as $bnf) { yield $bnf; }
+        foreach ($this->buildMembersByAgeAndGender('F', 66, $this->f60 ?? 0) as $bnf) { yield $bnf; }
+        foreach ($this->buildMembersByAgeAndGender('M', 66, $this->m60 ?? 0) as $bnf) { yield $bnf; }
+    }
+
+    private function buildMembersByAgeAndGender(string $gender, int $age, int $count): iterable
+    {
+        if (0 === $count) return;
+        $today = new \DateTime();
+
+        foreach (range(0, $count) as $i) {
+            $beneficiary = new BeneficiaryInputType();
+            $beneficiary->setDateOfBirth($today->modify("-$age year")->format('d-m-Y'));
+            $beneficiary->setGender($gender);
+            $beneficiary->setIsHead(false);
+            yield $beneficiary;
+        }
+    }
 
 }

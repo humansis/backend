@@ -17,17 +17,17 @@ class HouseholdMember
     use HouseholdInputBuilderTrait;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      */
     protected $addressStreet;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      */
     protected $addressNumber;
 
     /**
-     * @Assert\Type("numeric")
+     * @Assert\Type("scalar")
      */
     protected $addressPostcode;
 
@@ -204,12 +204,12 @@ class HouseholdMember
     protected $proxyPhone2;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      */
     protected $idType;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      */
     protected $idNumber;
 

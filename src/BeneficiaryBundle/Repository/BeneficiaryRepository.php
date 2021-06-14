@@ -142,6 +142,24 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
+    public function findIdentityByNationalId(string $iso3, string $idType, string $idNumber)
+    {
+        return $this->createQueryBuilder('b')
+            ->join('b.person', 'p')
+            ->join('b.household', 'hh')
+            ->join('hh.projects', 'project')
+            ->join('p.nationalIds', 'id')
+            ->andWhere('b.archived = 0')
+            ->andWhere('id.idNumber = :idNumber')
+            ->andWhere('id.idType = :idType')
+            ->andWhere('project.iso3 = :country')
+            ->setParameter('idNumber', $idNumber)
+            ->setParameter('idType', $idType)
+            ->setParameter('country', $iso3)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function getAllofDistribution(Assistance $assistance)
     {
         $qb = $this->createQueryBuilder('b');

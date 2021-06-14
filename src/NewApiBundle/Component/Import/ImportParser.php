@@ -95,7 +95,7 @@ class ImportParser
         $row = [];
         $stop = true;
 
-        for ($c = 1; $c < count($headers); $c++) {
+        for ($c = 1; $c <= count($headers); $c++) {
             $cell = $worksheet->getCellByColumnAndRow($c, $r, false);
             $value = self::value($cell);
 
