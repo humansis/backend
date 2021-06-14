@@ -93,10 +93,11 @@ class ImportInvalidFileService
     {
         $sheet = $template->getActiveSheet();
 
+        $currentRow = ImportTemplate::FIRST_ENTRY_ROW;
+        $currentColumn = 1;
+
         /** @var ImportQueue $entry */
         foreach ($entries as $entry) {
-            $currentRow = ImportTemplate::FIRST_ENTRY_ROW;
-            $currentColumn = 1;
 
             foreach ($entry->getContent() as $i => $row) {
                 $invalidColumns = $this->parseInvalidColumns($entry->getMessage(), $i);
@@ -120,6 +121,7 @@ class ImportInvalidFileService
 
                     ++$currentColumn;
                 }
+
                 $currentColumn = 1;
                 ++$currentRow;
             }

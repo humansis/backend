@@ -18,7 +18,7 @@ class HouseholdHead
     use HouseholdInputBuilderTrait;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      */
     protected $addressStreet;
 
