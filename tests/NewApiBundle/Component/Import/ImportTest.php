@@ -3,7 +3,10 @@ declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Component\Import;
 
+use BeneficiaryBundle\Entity\Person;
+use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
+use NewApiBundle\InputType\DuplicityResolveInputType;
 use ProjectBundle\Utils\ProjectService;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use BeneficiaryBundle\Entity\Beneficiary;
@@ -127,13 +130,13 @@ class ImportTest extends KernelTestCase
         $this->uploadService->load($importFile);
 
         $this->assertNotNull($importFile->getId(), "ImportFile wasn't saved to DB");
-        $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import]);
         $this->assertCount($householdCount, $queue);
 
         // start integrity check
         $this->importService->updateStatus($import, ImportState::INTEGRITY_CHECKING);
 
-        $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import]);
         $this->assertCount($householdCount, $queue);
         $this->assertEquals(ImportState::INTEGRITY_CHECKING, $import->getState());
 
@@ -160,7 +163,7 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:identity failed");
 
         $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
-        $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import]);
         $this->assertCount($householdCount, $queue);
 
         // start similarity check
@@ -176,10 +179,10 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:similarity failed");
 
         $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
-        $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import]);
         $this->assertCount($householdCount, $queue);
 
-        $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_CREATE]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_CREATE]);
         $this->assertCount($householdCount, $queue);
 
         // save to DB
@@ -280,6 +283,57 @@ class ImportTest extends KernelTestCase
 
         $stats = $this->importService->getStatistics($import);
         $this->assertEquals($expectedDuplicities, $stats->getAmountDuplicities());
+
+        // resolve all as duplicity to update and continue
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::SUSPICIOUS]);
+        foreach ($queue as $item) {
+            $duplicityResolve = new DuplicityResolveInputType();
+            $duplicityResolve->setStatus(ImportQueueState::TO_UPDATE);
+            $duplicityResolve->setAcceptedDuplicityId($item->getDuplicities()[0]->getId());
+            $this->importService->resolveDuplicity($item, $duplicityResolve, $this->getUser());
+        }
+
+        $count = $this->entityManager->getRepository(ImportQueue::class)->count(['import' => $import, 'state' => ImportQueueState::SUSPICIOUS]);
+        $this->assertEquals(0, $count, "Some duplicities wasn't resolved");
+        $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
+
+        // start similarity check
+        $this->importService->updateStatus($import, ImportState::SIMILARITY_CHECKING);
+
+        $this->assertEquals(ImportState::SIMILARITY_CHECKING, $import->getState());
+
+        $checkSimilarityCommand = $this->application->find('app:import:similarity');
+        $commandTester = new CommandTester($checkSimilarityCommand);
+        $commandTester->execute(['import' => $import->getId()]);
+        $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:similarity failed");
+
+        $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import]);
+        $this->assertCount($householdCount, $queue);
+
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_CREATE]);
+        $this->assertCount($householdCount, $queue);
+
+        // save to DB
+        $this->importService->updateStatus($import, ImportState::IMPORTING);
+
+        $this->assertEquals(ImportState::IMPORTING, $import->getState());
+
+        $finishCommand = $this->application->find('app:import:finish');
+        $commandTester = new CommandTester($finishCommand);
+        $commandTester->execute(['import' => $import->getId()]);
+        $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:finish failed");
+
+        $this->assertEquals(ImportState::FINISHED, $import->getState());
+
+        $beneficiaryIds = [];
+        foreach ($this->entityManager->getRepository(Beneficiary::class)->getImported($imports['first']) as $beneficiary) {
+            $beneficiaryIds[] = $beneficiary->getHousehold()->getId();
+        }
+        foreach ($this->entityManager->getRepository(Beneficiary::class)->getImported($imports['second']) as $beneficiary) {
+            $beneficiaryIds[] = $beneficiary->getHousehold()->getId();
+        }
+        $this->assertCount($householdCount, array_unique($beneficiaryIds), "Some duplicities was saved instead of updated");
     }
 
     public function testErrorInIntegrityCheck()
