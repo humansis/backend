@@ -301,6 +301,9 @@ class HouseholdHead
      */
     protected $m60;
 
+    /**
+     * @var string[] countrySpecific::id => countrySpecificAnswer::answer
+     */
     protected $countrySpecifics = [];
 
     /** @var string */
@@ -323,7 +326,7 @@ class HouseholdHead
         $countrySpecifics = $entityManager->getRepository(CountrySpecific::class)->findByCountryIso3($countryIso3);
         foreach ($countrySpecifics as $countrySpecific) {
             if (isset($content[$countrySpecific->getFieldString()])) {
-                $this->countrySpecifics[$countrySpecific->getFieldString()] = $content[$countrySpecific->getFieldString()];
+                $this->countrySpecifics[$countrySpecific->getId()] = $content[$countrySpecific->getFieldString()];
             }
         }
     }

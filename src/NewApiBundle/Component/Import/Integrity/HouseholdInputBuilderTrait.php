@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import\Integrity;
 
+use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Entity\Location;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
@@ -51,8 +52,8 @@ trait HouseholdInputBuilderTrait
         $household->setIncomeLevel($this->incomeLevel);
         $household->setIso3($this->countryIso3);
         $household->setNotes($this->notes);
-        $household->setLatitude('');
-        $household->setLongitude('');
+        $household->setLatitude($this->latitude);
+        $household->setLongitude($this->longitude);
         $household->setLivelihood($this->livelihood);
         $household->setEnumeratorName($this->enumeratorName);
         $household->setShelterStatus($this->shelterStatus);
@@ -79,9 +80,9 @@ trait HouseholdInputBuilderTrait
             $household->setAssets($assets);
         }
 
-        foreach ($this->countrySpecifics as $id => $answer) {
+        foreach ($this->countrySpecifics as $countrySpecificId => $answer) {
             $specificAnswer = new CountrySpecificsAnswerInputType();
-            $specificAnswer->setCountrySpecificId($id);
+            $specificAnswer->setCountrySpecificId($countrySpecificId);
             $specificAnswer->setAnswer($answer);
             $household->addCountrySpecificAnswer($specificAnswer);
         }
