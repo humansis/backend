@@ -312,7 +312,11 @@ class ImportTest extends KernelTestCase
         $this->assertCount($householdCount, $queue);
 
         $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_CREATE]);
-        $this->assertCount($householdCount, $queue);
+        $this->assertCount(0, $queue);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_UPDATE]);
+        $this->assertCount($expectedDuplicities, $queue);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_LINK]);
+        $this->assertCount(0, $queue);
 
         // save to DB
         $this->importService->updateStatus($import, ImportState::IMPORTING);
@@ -333,7 +337,7 @@ class ImportTest extends KernelTestCase
         foreach ($this->entityManager->getRepository(Beneficiary::class)->getImported($imports['second']) as $beneficiary) {
             $beneficiaryIds[] = $beneficiary->getHousehold()->getId();
         }
-        $this->assertCount($householdCount, array_unique($beneficiaryIds), "Some duplicities was saved instead of updated");
+        $this->assertCount($householdCount*2 - $expectedDuplicities, array_unique($beneficiaryIds), "Some duplicities was saved instead of updated");
     }
 
     public function testErrorInIntegrityCheck()

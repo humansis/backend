@@ -53,7 +53,20 @@ class SimilarityChecker
 
         // TODO: similarity check
 
-        $item->setState(ImportQueueState::TO_CREATE);
+        switch ($item->getState()) {
+            case ImportQueueState::TO_CREATE:
+            case ImportQueueState::TO_LINK:
+            case ImportQueueState::TO_IGNORE:
+                // nothing, already decided
+                break;
+            case ImportQueueState::INVALID_EXPORTED:
+                // nothing, ignore
+                break;
+            default:
+                $item->setState(ImportQueueState::TO_CREATE);
+                break;
+        }
+
         $this->entityManager->persist($item);
     }
 
@@ -63,8 +76,10 @@ class SimilarityChecker
             ->update(ImportQueue::class, 'iq')
             ->set('iq.state', '?1')
             ->andWhere('iq.import = ?2')
+            ->andWhere('iq.state = ?3')
             ->setParameter('1', ImportQueueState::NEW)
             ->setParameter('2', $import->getId())
+            ->setParameter('3', ImportQueueState::VALID)
             ->getQuery()
             ->execute();
     }

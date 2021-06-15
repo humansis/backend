@@ -353,7 +353,7 @@ class ImportService
     private function finishCreationQueue(ImportQueue $item, Import $import): void
     {
         if (ImportQueueState::TO_CREATE !== $item->getState()) {
-            throw new InvalidArgumentException("Wrong ImportQueue state");
+            throw new InvalidArgumentException("Wrong ImportQueue creation state: ".$item->getState());
         }
 
         $headContent = $item->getContent()[0];
@@ -406,7 +406,7 @@ class ImportService
         }
 
         $updatedHousehold = $acceptedDuplicity->getTheirs();
-        $this->householdService->update($updatedHousehold, $householdUpdateInputType);
+        // $this->householdService->update($updatedHousehold, $householdUpdateInputType);
 
         $this->linkHouseholdToQueue($import, $updatedHousehold, $acceptedDuplicity->getDecideBy());
         //$this->removeFinishedQueue($item);
