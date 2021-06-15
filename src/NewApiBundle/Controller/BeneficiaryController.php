@@ -155,32 +155,6 @@ class BeneficiaryController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/assistances/{id}/beneficiaries/exports-raw")
-     *
-     * @param Assistance $assistance
-     * @param Request    $request
-     *
-     * @return Response
-     */
-    public function exportsByAssistanceRaw(Assistance $assistance, Request $request): Response
-    {
-        $file = $this->get('distribution.assistance_service')->exportGeneralReliefDistributionToCsv($assistance, $request->query->get('type'));
-
-        $response = new BinaryFileResponse(getcwd() . '/' . $file);
-
-        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $file);
-        $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
-        if ($mimeTypeGuesser->isGuesserSupported()) {
-            $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType(getcwd() . '/' . $file));
-        } else {
-            $response->headers->set('Content-Type', 'text/plain');
-        }
-        $response->deleteFileAfterSend(true);
-
-        return $response;
-    }
-
-    /**
      * @Rest\Get("/beneficiaries/national-ids")
      *
      * @param NationalIdFilterInputType $filter
