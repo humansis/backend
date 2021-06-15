@@ -51,8 +51,8 @@ trait HouseholdInputBuilderTrait
         $household->setIncomeLevel($this->incomeLevel);
         $household->setIso3($this->countryIso3);
         $household->setNotes($this->notes);
-        $household->setLatitude('');
-        $household->setLongitude('');
+        $household->setLatitude($this->latitude);
+        $household->setLongitude($this->longitude);
         $household->setLivelihood($this->livelihood);
         $household->setEnumeratorName($this->enumeratorName);
         $household->setShelterStatus($this->shelterStatus);
