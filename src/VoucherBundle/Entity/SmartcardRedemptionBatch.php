@@ -83,6 +83,13 @@ class SmartcardRedemptionBatch implements JsonSerializable
     private $contractNo;
 
     /**
+     * @var string|null
+     *
+     * @ORM\Column(name="vendor_no", type="string", nullable=true)
+     */
+    private $vendorNo;
+
+    /**
      * @var Collection|SmartcardPurchase[]
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardPurchase", mappedBy="redemptionBatch", cascade={"persist"}, orphanRemoval=false)
@@ -99,6 +106,7 @@ class SmartcardRedemptionBatch implements JsonSerializable
      * @param mixed        $value
      * @param string       $currency
      * @param string|null  $contractNo
+     * @param string|null  $vendorNo
      * @param iterable     $purchases
      */
     public function __construct(
@@ -109,6 +117,7 @@ class SmartcardRedemptionBatch implements JsonSerializable
         $value,
         string $currency,
         ?string $contractNo,
+        ?string $vendorNo,
         iterable $purchases
     )
     {
@@ -120,6 +129,7 @@ class SmartcardRedemptionBatch implements JsonSerializable
         $this->currency = $currency;
         $this->purchases = new ArrayCollection($purchases);
         $this->contractNo = $contractNo;
+        $this->vendorNo = $vendorNo;
     }
 
     /**
@@ -239,6 +249,14 @@ class SmartcardRedemptionBatch implements JsonSerializable
     /**
      * @return string|null
      */
+    public function getVendorNo(): ?string
+    {
+        return $this->vendorNo;
+    }
+
+    /**
+     * @return string|null
+     */
     public function getInvoiceNo(): ?string
     {
         return $this->getId() ? sprintf('%06d', $this->getId()) : null;
@@ -254,6 +272,7 @@ class SmartcardRedemptionBatch implements JsonSerializable
             'value' => (float) $this->value,
             'currency' => $this->currency,
             'contract_no' => $this->contractNo,
+            'vendor_no' => $this->vendorNo,
             'invoice_number' => $this->getInvoiceNo(),
             'project_id' => $this->getProject() ? $this->getProject()->getId() : null,
             'project_name' => $this->getProject() ? $this->getProject()->getName() : null,

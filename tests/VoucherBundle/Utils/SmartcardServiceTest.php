@@ -52,10 +52,10 @@ class SmartcardServiceTest extends KernelTestCase
     public function validSmartcardCashflows(): array
     {
         $projectA = 3;
-        $projectB = 9;
+        $projectB = 10;
         $assistanceA1 = 51; // USD
-        $assistanceA2 = 207; // SYP
-        $assistanceB1 = 153; // USD
+        $assistanceA2 = 241; // SYP
+        $assistanceB1 = 242; // USD
 
         return [
             'vendor has nothing' => [

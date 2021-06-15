@@ -10,6 +10,11 @@ services:
         tags:
             - { name: 'console.command' }
 
+    CommonBundle\Command\AdmCSV2XMLCommand:
+        public: true
+        tags:
+            - { name: 'console.command' }
+
     CommonBundle\Command\ClearCacheImportCommand:
         public: true
         tags:
@@ -202,6 +207,11 @@ services:
             - "@kernel"
             - "%app.countries%"
             - "@distribution.assistance_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\ImportFixtures:
+        public: true
         tags:
             - { name: doctrine.fixture.orm }
 

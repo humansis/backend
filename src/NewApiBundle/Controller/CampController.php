@@ -31,6 +31,19 @@ class CampController extends AbstractController
         return $this->json(new Paginator($beneficiaries));
     }
 
+
+    /**
+     * @Rest\Get("/camps/{id}")
+     *
+     * @param Camp $camp
+     *
+     * @return JsonResponse
+     */
+    public function camp(Camp $camp): JsonResponse
+    {
+        return $this->json($camp);
+    }
+
     /**
      * @Rest\Get("locations/{id}/camps")
      *

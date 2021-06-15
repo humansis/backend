@@ -42,6 +42,20 @@ class BeneficiaryController extends AbstractController
 
         return $this->json($beneficiaries);
     }
+    /**
+     * @Rest\Post("/assistances/vulnerability-scores")
+     *
+     * @param AssistanceCreateInputType $inputType
+     * @param Pagination $pagination
+     *
+     * @return JsonResponse
+     */
+    public function vulnerabilityScores(AssistanceCreateInputType $inputType, Pagination $pagination): JsonResponse
+    {
+        $vulnerabilities = $this->get('distribution.assistance_service')->findVulnerabilityScores($inputType, $pagination);
+
+        return $this->json($vulnerabilities);
+    }
 
     /**
      * @Rest\Get("/beneficiaries/exports")
@@ -112,6 +126,32 @@ class BeneficiaryController extends AbstractController
         } catch (\Exception $exception) {
             return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
+    }
+
+    /**
+     * @Rest\Get("/assistances/{id}/beneficiaries/exports-raw")
+     *
+     * @param Assistance $assistance
+     * @param Request    $request
+     *
+     * @return Response
+     */
+    public function exportsByAssistanceRaw(Assistance $assistance, Request $request): Response
+    {
+        $file = $this->get('distribution.assistance_service')->exportGeneralReliefDistributionToCsv($assistance, $request->query->get('type'));
+
+        $response = new BinaryFileResponse(getcwd() . '/' . $file);
+
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $file);
+        $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
+        if ($mimeTypeGuesser->isGuesserSupported()) {
+            $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType(getcwd() . '/' . $file));
+        } else {
+            $response->headers->set('Content-Type', 'text/plain');
+        }
+        $response->deleteFileAfterSend(true);
+
+        return $response;
     }
 
     /**

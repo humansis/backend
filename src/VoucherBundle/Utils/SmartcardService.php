@@ -212,6 +212,7 @@ class SmartcardService
             $repository->countPurchasesValue($purchases),
             $currency,
             $vendor->getContractNo(),
+            $vendor->getVendorNo(),
             $purchases
         );
 

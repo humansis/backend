@@ -8,6 +8,7 @@ use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Codelist\CodeLists;
 use ProjectBundle\DBAL\SectorEnum;
+use ProjectBundle\Entity\Project;
 use ProjectBundle\Utils\SectorService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -29,10 +30,25 @@ class SectorsCodelistController extends AbstractController
      * @Rest\Get("/sectors")
      *
      * @return JsonResponse
+     * @deprecated use /projects/{id}/sectors instead
      */
     public function getSectors(): JsonResponse
     {
         $data = CodeLists::mapEnum(SectorEnum::all());
+
+        return $this->json(new Paginator($data));
+    }
+
+    /**
+     * @Rest\Get("/web-app/v2/projects/{id}/sectors")
+     *
+     * @param Project $project
+     *
+     * @return JsonResponse
+     */
+    public function getSectorsV2(Project $project): JsonResponse
+    {
+        $data = $this->sectorService->getSectorsInProject($project);
 
         return $this->json(new Paginator($data));
     }

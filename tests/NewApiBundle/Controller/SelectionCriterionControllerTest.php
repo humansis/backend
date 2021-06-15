@@ -58,7 +58,7 @@ class SelectionCriterionControllerTest extends BMSServiceTestCase
             "data": [
                 {"code": "gender", "type": "gender", "value": "Gender"},
                 {"code": "dateOfBirth", "type": "date", "value": "Date of Birth"},
-                {"code": "hasNotBeenInDistributionsSince", "type": "boolean", "value": "Has Not Been in a Distribution Since"}
+                {"code": "hasNotBeenInDistributionsSince", "type": "date", "value": "Has Not Been in a Distribution Since"}
             ]
         }', $this->client->getResponse()->getContent());
     }

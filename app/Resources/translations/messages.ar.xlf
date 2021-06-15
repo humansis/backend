@@ -1133,6 +1133,10 @@
         <source>Village</source>
         <target>القرية</target>
       </trans-unit>
+      <trans-unit id="pPmun0d" resname="Village/Neighbourhood">
+        <source>Village/Neighbourhood</source>
+        <target>قرية</target>
+      </trans-unit>
       <trans-unit id="9nNksbD" resname="Vocational Training">
         <source>Vocational Training</source>
         <target>تدريب مهني</target>

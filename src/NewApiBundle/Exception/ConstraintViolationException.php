@@ -25,7 +25,7 @@ class ConstraintViolationException extends \RuntimeException
             throw new \InvalidArgumentException('Argument 1 must be instance of '.ConstraintViolationListInterface::class.' or '.ConstraintViolationInterface::class);
         }
 
-        parent::__construct();
+        parent::__construct((string) $this->list);
 
     }
 

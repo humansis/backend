@@ -49,7 +49,9 @@ abstract class AbstractFilterInputType implements FilterInputTypeInterface
                 $value[$i] = $this->recursiveNormalize($v);
             }
         } elseif (is_numeric($value)) {
-            if (ctype_digit($value)) {
+            if (0 === strpos($value, '0')) {
+                // no transformation for "numbers" like "007"
+            } elseif (ctype_digit($value)) {
                 $value = (int) $value;
             } else {
                 $value = (float) $value;
