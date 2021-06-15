@@ -39,7 +39,7 @@ class ImportControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There needs to be at least one project in system to complete this test');
         }
 
-        $this->request('POST', '/api/basic/imports', [
+        $this->request('POST', '/api/basic/web-app/v1/imports', [
             'title' => 'test',
             'description' => 'test',
             'projectId' => $projects->getId(),
@@ -73,7 +73,7 @@ class ImportControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/imports/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/imports/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -99,7 +99,7 @@ class ImportControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        $this->request('GET', '/api/basic/imports?page=1&size=10&sort[]=project.desc');
+        $this->request('GET', '/api/basic/web-app/v1/imports?page=1&size=10&sort[]=project.desc');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -136,7 +136,7 @@ class ImportControllerTest extends BMSServiceTestCase
      */
     public function testPatch(string $parameter, $value, int $id)
     {
-        $this->request('PATCH', '/api/basic/imports/'.$id, [
+        $this->request('PATCH', '/api/basic/web-app/v1/imports/'.$id, [
             $parameter => $value,
         ]);
 
@@ -157,7 +157,7 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $importId = $duplicity->getOurs()->getImport()->getId();
 
-        $this->request('GET', "/api/basic/imports/$importId/duplicities");
+        $this->request('GET', "/api/basic/web-app/v1/imports/$importId/duplicities");
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -188,7 +188,7 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $importId = $importQueue->getImport()->getId();
 
-        $this->request('GET', "/api/basic/imports/$importId/statistics");
+        $this->request('GET', "/api/basic/web-app/v1/imports/$importId/statistics");
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -217,7 +217,7 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $importQueueId = $importQueue->getId();
 
-        $this->request('GET', "/api/basic/imports/queue/$importQueueId");
+        $this->request('GET', "/api/basic/web-app/v1/imports/queue/$importQueueId");
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -241,7 +241,7 @@ class ImportControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There needs to be at least one duplicity with entries in queue in system.');
         }
 
-        $this->request('PATCH', '/api/basic/imports/queue/'.$duplicity->getOurs()->getId(), [
+        $this->request('PATCH', '/api/basic/web-app/v1/imports/queue/'.$duplicity->getOurs()->getId(), [
             'status' => 'To Update',
             'acceptedDuplicityId' => $duplicity->getId(),
         ]);
@@ -263,7 +263,7 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $importId = $importInvalidFile->getImport()->getId();
 
-        $this->request('GET', "/api/basic/imports/$importId/invalid-files");
+        $this->request('GET', "/api/basic/web-app/v1/imports/$importId/invalid-files");
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -291,7 +291,7 @@ class ImportControllerTest extends BMSServiceTestCase
      */
     public function testGetInvalidFile(int $id)
     {
-        $this->request('GET', "/api/basic/imports/invalid-files/$id");
+        $this->request('GET', "/api/basic/web-app/v1/imports/invalid-files/$id");
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -310,7 +310,7 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $importId = $importQueue->getImport()->getId();
 
-        $this->request('GET', "/api/basic/imports/$importId/queue");
+        $this->request('GET', "/api/basic/web-app/v1/imports/$importId/queue");
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

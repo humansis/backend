@@ -29,7 +29,7 @@ use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 class BeneficiaryController extends AbstractController
 {
     /**
-     * @Rest\Post("/assistances/beneficiaries")
+     * @Rest\Post("/web-app/v1/assistances/beneficiaries")
      *
      * @param AssistanceCreateInputType $inputType
      * @param Pagination $paginationF
@@ -43,7 +43,7 @@ class BeneficiaryController extends AbstractController
         return $this->json($beneficiaries);
     }
     /**
-     * @Rest\Post("/assistances/vulnerability-scores")
+     * @Rest\Post("/web-app/v1/assistances/vulnerability-scores")
      *
      * @param AssistanceCreateInputType $inputType
      * @param Pagination $pagination
@@ -58,7 +58,7 @@ class BeneficiaryController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/beneficiaries/exports")
+     * @Rest\Get("/web-app/v1/beneficiaries/exports")
      *
      * @param Request                          $request
      * @param BeneficiaryExportFilterInputType $inputType
@@ -95,7 +95,7 @@ class BeneficiaryController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/assistances/{id}/beneficiaries/exports")
+     * @Rest\Get("/web-app/v1/assistances/{id}/beneficiaries/exports")
      *
      * @param Assistance $assistance
      * @param Request    $request
@@ -129,7 +129,7 @@ class BeneficiaryController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/assistances/{id}/beneficiaries/exports-raw")
+     * @Rest\Get("/web-app/v1/assistances/{id}/beneficiaries/exports-raw")
      *
      * @param Assistance $assistance
      * @param Request    $request
@@ -155,7 +155,7 @@ class BeneficiaryController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/beneficiaries/national-ids")
+     * @Rest\Get("/web-app/v1/beneficiaries/national-ids")
      *
      * @param NationalIdFilterInputType $filter
      *
@@ -169,7 +169,7 @@ class BeneficiaryController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/beneficiaries/national-ids/{id}")
+     * @Rest\Get("/web-app/v1/beneficiaries/national-ids/{id}")
      *
      * @param NationalId $nationalId
      *
@@ -181,7 +181,7 @@ class BeneficiaryController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/beneficiaries/phones")
+     * @Rest\Get("/web-app/v1/beneficiaries/phones")
      *
      * @param PhoneFilterInputType $filter
      *
@@ -195,7 +195,7 @@ class BeneficiaryController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/beneficiaries/phones/{id}")
+     * @Rest\Get("/web-app/v1/beneficiaries/phones/{id}")
      *
      * @param Phone $phone
      *
@@ -207,7 +207,7 @@ class BeneficiaryController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/beneficiaries/{id}")
+     * @Rest\Get("/web-app/v1/beneficiaries/{id}")
      *
      * @param Beneficiary $beneficiary
      *
@@ -223,7 +223,7 @@ class BeneficiaryController extends AbstractController
     }
 
     /**
-     * @Rest\Patch("/beneficiaries/{id}")
+     * @Rest\Patch("/web-app/v1/beneficiaries/{id}")
      *
      * @param Beneficiary              $beneficiary
      * @param BenefciaryPatchInputType $inputType
@@ -242,7 +242,7 @@ class BeneficiaryController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/beneficiaries")
+     * @Rest\Get("/web-app/v1/beneficiaries")
      *
      * @param BeneficiaryFilterInputType $filter
      *
@@ -256,7 +256,7 @@ class BeneficiaryController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/projects/{id}/targets/{target}/beneficiaries")
+     * @Rest\Get("/web-app/v1/projects/{id}/targets/{target}/beneficiaries")
      *
      * @param Project $project
      * @param string  $target

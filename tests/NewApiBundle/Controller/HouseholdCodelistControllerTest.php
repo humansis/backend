@@ -28,7 +28,7 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetLivelihoods()
     {
-        $this->request('GET', '/api/basic/households/livelihoods');
+        $this->request('GET', '/api/basic/web-app/v1/households/livelihoods');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -45,7 +45,7 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetAssets()
     {
-        $this->request('GET', '/api/basic/households/assets');
+        $this->request('GET', '/api/basic/web-app/v1/households/assets');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -62,7 +62,7 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetSupportReceivedTypes()
     {
-        $this->request('GET', '/api/basic/households/support-received-types');
+        $this->request('GET', '/api/basic/web-app/v1/households/support-received-types');
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
@@ -76,7 +76,7 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetShelterStatuses()
     {
-        $this->request('GET', '/api/basic/households/shelter-statuses');
+        $this->request('GET', '/api/basic/web-app/v1/households/shelter-statuses');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -93,7 +93,7 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetLocationTypes()
     {
-        $this->request('GET', '/api/basic/households/locations/types');
+        $this->request('GET', '/api/basic/web-app/v1/households/locations/types');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

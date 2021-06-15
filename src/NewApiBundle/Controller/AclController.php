@@ -23,7 +23,7 @@ class AclController extends AbstractController
     ];
 
     /**
-     * @Rest\Get("/acl/roles")
+     * @Rest\Get("/web-app/v1/acl/roles")
      * @Cache(expires="+5 days", public=true)
      *
      * @return JsonResponse
@@ -45,7 +45,7 @@ class AclController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/acl/roles/{code}")
+     * @Rest\Get("/web-app/v1/acl/roles/{code}")
      * @ParamConverter("role", options={"mapping": {"code": "code"}})
      * @Cache(expires="+5 days", public=true)
      *

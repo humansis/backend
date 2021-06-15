@@ -24,7 +24,7 @@ class CampControllerTest extends BMSServiceTestCase
 
     public function testCamps()
     {
-        $this->request('GET', '/api/basic/camps');
+        $this->request('GET', '/api/basic/web-app/v1/camps');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -50,7 +50,7 @@ class CampControllerTest extends BMSServiceTestCase
             return;
         }
 
-        $this->request('GET', '/api/basic/camp/'.$campId);
+        $this->request('GET', '/api/basic/web-app/v1/camp/'.$campId);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -84,7 +84,7 @@ class CampControllerTest extends BMSServiceTestCase
             return;
         }
 
-        $this->request('GET', "/api/basic/locations/$locationId/camps");
+        $this->request('GET', "/api/basic/web-app/v1/locations/$locationId/camps");
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

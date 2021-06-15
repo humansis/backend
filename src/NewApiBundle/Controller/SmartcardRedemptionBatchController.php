@@ -19,7 +19,7 @@ use VoucherBundle\Entity\Vendor;
 class SmartcardRedemptionBatchController extends AbstractController
 {
     /**
-     * @Rest\Get("/smartcard-redemption-batches/{id}/exports")
+     * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/exports")
      * @ParamConverter("redemptionBatch", class="VoucherBundle\Entity\SmartcardRedemptionBatch")
      *
      * @param SmartcardRedemptionBatch $redemptionBatch
@@ -32,7 +32,7 @@ class SmartcardRedemptionBatchController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/vendors/{id}/smartcard-redemption-batches")
+     * @Rest\Get("/web-app/v1/vendors/{id}/smartcard-redemption-batches")
      *
      * @param Vendor $vendor
      * @param Pagination $pagination
@@ -61,7 +61,7 @@ class SmartcardRedemptionBatchController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/vendors/{id}/smartcard-redemption-batches")
+     * @Rest\Post("/web-app/v1/vendors/{id}/smartcard-redemption-batches")
      *
      * @param Vendor $vendor
      *
@@ -79,7 +79,7 @@ class SmartcardRedemptionBatchController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/vendors/{id}/smartcard-redemption-candidates")
+     * @Rest\Get("/web-app/v1/vendors/{id}/smartcard-redemption-candidates")
      *
      * @param Vendor $vendor
      *

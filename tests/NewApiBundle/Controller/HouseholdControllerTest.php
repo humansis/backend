@@ -35,7 +35,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $vulnerabilityCriterion = self::$container->get('doctrine')->getRepository(VulnerabilityCriterion::class)->findBy([])[0];
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
-        $this->request('POST', '/api/basic/households', [
+        $this->request('POST', '/api/basic/web-app/v1/households', [
             'livelihood' => Livelihood::DAILY_LABOUR,
             'iso3' => 'KHM',
             'assets' => ['1'],
@@ -165,7 +165,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
         $camp = self::$container->get('doctrine')->getRepository(Camp::class)->findBy([])[0];
 
-        $this->request('PUT', '/api/basic/households/'.$id, [
+        $this->request('PUT', '/api/basic/web-app/v1/households/'.$id, [
             'livelihood' => Livelihood::FARMING_AGRICULTURE,
             'iso3' => 'KHM',
             'assets' => ['1', '2'],
@@ -289,7 +289,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/households/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/households/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -339,7 +339,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        $this->request('GET', '/api/basic/households?sort[]=localFirstName.asc&filter[gender]=F');
+        $this->request('GET', '/api/basic/web-app/v1/households?sort[]=localFirstName.asc&filter[gender]=F');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -357,7 +357,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        $this->request('DELETE', '/api/basic/households/'.$id);
+        $this->request('DELETE', '/api/basic/web-app/v1/households/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
 
@@ -369,7 +369,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        $this->request('GET', '/api/basic/households/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/households/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }
@@ -384,7 +384,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $project = $em->getRepository(Project::class)->findOneBy([]);
         $household = $em->getRepository(Household::class)->findOneBy([], ['id'=>'desc']);
 
-        $this->request('PUT', '/api/basic/projects/'.$project->getId().'/households', [
+        $this->request('PUT', '/api/basic/web-app/v1/projects/'.$project->getId().'/households', [
             'householdIds' => [$household->getId()],
         ]);
 

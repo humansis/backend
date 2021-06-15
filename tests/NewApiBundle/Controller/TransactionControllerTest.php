@@ -23,7 +23,7 @@ class TransactionControllerTest extends BMSServiceTestCase
 
     public function testListOfStatuses()
     {
-        $this->request('GET', '/api/basic/transactions/statuses');
+        $this->request('GET', '/api/basic/web-app/v1/transactions/statuses');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

@@ -21,7 +21,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class CountrySpecificController extends AbstractController
 {
     /**
-     * @Rest\Get("/country-specifics/exports")
+     * @Rest\Get("/web-app/v1/country-specifics/exports")
      *
      * @param Request $request
      *
@@ -38,7 +38,7 @@ class CountrySpecificController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/country-specifics/answers/{id}")
+     * @Rest\Get("/web-app/v1/country-specifics/answers/{id}")
      *
      * @param CountrySpecificAnswer $object
      *
@@ -50,7 +50,7 @@ class CountrySpecificController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/country-specifics/{id}")
+     * @Rest\Get("/web-app/v1/country-specifics/{id}")
      *
      * @param CountrySpecific $object
      *
@@ -62,7 +62,7 @@ class CountrySpecificController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/country-specifics")
+     * @Rest\Get("/web-app/v1/country-specifics")
      *
      * @param Request                        $request
      * @param CountrySpecificFilterInputType $filter
@@ -89,7 +89,7 @@ class CountrySpecificController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/country-specifics")
+     * @Rest\Post("/web-app/v1/country-specifics")
      *
      * @param CountrySpecificCreateInputType $inputType
      *
@@ -106,7 +106,7 @@ class CountrySpecificController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/country-specifics/{id}")
+     * @Rest\Put("/web-app/v1/country-specifics/{id}")
      *
      * @param CountrySpecific                $countrySpecific
      * @param CountrySpecificUpdateInputType $inputType
@@ -125,7 +125,7 @@ class CountrySpecificController extends AbstractController
     }
 
     /**
-     * @Rest\Delete("/country-specifics/{id}")
+     * @Rest\Delete("/web-app/v1/country-specifics/{id}")
      *
      * @param CountrySpecific $object
      *

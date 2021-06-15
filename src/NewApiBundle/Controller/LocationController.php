@@ -34,7 +34,7 @@ class LocationController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/countries/{iso3}")
+     * @Rest\Get("/web-app/v1/countries/{iso3}")
      *
      * @param string $iso3
      *
@@ -51,7 +51,7 @@ class LocationController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/users/{id}/countries")
+     * @Rest\Get("/web-app/v1/users/{id}/countries")
      *
      * @param User$user
      *
@@ -78,7 +78,7 @@ class LocationController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/countries")
+     * @Rest\Get("/web-app/v1/countries")
      *
      * @return JsonResponse
      */
@@ -88,7 +88,7 @@ class LocationController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/adm1/{id}")
+     * @Rest\Get("/web-app/v1/adm1/{id}")
      *
      * @param Adm1 $adm1
      *
@@ -100,7 +100,7 @@ class LocationController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/adm2/{id}")
+     * @Rest\Get("/web-app/v1/adm2/{id}")
      *
      * @param Adm2 $adm2
      *
@@ -112,7 +112,7 @@ class LocationController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/adm3/{id}")
+     * @Rest\Get("/web-app/v1/adm3/{id}")
      *
      * @param Adm3 $adm3
      *
@@ -124,7 +124,7 @@ class LocationController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/adm4/{id}")
+     * @Rest\Get("/web-app/v1/adm4/{id}")
      *
      * @param Adm4 $adm4
      *
@@ -136,7 +136,7 @@ class LocationController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/adm1")
+     * @Rest\Get("/web-app/v1/adm1")
      *
      * @param Request $request
      *
@@ -156,7 +156,7 @@ class LocationController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/adm1/{id}/adm2")
+     * @Rest\Get("/web-app/v1/adm1/{id}/adm2")
      *
      * @param Adm1 $adm1
      *
@@ -170,7 +170,7 @@ class LocationController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/adm2")
+     * @Rest\Get("/web-app/v1/adm2")
      *
      * @param AdmFilterInputType $inputType
      *
@@ -184,7 +184,7 @@ class LocationController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/adm2/{id}/adm3")
+     * @Rest\Get("/web-app/v1/adm2/{id}/adm3")
      *
      * @param Adm2 $adm2
      *
@@ -198,7 +198,7 @@ class LocationController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/adm3")
+     * @Rest\Get("/web-app/v1/adm3")
      *
      * @param AdmFilterInputType $inputType
      *
@@ -212,7 +212,7 @@ class LocationController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/adm3/{id}/adm4")
+     * @Rest\Get("/web-app/v1/adm3/{id}/adm4")
      *
      * @param Adm3 $adm3
      *
@@ -226,7 +226,7 @@ class LocationController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/adm4")
+     * @Rest\Get("/web-app/v1/adm4")
      *
      * @param AdmFilterInputType $inputType
      *
@@ -240,7 +240,7 @@ class LocationController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/locations/{id}")
+     * @Rest\Get("/web-app/v1/locations/{id}")
      *
      * @param Location $location
      *
@@ -252,7 +252,7 @@ class LocationController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/locations")
+     * @Rest\Get("/web-app/v1/locations")
      *
      * @param LocationFilterInputType $filter
      *

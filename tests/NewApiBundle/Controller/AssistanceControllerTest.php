@@ -34,7 +34,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             return $commodity->getId();
         }, $assistance->getCommodities()->toArray());
 
-        $this->request('GET', '/api/basic/assistances/'.$assistance->getId());
+        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistance->getId());
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -66,7 +66,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var Location $location */
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
-        $this->request('GET', '/api/basic/assistances?filter[type]='.AssistanceType::DISTRIBUTION.
+        $this->request('GET', '/api/basic/web-app/v1/assistances?filter[type]='.AssistanceType::DISTRIBUTION.
                                                     '&filter[modalityTypes][]=Smartcard'.
                                                     '&filter[projects][]='.$project->getId().
                                                     '&filter[locations][]='.$location->getId());
@@ -86,7 +86,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     {
         $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
-        $this->request('GET', '/api/basic/projects/'.$project->getId().'/assistances');
+        $this->request('GET', '/api/basic/web-app/v1/projects/'.$project->getId().'/assistances');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -110,7 +110,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var ModalityType $modalityType */
         $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Cash'])[0];
 
-        $this->request('POST', '/api/basic/assistances', [
+        $this->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
@@ -164,7 +164,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var Location $location */
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
-        $this->request('POST', '/api/basic/assistances', [
+        $this->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
@@ -219,7 +219,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var Community $community */
         $community = self::$container->get('doctrine')->getRepository(Community::class)->findBy([])[0];
 
-        $this->request('POST', '/api/basic/assistances', [
+        $this->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),

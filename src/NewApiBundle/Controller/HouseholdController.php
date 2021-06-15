@@ -21,7 +21,7 @@ use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 class HouseholdController extends AbstractController
 {
     /**
-     * @Rest\Get("/households/exports")
+     * @Rest\Get("/web-app/v1/households/exports")
      *
      * @param Request                  $request
      * @param HouseholdFilterInputType $filter
@@ -60,7 +60,7 @@ class HouseholdController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/households/{id}")
+     * @Rest\Get("/web-app/v1/households/{id}")
      *
      * @param Household $household
      *
@@ -76,7 +76,7 @@ class HouseholdController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/households")
+     * @Rest\Get("/web-app/v1/households")
      *
      * @param Request                  $request
      * @param HouseholdFilterInputType $filter
@@ -98,7 +98,7 @@ class HouseholdController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/households")
+     * @Rest\Post("/web-app/v1/households")
      *
      * @param HouseholdCreateInputType $inputType
      *
@@ -112,7 +112,7 @@ class HouseholdController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/households/{id}")
+     * @Rest\Put("/web-app/v1/households/{id}")
      *
      * @param Household                $household
      * @param HouseholdUpdateInputType $inputType
@@ -127,7 +127,7 @@ class HouseholdController extends AbstractController
     }
 
     /**
-     * @Rest\Delete("/households/{id}")
+     * @Rest\Delete("/web-app/v1/households/{id}")
      *
      * @param Household $household
      *
@@ -141,7 +141,7 @@ class HouseholdController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/projects/{id}/households")
+     * @Rest\Put("/web-app/v1/projects/{id}/households")
      *
      * @param Project                         $project
      *

@@ -15,7 +15,7 @@ use VoucherBundle\Entity\SmartcardRedemptionBatch;
 class SmartcardPurchaseController extends AbstractController
 {
     /**
-     * @Rest\Get("/smartcard-purchases")
+     * @Rest\Get("/web-app/v1/smartcard-purchases")
      * @Rest\Get("/vendor-app/v2/smartcard-purchases")
      *
      * @param SmartcardPurchaseFilterInputType $filter
@@ -32,7 +32,7 @@ class SmartcardPurchaseController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/smartcard-redemption-batches/{id}/smartcard-purchases")
+     * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/smartcard-purchases")
      * @ParamConverter("redemptionBatch", class="VoucherBundle\Entity\SmartcardRedemptionBatch")
      *
      * @param SmartcardRedemptionBatch $redemptionBatch

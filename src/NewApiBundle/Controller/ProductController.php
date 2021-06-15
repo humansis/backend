@@ -30,7 +30,7 @@ class ProductController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/products/exports")
+     * @Rest\Get("/web-app/v1/products/exports")
      *
      * @param Request $request
      *
@@ -49,7 +49,7 @@ class ProductController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/products/{id}")
+     * @Rest\Get("/web-app/v1/products/{id}")
      *
      * @param Product $product
      *
@@ -65,7 +65,7 @@ class ProductController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/products")
+     * @Rest\Get("/web-app/v1/products")
      *
      * @param Request                $request
      * @param ProductFilterInputType $filter
@@ -88,7 +88,7 @@ class ProductController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/products")
+     * @Rest\Post("/web-app/v1/products")
      *
      * @param ProductCreateInputType $inputType
      *
@@ -102,7 +102,7 @@ class ProductController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/products/{id}")
+     * @Rest\Put("/web-app/v1/products/{id}")
      *
      * @param Product                $product
      * @param ProductUpdateInputType $inputType
@@ -117,7 +117,7 @@ class ProductController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/products/images")
+     * @Rest\Post("/web-app/v1/products/images")
      *
      * @param Request $request
      *
@@ -139,7 +139,7 @@ class ProductController extends AbstractController
     }
 
     /**
-     * @Rest\Delete("/products/{id}")
+     * @Rest\Delete("/web-app/v1/products/{id}")
      *
      * @param Product $product
      *

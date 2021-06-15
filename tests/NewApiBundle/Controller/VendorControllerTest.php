@@ -54,7 +54,7 @@ class VendorControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There needs to be at least one user in system which is not assigned to any vendor to complete this test');
         }
 
-        $this->request('POST', '/api/basic/vendors', [
+        $this->request('POST', '/api/basic/web-app/v1/vendors', [
             'shop' => 'test shop',
             'name' => $this->vendorUsername,
             'addressStreet' => 'test street',
@@ -112,7 +112,7 @@ class VendorControllerTest extends BMSServiceTestCase
             'contractNo' => 'c-10-changed',
         ];
 
-        $this->request('PUT', '/api/basic/vendors/'.$vendor['id'], $data);
+        $this->request('PUT', '/api/basic/web-app/v1/vendors/'.$vendor['id'], $data);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -154,7 +154,7 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/vendors/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/vendors/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -189,7 +189,7 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        $this->request('GET', '/api/basic/vendors?filter[id][]=1&sort[]=name.asc');
+        $this->request('GET', '/api/basic/web-app/v1/vendors?filter[id][]=1&sort[]=name.asc');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -206,7 +206,7 @@ class VendorControllerTest extends BMSServiceTestCase
     {
         $vendor = $this->em->getRepository(Vendor::class)->findBy([])[0];
 
-        $this->request('GET', '/api/basic/vendors/'.$vendor->getId().'/summaries');
+        $this->request('GET', '/api/basic/web-app/v1/vendors/'.$vendor->getId().'/summaries');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -228,7 +228,7 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        $this->request('DELETE', '/api/basic/vendors/'.$id);
+        $this->request('DELETE', '/api/basic/web-app/v1/vendors/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
 
@@ -244,7 +244,7 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testGetNotExists(int $id)
     {
-        $this->request('GET', '/api/basic/vendors/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/vendors/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }

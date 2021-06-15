@@ -10,7 +10,7 @@ use UserBundle\Entity\User;
 class AuthController extends AbstractController
 {
     /**
-     * @Rest\Post("/login")
+     * @Rest\Post("/web-app/v1/login")
      *
      * @param JWTTokenManagerInterface $JWTManager
      *

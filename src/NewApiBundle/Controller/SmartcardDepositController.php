@@ -22,7 +22,7 @@ use VoucherBundle\Repository\SmartcardDepositRepository;
 class SmartcardDepositController extends AbstractController
 {
     /**
-     * @Rest\Get("/smartcard-deposits")
+     * @Rest\Get("/web-app/v1/smartcard-deposits")
      *
      * @param SmartcardDepositFilterInputType $filter
      *

@@ -44,7 +44,7 @@ class UserControllerTest extends BMSServiceTestCase
      */
     public function testInitialize()
     {
-        $this->request('POST', '/api/basic/users/initialize', [
+        $this->request('POST', '/api/basic/web-app/v1/users/initialize', [
             'username' => $this->username,
         ]);
 
@@ -80,7 +80,7 @@ class UserControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There needs to be at least one project in system to complete this test');
         }
 
-        $this->request('POST', '/api/basic/users/'.$userId, [
+        $this->request('POST', '/api/basic/web-app/v1/users/'.$userId, [
             'email' => $this->email,
             'password' => 'password',
             'phonePrefix' => '+420',
@@ -130,7 +130,7 @@ class UserControllerTest extends BMSServiceTestCase
      */
     public function testGetSalt(array $result)
     {
-        $this->request('GET', '/api/basic/users/salt/'.$result['username']);
+        $this->request('GET', '/api/basic/web-app/v1/users/salt/'.$result['username']);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -181,7 +181,7 @@ class UserControllerTest extends BMSServiceTestCase
             'changePassword' => false,
         ];
 
-        $this->request('PUT', '/api/basic/users/'.$result['id'], $data);
+        $this->request('PUT', '/api/basic/web-app/v1/users/'.$result['id'], $data);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -217,7 +217,7 @@ class UserControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/users/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/users/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -250,7 +250,7 @@ class UserControllerTest extends BMSServiceTestCase
      */
     public function testList(int $id)
     {
-        $this->request('GET', '/api/basic/users?sort[]=id.desc&filter[fulltext]=test&filter[id][]='.$id);
+        $this->request('GET', '/api/basic/web-app/v1/users?sort[]=id.desc&filter[fulltext]=test&filter[id][]='.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -276,7 +276,7 @@ class UserControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        $this->request('DELETE', '/api/basic/users/'.$id);
+        $this->request('DELETE', '/api/basic/web-app/v1/users/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
 
@@ -293,7 +293,7 @@ class UserControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        $this->request('GET', '/api/basic/users/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/users/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }
