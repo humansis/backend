@@ -12,7 +12,7 @@ web_profiler:
     intercept_redirects: false
 
 monolog:
-    channels: [ 'exception', 'import' ]
+    channels: [ 'exception', 'mobile', 'import' ]
     handlers:
         main:
             type: stream

@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
 use CommonBundle\Controller\ExportController;
+use CommonBundle\Entity\Organization;
 use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Enum\AssistanceTargetType;
@@ -103,9 +104,54 @@ class BeneficiaryController extends AbstractController
      */
     public function exportsByAssistance(Assistance $assistance, Request $request): Response
     {
-        $request->query->add(['beneficiariesInDistribution' => $assistance->getId()]);
+        $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
+        $type = $request->query->get('type');
 
-        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
+        $filename = $this->get('export.spreadsheet')->export($assistance, $organization, $type);
+
+        try {
+            // Create binary file to send
+            $response = new BinaryFileResponse(getcwd() . '/' . $filename);
+
+            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
+            $mimeTypeGuesser = new \Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser();
+            if ($mimeTypeGuesser->isSupported()) {
+                $response->headers->set('Content-Type', $mimeTypeGuesser->guess(getcwd() . '/' . $filename));
+            } else {
+                $response->headers->set('Content-Type', 'text/plain');
+            }
+            $response->deleteFileAfterSend(true);
+
+            return $response;
+        } catch (\Exception $exception) {
+            return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    /**
+     * @Rest\Get("/assistances/{id}/beneficiaries/exports-raw")
+     *
+     * @param Assistance $assistance
+     * @param Request    $request
+     *
+     * @return Response
+     */
+    public function exportsByAssistanceRaw(Assistance $assistance, Request $request): Response
+    {
+        $file = $this->get('distribution.assistance_service')->exportGeneralReliefDistributionToCsv($assistance, $request->query->get('type'));
+
+        $response = new BinaryFileResponse(getcwd() . '/' . $file);
+
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $file);
+        $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
+        if ($mimeTypeGuesser->isGuesserSupported()) {
+            $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType(getcwd() . '/' . $file));
+        } else {
+            $response->headers->set('Content-Type', 'text/plain');
+        }
+        $response->deleteFileAfterSend(true);
+
+        return $response;
     }
 
     /**

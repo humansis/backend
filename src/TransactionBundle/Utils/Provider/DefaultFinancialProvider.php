@@ -3,6 +3,7 @@
 namespace TransactionBundle\Utils\Provider;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use TransactionBundle\Entity\Transaction;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
@@ -28,6 +29,9 @@ abstract class DefaultFinancialProvider
     /** @var string from */
     protected $from;
 
+    /** @var LoggerInterface */
+    protected $logger;
+
     /**
      * DefaultFinancialProvider constructor.
      * @param EntityManagerInterface $entityManager
@@ -36,6 +40,7 @@ abstract class DefaultFinancialProvider
     {
         $this->em = $entityManager;
         $this->container = $container;
+        $this->logger = $container->get('monolog.logger.mobile');
     }
     
     /**
@@ -89,12 +94,16 @@ abstract class DefaultFinancialProvider
             $cache->set($assistance->getId() . '-amount_sent', 0);
         }
 
+        $this->logger->info("Money sending: Start");
+
         $this->from = $from;
         $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)
             ->findBy([
                 'assistance' => $assistance,
                 'removed' => 0,
                 ]);
+
+        $this->logger->info("Money sending: Recipient count ".count($distributionBeneficiaries));
 
         $response = array(
             'sent'          => array(),
@@ -109,6 +118,7 @@ abstract class DefaultFinancialProvider
             $beneficiary = $assistanceBeneficiary->getBeneficiary();
 
             if ($beneficiary->getArchived() == true) {
+                $this->logger->debug("Money sending: Recipient omitted - archived", [$beneficiary, $assistanceBeneficiary]);
                 array_push($response['failure'], $assistanceBeneficiary);
                 continue;
             }
@@ -135,6 +145,7 @@ abstract class DefaultFinancialProvider
             if ($phoneNumber) {
                 // if a successful transaction already exists
                 if (! $transactions->isEmpty()) {
+                    $this->logger->debug("Money sending: Recipient omitted - already sent", [$beneficiary, $assistanceBeneficiary]);
                     array_push($response['already_sent'], $assistanceBeneficiary);
                 } else {
                     if ($cache->has($assistance->getId() . '-amount_sent')) {
@@ -143,6 +154,7 @@ abstract class DefaultFinancialProvider
                     // if the limit hasn't been reached
                     if (empty($amountSent) || $amountSent + $amount <= 10000) {
                         try {
+                            $this->logger->debug("Money sending: Recipient sending start", [$beneficiary, $assistanceBeneficiary]);
                             $transaction = $this->sendMoneyToOne($phoneNumber, $assistanceBeneficiary, $amount, $currency);
                             if ($transaction->getTransactionStatus() === 0) {
                                 array_push($response['failure'], $assistanceBeneficiary);
@@ -152,14 +164,17 @@ abstract class DefaultFinancialProvider
                                 array_push($response['sent'], $assistanceBeneficiary);
                             }
                         } catch (Exception $e) {
+                            $this->logger->warning("Money sending: Recipient error: ".$e->getMessage(), [$beneficiary, $assistanceBeneficiary]);
                             $this->createTransaction($assistanceBeneficiary, '', new \DateTime(), 0, 2, $e->getMessage());
                             array_push($response['failure'], $assistanceBeneficiary);
                         }
                     } else {
+                        $this->logger->warning("Money sending: Recipient omitted - money limit", [$beneficiary, $assistanceBeneficiary]);
                         $this->createTransaction($assistanceBeneficiary, '', new \DateTime(), 0, 0, "The maximum amount that can be sent per distribution (USD 10000) has been reached");
                     }
                 }
             } else {
+                $this->logger->debug("Money sending: Recipient omitted - no mobile", [$beneficiary, $assistanceBeneficiary]);
                 $this->createTransaction($assistanceBeneficiary, '', new \DateTime(), 0, 2, "No Phone");
                 array_push($response['no_mobile'], $assistanceBeneficiary);
             }
@@ -183,7 +198,8 @@ abstract class DefaultFinancialProvider
         $response = array();
 
         $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findBy(['assistance' => $assistance]);
-        
+        $this->logger->info("Recipients to update transaction status: ".count($distributionBeneficiaries), [$assistance]);
+
         foreach ($distributionBeneficiaries as $assistanceBeneficiary) {
             $successfulTransaction = $this->em->getRepository(Transaction::class)->findOneBy(
                 [
@@ -192,12 +208,8 @@ abstract class DefaultFinancialProvider
                 ]
             );
             if ($successfulTransaction) {
-                try {
-                    $this->updateStatusTransaction($successfulTransaction);
-                    array_push($response, $assistanceBeneficiary);
-                } catch (\Exception $e) {
-                    throw $e;
-                }
+                $this->updateStatusTransaction($successfulTransaction);
+                array_push($response, $assistanceBeneficiary);
             }
         }
         return $response;

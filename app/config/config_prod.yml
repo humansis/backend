@@ -8,7 +8,7 @@ imports:
 #        query_cache_driver: apc
 
 monolog:
-    channels: [ 'exception', 'import' ]
+    channels: [ 'exception', 'mobile', 'import' ]
     handlers:
         main:
             type: fingers_crossed
