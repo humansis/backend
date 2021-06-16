@@ -194,7 +194,13 @@ class IdentityChecker
                 (string) $c['ID Type'],
                 (string) $c['ID Number']
             );
-            $this->logImportInfo($current->getImport(), "Found ".count($duplicities)." duplicities");
+
+            if (count($duplicities) > 0) {
+                $this->logImportInfo($current->getImport(), "Found ".count($duplicities)." duplicities");
+            } else {
+                $this->logImportDebug($current->getImport(), "Found no duplicities");
+            }
+
             foreach($duplicities as $duplicity) {
                 $founded[] = $duplicity;
             }
