@@ -78,7 +78,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * @var ImportBeneficiary[]|Collection
      *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiary", mappedBy="beneficiary")
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiary", mappedBy="beneficiary", cascade={"persist", "remove"})
      */
     private $importBeneficiaries;
 

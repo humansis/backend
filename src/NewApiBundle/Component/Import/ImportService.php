@@ -266,17 +266,21 @@ class ImportService
 
         $queueRepo = $this->em->getRepository(ImportQueue::class);
 
-        foreach ($queueRepo->findBy([
+        $queueToInsert = $queueRepo->findBy([
             'import' => $import,
             'state' => ImportQueueState::TO_CREATE,
-        ]) as $item) {
+        ]);
+        $this->logImportDebug($import, "Items to save: ".count($queueToInsert));
+        foreach ($queueToInsert as $item) {
             $this->finishCreationQueue($item, $import);
         }
 
-        foreach ($queueRepo->findBy([
+        $queueToUpdate = $queueRepo->findBy([
             'import' => $import,
             'state' => ImportQueueState::TO_UPDATE,
-        ]) as $item) {
+        ]);
+        $this->logImportDebug($import, "Items to update: ".count($queueToUpdate));
+        foreach ($queueToUpdate as $item) {
             $this->finishUpdateQueue($item, $import);
         }
 
@@ -288,10 +292,12 @@ class ImportService
             $this->removeFinishedQueue($item);
         }*/
 
-        foreach ($queueRepo->findBy([
+        $queueToLink = $queueRepo->findBy([
             'import' => $import,
             'state' => ImportQueueState::TO_LINK,
-        ]) as $item) {
+        ]);
+        $this->logImportDebug($import, "Items to link: ".count($queueToLink));
+        foreach ($queueToLink as $item) {
             /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
             $acceptedDuplicity = $item->getAcceptedDuplicity();
             if (null == $acceptedDuplicity) continue;
@@ -314,7 +320,7 @@ class ImportService
         $this->em->flush();
 
         $importConflicts = $this->em->getRepository(Import::class)->getConflictingImports($import);
-        $this->logImportInfo($import, count($importConflicts)." conflicting imports to reset duplicity checks.");
+        $this->logImportInfo($import, count($importConflicts)." conflicting imports to reset duplicity checks");
         foreach ($importConflicts as $conflictImport) {
             $conflictImport->setState(ImportState::IDENTITY_CHECKING);
             $conflictQueue = $queueRepo->findBy([
@@ -406,7 +412,7 @@ class ImportService
         }
 
         $updatedHousehold = $acceptedDuplicity->getTheirs();
-        // $this->householdService->update($updatedHousehold, $householdUpdateInputType);
+        $this->householdService->update($updatedHousehold, $householdUpdateInputType);
 
         $this->linkHouseholdToQueue($import, $updatedHousehold, $acceptedDuplicity->getDecideBy());
         //$this->removeFinishedQueue($item);

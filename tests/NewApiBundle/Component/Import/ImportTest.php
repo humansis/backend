@@ -312,7 +312,7 @@ class ImportTest extends KernelTestCase
         $this->assertCount($householdCount, $queue);
 
         $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_CREATE]);
-        $this->assertCount(0, $queue);
+        $this->assertCount($householdCount-$expectedDuplicities, $queue);
         $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_UPDATE]);
         $this->assertCount($expectedDuplicities, $queue);
         $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_LINK]);
