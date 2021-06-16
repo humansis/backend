@@ -97,17 +97,17 @@ class ImportTest extends KernelTestCase
 
     public function correctFiles(): array
     {
-        return [ // filename, HH count, duplicity in reimport
-            'minimal csv' => ['KHM-Import-2HH-3HHM.csv', 2, 1],
-            'minimal ods' => ['KHM-Import-2HH-3HHM.ods', 2, 2],
-            'minimal xlsx' => ['KHM-Import-4HH-0HHM.xlsx', 4, 4],
+        return [ // filename, HH count, BNF count, duplicity in reimport
+            'minimal csv' => ['KHM-Import-2HH-3HHM-55HHM.csv', 2, 60, 1],
+            'minimal ods' => ['KHM-Import-2HH-3HHM-24HHM.ods', 2, 29, 2],
+            'minimal xlsx' => ['KHM-Import-4HH-0HHM-0HHM.xlsx', 4, 4, 4],
         ];
     }
 
     /**
      * @dataProvider correctFiles
      */
-    public function testMinimalWorkflow(string $filename, int $householdCount)
+    public function testMinimalWorkflow(string $filename, int $expectedHouseholdCount, int $expectedBeneficiaryCount)
     {
         // create import
         $createImportInput = new ImportCreateInputType();
@@ -131,13 +131,13 @@ class ImportTest extends KernelTestCase
 
         $this->assertNotNull($importFile->getId(), "ImportFile wasn't saved to DB");
         $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import]);
-        $this->assertCount($householdCount, $queue);
+        $this->assertCount($expectedHouseholdCount, $queue);
 
         // start integrity check
         $this->importService->updateStatus($import, ImportState::INTEGRITY_CHECKING);
 
         $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import]);
-        $this->assertCount($householdCount, $queue);
+        $this->assertCount($expectedHouseholdCount, $queue);
         $this->assertEquals(ImportState::INTEGRITY_CHECKING, $import->getState());
 
         $checkIntegrityCommand = $this->application->find('app:import:integrity');
@@ -147,7 +147,7 @@ class ImportTest extends KernelTestCase
         ]);
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:integrity failed");
 
-        $this->assertCount($householdCount, $queue);
+        $this->assertCount($expectedHouseholdCount, $queue);
         $this->assertEquals(ImportState::INTEGRITY_CHECK_CORRECT, $import->getState());
 
         // start identity check
@@ -164,7 +164,7 @@ class ImportTest extends KernelTestCase
 
         $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
         $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import]);
-        $this->assertCount($householdCount, $queue);
+        $this->assertCount($expectedHouseholdCount, $queue);
 
         // start similarity check
         $this->importService->updateStatus($import, ImportState::SIMILARITY_CHECKING);
@@ -180,10 +180,10 @@ class ImportTest extends KernelTestCase
 
         $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
         $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import]);
-        $this->assertCount($householdCount, $queue);
+        $this->assertCount($expectedHouseholdCount, $queue);
 
         $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_CREATE]);
-        $this->assertCount($householdCount, $queue);
+        $this->assertCount($expectedHouseholdCount, $queue);
 
         // save to DB
         $this->importService->updateStatus($import, ImportState::IMPORTING);
@@ -200,13 +200,16 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(ImportState::FINISHED, $import->getState());
 
         $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import]);
-        $this->assertCount($householdCount, $queue);
+        $this->assertCount($expectedHouseholdCount, $queue);
+
+        $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->getImported($import);
+        $this->assertCount($expectedBeneficiaryCount, $bnfCount, "Wrong beneficiary count");
     }
 
     /**
      * @dataProvider correctFiles
      */
-    public function testRepeatedUploadSameFile(string $filename, int $householdCount, int $expectedDuplicities)
+    public function testRepeatedUploadSameFile(string $filename, int $expectedHouseholdCount, int $expectedBeneficiaryCount, int $expectedDuplicities)
     {
         $imports = [];
         foreach (['first', 'second'] as $runName) {
@@ -309,10 +312,10 @@ class ImportTest extends KernelTestCase
 
         $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
         $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import]);
-        $this->assertCount($householdCount, $queue);
+        $this->assertCount($expectedHouseholdCount, $queue);
 
         $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_CREATE]);
-        $this->assertCount($householdCount-$expectedDuplicities, $queue);
+        $this->assertCount($expectedHouseholdCount-$expectedDuplicities, $queue);
         $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_UPDATE]);
         $this->assertCount($expectedDuplicities, $queue);
         $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_LINK]);
@@ -331,13 +334,17 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(ImportState::FINISHED, $import->getState());
 
         $beneficiaryIds = [];
+        $householdIds = [];
         foreach ($this->entityManager->getRepository(Beneficiary::class)->getImported($imports['first']) as $beneficiary) {
-            $beneficiaryIds[] = $beneficiary->getHousehold()->getId();
+            $householdIds[] = $beneficiary->getHousehold()->getId();
+            $beneficiaryIds[] = $beneficiary->getId();
         }
         foreach ($this->entityManager->getRepository(Beneficiary::class)->getImported($imports['second']) as $beneficiary) {
-            $beneficiaryIds[] = $beneficiary->getHousehold()->getId();
+            $householdIds[] = $beneficiary->getHousehold()->getId();
+            $beneficiaryIds[] = $beneficiary->getId();
         }
-        $this->assertCount($householdCount*2 - $expectedDuplicities, array_unique($beneficiaryIds), "Some duplicities was saved instead of updated");
+        $this->assertCount($expectedHouseholdCount*2 - $expectedDuplicities, array_unique($householdIds), "Some duplicities was saved instead of updated");
+        $this->assertCount($expectedBeneficiaryCount, array_unique($beneficiaryIds), "Some duplicities was saved instead of updated");
     }
 
     public function testErrorInIntegrityCheck()

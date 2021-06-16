@@ -172,7 +172,7 @@ trait HouseholdInputBuilderTrait
         if (0 === $count) return;
         $today = new \DateTime();
 
-        foreach (range(0, $count) as $i) {
+        for ($i=0; $i<$count; $i++) {
             $beneficiary = new BeneficiaryInputType();
             $beneficiary->setDateOfBirth($today->modify("-$age year")->format('d-m-Y'));
             $beneficiary->setGender($gender);
