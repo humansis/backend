@@ -223,25 +223,19 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         
         $info = curl_getinfo($curl);
 
-        $this->logger->debug("Request route: ".($this->production ? $this->url_prod : $this->url) . $route . "[".($this->production ? "8443": "9443")."]", [$assistance]);
+        $this->logger->error("Request route: ".($this->production ? $this->url_prod : $this->url) . $route . "[".($this->production ? "8443": "9443")."]", [$assistance]);
 
-        try {
-            $response = curl_exec($curl);
-        } catch (\Exception $exception) {
+        $err = null;
+        $response = curl_exec($curl);
+        if (false === $response) {
             $err = curl_error($curl);
-            $this->logger->error("Request fails: ".$exception->getMessage(). " | ".$err);
-            throw $exception;
-        }
-
-        $err = curl_error($curl);
-        $duration = curl_getinfo($curl, CURLINFO_TOTAL_TIME);
-
-        curl_close($curl);
-
-        if (!empty($err)) {
             $this->logger->error("Request fails: ".$err);
         }
-        $this->logger->debug("Request time $duration s");
+
+        $duration = curl_getinfo($curl, CURLINFO_TOTAL_TIME);
+        $this->logger->error("Request time $duration s");
+
+        curl_close($curl);
 
         $bodyString = '';
         // Record request
