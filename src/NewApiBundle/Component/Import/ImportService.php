@@ -373,17 +373,17 @@ class ImportService
             $householdUpdateInputType->addBeneficiary($hhm->buildBeneficiaryInputType());
         }
 
-        $creaedHousehold = $this->householdService->create($householdUpdateInputType);
+        $createdHousehold = $this->householdService->create($householdUpdateInputType);
 
         /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
         $acceptedDuplicity = $item->getAcceptedDuplicity();
         if (null !== $acceptedDuplicity) {
-            $this->linkHouseholdToQueue($import, $creaedHousehold, $acceptedDuplicity->getDecideBy());
+            $this->linkHouseholdToQueue($import, $createdHousehold, $acceptedDuplicity->getDecideBy());
         } else {
-            $this->linkHouseholdToQueue($import, $creaedHousehold, $import->getCreatedBy());
+            $this->linkHouseholdToQueue($import, $createdHousehold, $import->getCreatedBy());
         }
         //$this->removeFinishedQueue($item);
-        $this->logImportInfo($import, "Created Household #{$creaedHousehold->getId()}");
+        $this->logImportInfo($import, "Created Household #{$createdHousehold->getId()}");
     }
 
     /**
