@@ -223,7 +223,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         
         $info = curl_getinfo($curl);
 
-        $this->logger->debug("Request route: ".($this->production ? $this->url_prod : $this->url) . $route . "[".($this->production ? "8443": "9443")."]", [$assistance]);
+        $this->logger->error("Request route: ".($this->production ? $this->url_prod : $this->url) . $route . "[".($this->production ? "8443": "9443")."]", [$assistance]);
 
         $err = null;
         $response = curl_exec($curl);
@@ -233,7 +233,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         }
 
         $duration = curl_getinfo($curl, CURLINFO_TOTAL_TIME);
-        $this->logger->debug("Request time $duration s");
+        $this->logger->error("Request time $duration s");
 
         curl_close($curl);
 
