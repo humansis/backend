@@ -45,7 +45,12 @@ class TransactionController extends AbstractController
      */
     public function createTransactions(Assistance $assistance, Request $request): JsonResponse
     {
-        $this->forward(\TransactionBundle\Controller\TransactionController::class.'::sendTransactionAction', [$request, $assistance]);
+        $request->request->set('__country', $request->headers->get('country'));
+
+        $this->forward(\TransactionBundle\Controller\TransactionController::class.'::sendTransactionAction', [
+            'request' => $request,
+            'assistance' => $assistance,
+        ]);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

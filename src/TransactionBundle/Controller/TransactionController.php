@@ -33,7 +33,7 @@ class TransactionController extends Controller
     /**
      * Send money to distribution beneficiaries via country financial provider
      * @Rest\Post("/transaction/distribution/{id}/send", name="send_money_for_distribution")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     * @ Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Transaction")
      *
