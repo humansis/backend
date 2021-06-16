@@ -64,7 +64,7 @@ class IntegrityCheckCommand extends AbstractImportQueueCommand
                     $this->logImportInfo($import, "Integrity check found {$statistics->getAmountIntegrityFailed()} integrity errors");
                 }
             } catch (Throwable $e) {
-                $this->logImportWarning($import, 'Unknown Exception in integrity check occurred. Exception message: '.$e->getMessage()); //TODO Error
+                $this->logImportError($import, 'Unknown Exception in integrity check occurred. Exception message: '.$e->getMessage());
             }
         }
 

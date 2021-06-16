@@ -62,7 +62,7 @@ class IdentityCheckCommand extends AbstractImportQueueCommand
                     $this->logImportInfo($import, "Identity check found {$statistics->getAmountDuplicities()} duplicities");
                 }
             } catch (Throwable $e) {
-                $this->logImportWarning($import, 'Unknown Exception in identity check occurred. Exception message: '.$e->getMessage()); //TODO Error
+                $this->logImportError($import, 'Unknown Exception in identity check occurred. Exception message: '.$e->getMessage());
             }
         }
 

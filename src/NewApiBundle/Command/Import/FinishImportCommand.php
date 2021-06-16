@@ -48,7 +48,7 @@ class FinishImportCommand extends AbstractImportQueueCommand
                 $this->importService->finish($import);
                 $this->logImportDebug($import, "Finished");
             } catch (Throwable $e) {
-                $this->logImportWarning($import, 'Unknown Exception in finishing occurred. Exception message: '.$e->getMessage()); //TODO Error
+                $this->logImportError($import, 'Unknown Exception in finishing occurred. Exception message: '.$e->getMessage());
             }
         }
         $output->writeln('Done');
