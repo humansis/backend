@@ -9,7 +9,9 @@ use DistributionBundle\Enum\AssistanceType;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use NewApiBundle\Component\Codelist\CodeItem;
+use NewApiBundle\Component\Codelist\CodeLists;
 use ProjectBundle\Entity\Project;
+use ProjectBundle\Entity\ProjectSector;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
@@ -52,11 +54,12 @@ class SectorService
     public function getSectorsInProject(Project $project)
     {
         $data = [];
+        /** @var ProjectSector $sector */
         foreach ($project->getSectors() as $sector) {
-            $data[] = new CodeItem($sector, $sector->getSector());
+            $data[] = $sector->getSector();
         }
 
-        return $data;
+        return CodeLists::mapEnum($data);;
     }
 
     public function findBySubSector($subSectorName): ?Sector
