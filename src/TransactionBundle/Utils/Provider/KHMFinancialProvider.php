@@ -242,20 +242,42 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         $this->logger->error($requestID."Route: ".($this->production ? $this->url_prod : $this->url) . $route . "[port".($this->production ? "8443": "9443")."]");
 
         $err = null;
-        $response = curl_exec($curl);
+        try {
+            $response = curl_exec($curl);
+        } catch (\Exception $exception) {
+            $this->logger->error($requestID."curl_exec throw exception: ".$exception->getMessage());
+            throw $exception;
+        }
+
         $this->logger->error($requestID."curl_exec done");
         if (false === $response) {
             $this->logger->error($requestID."error branch, response === null");
-            $err = curl_error($curl);
+            try {
+                $err = curl_error($curl);
+            } catch (\Exception $exception) {
+                $this->logger->error($requestID."curl_error throw exception: ".$exception->getMessage());
+                throw $exception;
+            }
             $this->logger->error($requestID." fails: ".$err);
         } else {
             $this->logger->error($requestID."response OK, response !== null");
         }
 
-        $duration = curl_getinfo($curl, CURLINFO_TOTAL_TIME);
-        $this->logger->error($requestID."Request time $duration s");
+        try {
+            $duration = curl_getinfo($curl, CURLINFO_TOTAL_TIME);
+            $this->logger->error($requestID."Request time $duration s");
+        } catch (\Exception $exception) {
+            $this->logger->error($requestID."curl_getinfo throw exception: ".$exception->getMessage());
+            throw $exception;
+        }
 
-        curl_close($curl);
+        try {
+            curl_close($curl);
+        } catch (\Exception $exception) {
+            $this->logger->error($requestID."curl_close throw exception: ".$exception->getMessage());
+            throw $exception;
+        }
+
 
         $this->logger->error($requestID."curl_close done");
 
