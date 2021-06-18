@@ -92,6 +92,8 @@ services:
         tags: [ 'app.mapper' ]
 
     NewApiBundle\Controller\AssistanceController:
+        arguments:
+            - '@NewApiBundle\Export\VulnerabilityScoreExport'
 
     NewApiBundle\Controller\CommonController:
         arguments:
@@ -224,6 +226,12 @@ services:
 
     NewApiBundle\Component\Import\ImportTemplate:
         arguments: ['@beneficiary.household_export_csv_service']
+
+    NewApiBundle\Export\VulnerabilityScoreExport:
+        arguments:
+            - '@export_csv_service'
+            - '@translator'
+            - '@doctrine.orm.entity_manager'
 
     NewApiBundle\Controller\ImportController:
         arguments:
