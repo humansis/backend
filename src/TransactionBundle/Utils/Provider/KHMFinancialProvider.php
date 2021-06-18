@@ -221,6 +221,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
 
         $dir_root = $this->container->get('kernel')->getRootDir();
         $curlLog = $dir_root . "/../var/data/curl_$requestUnique.log";
+        $curlLogFile = fopen($curlLog, 'w+');
 
         $this->logger->error($requestID."curl log in ".$curlLog);
                 
@@ -236,17 +237,21 @@ class KHMFinancialProvider extends DefaultFinancialProvider
           CURLOPT_POSTFIELDS     => $body,
           CURLOPT_HTTPHEADER     => $headers,
           CURLOPT_FAILONERROR    => true,
-          CURLINFO_HEADER_OUT    => true,
+          // CURLINFO_HEADER_OUT    => true,
 
           // verbose to debug
           CURLOPT_VERBOSE => true,
-          CURLOPT_STDERR => fopen($curlLog, 'w+'),
+          CURLOPT_STDERR => $curlLogFile,
         ));
         
         $info = curl_getinfo($curl);
 
         foreach ($info as $key => $value) {
-            $this->logger->error($requestID."curl_getinfo $key = ".$value);
+            if (is_array($value)) {
+                $this->logger->error($requestID."curl_getinfo $key = ".implode(', ', $value));
+            } else {
+                $this->logger->error($requestID."curl_getinfo $key = ".$value);
+            }
         }
 
         $this->logger->error($requestID."Route: ".($this->production ? $this->url_prod : $this->url) . $route . "[port".($this->production ? "8443": "9443")."]");
@@ -258,6 +263,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
             $this->logger->error($requestID."curl_exec throw exception: ".$exception->getMessage());
             throw $exception;
         }
+        fclose($curlLogFile);
 
         $this->logger->error($requestID."curl_exec done");
         if (false === $response) {
