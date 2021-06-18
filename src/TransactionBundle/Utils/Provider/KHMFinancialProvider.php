@@ -188,7 +188,8 @@ class KHMFinancialProvider extends DefaultFinancialProvider
      */
     public function sendRequest(Assistance $assistance, string $type, string $route, array $body = array())
     {
-        $requestID = "Request#".uniqid().": ";
+        $requestUnique = uniqid();
+        $requestID = "Request#$requestUnique: ";
 
         $this->logger->error($requestID."started for Assistance#".$assistance->getId()." of type $type to route $route");
 
@@ -217,6 +218,11 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         }
 
         $this->logger->error($requestID."Body built");
+
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $curlLog = $dir_root . "/../var/data/curl_$requestUnique.log";
+
+        $this->logger->error($requestID."curl log in ".$curlLog);
                 
         curl_setopt_array($curl, array(
           CURLOPT_PORT           => ($this->production ? "8443": "9443"),
@@ -230,7 +236,11 @@ class KHMFinancialProvider extends DefaultFinancialProvider
           CURLOPT_POSTFIELDS     => $body,
           CURLOPT_HTTPHEADER     => $headers,
           CURLOPT_FAILONERROR    => true,
-          CURLINFO_HEADER_OUT    => true
+          CURLINFO_HEADER_OUT    => true,
+
+          // verbose to debug
+          CURLOPT_VERBOSE => true,
+          CURLOPT_STDERR => fopen($curlLog, 'w+'),
         ));
         
         $info = curl_getinfo($curl);
