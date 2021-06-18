@@ -188,9 +188,9 @@ class KHMFinancialProvider extends DefaultFinancialProvider
      */
     public function sendRequest(Assistance $assistance, string $type, string $route, array $body = array())
     {
-        $requestID = "Request#".substr(uniqid(), 0, 5).": ";
+        $requestID = "Request#".uniqid().": ";
 
-        $this->logger->error($requestID."started for Assistance#".$assistance->getId());
+        $this->logger->error($requestID."started for Assistance#".$assistance->getId()." of type $type to route $route");
 
         $curl = curl_init();
 
