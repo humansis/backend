@@ -264,6 +264,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
             throw $exception;
         }
         fclose($curlLogFile);
+        $this->logger->error($requestID."curl.log:\n".file_get_contents($curlLog));
 
         $this->logger->error($requestID."curl_exec done");
         if (false === $response) {
