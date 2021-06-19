@@ -152,7 +152,7 @@ abstract class DefaultFinancialProvider
                         $amountSent = $cache->get($assistance->getId() . '-amount_sent');
                     }
                     // if the limit hasn't been reached
-                    if (empty($amountSent) || $amountSent + $amount <= 10000) {
+                    if (empty($amountSent) || $amountSent + $amount <= 100000) {
                         try {
                             $this->logger->debug("Money sending: Recipient sending start", [$beneficiary, $assistanceBeneficiary]);
                             $transaction = $this->sendMoneyToOne($phoneNumber, $assistanceBeneficiary, $amount, $currency);
