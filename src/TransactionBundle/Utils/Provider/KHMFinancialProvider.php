@@ -188,7 +188,18 @@ class KHMFinancialProvider extends DefaultFinancialProvider
      */
     public function sendRequest(Assistance $assistance, string $type, string $route, array $body = array())
     {
+        $requestUnique = uniqid();
+        $requestID = "Request#$requestUnique: ";
+
+        $this->logger->error($requestID."started for Assistance#".$assistance->getId()." of type $type to route $route");
+
         $curl = curl_init();
+
+        if (false === $curl) {
+            $this->logger->error($requestID."curl_init failed");
+        } else {
+            $this->logger->error($requestID."Curl initialized");
+        }
 
         $headers = array();
         
@@ -205,6 +216,13 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         else {
             $body = http_build_query($body); // Pass body as url-encoded string
         }
+
+        $this->logger->error($requestID."Body built");
+
+        $dir_root = $this->container->get('kernel')->getRootDir();
+        $curlLog = $dir_root . "/../var/data/curl_$requestUnique.log";
+
+        $this->logger->error($requestID."curl log in ".$curlLog);
                 
         curl_setopt_array($curl, array(
           CURLOPT_PORT           => ($this->production ? "8443": "9443"),
@@ -218,30 +236,60 @@ class KHMFinancialProvider extends DefaultFinancialProvider
           CURLOPT_POSTFIELDS     => $body,
           CURLOPT_HTTPHEADER     => $headers,
           CURLOPT_FAILONERROR    => true,
-          CURLINFO_HEADER_OUT    => true
+          CURLINFO_HEADER_OUT    => true,
+
+          // verbose to debug
+          CURLOPT_VERBOSE => true,
+          CURLOPT_STDERR => fopen($curlLog, 'w+'),
         ));
         
         $info = curl_getinfo($curl);
 
-        $this->logger->debug("Request route: ".($this->production ? $this->url_prod : $this->url) . $route . "[".($this->production ? "8443": "9443")."]", [$assistance]);
+        foreach ($info as $key => $value) {
+            $this->logger->error($requestID."curl_getinfo $key = ".$value);
+        }
 
+        $this->logger->error($requestID."Route: ".($this->production ? $this->url_prod : $this->url) . $route . "[port".($this->production ? "8443": "9443")."]");
+
+        $err = null;
         try {
             $response = curl_exec($curl);
         } catch (\Exception $exception) {
-            $err = curl_error($curl);
-            $this->logger->error("Request fails: ".$exception->getMessage(). " | ".$err);
+            $this->logger->error($requestID."curl_exec throw exception: ".$exception->getMessage());
             throw $exception;
         }
 
-        $err = curl_error($curl);
-        $duration = curl_getinfo($curl, CURLINFO_TOTAL_TIME);
-
-        curl_close($curl);
-
-        if (!empty($err)) {
-            $this->logger->error("Request fails: ".$err);
+        $this->logger->error($requestID."curl_exec done");
+        if (false === $response) {
+            $this->logger->error($requestID."error branch, response === null");
+            try {
+                $err = curl_error($curl);
+            } catch (\Exception $exception) {
+                $this->logger->error($requestID."curl_error throw exception: ".$exception->getMessage());
+                throw $exception;
+            }
+            $this->logger->error($requestID." fails: ".$err);
+        } else {
+            $this->logger->error($requestID."response OK, response !== null");
         }
-        $this->logger->debug("Request time $duration s");
+
+        try {
+            $duration = curl_getinfo($curl, CURLINFO_TOTAL_TIME);
+            $this->logger->error($requestID."Request time $duration s");
+        } catch (\Exception $exception) {
+            $this->logger->error($requestID."curl_getinfo throw exception: ".$exception->getMessage());
+            throw $exception;
+        }
+
+        try {
+            curl_close($curl);
+        } catch (\Exception $exception) {
+            $this->logger->error($requestID."curl_close throw exception: ".$exception->getMessage());
+            throw $exception;
+        }
+
+
+        $this->logger->error($requestID."curl_close done");
 
         $bodyString = '';
         // Record request
@@ -259,10 +307,14 @@ class KHMFinancialProvider extends DefaultFinancialProvider
 
         $data = [$this->from, (new \DateTime())->format('d-m-Y h:i:s'), $info['url'], $info['http_code'], $response, $err, $bodyString];
         $this->recordTransaction($assistance, $data);
+
+        $this->logger->error($requestID."record logged into var/data/record_{$assistance->getId()}.csv");
     
         if ($err) {
+            $this->logger->error($requestID.__METHOD__." ended with error, throw exception");
             throw new \Exception($err);
         } else {
+            $this->logger->error($requestID.__METHOD__."ended correctly");
             $result = json_decode($response);
             return $result;
         }

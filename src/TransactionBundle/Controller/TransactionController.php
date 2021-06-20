@@ -33,7 +33,7 @@ class TransactionController extends Controller
     /**
      * Send money to distribution beneficiaries via country financial provider
      * @Rest\Post("/transaction/distribution/{id}/send", name="send_money_for_distribution")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     * @ Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Transaction")
      *
@@ -59,7 +59,7 @@ class TransactionController extends Controller
 
         /** @var LoggerInterface $logger */
         $logger = $this->get('monolog.logger.mobile');
-        $logger->info('Sending money requested', [$countryISO3, $user, $assistance]);
+        $logger->error('Sending money requested', [$countryISO3, $user, $assistance]);
 
         $code = trim(preg_replace('/\s+/', ' ', $code));
 
@@ -68,7 +68,7 @@ class TransactionController extends Controller
             $logger->warning('Code: did not match');
             return new Response("The supplied code did not match. The transaction cannot be executed", Response::HTTP_BAD_REQUEST);
         } else {
-            $logger->debug('Code: verified');
+            $logger->error('Code: verified');
         }
         
         try {

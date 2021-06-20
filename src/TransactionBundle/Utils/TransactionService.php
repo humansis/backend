@@ -91,7 +91,7 @@ class TransactionService
             $this->logger->error("Country $countryISO3 has no defined financial provider");
             throw new \Exception("The financial provider for " . $countryISO3 . " is not properly defined");
         }
-        $this->logger->debug("Financial provider for country $countryISO3: ".get_class($provider));
+        $this->logger->error("Financial provider for country $countryISO3: ".get_class($provider));
         return $provider;
     }
 
@@ -133,7 +133,7 @@ class TransactionService
             );
 
         $this->container->get('mailer')->send($message);
-        $this->logger->info("Code for verify assistance was sent to ".$user->getEmail(), [$assistance]);
+        $this->logger->error("Code for verify assistance was sent to ".$user->getEmail(), [$assistance]);
     }
 
     /**
