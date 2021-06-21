@@ -322,11 +322,11 @@ class TransactionService
             array_push($exportableTable,
                 array_merge($commonFields, array(
                 "Amount Sent" => $transaction->getAmountSent(),
-                "Sent At" => $transaction->getDateSent() ? $transaction->getDateSent()->format('d-m-Y') : null,
+                "Sent At" => $transaction->getDateSent() ? $transaction->getDateSent()->format('d-m-Y H:i:s') : null,
                 "Transactios Status" => $status,
                 "Message" => $transaction->getMessage(),
                 "Money Received" => $transaction->getMoneyReceived(),
-                "Pickup Date" => $transaction->getPickupDate() ? $transaction->getPickupDate()->format('d-m-Y') : null,
+                "Pickup Date" => $transaction->getPickupDate() ? $transaction->getPickupDate()->format('d-m-Y H:i:s') : null,
                 "Removed" => $transaction->getAssistanceBeneficiary()->getRemoved() ? 'Yes' : 'No',
                 "Justification for adding/removing" => $transaction->getAssistanceBeneficiary()->getJustification(),
                 ))
