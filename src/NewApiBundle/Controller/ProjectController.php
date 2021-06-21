@@ -161,7 +161,11 @@ class ProjectController extends AbstractController
     public function userProjects(User $user): JsonResponse
     {
         if ($user->getProjects()->count() > 0) {
-            return $this->json(new Paginator($user->getProjects()));
+            $projects = array_map(function (\UserBundle\Entity\UserProject $item) {
+                return $item->getProject();
+            }, $user->getProjects()->toArray());
+
+            return $this->json(new Paginator($projects));
         }
 
         if ($user->getCountries()->count() > 0) {
