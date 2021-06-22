@@ -112,7 +112,7 @@ class ImportTest extends KernelTestCase
     {
         // create import
         $createImportInput = new ImportCreateInputType();
-        $createImportInput->setTitle('unit test');
+        $createImportInput->setTitle('testMinimalWorkflow test');
         $createImportInput->setDescription(__METHOD__);
         $createImportInput->setProjectId($this->project->getId());
         $import = $this->importService->create($createImportInput, $this->getUser());
@@ -472,7 +472,7 @@ class ImportTest extends KernelTestCase
 
         $nationalId = new NationalId();
         $nationalId->setIdType('National ID');
-        $nationalId->setIdNumber('98349834');
+        $nationalId->setIdNumber('123456789');
         $hhh->getPerson()->addNationalId($nationalId);
         $nationalId->setPerson($hhh->getPerson());
 

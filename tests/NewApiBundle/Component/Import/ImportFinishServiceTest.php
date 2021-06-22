@@ -26,7 +26,7 @@ class ImportFinishServiceTest extends KernelTestCase
     const TEST_COUNTRY = 'KHM';
     // json copied from KHM-Import-2HH-3HHM.ods
     const TEST_QUEUE_ITEM = '[{"Adm1": "Banteay Meanchey", "Adm2": null, "Adm3": null, "Adm4": null, "Head": "true",
-    "ID Number": 98349834, "ID Type": "National ID",
+    "ID Number": 123456789, "ID Type": "National ID",
     "F 0 - 2": 1, "F 2 - 5": 2, "F 6 - 17": 3, "F 18 - 59": 4, "F 60+": 5,
     "M 0 - 2": null, "M 2 - 5": null, "M 6 - 17": null, "M 18 - 59": null, "M 60+": null,
     "Notes": "import from unittest", "Assets": null, "Gender": "Male",  
@@ -254,7 +254,7 @@ class ImportFinishServiceTest extends KernelTestCase
 
         $nationalId = new NationalId();
         $nationalId->setIdType('National ID');
-        $nationalId->setIdNumber('98349834');
+        $nationalId->setIdNumber('123456789');
         $hhh->getPerson()->addNationalId($nationalId);
         $nationalId->setPerson($hhh->getPerson());
 
