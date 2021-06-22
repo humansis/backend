@@ -295,18 +295,13 @@ class TransactionService
     {
         $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findByAssistance($assistance);
 
-        $transactions = array();
         $exportableTable = array();
         foreach ($assistanceBeneficiary as $db) {
             $transaction = $this->em->getRepository(Transaction::class)->findOneByAssistanceBeneficiary($db);
 
-            if ($transaction) {
-                array_push($transactions, $transaction);
-            }
-        }
-
-        foreach ($transactions as $transaction) {
-            if ($transaction->getTransactionStatus() == Transaction::SUCCESS) {
+            if (null === $transaction) {
+                $status = "Not sent";
+            } elseif ($transaction->getTransactionStatus() == Transaction::SUCCESS) {
                 $status = "Success";
             } elseif ($transaction->getTransactionStatus() == Transaction::FAILURE) {
                 $status = "Error";
@@ -316,20 +311,34 @@ class TransactionService
                 $status = "Unknown error";
             }
 
-            $beneficiary = $transaction->getAssistanceBeneficiary()->getBeneficiary();
+            $beneficiary = $db->getBeneficiary();
             $commonFields = $beneficiary->getCommonExportFields();
 
+            $transactionAdditionalInfo = array(
+                "Amount Sent" => null,
+                "Sent At" => null,
+                "Transaction Status" => $status,
+                "Message" => null,
+                "Money Received" => null,
+                "Pickup Date" => null,
+                "Removed" => $db->getRemoved() ? 'Yes' : 'No',
+                "Justification for adding/removing" => $db->getJustification(),
+            );
+
+            if (null !== $transaction) {
+                $transactionAdditionalInfo["Amount Sent"] = $transaction->getAmountSent();
+                $transactionAdditionalInfo["Message"] = $transaction->getMessage();
+                $transactionAdditionalInfo["Money Received"] = $transaction->getMoneyReceived();
+            }
+            if (null !== $transaction && $transaction->getDateSent()) {
+                $transactionAdditionalInfo["Sent At"] = $transaction->getDateSent()->format('d-m-Y H:i:s');
+            }
+            if (null !== $transaction && $transaction->getPickupDate()) {
+                $transactionAdditionalInfo["Pickup Date"] = $transaction->getPickupDate()->format('d-m-Y H:i:s');
+            }
+
             array_push($exportableTable,
-                array_merge($commonFields, array(
-                "Amount Sent" => $transaction->getAmountSent(),
-                "Sent At" => $transaction->getDateSent() ? $transaction->getDateSent()->format('d-m-Y') : null,
-                "Transactios Status" => $status,
-                "Message" => $transaction->getMessage(),
-                "Money Received" => $transaction->getMoneyReceived(),
-                "Pickup Date" => $transaction->getPickupDate() ? $transaction->getPickupDate()->format('d-m-Y') : null,
-                "Removed" => $transaction->getAssistanceBeneficiary()->getRemoved() ? 'Yes' : 'No',
-                "Justification for adding/removing" => $transaction->getAssistanceBeneficiary()->getJustification(),
-                ))
+                array_merge($commonFields, $transactionAdditionalInfo)
             );
         }
 
