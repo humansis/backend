@@ -103,9 +103,15 @@ trait HouseholdInputBuilderTrait
 
         $household->addBeneficiary($head);
 
+        $i = 1;
         foreach ($this->buildNamelessMembers() as $namelessMember) {
-            $namelessMember->setResidencyStatus($this->residencyStatus); // not sure if it is correct but residency status is mandatory
+            $namelessMember->setResidencyStatus($this->residencyStatus);
+            $namelessMember->setLocalFamilyName($head->getLocalFamilyName());
+            $namelessMember->setEnFamilyName($head->getEnFamilyName());
+            $namelessMember->setEnGivenName("Member $i");
+            $namelessMember->setLocalGivenName("Member $i");
             $household->addBeneficiary($namelessMember);
+            $i++;
         }
     }
 
