@@ -390,4 +390,11 @@ class Transaction
  
         return $this;
     }
+
+    public function hasUpdatableStatus(): bool
+    {
+        return null === $this->moneyReceived
+            || false === $this->moneyReceived
+            || null === $this->pickupDate;
+    }
 }
