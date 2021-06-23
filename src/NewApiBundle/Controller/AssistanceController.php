@@ -26,7 +26,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class AssistanceController extends AbstractController
 {
     /**
-     * @Rest\Get("/assistances/statistics")
+     * @Rest\Get("/web-app/v1/assistances/statistics")
      *
      * @param Request                             $request
      * @param AssistanceStatisticsFilterInputType $filter
@@ -46,7 +46,7 @@ class AssistanceController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/assistances/{id}/statistics")
+     * @Rest\Get("/web-app/v1/assistances/{id}/statistics")
      * @ParamConverter("assistance", options={"mapping": {"id": "id"}})
      *
      * @param Assistance $assistance
@@ -61,7 +61,7 @@ class AssistanceController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/assistances")
+     * @Rest\Get("/web-app/v1/assistances")
      *
      * @param Request                   $request
      * @param AssistanceFilterInputType $filter
@@ -88,7 +88,7 @@ class AssistanceController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/assistances")
+     * @Rest\Post("/web-app/v1/assistances")
      *
      * @param AssistanceCreateInputType $inputType
      *
@@ -102,7 +102,7 @@ class AssistanceController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/assistances/{id}")
+     * @Rest\Get("/web-app/v1/assistances/{id}")
      *
      * @param Assistance $assistance
      *
@@ -118,7 +118,7 @@ class AssistanceController extends AbstractController
     }
 
     /**
-     * @Rest\Patch("/assistances/{id}")
+     * @Rest\Patch("/web-app/v1/assistances/{id}")
      *
      * @param Assistance $assistance
      *
@@ -143,7 +143,7 @@ class AssistanceController extends AbstractController
     }
 
     /**
-     * @Rest\Delete("/assistances/{id}")
+     * @Rest\Delete("/web-app/v1/assistances/{id}")
      *
      * @param Assistance $assistance
      *
@@ -157,7 +157,7 @@ class AssistanceController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/projects/{id}/assistances/exports")
+     * @Rest\Get("/web-app/v1/projects/{id}/assistances/exports")
      *
      * @param Project $project
      * @param Request $request
@@ -172,7 +172,7 @@ class AssistanceController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/projects/{id}/assistances")
+     * @Rest\Get("/web-app/v1/projects/{id}/assistances")
      *
      * @param Project                           $project
      * @param Pagination                        $pagination

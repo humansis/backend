@@ -22,7 +22,7 @@ class AclControllerTest extends BMSServiceTestCase
 
     public function testDetail()
     {
-        $this->request('GET', '/api/basic/acl/roles/ROLE_ADMIN');
+        $this->request('GET', '/api/basic/web-app/v1/acl/roles/ROLE_ADMIN');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -37,7 +37,7 @@ class AclControllerTest extends BMSServiceTestCase
 
     public function testList()
     {
-        $this->request('GET', '/api/basic/acl/roles');
+        $this->request('GET', '/api/basic/web-app/v1/acl/roles');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

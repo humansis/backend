@@ -23,7 +23,7 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 class PurchasedItemController extends AbstractController
 {
     /**
-     * @Rest\Get("/beneficiaries/{id}/purchased-items")
+     * @Rest\Get("/web-app/v1/beneficiaries/{id}/purchased-items")
      * @ParamConverter("beneficiary")
      *
      * @param Beneficiary $beneficiary
@@ -41,7 +41,7 @@ class PurchasedItemController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/households/{id}/purchased-items")
+     * @Rest\Get("/web-app/v1/households/{id}/purchased-items")
      * @ParamConverter("household")
      *
      * @param Household $household
@@ -59,7 +59,7 @@ class PurchasedItemController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/purchased-items")
+     * @Rest\Get("/web-app/v1/purchased-items")
      *
      * @return JsonResponse
      */
@@ -83,7 +83,7 @@ class PurchasedItemController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/purchased-items/exports")
+     * @Rest\Get("/web-app/v1/purchased-items/exports")
      *
      * @param Request                      $request
      * @param PurchasedItemFilterInputType $filter

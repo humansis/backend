@@ -51,21 +51,21 @@ security:
                 provider: basic-auth-provider
 
         jwt_login:
-            pattern: ^/api/jwt/login
+            pattern: ^/api/jwt/web-app/v[0-9]+/login
             stateless: true
             anonymous: true
             provider: jwt_provider
             json_login:
-                check_path: /api/jwt/login
+                check_path: /api/jwt/web-app/v1/login
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
         jwt_salt:
-            pattern: ^/api/jwt/users/salt
+            pattern: ^/api/jwt/web-app/v[0-9]+/users/salt
             stateless: true
             anonymous: true
 
         jwt:
-            pattern: ^/api/jwt/
+            pattern: ^/api/jwt/web-app/v[0-9]+/
             stateless: true
             anonymous: false
             provider: jwt_provider
@@ -87,9 +87,9 @@ security:
         - { path: ^/login$,    role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register,  role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/jwt/login,      role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/jwt/users/salt, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/jwt,            role: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/jwt/web-app/v[0-9]+/login,      role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/jwt/web-app/v[0-9]+/users/salt, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/jwt/web-app/v[0-9]+,            role: IS_AUTHENTICATED_FULLY }
 
     access_decision_manager:
         strategy: unanimous

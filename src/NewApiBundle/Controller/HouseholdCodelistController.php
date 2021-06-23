@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class HouseholdCodelistController extends AbstractController
 {
     /**
-     * @Rest\Get("/households/livelihoods")
+     * @Rest\Get("/web-app/v1/households/livelihoods")
      *
      * @return JsonResponse
      */
@@ -36,7 +36,7 @@ class HouseholdCodelistController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/households/assets")
+     * @Rest\Get("/web-app/v1/households/assets")
      *
      * @return JsonResponse
      */
@@ -48,7 +48,7 @@ class HouseholdCodelistController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/households/support-received-types")
+     * @Rest\Get("/web-app/v1/households/support-received-types")
      *
      * @return JsonResponse
      */
@@ -60,7 +60,7 @@ class HouseholdCodelistController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/households/shelter-statuses")
+     * @Rest\Get("/web-app/v1/households/shelter-statuses")
      *
      * @return JsonResponse
      */
@@ -72,7 +72,7 @@ class HouseholdCodelistController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/households/locations/types")
+     * @Rest\Get("/web-app/v1/households/locations/types")
      *
      * @return JsonResponse
      */
@@ -84,7 +84,7 @@ class HouseholdCodelistController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/households/referrals/types")
+     * @Rest\Get("/web-app/v1/households/referrals/types")
      *
      * @return JsonResponse
      */

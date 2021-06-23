@@ -21,7 +21,7 @@ use VoucherBundle\Repository\VendorRepository;
 class VendorController extends AbstractController
 {
     /**
-     * @Rest\Get("/vendors/exports")
+     * @Rest\Get("/web-app/v1/vendors/exports")
      *
      * @param Request $request
      *
@@ -36,7 +36,7 @@ class VendorController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/vendors/{id}")
+     * @Rest\Get("/web-app/v1/vendors/{id}")
      *
      * @param Vendor $vendor
      *
@@ -52,7 +52,7 @@ class VendorController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/vendors")
+     * @Rest\Get("/web-app/v1/vendors")
      *
      * @param Request               $request
      * @param VendorFilterInputType $filter
@@ -75,7 +75,7 @@ class VendorController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/vendors")
+     * @Rest\Post("/web-app/v1/vendors")
      *
      * @param VendorCreateInputType $inputType
      *
@@ -91,7 +91,7 @@ class VendorController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/vendors/{id}")
+     * @Rest\Put("/web-app/v1/vendors/{id}")
      *
      * @param Vendor                $vendor
      * @param VendorUpdateInputType $inputType
@@ -110,7 +110,7 @@ class VendorController extends AbstractController
     }
 
     /**
-     * @Rest\Delete("/vendors/{id}")
+     * @Rest\Delete("/web-app/v1/vendors/{id}")
      *
      * @param Vendor $vendor
      *
@@ -126,7 +126,7 @@ class VendorController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/vendors/{id}/invoice")
+     * @Rest\Get("/web-app/v1/vendors/{id}/invoice")
      *
      * @param Vendor $vendor
      *
@@ -140,7 +140,7 @@ class VendorController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/vendors/{id}/summaries")
+     * @Rest\Get("/web-app/v1/vendors/{id}/summaries")
      *
      * @param Vendor $vendor
      *

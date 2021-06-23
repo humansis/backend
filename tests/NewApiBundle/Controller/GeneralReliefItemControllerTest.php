@@ -26,7 +26,7 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
         /** @var GeneralReliefItem $item */
         $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy([])[0];
 
-        $this->request('GET', '/api/basic/general-relief-items/'.$item->getId());
+        $this->request('GET', '/api/basic/web-app/v1/general-relief-items/'.$item->getId());
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -42,7 +42,7 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
 
     public function testList()
     {
-        $this->request('GET', '/api/basic/general-relief-items?&filter[id][]=1');
+        $this->request('GET', '/api/basic/web-app/v1/general-relief-items?&filter[id][]=1');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -60,8 +60,10 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
         /** @var GeneralReliefItem $item */
         $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy(['distributedAt' => null])[0];
 
-        $this->request('PATCH', '/api/basic/general-relief-items/'.$item->getId(), [
+        $this->request('PATCH', '/api/basic/web-app/v2/general-relief-items/'.$item->getId(), [
             'distributed' => true,
+            'dateOfDistribution' => "2020-01-01T10:10:00+00",
+            'note' => "some note",
         ]);
 
         $this->assertTrue(
@@ -70,7 +72,32 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
         );
         $this->assertJsonFragment('{
             "id": '.$item->getId().',
-            "distributed": true
+            "distributed": true,
+            "dateOfDistribution": "*",
+            "note": "some note"
+        }', $this->client->getResponse()->getContent());
+    }
+
+    /**
+     * @depends testPatch
+     */
+    public function testPatch2()
+    {
+        /** @var GeneralReliefItem $item */
+        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy(['distributedAt' => new \DateTime('2020-01-01T10:10:00+00')])[0];
+
+        $this->request('PATCH', '/api/basic/web-app/v2/general-relief-items/'.$item->getId(), [
+            'distributed' => false,
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{
+            "id": '.$item->getId().',
+            "distributed": false,
+            "dateOfDistribution": null
         }', $this->client->getResponse()->getContent());
     }
 }

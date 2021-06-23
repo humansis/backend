@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class CampController extends AbstractController
 {
     /**
-     * @Rest\Get("/camps")
+     * @Rest\Get("/web-app/v1/camps")
      *
      * @param Request $request
      *
@@ -29,6 +29,19 @@ class CampController extends AbstractController
         $beneficiaries = $this->getDoctrine()->getRepository(Camp::class)->findByCountry($countryIso3);
 
         return $this->json(new Paginator($beneficiaries));
+    }
+
+
+    /**
+     * @Rest\Get("/web-app/v1/camps/{id}")
+     *
+     * @param Camp $camp
+     *
+     * @return JsonResponse
+     */
+    public function camp(Camp $camp): JsonResponse
+    {
+        return $this->json($camp);
     }
 
     /**

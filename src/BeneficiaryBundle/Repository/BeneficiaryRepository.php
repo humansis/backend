@@ -13,6 +13,7 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\Entity\Import;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\Request\Pagination;
@@ -141,12 +142,41 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
+    public function findIdentityByNationalId(string $iso3, string $idType, string $idNumber)
+    {
+        return $this->createQueryBuilder('b')
+            ->join('b.person', 'p')
+            ->join('b.household', 'hh')
+            ->join('hh.projects', 'project')
+            ->join('p.nationalIds', 'id')
+            ->andWhere('b.archived = 0')
+            ->andWhere('hh.archived = 0')
+            ->andWhere('id.idNumber = :idNumber')
+            ->andWhere('id.idType = :idType')
+            ->andWhere('project.iso3 = :country')
+            ->setParameter('idNumber', $idNumber)
+            ->setParameter('idType', $idType)
+            ->setParameter('country', $iso3)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function getAllofDistribution(Assistance $assistance)
     {
         $qb = $this->createQueryBuilder('b');
         $q = $qb->leftJoin('b.assistanceBeneficiary', 'db')
             ->where('db.assistance = :assistance')
             ->setParameter('assistance', $assistance);
+
+        return $q->getQuery()->getResult();
+    }
+
+    public function getImported(Import $import)
+    {
+        $qb = $this->createQueryBuilder('b');
+        $q = $qb->leftJoin('b.importBeneficiaries', 'ib')
+            ->where('ib.import = :import')
+            ->setParameter('import', $import);
 
         return $q->getQuery()->getResult();
     }

@@ -30,7 +30,7 @@ class DonorController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/donors/exports")
+     * @Rest\Get("/web-app/v1/donors/exports")
      *
      * @param Request $request
      *
@@ -44,7 +44,7 @@ class DonorController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/donors/{id}")
+     * @Rest\Get("/web-app/v1/donors/{id}")
      *
      * @param Donor $object
      *
@@ -56,7 +56,7 @@ class DonorController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/donors")
+     * @Rest\Get("/web-app/v1/donors")
      *
      * @param Pagination           $pagination
      * @param DonorOrderInputType  $orderBy
@@ -73,7 +73,7 @@ class DonorController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/donors")
+     * @Rest\Post("/web-app/v1/donors")
      *
      * @param DonorCreateInputType $inputType
      *
@@ -87,7 +87,7 @@ class DonorController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/donors/{id}")
+     * @Rest\Put("/web-app/v1/donors/{id}")
      *
      * @param Donor                $donor
      * @param DonorUpdateInputType $inputType
@@ -102,7 +102,7 @@ class DonorController extends AbstractController
     }
 
     /**
-     * @Rest\Delete("/donors/{id}")
+     * @Rest\Delete("/web-app/v1/donors/{id}")
      *
      * @param Donor $object
      *
@@ -116,7 +116,7 @@ class DonorController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/donors/{id}/images")
+     * @Rest\Post("/web-app/v1/donors/{id}/images")
      *
      * @param Donor   $donor
      * @param Request $request

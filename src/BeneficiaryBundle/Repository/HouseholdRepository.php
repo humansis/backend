@@ -209,6 +209,11 @@ class HouseholdRepository extends AbstractCriteriaRepository
             $qb->setFirstResult($pagination->getOffset());
         }
 
+        if ($filter->hasIds()) {
+            $qb->andWhere("hh.id IN (:ids)")
+                ->setParameter('ids', $filter->getIds());
+        }
+
         if ($filter->hasFulltext()) {
             $qb->andWhere("CONCAT(
                         COALESCE(hh.id, ''),
@@ -225,6 +230,11 @@ class HouseholdRepository extends AbstractCriteriaRepository
                         COALESCE(ni.idNumber, '')
                     ) LIKE :fulltext")
                 ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+        }
+
+        if ($filter->hasGender()) {
+            $qb->andWhere('per.gender = :gender')
+                ->setParameter('gender', 'M' === $filter->getGender() ? 1 : 0);
         }
 
         if ($filter->hasGender()) {

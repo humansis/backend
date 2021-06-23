@@ -4,6 +4,7 @@ namespace Tests\NewApiBundle\Controller;
 
 use Exception;
 use ProjectBundle\DBAL\SectorEnum;
+use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
 
 class SectorsCodelistControllerTest extends BMSServiceTestCase
@@ -26,7 +27,10 @@ class SectorsCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetSectors()
     {
-        $this->request('GET', '/api/basic/sectors');
+        /** @var Project $project */
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+
+        $this->request('GET', '/api/basic/web-app/v2/projects/'.$project->getId().'/sectors');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -38,7 +42,7 @@ class SectorsCodelistControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
         $this->assertIsArray($result['data']);
-        $this->assertEquals(count(SectorEnum::all()), $result['totalCount']);
+        $this->assertEquals($project->getSectors()->count(), $result['totalCount']);
     }
 
     /**
@@ -48,7 +52,7 @@ class SectorsCodelistControllerTest extends BMSServiceTestCase
     {
         $testSector = SectorEnum::all()[0];
 
-        $this->request('GET', '/api/basic/sectors/'.$testSector.'/subsectors');
+        $this->request('GET', '/api/basic/web-app/v1/sectors/'.$testSector.'/subsectors');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

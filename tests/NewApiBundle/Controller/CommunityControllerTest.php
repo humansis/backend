@@ -43,7 +43,7 @@ class CommunityControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There needs to be at least one location in system to complete this test');
         }
 
-        $this->request('POST', '/api/basic/communities', [
+        $this->request('POST', '/api/basic/web-app/v1/communities', [
             'longitude' => 'test longitude',
             'latitude' => 'test latitude',
             'contactGivenName' => 'test contactGivenName',
@@ -101,7 +101,7 @@ class CommunityControllerTest extends BMSServiceTestCase
         /** @var Location|null $location */
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
-        $this->request('POST', '/api/basic/communities', [
+        $this->request('POST', '/api/basic/web-app/v1/communities', [
             'address' => [
                 'type' => 'test type',
                 'locationGroup' => 'test locationGroup',
@@ -173,7 +173,7 @@ class CommunityControllerTest extends BMSServiceTestCase
             ],
         ];
 
-        $this->request('PUT', '/api/basic/communities/'.$id, $data);
+        $this->request('PUT', '/api/basic/web-app/v1/communities/'.$id, $data);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -209,7 +209,7 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/communities/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/communities/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -241,7 +241,7 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        $this->request('GET', '/api/basic/communities?sort[]=id.asc&filter[fulltext]=test');
+        $this->request('GET', '/api/basic/web-app/v1/communities?sort[]=id.asc&filter[fulltext]=test');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -264,7 +264,7 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        $this->request('DELETE', '/api/basic/communities/'.$id);
+        $this->request('DELETE', '/api/basic/web-app/v1/communities/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
 
@@ -280,7 +280,7 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        $this->request('GET', '/api/basic/communities/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/communities/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }
@@ -297,7 +297,7 @@ class CommunityControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There is no Community to be tested');
         }
 
-        $this->request('GET', '/api/basic/projects/'.$institution->getProjects()[0]->getId().'/communities');
+        $this->request('GET', '/api/basic/web-app/v1/projects/'.$institution->getProjects()[0]->getId().'/communities');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

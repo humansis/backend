@@ -2553,6 +2553,10 @@
         <source>Village</source>
         <target>Village</target>
       </trans-unit>
+      <trans-unit id="pPmun0d" resname="Village/Neighbourhood">
+        <source>Village/Neighbourhood</source>
+        <target>Village/Neighbourhood</target>
+      </trans-unit>
       <trans-unit id="Y1Ee7w5" resname="Villages">
         <source>Villages</source>
         <target>Villages</target>

@@ -1,0 +1,1662 @@
+<?xml version="1.0"?>
+<adm0 name="Zambia" code="ZM">
+    <adm1 code="ZM10" name="Central">
+        <adm2 code="ZM1001" name="Chibombo">
+            <adm3 code="ZM100101" name="Chaloshi"/>
+            <adm3 code="ZM100102" name="Chibombo"/>
+            <adm3 code="ZM100103" name="Chikobo"/>
+            <adm3 code="ZM100104" name="Chilochabalenge"/>
+            <adm3 code="ZM100105" name="Chitanda"/>
+            <adm3 code="ZM100106" name="Chunga"/>
+            <adm3 code="ZM100107" name="Ipongo"/>
+            <adm3 code="ZM100108" name="Kabile"/>
+            <adm3 code="ZM100109" name="Kakoma"/>
+            <adm3 code="ZM100110" name="Kalola"/>
+            <adm3 code="ZM100111" name="Katuba"/>
+            <adm3 code="ZM100112" name="Keembe"/>
+            <adm3 code="ZM100113" name="Lunjofwa"/>
+            <adm3 code="ZM100114" name="Mashikili"/>
+            <adm3 code="ZM100115" name="Muchenje"/>
+            <adm3 code="ZM100116" name="Mungule"/>
+        </adm2>
+        <adm2 code="ZM1007" name="Chisamba">
+            <adm3 code="ZM100701" name="Chamuka"/>
+            <adm3 code="ZM100702" name="Chikonkomene"/>
+            <adm3 code="ZM100703" name="Chisamba"/>
+            <adm3 code="ZM100704" name="Liteta"/>
+            <adm3 code="ZM100705" name="Mulungushi"/>
+            <adm3 code="ZM100706" name="Muswishi"/>
+        </adm2>
+        <adm2 code="ZM1008" name="Chitambo">
+            <adm3 code="ZM100801" name="Chalilo"/>
+            <adm3 code="ZM100802" name="Chipundu"/>
+            <adm3 code="ZM100803" name="Chitambo"/>
+            <adm3 code="ZM100804" name="Lulimala"/>
+            <adm3 code="ZM100805" name="Luombwa"/>
+            <adm3 code="ZM100806" name="Mpelembe"/>
+            <adm3 code="ZM100807" name="Muchinka"/>
+        </adm2>
+        <adm2 code="ZM1009" name="Itezhi-tezhi">
+            <adm3 code="ZM100901" name="Banamwaze"/>
+            <adm3 code="ZM100902" name="Basanga"/>
+            <adm3 code="ZM100903" name="Itezhi-Tezhi"/>
+            <adm3 code="ZM100904" name="Itumbi"/>
+            <adm3 code="ZM100905" name="Kaanzwa"/>
+            <adm3 code="ZM100906" name="Kabulungwe"/>
+            <adm3 code="ZM100907" name="Lubanda"/>
+            <adm3 code="ZM100908" name="Luchena"/>
+            <adm3 code="ZM100909" name="Luubwe"/>
+            <adm3 code="ZM100910" name="Makunku"/>
+            <adm3 code="ZM100911" name="Masemu"/>
+            <adm3 code="ZM100912" name="Mbila"/>
+            <adm3 code="ZM100913" name="Nyambo"/>
+        </adm2>
+        <adm2 code="ZM1002" name="Kabwe">
+            <adm3 code="ZM100201" name="Ben Kapufi"/>
+            <adm3 code="ZM100202" name="Bwacha"/>
+            <adm3 code="ZM100203" name="Chililalila"/>
+            <adm3 code="ZM100204" name="Chimanimani"/>
+            <adm3 code="ZM100205" name="Chinyanja"/>
+            <adm3 code="ZM100206" name="Chirwa"/>
+            <adm3 code="ZM100207" name="David Ramushu"/>
+            <adm3 code="ZM100208" name="Highridge"/>
+            <adm3 code="ZM100209" name="Justine Kabwe"/>
+            <adm3 code="ZM100210" name="Kalonga"/>
+            <adm3 code="ZM100211" name="Kang'omba"/>
+            <adm3 code="ZM100212" name="Kaputula"/>
+            <adm3 code="ZM100213" name="Kawama"/>
+            <adm3 code="ZM100214" name="Luangwa"/>
+            <adm3 code="ZM100215" name="Luansase"/>
+            <adm3 code="ZM100216" name="Makululu"/>
+            <adm3 code="ZM100217" name="Moomba"/>
+            <adm3 code="ZM100218" name="Mpima"/>
+            <adm3 code="ZM100219" name="Munga"/>
+            <adm3 code="ZM100220" name="Munyama"/>
+            <adm3 code="ZM100221" name="Muwowo"/>
+            <adm3 code="ZM100222" name="Muwowo East"/>
+            <adm3 code="ZM100223" name="Nakoli"/>
+            <adm3 code="ZM100224" name="Ngungu"/>
+            <adm3 code="ZM100225" name="Njanji"/>
+            <adm3 code="ZM100226" name="Waya"/>
+            <adm3 code="ZM100227" name="Zambezi"/>
+        </adm2>
+        <adm2 code="ZM1010" name="Luano">
+            <adm3 code="ZM101001" name="Chapaba"/>
+            <adm3 code="ZM101002" name="Ching'ombe"/>
+            <adm3 code="ZM101003" name="Kalwa"/>
+            <adm3 code="ZM101004" name="Kamimbya"/>
+            <adm3 code="ZM101005" name="Mwalala"/>
+            <adm3 code="ZM101006" name="Nkomashi"/>
+        </adm2>
+        <adm2 code="ZM1004" name="Mkushi">
+            <adm3 code="ZM100401" name="Chalata"/>
+            <adm3 code="ZM100402" name="Chibefwe"/>
+            <adm3 code="ZM100403" name="Chikanda"/>
+            <adm3 code="ZM100404" name="Masofu"/>
+            <adm3 code="ZM100405" name="Matuku"/>
+            <adm3 code="ZM100406" name="Munda"/>
+            <adm3 code="ZM100407" name="Mushibemba"/>
+            <adm3 code="ZM100408" name="Nkumbi"/>
+            <adm3 code="ZM100409" name="Nshinso"/>
+            <adm3 code="ZM100410" name="Tembwe"/>
+            <adm3 code="ZM100411" name="Upper Lunsenfwa"/>
+        </adm2>
+        <adm2 code="ZM1005" name="Mumbwa">
+            <adm3 code="ZM100501" name="Chibolyo"/>
+            <adm3 code="ZM100502" name="Chisalu"/>
+            <adm3 code="ZM100503" name="Choma"/>
+            <adm3 code="ZM100504" name="Kalwanyembe"/>
+            <adm3 code="ZM100505" name="Lutale"/>
+            <adm3 code="ZM100506" name="Mpusu"/>
+            <adm3 code="ZM100507" name="Mumba"/>
+            <adm3 code="ZM100508" name="Mupona"/>
+            <adm3 code="ZM100509" name="Myooye"/>
+            <adm3 code="ZM100510" name="Nakasaka"/>
+            <adm3 code="ZM100511" name="Nalubanda"/>
+            <adm3 code="ZM100512" name="Nalusanga"/>
+            <adm3 code="ZM100513" name="Nambala"/>
+            <adm3 code="ZM100514" name="Nangoma"/>
+            <adm3 code="ZM100515" name="Shichanzu"/>
+            <adm3 code="ZM100516" name="Shimbizhi"/>
+        </adm2>
+        <adm2 code="ZM1011" name="Ngabwe"/>
+        <adm2 code="ZM1006" name="Serenje">
+            <adm3 code="ZM100601" name="Chibale"/>
+            <adm3 code="ZM100602" name="Chisomo"/>
+            <adm3 code="ZM100603" name="Ibolelo"/>
+            <adm3 code="ZM100604" name="Kabamba"/>
+            <adm3 code="ZM100605" name="Kabansa"/>
+            <adm3 code="ZM100606" name="Kanona"/>
+            <adm3 code="ZM100607" name="Lukusashi"/>
+            <adm3 code="ZM100608" name="Lupiya"/>
+            <adm3 code="ZM100609" name="Mailo"/>
+            <adm3 code="ZM100610" name="Masaninga"/>
+            <adm3 code="ZM100611" name="Muchinda"/>
+            <adm3 code="ZM100612" name="Musangashi"/>
+            <adm3 code="ZM100613" name="Ng'answa"/>
+            <adm3 code="ZM100614" name="Sancha"/>
+            <adm3 code="ZM100615" name="Serenje"/>
+        </adm2>
+        <adm2 code="ZM1003" name="Kapiri Mposhi">
+            <adm3 code="ZM100301" name="Chango'ndo"/>
+            <adm3 code="ZM100302" name="Chibwelo"/>
+            <adm3 code="ZM100303" name="Chipepo"/>
+            <adm3 code="ZM100304" name="Kakwelesa"/>
+            <adm3 code="ZM100305" name="Kampumba"/>
+            <adm3 code="ZM100306" name="Kapandwe"/>
+            <adm3 code="ZM100307" name="Kapiri Mposhi"/>
+            <adm3 code="ZM100308" name="Kashitu"/>
+            <adm3 code="ZM100309" name="Lunchu"/>
+            <adm3 code="ZM100310" name="Lwanchele"/>
+            <adm3 code="ZM100311" name="Mpunde"/>
+            <adm3 code="ZM100312" name="Mushimbili"/>
+        </adm2>
+    </adm1>
+    <adm1 code="ZM20" name="Copperbelt">
+        <adm2 code="ZM2001" name="Chililabombwe">
+            <adm3 code="ZM200101" name="Anoya Zulu"/>
+            <adm3 code="ZM200102" name="Chilimina"/>
+            <adm3 code="ZM200103" name="Chitambi"/>
+            <adm3 code="ZM200104" name="Chitimukulu"/>
+            <adm3 code="ZM200105" name="Helen Kaunda"/>
+            <adm3 code="ZM200106" name="James Phiri"/>
+            <adm3 code="ZM200107" name="Joseph Mwilwa"/>
+            <adm3 code="ZM200108" name="Kafue"/>
+            <adm3 code="ZM200109" name="Kakoso"/>
+            <adm3 code="ZM200110" name="Kamima"/>
+            <adm3 code="ZM200111" name="Kawama"/>
+            <adm3 code="ZM200112" name="Mathew Nkoloma"/>
+            <adm3 code="ZM200113" name="Miteta"/>
+            <adm3 code="ZM200114" name="Miyanda"/>
+            <adm3 code="ZM200115" name="Mukuka"/>
+            <adm3 code="ZM200116" name="Mumba"/>
+            <adm3 code="ZM200117" name="Mvula"/>
+            <adm3 code="ZM200118" name="Nakatindi"/>
+            <adm3 code="ZM200119" name="Ngebe"/>
+            <adm3 code="ZM200120" name="Silwizya"/>
+            <adm3 code="ZM200121" name="Yeta"/>
+            <adm3 code="ZM200122" name="Yotam Muleya"/>
+        </adm2>
+        <adm2 code="ZM2002" name="Chingola">
+            <adm3 code="ZM200201" name="Buntungwa"/>
+            <adm3 code="ZM200202" name="Bupalo"/>
+            <adm3 code="ZM200203" name="Chabanyama"/>
+            <adm3 code="ZM200204" name="Chikola"/>
+            <adm3 code="ZM200205" name="Chingola"/>
+            <adm3 code="ZM200206" name="Chitimukulu"/>
+            <adm3 code="ZM200207" name="Chiwempala"/>
+            <adm3 code="ZM200208" name="Gibson Chimfwembe"/>
+            <adm3 code="ZM200209" name="Ipafu"/>
+            <adm3 code="ZM200210" name="Kabundi"/>
+            <adm3 code="ZM200211" name="Kabungo"/>
+            <adm3 code="ZM200212" name="Kalilo"/>
+            <adm3 code="ZM200213" name="Kapisha"/>
+            <adm3 code="ZM200214" name="Kasala"/>
+            <adm3 code="ZM200215" name="Kasompe"/>
+            <adm3 code="ZM200216" name="Kwacha"/>
+            <adm3 code="ZM200217" name="Luano"/>
+            <adm3 code="ZM200218" name="Lulamba"/>
+            <adm3 code="ZM200219" name="Maiteneke"/>
+            <adm3 code="ZM200220" name="Mimbula"/>
+            <adm3 code="ZM200221" name="Muchinshi"/>
+            <adm3 code="ZM200222" name="Musenga"/>
+            <adm3 code="ZM200223" name="Mutenda"/>
+            <adm3 code="ZM200224" name="Nchanga"/>
+            <adm3 code="ZM200225" name="Nsansa"/>
+            <adm3 code="ZM200226" name="Sekela"/>
+            <adm3 code="ZM200227" name="Twatasha"/>
+        </adm2>
+        <adm2 code="ZM2003" name="Kalulushi">
+            <adm3 code="ZM200301" name="Buseko"/>
+            <adm3 code="ZM200302" name="Chambishi"/>
+            <adm3 code="ZM200303" name="Chankalamo"/>
+            <adm3 code="ZM200304" name="Chati"/>
+            <adm3 code="ZM200305" name="Chembe"/>
+            <adm3 code="ZM200306" name="Chibuluma"/>
+            <adm3 code="ZM200307" name="Dongwe"/>
+            <adm3 code="ZM200308" name="Ichimpe"/>
+            <adm3 code="ZM200309" name="Kafue"/>
+            <adm3 code="ZM200310" name="Kalanga"/>
+            <adm3 code="ZM200311" name="Kalengwa"/>
+            <adm3 code="ZM200312" name="Kalungwishi"/>
+            <adm3 code="ZM200313" name="Kankonshi"/>
+            <adm3 code="ZM200314" name="Luapula"/>
+            <adm3 code="ZM200315" name="Lubuto"/>
+            <adm3 code="ZM200316" name="Lukoshi"/>
+            <adm3 code="ZM200317" name="Lulamba"/>
+            <adm3 code="ZM200318" name="Musakashi"/>
+            <adm3 code="ZM200319" name="Mwambashi"/>
+            <adm3 code="ZM200320" name="Ngweshi"/>
+            <adm3 code="ZM200321" name="Remmy Chisupa"/>
+            <adm3 code="ZM200322" name="Twaiteka"/>
+        </adm2>
+        <adm2 code="ZM2004" name="Kitwe">
+            <adm3 code="ZM200401" name="Buchi"/>
+            <adm3 code="ZM200402" name="Bulangililo"/>
+            <adm3 code="ZM200403" name="Buntungwa"/>
+            <adm3 code="ZM200404" name="Bupe"/>
+            <adm3 code="ZM200405" name="Chamboli"/>
+            <adm3 code="ZM200406" name="Chantete"/>
+            <adm3 code="ZM200407" name="Chibote"/>
+            <adm3 code="ZM200408" name="Chimwemwe"/>
+            <adm3 code="ZM200409" name="Ipusukilo"/>
+            <adm3 code="ZM200410" name="Itimpi"/>
+            <adm3 code="ZM200411" name="Kafue"/>
+            <adm3 code="ZM200412" name="Kamakonde"/>
+            <adm3 code="ZM200413" name="Kamfinsa"/>
+            <adm3 code="ZM200414" name="Kawama"/>
+            <adm3 code="ZM200415" name="Kwacha"/>
+            <adm3 code="ZM200416" name="Limaposa"/>
+            <adm3 code="ZM200417" name="Luangwa"/>
+            <adm3 code="ZM200418" name="Lubuto"/>
+            <adm3 code="ZM200419" name="Lubwa"/>
+            <adm3 code="ZM200420" name="Mindolo"/>
+            <adm3 code="ZM200421" name="Miseshi"/>
+            <adm3 code="ZM200422" name="Mukuba"/>
+            <adm3 code="ZM200423" name="Ndeke"/>
+            <adm3 code="ZM200424" name="Parklands"/>
+            <adm3 code="ZM200425" name="Riverside"/>
+            <adm3 code="ZM200426" name="Rokana"/>
+            <adm3 code="ZM200427" name="Twatasha"/>
+            <adm3 code="ZM200428" name="Wusakile"/>
+        </adm2>
+        <adm2 code="ZM2005" name="Luanshya">
+            <adm3 code="ZM200501" name="Baluba"/>
+            <adm3 code="ZM200502" name="Buntungwa"/>
+            <adm3 code="ZM200503" name="Buteko"/>
+            <adm3 code="ZM200504" name="Chifulube"/>
+            <adm3 code="ZM200505" name="Chilabula"/>
+            <adm3 code="ZM200506" name="Chitwi"/>
+            <adm3 code="ZM200507" name="Fisenge"/>
+            <adm3 code="ZM200508" name="James Phiri"/>
+            <adm3 code="ZM200509" name="Justine Kabwe"/>
+            <adm3 code="ZM200510" name="Kafubu"/>
+            <adm3 code="ZM200511" name="Kafue"/>
+            <adm3 code="ZM200512" name="Kansengu"/>
+            <adm3 code="ZM200513" name="Kawama"/>
+            <adm3 code="ZM200514" name="Levi Chiko"/>
+            <adm3 code="ZM200515" name="Lumumba"/>
+            <adm3 code="ZM200516" name="Mikomfwa"/>
+            <adm3 code="ZM200517" name="Milyashi"/>
+            <adm3 code="ZM200518" name="Mipundu"/>
+            <adm3 code="ZM200519" name="Misaka"/>
+            <adm3 code="ZM200520" name="Mpatamatu"/>
+            <adm3 code="ZM200521" name="Mpelembe"/>
+            <adm3 code="ZM200522" name="Mulungushi"/>
+            <adm3 code="ZM200523" name="Muva Hill"/>
+            <adm3 code="ZM200524" name="Ngebe"/>
+            <adm3 code="ZM200525" name="Nkoloma"/>
+            <adm3 code="ZM200526" name="Nkulumashiba"/>
+            <adm3 code="ZM200527" name="Twashuka"/>
+            <adm3 code="ZM200528" name="Zambezi"/>
+        </adm2>
+        <adm2 code="ZM2006" name="Lufwanyama">
+            <adm3 code="ZM200601" name="Boso"/>
+            <adm3 code="ZM200602" name="Bulaya"/>
+            <adm3 code="ZM200603" name="Chantete"/>
+            <adm3 code="ZM200604" name="Chibanga"/>
+            <adm3 code="ZM200605" name="Kabundia"/>
+            <adm3 code="ZM200606" name="Kafubu"/>
+            <adm3 code="ZM200607" name="Kansanta"/>
+            <adm3 code="ZM200608" name="Kansonka"/>
+            <adm3 code="ZM200609" name="Lufwanyama"/>
+            <adm3 code="ZM200610" name="Luswishi"/>
+            <adm3 code="ZM200611" name="Mibenge"/>
+            <adm3 code="ZM200612" name="Mpindi"/>
+            <adm3 code="ZM200613" name="Mukumbo"/>
+            <adm3 code="ZM200614" name="Mushingashi"/>
+            <adm3 code="ZM200615" name="Mwelushi"/>
+            <adm3 code="ZM200616" name="Sokotwe"/>
+        </adm2>
+        <adm2 code="ZM2007" name="Masaiti">
+            <adm3 code="ZM200701" name="Chilulu"/>
+            <adm3 code="ZM200702" name="Chinondo"/>
+            <adm3 code="ZM200703" name="Chondwe"/>
+            <adm3 code="ZM200704" name="Ishitwe"/>
+            <adm3 code="ZM200705" name="Kashitu"/>
+            <adm3 code="ZM200706" name="Katonte"/>
+            <adm3 code="ZM200707" name="Katuba"/>
+            <adm3 code="ZM200708" name="Luansobe"/>
+            <adm3 code="ZM200709" name="Lumano"/>
+            <adm3 code="ZM200710" name="Majaliwa"/>
+            <adm3 code="ZM200711" name="Masangano"/>
+            <adm3 code="ZM200712" name="Miengwe"/>
+            <adm3 code="ZM200713" name="Miputu"/>
+            <adm3 code="ZM200714" name="Mishikishi"/>
+            <adm3 code="ZM200715" name="Mutaba"/>
+            <adm3 code="ZM200716" name="Mwatishi"/>
+            <adm3 code="ZM200717" name="Shimibanga"/>
+        </adm2>
+        <adm2 code="ZM2008" name="Mpongwe">
+            <adm3 code="ZM200801" name="Ibenga"/>
+            <adm3 code="ZM200802" name="Kalweo"/>
+            <adm3 code="ZM200803" name="Kanyenda"/>
+            <adm3 code="ZM200804" name="Kasamba"/>
+            <adm3 code="ZM200805" name="Kashiba"/>
+            <adm3 code="ZM200806" name="Kasonga"/>
+            <adm3 code="ZM200807" name="Luswishi"/>
+            <adm3 code="ZM200808" name="Mikata"/>
+            <adm3 code="ZM200809" name="Mpongwe"/>
+            <adm3 code="ZM200810" name="Munkumpu"/>
+            <adm3 code="ZM200811" name="Musofu"/>
+            <adm3 code="ZM200812" name="Nampamba"/>
+        </adm2>
+        <adm2 code="ZM2009" name="Mufulira">
+            <adm3 code="ZM200901" name="Buntungwa"/>
+            <adm3 code="ZM200902" name="Butondo"/>
+            <adm3 code="ZM200903" name="Bwafwano"/>
+            <adm3 code="ZM200904" name="Bwananyina"/>
+            <adm3 code="ZM200905" name="Bwembya Silwizya"/>
+            <adm3 code="ZM200906" name="Chachacha"/>
+            <adm3 code="ZM200907" name="David Kaunda"/>
+            <adm3 code="ZM200908" name="David Lunda"/>
+            <adm3 code="ZM200909" name="Fibusa"/>
+            <adm3 code="ZM200910" name="Francis Mukuka"/>
+            <adm3 code="ZM200911" name="Hanky Kalanga"/>
+            <adm3 code="ZM200912" name="John Kampengele"/>
+            <adm3 code="ZM200913" name="Kafue"/>
+            <adm3 code="ZM200914" name="Kamuchanga"/>
+            <adm3 code="ZM200915" name="Kangwa Nsuluka"/>
+            <adm3 code="ZM200916" name="Kansuswa"/>
+            <adm3 code="ZM200917" name="Kasempa"/>
+            <adm3 code="ZM200918" name="Kawama"/>
+            <adm3 code="ZM200919" name="Kwacha"/>
+            <adm3 code="ZM200920" name="Leya Mukutu"/>
+            <adm3 code="ZM200921" name="Luansobe"/>
+            <adm3 code="ZM200922" name="Maina Soko"/>
+            <adm3 code="ZM200923" name="Minambe"/>
+            <adm3 code="ZM200924" name="Mpelembe"/>
+            <adm3 code="ZM200925" name="Mulungushi"/>
+            <adm3 code="ZM200926" name="Murundu"/>
+            <adm3 code="ZM200927" name="Mutundu"/>
+            <adm3 code="ZM200928" name="Shinde"/>
+        </adm2>
+        <adm2 code="ZM2010" name="Ndola">
+            <adm3 code="ZM201001" name="Chichele"/>
+            <adm3 code="ZM201002" name="Chifubu"/>
+            <adm3 code="ZM201003" name="Chipulukusu"/>
+            <adm3 code="ZM201004" name="Dag Hammerskjoeld"/>
+            <adm3 code="ZM201005" name="Fibobe"/>
+            <adm3 code="ZM201006" name="Itawa"/>
+            <adm3 code="ZM201007" name="Kabushi"/>
+            <adm3 code="ZM201008" name="Kafubu"/>
+            <adm3 code="ZM201009" name="Kaloko"/>
+            <adm3 code="ZM201010" name="Kamba"/>
+            <adm3 code="ZM201011" name="Kaniki"/>
+            <adm3 code="ZM201012" name="Kanini"/>
+            <adm3 code="ZM201013" name="Kansenshi"/>
+            <adm3 code="ZM201014" name="Kantolomba"/>
+            <adm3 code="ZM201015" name="Kavu"/>
+            <adm3 code="ZM201016" name="Kawama"/>
+            <adm3 code="ZM201017" name="Lubuto"/>
+            <adm3 code="ZM201018" name="Masala"/>
+            <adm3 code="ZM201019" name="Mukuba"/>
+            <adm3 code="ZM201020" name="Munkulungwe"/>
+            <adm3 code="ZM201021" name="Mushili"/>
+            <adm3 code="ZM201022" name="Nkwazi"/>
+            <adm3 code="ZM201023" name="Pamodzi"/>
+            <adm3 code="ZM201024" name="Skyways"/>
+            <adm3 code="ZM201025" name="Toka"/>
+            <adm3 code="ZM201026" name="Twapia"/>
+            <adm3 code="ZM201027" name="Twashuka"/>
+            <adm3 code="ZM201028" name="Yengwe"/>
+            <adm3 code="ZM201029" name="Ngabwe"/>
+            <adm3 code="ZM201030" name="Mukumbwe"/>
+            <adm3 code="ZM201031" name="Ngabwe"/>
+        </adm2>
+    </adm1>
+    <adm1 code="ZM30" name="Eastern">
+        <adm2 code="ZM3001" name="Chadiza">
+            <adm3 code="ZM300101" name="Chadiza"/>
+            <adm3 code="ZM300102" name="Chamandala"/>
+            <adm3 code="ZM300103" name="Chanjowe"/>
+            <adm3 code="ZM300104" name="Chilenga"/>
+            <adm3 code="ZM300105" name="Kampini"/>
+            <adm3 code="ZM300106" name="Kandabwako"/>
+            <adm3 code="ZM300107" name="Kapachi"/>
+            <adm3 code="ZM300108" name="Mangwe"/>
+            <adm3 code="ZM300109" name="Manje"/>
+            <adm3 code="ZM300110" name="Naviluri"/>
+            <adm3 code="ZM300111" name="Nsadzu"/>
+            <adm3 code="ZM300112" name="Tafelansoni"/>
+        </adm2>
+        <adm2 code="ZM3002" name="Chasefu"/>
+        <adm2 code="ZM3009" name="Chipangali"/>
+        <adm2 code="ZM3003" name="Chipata">
+            <adm3 code="ZM300301" name="Chikando"/>
+            <adm3 code="ZM300302" name="Chingazi"/>
+            <adm3 code="ZM300303" name="Chipangali"/>
+            <adm3 code="ZM300304" name="Chiparamba"/>
+            <adm3 code="ZM300305" name="Dilika"/>
+            <adm3 code="ZM300306" name="Kanjala"/>
+            <adm3 code="ZM300307" name="Kapata"/>
+            <adm3 code="ZM300308" name="Kasenga"/>
+            <adm3 code="ZM300309" name="Kazimule"/>
+            <adm3 code="ZM300310" name="Khova"/>
+            <adm3 code="ZM300311" name="Kwenje"/>
+            <adm3 code="ZM300312" name="Makangila"/>
+            <adm3 code="ZM300313" name="Makungwa"/>
+            <adm3 code="ZM300314" name="Mboza"/>
+            <adm3 code="ZM300315" name="Mkowe"/>
+            <adm3 code="ZM300316" name="Msandile"/>
+            <adm3 code="ZM300317" name="Msanga"/>
+            <adm3 code="ZM300318" name="Ng'ongwe"/>
+            <adm3 code="ZM300319" name="Nsingo"/>
+            <adm3 code="ZM300320" name="Nthope"/>
+            <adm3 code="ZM300321" name="Rukuzye"/>
+            <adm3 code="ZM300322" name="Sisinje"/>
+        </adm2>
+        <adm2 code="ZM3010" name="Kasenengwa"/>
+        <adm2 code="ZM3004" name="Katete">
+            <adm3 code="ZM300401" name="Chavuka"/>
+            <adm3 code="ZM300402" name="Chimtende"/>
+            <adm3 code="ZM300403" name="Chimwa"/>
+            <adm3 code="ZM300404" name="Chindwale"/>
+            <adm3 code="ZM300405" name="Dole"/>
+            <adm3 code="ZM300406" name="Kadula"/>
+            <adm3 code="ZM300407" name="Kafumbwe"/>
+            <adm3 code="ZM300408" name="Kapangulula"/>
+            <adm3 code="ZM300409" name="Kapoche"/>
+            <adm3 code="ZM300410" name="Katiula"/>
+            <adm3 code="ZM300411" name="Kazala"/>
+            <adm3 code="ZM300412" name="Lukweta"/>
+            <adm3 code="ZM300413" name="Matunga"/>
+            <adm3 code="ZM300414" name="Milanzi"/>
+            <adm3 code="ZM300415" name="Mkaika"/>
+            <adm3 code="ZM300416" name="Mphangwe"/>
+            <adm3 code="ZM300417" name="Mwandafisi"/>
+            <adm3 code="ZM300418" name="Vulamkoko"/>
+        </adm2>
+        <adm2 code="ZM3011" name="Lumezi"/>
+        <adm2 code="ZM3005" name="Lundazi">
+            <adm3 code="ZM300501" name="Chaboli"/>
+            <adm3 code="ZM300502" name="Chamtowa"/>
+            <adm3 code="ZM300503" name="Chibande"/>
+            <adm3 code="ZM300504" name="Chilola"/>
+            <adm3 code="ZM300505" name="Chimaliro"/>
+            <adm3 code="ZM300506" name="Diwa"/>
+            <adm3 code="ZM300507" name="Kachama"/>
+            <adm3 code="ZM300508" name="Kajilime"/>
+            <adm3 code="ZM300509" name="Kamimba"/>
+            <adm3 code="ZM300510" name="Kapilisanga"/>
+            <adm3 code="ZM300511" name="Kazembe"/>
+            <adm3 code="ZM300512" name="Lukusuzi"/>
+            <adm3 code="ZM300513" name="Lumimba"/>
+            <adm3 code="ZM300514" name="Lunevwa"/>
+            <adm3 code="ZM300515" name="Luwerezi"/>
+            <adm3 code="ZM300516" name="Magodi"/>
+            <adm3 code="ZM300517" name="Manda Hill"/>
+            <adm3 code="ZM300518" name="Membe"/>
+            <adm3 code="ZM300519" name="Mkomba"/>
+            <adm3 code="ZM300520" name="Mnyamazi"/>
+            <adm3 code="ZM300521" name="Msuzi"/>
+            <adm3 code="ZM300522" name="Ndonda"/>
+            <adm3 code="ZM300523" name="Nkhanga"/>
+            <adm3 code="ZM300524" name="Nthintimila"/>
+            <adm3 code="ZM300525" name="Susa"/>
+            <adm3 code="ZM300526" name="Vuu"/>
+            <adm3 code="ZM300527" name="Wachitangachi"/>
+            <adm3 code="ZM300528" name="Lunga"/>
+            <adm3 code="ZM300529" name="Lunga"/>
+            <adm3 code="ZM300530" name="Ncheta"/>
+            <adm3 code="ZM300531" name="Nkutila"/>
+            <adm3 code="ZM300532" name="Nsalushi"/>
+        </adm2>
+        <adm2 code="ZM3006" name="Mambwe">
+            <adm3 code="ZM300601" name="Chikowa"/>
+            <adm3 code="ZM300602" name="Chipapa"/>
+            <adm3 code="ZM300603" name="Jumbe"/>
+            <adm3 code="ZM300604" name="Kakumbi"/>
+            <adm3 code="ZM300605" name="Kasamanda"/>
+            <adm3 code="ZM300606" name="Malama"/>
+            <adm3 code="ZM300607" name="Mdima"/>
+            <adm3 code="ZM300608" name="Mnkhanya"/>
+            <adm3 code="ZM300609" name="Mphomwa"/>
+            <adm3 code="ZM300610" name="Msoro"/>
+            <adm3 code="ZM300611" name="Ncheka"/>
+            <adm3 code="ZM300612" name="Nsefu"/>
+            <adm3 code="ZM300613" name="Nyakatokoli"/>
+        </adm2>
+        <adm2 code="ZM3007" name="Nyimba">
+            <adm3 code="ZM300701" name="Chamilala"/>
+            <adm3 code="ZM300702" name="Chinambi"/>
+            <adm3 code="ZM300703" name="Chinsimbwe"/>
+            <adm3 code="ZM300704" name="Chiweza"/>
+            <adm3 code="ZM300705" name="Kaliwe"/>
+            <adm3 code="ZM300706" name="Katipa"/>
+            <adm3 code="ZM300707" name="Luangwa"/>
+            <adm3 code="ZM300708" name="Luezi"/>
+            <adm3 code="ZM300709" name="Mombe"/>
+            <adm3 code="ZM300710" name="Mtilizi"/>
+            <adm3 code="ZM300711" name="Ngozi"/>
+            <adm3 code="ZM300712" name="Nyimba"/>
+            <adm3 code="ZM300713" name="Vizimumba"/>
+        </adm2>
+        <adm2 code="ZM3008" name="Petauke">
+            <adm3 code="ZM300801" name="Chimanyama"/>
+            <adm3 code="ZM300802" name="Chisangu"/>
+            <adm3 code="ZM300803" name="Kaumbwe"/>
+            <adm3 code="ZM300804" name="Kovyane"/>
+            <adm3 code="ZM300805" name="Lusangazi"/>
+            <adm3 code="ZM300806" name="Lusinde"/>
+            <adm3 code="ZM300807" name="Manjazi"/>
+            <adm3 code="ZM300808" name="Manyane"/>
+            <adm3 code="ZM300809" name="Mateyo Mzeka"/>
+            <adm3 code="ZM300810" name="Mawanda"/>
+            <adm3 code="ZM300811" name="Mbala"/>
+            <adm3 code="ZM300812" name="Msumbazi"/>
+            <adm3 code="ZM300813" name="Nsimbo"/>
+            <adm3 code="ZM300814" name="Nyakawise"/>
+            <adm3 code="ZM300815" name="Nyika"/>
+            <adm3 code="ZM300816" name="Ongolwe"/>
+            <adm3 code="ZM300817" name="Singozi"/>
+            <adm3 code="ZM300818" name="Ukwimi"/>
+        </adm2>
+        <adm2 code="ZM3012" name="Sinda">
+            <adm3 code="ZM301201" name="Ching'ombe"/>
+            <adm3 code="ZM301202" name="Chitawe"/>
+            <adm3 code="ZM301203" name="Chiwuyu"/>
+            <adm3 code="ZM301204" name="Kamwaza"/>
+            <adm3 code="ZM301205" name="Kapoche"/>
+            <adm3 code="ZM301206" name="Kasangazi"/>
+            <adm3 code="ZM301207" name="Luandazi"/>
+            <adm3 code="ZM301208" name="Matambazi"/>
+            <adm3 code="ZM301209" name="Mng'omba"/>
+            <adm3 code="ZM301210" name="Mnyamanzi"/>
+            <adm3 code="ZM301211" name="Mwangaila"/>
+            <adm3 code="ZM301212" name="Nchingilizya"/>
+            <adm3 code="ZM301213" name="Nyamasonkho"/>
+            <adm3 code="ZM301214" name="Sinda"/>
+        </adm2>
+        <adm2 code="ZM3013" name="Vubwi">
+            <adm3 code="ZM301301" name="Ambidzi"/>
+            <adm3 code="ZM301302" name="Chimphanje"/>
+            <adm3 code="ZM301303" name="Chisiya"/>
+            <adm3 code="ZM301304" name="Kabvumo"/>
+            <adm3 code="ZM301305" name="Khumba"/>
+            <adm3 code="ZM301306" name="Mbozi"/>
+            <adm3 code="ZM301307" name="Mlawe"/>
+            <adm3 code="ZM301308" name="Mwangazi"/>
+            <adm3 code="ZM301309" name="Vubwi"/>
+            <adm3 code="ZM301310" name="Zozwe"/>
+        </adm2>
+    </adm1>
+    <adm1 code="ZM40" name="Luapula">
+        <adm2 code="ZM4008" name="Chembe">
+            <adm3 code="ZM400801" name="Luapula"/>
+            <adm3 code="ZM400802" name="Lukola"/>
+        </adm2>
+        <adm2 code="ZM4001" name="Chiengi">
+            <adm3 code="ZM400101" name="Chienge&#xA0;(Chiengi)"/>
+            <adm3 code="ZM400102" name="Chipamba"/>
+            <adm3 code="ZM400103" name="Chipungu"/>
+            <adm3 code="ZM400104" name="Chitutu"/>
+            <adm3 code="ZM400105" name="Ifuna"/>
+            <adm3 code="ZM400106" name="Kalobwa"/>
+            <adm3 code="ZM400107" name="Katete"/>
+            <adm3 code="ZM400108" name="Kulungwishi"/>
+            <adm3 code="ZM400109" name="Lambwe Chomba"/>
+            <adm3 code="ZM400110" name="Luau"/>
+            <adm3 code="ZM400111" name="Lunchinda"/>
+            <adm3 code="ZM400112" name="Mununga"/>
+            <adm3 code="ZM400113" name="Munwa"/>
+        </adm2>
+        <adm2 code="ZM4009" name="Chifunabuli"/>
+        <adm2 code="ZM4010" name="Chipili">
+            <adm3 code="ZM401001" name="Chibalashi"/>
+            <adm3 code="ZM401002" name="Mumbwe"/>
+            <adm3 code="ZM401003" name="Mweshi"/>
+            <adm3 code="ZM401004" name="Nalupembe"/>
+            <adm3 code="ZM401005" name="Nkonge"/>
+            <adm3 code="ZM401006" name="Nsenga"/>
+        </adm2>
+        <adm2 code="ZM4002" name="Kawambwa">
+            <adm3 code="ZM400201" name="Chibote"/>
+            <adm3 code="ZM400202" name="Chimpili"/>
+            <adm3 code="ZM400203" name="Fisaka"/>
+            <adm3 code="ZM400204" name="Ilombe"/>
+            <adm3 code="ZM400205" name="Iyanga"/>
+            <adm3 code="ZM400206" name="Kabanse"/>
+            <adm3 code="ZM400207" name="Kawambwa"/>
+            <adm3 code="ZM400208" name="Luena"/>
+            <adm3 code="ZM400209" name="Luongo"/>
+            <adm3 code="ZM400210" name="Mulunda"/>
+            <adm3 code="ZM400211" name="Ng'ona"/>
+            <adm3 code="ZM400212" name="Ntumbachushi"/>
+            <adm3 code="ZM400213" name="Pambashe"/>
+            <adm3 code="ZM400214" name="Senga"/>
+        </adm2>
+        <adm2 code="ZM4011" name="Lunga"/>
+        <adm2 code="ZM4003" name="Mansa">
+            <adm3 code="ZM400301" name="Chansusu"/>
+            <adm3 code="ZM400302" name="Chibeleka"/>
+            <adm3 code="ZM400303" name="Chilyapa"/>
+            <adm3 code="ZM400304" name="Kaole"/>
+            <adm3 code="ZM400305" name="Lukangaba"/>
+            <adm3 code="ZM400306" name="Lwingishi"/>
+            <adm3 code="ZM400307" name="Mansa"/>
+            <adm3 code="ZM400308" name="Misakalala"/>
+            <adm3 code="ZM400309" name="Muchinka"/>
+            <adm3 code="ZM400310" name="Mulelenshi"/>
+            <adm3 code="ZM400311" name="Muleshi"/>
+            <adm3 code="ZM400312" name="Mushipashi"/>
+            <adm3 code="ZM400313" name="Mutuna"/>
+            <adm3 code="ZM400314" name="Myulu"/>
+        </adm2>
+        <adm2 code="ZM4004" name="Milenge">
+            <adm3 code="ZM400401" name="Chipundu"/>
+            <adm3 code="ZM400402" name="Chiswishi"/>
+            <adm3 code="ZM400403" name="Fibalala"/>
+            <adm3 code="ZM400404" name="Itemba"/>
+            <adm3 code="ZM400405" name="Kapalala"/>
+            <adm3 code="ZM400406" name="Lusumbwe"/>
+            <adm3 code="ZM400407" name="Mikula"/>
+            <adm3 code="ZM400408" name="Milambo"/>
+            <adm3 code="ZM400409" name="Mulumbi"/>
+            <adm3 code="ZM400410" name="Mumbotuta"/>
+            <adm3 code="ZM400411" name="Nsaka"/>
+            <adm3 code="ZM400412" name="Nsunga"/>
+            <adm3 code="ZM400413" name="Sokontwe"/>
+        </adm2>
+        <adm2 code="ZM4012" name="Mwansabombwe">
+            <adm3 code="ZM401201" name="Chipita"/>
+            <adm3 code="ZM401202" name="Kakose"/>
+            <adm3 code="ZM401203" name="Kayo"/>
+            <adm3 code="ZM401204" name="Lufubu"/>
+            <adm3 code="ZM401205" name="Mbereshi"/>
+            <adm3 code="ZM401206" name="Mulele"/>
+            <adm3 code="ZM401207" name="Mununshi"/>
+            <adm3 code="ZM401208" name="Mwansabombwe"/>
+        </adm2>
+        <adm2 code="ZM4005" name="Mwense">
+            <adm3 code="ZM400501" name="Chachacha"/>
+            <adm3 code="ZM400502" name="Chibembe"/>
+            <adm3 code="ZM400503" name="Kalanga"/>
+            <adm3 code="ZM400504" name="Kaombe"/>
+            <adm3 code="ZM400505" name="Kapela"/>
+            <adm3 code="ZM400506" name="Kasengu"/>
+            <adm3 code="ZM400507" name="Katiti"/>
+            <adm3 code="ZM400508" name="Luche"/>
+            <adm3 code="ZM400509" name="Lundashi"/>
+            <adm3 code="ZM400510" name="Mambilima"/>
+            <adm3 code="ZM400511" name="Mpasa"/>
+            <adm3 code="ZM400512" name="Munwa"/>
+            <adm3 code="ZM400513" name="Musonda"/>
+            <adm3 code="ZM400514" name="Nkanga"/>
+            <adm3 code="ZM400515" name="Nsomfi"/>
+            <adm3 code="ZM400516" name="Pabe Kabesa"/>
+        </adm2>
+        <adm2 code="ZM4007" name="Samfya">
+            <adm3 code="ZM400701" name="Chifunabuli"/>
+            <adm3 code="ZM400702" name="Chimana"/>
+            <adm3 code="ZM400703" name="Chinkutila"/>
+            <adm3 code="ZM400704" name="Chishi"/>
+            <adm3 code="ZM400705" name="Isamba"/>
+            <adm3 code="ZM400706" name="Kafumbo"/>
+            <adm3 code="ZM400707" name="Kapamba"/>
+            <adm3 code="ZM400708" name="Kapata"/>
+            <adm3 code="ZM400709" name="Kapilibila"/>
+            <adm3 code="ZM400710" name="Kasaba"/>
+            <adm3 code="ZM400711" name="Kasansa"/>
+            <adm3 code="ZM400712" name="Kasongele"/>
+            <adm3 code="ZM400713" name="Katanshya"/>
+            <adm3 code="ZM400714" name="Lumamya"/>
+            <adm3 code="ZM400715" name="Mano"/>
+            <adm3 code="ZM400716" name="Masonde"/>
+            <adm3 code="ZM400717" name="Mbabala"/>
+            <adm3 code="ZM400718" name="Musaba"/>
+        </adm2>
+        <adm2 code="ZM4006" name="Nchelenge">
+            <adm3 code="ZM400901" name="Chilongo"/>
+            <adm3 code="ZM400902" name="Chisenga"/>
+            <adm3 code="ZM400903" name="Kabuta"/>
+            <adm3 code="ZM400904" name="Kasamba"/>
+            <adm3 code="ZM400905" name="Kashikishi"/>
+            <adm3 code="ZM400906" name="Katofyo"/>
+            <adm3 code="ZM400907" name="Kilwa"/>
+            <adm3 code="ZM400908" name="Mofwe"/>
+            <adm3 code="ZM400909" name="Mulwe"/>
+            <adm3 code="ZM400910" name="Munkombwe"/>
+            <adm3 code="ZM400911" name="Mwatishi"/>
+            <adm3 code="ZM400912" name="Nchelenge"/>
+            <adm3 code="ZM400913" name="Shabo"/>
+        </adm2>
+    </adm1>
+    <adm1 code="ZM50" name="Lusaka">
+        <adm2 code="ZM5005" name="Chilanga">
+            <adm3 code="ZM500501" name="Chilanga"/>
+            <adm3 code="ZM500502" name="Chilongolo"/>
+            <adm3 code="ZM500503" name="Chinyanja"/>
+            <adm3 code="ZM500504" name="Nakachenje"/>
+            <adm3 code="ZM500505" name="Namalombwe"/>
+            <adm3 code="ZM500506" name="Nyemba"/>
+        </adm2>
+        <adm2 code="ZM5006" name="Chirundu">
+            <adm3 code="ZM500601" name="Chirundu"/>
+            <adm3 code="ZM500602" name="Ibwemunyama"/>
+            <adm3 code="ZM500603" name="Lusitu"/>
+            <adm3 code="ZM500604" name="Musaya"/>
+            <adm3 code="ZM500605" name="Ng'ombe Ilede"/>
+            <adm3 code="ZM500606" name="Sikoongo"/>
+        </adm2>
+        <adm2 code="ZM5001" name="Chongwe">
+            <adm3 code="ZM500101" name="Chalimbana"/>
+            <adm3 code="ZM500102" name="Chinkuli"/>
+            <adm3 code="ZM500103" name="Chongwe"/>
+            <adm3 code="ZM500104" name="Kanakantapa"/>
+            <adm3 code="ZM500105" name="Kapwayambale"/>
+            <adm3 code="ZM500106" name="Lukoshi"/>
+            <adm3 code="ZM500107" name="Lwimba"/>
+            <adm3 code="ZM500108" name="Manyika"/>
+            <adm3 code="ZM500109" name="Nakatindi"/>
+            <adm3 code="ZM500110" name="Ntandabale"/>
+        </adm2>
+        <adm2 code="ZM5002" name="Kafue">
+            <adm3 code="ZM500201" name="Chikupi"/>
+            <adm3 code="ZM500202" name="Chisankane"/>
+            <adm3 code="ZM500203" name="Chiyaba"/>
+            <adm3 code="ZM500204" name="Kafue"/>
+            <adm3 code="ZM500205" name="Kambale"/>
+            <adm3 code="ZM500206" name="Kasenje"/>
+            <adm3 code="ZM500207" name="Lukolongo"/>
+            <adm3 code="ZM500208" name="Malundu"/>
+            <adm3 code="ZM500209" name="Matanda"/>
+            <adm3 code="ZM500210" name="Mungu"/>
+            <adm3 code="ZM500211" name="Shabusele"/>
+        </adm2>
+        <adm2 code="ZM5003" name="Luangwa">
+            <adm3 code="ZM500301" name="Chikoma"/>
+            <adm3 code="ZM500302" name="Chiriwe"/>
+            <adm3 code="ZM500303" name="Dzalo"/>
+            <adm3 code="ZM500304" name="Kabowo"/>
+            <adm3 code="ZM500305" name="Kapoche"/>
+            <adm3 code="ZM500306" name="Katondwe"/>
+            <adm3 code="ZM500307" name="Kaunga"/>
+            <adm3 code="ZM500308" name="Lunya"/>
+            <adm3 code="ZM500309" name="Mandombe"/>
+            <adm3 code="ZM500310" name="Mankhokwe"/>
+            <adm3 code="ZM500311" name="Mburuma"/>
+            <adm3 code="ZM500312" name="M'kaliva"/>
+            <adm3 code="ZM500313" name="Mphuka"/>
+            <adm3 code="ZM500314" name="Mwalilia"/>
+            <adm3 code="ZM500315" name="Phwazi"/>
+        </adm2>
+        <adm2 code="ZM5004" name="Lusaka">
+            <adm3 code="ZM500401" name="Chainda"/>
+            <adm3 code="ZM500402" name="Chaisa"/>
+            <adm3 code="ZM500403" name="Chakunkula"/>
+            <adm3 code="ZM500404" name="Chawama"/>
+            <adm3 code="ZM500405" name="Chilenje"/>
+            <adm3 code="ZM500406" name="Harry Mwaanga Nkumbula"/>
+            <adm3 code="ZM500407" name="Independence"/>
+            <adm3 code="ZM500408" name="John Howard"/>
+            <adm3 code="ZM500409" name="Justine Kabwe"/>
+            <adm3 code="ZM500410" name="Kabulonga"/>
+            <adm3 code="ZM500411" name="Kabwata"/>
+            <adm3 code="ZM500412" name="Kalingalinga"/>
+            <adm3 code="ZM500413" name="Kamulanga"/>
+            <adm3 code="ZM500414" name="Kamwala"/>
+            <adm3 code="ZM500415" name="Kanyama"/>
+            <adm3 code="ZM500416" name="Kapwepwe"/>
+            <adm3 code="ZM500417" name="Libala"/>
+            <adm3 code="ZM500418" name="Lilayi"/>
+            <adm3 code="ZM500419" name="Lima"/>
+            <adm3 code="ZM500420" name="Lubwa"/>
+            <adm3 code="ZM500421" name="Matero"/>
+            <adm3 code="ZM500422" name="Mpulungu"/>
+            <adm3 code="ZM500423" name="Mtendere"/>
+            <adm3 code="ZM500424" name="Muchinga"/>
+            <adm3 code="ZM500425" name="Mulungushi"/>
+            <adm3 code="ZM500426" name="Munali"/>
+            <adm3 code="ZM500427" name="Munkolo"/>
+            <adm3 code="ZM500428" name="Mwembeshi"/>
+            <adm3 code="ZM500429" name="Ngwerere"/>
+            <adm3 code="ZM500430" name="Nkoloma"/>
+            <adm3 code="ZM500431" name="Raphael Chota"/>
+            <adm3 code="ZM500432" name="Roma"/>
+            <adm3 code="ZM500433" name="Silwizya"/>
+        </adm2>
+        <adm2 code="ZM5007" name="Rufunsa">
+            <adm3 code="ZM500701" name="Bunda Bunda"/>
+            <adm3 code="ZM500702" name="Mankanda"/>
+            <adm3 code="ZM500703" name="Mwachilele"/>
+            <adm3 code="ZM500704" name="Nyamanongo"/>
+            <adm3 code="ZM500705" name="Nyangwena"/>
+            <adm3 code="ZM500706" name="Rufunsa"/>
+            <adm3 code="ZM500707" name="Shikabeta"/>
+        </adm2>
+        <adm2 code="ZM5008" name="Shibuyunji">
+            <adm3 code="ZM500801" name="Chabota"/>
+            <adm3 code="ZM500802" name="Kalundu"/>
+            <adm3 code="ZM500803" name="Kapyanga"/>
+            <adm3 code="ZM500804" name="Makombwe"/>
+            <adm3 code="ZM500805" name="Milandu"/>
+            <adm3 code="ZM500806" name="Nampundwe"/>
+        </adm2>
+    </adm1>
+    <adm1 code="ZM11" name="Muchinga">
+        <adm2 code="ZM1112" name="Chama">
+            <adm3 code="ZM111201" name="Bazimu"/>
+            <adm3 code="ZM111202" name="Chibungwe"/>
+            <adm3 code="ZM111203" name="Chilenje"/>
+            <adm3 code="ZM111204" name="Chipala"/>
+            <adm3 code="ZM111205" name="Chisunga"/>
+            <adm3 code="ZM111206" name="Kalinkhu"/>
+            <adm3 code="ZM111207" name="Kamphemba"/>
+            <adm3 code="ZM111208" name="Luangwa"/>
+            <adm3 code="ZM111209" name="Lumezi"/>
+            <adm3 code="ZM111210" name="Lunzi"/>
+            <adm3 code="ZM111211" name="Lupamazi"/>
+            <adm3 code="ZM111212" name="Mabinga"/>
+            <adm3 code="ZM111213" name="Manthepa"/>
+            <adm3 code="ZM111214" name="Mapamba"/>
+            <adm3 code="ZM111215" name="Mazonde"/>
+            <adm3 code="ZM111216" name="Mbazi"/>
+            <adm3 code="ZM111217" name="Mphalausenga"/>
+            <adm3 code="ZM111218" name="Muchinga"/>
+            <adm3 code="ZM111219" name="Mwalala"/>
+            <adm3 code="ZM111220" name="Ndunda"/>
+            <adm3 code="ZM111221" name="Nkhankha"/>
+            <adm3 code="ZM111222" name="Vilimukulu"/>
+        </adm2>
+        <adm2 code="ZM1114" name="Chinsali">
+            <adm3 code="ZM111401" name="Chambeshi"/>
+            <adm3 code="ZM111402" name="Chilinda"/>
+            <adm3 code="ZM111403" name="Chilunda"/>
+            <adm3 code="ZM111404" name="Chipanga"/>
+            <adm3 code="ZM111405" name="Ichinga"/>
+            <adm3 code="ZM111406" name="Itapa"/>
+            <adm3 code="ZM111407" name="Kaunga"/>
+            <adm3 code="ZM111408" name="Lubwa"/>
+            <adm3 code="ZM111409" name="Malalo"/>
+            <adm3 code="ZM111410" name="Munwakubili"/>
+            <adm3 code="ZM111411" name="Nkakula"/>
+        </adm2>
+        <adm2 code="ZM1113" name="Isoka">
+            <adm3 code="ZM111301" name="Itukuta"/>
+            <adm3 code="ZM111302" name="Kantenshya"/>
+            <adm3 code="ZM111303" name="Kapililonga"/>
+            <adm3 code="ZM111304" name="Kasoka"/>
+            <adm3 code="ZM111305" name="Luangwa"/>
+            <adm3 code="ZM111306" name="Milongo"/>
+            <adm3 code="ZM111307" name="Mpungu"/>
+            <adm3 code="ZM111308" name="Nkombwa"/>
+            <adm3 code="ZM111309" name="Sasamwenje"/>
+        </adm2>
+        <adm2 code="ZM1116" name="Kanchibiya"/>
+        <adm2 code="ZM1117" name="Lavushimanda"/>
+        <adm2 code="ZM1115" name="Mafinga">
+            <adm3 code="ZM111501" name="Bemba"/>
+            <adm3 code="ZM111502" name="Kakoma"/>
+            <adm3 code="ZM111503" name="Kalanga"/>
+            <adm3 code="ZM111504" name="Luhoka"/>
+            <adm3 code="ZM111505" name="Mafinga"/>
+            <adm3 code="ZM111506" name="Mukutu"/>
+            <adm3 code="ZM111507" name="Ntonga"/>
+            <adm3 code="ZM111508" name="Thendere"/>
+        </adm2>
+        <adm2 code="ZM1118" name="Mpika">
+            <adm3 code="ZM111801" name="Chambeshi"/>
+            <adm3 code="ZM111802" name="Chibwa"/>
+            <adm3 code="ZM111803" name="Chifungwe"/>
+            <adm3 code="ZM111804" name="Chikanda"/>
+            <adm3 code="ZM111805" name="Chinama"/>
+            <adm3 code="ZM111806" name="Chipembele"/>
+            <adm3 code="ZM111807" name="Chishibe Isonde"/>
+            <adm3 code="ZM111808" name="Lubaleshi"/>
+            <adm3 code="ZM111809" name="Lubambala"/>
+            <adm3 code="ZM111810" name="Lukulu"/>
+            <adm3 code="ZM111811" name="Lulimala"/>
+            <adm3 code="ZM111812" name="Lulingila"/>
+            <adm3 code="ZM111813" name="Lwitikila"/>
+            <adm3 code="ZM111814" name="Mansha"/>
+            <adm3 code="ZM111815" name="Muchinga"/>
+            <adm3 code="ZM111816" name="Mukungwa"/>
+            <adm3 code="ZM111817" name="Mumbubu"/>
+            <adm3 code="ZM111818" name="Munikashi"/>
+            <adm3 code="ZM111819" name="Mupamadzi"/>
+            <adm3 code="ZM111820" name="Musakanya"/>
+            <adm3 code="ZM111821" name="Mutekwe"/>
+            <adm3 code="ZM111822" name="Nachikufu"/>
+        </adm2>
+        <adm2 code="ZM1111" name="Nakonde">
+            <adm3 code="ZM111101" name="Chiwaza"/>
+            <adm3 code="ZM111102" name="Ilonda"/>
+            <adm3 code="ZM111103" name="Isunda"/>
+            <adm3 code="ZM111104" name="Luchinde"/>
+            <adm3 code="ZM111105" name="Mpande"/>
+            <adm3 code="ZM111106" name="Mukulika"/>
+            <adm3 code="ZM111107" name="Mulalo"/>
+            <adm3 code="ZM111108" name="Musele"/>
+            <adm3 code="ZM111109" name="Musyani"/>
+            <adm3 code="ZM111110" name="Nakonde"/>
+            <adm3 code="ZM111111" name="Ng'umba"/>
+            <adm3 code="ZM111112" name="Old Fife"/>
+            <adm3 code="ZM111113" name="Popomozi"/>
+        </adm2>
+        <adm2 code="ZM1119" name="Shiwang'andu">
+            <adm3 code="ZM111901" name="Chamusenga"/>
+            <adm3 code="ZM111902" name="Chandaula"/>
+            <adm3 code="ZM111903" name="Chibinda"/>
+            <adm3 code="ZM111904" name="Chimpunda"/>
+            <adm3 code="ZM111905" name="Ichingo"/>
+            <adm3 code="ZM111906" name="Mayembe"/>
+            <adm3 code="ZM111907" name="Muchinga"/>
+            <adm3 code="ZM111908" name="Mukumbi"/>
+            <adm3 code="ZM111909" name="Mwiche"/>
+            <adm3 code="ZM111910" name="Mwila Kabuswe"/>
+            <adm3 code="ZM111911" name="Nkulungwe"/>
+        </adm2>
+    </adm1>
+    <adm1 code="ZM70" name="North-Western">
+        <adm2 code="ZM7001" name="Chavuma">
+            <adm3 code="ZM700101" name="Chambi Mandalo"/>
+            <adm3 code="ZM700102" name="Chavuma Central"/>
+            <adm3 code="ZM700103" name="Chivombo Mbalango"/>
+            <adm3 code="ZM700104" name="Chiyeke"/>
+            <adm3 code="ZM700105" name="Kalombo Kamisamba"/>
+            <adm3 code="ZM700106" name="Kambuya Mukelangombe"/>
+            <adm3 code="ZM700107" name="Lingelengenda"/>
+            <adm3 code="ZM700108" name="Lingundu"/>
+            <adm3 code="ZM700109" name="Lukolwe Musumba"/>
+            <adm3 code="ZM700110" name="Nguvu"/>
+            <adm3 code="ZM700111" name="Nyatanda Nyambingila"/>
+            <adm3 code="ZM700112" name="Sanjongo"/>
+            <adm3 code="ZM700113" name="Sewe"/>
+        </adm2>
+        <adm2 code="ZM7008" name="Ikelenge">
+            <adm3 code="ZM700801" name="Chana Chamuhinga"/>
+            <adm3 code="ZM700802" name="Ikeleng'i"/>
+            <adm3 code="ZM700803" name="Jimbe"/>
+            <adm3 code="ZM700804" name="Mukangala"/>
+            <adm3 code="ZM700805" name="Mwininyilamba"/>
+            <adm3 code="ZM700806" name="Nyakaseya"/>
+        </adm2>
+        <adm2 code="ZM7002" name="Kabompo">
+            <adm3 code="ZM700201" name="Chikenge"/>
+            <adm3 code="ZM700202" name="Chikonkwelo"/>
+            <adm3 code="ZM700203" name="Kabompo"/>
+            <adm3 code="ZM700204" name="Kabulamema"/>
+            <adm3 code="ZM700205" name="Kamafwafwa"/>
+            <adm3 code="ZM700206" name="Kamisombo"/>
+            <adm3 code="ZM700207" name="Katuva"/>
+            <adm3 code="ZM700208" name="Kayombo"/>
+            <adm3 code="ZM700209" name="Litoya"/>
+            <adm3 code="ZM700210" name="Luli"/>
+            <adm3 code="ZM700211" name="Lunyiwe"/>
+            <adm3 code="ZM700212" name="Maveve"/>
+            <adm3 code="ZM700213" name="Mumbeji"/>
+        </adm2>
+        <adm2 code="ZM7009" name="Kalumbila"/>
+        <adm2 code="ZM7003" name="Kasempa">
+            <adm3 code="ZM700301" name="Dengwe"/>
+            <adm3 code="ZM700302" name="Ingwe"/>
+            <adm3 code="ZM700303" name="Jifumpa"/>
+            <adm3 code="ZM700304" name="Kaimbwe"/>
+            <adm3 code="ZM700305" name="Kalombe"/>
+            <adm3 code="ZM700306" name="Kamakuku"/>
+            <adm3 code="ZM700307" name="Kamankechi"/>
+            <adm3 code="ZM700308" name="Kamatete"/>
+            <adm3 code="ZM700309" name="Kamusongolwa"/>
+            <adm3 code="ZM700310" name="Kanongo"/>
+            <adm3 code="ZM700311" name="Kelongwa"/>
+            <adm3 code="ZM700312" name="Kikonkomene"/>
+            <adm3 code="ZM700313" name="Lubofu"/>
+            <adm3 code="ZM700314" name="Mpungu"/>
+            <adm3 code="ZM700315" name="Mukema"/>
+            <adm3 code="ZM700316" name="Mukinge"/>
+            <adm3 code="ZM700317" name="Mukunanshi"/>
+            <adm3 code="ZM700318" name="Mutenda"/>
+            <adm3 code="ZM700319" name="Njenga"/>
+            <adm3 code="ZM700320" name="Nkenyauna"/>
+            <adm3 code="ZM700321" name="Nselauke"/>
+            <adm3 code="ZM700322" name="Nyoka"/>
+        </adm2>
+        <adm2 code="ZM7010" name="Manyinga">
+            <adm3 code="ZM701001" name="Chiteve"/>
+            <adm3 code="ZM701002" name="Chongo"/>
+            <adm3 code="ZM701003" name="Dihamba"/>
+            <adm3 code="ZM701004" name="Kashinakaji"/>
+            <adm3 code="ZM701005" name="Kaula"/>
+            <adm3 code="ZM701006" name="Kawanda"/>
+            <adm3 code="ZM701007" name="Loloma"/>
+            <adm3 code="ZM701008" name="Lunsona"/>
+            <adm3 code="ZM701009" name="Manyinga"/>
+        </adm2>
+        <adm2 code="ZM7004" name="Mufumbwe">
+            <adm3 code="ZM700401" name="Chizela"/>
+            <adm3 code="ZM700402" name="Kabipupu"/>
+            <adm3 code="ZM700403" name="Kalambu"/>
+            <adm3 code="ZM700404" name="Kalengwa"/>
+            <adm3 code="ZM700405" name="Kamabuta"/>
+            <adm3 code="ZM700406" name="Kaminzekenzeke"/>
+            <adm3 code="ZM700407" name="Kashima East"/>
+            <adm3 code="ZM700408" name="Kashima West"/>
+            <adm3 code="ZM700409" name="Kikonge"/>
+            <adm3 code="ZM700410" name="Lalafuta"/>
+            <adm3 code="ZM700411" name="Matushi"/>
+            <adm3 code="ZM700412" name="Miluji"/>
+            <adm3 code="ZM700413" name="Munyambala"/>
+            <adm3 code="ZM700414" name="Mushima"/>
+            <adm3 code="ZM700415" name="Musonweji"/>
+            <adm3 code="ZM700416" name="Shukwe"/>
+        </adm2>
+        <adm2 code="ZM7011" name="Mushindano"/>
+        <adm2 code="ZM7005" name="Mwinilunga">
+            <adm3 code="ZM700501" name="Chibwika"/>
+            <adm3 code="ZM700502" name="Chisasa"/>
+            <adm3 code="ZM700503" name="Kakoma"/>
+            <adm3 code="ZM700504" name="Kamapanda"/>
+            <adm3 code="ZM700505" name="Kanongesha"/>
+            <adm3 code="ZM700506" name="Kanyama"/>
+            <adm3 code="ZM700507" name="Kapundu"/>
+            <adm3 code="ZM700508" name="Kasampula"/>
+            <adm3 code="ZM700509" name="Kawiku"/>
+            <adm3 code="ZM700510" name="Lumwana"/>
+            <adm3 code="ZM700511" name="Mudyanyama"/>
+            <adm3 code="ZM700512" name="Mulumbi"/>
+            <adm3 code="ZM700513" name="Mundwinji"/>
+            <adm3 code="ZM700514" name="Ntambu"/>
+            <adm3 code="ZM700515" name="Sailunga"/>
+            <adm3 code="ZM700516" name="Samuteba"/>
+        </adm2>
+        <adm2 code="ZM7006" name="Solwezi">
+            <adm3 code="ZM700601" name="Chikola"/>
+            <adm3 code="ZM700602" name="Chovwe"/>
+            <adm3 code="ZM700603" name="Kalilele"/>
+            <adm3 code="ZM700604" name="Kamalamba"/>
+            <adm3 code="ZM700605" name="Kangwena"/>
+            <adm3 code="ZM700606" name="Kapijimpanga"/>
+            <adm3 code="ZM700607" name="Kibanza"/>
+            <adm3 code="ZM700608" name="Kimasala"/>
+            <adm3 code="ZM700609" name="Lumwana"/>
+            <adm3 code="ZM700610" name="Mapunga"/>
+            <adm3 code="ZM700611" name="Matebo"/>
+            <adm3 code="ZM700612" name="Mujimanzovu"/>
+            <adm3 code="ZM700613" name="Mukumbi"/>
+            <adm3 code="ZM700614" name="Mulonga"/>
+            <adm3 code="ZM700615" name="Mumbezhi"/>
+            <adm3 code="ZM700616" name="Mumena"/>
+            <adm3 code="ZM700617" name="Musaka"/>
+            <adm3 code="ZM700618" name="Musele"/>
+            <adm3 code="ZM700619" name="Mwajimambwe"/>
+            <adm3 code="ZM700620" name="Sandangombe"/>
+            <adm3 code="ZM700621" name="Shilenda"/>
+            <adm3 code="ZM700622" name="Tumvwanganai"/>
+        </adm2>
+        <adm2 code="ZM7007" name="Zambezi">
+            <adm3 code="ZM700701" name="Chileng'a Chizenzi"/>
+            <adm3 code="ZM700702" name="Chitokoloki"/>
+            <adm3 code="ZM700703" name="Chivweji Kasesi"/>
+            <adm3 code="ZM700704" name="Dipalata"/>
+            <adm3 code="ZM700705" name="Likungu"/>
+            <adm3 code="ZM700706" name="Liyovu"/>
+            <adm3 code="ZM700707" name="Lunkunyi"/>
+            <adm3 code="ZM700708" name="Lwitadi Lwatembo"/>
+            <adm3 code="ZM700709" name="Mapachi Chinyingi"/>
+            <adm3 code="ZM700710" name="Matondo Nyachikayi"/>
+            <adm3 code="ZM700711" name="Mpidi Kakong'a"/>
+            <adm3 code="ZM700712" name="Mukanda Nkunda"/>
+            <adm3 code="ZM700713" name="Muyembe"/>
+            <adm3 code="ZM700714" name="Mwange Nyawanda"/>
+            <adm3 code="ZM700715" name="Nyakuleng'a"/>
+            <adm3 code="ZM700716" name="Zambezi"/>
+        </adm2>
+    </adm1>
+    <adm1 code="ZM60" name="Northern">
+        <adm2 code="ZM6001" name="Chilubi">
+            <adm3 code="ZM600101" name="Bulilo"/>
+            <adm3 code="ZM600102" name="Bumba"/>
+            <adm3 code="ZM600103" name="Chifwenge"/>
+            <adm3 code="ZM600104" name="Chiloba"/>
+            <adm3 code="ZM600105" name="Chinkundu"/>
+            <adm3 code="ZM600106" name="Chisupa"/>
+            <adm3 code="ZM600107" name="Kambashi"/>
+            <adm3 code="ZM600108" name="Kanama"/>
+            <adm3 code="ZM600109" name="Kanchindi"/>
+            <adm3 code="ZM600110" name="Kapoka"/>
+            <adm3 code="ZM600111" name="Kashitu"/>
+            <adm3 code="ZM600112" name="Katamba"/>
+            <adm3 code="ZM600113" name="Kawena"/>
+            <adm3 code="ZM600114" name="Luangwa"/>
+            <adm3 code="ZM600115" name="Lwenda"/>
+            <adm3 code="ZM600116" name="Mofu"/>
+            <adm3 code="ZM600117" name="Mpanshya"/>
+            <adm3 code="ZM600118" name="Mubemba"/>
+            <adm3 code="ZM600119" name="Mulanda"/>
+            <adm3 code="ZM600120" name="Muteka"/>
+            <adm3 code="ZM600121" name="Ndela"/>
+            <adm3 code="ZM600122" name="Nguni"/>
+        </adm2>
+        <adm2 code="ZM6004" name="Kaputa">
+            <adm3 code="ZM600401" name="Chipili"/>
+            <adm3 code="ZM600402" name="Chiyilunda"/>
+            <adm3 code="ZM600403" name="Choma"/>
+            <adm3 code="ZM600404" name="Kaleulu"/>
+            <adm3 code="ZM600405" name="Kalungwishi"/>
+            <adm3 code="ZM600406" name="Kapulwa"/>
+            <adm3 code="ZM600407" name="Mofwe"/>
+            <adm3 code="ZM600408" name="Mowa"/>
+            <adm3 code="ZM600409" name="Munkonge"/>
+            <adm3 code="ZM600410" name="Mwawe"/>
+            <adm3 code="ZM600411" name="Nkota"/>
+        </adm2>
+        <adm2 code="ZM6005" name="Kasama">
+            <adm3 code="ZM600501" name="Bululu"/>
+            <adm3 code="ZM600502" name="Buseko"/>
+            <adm3 code="ZM600503" name="Chiba"/>
+            <adm3 code="ZM600504" name="Chibundu"/>
+            <adm3 code="ZM600505" name="Chilunga"/>
+            <adm3 code="ZM600506" name="Chumba"/>
+            <adm3 code="ZM600507" name="Julia Chikamoneka"/>
+            <adm3 code="ZM600508" name="Kapongolo"/>
+            <adm3 code="ZM600509" name="Kapumaula"/>
+            <adm3 code="ZM600510" name="Kasenga"/>
+            <adm3 code="ZM600511" name="Lualuo"/>
+            <adm3 code="ZM600512" name="Lukulu"/>
+            <adm3 code="ZM600513" name="Lukupa"/>
+            <adm3 code="ZM600514" name="Lusenga"/>
+            <adm3 code="ZM600515" name="Mukanga"/>
+            <adm3 code="ZM600516" name="Mulilansolo"/>
+            <adm3 code="ZM600517" name="Musowa"/>
+        </adm2>
+        <adm2 code="ZM6002" name="Lunte District"/>
+        <adm2 code="ZM6003" name="Lupososhi"/>
+        <adm2 code="ZM6006" name="Luwingu">
+            <adm3 code="ZM600601" name="Bwalinde"/>
+            <adm3 code="ZM600602" name="Chifwile"/>
+            <adm3 code="ZM600603" name="Chulungoma"/>
+            <adm3 code="ZM600604" name="Ibale"/>
+            <adm3 code="ZM600605" name="Ilambo"/>
+            <adm3 code="ZM600606" name="Ipusukilo"/>
+            <adm3 code="ZM600607" name="Isangano"/>
+            <adm3 code="ZM600608" name="Isansa"/>
+            <adm3 code="ZM600609" name="Kaela"/>
+            <adm3 code="ZM600610" name="Kafinsa"/>
+            <adm3 code="ZM600611" name="Kampemba"/>
+            <adm3 code="ZM600612" name="Katilye"/>
+            <adm3 code="ZM600613" name="Katopola"/>
+            <adm3 code="ZM600614" name="Lwata"/>
+            <adm3 code="ZM600615" name="Masonde"/>
+            <adm3 code="ZM600616" name="Mufili"/>
+            <adm3 code="ZM600617" name="Mulalashi"/>
+            <adm3 code="ZM600618" name="Munshishinga"/>
+            <adm3 code="ZM600619" name="Mushitu-Wamboo"/>
+            <adm3 code="ZM600620" name="Mwelawamangu"/>
+            <adm3 code="ZM600621" name="Namukolo"/>
+            <adm3 code="ZM600622" name="Ntandashi"/>
+        </adm2>
+        <adm2 code="ZM6007" name="Mbala">
+            <adm3 code="ZM600701" name="Chela"/>
+            <adm3 code="ZM600702" name="Chimbili"/>
+            <adm3 code="ZM600703" name="Chinyika"/>
+            <adm3 code="ZM600704" name="Chozi"/>
+            <adm3 code="ZM600705" name="Intala"/>
+            <adm3 code="ZM600706" name="Ipembe"/>
+            <adm3 code="ZM600707" name="Kawimbe"/>
+            <adm3 code="ZM600708" name="Kazimolwa"/>
+            <adm3 code="ZM600709" name="Lapisha"/>
+            <adm3 code="ZM600710" name="Luandi"/>
+            <adm3 code="ZM600711" name="Malamba"/>
+            <adm3 code="ZM600712" name="Motomoto"/>
+            <adm3 code="ZM600713" name="Mukololo"/>
+            <adm3 code="ZM600714" name="Mwamba"/>
+            <adm3 code="ZM600715" name="Mwambezi"/>
+            <adm3 code="ZM600716" name="Mwiluzi"/>
+            <adm3 code="ZM600717" name="Nsunzu"/>
+        </adm2>
+        <adm2 code="ZM6010" name="Mpulungu">
+            <adm3 code="ZM601001" name="Chibulula"/>
+            <adm3 code="ZM601002" name="Chilumba"/>
+            <adm3 code="ZM601003" name="Chisha"/>
+            <adm3 code="ZM601004" name="Isoko"/>
+            <adm3 code="ZM601005" name="Isunga"/>
+            <adm3 code="ZM601006" name="Itimbwe"/>
+            <adm3 code="ZM601007" name="Iyendwe"/>
+            <adm3 code="ZM601008" name="Kapembwa"/>
+            <adm3 code="ZM601009" name="Katwe"/>
+            <adm3 code="ZM601010" name="Mpulungu Central"/>
+            <adm3 code="ZM601011" name="Mumila"/>
+            <adm3 code="ZM601012" name="Tanganyika"/>
+            <adm3 code="ZM601013" name="Vyamba"/>
+        </adm2>
+        <adm2 code="ZM6011" name="Mungwi">
+            <adm3 code="ZM601101" name="Chambeshi"/>
+            <adm3 code="ZM601102" name="Chibamba"/>
+            <adm3 code="ZM601103" name="Fibwe"/>
+            <adm3 code="ZM601104" name="Fube"/>
+            <adm3 code="ZM601105" name="Iyaya"/>
+            <adm3 code="ZM601106" name="Kabisha"/>
+            <adm3 code="ZM601107" name="Kalungu"/>
+            <adm3 code="ZM601108" name="Lubala"/>
+            <adm3 code="ZM601109" name="Mabula"/>
+            <adm3 code="ZM601110" name="Mpanda"/>
+            <adm3 code="ZM601111" name="Mungwi"/>
+            <adm3 code="ZM601112" name="Musensenshe"/>
+            <adm3 code="ZM601113" name="Ngulula"/>
+        </adm2>
+        <adm2 code="ZM6008" name="Nsama">
+            <adm3 code="ZM600801" name="Chishela"/>
+            <adm3 code="ZM600802" name="Chubo"/>
+            <adm3 code="ZM600803" name="Fungwa"/>
+            <adm3 code="ZM600804" name="Kakusu"/>
+            <adm3 code="ZM600805" name="Kampinda"/>
+            <adm3 code="ZM600806" name="Kapisha"/>
+            <adm3 code="ZM600807" name="Kashikishi"/>
+            <adm3 code="ZM600808" name="Mukubwe"/>
+            <adm3 code="ZM600809" name="Munwa"/>
+            <adm3 code="ZM600810" name="Mwambeshi"/>
+            <adm3 code="ZM600811" name="Nsumbu"/>
+        </adm2>
+        <adm2 code="ZM6012" name="Senga Hill"/>
+        <adm2 code="ZM6009" name="Mporokoso">
+            <adm3 code="ZM600901" name="Bwandela"/>
+            <adm3 code="ZM600902" name="Chikulu"/>
+            <adm3 code="ZM600903" name="Chimpolonge"/>
+            <adm3 code="ZM600904" name="Chisha Mwamba"/>
+            <adm3 code="ZM600905" name="Isenga"/>
+            <adm3 code="ZM600906" name="Kalungwishi"/>
+            <adm3 code="ZM600907" name="Kanyanta"/>
+            <adm3 code="ZM600908" name="Kapumo"/>
+            <adm3 code="ZM600909" name="Kasanshi"/>
+            <adm3 code="ZM600910" name="Luangwa"/>
+            <adm3 code="ZM600911" name="Lubushi"/>
+            <adm3 code="ZM600912" name="Lumangwe"/>
+            <adm3 code="ZM600913" name="Lunte"/>
+            <adm3 code="ZM600914" name="Mabale"/>
+            <adm3 code="ZM600915" name="Malaila"/>
+            <adm3 code="ZM600916" name="Malambwa"/>
+            <adm3 code="ZM600917" name="Masonde"/>
+            <adm3 code="ZM600918" name="Mikomba"/>
+            <adm3 code="ZM600919" name="Muchinga"/>
+            <adm3 code="ZM600920" name="Mumbuluma"/>
+            <adm3 code="ZM600921" name="Mutotoshi"/>
+            <adm3 code="ZM600922" name="Nchelenge"/>
+        </adm2>
+    </adm1>
+    <adm1 code="ZM80" name="Southern">
+        <adm2 code="ZM8003" name="Chikankanta">
+            <adm3 code="ZM800301" name="Chitete"/>
+            <adm3 code="ZM800302" name="Kasengo"/>
+            <adm3 code="ZM800303" name="Mabwe Atuba"/>
+            <adm3 code="ZM800304" name="Malala"/>
+            <adm3 code="ZM800305" name="Musaya"/>
+            <adm3 code="ZM800306" name="Namalundu"/>
+            <adm3 code="ZM800307" name="Nansenga"/>
+            <adm3 code="ZM800308" name="Upper Kaleya"/>
+        </adm2>
+        <adm2 code="ZM8001" name="Choma">
+            <adm3 code="ZM800101" name="Batoka"/>
+            <adm3 code="ZM800102" name="Chilalantambo"/>
+            <adm3 code="ZM800103" name="Kabimba"/>
+            <adm3 code="ZM800104" name="Kalundana"/>
+            <adm3 code="ZM800105" name="Macha"/>
+            <adm3 code="ZM800106" name="Mang'unza"/>
+            <adm3 code="ZM800107" name="Mapanza"/>
+            <adm3 code="ZM800108" name="Mbabala"/>
+            <adm3 code="ZM800109" name="Moomba"/>
+            <adm3 code="ZM800110" name="Mubula"/>
+            <adm3 code="ZM800111" name="Nakeempa"/>
+            <adm3 code="ZM800112" name="Namuswa"/>
+            <adm3 code="ZM800113" name="Siasikabole"/>
+            <adm3 code="ZM800114" name="Sikalongo"/>
+            <adm3 code="ZM800115" name="Sikalundu"/>
+            <adm3 code="ZM800116" name="Simacheche"/>
+            <adm3 code="ZM800117" name="Simamvwa"/>
+            <adm3 code="ZM800118" name="Simaubi"/>
+            <adm3 code="ZM800119" name="Singani"/>
+            <adm3 code="ZM800120" name="Stateland"/>
+        </adm2>
+        <adm2 code="ZM8002" name="Gwembe">
+            <adm3 code="ZM800201" name="Bbondo"/>
+            <adm3 code="ZM800202" name="Chaamwe"/>
+            <adm3 code="ZM800203" name="Chibuwe"/>
+            <adm3 code="ZM800204" name="Chisanga"/>
+            <adm3 code="ZM800205" name="Fumbo"/>
+            <adm3 code="ZM800206" name="Jongola"/>
+            <adm3 code="ZM800207" name="Jumbo"/>
+            <adm3 code="ZM800208" name="Kkole"/>
+            <adm3 code="ZM800209" name="Kkoma"/>
+            <adm3 code="ZM800210" name="Kota Kota"/>
+            <adm3 code="ZM800211" name="Lukonde"/>
+            <adm3 code="ZM800212" name="Luumbo"/>
+            <adm3 code="ZM800213" name="Siampande"/>
+            <adm3 code="ZM800214" name="Sinafala"/>
+        </adm2>
+        <adm2 code="ZM8004" name="Kalomo">
+            <adm3 code="ZM800401" name="Bbilili"/>
+            <adm3 code="ZM800402" name="Chamuka"/>
+            <adm3 code="ZM800403" name="Chawila"/>
+            <adm3 code="ZM800404" name="Chikanta"/>
+            <adm3 code="ZM800405" name="Choonga"/>
+            <adm3 code="ZM800406" name="Kalonda"/>
+            <adm3 code="ZM800407" name="Kasukwe"/>
+            <adm3 code="ZM800408" name="Mayoba"/>
+            <adm3 code="ZM800409" name="Nachikungu"/>
+            <adm3 code="ZM800410" name="Naluja"/>
+            <adm3 code="ZM800411" name="Namwianga"/>
+            <adm3 code="ZM800412" name="Omba"/>
+            <adm3 code="ZM800413" name="Siachitema"/>
+            <adm3 code="ZM800414" name="Simayakwe"/>
+            <adm3 code="ZM800415" name="Sipatunyana"/>
+        </adm2>
+        <adm2 code="ZM8005" name="Kazungula">
+            <adm3 code="ZM800501" name="Chooma"/>
+            <adm3 code="ZM800502" name="Kanchele"/>
+            <adm3 code="ZM800503" name="Katapazi"/>
+            <adm3 code="ZM800504" name="Kauwe"/>
+            <adm3 code="ZM800505" name="Mandia"/>
+            <adm3 code="ZM800506" name="Moomba"/>
+            <adm3 code="ZM800507" name="Mukuni"/>
+            <adm3 code="ZM800508" name="Musokotwane"/>
+            <adm3 code="ZM800509" name="Nguba"/>
+            <adm3 code="ZM800510" name="Ngwezi"/>
+            <adm3 code="ZM800511" name="Nyawa"/>
+            <adm3 code="ZM800512" name="Sekute"/>
+            <adm3 code="ZM800513" name="Sikaunzwe"/>
+            <adm3 code="ZM800514" name="Simango"/>
+        </adm2>
+        <adm2 code="ZM8006" name="Livingstone">
+            <adm3 code="ZM800601" name="Akapelwa"/>
+            <adm3 code="ZM800602" name="Dambwa Central"/>
+            <adm3 code="ZM800603" name="Dr. Mubitana"/>
+            <adm3 code="ZM800604" name="Freedom"/>
+            <adm3 code="ZM800605" name="Kariba"/>
+            <adm3 code="ZM800606" name="Kasiya"/>
+            <adm3 code="ZM800607" name="Libuyu"/>
+            <adm3 code="ZM800608" name="Lizuma"/>
+            <adm3 code="ZM800609" name="Maramba"/>
+            <adm3 code="ZM800610" name="Mulungushi"/>
+            <adm3 code="ZM800611" name="Musi-oa-tunya"/>
+            <adm3 code="ZM800612" name="Mwalibonena"/>
+            <adm3 code="ZM800613" name="Namatama"/>
+            <adm3 code="ZM800614" name="Nansanzu"/>
+            <adm3 code="ZM800615" name="Shungu"/>
+            <adm3 code="ZM800616" name="Simonga"/>
+            <adm3 code="ZM800617" name="Zambezi"/>
+        </adm2>
+        <adm2 code="ZM8007" name="Mazabuka">
+            <adm3 code="ZM800701" name="Chivuna"/>
+            <adm3 code="ZM800702" name="Chizobo"/>
+            <adm3 code="ZM800703" name="Itebe"/>
+            <adm3 code="ZM800704" name="Kalama"/>
+            <adm3 code="ZM800705" name="Konkola"/>
+            <adm3 code="ZM800706" name="Lubombo"/>
+            <adm3 code="ZM800707" name="Mazabuka Central"/>
+            <adm3 code="ZM800708" name="Munenga"/>
+            <adm3 code="ZM800709" name="Munjile"/>
+            <adm3 code="ZM800710" name="Musuma"/>
+            <adm3 code="ZM800711" name="Mwanachingwala"/>
+            <adm3 code="ZM800712" name="Nakambala"/>
+            <adm3 code="ZM800713" name="Nega Nega"/>
+            <adm3 code="ZM800714" name="Ngwezi"/>
+        </adm2>
+        <adm2 code="ZM8008" name="Monze">
+            <adm3 code="ZM800801" name="Bbombo"/>
+            <adm3 code="ZM800802" name="Bweengwa"/>
+            <adm3 code="ZM800803" name="Chipembele"/>
+            <adm3 code="ZM800804" name="Chisekesi"/>
+            <adm3 code="ZM800805" name="Chona"/>
+            <adm3 code="ZM800806" name="Choongo East"/>
+            <adm3 code="ZM800807" name="Choongo West"/>
+            <adm3 code="ZM800808" name="Hamamvwa"/>
+            <adm3 code="ZM800809" name="Hamangaba"/>
+            <adm3 code="ZM800810" name="Hatontola"/>
+            <adm3 code="ZM800811" name="Hufwa/Hamapande"/>
+            <adm3 code="ZM800812" name="Kaila"/>
+            <adm3 code="ZM800813" name="Katimba"/>
+            <adm3 code="ZM800814" name="Keemba"/>
+            <adm3 code="ZM800815" name="Malundu"/>
+            <adm3 code="ZM800816" name="Manungu"/>
+            <adm3 code="ZM800817" name="Mayaba"/>
+            <adm3 code="ZM800818" name="Monze Urban"/>
+            <adm3 code="ZM800819" name="Moomba"/>
+            <adm3 code="ZM800820" name="Mwanza East"/>
+            <adm3 code="ZM800821" name="Mwanza West"/>
+            <adm3 code="ZM800822" name="Ufwenuka"/>
+        </adm2>
+        <adm2 code="ZM8009" name="Namwala">
+            <adm3 code="ZM800901" name="Baambwe"/>
+            <adm3 code="ZM800902" name="Chitongo"/>
+            <adm3 code="ZM800903" name="Itapa"/>
+            <adm3 code="ZM800904" name="Kabulamwanda"/>
+            <adm3 code="ZM800905" name="Kantengwa"/>
+            <adm3 code="ZM800906" name="Maala"/>
+            <adm3 code="ZM800907" name="Mandondo"/>
+            <adm3 code="ZM800908" name="Mbeza"/>
+            <adm3 code="ZM800909" name="Moobola"/>
+            <adm3 code="ZM800910" name="Nakamboma"/>
+            <adm3 code="ZM800911" name="Namakube"/>
+            <adm3 code="ZM800912" name="Namwala Central"/>
+            <adm3 code="ZM800913" name="Ndema"/>
+            <adm3 code="ZM800914" name="Ngabo"/>
+        </adm2>
+        <adm2 code="ZM8012" name="Pemba">
+            <adm3 code="ZM801201" name="Habunkululu"/>
+            <adm3 code="ZM801202" name="Hamaundu"/>
+            <adm3 code="ZM801203" name="Kasiya"/>
+            <adm3 code="ZM801204" name="Kauba"/>
+            <adm3 code="ZM801205" name="Maambo"/>
+            <adm3 code="ZM801206" name="Nachibanga"/>
+            <adm3 code="ZM801207" name="Pemba"/>
+        </adm2>
+        <adm2 code="ZM8010" name="Siavonga">
+            <adm3 code="ZM801001" name="Kariba"/>
+            <adm3 code="ZM801002" name="Lusangazi"/>
+            <adm3 code="ZM801003" name="Manchamvwa"/>
+            <adm3 code="ZM801004" name="Mulimya"/>
+            <adm3 code="ZM801005" name="Nanyanga"/>
+            <adm3 code="ZM801006" name="Simamba"/>
+            <adm3 code="ZM801007" name="Sinadambwe"/>
+        </adm2>
+        <adm2 code="ZM8011" name="Sinazongwe">
+            <adm3 code="ZM801101" name="Maamba"/>
+            <adm3 code="ZM801102" name="Mabinga"/>
+            <adm3 code="ZM801103" name="Malima"/>
+            <adm3 code="ZM801104" name="Muchekwa"/>
+            <adm3 code="ZM801105" name="Muuka"/>
+            <adm3 code="ZM801106" name="Mweemba"/>
+            <adm3 code="ZM801107" name="Mweenda"/>
+            <adm3 code="ZM801108" name="Mweezya"/>
+            <adm3 code="ZM801109" name="Namazambwe"/>
+            <adm3 code="ZM801110" name="Nang'ombe"/>
+            <adm3 code="ZM801111" name="Nkamdabwe"/>
+            <adm3 code="ZM801112" name="Sinazongwe"/>
+            <adm3 code="ZM801113" name="Sinenge"/>
+            <adm3 code="ZM801114" name="Tekelo"/>
+        </adm2>
+        <adm2 code="ZM8013" name="Zimba">
+            <adm3 code="ZM801301" name="Chidi"/>
+            <adm3 code="ZM801302" name="Luyaba"/>
+            <adm3 code="ZM801303" name="Mbwiko"/>
+            <adm3 code="ZM801304" name="Mulamfu"/>
+            <adm3 code="ZM801305" name="Siamafumba"/>
+            <adm3 code="ZM801306" name="Simwatachela"/>
+            <adm3 code="ZM801307" name="Zimba"/>
+        </adm2>
+    </adm1>
+    <adm1 code="ZM90" name="Western">
+        <adm2 code="ZM9001" name="Kalabo">
+            <adm3 code="ZM900101" name="Buleya"/>
+            <adm3 code="ZM900102" name="Kandambo"/>
+            <adm3 code="ZM900103" name="Kuuli"/>
+            <adm3 code="ZM900104" name="Libonda"/>
+            <adm3 code="ZM900105" name="Likulundundu"/>
+            <adm3 code="ZM900106" name="Liumba"/>
+            <adm3 code="ZM900107" name="Luanginga"/>
+            <adm3 code="ZM900108" name="Luola"/>
+            <adm3 code="ZM900109" name="Lutwi"/>
+            <adm3 code="ZM900110" name="Mapungu"/>
+            <adm3 code="ZM900111" name="Namulilo"/>
+            <adm3 code="ZM900112" name="Ndoka"/>
+            <adm3 code="ZM900113" name="Nguma"/>
+            <adm3 code="ZM900114" name="Salunda"/>
+            <adm3 code="ZM900115" name="Siluwe"/>
+            <adm3 code="ZM900116" name="Sishekanu"/>
+            <adm3 code="ZM900117" name="Yuka"/>
+        </adm2>
+        <adm2 code="ZM9002" name="Kaoma">
+            <adm3 code="ZM900201" name="Kanabilumbu"/>
+            <adm3 code="ZM900202" name="Kapili"/>
+            <adm3 code="ZM900203" name="Lalafuta"/>
+            <adm3 code="ZM900204" name="Longe"/>
+            <adm3 code="ZM900205" name="Luambuwa"/>
+            <adm3 code="ZM900206" name="Mangango"/>
+            <adm3 code="ZM900207" name="Mulamatila"/>
+            <adm3 code="ZM900208" name="Mushwala"/>
+            <adm3 code="ZM900209" name="Namafulo"/>
+            <adm3 code="ZM900210" name="Shikombwe"/>
+            <adm3 code="ZM900211" name="Shitwa"/>
+        </adm2>
+        <adm2 code="ZM9006" name="Limulunga">
+            <adm3 code="ZM900601" name="Ikwichi"/>
+            <adm3 code="ZM900602" name="Limulunga"/>
+            <adm3 code="ZM900603" name="Mabili"/>
+            <adm3 code="ZM900604" name="Namboma"/>
+            <adm3 code="ZM900605" name="Nangula"/>
+            <adm3 code="ZM900606" name="Ndanda"/>
+            <adm3 code="ZM900607" name="Simaa"/>
+            <adm3 code="ZM900608" name="Ushaa"/>
+        </adm2>
+        <adm2 code="ZM9008" name="Luampa">
+            <adm3 code="ZM900801" name="Luampa"/>
+            <adm3 code="ZM900802" name="Lui"/>
+            <adm3 code="ZM900803" name="Mbanyutu"/>
+            <adm3 code="ZM900804" name="Mulwa"/>
+            <adm3 code="ZM900805" name="Naliele"/>
+            <adm3 code="ZM900806" name="Namando"/>
+            <adm3 code="ZM900807" name="Nkenga"/>
+            <adm3 code="ZM900808" name="Nyambi"/>
+        </adm2>
+        <adm2 code="ZM9003" name="Lukulu">
+            <adm3 code="ZM900301" name="Dongwe"/>
+            <adm3 code="ZM900302" name="Kamilende"/>
+            <adm3 code="ZM900303" name="Kang'oti"/>
+            <adm3 code="ZM900304" name="Kashamba"/>
+            <adm3 code="ZM900305" name="Kawaya"/>
+            <adm3 code="ZM900306" name="Likapai"/>
+            <adm3 code="ZM900307" name="Luanchuma"/>
+            <adm3 code="ZM900308" name="Lukau"/>
+            <adm3 code="ZM900309" name="Mbanga"/>
+            <adm3 code="ZM900310" name="Mwandi"/>
+            <adm3 code="ZM900311" name="Mwito"/>
+            <adm3 code="ZM900312" name="Namayula"/>
+            <adm3 code="ZM900313" name="Simakumba"/>
+        </adm2>
+        <adm2 code="ZM9009" name="Mitete">
+            <adm3 code="ZM900901" name="Chin'onwe"/>
+            <adm3 code="ZM900902" name="Kakwacha"/>
+            <adm3 code="ZM900903" name="Kashizhi"/>
+            <adm3 code="ZM900904" name="Lupui"/>
+            <adm3 code="ZM900905" name="Lutembwe"/>
+            <adm3 code="ZM900906" name="Mataba"/>
+            <adm3 code="ZM900907" name="Mitete"/>
+            <adm3 code="ZM900908" name="Muyondoti"/>
+            <adm3 code="ZM900909" name="Nyaala"/>
+        </adm2>
+        <adm2 code="ZM9004" name="Mongu">
+            <adm3 code="ZM900401" name="Imalyo"/>
+            <adm3 code="ZM900402" name="Imwiko"/>
+            <adm3 code="ZM900403" name="Kaande"/>
+            <adm3 code="ZM900404" name="Kama"/>
+            <adm3 code="ZM900405" name="Kambule"/>
+            <adm3 code="ZM900406" name="Kanyonyo"/>
+            <adm3 code="ZM900407" name="Katongo"/>
+            <adm3 code="ZM900408" name="Lealui"/>
+            <adm3 code="ZM900409" name="Lewanika"/>
+            <adm3 code="ZM900410" name="Lui"/>
+            <adm3 code="ZM900411" name="Lumbo"/>
+            <adm3 code="ZM900412" name="Mabumbu"/>
+            <adm3 code="ZM900413" name="Mbekise"/>
+            <adm3 code="ZM900414" name="Mulambwa"/>
+            <adm3 code="ZM900415" name="Mutondo"/>
+            <adm3 code="ZM900416" name="Nakanyaa"/>
+            <adm3 code="ZM900417" name="Nakato"/>
+            <adm3 code="ZM900418" name="Namengo"/>
+            <adm3 code="ZM900419" name="Namushakende"/>
+            <adm3 code="ZM900420" name="Yeta"/>
+        </adm2>
+        <adm2 code="ZM9010" name="Mulobezi">
+            <adm3 code="ZM901001" name="Kamanga"/>
+            <adm3 code="ZM901002" name="Luamuloba"/>
+            <adm3 code="ZM901003" name="Machile"/>
+            <adm3 code="ZM901004" name="Mulobezi"/>
+            <adm3 code="ZM901005" name="Nawinda"/>
+            <adm3 code="ZM901006" name="Sichili"/>
+        </adm2>
+        <adm2 code="ZM9011" name="Mwandi">
+            <adm3 code="ZM901101" name="Loanja"/>
+            <adm3 code="ZM901102" name="Lwazamba"/>
+            <adm3 code="ZM901103" name="Mabumbu"/>
+            <adm3 code="ZM901104" name="Magumwi"/>
+            <adm3 code="ZM901105" name="Mushukula"/>
+            <adm3 code="ZM901106" name="Mwandi"/>
+            <adm3 code="ZM901107" name="Sankolonga"/>
+            <adm3 code="ZM901108" name="Simungoma"/>
+        </adm2>
+        <adm2 code="ZM9013" name="Nalolo">
+            <adm3 code="ZM901301" name="Kambai"/>
+            <adm3 code="ZM901302" name="Kataba"/>
+            <adm3 code="ZM901303" name="Lyamakumba"/>
+            <adm3 code="ZM901304" name="Makoka"/>
+            <adm3 code="ZM901305" name="Muoyo"/>
+            <adm3 code="ZM901306" name="Nanjucha"/>
+            <adm3 code="ZM901307" name="Shekela"/>
+            <adm3 code="ZM901308" name="Silowana"/>
+        </adm2>
+        <adm2 code="ZM9014" name="Nkeyema">
+            <adm3 code="ZM901401" name="Litoya"/>
+            <adm3 code="ZM901402" name="Namilangi"/>
+            <adm3 code="ZM901403" name="Nkeyema"/>
+        </adm2>
+        <adm2 code="ZM9005" name="Senanga">
+            <adm3 code="ZM900501" name="Imatanda"/>
+            <adm3 code="ZM900502" name="Imatongo"/>
+            <adm3 code="ZM900503" name="Lipuwe"/>
+            <adm3 code="ZM900504" name="Lumbe"/>
+            <adm3 code="ZM900505" name="Mata"/>
+            <adm3 code="ZM900506" name="Mwanambuyu"/>
+            <adm3 code="ZM900507" name="Naluywa"/>
+            <adm3 code="ZM900508" name="Sibukali"/>
+            <adm3 code="ZM900509" name="Wanyau"/>
+        </adm2>
+        <adm2 code="ZM9012" name="Sesheke">
+            <adm3 code="ZM901201" name="Imusho"/>
+            <adm3 code="ZM901202" name="Kalobolelwa"/>
+            <adm3 code="ZM901203" name="Luampungu"/>
+            <adm3 code="ZM901204" name="Lusu"/>
+            <adm3 code="ZM901205" name="Maondo"/>
+            <adm3 code="ZM901206" name="Mulimambango"/>
+        </adm2>
+        <adm2 code="ZM9007" name="Shang'ombo">
+            <adm3 code="ZM900701" name="Beshe"/>
+            <adm3 code="ZM900702" name="Kaunga Mashi"/>
+            <adm3 code="ZM900703" name="Keyana"/>
+            <adm3 code="ZM900704" name="Mambolomoka"/>
+            <adm3 code="ZM900705" name="Mulonga"/>
+            <adm3 code="ZM900706" name="Simu"/>
+            <adm3 code="ZM900707" name="Sipuma"/>
+        </adm2>
+        <adm2 code="ZM9015" name="Sikongo">
+            <adm3 code="ZM901501" name="Licha"/>
+            <adm3 code="ZM901502" name="Liumena"/>
+            <adm3 code="ZM901503" name="Lueti"/>
+            <adm3 code="ZM901504" name="Lulan'gunyi"/>
+            <adm3 code="ZM901505" name="Lwambi"/>
+            <adm3 code="ZM901506" name="Maala"/>
+            <adm3 code="ZM901507" name="Mutala"/>
+            <adm3 code="ZM901508" name="Mwenyi"/>
+            <adm3 code="ZM901509" name="Nengu"/>
+            <adm3 code="ZM901510" name="Tuuwa"/>
+        </adm2>
+        <adm2 code="ZM9016" name="Sioma">
+            <adm3 code="ZM901601" name="Kalongola"/>
+            <adm3 code="ZM901602" name="Mbeta"/>
+            <adm3 code="ZM901603" name="Mulamba"/>
+            <adm3 code="ZM901604" name="Mutomena"/>
+            <adm3 code="ZM901605" name="Nalwashi"/>
+            <adm3 code="ZM901606" name="Sikabenga"/>
+            <adm3 code="ZM901607" name="Sioma"/>
+        </adm2>
+    </adm1>
+</adm0>

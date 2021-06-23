@@ -33,7 +33,7 @@ class SmartcardRedemptionBatchControllerTest extends BMSServiceTestCase
             ->setMaxResults(1)
             ->getSingleScalarResult();
 
-        $this->request('GET', '/api/basic/vendors/'.$vendorId.'/smartcard-redemption-batches');
+        $this->request('GET', '/api/basic/web-app/v1/vendors/'.$vendorId.'/smartcard-redemption-batches');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -66,7 +66,7 @@ class SmartcardRedemptionBatchControllerTest extends BMSServiceTestCase
             ->setMaxResults(1)
             ->getResult(Query::HYDRATE_ARRAY);
 
-        $this->request('POST', '/api/basic/vendors/'.$vendorId.'/smartcard-redemption-batches', [
+        $this->request('POST', '/api/basic/web-app/v1/vendors/'.$vendorId.'/smartcard-redemption-batches', [
             'purchaseIds' => (array) $purchaseIds[0]['id'],
         ]);
 
@@ -93,7 +93,7 @@ class SmartcardRedemptionBatchControllerTest extends BMSServiceTestCase
             ->setMaxResults(1)
             ->getSingleScalarResult();
 
-        $this->request('GET', '/api/basic/vendors/'.$vendorId.'/smartcard-redemption-candidates');
+        $this->request('GET', '/api/basic/web-app/v1/vendors/'.$vendorId.'/smartcard-redemption-candidates');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

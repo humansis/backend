@@ -18,11 +18,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use UserBundle\Entity\User;
 
 class ProjectController extends AbstractController
 {
     /**
-     * @Rest\Get("/projects/{id}/summaries")
+     * @Rest\Get("/web-app/v1/projects/{id}/summaries")
      *
      * @param Request $request
      * @param Project $project
@@ -52,7 +53,7 @@ class ProjectController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/projects/exports")
+     * @Rest\Get("/web-app/v1/projects/exports")
      *
      * @param Request $request
      *
@@ -66,7 +67,7 @@ class ProjectController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/projects/{id}")
+     * @Rest\Get("/web-app/v1/projects/{id}")
      *
      * @param Project $project
      *
@@ -82,7 +83,7 @@ class ProjectController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/projects")
+     * @Rest\Get("/web-app/v1/projects")
      *
      * @param Request                $request
      * @param ProjectFilterInputType $filter
@@ -104,7 +105,7 @@ class ProjectController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/projects")
+     * @Rest\Post("/web-app/v1/projects")
      *
      * @param ProjectCreateInputType $inputType
      *
@@ -118,7 +119,7 @@ class ProjectController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/projects/{id}")
+     * @Rest\Put("/web-app/v1/projects/{id}")
      *
      * @param Project                $project
      * @param ProjectUpdateInputType $inputType
@@ -137,7 +138,7 @@ class ProjectController extends AbstractController
     }
 
     /**
-     * @Rest\Delete("/projects/{id}")
+     * @Rest\Delete("/web-app/v1/projects/{id}")
      *
      * @param Project $project
      *
@@ -148,5 +149,38 @@ class ProjectController extends AbstractController
         $this->get('project.project_service')->delete($project);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Rest\Get("/web-app/v1/users/{id}/projects")
+     *
+     * @param User $user
+     *
+     * @return JsonResponse
+     */
+    public function userProjects(User $user): JsonResponse
+    {
+        if ($user->getProjects()->count() > 0) {
+            $projects = array_map(function (\UserBundle\Entity\UserProject $item) {
+                return $item->getProject();
+            }, $user->getProjects()->toArray());
+
+            return $this->json(new Paginator($projects));
+        }
+
+        if ($user->getCountries()->count() > 0) {
+            $countries = array_map(function (\UserBundle\Entity\UserCountry $item) {
+                return $item->getId();
+            }, $user->getCountries()->toArray());
+
+            $data = $this->getDoctrine()->getRepository(Project::class)->findByCountries($countries);
+
+            return $this->json(new Paginator($data));
+        }
+
+        // user without related projects should have access to all projects
+        $data = $this->getDoctrine()->getRepository(Project::class)->findBy(['archived' => false]);
+
+        return $this->json(new Paginator($data));
     }
 }

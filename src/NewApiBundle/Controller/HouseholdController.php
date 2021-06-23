@@ -11,14 +11,56 @@ use NewApiBundle\InputType\HouseholdOrderInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 
 class HouseholdController extends AbstractController
 {
     /**
-     * @Rest\Get("/households/{id}")
+     * @Rest\Get("/web-app/v1/households/exports")
+     *
+     * @param Request                  $request
+     * @param HouseholdFilterInputType $filter
+     * @param Pagination               $pagination
+     * @param HouseholdOrderInputType  $order
+     *
+     * @return Response
+     */
+    public function exports(Request $request, HouseholdFilterInputType $filter, Pagination $pagination, HouseholdOrderInputType $order): Response
+    {
+        if (!$request->query->has('type')) {
+            throw $this->createNotFoundException('Missing query attribute type');
+        }
+        if (!$request->headers->has('country')) {
+            throw $this->createNotFoundException('Missing header attribute country');
+        }
+
+        $filename = $this->get('beneficiary.beneficiary_service')->exportToCsv(
+            $request->query->get('type'),
+            $request->headers->get('country'),
+            $filter, $pagination, $order
+        );
+
+        $response = new BinaryFileResponse(getcwd().'/'.$filename);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, '$filename');
+        $response->deleteFileAfterSend(true);
+
+        $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
+        if ($mimeTypeGuesser->isGuesserSupported()) {
+            $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType($filename));
+        } else {
+            $response->headers->set('Content-Type', 'text/plain');
+        }
+
+        return $response;
+    }
+
+    /**
+     * @Rest\Get("/web-app/v1/households/{id}")
      *
      * @param Household $household
      *
@@ -34,7 +76,7 @@ class HouseholdController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/households")
+     * @Rest\Get("/web-app/v1/households")
      *
      * @param Request                  $request
      * @param HouseholdFilterInputType $filter
@@ -56,7 +98,7 @@ class HouseholdController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/households")
+     * @Rest\Post("/web-app/v1/households")
      *
      * @param HouseholdCreateInputType $inputType
      *
@@ -70,7 +112,7 @@ class HouseholdController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/households/{id}")
+     * @Rest\Put("/web-app/v1/households/{id}")
      *
      * @param Household                $household
      * @param HouseholdUpdateInputType $inputType
@@ -85,7 +127,7 @@ class HouseholdController extends AbstractController
     }
 
     /**
-     * @Rest\Delete("/households/{id}")
+     * @Rest\Delete("/web-app/v1/households/{id}")
      *
      * @param Household $household
      *
@@ -99,7 +141,7 @@ class HouseholdController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/projects/{id}/households")
+     * @Rest\Put("/web-app/v1/projects/{id}/households")
      *
      * @param Project                         $project
      *

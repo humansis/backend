@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
+use NewApiBundle\Entity\ImportBeneficiary;
 use ProjectBundle\Enum\Livelihood;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -75,6 +76,13 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     private $smartcards;
 
     /**
+     * @var ImportBeneficiary[]|Collection
+     *
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiary", mappedBy="beneficiary", cascade={"persist", "remove"})
+     */
+    private $importBeneficiaries;
+
+    /**
      * Constructor.
      */
     public function __construct()
@@ -84,6 +92,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         $this->person = new Person();
         $this->smartcards = new ArrayCollection();
         $this->setUpdatedOn(new DateTime());
+        $this->importBeneficiaries = new ArrayCollection();
 
         //TODO check if updatedOn everytime
     }
@@ -923,6 +932,14 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         }
 
         return false;
+    }
+
+    /**
+     * @return Collection|ImportBeneficiary[]
+     */
+    public function getImportBeneficiaries()
+    {
+        return $this->importBeneficiaries;
     }
 
 }

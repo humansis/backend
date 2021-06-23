@@ -26,7 +26,7 @@ class SelectionCriterionControllerTest extends BMSServiceTestCase
      */
     public function testGetTargets()
     {
-        $this->request('GET', '/api/basic/selection-criteria/targets');
+        $this->request('GET', '/api/basic/web-app/v1/selection-criteria/targets');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -47,7 +47,7 @@ class SelectionCriterionControllerTest extends BMSServiceTestCase
      */
     public function testGetFields()
     {
-        $this->request('GET', '/api/basic/selection-criteria/targets/'.SelectionCriteriaTarget::BENEFICIARY.'/fields', ['country' => 'KHM']);
+        $this->request('GET', '/api/basic/web-app/v1/selection-criteria/targets/'.SelectionCriteriaTarget::BENEFICIARY.'/fields', ['country' => 'KHM']);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -58,7 +58,7 @@ class SelectionCriterionControllerTest extends BMSServiceTestCase
             "data": [
                 {"code": "gender", "type": "gender", "value": "Gender"},
                 {"code": "dateOfBirth", "type": "date", "value": "Date of Birth"},
-                {"code": "hasNotBeenInDistributionsSince", "type": "boolean", "value": "Has Not Been in a Distribution Since"}
+                {"code": "hasNotBeenInDistributionsSince", "type": "date", "value": "Has Not Been in a Distribution Since"}
             ]
         }', $this->client->getResponse()->getContent());
     }
@@ -68,7 +68,7 @@ class SelectionCriterionControllerTest extends BMSServiceTestCase
      */
     public function testGetConditions()
     {
-        $this->request('GET', '/api/basic/selection-criteria/targets/'.SelectionCriteriaTarget::BENEFICIARY.'/fields/gender/conditions', ['country' => 'KHM']);
+        $this->request('GET', '/api/basic/web-app/v1/selection-criteria/targets/'.SelectionCriteriaTarget::BENEFICIARY.'/fields/gender/conditions', ['country' => 'KHM']);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

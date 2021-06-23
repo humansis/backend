@@ -12,6 +12,17 @@ use Symfony\Component\Validator\Constraints as Assert;
 class HouseholdFilterInputType extends AbstractFilterInputType
 {
     /**
+     * @Assert\Type("array")
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Type("int", groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
+     */
+    protected $id;
+
+    /**
      * @Assert\Type("scalar")
      */
     protected $fulltext;
@@ -101,6 +112,16 @@ class HouseholdFilterInputType extends AbstractFilterInputType
     public static function vulnerabilities(): array
     {
         return array_keys(\BeneficiaryBundle\Entity\VulnerabilityCriterion::all());
+    }
+
+    public function hasIds(): bool
+    {
+        return $this->has('id');
+    }
+
+    public function getIds(): array
+    {
+        return $this->id;
     }
 
     public function hasFulltext(): bool

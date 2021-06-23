@@ -27,7 +27,7 @@ use Symfony\Component\HttpFoundation\Response;
 class CommunityController extends AbstractController
 {
     /**
-     * @Rest\Get("/communities/{id}")
+     * @Rest\Get("/web-app/v1/communities/{id}")
      *
      * @param Community $object
      *
@@ -43,7 +43,7 @@ class CommunityController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/communities")
+     * @Rest\Get("/web-app/v1/communities")
      *
      * @param Request $request
      * @param CommunityOrderInputType $communityOrderInputType
@@ -67,7 +67,7 @@ class CommunityController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/communities")
+     * @Rest\Post("/web-app/v1/communities")
      *
      * @param CommunityCreateInputType $inputType
      *
@@ -84,7 +84,7 @@ class CommunityController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/communities/{id}")
+     * @Rest\Put("/web-app/v1/communities/{id}")
      *
      * @param Community                $community
      * @param CommunityUpdateInputType $inputType
@@ -99,7 +99,7 @@ class CommunityController extends AbstractController
     }
 
     /**
-     * @Rest\Delete("/communities/{id}")
+     * @Rest\Delete("/web-app/v1/communities/{id}")
      *
      * @param Community $project
      *
@@ -113,7 +113,7 @@ class CommunityController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/projects/{id}/communities")
+     * @Rest\Get("/web-app/v1/projects/{id}/communities")
      *
      * @param Project $project
      *
