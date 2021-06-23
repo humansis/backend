@@ -254,7 +254,11 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         $info = curl_getinfo($curl);
 
         foreach ($info as $key => $value) {
-            $this->logger->error($requestID."curl_getinfo $key = ".$value);
+            if (is_array($value)) {
+                $this->logger->error($requestID."curl_getinfo $key = ".implode(', ', $value));
+            } else {
+                $this->logger->error($requestID."curl_getinfo $key = ".$value);
+            }
         }
 
         $this->logger->error($requestID."Route: ".($this->production ? $this->url_prod : $this->url) . $route . "[port".($this->production ? "8443": "9443")."]");
