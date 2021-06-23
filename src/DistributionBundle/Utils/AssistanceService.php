@@ -908,6 +908,7 @@ class AssistanceService
             'assistance_type' => $inputType->getType(),
             'target_type' => $inputType->getTarget(),
             'date_distribution' => $inputType->getDateDistribution(),
+            'date_expiration' => $inputType->getDateExpiration(),
             'project' => ['id' => $inputType->getProjectId()],
             'location' => $locationArray,
             'sector' => $inputType->getSector(),

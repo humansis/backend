@@ -29,6 +29,11 @@ class AssistanceCreateInputType implements InputTypeInterface
     private $dateDistribution;
 
     /**
+     * @Iso8601
+     */
+    private $dateExpiration;
+
+    /**
      * @Assert\Type("string")
      */
     private $description;
@@ -169,6 +174,22 @@ class AssistanceCreateInputType implements InputTypeInterface
     public function setDateDistribution($dateDistribution)
     {
         $this->dateDistribution = $dateDistribution;
+    }
+
+    /**
+     * @return \DateTimeInterface|null
+     */
+    public function getDateExpiration()
+    {
+        return $this->dateExpiration;
+    }
+
+    /**
+     * @param \DateTimeInterface|null $dateExpiration
+     */
+    public function setDateExpiration($dateExpiration): void
+    {
+        $this->dateExpiration = $dateExpiration;
     }
 
     /**
