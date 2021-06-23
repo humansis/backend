@@ -103,9 +103,15 @@ trait HouseholdInputBuilderTrait
 
         $household->addBeneficiary($head);
 
+        $i = 1;
         foreach ($this->buildNamelessMembers() as $namelessMember) {
-            $namelessMember->setResidencyStatus($this->residencyStatus); // not sure if it is correct but residency status is mandatory
+            $namelessMember->setResidencyStatus($this->residencyStatus);
+            $namelessMember->setLocalFamilyName($head->getLocalFamilyName());
+            $namelessMember->setEnFamilyName($head->getEnFamilyName());
+            $namelessMember->setEnGivenName("Member $i");
+            $namelessMember->setLocalGivenName("Member $i");
             $household->addBeneficiary($namelessMember);
+            $i++;
         }
     }
 
@@ -172,7 +178,7 @@ trait HouseholdInputBuilderTrait
         if (0 === $count) return;
         $today = new \DateTime();
 
-        foreach (range(0, $count) as $i) {
+        for ($i=0; $i<$count; $i++) {
             $beneficiary = new BeneficiaryInputType();
             $beneficiary->setDateOfBirth($today->modify("-$age year")->format('d-m-Y'));
             $beneficiary->setGender($gender);

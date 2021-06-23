@@ -64,20 +64,42 @@ class IdentityChecker
         }
         */
 
-        $bnfs = $this->findInBeneficiaries($item);
-        foreach ($bnfs as $bnf) {
-            if ($bnf->getHousehold()->getArchived()) {
-                $this->logImportDebug($item->getImport(), "Found duplicity with archived records: Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
+        $duplicities = [];
+        $index = 0;
+        foreach ($item->getContent() as $c) {
+            if (empty($c['ID Type']) || empty($c['ID Number'])) {
+                $this->logImportDebug($item->getImport(), "[Queue#{$item->getId()}|line#$index] Duplicity checking omitted because of missing ID information");
                 continue;
             }
-            $importDuplicity = new ImportBeneficiaryDuplicity($item, $bnf->getHousehold());
-            $importDuplicity->setDecideAt(new \DateTime('now'));
-            $this->entityManager->persist($importDuplicity);
 
-            $item->setState(ImportQueueState::SUSPICIOUS);
-            $this->entityManager->persist($item);
-            $this->logImportInfo($item->getImport(), "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
-            $found = true;
+            $bnfDuplicities = $this->entityManager->getRepository(Beneficiary::class)->findIdentityByNationalId(
+                $item->getImport()->getProject()->getIso3(),
+                (string) $c['ID Type'],
+                (string) $c['ID Number']
+            );
+
+            if (count($bnfDuplicities) > 0) {
+                $this->logImportInfo($item->getImport(), "Found ".count($bnfDuplicities)." duplicities for {$c['ID Type']} {$c['ID Number']}");
+                $found = true;
+            } else {
+                $this->logImportDebug($item->getImport(), "Found no duplicities");
+            }
+
+            foreach ($bnfDuplicities as $bnf) {
+
+                if (!array_key_exists($bnf->getHousehold()->getId(), $duplicities)) {
+                    $duplicities[$bnf->getHousehold()->getId()] = new ImportBeneficiaryDuplicity($item, $bnf->getHousehold());
+                    $duplicities[$bnf->getHousehold()->getId()]->setDecideAt(new \DateTime('now'));
+                }
+                $importDuplicity = $duplicities[$bnf->getHousehold()->getId()];
+                $importDuplicity->addReason("Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
+
+                $this->entityManager->persist($item);
+                $this->entityManager->persist($importDuplicity);
+                $this->logImportInfo($item->getImport(),
+                    "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
+            }
+            $index++;
         }
 
         $item->setState($found ? ImportQueueState::SUSPICIOUS : ImportQueueState::VALID);
@@ -166,37 +188,6 @@ class IdentityChecker
                         break 2;
                     }
                 }
-            }
-        }
-
-        return $founded;
-    }
-
-    /**
-     * @param ImportQueue $current
-     *
-     * @return Beneficiary[]
-     */
-    private function findInBeneficiaries(ImportQueue $current)
-    {
-        $founded = [];
-
-        $index = -1;
-        foreach ($current->getContent() as $c) {
-            $index++;
-            if (empty($c['ID Type']) || empty($c['ID Number'])) {
-                $this->logImportDebug($current->getImport(), "[Queue#{$current->getId()}|line#$index] Duplicity ignored because of missing ID information");
-                continue;
-            }
-
-            $duplicities = $this->entityManager->getRepository(Beneficiary::class)->findIdentityByNationalId(
-                $current->getImport()->getProject()->getIso3(),
-                (string) $c['ID Type'],
-                (string) $c['ID Number']
-            );
-            $this->logImportInfo($current->getImport(), "Found ".count($duplicities)." duplicities");
-            foreach($duplicities as $duplicity) {
-                $founded[] = $duplicity;
             }
         }
 

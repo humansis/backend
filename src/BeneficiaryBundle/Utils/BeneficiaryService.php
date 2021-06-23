@@ -344,6 +344,10 @@ class BeneficiaryService
             return false;
         }
 
+        foreach ($beneficiary->getImportBeneficiaries() as $importLink) {
+            $this->em->remove($importLink);
+        }
+
         $nationalIds = $this->em->getRepository(NationalId::class)->findByPerson($beneficiary->getPerson());
         $profile = $this->em->getRepository(Profile::class)->find($beneficiary->getProfile());
         foreach ($nationalIds as $nationalId) {

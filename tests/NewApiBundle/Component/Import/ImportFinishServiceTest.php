@@ -5,6 +5,7 @@ namespace Tests\NewApiBundle\Component\Import;
 use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\NationalId;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Entity\Import;
@@ -25,9 +26,11 @@ class ImportFinishServiceTest extends KernelTestCase
     const TEST_COUNTRY = 'KHM';
     // json copied from KHM-Import-2HH-3HHM.ods
     const TEST_QUEUE_ITEM = '[{"Adm1": "Banteay Meanchey", "Adm2": null, "Adm3": null, "Adm4": null, "Head": "true",
-    "F 65+": null, "M 65+": null, "Notes": "import from unittest", "Assets": null, "Gender": "Male", "F 0 - 2": null, 
-    "F 2 - 5": null, "ID Type": "National ID", "M 0 - 2": null, "M 2 - 5": null, "F 6 - 17": null, "Latitude": null, 
-    "M 6 - 17": null, "Camp name": null, "F 18 - 64": 1, "ID Number": 98349834, "Longitude": null, "M 18 - 64": 1, 
+    "ID Number": 123456789, "ID Type": "National ID",
+    "F 0 - 2": 1, "F 2 - 5": 2, "F 6 - 17": 3, "F 18 - 59": 4, "F 60+": 5,
+    "M 0 - 2": null, "M 2 - 5": null, "M 6 - 17": null, "M 18 - 59": null, "M 60+": null,
+    "Notes": "import from unittest", "Assets": null, "Gender": "Male",  
+    "Latitude": null, "Camp name": null, "Longitude": null, 
     "Debt Level": 3, "Livelihood": "Government", "Tent number": null, "Income level": null, "Type phone 1": "Mobile", 
     "Type phone 2": null, "Date of birth": "31-12-2000", "Proxy phone 1": null, "Proxy phone 2": null, "Address number": 123, 
     "Address street": "Fake St", "Number phone 1": "10834243", "Number phone 2": null, "Prefix phone 1": "+855", 
@@ -109,7 +112,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->importService->finish($this->import);
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
-        $this->assertEquals(2, $bnfCount, "Wrong number of created beneficiaries");
+        $this->assertEquals(17, $bnfCount, "Wrong number of created beneficiaries");
 
         $originLinks = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
             'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
@@ -119,7 +122,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $links = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
             'import' => $this->import->getId()
         ]);
-        $this->assertCount(1, $links, "There should be only one link");
+        $this->assertCount(16, $links, "There should be only one link");
     }
 
     public function testDecidedCreate()
@@ -138,7 +141,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->importService->finish($this->import);
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
-        $this->assertEquals(2, $bnfCount, "Wrong number of created beneficiaries");
+        $this->assertEquals(17, $bnfCount, "Wrong number of created beneficiaries");
 
         $originLinks = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
             'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
@@ -148,7 +151,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $links = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
             'import' => $this->import->getId()
         ]);
-        $this->assertCount(1, $links, "There should be only one link");
+        $this->assertCount(16, $links, "There should be only one link");
     }
 
     public function testUpdate()
@@ -166,8 +169,10 @@ class ImportFinishServiceTest extends KernelTestCase
 
         $this->importService->finish($this->import);
 
-        $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
-        $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
+        $links = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
+            'import' => $this->import->getId()
+        ]);
+        $this->assertEquals(16, count($links), "Wrong number of created beneficiaries");
 
         $originLinks = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
             'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
@@ -247,9 +252,16 @@ class ImportFinishServiceTest extends KernelTestCase
         $hhh->setHead(true);
         $hhh->setResidencyStatus('empty');
 
+        $nationalId = new NationalId();
+        $nationalId->setIdType('National ID');
+        $nationalId->setIdNumber('123456789');
+        $hhh->getPerson()->addNationalId($nationalId);
+        $nationalId->setPerson($hhh->getPerson());
+
         $hh->addBeneficiary($hhh);
         $hh->addProject($project);
         $hhh->addProject($project);
+        $this->entityManager->persist($nationalId);
         $this->entityManager->persist($hh);
         $this->entityManager->persist($hhh);
         $this->entityManager->flush();

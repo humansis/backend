@@ -310,7 +310,7 @@ class HouseholdService
                 );
                 foreach ($toRemove as $beneficiaryToRemove) {
                     $household->removeBeneficiary($beneficiaryToRemove);
-                    $this->em->remove($beneficiaryToRemove);
+                    $this->beneficiaryService->remove($beneficiaryToRemove);
                 }
             }
         }

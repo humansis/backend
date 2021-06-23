@@ -150,6 +150,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             ->join('hh.projects', 'project')
             ->join('p.nationalIds', 'id')
             ->andWhere('b.archived = 0')
+            ->andWhere('hh.archived = 0')
             ->andWhere('id.idNumber = :idNumber')
             ->andWhere('id.idType = :idType')
             ->andWhere('project.iso3 = :country')
