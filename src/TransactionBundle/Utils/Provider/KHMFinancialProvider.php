@@ -228,7 +228,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         $this->logger->error($requestID."Body built");
 
         $dir_root = $this->container->get('kernel')->getRootDir();
-        $curlLog = $dir_root . "/../var/data/curl_$requestUnique.log";
+        $curlLog = $dir_root . "/../var/logs/curl_$requestUnique.log";
 
         $this->logger->error($requestID."curl log in ".$curlLog);
                 
@@ -316,7 +316,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         $data = [$this->from, (new \DateTime())->format('d-m-Y h:i:s'), $info['url'], $info['http_code'], $response, $err, $bodyString];
         $this->recordTransaction($assistance, $data);
 
-        $this->logger->error($requestID."record logged into var/data/record_{$assistance->getId()}.csv");
+        $this->logger->error($requestID."record logged into var/logs/record_{$assistance->getId()}.csv");
     
         if ($err) {
             $this->logger->error($requestID.__METHOD__." ended with error, throw exception");

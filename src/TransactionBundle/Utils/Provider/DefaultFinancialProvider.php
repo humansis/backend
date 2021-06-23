@@ -265,7 +265,7 @@ abstract class DefaultFinancialProvider
     public function recordTransaction(Assistance $assistance, array $data)
     {
         $dir_root = $this->container->get('kernel')->getRootDir();
-        $dir_var = $dir_root . '/../var/data';
+        $dir_var = $dir_root . '/../var/logs';
         if (! is_dir($dir_var)) {
             mkdir($dir_var);
         }
