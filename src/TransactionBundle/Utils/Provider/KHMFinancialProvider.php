@@ -147,6 +147,10 @@ class KHMFinancialProvider extends DefaultFinancialProvider
      */
     public function updateStatusTransaction(Transaction $transaction): Transaction
     {
+        $requestUnique = uniqid();
+        $requestID = "Update#$requestUnique: ";
+        $this->logger->info("$requestID Transaction {$transaction->getId()} status will be updated");
+
         $response = $this->getStatus($transaction->getAssistanceBeneficiary()->getAssistance(), $transaction->getTransactionId());
 
         if (property_exists($response, 'cashout_status') && $response->cashout_status === "Complete") {
@@ -155,6 +159,10 @@ class KHMFinancialProvider extends DefaultFinancialProvider
             
             $this->em->persist($transaction);
             $this->em->flush();
+
+            $this->logger->info("$requestID Transaction {$transaction->getId()} status was set to picked up");
+        } else {
+            $this->logger->debug("$requestID Transaction {$transaction->getId()} status wasn't updated");
         }
         
         return $transaction;
@@ -220,7 +228,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         $this->logger->error($requestID."Body built");
 
         $dir_root = $this->container->get('kernel')->getRootDir();
-        $curlLog = $dir_root . "/../var/data/curl_$requestUnique.log";
+        $curlLog = $dir_root . "/../var/logs/curl_$requestUnique.log";
 
         $this->logger->error($requestID."curl log in ".$curlLog);
                 
@@ -246,7 +254,11 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         $info = curl_getinfo($curl);
 
         foreach ($info as $key => $value) {
-            $this->logger->error($requestID."curl_getinfo $key = ".$value);
+            if (is_array($value)) {
+                $this->logger->error($requestID."curl_getinfo $key = ".implode(', ', $value));
+            } else {
+                $this->logger->error($requestID."curl_getinfo $key = ".$value);
+            }
         }
 
         $this->logger->error($requestID."Route: ".($this->production ? $this->url_prod : $this->url) . $route . "[port".($this->production ? "8443": "9443")."]");
@@ -308,7 +320,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         $data = [$this->from, (new \DateTime())->format('d-m-Y h:i:s'), $info['url'], $info['http_code'], $response, $err, $bodyString];
         $this->recordTransaction($assistance, $data);
 
-        $this->logger->error($requestID."record logged into var/data/record_{$assistance->getId()}.csv");
+        $this->logger->error($requestID."record logged into var/logs/record_{$assistance->getId()}.csv");
     
         if ($err) {
             $this->logger->error($requestID.__METHOD__." ended with error, throw exception");

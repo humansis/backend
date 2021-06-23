@@ -201,13 +201,14 @@ abstract class DefaultFinancialProvider
         $this->logger->info("Recipients to update transaction status: ".count($distributionBeneficiaries), [$assistance]);
 
         foreach ($distributionBeneficiaries as $assistanceBeneficiary) {
+            /** @var Transaction $successfulTransaction */
             $successfulTransaction = $this->em->getRepository(Transaction::class)->findOneBy(
                 [
                     'assistanceBeneficiary' => $assistanceBeneficiary,
-                    'transactionStatus'       => 1
+                    'transactionStatus'     => Transaction::SUCCESS,
                 ]
             );
-            if ($successfulTransaction) {
+            if (null !== $successfulTransaction && $successfulTransaction->hasUpdatableStatus()) {
                 $this->updateStatusTransaction($successfulTransaction);
                 array_push($response, $assistanceBeneficiary);
             }
@@ -264,7 +265,7 @@ abstract class DefaultFinancialProvider
     public function recordTransaction(Assistance $assistance, array $data)
     {
         $dir_root = $this->container->get('kernel')->getRootDir();
-        $dir_var = $dir_root . '/../var/data';
+        $dir_var = $dir_root . '/../var/logs';
         if (! is_dir($dir_var)) {
             mkdir($dir_var);
         }
