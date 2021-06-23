@@ -147,6 +147,10 @@ class KHMFinancialProvider extends DefaultFinancialProvider
      */
     public function updateStatusTransaction(Transaction $transaction): Transaction
     {
+        $requestUnique = uniqid();
+        $requestID = "Update#$requestUnique: ";
+        $this->logger->info("$requestID Transaction {$transaction->getId()} status will be updated");
+
         $response = $this->getStatus($transaction->getAssistanceBeneficiary()->getAssistance(), $transaction->getTransactionId());
 
         if (property_exists($response, 'cashout_status') && $response->cashout_status === "Complete") {
@@ -155,6 +159,10 @@ class KHMFinancialProvider extends DefaultFinancialProvider
             
             $this->em->persist($transaction);
             $this->em->flush();
+
+            $this->logger->info("$requestID Transaction {$transaction->getId()} status was set to picked up");
+        } else {
+            $this->logger->debug("$requestID Transaction {$transaction->getId()} status wasn't updated");
         }
         
         return $transaction;
