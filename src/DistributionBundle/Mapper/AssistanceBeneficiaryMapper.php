@@ -100,15 +100,15 @@ class AssistanceBeneficiaryMapper
             return null;
         }
 
-        // send only successful transactions or last one
+        // send only successful transactions or all failed
         $transactions = [];
         foreach ($assistanceBeneficiary->getTransactions() as $transaction) {
             if (Transaction::SUCCESS === $transaction->getTransactionStatus()) {
                 $transactions[] = $transaction;
             }
         }
-        if (empty($transactions)) {
-            $transactions = $assistanceBeneficiary->getTransactions()[count($assistanceBeneficiary->getTransactions()) - 1];
+        if (empty($transactions) && !empty($assistanceBeneficiary->getTransactions())) {
+            $transactions = $assistanceBeneficiary->getTransactions();
         }
 
         $serializedAB = [
