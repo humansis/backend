@@ -17,6 +17,7 @@ use ProjectBundle\Entity\Project;
 
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use BeneficiaryBundle\Entity\Household;
+use TransactionBundle\Entity\Transaction;
 
 /**
  * Assistance
@@ -827,14 +828,13 @@ class Assistance implements ExportableInterface
     {
         $modalityType = $this->getCommodities()[0]->getModalityType()->getName();
         if ($modalityType === 'Mobile Money') {
-            $numberOfTransactions = count($assistanceBeneficiary->getTransactions());
-            if (count($assistanceBeneficiary->getTransactions()) > 0) {
-                $transaction = $assistanceBeneficiary->getTransactions()[$numberOfTransactions - 1];
-
-                return ($transaction->getTransactionStatus() === 1 ? $commodity->getValue() : 0);
-            } else {
-                return 0;
+            $values = 0;
+            foreach ($assistanceBeneficiary->getTransactions() as $transaction) {
+                if (Transaction::SUCCESS === $transaction->getTransactionStatus()) {
+                    $values += $commodity->getValue();
+                }
             }
+            return $values;
         } elseif ($modalityType === 'QR Code Voucher') {
             $booklets = $assistanceBeneficiary->getBooklets();
             foreach ($booklets as $booklet) {
