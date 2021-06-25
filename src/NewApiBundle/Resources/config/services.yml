@@ -255,3 +255,7 @@ services:
         arguments:
             - '%import.uploadedFilesDirectory%'
         public: true
+
+    NewApiBundle\Command\WingMoneyReportImportCommand:
+        arguments:
+            - '@=service("doctrine.orm.entity_manager").getRepository("DistributionBundle:Assistance")'
