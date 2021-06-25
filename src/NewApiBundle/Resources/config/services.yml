@@ -178,3 +178,7 @@ services:
 
     NewApiBundle\Component\Smartcard\SmartcardPurchaseService:
         arguments: [ '@smartcard_purchase.repository' ]
+
+    NewApiBundle\Command\WingMoneyReportImportCommand:
+        arguments:
+            - '@=service("doctrine.orm.entity_manager").getRepository("DistributionBundle:Assistance")'
