@@ -231,3 +231,7 @@ services:
             - '@NewApiBundle\Component\Import\UploadImportService'
             - '%import.invalidFilesDirectory%'
             - '%import.maxFileSizeToLoad%'
+
+    NewApiBundle\Command\WingMoneyReportImportCommand:
+        arguments:
+            - '@=service("doctrine.orm.entity_manager").getRepository("DistributionBundle:Assistance")'
