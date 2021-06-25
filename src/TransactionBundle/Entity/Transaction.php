@@ -23,6 +23,7 @@ class Transaction
     const FAILURE = 0;
     const SUCCESS = 1;
     const NO_PHONE = 2;
+    const CANCELED = 3;
 
     public static function statuses()
     {
@@ -30,6 +31,7 @@ class Transaction
             self::FAILURE => 'Failure',
             self::SUCCESS => 'Success',
             self::NO_PHONE => 'No Phone',
+            self::CANCELED => 'Canceled',
         ];
     }
 

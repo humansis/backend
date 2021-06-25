@@ -100,9 +100,20 @@ class AssistanceBeneficiaryMapper
             return null;
         }
 
+        // send only successful transactions or all failed
+        $transactions = [];
+        foreach ($assistanceBeneficiary->getTransactions() as $transaction) {
+            if (Transaction::SUCCESS === $transaction->getTransactionStatus()) {
+                $transactions[] = $transaction;
+            }
+        }
+        if (empty($transactions) && !empty($assistanceBeneficiary->getTransactions())) {
+            $transactions = $assistanceBeneficiary->getTransactions();
+        }
+
         $serializedAB = [
             'id' => $assistanceBeneficiary->getId(),
-            'transactions' => $this->transactionMapper->toValidateDistributionGroups($assistanceBeneficiary->getTransactions()),
+            'transactions' => $this->transactionMapper->toValidateDistributionGroups($transactions),
             'booklets' => $this->bookletMapper->toValidateDistributionGroups($assistanceBeneficiary->getBooklets()),
             'general_reliefs' => $this->generalReliefItemMapper->toValidateDistributionGroups($assistanceBeneficiary->getGeneralReliefs()),
             'smartcard_distributed' => $assistanceBeneficiary->getSmartcardDistributed(),
