@@ -248,10 +248,14 @@ services:
 
     NewApiBundle\Component\Product\ProductCategoryService:
 
-    NewApiBundle\Component\Smartcard\SmartcardPurchaseService:
-        arguments: [ '@smartcard_purchase.repository' ]
-
     NewApiBundle\Component\Import\ImportFileValidator:
         arguments:
             - '%import.uploadedFilesDirectory%'
         public: true
+
+    NewApiBundle\Command\WingMoneyReportImportCommand:
+        arguments:
+            - '@=service("doctrine.orm.entity_manager").getRepository("DistributionBundle:Assistance")'
+
+    NewApiBundle\Component\Smartcard\SmartcardPurchaseService:
+        arguments: [ '@smartcard_purchase.repository' ]
