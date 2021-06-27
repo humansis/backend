@@ -40,7 +40,8 @@ class TestReportImportCommand extends KernelTestCase
         $commandTester = new CommandTester($wingMoneyImportCommand);
         $commandTester->execute([
             'reportFile' => $wingMoneyReportFilePath,
-            'assistance' => $assistance->getId(),
+            'assistance' => 243,
+            '--check' => false,
         ]);
     }
 }

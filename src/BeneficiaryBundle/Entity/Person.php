@@ -137,6 +137,13 @@ class Person
     private $enParentsName;
 
     /**
+     * @var Beneficiary|null
+     *
+     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary", mappedBy="person")
+     */
+    private $beneficiary;
+
+    /**
      * Constructor.
      */
     public function __construct()
@@ -773,5 +780,21 @@ class Person
     public function getEnParentsName(): ?string
     {
         return $this->enParentsName;
+    }
+
+    /**
+     * @return Beneficiary|null
+     */
+    public function getBeneficiary(): ?Beneficiary
+    {
+        return $this->beneficiary;
+    }
+
+    /**
+     * @param Beneficiary|null $beneficiary
+     */
+    public function setBeneficiary(?Beneficiary $beneficiary): void
+    {
+        $this->beneficiary = $beneficiary;
     }
 }

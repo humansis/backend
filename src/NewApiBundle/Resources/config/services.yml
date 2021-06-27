@@ -235,3 +235,10 @@ services:
     NewApiBundle\Command\WingMoneyReportImportCommand:
         arguments:
             - '@=service("doctrine.orm.entity_manager").getRepository("DistributionBundle:Assistance")'
+
+    NewApiBundle\Component\WingMoney\ReportParser:
+
+    NewApiBundle\Component\WingMoney\ImportService:
+        arguments:
+            - '@=service("doctrine.orm.entity_manager").getRepository("TransactionBundle:Transaction")'
+            - '@=service("doctrine.orm.entity_manager").getRepository("BeneficiaryBundle:Phone")'
