@@ -254,8 +254,13 @@ services:
         public: true
 
     NewApiBundle\Command\WingMoneyReportImportCommand:
+
+    NewApiBundle\Component\WingMoney\ReportParser:
+
+    NewApiBundle\Component\WingMoney\ImportService:
         arguments:
-            - '@=service("doctrine.orm.entity_manager").getRepository("DistributionBundle:Assistance")'
+            - '@=service("doctrine.orm.entity_manager").getRepository("TransactionBundle:Transaction")'
+            - '@=service("doctrine.orm.entity_manager").getRepository("BeneficiaryBundle:Phone")'
 
     NewApiBundle\Component\Smartcard\SmartcardPurchaseService:
         arguments: [ '@smartcard_purchase.repository' ]
