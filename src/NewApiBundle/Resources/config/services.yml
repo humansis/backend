@@ -233,8 +233,6 @@ services:
             - '%import.maxFileSizeToLoad%'
 
     NewApiBundle\Command\WingMoneyReportImportCommand:
-        arguments:
-            - '@=service("doctrine.orm.entity_manager").getRepository("DistributionBundle:Assistance")'
 
     NewApiBundle\Component\WingMoney\ReportParser:
 

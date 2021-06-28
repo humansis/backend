@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\WingMoney\ValueObject\ReportEntry;
 use TransactionBundle\Entity\Transaction;
 use TransactionBundle\Repository\TransactionRepository;
+use UserBundle\Entity\User;
 
 class ImportService
 {
@@ -61,12 +62,14 @@ class ImportService
     public function filterTransactionsInAssistanceOnly(array $entries, Assistance $assistance): array
     {
         return array_filter($entries, function (ReportEntry $entry) use ($assistance) {
-            return $this->findAssistanceBeneficiaryByPhoneNumber(substr($entry->getPhoneNumber(), 1), $assistance) instanceof AssistanceBeneficiary;
+            return $this->findAssistanceBeneficiaryByPhoneNumber($entry, $assistance) instanceof AssistanceBeneficiary;
         });
     }
 
-    private function findAssistanceBeneficiaryByPhoneNumber(string $number, Assistance $assistance): ?AssistanceBeneficiary
+    private function findAssistanceBeneficiaryByPhoneNumber(ReportEntry $entry, Assistance $assistance): ?AssistanceBeneficiary
     {
+        $number = substr($entry->getPhoneNumber(), 1);
+
         $phone = $this->phoneRepository->findOneBy(['number' => $number]);
 
         if (!$phone instanceof Phone) {
@@ -83,6 +86,18 @@ class ImportService
 
         foreach ($assistanceBeneficiaries as $assistanceBeneficiary) {
             if ($assistanceBeneficiary->getAssistance()->getId() === $assistance->getId()) {
+                $commodities = $assistance->getCommodities();
+
+                if (empty($commodities)) {
+                    return null;
+                }
+
+                $commodity = current($commodities);
+
+                if (floor($commodity->getValue()) !== floor($entry->getAmount())) {
+                    return null;
+                }
+
                 return $assistanceBeneficiary;
             }
         }
@@ -90,15 +105,16 @@ class ImportService
         return null;
     }
 
-    public function createTransactionFromReportEntry(ReportEntry $entry, Assistance $assistance)
+    public function createTransactionFromReportEntry(ReportEntry $entry, Assistance $assistance, User $user)
     {
         $transaction = new Transaction();
 
-        $transaction->setAssistanceBeneficiary($this->findAssistanceBeneficiaryByPhoneNumber(substr($entry->getPhoneNumber(), 1), $assistance));
+        $transaction->setAssistanceBeneficiary($this->findAssistanceBeneficiaryByPhoneNumber($entry, $assistance));
         $transaction->setTransactionId($entry->getTransactionId());
         $transaction->setAmountSent($entry->getCurrency().' '.number_format($entry->getAmount(), 2));
         $transaction->setDateSent($entry->getTransactionDate());
         $transaction->setTransactionStatus(Transaction::SUCCESS);
+        $transaction->setSentBy($user);
 
         $this->em->persist($transaction);
         $this->em->flush();
