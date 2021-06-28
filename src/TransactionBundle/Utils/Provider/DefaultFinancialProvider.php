@@ -16,6 +16,10 @@ use Symfony\Component\Cache\Simple\FilesystemCache;
  */
 abstract class DefaultFinancialProvider
 {
+    /**
+     * Limit for one batch site due problems with timeouts
+     */
+    const MAX_BATCH_SIZE = 100;
 
     /** @var EntityManagerInterface $em */
     protected $em;
@@ -180,6 +184,8 @@ abstract class DefaultFinancialProvider
             }
 
             $count++;
+
+            if ($count > self::MAX_BATCH_SIZE) break;
         }
 
         $cache->delete($this->from . '-progression-' . $assistance->getId());
