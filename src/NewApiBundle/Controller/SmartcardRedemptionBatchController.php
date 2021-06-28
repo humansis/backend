@@ -108,6 +108,19 @@ class SmartcardRedemptionBatchController extends AbstractController
 
     /**
      * @Rest\Get("/vendor-app/v2/vendors/{id}/smartcard-redemption-candidates")
+     * @deprecated use $this->candidatesForVendorApp()
+     *
+     * @param Vendor $vendor
+     *
+     * @return JsonResponse
+     */
+    public function candidatesForVendorAppDeprecated(Vendor $vendor): Response
+    {
+        return $this->forward(self::class.'::candidates', ['vendor' => $vendor]);
+    }
+
+    /**
+     * @Rest\Get("/vendor-app/v3/vendors/{id}/smartcard-redemption-candidates")
      *
      * @param Vendor $vendor
      *
@@ -115,6 +128,9 @@ class SmartcardRedemptionBatchController extends AbstractController
      */
     public function candidatesForVendorApp(Vendor $vendor): Response
     {
-        return $this->forward(self::class.'::candidates', ['vendor' => $vendor]);
+        $candidates = $this->getDoctrine()->getRepository(SmartcardPurchase::class)
+            ->countPurchasesToRedeem($vendor);
+
+        return $this->json($candidates, 200, [], ['version' => 3]);
     }
 }
