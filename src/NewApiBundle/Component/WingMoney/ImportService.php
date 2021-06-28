@@ -96,9 +96,9 @@ class ImportService
                     return null;
                 }
 
-                $commodity = current($commodities);
+                $commodity = $commodities->first();
 
-                if (floor($commodity->getValue()) !== floor($entry->getAmount())) {
+                if (round($commodity->getValue()) !== round($entry->getAmount())) {
                     return null;
                 }
 
