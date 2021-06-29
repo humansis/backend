@@ -6,7 +6,7 @@ namespace NewApiBundle\Mapper;
 use NewApiBundle\Serializer\MapperInterface;
 use VoucherBundle\DTO\PurchaseRedemptionBatch;
 
-class SmartcardRedemptionCandidateMapper implements MapperInterface
+class SmartcardRedemptionCandidateVersion3Mapper implements MapperInterface
 {
     /** @var PurchaseRedemptionBatch */
     private $object;
@@ -16,7 +16,9 @@ class SmartcardRedemptionCandidateMapper implements MapperInterface
      */
     public function supports(object $object, $format = null, array $context = null): bool
     {
-        return $object instanceof PurchaseRedemptionBatch && isset($context[self::NEW_API]) && true === $context[self::NEW_API] && !isset($context['version']);
+        return $object instanceof PurchaseRedemptionBatch &&
+            isset($context[self::NEW_API]) && true === $context[self::NEW_API] &&
+            isset($context['version']) && 3 === $context['version'];
     }
 
     /**
@@ -36,11 +38,6 @@ class SmartcardRedemptionCandidateMapper implements MapperInterface
     public function getProjectId(): int
     {
         return $this->object->getProjectId();
-    }
-
-    public function getPurchaseIds(): array
-    {
-        return $this->object->getPurchasesIds();
     }
 
     public function getValue()
