@@ -124,6 +124,10 @@ services:
         arguments:
             - "@transformer.selection_criterion_field"
 
+    NewApiBundle\Controller\SmartcardPurchaseController:
+        arguments:
+            - '@NewApiBundle\Component\Smartcard\SmartcardPurchaseService'
+
     NewApiBundle\Controller\BeneficiaryCodelistController:
         public: true
         arguments:
@@ -231,3 +235,5 @@ services:
             - '@NewApiBundle\Component\Import\UploadImportService'
             - '%import.invalidFilesDirectory%'
             - '%import.maxFileSizeToLoad%'
+    NewApiBundle\Component\Smartcard\SmartcardPurchaseService:
+        arguments: [ '@smartcard_purchase.repository' ]
