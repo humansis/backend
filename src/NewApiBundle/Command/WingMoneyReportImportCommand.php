@@ -56,22 +56,22 @@ class WingMoneyReportImportCommand extends Command
         $assistance = $this->getAssistance($input);
         $user = $this->getUser($input);
 
-        echo 'Parsing file "'.$reportFile.'"'.PHP_EOL;
+        $output->writeln('Parsing file "'.$reportFile.'"');
 
         $entries = $this->reportParser->parseEntries($reportFile);
 
         $totalEntries = count($entries);
-        echo 'Found '.$totalEntries.' valid entries in given file'.PHP_EOL;
+        $output->writeln('Found '.$totalEntries.' valid entries in given file');
 
         $newEntries = $this->importService->filterExistingTransactions($entries);
         $totalInSystem = $totalEntries - count($newEntries);
 
-        echo $totalInSystem.' entries are already in system'.PHP_EOL;
+        $output->writeln($totalInSystem.' entries are already in system');
 
         $entriesToImport = $this->importService->filterTransactionsInAssistanceOnly($newEntries, $assistance);
 
-        echo count($newEntries) - count($entriesToImport).' entries won\'t be imported (phone number not found, phone number does not belong to beneficiary in given assistance, amount does not match with assistance commodity)'.PHP_EOL;
-        echo count($entriesToImport).' entries ready to import'.PHP_EOL;
+        $output->writeln(count($newEntries) - count($entriesToImport).' entries won\'t be imported (phone number not found, phone number does not belong to beneficiary in given assistance, amount does not match with assistance commodity)');
+        $output->writeln(count($entriesToImport).' entries ready to import');
 
         /** @var ReportEntry $entry */
         foreach ($entriesToImport as $entry) {
@@ -80,10 +80,11 @@ class WingMoneyReportImportCommand extends Command
             }
         }
 
+        $output->writeln('');
         if ($input->getOption('check')) {
-            echo PHP_EOL.'None entries were imported.'.PHP_EOL;
+            $output->writeln('None entries were imported.');
         } else {
-            echo PHP_EOL.'Entries were imported'.PHP_EOL;
+            $output->writeln('Entries were imported');
         }
 
         return 0;
