@@ -117,6 +117,7 @@ abstract class DefaultFinancialProvider
         );
 
         $count = 0;
+        $requestCount = 0;
         foreach ($distributionBeneficiaries as $assistanceBeneficiary) {
             $cache->set($this->from . '-progression-' . $assistance->getId(), $count);
             $beneficiary = $assistanceBeneficiary->getBeneficiary();
@@ -171,6 +172,8 @@ abstract class DefaultFinancialProvider
                             $this->logger->warning("Money sending: Recipient error: ".$e->getMessage(), [$beneficiary, $assistanceBeneficiary]);
                             $this->createTransaction($assistanceBeneficiary, '', new \DateTime(), 0, 2, $e->getMessage());
                             array_push($response['failure'], $assistanceBeneficiary);
+                        } finally {
+                            $requestCount++;
                         }
                     } else {
                         $this->logger->warning("Money sending: Recipient omitted - money limit", [$beneficiary, $assistanceBeneficiary]);
@@ -185,7 +188,7 @@ abstract class DefaultFinancialProvider
 
             $count++;
 
-            if ($count > self::MAX_BATCH_SIZE) break;
+            if ($requestCount >= self::MAX_BATCH_SIZE) break;
         }
 
         $cache->delete($this->from . '-progression-' . $assistance->getId());
