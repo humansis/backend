@@ -5,6 +5,7 @@ namespace Tests\NewApiBundle\Controller;
 use Exception;
 use Tests\BMSServiceTestCase;
 use VoucherBundle\Entity\SmartcardPurchase;
+use VoucherBundle\Entity\Vendor;
 
 class SmartcardPurchaseControllerTest extends BMSServiceTestCase
 {
@@ -62,4 +63,32 @@ class SmartcardPurchaseControllerTest extends BMSServiceTestCase
         }', $this->client->getResponse()->getContent());
     }
 
+    public function testPurchasesByRedemptionCandidates()
+    {
+        $result = $this->em->createQueryBuilder()
+            ->select('p.id', 'v.vendorNo', 's.currency')
+            ->from(SmartcardPurchase::class, 'sp')
+            ->join('sp.vendor', 'v')
+            ->join('sp.smartcard', 's')
+            ->join('s.deposites', 'sd')
+            ->join('sd.assistanceBeneficiary', 'ab')
+            ->join('ab.assistance', 'a')
+            ->join('a.project', 'p')
+            ->where('sp.redemptionBatch IS NULL')
+            ->getQuery()
+            ->setMaxResults(1)
+            ->getSingleResult();
+
+        $vendor = $this->em->getRepository(Vendor::class)->findOneBy(['vendorNo' => $result['vendorNo']]);
+
+        $this->request('GET', '/api/basic/vendor-app/v1/vendors/'.$vendor->getId().'/projects/'.$result['id'].'/currencies/'.$result['currency'].'/smartcard-purchases');
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('[
+            {"id": "*", "beneficiaryId": "*", "value": "*", "currency": "*", "dateOfPurchase": "*"}
+        ]', $this->client->getResponse()->getContent());
+    }
 }
