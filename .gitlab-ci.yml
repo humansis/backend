@@ -269,7 +269,7 @@ deploy test DCA fixtures:
     - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
   <<: *remove_key
   only:
-    - master
+    - dca_master
   when: manual
 
 deploy test DCA keep DB:
@@ -288,7 +288,7 @@ deploy test DCA keep DB:
     - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
   <<: *remove_key
   only:
-    - master
+    - dca_master
   when: manual
 
 deploy test DCA prod DB:
@@ -307,7 +307,7 @@ deploy test DCA prod DB:
     - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
   <<: *remove_key
   only:
-    - master
+    - dca_master
   when: manual
 
 deploy prod DCA:
@@ -326,7 +326,7 @@ deploy prod DCA:
     - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
   <<: *remove_key
   only:
-    - /^v.*$/
+    - /^dca-v.*$/
   except:
     - branches
   when: manual
