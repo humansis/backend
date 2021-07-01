@@ -297,16 +297,27 @@ class TransactionService
 
         $exportableTable = array();
         foreach ($assistanceBeneficiary as $db) {
-            $transaction = $this->em->getRepository(Transaction::class)->findOneByAssistanceBeneficiary($db);
+            $lastTransaction = $this->em->getRepository(Transaction::class)->findOneBy([
+                'assistanceBeneficiary' => $db,
+            ], ['dateSent' => 'desc']);
 
-            if (null === $transaction) {
+            $successTransaction = $this->em->getRepository(Transaction::class)->findOneBy([
+                'assistanceBeneficiary' => $db,
+                'transactionStatus' => Transaction::SUCCESS,
+            ], ['dateSent' => 'desc']);
+
+            $transaction = $lastTransaction;
+            if (null === $lastTransaction) {
                 $status = "Not sent";
-            } elseif ($transaction->getTransactionStatus() == Transaction::SUCCESS) {
+            } elseif (null !== $successTransaction) { // successful transaction has priority over everything
                 $status = "Success";
-            } elseif ($transaction->getTransactionStatus() == Transaction::FAILURE) {
+                $transaction = $successTransaction;
+            } elseif ($lastTransaction->getTransactionStatus() == Transaction::FAILURE) {
                 $status = "Error";
-            } elseif ($transaction->getTransactionStatus() == Transaction::NO_PHONE) {
+            } elseif ($lastTransaction->getTransactionStatus() == Transaction::NO_PHONE) {
                 $status = "No Phone";
+            } elseif ($lastTransaction->getTransactionStatus() == Transaction::CANCELED) {
+                $status = "Canceled";
             } else {
                 $status = "Unknown error";
             }
