@@ -45,7 +45,7 @@ class CampController extends AbstractController
     }
 
     /**
-     * @Rest\Get("locations/{id}/camps")
+     * @Rest\Get("/web-app/v1/locations/{id}/camps")
      *
      * @param Location $location
      *
