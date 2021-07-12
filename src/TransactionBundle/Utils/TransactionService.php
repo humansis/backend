@@ -328,7 +328,9 @@ class TransactionService
             $transactionAdditionalInfo = array(
                 "Amount Sent" => null,
                 "Sent At" => null,
+                "Phone number" => null,
                 "Transaction Status" => $status,
+                "Wing Transaction ID" => null,
                 "Message" => null,
                 "Money Received" => null,
                 "Pickup Date" => null,
@@ -340,9 +342,15 @@ class TransactionService
                 $transactionAdditionalInfo["Amount Sent"] = $transaction->getAmountSent();
                 $transactionAdditionalInfo["Message"] = $transaction->getMessage();
                 $transactionAdditionalInfo["Money Received"] = $transaction->getMoneyReceived();
+                $transactionAdditionalInfo["Wing Transaction ID"] = $transaction->getTransactionId();
             }
             if (null !== $transaction && $transaction->getDateSent()) {
                 $transactionAdditionalInfo["Sent At"] = $transaction->getDateSent()->format('d-m-Y H:i:s');
+                $phoneNumbers = [];
+                foreach ($beneficiary->getPerson()->getPhones() as $phone) {
+                    $phoneNumbers[] = $phone->getPrefix().' '.$phone->getNumber();
+                }
+                $transactionAdditionalInfo["Phone number"] = implode(', ', $phoneNumbers);
             }
             if (null !== $transaction && $transaction->getPickupDate()) {
                 $transactionAdditionalInfo["Pickup Date"] = $transaction->getPickupDate()->format('d-m-Y H:i:s');
