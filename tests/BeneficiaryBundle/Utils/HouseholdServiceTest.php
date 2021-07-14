@@ -3,6 +3,7 @@
 namespace Tests\BeneficiaryBundle\Utils;
 
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Enum\ResidencyStatus;
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -10,6 +11,7 @@ use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\AddressInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
+use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\InputType\HouseholdCreateInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
@@ -76,6 +78,11 @@ class HouseholdServiceTest extends KernelTestCase
         $phone->setNumber('123 456 789');
         $createBeneficiary->addPhone($phone);
 
+        $nationalId = new NationalIdCardInputType();
+        $nationalId->setType(NationalId::TYPE_NATIONAL_ID);
+        $nationalId->setNumber('111-222-333');
+        $createBeneficiary->addNationalIdCard($nationalId);
+
         $violations = $this->validator->validate($createData);
         if ($violations->count() > 0) {
             /** @var ConstraintViolationInterface $violation */
@@ -111,6 +118,11 @@ class HouseholdServiceTest extends KernelTestCase
         $this->assertEquals('123 456 789', $phones[0]->getNumber());
         $this->assertEquals('Mobile', $phones[0]->getType());
         $this->assertTrue($phones[0]->getProxy());
+
+        $nationalIds = $head->getPerson()->getNationalIds();
+        $this->assertCount(1, $nationalIds, "Wrong nationalID count");
+        $this->assertEquals(NationalId::TYPE_NATIONAL_ID, $nationalIds[0]->getIdType());
+        $this->assertEquals('111-222-333', $nationalIds[0]->getIdNumber());
 
         return $household->getId();
     }
