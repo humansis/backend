@@ -56,7 +56,7 @@ class HouseholdServiceTest extends KernelTestCase
         $addressData = new ResidenceAddressInputType();
         $addressData->setLocationId(1);
         $addressData->setNumber(123459);
-        $addressData->setPostcode('123 45');
+        $addressData->setPostcode(12345);
         $addressData->setStreet('Fakes st.');
         $createData->setResidenceAddress($addressData);
 
