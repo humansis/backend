@@ -257,7 +257,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     {
         $keys = [];
         foreach (Household::SHELTER_STATUSES as $key => $value) {
-            $keys[] = (string) $key;
+            $keys[] = (int) $key;
         }
 
         return $keys;
@@ -336,7 +336,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      */
     public function setShelterStatus($shelterStatus)
     {
-        $this->shelterStatus = $shelterStatus;
+        $this->shelterStatus = (int) $shelterStatus;
     }
 
     /**
@@ -492,7 +492,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     }
 
     /**
-     * @return \DateTimeInterface|null
+     * @return string|null
      */
     public function getSupportDateReceived()
     {
@@ -500,7 +500,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     }
 
     /**
-     * @param \DateTimeInterface|null $supportDateReceived
+     * @param string|null $supportDateReceived
      */
     public function setSupportDateReceived($supportDateReceived)
     {
