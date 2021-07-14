@@ -78,9 +78,21 @@ class HouseholdServiceTest extends KernelTestCase
         $phone->setNumber('123 456 789');
         $createBeneficiary->addPhone($phone);
 
+        $phone = new PhoneInputType();
+        $phone->setPrefix('+85');
+        $phone->setType('Landline');
+        $phone->setProxy(false);
+        $phone->setNumber('65 5432 14');
+        $createBeneficiary->addPhone($phone);
+
         $nationalId = new NationalIdCardInputType();
         $nationalId->setType(NationalId::TYPE_NATIONAL_ID);
         $nationalId->setNumber('111-222-333');
+        $createBeneficiary->addNationalIdCard($nationalId);
+
+        $nationalId = new NationalIdCardInputType();
+        $nationalId->setType(NationalId::TYPE_FAMILY);
+        $nationalId->setNumber('7897 4657 1234 7896');
         $createBeneficiary->addNationalIdCard($nationalId);
 
         $violations = $this->validator->validate($createData);
@@ -113,16 +125,23 @@ class HouseholdServiceTest extends KernelTestCase
         $this->assertNull($head->getPerson()->getEnParentsName());
 
         $phones = $head->getPerson()->getPhones();
-        $this->assertCount(1, $phones, "Wrong phone count");
+        $this->assertCount(2, $phones, "Wrong phone count");
         $this->assertEquals('+855', $phones[0]->getPrefix());
         $this->assertEquals('123 456 789', $phones[0]->getNumber());
         $this->assertEquals('Mobile', $phones[0]->getType());
         $this->assertTrue($phones[0]->getProxy());
 
+        $this->assertEquals('+85', $phones[1]->getPrefix());
+        $this->assertEquals('65 5432 14', $phones[1]->getNumber());
+        $this->assertEquals('Landline', $phones[1]->getType());
+        $this->assertFalse($phones[1]->getProxy());
+
         $nationalIds = $head->getPerson()->getNationalIds();
-        $this->assertCount(1, $nationalIds, "Wrong nationalID count");
+        $this->assertCount(2, $nationalIds, "Wrong nationalID count");
         $this->assertEquals(NationalId::TYPE_NATIONAL_ID, $nationalIds[0]->getIdType());
         $this->assertEquals('111-222-333', $nationalIds[0]->getIdNumber());
+        $this->assertEquals(NationalId::TYPE_FAMILY, $nationalIds[1]->getIdType());
+        $this->assertEquals('7897 4657 1234 7896', $nationalIds[1]->getIdNumber());
 
         return $household->getId();
     }
