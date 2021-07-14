@@ -47,8 +47,7 @@ class HouseholdServiceTest extends KernelTestCase
         $createData = new HouseholdCreateInputType();
         $createData->setProjectIds([1]);
         $createData->setIso3('KHM');
-        // $createData->setAssets([1,3,5]);
-        $createData->setAssets([]);
+        $createData->setAssets(["3", 2]);
         $createData->setLongitude('');
         $createData->setLatitude('');
         $createData->setNotes('');
@@ -94,8 +93,7 @@ class HouseholdServiceTest extends KernelTestCase
         $updateData = new HouseholdUpdateInputType();
         $updateData->setProjectIds([1]);
         $updateData->setIso3('KHM');
-        // $createData->setAssets([1,3,5]);
-        $updateData->setAssets([]);
+        $updateData->setAssets(["1", 5]);
         $updateData->setLongitude('');
         $updateData->setLatitude('');
         $updateData->setNotes('');

@@ -247,7 +247,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     {
         $keys = [];
         foreach (Household::ASSETS as $key => $value) {
-            $keys[] = (string) $key;
+            $keys[] = (int) $key;
         }
 
         return $keys;
@@ -316,9 +316,11 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     /**
      * @param int[] $assets
      */
-    public function setAssets($assets)
+    public function setAssets(array $assets)
     {
-        $this->assets = $assets;
+        foreach ($assets as $asset) {
+            $this->assets[] = (int) $asset;
+        }
     }
 
     /**
