@@ -75,6 +75,9 @@ services:
         resource: '../../Mapper'
         tags: [ 'app.mapper' ]
 
+    NewApiBundle\Mapper\AssistanceOfflineAppMapper:
+        arguments: [ "@=service('doctrine.orm.entity_manager').getRepository('NewApiBundle:AssistanceStatistics')" ]
+
     NewApiBundle\Mapper\SelectionCriterionFieldMapper:
         arguments: [ '@translator' ]
         tags: [ 'app.mapper' ]
