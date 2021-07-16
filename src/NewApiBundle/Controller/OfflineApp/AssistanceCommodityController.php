@@ -28,6 +28,11 @@ class AssistanceCommodityController extends AbstractController
 
         $commodities = $this->getDoctrine()->getRepository(Commodity::class)->findByCountry($countryIso3);
 
-        return $this->json($commodities);
+        $response = $this->json($commodities);
+        $response->setEtag(md5($response->getContent()));
+        $response->setPublic();
+        $response->isNotModified($request);
+
+        return $response;
     }
 }

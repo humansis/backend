@@ -43,11 +43,20 @@ class AssistanceController extends AbstractController
             throw new BadRequestHttpException('Missing country header');
         }
 
+        $fn = function (Assistance $assistance) {
+            return $assistance->getId().',';
+        };
+
         /** @var AssistanceRepository $repository */
         $repository = $this->getDoctrine()->getRepository(Assistance::class);
-
         $assistances = $repository->findByProjectInOfflineApp($project, $countryIso3, $filter);
+        $hash = array_reduce($assistances, $fn, '');
 
-        return $this->json($assistances);
+        $response = $this->json($assistances);
+        $response->setEtag(md5($hash));
+        $response->setPublic();
+        $response->isNotModified($request);
+
+        return $response;
     }
 }
