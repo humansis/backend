@@ -2,6 +2,7 @@
 
 namespace BeneficiaryBundle\Repository;
 use CommonBundle\Entity\Location;
+use NewApiBundle\InputType\CampFilterInputType;
 
 /**
  * CampRepository
@@ -11,13 +12,21 @@ use CommonBundle\Entity\Location;
  */
 class CampRepository extends \Doctrine\ORM\EntityRepository
 {
-
-    public function findByCountry(string $countryISO3)
+    public function findByCountry(string $countryISO3, ?CampFilterInputType $filterInputType = null)
     {
         $qb = $this->createQueryBuilder('c')
             ->leftJoin('c.location', 'l');
+
+        if (!is_null($filterInputType)) {
+            if ($filterInputType->hasIds()) {
+                $qb->andWhere('c.id = :ids')
+                    ->setParameter('ids', $filterInputType->getIds());
+            }
+        }
+
         $locationRepository = $this->getEntityManager()->getRepository(Location::class);
         $locationRepository->whereCountry($qb, $countryISO3);
+
         return $qb->getQuery()->getResult();
 
     }
