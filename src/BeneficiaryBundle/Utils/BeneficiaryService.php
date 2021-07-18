@@ -14,6 +14,9 @@ use BeneficiaryBundle\Form\HouseholdConstraints;
 use CommonBundle\Controller\ExportController;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\InputType\BenefciaryPatchInputType;
+use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
+use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
+use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\InputType\HouseholdFilterInputType;
 use NewApiBundle\InputType\HouseholdOrderInputType;
 use NewApiBundle\Request\Pagination;
@@ -78,6 +81,110 @@ class BeneficiaryService
     public function getAllVulnerabilityCriteria()
     {
         return $this->em->getRepository(VulnerabilityCriterion::class)->findAllActive();
+    }
+
+    public function createPhone(PhoneInputType $inputType): Phone
+    {
+        $phone = new Phone();
+
+        $number = $inputType->getNumber();
+        if (preg_match('/^0/', $number)) {
+            $number = substr($number, 1);
+        }
+
+        $phone->setType($inputType->getType());
+        $phone->setPrefix($inputType->getPrefix());
+        $phone->setNumber($number);
+        $phone->setProxy($inputType->getProxy());
+
+        $this->em->persist($phone);
+
+        return $phone;
+    }
+
+    public function createNationalId(NationalIdCardInputType $inputType): NationalId
+    {
+        $nationalId = new NationalId();
+
+        $nationalId->setIdType($inputType->getType());
+        $nationalId->setIdNumber($inputType->getNumber());
+
+        $this->em->persist($nationalId);
+
+        return $nationalId;
+    }
+
+    /**
+     * @param Beneficiary          $beneficiary
+     * @param BeneficiaryInputType $inputType
+     *
+     * @return Beneficiary
+     *
+     * //TODO rename after old methods removal
+     */
+    public function newUpdate(Beneficiary $beneficiary, BeneficiaryInputType $inputType): Beneficiary
+    {
+        $beneficiaryPerson = $beneficiary->getPerson();
+
+        $beneficiaryPerson->setGender($inputType->getGender())
+            ->setDateOfBirth($inputType->getDateOfBirth())
+            ->setEnGivenName($inputType->getEnGivenName())
+            ->setEnFamilyName($inputType->getEnFamilyName())
+            ->setEnParentsName($inputType->getEnParentsName())
+            ->setLocalGivenName($inputType->getLocalGivenName())
+            ->setLocalFamilyName($inputType->getLocalFamilyName())
+            ->setLocalParentsName($inputType->getLocalParentsName());
+
+        $beneficiary->setHead($inputType->isHead())
+            ->setResidencyStatus($inputType->getResidencyStatus())
+            ->setUpdatedOn(new \DateTime()); //TODO use doctrine lifecycle callback
+
+        //phones
+        foreach ($beneficiaryPerson->getPhones() as $oldPhone) {
+            $this->em->remove($oldPhone);
+        }
+        $beneficiaryPerson->getPhones()->clear();
+
+        foreach ($inputType->getPhones() as $phoneInputType) {
+            $phone = $this->createPhone($phoneInputType);
+            $phone->setPerson($beneficiaryPerson);
+        }
+
+        //national ids
+        foreach ($beneficiaryPerson->getNationalIds() as $nationalId) {
+            $this->em->remove($nationalId);
+        }
+        $beneficiaryPerson->getNationalIds()->clear();
+
+        foreach ($inputType->getNationalIdCards() as $nationalIdInputType) {
+            $nationalId = $this->createNationalId($nationalIdInputType);
+            $nationalId->setPerson($beneficiaryPerson);
+        }
+
+        //vulnerability criteria
+        $beneficiary->getVulnerabilityCriteria()->clear();
+        foreach ($inputType->getVulnerabilityCriteria() as $vulnerabilityCriterionName) {
+            /** @var VulnerabilityCriterion $criterion */
+            $criterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy(['fieldString' => $vulnerabilityCriterionName]);
+            $beneficiary->addVulnerabilityCriterion($criterion);
+        }
+
+        //referral
+        $referral = $beneficiaryPerson->getReferral();
+
+        if (is_null($referral)) {
+            $referral = new Referral();
+            $this->em->persist($referral);
+        }
+
+        $referral->setType($inputType->getReferralType());
+        $referral->setComment($inputType->getReferralComment());
+
+        $this->em->persist($beneficiary);
+
+        $this->em->flush();
+
+        return $beneficiary;
     }
 
     /**

@@ -16,6 +16,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 class BeneficiaryInputType implements InputTypeInterface
 {
     /**
+     * @var int|null
+     * @Assert\Type("integer")
+     */
+    private $id;
+
+    /**
      * @Iso8601
      * @Assert\NotBlank
      * @Assert\NotNull
@@ -376,5 +382,21 @@ class BeneficiaryInputType implements InputTypeInterface
     public function setVulnerabilityCriteria($vulnerabilityCriteria)
     {
         $this->vulnerabilityCriteria = $vulnerabilityCriteria;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int|null $id
+     */
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
     }
 }

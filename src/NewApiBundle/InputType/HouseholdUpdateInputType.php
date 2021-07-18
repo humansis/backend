@@ -491,8 +491,10 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
         $this->debtLevel = $debtLevel;
     }
 
+
     /**
-     * @return string|null
+     * @return \DateTime|null
+     * @throws \Exception
      */
     public function getSupportDateReceived()
     {
