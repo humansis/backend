@@ -22,6 +22,9 @@ use CommonBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Exception;
+use NewApiBundle\InputType\Beneficiary\Address\CampAddressInputType;
+use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
+use NewApiBundle\InputType\Beneficiary\Address\TemporarySettlementAddressInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 use NewApiBundle\InputType\Beneficiary\CountrySpecificsAnswerInputType;
 use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
@@ -131,45 +134,18 @@ class HouseholdService
 
         /** @var Household $household */
         $household = new Household();
-        // TODO: predelat
-        // foreach ($householdArray['household_locations'] as $householdLocation) {
-        //     $newHouseholdLocation = new HouseholdLocation();
-        //     $newHouseholdLocation
-        //         ->setLocationGroup($householdLocation['location_group'])
-        //         ->setType($householdLocation['type']);
-        //
-        //     if ($householdLocation['type'] === HouseholdLocation::LOCATION_TYPE_CAMP) {
-        //         // Try to find the camp with the name in the request
-        //         $camp = $this->em->getRepository(Camp::class)->findOneBy(['name' => $householdLocation['camp_address']['camp']['name']]);
-        //         // Or create a camp with the name in the request
-        //         if (!$camp instanceof Camp) {
-        //             $location = $this->locationService->getLocation($householdArray['__country'], $householdLocation['camp_address']['camp']['location']);
-        //             if (null === $location) {
-        //                 throw new \Exception("Location was not found.");
-        //             }
-        //             $camp = new Camp();
-        //             $camp->setName($householdLocation['camp_address']['camp']['name']);
-        //             $camp->setLocation($location);
-        //         }
-        //         $campAddress = new CampAddress();
-        //         $campAddress->setTentNumber($householdLocation['camp_address']['tent_number'])
-        //             ->setCamp($camp);
-        //         $newHouseholdLocation->setCampAddress($campAddress);
-        //     } else {
-        //         $location = $this->locationService->getLocation($householdArray['__country'], $householdLocation['address']["location"]);
-        //         if (null === $location) {
-        //             throw new \Exception("Location was not found.");
-        //         }
-        //         $newHouseholdLocation->setAddress(Address::create(
-        //             $householdLocation['address']['street'] ?? null,
-        //             $householdLocation['address']['number'] ?? null,
-        //             $householdLocation['address']['postcode'] ?? null,
-        //             $location
-        //         ));
-        //     }
-        //     $household->addHouseholdLocation($newHouseholdLocation);
-        //     $this->em->persist($newHouseholdLocation);
-        // }
+
+        if ($inputType->getResidenceAddress()) {
+            $household->addHouseholdLocation($this->createResidenceAddress($inputType->getResidenceAddress()));
+        }
+
+        if ($inputType->getTemporarySettlementAddress()) {
+            $household->addHouseholdLocation($this->createTemporarySettlementAddress($inputType->getTemporarySettlementAddress()));
+        }
+
+        if ($inputType->getCampAddress()) {
+            $household->addHouseholdLocation($this->createCampAddress($inputType->getCampAddress()));
+        }
 
         $household->setNotes($inputType->getNotes())
             ->setLivelihood($inputType->getLivelihood())
@@ -248,6 +224,72 @@ class HouseholdService
         return $household;
     }
 
+    private function createResidenceAddress(ResidenceAddressInputType $inputType): HouseholdLocation
+    {
+        $householdLocation = new HouseholdLocation();
+        $householdLocation->setLocationGroup(HouseholdLocation::LOCATION_GROUP_CURRENT);
+        $householdLocation->setType(HouseholdLocation::LOCATION_TYPE_RESIDENCE);
+
+        $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
+        if (null === $location) {
+            throw new \Exception("Location was not found.");
+        }
+        $householdLocation->setAddress(Address::create(
+            $inputType->getStreet(),
+            $inputType->getNumber(),
+            $inputType->getPostcode(),
+            $location
+        ));
+
+        return $householdLocation;
+    }
+
+    private function createTemporarySettlementAddress(TemporarySettlementAddressInputType $inputType): HouseholdLocation
+    {
+        $householdLocation = new HouseholdLocation();
+        $householdLocation->setLocationGroup(HouseholdLocation::LOCATION_GROUP_CURRENT);
+        $householdLocation->setType(HouseholdLocation::LOCATION_TYPE_SETTLEMENT);
+
+        $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
+        if (null === $location) {
+            throw new \Exception("Location was not found.");
+        }
+        $householdLocation->setAddress(Address::create(
+            $inputType->getStreet(),
+            $inputType->getNumber(),
+            $inputType->getPostcode(),
+            $location
+        ));
+
+        return $householdLocation;
+    }
+
+    private function createCampAddress(CampAddressInputType $inputType): HouseholdLocation
+    {
+        $householdLocation = new HouseholdLocation();
+        $householdLocation->setLocationGroup(HouseholdLocation::LOCATION_GROUP_CURRENT);
+        $householdLocation->setType(HouseholdLocation::LOCATION_TYPE_CAMP);
+
+        // Try to find the camp with the name in the request
+        $camp = $this->em->getRepository(Camp::class)->findOneBy(['name' => $inputType->getCamp()->getName()]);
+
+        // Or create a camp with the name in the request
+        if (!$camp) {
+            $location = $this->em->getRepository(Location::class)->find($inputType->getCampId());
+            if (null === $location) {
+                throw new \Exception("Location was not found.");
+            }
+            $camp = new Camp();
+            $camp->setName($inputType->getCamp()->getName());
+            $camp->setLocation($location);
+        }
+        $campAddress = new CampAddress();
+        $campAddress->setTentNumber($inputType->getTentNumber())
+            ->setCamp($camp);
+        $householdLocation->setCampAddress($campAddress);
+        return $householdLocation;
+    }
+
     /**
      * @param Household                $household
      * @param HouseholdUpdateInputType $inputType
@@ -271,8 +313,6 @@ class HouseholdService
      *
      * @throws EntityNotFoundException
      * @throws Exception
-     *
-     * //TODO rename after old methods
      */
     public function newUpdate(Household $household, HouseholdUpdateInputType $inputType)
     {
@@ -293,7 +333,17 @@ class HouseholdService
         }
         $household->getHouseholdLocations()->clear();
 
-        //TODO hh location
+        if ($inputType->getResidenceAddress()) {
+            $household->addHouseholdLocation($this->createResidenceAddress($inputType->getResidenceAddress()));
+        }
+
+        if ($inputType->getTemporarySettlementAddress()) {
+            $household->addHouseholdLocation($this->createTemporarySettlementAddress($inputType->getTemporarySettlementAddress()));
+        }
+
+        if ($inputType->getCampAddress()) {
+            $household->addHouseholdLocation($this->createCampAddress($inputType->getCampAddress()));
+        }
 
         $household->setNotes($inputType->getNotes())
             ->setLivelihood($inputType->getLivelihood())
