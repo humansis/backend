@@ -15,6 +15,7 @@ use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\InputType\HouseholdCreateInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
+use ProjectBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\ConstraintViolationInterface;
@@ -309,6 +310,61 @@ class HouseholdServiceTest extends KernelTestCase
         $this->assertEquals('000', $nationalIds[0]->getIdNumber());
         $this->assertEquals(NationalId::TYPE_BIRTH_CERTIFICATE, $nationalIds[1]->getIdType());
         $this->assertEquals('111', $nationalIds[1]->getIdNumber());
+    }
+
+    public function testUpdateBeneficiaryInHousehold()
+    {
+        /** @var Project|null $project */
+        $project = $this->entityManager->getRepository(Project::class)->findOneBy([]);
+
+        if (is_null($project)) {
+            $this->markTestSkipped('There needs to be at least one project in system to complete this test');
+        }
+
+        $householdCreateInputType = new HouseholdCreateInputType();
+        $householdCreateInputType->setProjectIds([$project->getId()]);
+        $householdCreateInputType->setIso3('KHM');
+        $householdCreateInputType->setAssets([current(array_keys(Household::ASSETS))]);
+
+        $addressData = new ResidenceAddressInputType();
+        $addressData->setLocationId(1);
+        $addressData->setNumber(123459);
+        $addressData->setPostcode(12345);
+        $addressData->setStreet('Fakes st.');
+        $householdCreateInputType->setResidenceAddress($addressData);
+
+        $beneficiaryInputType = new BeneficiaryInputType();
+        $beneficiaryInputType->setGender('M');
+        $beneficiaryInputType->setDateOfBirth('2000-01-01');
+        $beneficiaryInputType->setIsHead(true);
+        $beneficiaryInputType->setLocalGivenName('000Head');
+        $beneficiaryInputType->setLocalFamilyName('000Head');
+        $beneficiaryInputType->setEnGivenName('000Head');
+        $beneficiaryInputType->setEnFamilyName('000Head');
+        $beneficiaryInputType->setEnParentsName('000Head');
+        $beneficiaryInputType->setResidencyStatus(ResidencyStatus::RETURNEE);
+        $householdCreateInputType->addBeneficiary($beneficiaryInputType);
+
+        $household = $this->householdService->create($householdCreateInputType);
+
+        $this->assertEquals(ResidencyStatus::RETURNEE, $household->getBeneficiaries()->first()->getResidencyStatus());
+
+        $householdUpdateInputType = new HouseholdUpdateInputType();
+        $householdUpdateInputType->setProjectIds([$project->getId()]);
+        $householdUpdateInputType->setIso3('KHM');
+        $householdUpdateInputType->setAssets([current(array_keys(Household::ASSETS))]);
+
+        $beneficiaryInputType->setResidencyStatus(ResidencyStatus::IDP);
+        $householdUpdateInputType->addBeneficiary($beneficiaryInputType);
+
+        $householdUpdateInputType->setResidenceAddress($addressData);
+
+        $this->householdService->update($household, $householdUpdateInputType);
+
+        $this->entityManager->refresh($household);
+
+        $this->assertEquals(1, $household->getBeneficiaries()->count());
+        $this->assertEquals(ResidencyStatus::IDP, $household->getBeneficiaries()->first()->getResidencyStatus());
     }
 
 }
