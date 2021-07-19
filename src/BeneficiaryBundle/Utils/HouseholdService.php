@@ -121,9 +121,131 @@ class HouseholdService
 
     public function create(HouseholdCreateInputType $inputType): Household
     {
-        $data = $this->fallbackMap($inputType);
+        $headCount = $inputType->getBeneficiaryHeadCount();
+        if ($headCount < 1) {
+            throw new \InvalidArgumentException('Household has less than one Head');
+        }
+        if ($headCount > 1) {
+            throw new \InvalidArgumentException('Household has more than one Head');
+        }
 
-        return $this->createOrEdit($data, $inputType->getProjectIds());
+        /** @var Household $household */
+        $household = new Household();
+        // TODO: predelat
+        // foreach ($householdArray['household_locations'] as $householdLocation) {
+        //     $newHouseholdLocation = new HouseholdLocation();
+        //     $newHouseholdLocation
+        //         ->setLocationGroup($householdLocation['location_group'])
+        //         ->setType($householdLocation['type']);
+        //
+        //     if ($householdLocation['type'] === HouseholdLocation::LOCATION_TYPE_CAMP) {
+        //         // Try to find the camp with the name in the request
+        //         $camp = $this->em->getRepository(Camp::class)->findOneBy(['name' => $householdLocation['camp_address']['camp']['name']]);
+        //         // Or create a camp with the name in the request
+        //         if (!$camp instanceof Camp) {
+        //             $location = $this->locationService->getLocation($householdArray['__country'], $householdLocation['camp_address']['camp']['location']);
+        //             if (null === $location) {
+        //                 throw new \Exception("Location was not found.");
+        //             }
+        //             $camp = new Camp();
+        //             $camp->setName($householdLocation['camp_address']['camp']['name']);
+        //             $camp->setLocation($location);
+        //         }
+        //         $campAddress = new CampAddress();
+        //         $campAddress->setTentNumber($householdLocation['camp_address']['tent_number'])
+        //             ->setCamp($camp);
+        //         $newHouseholdLocation->setCampAddress($campAddress);
+        //     } else {
+        //         $location = $this->locationService->getLocation($householdArray['__country'], $householdLocation['address']["location"]);
+        //         if (null === $location) {
+        //             throw new \Exception("Location was not found.");
+        //         }
+        //         $newHouseholdLocation->setAddress(Address::create(
+        //             $householdLocation['address']['street'] ?? null,
+        //             $householdLocation['address']['number'] ?? null,
+        //             $householdLocation['address']['postcode'] ?? null,
+        //             $location
+        //         ));
+        //     }
+        //     $household->addHouseholdLocation($newHouseholdLocation);
+        //     $this->em->persist($newHouseholdLocation);
+        // }
+
+        $household->setNotes($inputType->getNotes())
+            ->setLivelihood($inputType->getLivelihood())
+            ->setLongitude($inputType->getLongitude())
+            ->setLatitude($inputType->getLatitude())
+            ->setIncomeLevel($inputType->getIncomeLevel())
+            ->setCopingStrategiesIndex($inputType->getCopingStrategiesIndex())
+            ->setFoodConsumptionScore($inputType->getFoodConsumptionScore())
+            ->setAssets($inputType->getAssets())
+            ->setShelterStatus($inputType->getShelterStatus())
+            ->setDebtLevel($inputType->getDebtLevel())
+            ->setSupportReceivedTypes($inputType->getSupportReceivedTypes())
+            ->setSupportOrganizationName($inputType->getSupportOrganizationName())
+            ->setIncomeSpentOnFood($inputType->getIncomeSpentOnFood())
+            ->setHouseholdIncome($inputType->getHouseIncome())
+            ->setEnumeratorName($inputType->getEnumeratorName())
+            ->setSupportDateReceived($inputType->getSupportDateReceived());
+
+        $this->em->persist($household);
+
+        // Add projects
+        $projects = $this->em->getRepository(Project::class)->findBy(["id" => $inputType->getProjectIds()]);
+        foreach ($projects as $project) {
+            $household->addProject($project);
+        }
+
+        foreach ($inputType->getBeneficiaries() as $beneficiaryInputType) {
+            $beneficiary = $this->beneficiaryService->create($beneficiaryInputType);
+            $household->addBeneficiary($beneficiary);
+            $this->em->persist($beneficiary);
+        }
+
+
+        foreach ($inputType->getCountrySpecificAnswers() as $country_specific_answer) {
+            $this->addOrUpdateCountrySpecific($household, $country_specific_answer, false);
+        }
+
+
+        if ($inputType->hasProxy()) {
+            $proxy = new Person();
+            $proxy->setEnGivenName($inputType->getProxyEnGivenName());
+            $proxy->setEnFamilyName($inputType->getProxyEnFamilyName());
+            $proxy->setEnParentsName($inputType->getProxyEnParentsName());
+            $proxy->setLocalGivenName($inputType->getProxyLocalGivenName());
+            $proxy->setLocalFamilyName($inputType->getProxyLocalFamilyName());
+            $proxy->setLocalParentsName($inputType->getProxyLocalParentsName());
+
+            /** @var PhoneInputType $phoneInputType */
+            $phoneInputType = $inputType->getProxyPhone();
+
+            $proxy->getPhones()->clear();
+
+            $phone = new Phone();
+            $phone->setType($phoneInputType->getType());
+            $phone->setPrefix($phoneInputType->getPrefix());
+            $phone->setNumber($phoneInputType->getNumber());
+            $phone->setProxy($phoneInputType->getProxy());
+            $phone->setPerson($proxy);
+
+            $this->em->persist($phone);
+
+            /** @var NationalIdCardInputType $nationalIdInputType */
+            $nationalIdInputType = $inputType->getProxyNationalIdCard();
+
+            $proxy->getNationalIds()->clear();
+
+            $nationalId = new NationalId();
+            $nationalId->setIdType($nationalIdInputType->getType());
+            $nationalId->setIdNumber($nationalIdInputType->getNumber());
+            $nationalId->setPerson($proxy);
+
+            $this->em->persist($nationalId);
+            $household->setProxy($proxy);
+        }
+
+        return $household;
     }
 
     /**
@@ -612,11 +734,11 @@ class HouseholdService
 
     /**
      * @param Household $household
-     * @param array $countrySpecificAnswerArray
+     * @param $countrySpecificAnswerArray
      * @return array|CountrySpecificAnswer
      * @throws Exception
      */
-    public function addOrUpdateCountrySpecific(Household $household, array $countrySpecificAnswerArray, bool $flush)
+    public function addOrUpdateCountrySpecific(Household $household, $countrySpecificAnswerArray, bool $flush)
     {
         $this->requestValidator->validate(
             "country_specific_answer",

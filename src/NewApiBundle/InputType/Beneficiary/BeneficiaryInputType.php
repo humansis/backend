@@ -352,6 +352,13 @@ class BeneficiaryInputType implements InputTypeInterface
         $this->referralComment = $referralComment;
     }
 
+    public function hasReferral(): bool
+    {
+        return null !== $this->referralType
+            && null !== $this->referralComment
+            ;
+    }
+
     /**
      * @return boolean
      */

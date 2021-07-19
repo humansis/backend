@@ -125,6 +125,7 @@ class HouseholdServiceTest extends KernelTestCase
         }
 
         $household = $this->householdService->create($createData);
+        $this->entityManager->flush();
         $this->assertNotNull($household);
         $this->assertNotNull($household->getId());
         $this->assertEquals('12.123456', $household->getLongitude());
@@ -148,6 +149,7 @@ class HouseholdServiceTest extends KernelTestCase
         $this->assertEquals('tester', $household->getEnumeratorName());
 
         $head = $household->getHouseholdHead();
+        $this->assertNotNull($head, "Missing head");
         $person = $head->getPerson();
         $this->assertEquals('2000-12-31', $person->getDateOfBirth()->format('Y-m-d'));
         $this->assertEquals(0, $person->getGender());

@@ -193,6 +193,56 @@ class BeneficiaryService
         return $beneficiary;
     }
 
+    public function create(BeneficiaryInputType $inputType): Beneficiary
+    {
+        $beneficiary = new Beneficiary();
+        $beneficiary
+            ->setHead($inputType->isHead())
+            ->setResidencyStatus($inputType->getResidencyStatus())
+            ->setUpdatedOn(new \DateTime());
+
+        foreach ($inputType->getVulnerabilityCriteria() as $id => $vulnerability_criterion) {
+            $beneficiary->addVulnerabilityCriterion($this->getVulnerabilityCriterion($id));
+        }
+
+        $person = $beneficiary->getPerson();
+        $person->setGender($inputType->getGender())
+            ->setDateOfBirth($inputType->getDateOfBirth())
+            ->setEnFamilyName($inputType->getEnFamilyName())
+            ->setEnGivenName($inputType->getEnGivenName())
+            ->setEnParentsName($inputType->getEnParentsName())
+            ->setLocalFamilyName($inputType->getLocalFamilyName())
+            ->setLocalGivenName($inputType->getLocalGivenName())
+            ->setLocalParentsName($inputType->getLocalParentsName())
+            ->setUpdatedOn(new \DateTime());
+
+        foreach ($inputType->getPhones() as $phoneInputType) {
+            $person->addPhone($this->createPhone($phoneInputType));
+        }
+
+        foreach ($inputType->getNationalIdCards() as $nationalIdArray) {
+            $person->addNationalId($this->createNationalId($nationalIdArray));
+        }
+
+        // $this->createProfile($person, $inputType->getProfile()); TODO
+
+        $previousReferral = $person->getReferral();
+        if ($previousReferral) {
+            $this->em->remove($previousReferral);
+        }
+        if ($inputType->hasReferral()) {
+            $referral = new Referral();
+            $referral->setType($inputType->getReferralType())
+                ->setComment($inputType->getReferralComment());
+            $person->setReferral($referral);
+            $this->em->persist($referral);
+        }
+
+        $this->em->persist($beneficiary);
+
+        return $beneficiary;
+    }
+
     /**
      * @param Household $household
      * @param array $beneficiaryArray

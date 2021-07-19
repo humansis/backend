@@ -788,4 +788,27 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     {
         $this->proxyPhone = $proxyPhone;
     }
+
+    /**
+     * @Assert\EqualTo(1)
+     * @return int
+     */
+    public function getBeneficiaryHeadCount(): int
+    {
+        $headCount = 0;
+        foreach ($this->getBeneficiaries() as $beneficiaryInputType) {
+            if ($beneficiaryInputType->isHead()) {
+                $headCount++;
+            }
+        }
+        return $headCount;
+    }
+
+
+    public function hasProxy(): bool
+    {
+        return null !== $this->getProxyLocalGivenName()
+            && null !== $this->getProxyLocalFamilyName()
+            ;
+    }
 }
