@@ -75,7 +75,12 @@ class BookletFilterInputType extends AbstractFilterInputType
 
     public static function bookletStatuses()
     {
-        return array_keys(Booklet::statuses());
+        $keys = [];
+        foreach (Booklet::statuses() as $key => $value) {
+            $keys[] = (string) $key;
+        }
+
+        return $keys;
     }
 
     public function hasIds(): bool
