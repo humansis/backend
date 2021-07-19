@@ -3,6 +3,7 @@
 namespace Tests\BeneficiaryBundle\Utils;
 
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Enum\ResidencyStatus;
 use BeneficiaryBundle\Utils\HouseholdService;
@@ -147,6 +148,18 @@ class HouseholdServiceTest extends KernelTestCase
         $this->assertEquals(100000, $household->getIncomeSpentOnFood());
         $this->assertEquals(3, $household->getIncomeLevel());
         $this->assertEquals('tester', $household->getEnumeratorName());
+
+        $locations = $household->getHouseholdLocations();
+        $this->assertCount(1, $locations);
+        /** @var HouseholdLocation $location */
+        $location = $locations[0];
+        $this->assertEquals(HouseholdLocation::LOCATION_TYPE_RESIDENCE, $location->getType());
+        $this->assertNotNull($location->getLocation());
+        $this->assertEquals(1, $location->getLocation()->getId());
+        $this->assertNull($location->getCampAddress());
+        $this->assertEquals('123459', $location->getAddress()->getNumber());
+        $this->assertEquals('Fakes st.', $location->getAddress()->getStreet());
+        $this->assertEquals('12345', $location->getAddress()->getPostcode());
 
         $head = $household->getHouseholdHead();
         $this->assertNotNull($head, "Missing head");
