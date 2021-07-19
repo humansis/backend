@@ -136,4 +136,9 @@ class AssistanceMapper implements MapperInterface
     {
         return (bool) $this->object->getCompleted();
     }
+
+    public function getDeletable(): bool
+    {
+        return !$this->object->getValidated();
+    }
 }

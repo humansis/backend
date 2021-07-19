@@ -55,7 +55,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "description": "*",
             "commodityIds": ['.implode(',', $commodityIds).'],
             "validated": '.($assistance->getValidated() ? 'true' : 'false').',
-            "completed": '.($assistance->getCompleted() ? 'true' : 'false').'
+            "completed": '.($assistance->getCompleted() ? 'true' : 'false').',
+            "deletable": '.($assistance->getValidated() ? 'false' : 'true').'
         }', $this->client->getResponse()->getContent());
     }
 
@@ -151,6 +152,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "subsector": "*",
             "householdsTargeted": "*",
             "individualsTargeted": "*",
+            "deletable": true,
             "description": "*",
             "commodityIds": ["*"]
         }', $this->client->getResponse()->getContent());
@@ -203,6 +205,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "subsector": "*",
             "householdsTargeted": "*",
             "individualsTargeted": "*",
+            "deletable": true,
             "description": "*",
             "commodityIds": "*"
         }', $this->client->getResponse()->getContent());
@@ -250,6 +253,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "subsector": "*",
             "householdsTargeted": "*",
             "individualsTargeted": "*",
+            "deletable": true,
             "description": "*",
             "commodityIds": []
         }', $this->client->getResponse()->getContent());

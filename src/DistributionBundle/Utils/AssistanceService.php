@@ -831,8 +831,27 @@ class AssistanceService
             $this->em->remove($criterion);
         }
         foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+            /** @var AssistanceBeneficiary $assistanceBeneficiary */
             foreach ($assistanceBeneficiary->getGeneralReliefs() as $relief) {
                 $this->em->remove($relief);
+            }
+            foreach ($assistanceBeneficiary->getTransactions() as $transaction) {
+                $this->em->remove($transaction);
+            }
+            foreach ($assistanceBeneficiary->getSmartcardDeposits() as $deposit) {
+                $this->em->remove($deposit);
+            }
+            foreach ($assistanceBeneficiary->getBooklets() as $booklet) {
+                foreach ($booklet->getVouchers() as $voucher) {
+                    foreach ($voucher->getVoucherPurchase() as $voucherPurchase) {
+                        foreach ($voucherPurchase->getRecords() as $record) {
+                            $this->em->remove($record);
+                        }
+                        $this->em->remove($voucherPurchase);
+                    }
+                    $this->em->remove($voucher);
+                }
+                $this->em->remove($booklet);
             }
             $this->em->remove($assistanceBeneficiary);
         }
