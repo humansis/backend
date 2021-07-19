@@ -173,12 +173,18 @@ class BeneficiaryService
         $referral = $beneficiaryPerson->getReferral();
 
         if (is_null($referral)) {
-            $referral = new Referral();
-            $this->em->persist($referral);
+            if (!is_null($inputType->getReferralType())) {
+                $referral = new Referral();
+                $this->em->persist($referral);
+            }
+        } else {
+            if (!is_null($inputType->getReferralType())) {
+                $referral->setType($inputType->getReferralType());
+                $referral->setComment($inputType->getReferralComment());
+            } else {
+                $this->em->remove($referral);
+            }
         }
-
-        $referral->setType($inputType->getReferralType());
-        $referral->setComment($inputType->getReferralComment());
 
         $this->em->persist($beneficiary);
 

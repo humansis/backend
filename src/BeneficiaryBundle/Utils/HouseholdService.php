@@ -255,7 +255,7 @@ class HouseholdService
     {
         if (!is_null($beneficiaryInputType->getId())) {
             /** @var Beneficiary|null $beneficiary */
-            $beneficiary = $this->em->getRepository(Beneficiary::class)->findBy([
+            $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy([
                 'id' => $beneficiaryInputType->getId(),
                 'beneficiary' => $household,
             ]);
@@ -266,11 +266,18 @@ class HouseholdService
         /** @var BeneficiaryRepository $beneficiaryRepository */
         $beneficiaryRepository = $this->em->getRepository(Beneficiary::class);
 
-        return $beneficiaryRepository->findByName(
+        $existingBeneficiariesByName = $beneficiaryRepository->findByName(
             $beneficiaryInputType->getLocalGivenName(),
             $beneficiaryInputType->getLocalParentsName(),
-            $beneficiaryInputType->getLocalFamilyName()
+            $beneficiaryInputType->getLocalFamilyName(),
+            $household,
         );
+
+        if (!empty($existingBeneficiariesByName)) {
+            return $existingBeneficiariesByName[0];
+        }
+
+        return null;
     }
 
     /**
