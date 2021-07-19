@@ -9,6 +9,7 @@ use Doctrine\ORM\Query\Expr\Join;
 use \DateTime;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\InputType\AssistanceByProjectOfflineAppFilterInputType;
 use NewApiBundle\InputType\AssistanceFilterInputType;
 use NewApiBundle\InputType\AssistanceOrderInputType;
 use NewApiBundle\InputType\ProjectsAssistanceFilterInputType;
@@ -269,6 +270,47 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
         }
 
         return new Paginator($qb);
+    }
+
+    /**
+     * @param Project                                      $project
+     * @param string                                       $iso3
+     * @param AssistanceByProjectOfflineAppFilterInputType $filter
+     *
+     * @return Assistance[]
+     */
+    public function findByProjectInOfflineApp(
+        Project $project,
+        string $iso3,
+        AssistanceByProjectOfflineAppFilterInputType $filter
+    ): iterable
+    {
+        $qbr = $this->createQueryBuilder('dd')
+            ->leftJoin('dd.project', 'p')
+            ->andWhere('dd.archived = 0')
+            ->andWhere('dd.validated = 1')
+            ->andWhere('dd.project = :project')
+            ->andWhere('p.iso3 = :iso3')
+            ->setParameter('project', $project)
+            ->setParameter('iso3', $iso3);
+
+        if ($filter->hasType()) {
+            $qbr->andWhere('dd.assistanceType = :type')
+                ->setParameter('type', $filter->getType());
+        }
+
+        if ($filter->hasCompleted()) {
+            $qbr->andWhere('dd.completed = :completed')
+                ->setParameter('completed', $filter->getCompleted());
+        }
+
+        if ($filter->hasModalityTypes()) {
+            $qbr->join('dd.commodities', 'c')
+                ->join('c.modalityType', 'm', 'WITH', 'm.name IN (:modalityTypes)')
+                ->setParameter('modalityTypes', $filter->getModalityTypes());
+        }
+
+        return $qbr->getQuery()->getResult();
     }
 
     /**

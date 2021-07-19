@@ -27,4 +27,20 @@ class CommodityRepository extends \Doctrine\ORM\EntityRepository
 
         return new Paginator($qbr);
     }
+
+    /**
+     * @param string $country
+     *
+     * @return Commodity[]
+     */
+    public function findByCountry(string $country): iterable
+    {
+        $qbr = $this->createQueryBuilder('c')
+            ->join('c.assistance', 'a')
+            ->join('a.project', 'p')
+            ->andWhere('p.iso3 = :country')
+            ->setParameter('country', $country);
+
+        return $qbr->getQuery()->getResult();
+    }
 }
