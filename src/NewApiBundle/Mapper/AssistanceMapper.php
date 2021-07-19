@@ -48,6 +48,11 @@ class AssistanceMapper implements MapperInterface
         return $this->object->getDateDistribution()->format(\DateTime::ISO8601);
     }
 
+    public function getDateExpiration(): ?string
+    {
+        return $this->object->getDateExpiration() ? $this->object->getDateExpiration()->format(\DateTimeInterface::ISO8601) : null;
+    }
+
     public function getProjectId(): int
     {
         return $this->object->getProject()->getId();

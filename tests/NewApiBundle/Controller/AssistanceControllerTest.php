@@ -44,6 +44,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "id": '.$assistance->getId().',
             "name": "'.$assistance->getName().'",
             "dateDistribution": "'.$assistance->getDateDistribution()->format(\DateTime::ISO8601).'",
+            "dateExpiration": "*",
             "projectId": '.$assistance->getProject()->getId().',
             "locationId": '.$assistance->getLocation()->getId().',
             "target": "'.$assistance->getTargetType().'",
@@ -144,6 +145,66 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "id": "*",
             "name": "*",
             "dateDistribution": "*",
+            "dateExpiration": null,
+            "projectId": "*",
+            "locationId": "*",
+            "target": "*",
+            "type": "*",
+            "sector": "*",
+            "subsector": "*",
+            "householdsTargeted": "*",
+            "individualsTargeted": "*",
+            "description": "*",
+            "commodityIds": ["*"]
+        }', $this->client->getResponse()->getContent());
+    }
+
+    public function testCreateDistributionWithExpirationDate()
+    {
+        /** @var Project $project */
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+
+        /** @var Location $location */
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+
+        /** @var ModalityType $modalityType */
+        $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Cash'])[0];
+
+        $this->request('POST', '/api/basic/web-app/v1/assistances', [
+            'iso3' => 'KHM',
+            'projectId' => $project->getId(),
+            'locationId' => $location->getId(),
+            'dateDistribution' => '2021-03-10T13:45:32.988Z',
+            'dateExpiration' => '2022-10-10T03:45:00.000Z',
+            'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
+            'type' => AssistanceType::DISTRIBUTION,
+            'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
+            'threshold' => 1,
+            'commodities' => [
+                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+            ],
+            'selectionCriteria' => [
+                [
+                    'group' => 1,
+                    'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::BENEFICIARY,
+                    'field' => 'dateOfBirth',
+                    'condition' => '<',
+                    'weight' => 1,
+                    'value' => '2020-01-01',
+                ],
+            ],
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{
+            "id": "*",
+            "name": "*",
+            "dateDistribution": "2021-03-10T13:45:32+0000",
+            "dateExpiration": "2022-10-10T03:45:00+0000",
             "projectId": "*",
             "locationId": "*",
             "target": "*",
@@ -197,6 +258,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "id": "*",
             "name": "*",
             "dateDistribution": "*",
+            "dateExpiration": null,
             "projectId": "*",
             "locationId": "*",
             "target": "*",
@@ -245,6 +307,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "id": "*",
             "name": "*",
             "dateDistribution": "*",
+            "dateExpiration": null,
             "projectId": "*",
             "locationId": "*",
             "target": "*",

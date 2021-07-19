@@ -74,6 +74,15 @@ class Assistance implements ExportableInterface
     private $dateDistribution;
 
     /**
+     * @var \DateTime|null
+     *
+     * @ORM\Column(name="date_expiration", type="datetime", nullable=true)
+     *
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
+     */
+    private $dateExpiration;
+
+    /**
      * @var Location
      *
      * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
@@ -627,6 +636,22 @@ class Assistance implements ExportableInterface
     public function getDateDistribution(): \DateTimeInterface
     {
         return $this->dateDistribution;
+    }
+
+    /**
+     * @return \DateTimeInterface|null
+     */
+    public function getDateExpiration(): ?\DateTimeInterface
+    {
+        return $this->dateExpiration;
+    }
+
+    /**
+     * @param \DateTimeInterface|null $dateExpiration
+     */
+    public function setDateExpiration(?\DateTimeInterface $dateExpiration): void
+    {
+        $this->dateExpiration = $dateExpiration;
     }
 
     /**
