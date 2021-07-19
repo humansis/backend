@@ -121,6 +121,7 @@ class IdentityChecker
         $importQueues = $this->entityManager->getRepository(ImportQueue::class)
             ->findBy([
                 'import' => $import,
+                'state' => ImportQueueState::VALID,
             ]);
 
         /** @var ImportQueue $importQueue */
