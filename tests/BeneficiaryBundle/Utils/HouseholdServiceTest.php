@@ -224,41 +224,50 @@ class HouseholdServiceTest extends KernelTestCase
         $addressData->setStreet('No street');
         $updateData->setResidenceAddress($addressData);
 
-        $createBeneficiary = new BeneficiaryInputType();
-        $createBeneficiary->setGender('M');
-        $createBeneficiary->setDateOfBirth('2000-01-01');
-        $createBeneficiary->setIsHead(true);
-        $createBeneficiary->setLocalGivenName('000Head');
-        $createBeneficiary->setLocalFamilyName('000Head');
-        $createBeneficiary->setEnGivenName('000Head');
-        $createBeneficiary->setEnFamilyName('000Head');
-        $createBeneficiary->setEnParentsName('000Head');
-        $createBeneficiary->setResidencyStatus(ResidencyStatus::RETURNEE);
-        $updateData->addBeneficiary($createBeneficiary);
+        $head = new BeneficiaryInputType();
+        $head->setGender('M');
+        $head->setDateOfBirth('2000-01-01');
+        $head->setIsHead(true);
+        $head->setLocalGivenName('testGiven');
+        $head->setLocalFamilyName('testFamily');
+        $head->setResidencyStatus(ResidencyStatus::RESIDENT);
+        $updateData->addBeneficiary($head);
+
+        $member = new BeneficiaryInputType();
+        $member->setGender('M');
+        $member->setDateOfBirth('2000-01-01');
+        $member->setIsHead(false);
+        $member->setLocalGivenName('000Head');
+        $member->setLocalFamilyName('000Head');
+        $member->setEnGivenName('000Head');
+        $member->setEnFamilyName('000Head');
+        $member->setEnParentsName('000Head');
+        $member->setResidencyStatus(ResidencyStatus::RETURNEE);
+        $updateData->addBeneficiary($member);
 
         $phone = new PhoneInputType();
         $phone->setPrefix('111');
         $phone->setType('111');
         $phone->setProxy(false);
         $phone->setNumber('111');
-        $createBeneficiary->addPhone($phone);
+        $head->addPhone($phone);
 
         $phone = new PhoneInputType();
         $phone->setPrefix('222');
         $phone->setType('222');
         $phone->setProxy(true);
         $phone->setNumber('222');
-        $createBeneficiary->addPhone($phone);
+        $head->addPhone($phone);
 
         $nationalId = new NationalIdCardInputType();
         $nationalId->setType(NationalId::TYPE_CAMP_ID);
         $nationalId->setNumber('000');
-        $createBeneficiary->addNationalIdCard($nationalId);
+        $head->addNationalIdCard($nationalId);
 
         $nationalId = new NationalIdCardInputType();
         $nationalId->setType(NationalId::TYPE_BIRTH_CERTIFICATE);
         $nationalId->setNumber('111');
-        $createBeneficiary->addNationalIdCard($nationalId);
+        $head->addNationalIdCard($nationalId);
 
         $violations = $this->validator->validate($updateData);
         if ($violations->count() > 0) {
@@ -286,19 +295,20 @@ class HouseholdServiceTest extends KernelTestCase
         $this->assertContains(1, $household->getAssets());
         $this->assertContains(3, $household->getAssets());
         $this->assertContains(5, $household->getAssets());
-
+$this->assertCount(2, $household->getBeneficiaries(), "Wrong beneficiary count");
         $head = $household->getHouseholdHead();
+        $this->assertNotNull($head);
         $person = $head->getPerson();
         $this->assertEquals('2000-01-01', $person->getDateOfBirth()->format('Y-m-d'));
         $this->assertEquals(1, $person->getGender());
-        $this->assertEquals('000Head', $person->getLocalFamilyName());
-        $this->assertEquals('000Head', $person->getLocalGivenName());
-        $this->assertEquals('000Head', $person->getEnGivenName());
-        $this->assertEquals('000Head', $person->getEnFamilyName());
-        $this->assertEquals('000Head', $person->getEnParentsName());
+        $this->assertEquals('testFamily', $person->getLocalFamilyName());
+        $this->assertEquals('testGiven', $person->getLocalGivenName());
+        $this->assertNull($person->getEnGivenName());
+        $this->assertNull($person->getEnFamilyName());
+        $this->assertNull($person->getEnParentsName());
 
-        $this->assertCount(1, $household->getBeneficiaries(), "Wrong beneficiary count");
-        $person = $household->getBeneficiaries()->first()->getPerson();
+        $this->assertCount(2, $household->getBeneficiaries(), "Wrong beneficiary count");
+        $person = $household->getBeneficiaries()->last()->getPerson();
         $this->assertEquals('2000-01-01', $person->getDateOfBirth()->format('Y-m-d'));
         $this->assertEquals(1, $person->getGender());
         $this->assertEquals('000Head', $person->getLocalFamilyName());

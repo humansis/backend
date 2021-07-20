@@ -119,10 +119,8 @@ class BeneficiaryService
      * @param BeneficiaryInputType $inputType
      *
      * @return Beneficiary
-     *
-     * //TODO rename after old methods removal
      */
-    public function newUpdate(Beneficiary $beneficiary, BeneficiaryInputType $inputType): Beneficiary
+    public function update(Beneficiary $beneficiary, BeneficiaryInputType $inputType): Beneficiary
     {
         $beneficiaryPerson = $beneficiary->getPerson();
 
@@ -187,8 +185,6 @@ class BeneficiaryService
         }
 
         $this->em->persist($beneficiary);
-
-        $this->em->flush();
 
         return $beneficiary;
     }
@@ -644,25 +640,6 @@ class BeneficiaryService
         }
 
         return $this->container->get('export_csv_service')->export($exportableTable, 'beneficiaryhousehoulds', $type);
-    }
-
-    /**
-     * Updates a beneficiary
-     *
-     * @param Beneficiary $beneficiary
-     * @param array $beneficiaryData
-     * @return Beneficiary
-     * @throws \Exception
-     */
-    public function update(Beneficiary $beneficiary, array $beneficiaryData)
-    {
-        try {
-            $this->updateReferral($beneficiary, $beneficiaryData);
-            $this->em->persist($beneficiary);
-        } catch (\Exception $e) {
-            throw new \Exception('Error updating Beneficiary');
-        }
-        return $beneficiary;
     }
 
     public function patch(Beneficiary $beneficiary, BenefciaryPatchInputType $inputType)

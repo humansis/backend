@@ -296,25 +296,8 @@ class HouseholdService
      *
      * @return Household
      * @throws EntityNotFoundException
-     * @throws ValidationException
-     *
-     * @deprecated use newUpdate instead
      */
     public function update(Household $household, HouseholdUpdateInputType $inputType): Household
-    {
-        $data = $this->fallbackMap($inputType);
-
-        return $this->createOrEdit($data, $inputType->getProjectIds(), $household);
-    }
-
-    /**
-     * @param Household                $household
-     * @param HouseholdUpdateInputType $inputType
-     *
-     * @throws EntityNotFoundException
-     * @throws Exception
-     */
-    public function newUpdate(Household $household, HouseholdUpdateInputType $inputType)
     {
         /** @var Project[] $projects */
         $projects = $this->em->getRepository(Project::class)->findBy([
@@ -413,14 +396,20 @@ class HouseholdService
         foreach ($inputType->getBeneficiaries() as $beneficiaryInputType) {
             $existingBeneficiary = $this->tryToPairBeneficiaryInHousehold($household, $beneficiaryInputType);
 
-            if (!is_null($existingBeneficiary)) {
-                $this->beneficiaryService->newUpdate($existingBeneficiary, $beneficiaryInputType);
+            if (is_null($existingBeneficiary)) {
+                echo "bnf#{$beneficiaryInputType->isHead()} create\n";
+                $beneficiary = $this->beneficiaryService->create($beneficiaryInputType);
+                $beneficiary->setHousehold($household);
+                $household->addBeneficiary($beneficiary);
             } else {
-                //TODO create
+                echo "bnf#{$existingBeneficiary->getId()} update\n";
+                $this->beneficiaryService->update($existingBeneficiary, $beneficiaryInputType);
             }
         }
 
+        $this->em->persist($household);
         $this->em->flush();
+        return $household;
     }
 
     private function tryToPairBeneficiaryInHousehold(Household $household, BeneficiaryInputType $beneficiaryInputType): ?Beneficiary
@@ -442,7 +431,7 @@ class HouseholdService
             $beneficiaryInputType->getLocalGivenName(),
             $beneficiaryInputType->getLocalParentsName(),
             $beneficiaryInputType->getLocalFamilyName(),
-            $household,
+            $household
         );
 
         if (!empty($existingBeneficiariesByName)) {
