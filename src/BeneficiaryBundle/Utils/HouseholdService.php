@@ -134,91 +134,12 @@ class HouseholdService
 
         /** @var Household $household */
         $household = new Household();
-
-        if ($inputType->getResidenceAddress()) {
-            $household->addHouseholdLocation($this->createResidenceAddress($inputType->getResidenceAddress()));
-        }
-
-        if ($inputType->getTemporarySettlementAddress()) {
-            $household->addHouseholdLocation($this->createTemporarySettlementAddress($inputType->getTemporarySettlementAddress()));
-        }
-
-        if ($inputType->getCampAddress()) {
-            $household->addHouseholdLocation($this->createCampAddress($inputType->getCampAddress()));
-        }
-
-        $household->setNotes($inputType->getNotes())
-            ->setLivelihood($inputType->getLivelihood())
-            ->setLongitude($inputType->getLongitude())
-            ->setLatitude($inputType->getLatitude())
-            ->setIncomeLevel($inputType->getIncomeLevel())
-            ->setCopingStrategiesIndex($inputType->getCopingStrategiesIndex())
-            ->setFoodConsumptionScore($inputType->getFoodConsumptionScore())
-            ->setAssets($inputType->getAssets())
-            ->setShelterStatus($inputType->getShelterStatus())
-            ->setDebtLevel($inputType->getDebtLevel())
-            ->setSupportReceivedTypes($inputType->getSupportReceivedTypes())
-            ->setSupportOrganizationName($inputType->getSupportOrganizationName())
-            ->setIncomeSpentOnFood($inputType->getIncomeSpentOnFood())
-            ->setHouseholdIncome($inputType->getHouseIncome())
-            ->setEnumeratorName($inputType->getEnumeratorName())
-            ->setSupportDateReceived($inputType->getSupportDateReceived());
-
-        $this->em->persist($household);
-
-        // Add projects
-        $projects = $this->em->getRepository(Project::class)->findBy(["id" => $inputType->getProjectIds()]);
-        foreach ($projects as $project) {
-            $household->addProject($project);
-        }
+        $this->fillHousehold($inputType, $household);
 
         foreach ($inputType->getBeneficiaries() as $beneficiaryInputType) {
             $beneficiary = $this->beneficiaryService->create($beneficiaryInputType);
             $household->addBeneficiary($beneficiary);
             $this->em->persist($beneficiary);
-        }
-
-
-        foreach ($inputType->getCountrySpecificAnswers() as $country_specific_answer) {
-            $this->addOrUpdateCountrySpecific($household, $country_specific_answer, false);
-        }
-
-
-        if ($inputType->hasProxy()) {
-            $proxy = new Person();
-            $proxy->setEnGivenName($inputType->getProxyEnGivenName());
-            $proxy->setEnFamilyName($inputType->getProxyEnFamilyName());
-            $proxy->setEnParentsName($inputType->getProxyEnParentsName());
-            $proxy->setLocalGivenName($inputType->getProxyLocalGivenName());
-            $proxy->setLocalFamilyName($inputType->getProxyLocalFamilyName());
-            $proxy->setLocalParentsName($inputType->getProxyLocalParentsName());
-
-            /** @var PhoneInputType $phoneInputType */
-            $phoneInputType = $inputType->getProxyPhone();
-
-            $proxy->getPhones()->clear();
-
-            $phone = new Phone();
-            $phone->setType($phoneInputType->getType());
-            $phone->setPrefix($phoneInputType->getPrefix());
-            $phone->setNumber($phoneInputType->getNumber());
-            $phone->setProxy($phoneInputType->getProxy());
-            $phone->setPerson($proxy);
-
-            $this->em->persist($phone);
-
-            /** @var NationalIdCardInputType $nationalIdInputType */
-            $nationalIdInputType = $inputType->getProxyNationalIdCard();
-
-            $proxy->getNationalIds()->clear();
-
-            $nationalId = new NationalId();
-            $nationalId->setIdType($nationalIdInputType->getType());
-            $nationalId->setIdNumber($nationalIdInputType->getNumber());
-            $nationalId->setPerson($proxy);
-
-            $this->em->persist($nationalId);
-            $household->setProxy($proxy);
         }
 
         return $household;
@@ -299,98 +220,16 @@ class HouseholdService
      */
     public function update(Household $household, HouseholdUpdateInputType $inputType): Household
     {
-        /** @var Project[] $projects */
-        $projects = $this->em->getRepository(Project::class)->findBy([
-            'id' => $inputType->getProjectIds(),
-        ]);
-
-        //update projects
-        $household->getProjects()->clear();
-        foreach ($projects as $project) {
-            $household->getProjects()->add($project);
-        }
-
-        //update household locations
         foreach ($household->getHouseholdLocations() as $initialHouseholdLocation) {
             $this->em->remove($initialHouseholdLocation);
         }
         $household->getHouseholdLocations()->clear();
+        $household->getProjects()->clear();
 
-        if ($inputType->getResidenceAddress()) {
-            $household->addHouseholdLocation($this->createResidenceAddress($inputType->getResidenceAddress()));
-        }
-
-        if ($inputType->getTemporarySettlementAddress()) {
-            $household->addHouseholdLocation($this->createTemporarySettlementAddress($inputType->getTemporarySettlementAddress()));
-        }
-
-        if ($inputType->getCampAddress()) {
-            $household->addHouseholdLocation($this->createCampAddress($inputType->getCampAddress()));
-        }
-
-        $household->setNotes($inputType->getNotes())
-            ->setLivelihood($inputType->getLivelihood())
-            ->setLongitude($inputType->getLongitude())
-            ->setLatitude($inputType->getLatitude())
-            ->setIncomeLevel($inputType->getIncomeLevel())
-            ->setCopingStrategiesIndex($inputType->getCopingStrategiesIndex())
-            ->setFoodConsumptionScore($inputType->getFoodConsumptionScore())
-            ->setAssets($inputType->getAssets())
-            ->setShelterStatus($inputType->getShelterStatus())
-            ->setDebtLevel($inputType->getDebtLevel())
-            ->setSupportReceivedTypes($inputType->getSupportReceivedTypes())
-            ->setSupportOrganizationName($inputType->getSupportOrganizationName())
-            ->setIncomeSpentOnFood($inputType->getIncomeSpentOnFood())
-            ->setHouseholdIncome($inputType->getIncomeSpentOnFood())
-            ->setEnumeratorName($inputType->getEnumeratorName())
-            ->setSupportDateReceived($inputType->getSupportDateReceived());
+        $this->fillHousehold($inputType, $household);
 
         foreach ($inputType->getCountrySpecificAnswers() as $countrySpecificAnswer) {
             $this->createOrUpdateCountrySpecificAnswers($household, $countrySpecificAnswer);
-        }
-
-        $proxy = $household->getProxy();
-
-        if (!is_null($inputType->getProxyLocalGivenName())) {
-            if (null === $proxy) {
-                $proxy = new Person();
-                $this->em->persist($proxy);
-                $household->setProxy($proxy);
-            }
-
-            $proxy->setEnGivenName($inputType->getProxyEnGivenName());
-            $proxy->setEnFamilyName($inputType->getProxyEnFamilyName());
-            $proxy->setEnParentsName($inputType->getProxyEnParentsName());
-            $proxy->setLocalGivenName($inputType->getProxyLocalGivenName());
-            $proxy->setLocalFamilyName($inputType->getProxyLocalFamilyName());
-            $proxy->setLocalParentsName($inputType->getProxyLocalParentsName());
-
-            /** @var PhoneInputType $phoneInputType */
-            $phoneInputType = $inputType->getProxyPhone();
-
-            $proxy->getPhones()->clear();
-
-            $phone = $this->beneficiaryService->createPhone($phoneInputType);
-            $phone->setPerson($proxy);
-
-            $this->em->persist($phone);
-
-            /** @var NationalIdCardInputType $nationalIdInputType */
-            $nationalIdInputType = $inputType->getProxyNationalIdCard();
-
-            $proxy->getNationalIds()->clear();
-
-            $nationalId = $this->beneficiaryService->createNationalId($nationalIdInputType);
-            $nationalId->setPerson($proxy);
-
-            $this->em->persist($nationalId);
-
-        } else {
-            if (null !== $proxy) {
-                $this->em->remove($proxy);
-            }
-
-            $household->setProxy(null);
         }
 
         foreach ($inputType->getBeneficiaries() as $beneficiaryInputType) {
@@ -1040,5 +879,92 @@ class HouseholdService
         ];
 
         return $data;
+    }
+
+    /**
+     * @param HouseholdUpdateInputType $inputType
+     * @param Household                $household
+     *
+     * @throws Exception
+     */
+    private function fillHousehold(HouseholdUpdateInputType $inputType, Household $household): void
+    {
+        if ($inputType->getResidenceAddress()) {
+            $household->addHouseholdLocation($this->createResidenceAddress($inputType->getResidenceAddress()));
+        }
+
+        if ($inputType->getTemporarySettlementAddress()) {
+            $household->addHouseholdLocation($this->createTemporarySettlementAddress($inputType->getTemporarySettlementAddress()));
+        }
+
+        if ($inputType->getCampAddress()) {
+            $household->addHouseholdLocation($this->createCampAddress($inputType->getCampAddress()));
+        }
+
+        $household->setNotes($inputType->getNotes())
+            ->setLivelihood($inputType->getLivelihood())
+            ->setLongitude($inputType->getLongitude())
+            ->setLatitude($inputType->getLatitude())
+            ->setIncomeLevel($inputType->getIncomeLevel())
+            ->setCopingStrategiesIndex($inputType->getCopingStrategiesIndex())
+            ->setFoodConsumptionScore($inputType->getFoodConsumptionScore())
+            ->setAssets($inputType->getAssets())
+            ->setShelterStatus($inputType->getShelterStatus())
+            ->setDebtLevel($inputType->getDebtLevel())
+            ->setSupportReceivedTypes($inputType->getSupportReceivedTypes())
+            ->setSupportOrganizationName($inputType->getSupportOrganizationName())
+            ->setIncomeSpentOnFood($inputType->getIncomeSpentOnFood())
+            ->setHouseholdIncome($inputType->getHouseIncome())
+            ->setEnumeratorName($inputType->getEnumeratorName())
+            ->setSupportDateReceived($inputType->getSupportDateReceived());
+
+        $this->em->persist($household);
+
+        // Add projects
+        $projects = $this->em->getRepository(Project::class)->findBy(["id" => $inputType->getProjectIds()]);
+        foreach ($projects as $project) {
+            $household->addProject($project);
+        }
+
+        foreach ($inputType->getCountrySpecificAnswers() as $country_specific_answer) {
+            $this->addOrUpdateCountrySpecific($household, $country_specific_answer, false);
+        }
+
+        if ($inputType->hasProxy()) {
+            $proxy = new Person();
+            $proxy->setEnGivenName($inputType->getProxyEnGivenName());
+            $proxy->setEnFamilyName($inputType->getProxyEnFamilyName());
+            $proxy->setEnParentsName($inputType->getProxyEnParentsName());
+            $proxy->setLocalGivenName($inputType->getProxyLocalGivenName());
+            $proxy->setLocalFamilyName($inputType->getProxyLocalFamilyName());
+            $proxy->setLocalParentsName($inputType->getProxyLocalParentsName());
+
+            /** @var PhoneInputType $phoneInputType */
+            $phoneInputType = $inputType->getProxyPhone();
+
+            $proxy->getPhones()->clear();
+
+            $phone = new Phone();
+            $phone->setType($phoneInputType->getType());
+            $phone->setPrefix($phoneInputType->getPrefix());
+            $phone->setNumber($phoneInputType->getNumber());
+            $phone->setProxy($phoneInputType->getProxy());
+            $phone->setPerson($proxy);
+
+            $this->em->persist($phone);
+
+            /** @var NationalIdCardInputType $nationalIdInputType */
+            $nationalIdInputType = $inputType->getProxyNationalIdCard();
+
+            $proxy->getNationalIds()->clear();
+
+            $nationalId = new NationalId();
+            $nationalId->setIdType($nationalIdInputType->getType());
+            $nationalId->setIdNumber($nationalIdInputType->getNumber());
+            $nationalId->setPerson($proxy);
+
+            $this->em->persist($nationalId);
+            $household->setProxy($proxy);
+        }
     }
 }
