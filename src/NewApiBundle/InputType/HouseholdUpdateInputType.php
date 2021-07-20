@@ -336,7 +336,10 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      */
     public function setShelterStatus($shelterStatus)
     {
-        $this->shelterStatus = (int) $shelterStatus;
+        if (null !== $shelterStatus && is_string($shelterStatus)) {
+            $shelterStatus = (int) $shelterStatus;
+        }
+        $this->shelterStatus = $shelterStatus;
     }
 
     /**

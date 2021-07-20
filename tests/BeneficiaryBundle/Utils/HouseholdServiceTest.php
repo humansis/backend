@@ -59,7 +59,7 @@ class HouseholdServiceTest extends KernelTestCase
         $createData->setIncomeLevel(3);
         $createData->setCopingStrategiesIndex(3);
         $createData->setFoodConsumptionScore(3);
-        $createData->setShelterStatus(3);
+        $createData->setShelterStatus('3');
         $createData->setDebtLevel(3);
         $createData->setSupportDateReceived('1900-01-01');
         $createData->setSupportOrganizationName('OSN');
@@ -216,6 +216,7 @@ class HouseholdServiceTest extends KernelTestCase
         $updateData->setLongitude('1.000');
         $updateData->setLatitude('2.000');
         $updateData->setNotes('Lorem ipsum set dolor');
+        $updateData->setShelterStatus(2);
 
         $addressData = new ResidenceAddressInputType();
         $addressData->setLocationId(1);
@@ -350,6 +351,7 @@ $this->assertCount(2, $household->getBeneficiaries(), "Wrong beneficiary count")
         $householdCreateInputType->setProjectIds([$project->getId()]);
         $householdCreateInputType->setIso3('KHM');
         $householdCreateInputType->setAssets([current(array_keys(Household::ASSETS))]);
+        $householdCreateInputType->setShelterStatus(3);
 
         $addressData = new ResidenceAddressInputType();
         $addressData->setLocationId(1);
@@ -378,6 +380,7 @@ $this->assertCount(2, $household->getBeneficiaries(), "Wrong beneficiary count")
         $householdUpdateInputType->setProjectIds([$project->getId()]);
         $householdUpdateInputType->setIso3('KHM');
         $householdUpdateInputType->setAssets([current(array_keys(Household::ASSETS))]);
+        $householdCreateInputType->setShelterStatus(2);
 
         $beneficiaryInputType->setResidencyStatus(ResidencyStatus::IDP);
         $householdUpdateInputType->addBeneficiary($beneficiaryInputType);
