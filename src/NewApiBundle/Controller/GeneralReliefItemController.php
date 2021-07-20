@@ -28,21 +28,6 @@ class GeneralReliefItemController extends AbstractController
     }
 
     /**
-     * @Rest\Patch("/offline-app/v2/general-relief-items/{id}")
-     *
-     * @param GeneralReliefItem           $object
-     * @param GeneralReliefPatchInputType $inputType
-     *
-     * @return JsonResponse
-     */
-    public function patchOfflineApp(GeneralReliefItem $object, GeneralReliefPatchInputType $inputType): JsonResponse
-    {
-        $this->get('distribution.assistance_service')->patchGeneralReliefItem($object, $inputType);
-
-        return $this->json($object);
-    }
-
-    /**
      * @Rest\Patch("/web-app/v2/general-relief-items/{id}")
      *
      * @param GeneralReliefItem           $object
