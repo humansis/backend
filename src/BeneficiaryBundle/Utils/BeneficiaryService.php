@@ -215,7 +215,7 @@ class BeneficiaryService
             ->setProfile(new Profile())
         ;
         $person->getProfile()->setPhoto('');
-/*
+
         foreach ($inputType->getPhones() as $phoneInputType) {
             $phone = $this->createPhone($phoneInputType);
             $person->addPhone($phone);
@@ -229,7 +229,7 @@ class BeneficiaryService
             $nationalId->setPerson($person);
             $this->em->persist($nationalId);
         }
-*/
+
         // $this->createProfile($person, $inputType->getProfile()); TODO
 
         $previousReferral = $person->getReferral();
