@@ -242,6 +242,9 @@ class HouseholdService
         }
 
         $currentIds = [];
+        foreach ($household->getBeneficiaries() as $beneficiary) {
+            $currentIds[$beneficiary->getId()] = $beneficiary;
+        }
         foreach ($inputType->getBeneficiaries() as $beneficiaryInputType) {
             $existingBeneficiary = $this->tryToPairBeneficiaryInHousehold($household, $beneficiaryInputType);
 
@@ -251,17 +254,19 @@ class HouseholdService
                 $household->addBeneficiary($beneficiary);
             } else {
                 $beneficiary = $this->beneficiaryService->update($existingBeneficiary, $beneficiaryInputType);
+                unset($currentIds[$beneficiary->getId()]);
             }
-            $currentIds[$beneficiary->getId()] = $beneficiary;
         }
-        foreach ($household->getBeneficiaries() as $beneficiary) {
-            if (!array_key_exists($beneficiary->getId(), $currentIds)) {
-                $this->beneficiaryService->remove($beneficiary);
-            }
+        foreach ($currentIds as $beneficiaryId => $beneficiary) {
+            $this->beneficiaryService->remove($beneficiary);
         }
 
         $this->em->persist($household);
         $this->em->flush();
+
+        foreach ($household->getBeneficiaries() as $beneficiary) {
+            echo "is ".$beneficiary->getId()."\n";
+        }
         return $household;
     }
 
