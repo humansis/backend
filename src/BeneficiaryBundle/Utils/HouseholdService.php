@@ -245,7 +245,11 @@ class HouseholdService
         foreach ($household->getBeneficiaries() as $beneficiary) {
             $currentIds[$beneficiary->getId()] = $beneficiary;
         }
+        $head = $this->beneficiaryService->update($household->getHouseholdHead(), $inputType->getHouseholdHead());
+        unset($currentIds[$head->getId()]);
         foreach ($inputType->getBeneficiaries() as $beneficiaryInputType) {
+            if ($beneficiaryInputType->isHead()) continue;
+
             $existingBeneficiary = $this->tryToPairBeneficiaryInHousehold($household, $beneficiaryInputType);
 
             if (is_null($existingBeneficiary)) {
