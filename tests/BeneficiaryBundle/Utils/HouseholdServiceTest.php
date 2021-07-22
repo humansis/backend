@@ -296,7 +296,8 @@ class HouseholdServiceTest extends KernelTestCase
         $this->assertContains(1, $household->getAssets());
         $this->assertContains(3, $household->getAssets());
         $this->assertContains(5, $household->getAssets());
-$this->assertCount(2, $household->getBeneficiaries(), "Wrong beneficiary count");
+
+        $this->assertCount(2, $household->getBeneficiaries(), "Wrong beneficiary count");
         $head = $household->getHouseholdHead();
         $this->assertNotNull($head);
         $person = $head->getPerson();
@@ -308,7 +309,6 @@ $this->assertCount(2, $household->getBeneficiaries(), "Wrong beneficiary count")
         $this->assertNull($person->getEnFamilyName());
         $this->assertNull($person->getEnParentsName());
 
-        $this->assertCount(2, $household->getBeneficiaries(), "Wrong beneficiary count");
         $person = $household->getBeneficiaries()->last()->getPerson();
         $this->assertEquals('2000-01-01', $person->getDateOfBirth()->format('Y-m-d'));
         $this->assertEquals(1, $person->getGender());

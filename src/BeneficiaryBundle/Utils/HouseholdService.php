@@ -241,6 +241,7 @@ class HouseholdService
             $this->createOrUpdateCountrySpecificAnswers($household, $countrySpecificAnswer);
         }
 
+        $currentIds = [];
         foreach ($inputType->getBeneficiaries() as $beneficiaryInputType) {
             $existingBeneficiary = $this->tryToPairBeneficiaryInHousehold($household, $beneficiaryInputType);
 
@@ -249,7 +250,13 @@ class HouseholdService
                 $beneficiary->setHousehold($household);
                 $household->addBeneficiary($beneficiary);
             } else {
-                $this->beneficiaryService->update($existingBeneficiary, $beneficiaryInputType);
+                $beneficiary = $this->beneficiaryService->update($existingBeneficiary, $beneficiaryInputType);
+            }
+            $currentIds[$beneficiary->getId()] = $beneficiary;
+        }
+        foreach ($household->getBeneficiaries() as $beneficiary) {
+            if (!array_key_exists($beneficiary->getId(), $currentIds)) {
+                $this->beneficiaryService->remove($beneficiary);
             }
         }
 
