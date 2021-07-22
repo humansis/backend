@@ -157,6 +157,7 @@ class BeneficiaryService
         foreach ($inputType->getNationalIdCards() as $nationalIdInputType) {
             $nationalId = $this->createNationalId($nationalIdInputType);
             $nationalId->setPerson($beneficiaryPerson);
+            $beneficiaryPerson->addNationalId($nationalId);
         }
 
         //vulnerability criteria

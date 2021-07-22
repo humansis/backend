@@ -142,6 +142,9 @@ class HouseholdService
             $this->em->persist($beneficiary);
         }
 
+        $this->em->persist($household);
+        $this->em->flush();
+
         return $household;
     }
 
@@ -513,6 +516,7 @@ class HouseholdService
             $nationalId->setIdType($nationalIdInputType->getType());
             $nationalId->setIdNumber($nationalIdInputType->getNumber());
             $nationalId->setPerson($proxy);
+            $proxy->addNationalId($nationalId);
 
             $this->em->persist($nationalId);
 
@@ -962,7 +966,9 @@ class HouseholdService
             $nationalId->setIdType($nationalIdInputType->getType());
             $nationalId->setIdNumber($nationalIdInputType->getNumber());
             $nationalId->setPerson($proxy);
+            $proxy->addNationalId($nationalId);
 
+            $this->em->persist($proxy);
             $this->em->persist($nationalId);
             $household->setProxy($proxy);
         }
