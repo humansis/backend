@@ -226,7 +226,7 @@ class HouseholdServiceTest extends KernelTestCase
         $updateData->setResidenceAddress($addressData);
 
         $head = new BeneficiaryInputType();
-        $head->setGender('M');
+        $head->setGender('F');
         $head->setDateOfBirth('2000-01-01');
         $head->setIsHead(true);
         $head->setLocalGivenName('testGiven');
