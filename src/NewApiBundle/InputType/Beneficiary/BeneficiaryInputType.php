@@ -364,7 +364,7 @@ class BeneficiaryInputType implements InputTypeInterface
      */
     public function isHead()
     {
-        return $this->isHead;
+        return $this->isHead === true;
     }
 
     /**

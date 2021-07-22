@@ -211,16 +211,25 @@ class BeneficiaryService
             ->setLocalFamilyName($inputType->getLocalFamilyName())
             ->setLocalGivenName($inputType->getLocalGivenName())
             ->setLocalParentsName($inputType->getLocalParentsName())
-            ->setUpdatedOn(new \DateTime());
-
+            ->setUpdatedOn(new \DateTime())
+            ->setProfile(new Profile())
+        ;
+        $person->getProfile()->setPhoto('');
+/*
         foreach ($inputType->getPhones() as $phoneInputType) {
-            $person->addPhone($this->createPhone($phoneInputType));
+            $phone = $this->createPhone($phoneInputType);
+            $person->addPhone($phone);
+            $phone->setPerson($person);
+            $this->em->persist($phone);
         }
 
         foreach ($inputType->getNationalIdCards() as $nationalIdArray) {
-            $person->addNationalId($this->createNationalId($nationalIdArray));
+            $nationalId = $this->createNationalId($nationalIdArray);
+            $person->addNationalId($nationalId);
+            $nationalId->setPerson($person);
+            $this->em->persist($nationalId);
         }
-
+*/
         // $this->createProfile($person, $inputType->getProfile()); TODO
 
         $previousReferral = $person->getReferral();
@@ -247,6 +256,7 @@ class BeneficiaryService
      * @return Beneficiary|null|object
      * @throws \Exception
      * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
+     * @deprecated dont use at all
      */
     public function updateOrCreate(Household $household, array $beneficiaryArray, $flush)
     {

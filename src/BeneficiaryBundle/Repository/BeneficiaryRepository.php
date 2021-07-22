@@ -84,7 +84,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $q->getQuery()->getResult();
     }
 
-    public function findByName(string $givenName, ?string $parentsName, string $familyName, Household $household = null)
+    public function findByName(string $givenName, ?string $parentsName, string $familyName, ?int $gender = null, Household $household = null)
     {
         $qbr =  $this->createQueryBuilder('b')
             ->leftJoin('b.household', 'hh')
@@ -96,6 +96,12 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             ->setParameter('givenName', $givenName)
             ->setParameter('parentsName', $parentsName)
             ->setParameter('familyName', $familyName);
+
+        if (null !== $gender) {
+            $qbr
+                ->andWhere('p.gender = :gender')
+                ->setParameter('gender', $gender);
+        }
 
         if (!is_null($household)) {
             $qbr->andWhere('hh.id = :hhId')

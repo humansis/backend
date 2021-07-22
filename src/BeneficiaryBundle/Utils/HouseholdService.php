@@ -14,6 +14,7 @@ use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Entity\Phone;
+use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
@@ -199,7 +200,7 @@ class HouseholdService
 
         // Or create a camp with the name in the request
         if (!$camp) {
-            $location = $this->em->getRepository(Location::class)->find($inputType->getCampId());
+            $location = $this->em->getRepository(Location::class)->find($inputType->getCamp()->getLocationId());
             if (null === $location) {
                 throw new \Exception("Location was not found.");
             }
@@ -239,12 +240,10 @@ class HouseholdService
             $existingBeneficiary = $this->tryToPairBeneficiaryInHousehold($household, $beneficiaryInputType);
 
             if (is_null($existingBeneficiary)) {
-                echo "bnf#{$beneficiaryInputType->isHead()} create\n";
                 $beneficiary = $this->beneficiaryService->create($beneficiaryInputType);
                 $beneficiary->setHousehold($household);
                 $household->addBeneficiary($beneficiary);
             } else {
-                echo "bnf#{$existingBeneficiary->getId()} update\n";
                 $this->beneficiaryService->update($existingBeneficiary, $beneficiaryInputType);
             }
         }
@@ -273,6 +272,7 @@ class HouseholdService
             $beneficiaryInputType->getLocalGivenName(),
             $beneficiaryInputType->getLocalParentsName(),
             $beneficiaryInputType->getLocalFamilyName(),
+            $beneficiaryInputType->getGender(),
             $household
         );
 
@@ -290,7 +290,7 @@ class HouseholdService
      * @return Household
      * @throws ValidationException
      * @throws Exception
-     * @deprecated
+     * @deprecated dont use at all
      */
     public function createOrEdit(array $householdArray, array $projectsArray, $household = null, bool $flush = true)
     {
@@ -942,6 +942,8 @@ class HouseholdService
             $proxy->setLocalGivenName($inputType->getProxyLocalGivenName());
             $proxy->setLocalFamilyName($inputType->getProxyLocalFamilyName());
             $proxy->setLocalParentsName($inputType->getProxyLocalParentsName());
+            $proxy->setProfile(new Profile());
+            $proxy->getProfile()->setPhoto('');
 
             /** @var PhoneInputType $phoneInputType */
             $phoneInputType = $inputType->getProxyPhone();
@@ -959,7 +961,6 @@ class HouseholdService
 
             /** @var NationalIdCardInputType $nationalIdInputType */
             $nationalIdInputType = $inputType->getProxyNationalIdCard();
-
             $proxy->getNationalIds()->clear();
 
             $nationalId = new NationalId();
