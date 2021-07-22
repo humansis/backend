@@ -146,6 +146,7 @@ class BeneficiaryService
         foreach ($inputType->getPhones() as $phoneInputType) {
             $phone = $this->createPhone($phoneInputType);
             $phone->setPerson($beneficiaryPerson);
+            $beneficiaryPerson->addPhone($phone);
         }
 
         //national ids
