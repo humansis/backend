@@ -76,7 +76,9 @@ class ImportFinishServiceTest extends KernelTestCase
         foreach ($this->entityManager->getRepository(Import::class)->findAll() as $import) {
             $this->entityManager->remove($import);
             foreach ($this->entityManager->getRepository(Beneficiary::class)->getImported($import) as $bnf) {
-                $kernel->getContainer()->get('beneficiary.household_service')->remove($bnf->getHousehold());
+                if ($bnf->getHousehold()) {
+                    $kernel->getContainer()->get('beneficiary.household_service')->remove($bnf->getHousehold());
+                }
                 $kernel->getContainer()->get('beneficiary.beneficiary_service')->remove($bnf);
             }
         }
