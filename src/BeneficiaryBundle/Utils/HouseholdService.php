@@ -197,7 +197,11 @@ class HouseholdService
         $householdLocation->setType(HouseholdLocation::LOCATION_TYPE_CAMP);
 
         // Try to find the camp with the name in the request
-        $camp = $this->em->getRepository(Camp::class)->findOneBy(['name' => $inputType->getCamp()->getName()]);
+        if ($inputType->getCampId()) {
+            $camp = $this->em->getRepository(Camp::class)->find($inputType->getCampId());
+        } else {
+            $camp = $this->em->getRepository(Camp::class)->findOneBy(['name' => $inputType->getCamp()->getName()]);
+        }
 
         // Or create a camp with the name in the request
         if (!$camp) {
@@ -276,6 +280,8 @@ class HouseholdService
             $beneficiaryInputType->getGender(),
             $household
         );
+
+        if (count($existingBeneficiariesByName)>1) throw new Exception("too much duplicities");
 
         if (!empty($existingBeneficiariesByName)) {
             return $existingBeneficiariesByName[0];
