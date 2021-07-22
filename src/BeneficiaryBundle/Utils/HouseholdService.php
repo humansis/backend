@@ -264,9 +264,6 @@ class HouseholdService
         $this->em->persist($household);
         $this->em->flush();
 
-        foreach ($household->getBeneficiaries() as $beneficiary) {
-            echo "is ".$beneficiary->getId()."\n";
-        }
         return $household;
     }
 
