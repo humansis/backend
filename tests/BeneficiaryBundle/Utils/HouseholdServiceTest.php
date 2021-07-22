@@ -302,7 +302,7 @@ class HouseholdServiceTest extends KernelTestCase
         $this->assertNotNull($head);
         $person = $head->getPerson();
         $this->assertEquals('2000-01-01', $person->getDateOfBirth()->format('Y-m-d'));
-        $this->assertEquals(1, $person->getGender());
+        $this->assertEquals(0, $person->getGender());
         $this->assertEquals('testFamily', $person->getLocalFamilyName());
         $this->assertEquals('testGiven', $person->getLocalGivenName());
         $this->assertNull($person->getEnGivenName());
