@@ -139,6 +139,7 @@ class HouseholdService
 
         foreach ($inputType->getBeneficiaries() as $beneficiaryInputType) {
             $beneficiary = $this->beneficiaryService->create($beneficiaryInputType);
+            $beneficiary->setHousehold($household);
             $household->addBeneficiary($beneficiary);
             $this->em->persist($beneficiary);
         }

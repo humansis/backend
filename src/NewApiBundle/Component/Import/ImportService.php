@@ -365,15 +365,15 @@ class ImportService
         $headContent = $item->getContent()[0];
         $memberContents = array_slice($item->getContent(), 1);
         $hhh = new Integrity\HouseholdHead((array) $headContent, $import->getProject()->getIso3(), $this->em);
-        $householdUpdateInputType = $hhh->buildHouseholdInputType();
-        $householdUpdateInputType->setProjectIds([$import->getProject()->getId()]);
+        $householdCreateInputType = $hhh->buildHouseholdInputType();
+        $householdCreateInputType->setProjectIds([$import->getProject()->getId()]);
 
         foreach ($memberContents as $memberContent) {
             $hhm = new Integrity\HouseholdMember($memberContent, $import->getProject()->getIso3(), $this->em);
-            $householdUpdateInputType->addBeneficiary($hhm->buildBeneficiaryInputType());
+            $householdCreateInputType->addBeneficiary($hhm->buildBeneficiaryInputType());
         }
 
-        $createdHousehold = $this->householdService->create($householdUpdateInputType);
+        $createdHousehold = $this->householdService->create($householdCreateInputType);
 
         /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
         $acceptedDuplicity = $item->getAcceptedDuplicity();
