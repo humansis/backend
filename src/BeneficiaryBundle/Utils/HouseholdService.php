@@ -158,7 +158,7 @@ class HouseholdService
 
         $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
         if (null === $location) {
-            throw new \Exception("Location was not found.");
+            throw new EntityNotFoundException("Location was not found.");
         }
         $householdLocation->setAddress(Address::create(
             $inputType->getStreet(),
@@ -178,7 +178,7 @@ class HouseholdService
 
         $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
         if (null === $location) {
-            throw new \Exception("Location was not found.");
+            throw new EntityNotFoundException("Location was not found.");
         }
         $householdLocation->setAddress(Address::create(
             $inputType->getStreet(),
@@ -207,7 +207,7 @@ class HouseholdService
         if (!$camp) {
             $location = $this->em->getRepository(Location::class)->find($inputType->getCamp()->getLocationId());
             if (null === $location) {
-                throw new \Exception("Location was not found.");
+                throw new EntityNotFoundException("Location was not found.");
             }
             $camp = new Camp();
             $camp->setName($inputType->getCamp()->getName());
