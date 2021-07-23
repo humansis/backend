@@ -134,6 +134,12 @@ class ImportService
             throw new BadRequestHttpException("There can be only one finishing import in country in single time.");
         }
 
+        // running import cant be cancelled
+        if (ImportState::CANCELED === $status
+            && ImportState::IMPORTING === $import->getState()) {
+            throw new BadRequestHttpException("Already running import can't be cancelled.");
+        }
+
         $before = $import->getState();
         $import->setState($status);
 
