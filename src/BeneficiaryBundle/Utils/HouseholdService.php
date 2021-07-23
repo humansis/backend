@@ -14,12 +14,20 @@ use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Entity\Phone;
+use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
+use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use CommonBundle\Entity\Location;
 use CommonBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
+use Exception;
+use NewApiBundle\InputType\Beneficiary\Address\CampAddressInputType;
+use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
+use NewApiBundle\InputType\Beneficiary\Address\TemporarySettlementAddressInputType;
+use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
+use NewApiBundle\InputType\Beneficiary\CountrySpecificsAnswerInputType;
 use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\InputType\HouseholdCreateInputType;
@@ -117,16 +125,182 @@ class HouseholdService
 
     public function create(HouseholdCreateInputType $inputType): Household
     {
-        $data = $this->fallbackMap($inputType);
+        $headCount = $inputType->getBeneficiaryHeadCount();
+        if ($headCount < 1) {
+            throw new \InvalidArgumentException('Household has less than one Head');
+        }
+        if ($headCount > 1) {
+            throw new \InvalidArgumentException('Household has more than one Head');
+        }
 
-        return $this->createOrEdit($data, $inputType->getProjectIds());
+        /** @var Household $household */
+        $household = new Household();
+        $this->fillHousehold($inputType, $household);
+
+        foreach ($inputType->getBeneficiaries() as $beneficiaryInputType) {
+            $beneficiary = $this->beneficiaryService->create($beneficiaryInputType);
+            $beneficiary->setHousehold($household);
+            $household->addBeneficiary($beneficiary);
+            $this->em->persist($beneficiary);
+        }
+
+        $this->em->persist($household);
+        $this->em->flush();
+
+        return $household;
     }
 
+    private function createResidenceAddress(ResidenceAddressInputType $inputType): HouseholdLocation
+    {
+        $householdLocation = new HouseholdLocation();
+        $householdLocation->setLocationGroup(HouseholdLocation::LOCATION_GROUP_CURRENT);
+        $householdLocation->setType(HouseholdLocation::LOCATION_TYPE_RESIDENCE);
+
+        $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
+        if (null === $location) {
+            throw new EntityNotFoundException("Location was not found.");
+        }
+        $householdLocation->setAddress(Address::create(
+            $inputType->getStreet(),
+            $inputType->getNumber(),
+            $inputType->getPostcode(),
+            $location
+        ));
+
+        return $householdLocation;
+    }
+
+    private function createTemporarySettlementAddress(TemporarySettlementAddressInputType $inputType): HouseholdLocation
+    {
+        $householdLocation = new HouseholdLocation();
+        $householdLocation->setLocationGroup(HouseholdLocation::LOCATION_GROUP_CURRENT);
+        $householdLocation->setType(HouseholdLocation::LOCATION_TYPE_SETTLEMENT);
+
+        $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
+        if (null === $location) {
+            throw new EntityNotFoundException("Location was not found.");
+        }
+        $householdLocation->setAddress(Address::create(
+            $inputType->getStreet(),
+            $inputType->getNumber(),
+            $inputType->getPostcode(),
+            $location
+        ));
+
+        return $householdLocation;
+    }
+
+    private function createCampAddress(CampAddressInputType $inputType): HouseholdLocation
+    {
+        $householdLocation = new HouseholdLocation();
+        $householdLocation->setLocationGroup(HouseholdLocation::LOCATION_GROUP_CURRENT);
+        $householdLocation->setType(HouseholdLocation::LOCATION_TYPE_CAMP);
+
+        // Try to find the camp with the name in the request
+        if ($inputType->getCampId()) {
+            $camp = $this->em->getRepository(Camp::class)->find($inputType->getCampId());
+        } else {
+            $camp = $this->em->getRepository(Camp::class)->findOneBy(['name' => $inputType->getCamp()->getName()]);
+        }
+
+        // Or create a camp with the name in the request
+        if (!$camp) {
+            $location = $this->em->getRepository(Location::class)->find($inputType->getCamp()->getLocationId());
+            if (null === $location) {
+                throw new EntityNotFoundException("Location was not found.");
+            }
+            $camp = new Camp();
+            $camp->setName($inputType->getCamp()->getName());
+            $camp->setLocation($location);
+        }
+        $campAddress = new CampAddress();
+        $campAddress->setTentNumber($inputType->getTentNumber())
+            ->setCamp($camp);
+        $householdLocation->setCampAddress($campAddress);
+        return $householdLocation;
+    }
+
+    /**
+     * @param Household                $household
+     * @param HouseholdUpdateInputType $inputType
+     *
+     * @return Household
+     * @throws EntityNotFoundException
+     */
     public function update(Household $household, HouseholdUpdateInputType $inputType): Household
     {
-        $data = $this->fallbackMap($inputType);
+        foreach ($household->getHouseholdLocations() as $initialHouseholdLocation) {
+            $this->em->remove($initialHouseholdLocation);
+        }
+        $household->getHouseholdLocations()->clear();
+        $household->getProjects()->clear();
 
-        return $this->createOrEdit($data, $inputType->getProjectIds(), $household);
+        $this->fillHousehold($inputType, $household);
+
+        foreach ($inputType->getCountrySpecificAnswers() as $countrySpecificAnswer) {
+            $this->createOrUpdateCountrySpecificAnswers($household, $countrySpecificAnswer);
+        }
+
+        $currentIds = [];
+        foreach ($household->getBeneficiaries() as $beneficiary) {
+            $currentIds[$beneficiary->getId()] = $beneficiary;
+        }
+        $head = $this->beneficiaryService->update($household->getHouseholdHead(), $inputType->getHouseholdHead());
+        unset($currentIds[$head->getId()]);
+        foreach ($inputType->getBeneficiaries() as $beneficiaryInputType) {
+            if ($beneficiaryInputType->isHead()) continue;
+
+            $existingBeneficiary = $this->tryToPairBeneficiaryInHousehold($household, $beneficiaryInputType);
+
+            if (is_null($existingBeneficiary)) {
+                $beneficiary = $this->beneficiaryService->create($beneficiaryInputType);
+                $beneficiary->setHousehold($household);
+                $household->addBeneficiary($beneficiary);
+            } else {
+                $beneficiary = $this->beneficiaryService->update($existingBeneficiary, $beneficiaryInputType);
+                unset($currentIds[$beneficiary->getId()]);
+            }
+        }
+        foreach ($currentIds as $beneficiaryId => $beneficiary) {
+            $this->beneficiaryService->remove($beneficiary);
+        }
+
+        $this->em->persist($household);
+        $this->em->flush();
+
+        return $household;
+    }
+
+    private function tryToPairBeneficiaryInHousehold(Household $household, BeneficiaryInputType $beneficiaryInputType): ?Beneficiary
+    {
+        if (!is_null($beneficiaryInputType->getId())) {
+            /** @var Beneficiary|null $beneficiary */
+            $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy([
+                'id' => $beneficiaryInputType->getId(),
+                'beneficiary' => $household,
+            ]);
+
+            return $beneficiary;
+        }
+
+        /** @var BeneficiaryRepository $beneficiaryRepository */
+        $beneficiaryRepository = $this->em->getRepository(Beneficiary::class);
+
+        $existingBeneficiariesByName = $beneficiaryRepository->findByName(
+            $beneficiaryInputType->getLocalGivenName(),
+            $beneficiaryInputType->getLocalParentsName(),
+            $beneficiaryInputType->getLocalFamilyName(),
+            $beneficiaryInputType->getGender(),
+            $household
+        );
+
+        if (count($existingBeneficiariesByName)>1) throw new Exception("too much duplicities");
+
+        if (!empty($existingBeneficiariesByName)) {
+            return $existingBeneficiariesByName[0];
+        }
+
+        return null;
     }
 
     /**
@@ -135,8 +309,8 @@ class HouseholdService
      * @param bool $flush
      * @return Household
      * @throws ValidationException
-     * @throws \Exception
-     * @deprecated
+     * @throws Exception
+     * @deprecated dont use at all
      */
     public function createOrEdit(array $householdArray, array $projectsArray, $household = null, bool $flush = true)
     {
@@ -177,7 +351,7 @@ class HouseholdService
                 if (!$camp instanceof Camp) {
                     $location = $this->locationService->getLocation($householdArray['__country'], $householdLocation['camp_address']['camp']['location']);
                     if (null === $location) {
-                        throw new \Exception("Location was not found.");
+                        throw new Exception("Location was not found.");
                     }
                     $camp = new Camp();
                     $camp->setName($householdLocation['camp_address']['camp']['name']);
@@ -190,7 +364,7 @@ class HouseholdService
             } else {
                 $location = $this->locationService->getLocation($householdArray['__country'], $householdLocation['address']["location"]);
                 if (null === $location) {
-                    throw new \Exception("Location was not found.");
+                    throw new Exception("Location was not found.");
                 }
                 $newHouseholdLocation->setAddress(Address::create(
                     $householdLocation['address']['street'] ?? null,
@@ -229,7 +403,7 @@ class HouseholdService
             }
 
             if (!$dateReceived instanceof \DateTimeInterface) {
-                throw new \Exception("Value of support_date_received is invalid");
+                throw new Exception("Value of support_date_received is invalid");
             }
         }
         $household->setSupportDateReceived($dateReceived);
@@ -255,7 +429,7 @@ class HouseholdService
         // Add projects
         foreach ($projectsArray as $project) {
             if (!$project instanceof Project) {
-                throw new \Exception("The project could not be found.");
+                throw new Exception("The project could not be found.");
             }
             if ($actualAction !== 'update' || !$household->getProjects()->contains($project)) {
                 $household->addProject($project);
@@ -283,12 +457,12 @@ class HouseholdService
                         $household->addBeneficiary($beneficiary);
                     }
                     $beneficiariesPersisted[] = $beneficiary;
-                } catch (\Exception $exception) {
+                } catch (Exception $exception) {
                     throw $exception;
                 }
                 if ($beneficiary->isHead()) {
                     if ($hasHead) {
-                        throw new \Exception("You have defined more than 1 head of household.");
+                        throw new Exception("You have defined more than 1 head of household.");
                     }
                     $hasHead = true;
                 }
@@ -362,6 +536,7 @@ class HouseholdService
             $nationalId->setIdType($nationalIdInputType->getType());
             $nationalId->setIdNumber($nationalIdInputType->getNumber());
             $nationalId->setPerson($proxy);
+            $proxy->addNationalId($nationalId);
 
             $this->em->persist($nationalId);
 
@@ -420,12 +595,52 @@ class HouseholdService
     }
 
     /**
-     * @param Household $household
-     * @param array $countrySpecificAnswerArray
-     * @return array|CountrySpecificAnswer
-     * @throws \Exception
+     * @throws EntityNotFoundException
      */
-    public function addOrUpdateCountrySpecific(Household $household, array $countrySpecificAnswerArray, bool $flush)
+    public function createOrUpdateCountrySpecificAnswers(Household $household, CountrySpecificsAnswerInputType $inputType): CountrySpecificAnswer
+    {
+        $countrySpecific = $this->em->getRepository(CountrySpecific::class)
+            ->find($inputType->getCountrySpecificId());
+
+        if (!$countrySpecific instanceof CountrySpecific) {
+            throw new EntityNotFoundException('Country specific with id '.$inputType->getCountrySpecificId().' not found.');
+        }
+
+        $countrySpecificAnswer = $this->em->getRepository(CountrySpecificAnswer::class)
+            ->findOneBy([
+                "countrySpecific" => $countrySpecific,
+                "household" => $household
+            ]);
+
+        if (!is_null($inputType->getAnswer())) {
+            if (!$countrySpecificAnswer instanceof CountrySpecificAnswer) {
+                $countrySpecificAnswer = new CountrySpecificAnswer();
+
+                $countrySpecificAnswer->setCountrySpecific($countrySpecific)
+                    ->setHousehold($household);
+            }
+
+            $countrySpecificAnswer->setAnswer($inputType->getAnswer());
+
+            $this->em->persist($countrySpecificAnswer);
+        } else {
+            if ($countrySpecificAnswer instanceof CountrySpecificAnswer) {
+                $this->em->remove($countrySpecificAnswer);
+            }
+        }
+
+        $this->em->flush();
+
+        return $countrySpecificAnswer;
+    }
+
+    /**
+     * @param Household $household
+     * @param $countrySpecificAnswerArray
+     * @return array|CountrySpecificAnswer
+     * @throws Exception
+     */
+    public function addOrUpdateCountrySpecific(Household $household, $countrySpecificAnswerArray, bool $flush)
     {
         $this->requestValidator->validate(
             "country_specific_answer",
@@ -437,7 +652,7 @@ class HouseholdService
             ->find($countrySpecificAnswerArray["country_specific"]["id"]);
 
         if (!$countrySpecific instanceof CountrySpecific) {
-            throw new \Exception("This country specific is unknown");
+            throw new Exception("This country specific is unknown");
         }
 
         $countrySpecificAnswer = $this->em->getRepository(CountrySpecificAnswer::class)
@@ -688,5 +903,95 @@ class HouseholdService
         ];
 
         return $data;
+    }
+
+    /**
+     * @param HouseholdUpdateInputType $inputType
+     * @param Household                $household
+     *
+     * @throws Exception
+     */
+    private function fillHousehold(HouseholdUpdateInputType $inputType, Household $household): void
+    {
+        if ($inputType->getResidenceAddress()) {
+            $household->addHouseholdLocation($this->createResidenceAddress($inputType->getResidenceAddress()));
+        }
+
+        if ($inputType->getTemporarySettlementAddress()) {
+            $household->addHouseholdLocation($this->createTemporarySettlementAddress($inputType->getTemporarySettlementAddress()));
+        }
+
+        if ($inputType->getCampAddress()) {
+            $household->addHouseholdLocation($this->createCampAddress($inputType->getCampAddress()));
+        }
+
+        $household->setNotes($inputType->getNotes())
+            ->setLivelihood($inputType->getLivelihood())
+            ->setLongitude($inputType->getLongitude())
+            ->setLatitude($inputType->getLatitude())
+            ->setIncomeLevel($inputType->getIncomeLevel())
+            ->setCopingStrategiesIndex($inputType->getCopingStrategiesIndex())
+            ->setFoodConsumptionScore($inputType->getFoodConsumptionScore())
+            ->setAssets($inputType->getAssets())
+            ->setShelterStatus($inputType->getShelterStatus())
+            ->setDebtLevel($inputType->getDebtLevel())
+            ->setSupportReceivedTypes($inputType->getSupportReceivedTypes())
+            ->setSupportOrganizationName($inputType->getSupportOrganizationName())
+            ->setIncomeSpentOnFood($inputType->getIncomeSpentOnFood())
+            ->setHouseholdIncome($inputType->getHouseIncome())
+            ->setEnumeratorName($inputType->getEnumeratorName())
+            ->setSupportDateReceived($inputType->getSupportDateReceived());
+
+        $this->em->persist($household);
+
+        // Add projects
+        $projects = $this->em->getRepository(Project::class)->findBy(["id" => $inputType->getProjectIds()]);
+        foreach ($projects as $project) {
+            $household->addProject($project);
+        }
+
+        foreach ($inputType->getCountrySpecificAnswers() as $country_specific_answer) {
+            $this->addOrUpdateCountrySpecific($household, $country_specific_answer, false);
+        }
+
+        if ($inputType->hasProxy()) {
+            $proxy = new Person();
+            $proxy->setEnGivenName($inputType->getProxyEnGivenName());
+            $proxy->setEnFamilyName($inputType->getProxyEnFamilyName());
+            $proxy->setEnParentsName($inputType->getProxyEnParentsName());
+            $proxy->setLocalGivenName($inputType->getProxyLocalGivenName());
+            $proxy->setLocalFamilyName($inputType->getProxyLocalFamilyName());
+            $proxy->setLocalParentsName($inputType->getProxyLocalParentsName());
+            $proxy->setProfile(new Profile());
+            $proxy->getProfile()->setPhoto('');
+
+            /** @var PhoneInputType $phoneInputType */
+            $phoneInputType = $inputType->getProxyPhone();
+
+            $proxy->getPhones()->clear();
+
+            $phone = new Phone();
+            $phone->setType($phoneInputType->getType());
+            $phone->setPrefix($phoneInputType->getPrefix());
+            $phone->setNumber($phoneInputType->getNumber());
+            $phone->setProxy($phoneInputType->getProxy());
+            $phone->setPerson($proxy);
+
+            $this->em->persist($phone);
+
+            /** @var NationalIdCardInputType $nationalIdInputType */
+            $nationalIdInputType = $inputType->getProxyNationalIdCard();
+            $proxy->getNationalIds()->clear();
+
+            $nationalId = new NationalId();
+            $nationalId->setIdType($nationalIdInputType->getType());
+            $nationalId->setIdNumber($nationalIdInputType->getNumber());
+            $nationalId->setPerson($proxy);
+            $proxy->addNationalId($nationalId);
+
+            $this->em->persist($proxy);
+            $this->em->persist($nationalId);
+            $household->setProxy($proxy);
+        }
     }
 }

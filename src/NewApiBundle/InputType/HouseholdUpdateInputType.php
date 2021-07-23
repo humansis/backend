@@ -247,7 +247,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     {
         $keys = [];
         foreach (Household::ASSETS as $key => $value) {
-            $keys[] = (string) $key;
+            $keys[] = (int) $key;
         }
 
         return $keys;
@@ -257,7 +257,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     {
         $keys = [];
         foreach (Household::SHELTER_STATUSES as $key => $value) {
-            $keys[] = (string) $key;
+            $keys[] = (int) $key;
         }
 
         return $keys;
@@ -316,9 +316,11 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     /**
      * @param int[] $assets
      */
-    public function setAssets($assets)
+    public function setAssets(array $assets)
     {
-        $this->assets = $assets;
+        foreach ($assets as $asset) {
+            $this->assets[] = (int) $asset;
+        }
     }
 
     /**
@@ -334,6 +336,9 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      */
     public function setShelterStatus($shelterStatus)
     {
+        if (null !== $shelterStatus && is_string($shelterStatus)) {
+            $shelterStatus = (int) $shelterStatus;
+        }
         $this->shelterStatus = $shelterStatus;
     }
 
@@ -489,8 +494,10 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
         $this->debtLevel = $debtLevel;
     }
 
+
     /**
-     * @return \DateTimeInterface|null
+     * @return \DateTime|null
+     * @throws \Exception
      */
     public function getSupportDateReceived()
     {
@@ -498,7 +505,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     }
 
     /**
-     * @param \DateTimeInterface|null $supportDateReceived
+     * @param string|null $supportDateReceived
      */
     public function setSupportDateReceived($supportDateReceived)
     {
@@ -783,5 +790,35 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     public function setProxyPhone(?PhoneInputType $proxyPhone)
     {
         $this->proxyPhone = $proxyPhone;
+    }
+
+    /**
+     * @Assert\EqualTo(1)
+     * @return int
+     */
+    public function getBeneficiaryHeadCount(): int
+    {
+        $headCount = 0;
+        foreach ($this->getBeneficiaries() as $beneficiaryInputType) {
+            if ($beneficiaryInputType->isHead()) {
+                $headCount++;
+            }
+        }
+        return $headCount;
+    }
+
+
+    public function hasProxy(): bool
+    {
+        return null !== $this->getProxyLocalGivenName()
+            && null !== $this->getProxyLocalFamilyName()
+            ;
+    }
+
+    public function getHouseholdHead(): BeneficiaryInputType
+    {
+        foreach ($this->getBeneficiaries() as $beneficiaryInputType) {
+            if ($beneficiaryInputType->isHead()) return $beneficiaryInputType;
+        }
     }
 }

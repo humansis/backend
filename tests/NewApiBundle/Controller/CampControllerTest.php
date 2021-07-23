@@ -50,7 +50,7 @@ class CampControllerTest extends BMSServiceTestCase
             return;
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/camp/'.$campId);
+        $this->request('GET', '/api/basic/web-app/v1/camps/'.$campId);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

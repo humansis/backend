@@ -14,6 +14,9 @@ use BeneficiaryBundle\Form\HouseholdConstraints;
 use CommonBundle\Controller\ExportController;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\InputType\BenefciaryPatchInputType;
+use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
+use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
+use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\InputType\HouseholdFilterInputType;
 use NewApiBundle\InputType\HouseholdOrderInputType;
 use NewApiBundle\Request\Pagination;
@@ -80,6 +83,173 @@ class BeneficiaryService
         return $this->em->getRepository(VulnerabilityCriterion::class)->findAllActive();
     }
 
+    public function createPhone(PhoneInputType $inputType): Phone
+    {
+        $phone = new Phone();
+
+        $number = $inputType->getNumber();
+        if (preg_match('/^0/', $number)) {
+            $number = substr($number, 1);
+        }
+
+        $phone->setType($inputType->getType());
+        $phone->setPrefix($inputType->getPrefix());
+        $phone->setNumber($number);
+        $phone->setProxy($inputType->getProxy());
+
+        $this->em->persist($phone);
+
+        return $phone;
+    }
+
+    public function createNationalId(NationalIdCardInputType $inputType): NationalId
+    {
+        $nationalId = new NationalId();
+
+        $nationalId->setIdType($inputType->getType());
+        $nationalId->setIdNumber($inputType->getNumber());
+
+        $this->em->persist($nationalId);
+
+        return $nationalId;
+    }
+
+    /**
+     * @param Beneficiary          $beneficiary
+     * @param BeneficiaryInputType $inputType
+     *
+     * @return Beneficiary
+     */
+    public function update(Beneficiary $beneficiary, BeneficiaryInputType $inputType): Beneficiary
+    {
+        $beneficiaryPerson = $beneficiary->getPerson();
+
+        $beneficiaryPerson->setGender($inputType->getGender())
+            ->setDateOfBirth($inputType->getDateOfBirth())
+            ->setEnGivenName($inputType->getEnGivenName())
+            ->setEnFamilyName($inputType->getEnFamilyName())
+            ->setEnParentsName($inputType->getEnParentsName())
+            ->setLocalGivenName($inputType->getLocalGivenName())
+            ->setLocalFamilyName($inputType->getLocalFamilyName())
+            ->setLocalParentsName($inputType->getLocalParentsName());
+
+        $beneficiary->setHead($inputType->isHead())
+            ->setResidencyStatus($inputType->getResidencyStatus())
+            ->setUpdatedOn(new \DateTime()); //TODO use doctrine lifecycle callback
+
+        //phones
+        foreach ($beneficiaryPerson->getPhones() as $oldPhone) {
+            $this->em->remove($oldPhone);
+        }
+        $beneficiaryPerson->getPhones()->clear();
+
+        foreach ($inputType->getPhones() as $phoneInputType) {
+            $phone = $this->createPhone($phoneInputType);
+            $phone->setPerson($beneficiaryPerson);
+            $beneficiaryPerson->addPhone($phone);
+        }
+
+        //national ids
+        foreach ($beneficiaryPerson->getNationalIds() as $nationalId) {
+            $this->em->remove($nationalId);
+        }
+        $beneficiaryPerson->getNationalIds()->clear();
+
+        foreach ($inputType->getNationalIdCards() as $nationalIdInputType) {
+            $nationalId = $this->createNationalId($nationalIdInputType);
+            $nationalId->setPerson($beneficiaryPerson);
+            $beneficiaryPerson->addNationalId($nationalId);
+        }
+
+        //vulnerability criteria
+        $beneficiary->getVulnerabilityCriteria()->clear();
+        foreach ($inputType->getVulnerabilityCriteria() as $vulnerabilityCriterionName) {
+            /** @var VulnerabilityCriterion $criterion */
+            $criterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy(['fieldString' => $vulnerabilityCriterionName]);
+            $beneficiary->addVulnerabilityCriterion($criterion);
+        }
+
+        //referral
+        $referral = $beneficiaryPerson->getReferral();
+
+        if (is_null($referral)) {
+            if (!is_null($inputType->getReferralType())) {
+                $referral = new Referral();
+                $this->em->persist($referral);
+            }
+        } else {
+            if (!is_null($inputType->getReferralType())) {
+                $referral->setType($inputType->getReferralType());
+                $referral->setComment($inputType->getReferralComment());
+            } else {
+                $this->em->remove($referral);
+            }
+        }
+
+        $this->em->persist($beneficiary);
+
+        return $beneficiary;
+    }
+
+    public function create(BeneficiaryInputType $inputType): Beneficiary
+    {
+        $beneficiary = new Beneficiary();
+        $beneficiary
+            ->setHead($inputType->isHead())
+            ->setResidencyStatus($inputType->getResidencyStatus())
+            ->setUpdatedOn(new \DateTime());
+
+        foreach ($inputType->getVulnerabilityCriteria() as $id => $vulnerability_criterion) {
+            $beneficiary->addVulnerabilityCriterion($this->getVulnerabilityCriterion($id));
+        }
+
+        $person = $beneficiary->getPerson();
+        $person->setGender($inputType->getGender())
+            ->setDateOfBirth($inputType->getDateOfBirth())
+            ->setEnFamilyName($inputType->getEnFamilyName())
+            ->setEnGivenName($inputType->getEnGivenName())
+            ->setEnParentsName($inputType->getEnParentsName())
+            ->setLocalFamilyName($inputType->getLocalFamilyName())
+            ->setLocalGivenName($inputType->getLocalGivenName())
+            ->setLocalParentsName($inputType->getLocalParentsName())
+            ->setUpdatedOn(new \DateTime())
+            ->setProfile(new Profile())
+        ;
+        $person->getProfile()->setPhoto('');
+
+        foreach ($inputType->getPhones() as $phoneInputType) {
+            $phone = $this->createPhone($phoneInputType);
+            $person->addPhone($phone);
+            $phone->setPerson($person);
+            $this->em->persist($phone);
+        }
+
+        foreach ($inputType->getNationalIdCards() as $nationalIdArray) {
+            $nationalId = $this->createNationalId($nationalIdArray);
+            $person->addNationalId($nationalId);
+            $nationalId->setPerson($person);
+            $this->em->persist($nationalId);
+        }
+
+        // $this->createProfile($person, $inputType->getProfile()); TODO
+
+        $previousReferral = $person->getReferral();
+        if ($previousReferral) {
+            $this->em->remove($previousReferral);
+        }
+        if ($inputType->hasReferral()) {
+            $referral = new Referral();
+            $referral->setType($inputType->getReferralType())
+                ->setComment($inputType->getReferralComment());
+            $person->setReferral($referral);
+            $this->em->persist($referral);
+        }
+
+        $this->em->persist($beneficiary);
+
+        return $beneficiary;
+    }
+
     /**
      * @param Household $household
      * @param array $beneficiaryArray
@@ -87,6 +257,7 @@ class BeneficiaryService
      * @return Beneficiary|null|object
      * @throws \Exception
      * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
+     * @deprecated dont use at all
      */
     public function updateOrCreate(Household $household, array $beneficiaryArray, $flush)
     {
@@ -481,25 +652,6 @@ class BeneficiaryService
         }
 
         return $this->container->get('export_csv_service')->export($exportableTable, 'beneficiaryhousehoulds', $type);
-    }
-
-    /**
-     * Updates a beneficiary
-     *
-     * @param Beneficiary $beneficiary
-     * @param array $beneficiaryData
-     * @return Beneficiary
-     * @throws \Exception
-     */
-    public function update(Beneficiary $beneficiary, array $beneficiaryData)
-    {
-        try {
-            $this->updateReferral($beneficiary, $beneficiaryData);
-            $this->em->persist($beneficiary);
-        } catch (\Exception $e) {
-            throw new \Exception('Error updating Beneficiary');
-        }
-        return $beneficiary;
     }
 
     public function patch(Beneficiary $beneficiary, BenefciaryPatchInputType $inputType)
