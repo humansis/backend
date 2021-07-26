@@ -5,10 +5,11 @@ namespace NewApiBundle\Entity;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Component\Import\Integrity\HeaderColumnReview;
 use UserBundle\Entity\User;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ImportFileRepository")
  */
 class ImportFile
 {
@@ -69,6 +70,34 @@ class ImportFile
      * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportQueue", mappedBy="file", cascade={"remove"})
      */
     private $importQueues;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="expected_valid_columns", type="json", nullable=true)
+     */
+    private $expectedValidColumns;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="expected_missing_columns", type="json", nullable=true)
+     */
+    private $expectedMissingColumns;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="unexpected_columns", type="json", nullable=true)
+     */
+    private $unexpectedColumns;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="header_violations", type="json", nullable=true)
+     */
+    private $headerViolations;
 
     public function __construct(string $filename, Import $import, User $user)
     {
@@ -171,4 +200,69 @@ class ImportFile
     {
         $this->savedAsFilename = $savedAsFilename;
     }
+
+    /**
+     * @return string|null
+     */
+    public function getExpectedValidColumns(): ?string
+    {
+        return $this->expectedValidColumns;
+    }
+
+    /**
+     * @param string|null $expectedValidColumns
+     */
+    public function setExpectedValidColumns(?string $expectedValidColumns): void
+    {
+        $this->expectedValidColumns = $expectedValidColumns;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getExpectedMissingColumns(): ?string
+    {
+        return $this->expectedMissingColumns;
+    }
+
+    /**
+     * @param string|null $expectedMissingColumns
+     */
+    public function setExpectedMissingColumns(?string $expectedMissingColumns): void
+    {
+        $this->expectedMissingColumns = $expectedMissingColumns;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUnexpectedColumns(): ?string
+    {
+        return $this->unexpectedColumns;
+    }
+
+    /**
+     * @param string|null $unexpectedColumns
+     */
+    public function setUnexpectedColumns(?string $unexpectedColumns): void
+    {
+        $this->unexpectedColumns = $unexpectedColumns;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getHeaderViolations(): ?string
+    {
+        return $this->headerViolations;
+    }
+
+    /**
+     * @param string|null $headerViolations
+     */
+    public function setHeaderViolations(?string $headerViolations): void
+    {
+        $this->headerViolations = $headerViolations;
+    }
+
 }

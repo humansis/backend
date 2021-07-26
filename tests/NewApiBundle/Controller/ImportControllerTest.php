@@ -5,6 +5,7 @@ namespace Tests\NewApiBundle\Controller;
 
 use Exception;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportInvalidFile;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportState;
@@ -250,6 +251,85 @@ class ImportControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: '.$this->client->getResponse()->getContent()
         );
+    }
+
+    public function testListValidImportedFiles(): int
+    {
+        /** @var ImportFile|null $importFile */
+        $importFile = $this->em->getRepository(ImportFile::class)->findOneBy([
+            'headerViolations' => null,
+        ]);
+
+        if (is_null($importFile)) {
+            $this->markTestSkipped('There needs to be at least one import file in system.');
+        }
+
+        $importId = $importFile->getImport()->getId();
+
+        $this->request('GET', "/api/basic/web-app/v1/imports/$importId/files");
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        $this->assertJsonFragment('{
+            "totalCount": "*",
+            "data": [
+                {
+                    "id": "*",
+                    "name": "*",
+                    "createdBy": "*",
+                    "uploadedDate": "*",
+                    "isLoaded": true,
+                    "expectedColumns": "*",
+                    "missingColumns": "*",
+                    "unexpectedColumns": "*",
+                    "violations": "*"
+                }
+            ]}', $this->client->getResponse()->getContent()
+        );
+
+        return $importFile->getId();
+    }
+
+    public function testListInvalidImportedFiles(): int
+    {
+        /** @var ImportFile|null $importFile */
+        // TODO: make one invalid
+        $importFile = $this->em->getRepository(ImportFile::class)->findOneBy([]);
+
+        if (is_null($importFile)) {
+            $this->markTestSkipped('There needs to be at least one import invalid file in system.');
+        }
+
+        $importId = $importFile->getImport()->getId();
+
+        $this->request('GET', "/api/basic/web-app/v1/imports/$importId/files");
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        $this->assertJsonFragment('{
+            "totalCount": "*",
+            "data": [
+                {
+                    "id": "*",
+                    "name": "*",
+                    "createdBy": "*",
+                    "uploadedDate": "*",
+                    "isLoaded": true,
+                    "expectedColumns": "*",
+                    "missingColumns": "*",
+                    "unexpectedColumns": "*",
+                    "violations": "*"
+                }
+            ]}', $this->client->getResponse()->getContent()
+        );
+
+        return $importFile->getId();
     }
 
     public function testListInvalidFiles(): int
