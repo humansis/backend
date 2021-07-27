@@ -237,10 +237,6 @@ class HouseholdService
 
         $this->fillHousehold($inputType, $household);
 
-        foreach ($inputType->getCountrySpecificAnswers() as $countrySpecificAnswer) {
-            $this->createOrUpdateCountrySpecificAnswers($household, $countrySpecificAnswer);
-        }
-
         $currentIds = [];
         foreach ($household->getBeneficiaries() as $beneficiary) {
             $currentIds[$beneficiary->getId()] = $beneficiary;
@@ -639,6 +635,8 @@ class HouseholdService
      * @param $countrySpecificAnswerArray
      * @return array|CountrySpecificAnswer
      * @throws Exception
+     *
+     * @deprecated use createOrUpdateCountrySpecificAnswers instead
      */
     public function addOrUpdateCountrySpecific(Household $household, $countrySpecificAnswerArray, bool $flush)
     {
@@ -950,8 +948,8 @@ class HouseholdService
             $household->addProject($project);
         }
 
-        foreach ($inputType->getCountrySpecificAnswers() as $country_specific_answer) {
-            $this->addOrUpdateCountrySpecific($household, $country_specific_answer, false);
+        foreach ($inputType->getCountrySpecificAnswers() as $countrySpecificAnswer) {
+            $this->createOrUpdateCountrySpecificAnswers($household, $countrySpecificAnswer);
         }
 
         if ($inputType->hasProxy()) {
