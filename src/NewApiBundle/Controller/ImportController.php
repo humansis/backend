@@ -199,7 +199,7 @@ class ImportController extends AbstractController
 
             $this->importFileValidator->validate($uploadedFile);
 
-            if ($fileSize < $this->maxFileSizeToLoad * 1024 * 1024 && empty($uploadedFile->getStructureViolation())) {
+            if ($fileSize < $this->maxFileSizeToLoad * 1024 * 1024 && empty($uploadedFile->getStructureViolations())) {
                 $this->uploadImportService->load($uploadedFile);
             }
         }

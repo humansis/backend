@@ -69,6 +69,6 @@ class ImportFileMapper implements MapperInterface
 
     public function getViolations(): ?string
     {
-        return $this->object->getStructureViolation();
+        return $this->object->getStructureViolations();
     }
 }

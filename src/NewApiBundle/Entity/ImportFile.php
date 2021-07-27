@@ -94,9 +94,9 @@ class ImportFile
     /**
      * @var string|null
      *
-     * @ORM\Column(name="structure_violation", type="json", nullable=true)
+     * @ORM\Column(name="structure_violations", type="json", nullable=true)
      */
-    private $structureViolation;
+    private $structureViolations;
 
     public function __construct(string $filename, Import $import, User $user)
     {
@@ -251,17 +251,17 @@ class ImportFile
     /**
      * @return string|null
      */
-    public function getStructureViolation(): ?string
+    public function getStructureViolations(): ?string
     {
-        return $this->structureViolation;
+        return $this->structureViolations;
     }
 
     /**
-     * @param string|null $structureViolation
+     * @param string|null $structureViolations
      */
-    public function setStructureViolation(?string $structureViolation): void
+    public function setStructureViolations(?string $structureViolations): void
     {
-        $this->structureViolation = $structureViolation;
+        $this->structureViolations = $structureViolations;
     }
 
 }
