@@ -303,7 +303,7 @@ class ImportControllerTest extends BMSServiceTestCase
     {
         /** @var ImportFile|null $importFile */
         $importFile = $this->em->getRepository(ImportFile::class)->findOneBy([
-            'headerViolations' => null,
+            'structureViolations' => null,
         ]);
 
         if (is_null($importFile)) {
@@ -351,7 +351,7 @@ class ImportControllerTest extends BMSServiceTestCase
             /** @var ImportFile $importFile */
             $importFile = $this->em->createQueryBuilder()->select('if')
                 ->from(ImportFile::class, 'if')
-                ->where('if.headerViolations IS NOT NULL')
+                ->where('if.structureViolations IS NOT NULL')
                 ->setMaxResults(1)
                 ->getQuery()->getSingleResult();
         } catch (NoResultException $e) {
