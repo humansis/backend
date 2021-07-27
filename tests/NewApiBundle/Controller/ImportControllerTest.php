@@ -3,12 +3,16 @@ declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
+use Doctrine\ORM\NoResultException;
 use Exception;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportInvalidFile;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportState;
 use ProjectBundle\Entity\Project;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Tests\BMSServiceTestCase;
 
 class ImportControllerTest extends BMSServiceTestCase
@@ -62,6 +66,44 @@ class ImportControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('createdAt', $result);
 
         return $result['id'];
+    }
+
+    public function uploadFilesDataProvider(): array
+    {
+        return [
+            ['KHM-Import-2HH-3HHM-24HHM.ods', false],
+            ['import_wrong_header.xlsx', true],
+            ['import_missing_simple_mandatory_columns.ods', true],
+            ['import_missing_address_columns.ods', true],
+            ['import_invalid_file.png', true],
+        ];
+    }
+
+    /**
+     * @depends testCreate
+     * @dataProvider uploadFilesDataProvider
+     */
+    public function testUploadFile(string $filename, bool $expectingViolation, int $id)
+    {
+        $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
+
+        $fs = new Filesystem();
+        $fs->copy(__DIR__.'/../Resources/'.$filename, $uploadedFilePath, true);
+
+        $file = new UploadedFile($uploadedFilePath, $filename, null, null, true);
+
+        $this->request('POST', "/api/basic/web-app/v1/imports/$id/files", [], [$file]);
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        if ($expectingViolation) {
+            $this->assertJsonFragment('[{
+                "columns": [],
+                "message": "*" 
+            }]', $result['data'][0]['violations']);
+        } else {
+            $this->assertEquals(null, $result['data'][0]['violations']);
+        }
     }
 
     /**
@@ -250,6 +292,99 @@ class ImportControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: '.$this->client->getResponse()->getContent()
         );
+    }
+
+    /**
+     * @return int
+     *
+     * @depends testUploadFile
+     */
+    public function testListValidImportedFiles(): int
+    {
+        /** @var ImportFile|null $importFile */
+        $importFile = $this->em->getRepository(ImportFile::class)->findOneBy([
+            'structureViolations' => null,
+        ]);
+
+        if (is_null($importFile)) {
+            $this->markTestSkipped('There needs to be at least one import file in system.');
+        }
+
+        $importId = $importFile->getImport()->getId();
+
+        $this->request('GET', "/api/basic/web-app/v1/imports/$importId/files");
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        $this->assertJsonFragment('{
+            "totalCount": "*",
+            "data": [
+                {
+                    "id": "*",
+                    "name": "*",
+                    "createdBy": "*",
+                    "uploadedDate": "*",
+                    "isLoaded": true,
+                    "expectedColumns": "*",
+                    "missingColumns": "*",
+                    "unexpectedColumns": "*",
+                    "violations": "*"
+                }
+            ]}', $this->client->getResponse()->getContent()
+        );
+
+        return $importFile->getId();
+    }
+
+    /**
+     * @return int
+     *
+     * @depends testUploadFile
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function testListInvalidImportedFiles(): int
+    {
+        try {
+            /** @var ImportFile $importFile */
+            $importFile = $this->em->createQueryBuilder()->select('if')
+                ->from(ImportFile::class, 'if')
+                ->where('if.structureViolations IS NOT NULL')
+                ->setMaxResults(1)
+                ->getQuery()->getSingleResult();
+        } catch (NoResultException $e) {
+            $this->markTestSkipped('There needs to be at least one import invalid file in system.');
+        }
+
+        $importId = $importFile->getImport()->getId();
+
+        $this->request('GET', "/api/basic/web-app/v1/imports/$importId/files");
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        $this->assertJsonFragment('{
+            "totalCount": "*",
+            "data": [
+                {
+                    "id": "*",
+                    "name": "*",
+                    "createdBy": "*",
+                    "uploadedDate": "*",
+                    "isLoaded": true,
+                    "expectedColumns": "*",
+                    "missingColumns": "*",
+                    "unexpectedColumns": "*",
+                    "violations": "*"
+                }
+            ]}', $this->client->getResponse()->getContent()
+        );
+
+        return $importFile->getId();
     }
 
     public function testListInvalidFiles(): int

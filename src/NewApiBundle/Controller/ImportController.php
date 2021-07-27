@@ -6,6 +6,7 @@ namespace NewApiBundle\Controller;
 use CommonBundle\Controller\ExportController;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\Import\ImportFileValidator;
 use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Component\Import\UploadImportService;
 use NewApiBundle\Entity\Import;
@@ -42,6 +43,11 @@ class ImportController extends AbstractController
     private $uploadImportService;
 
     /**
+     * @var ImportFileValidator
+     */
+    private $importFileValidator;
+
+    /**
      * @var string
      */
     private $importInvalidFilesDirectory;
@@ -51,10 +57,11 @@ class ImportController extends AbstractController
      */
     private $maxFileSizeToLoad;
 
-    public function __construct(ImportService $importService, UploadImportService $uploadImportService, string $importInvalidFilesDirectory, int $maxFileSizeToLoad)
+    public function __construct(ImportService $importService, UploadImportService $uploadImportService, ImportFileValidator $importFileValidator, string $importInvalidFilesDirectory, int $maxFileSizeToLoad)
     {
         $this->importService = $importService;
         $this->uploadImportService = $uploadImportService;
+        $this->importFileValidator = $importFileValidator;
         $this->importInvalidFilesDirectory = $importInvalidFilesDirectory;
         $this->maxFileSizeToLoad = $maxFileSizeToLoad;
     }
@@ -190,7 +197,9 @@ class ImportController extends AbstractController
 
             $importFiles[] = $uploadedFile = $this->uploadImportService->uploadFile($import, $file, $user);
 
-            if ($fileSize < $this->maxFileSizeToLoad * 1024 * 1024) {
+            $this->importFileValidator->validate($uploadedFile);
+
+            if ($fileSize < $this->maxFileSizeToLoad * 1024 * 1024 && empty($uploadedFile->getStructureViolations())) {
                 $this->uploadImportService->load($uploadedFile);
             }
         }

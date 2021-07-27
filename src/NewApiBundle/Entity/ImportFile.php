@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use UserBundle\Entity\User;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ImportFileRepository")
  */
 class ImportFile
 {
@@ -69,6 +69,34 @@ class ImportFile
      * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportQueue", mappedBy="file", cascade={"remove"})
      */
     private $importQueues;
+
+    /**
+     * @var array|null
+     *
+     * @ORM\Column(name="expected_valid_columns", type="array", nullable=true)
+     */
+    private $expectedValidColumns;
+
+    /**
+     * @var array|null
+     *
+     * @ORM\Column(name="expected_missing_columns", type="array", nullable=true)
+     */
+    private $expectedMissingColumns;
+
+    /**
+     * @var array|null
+     *
+     * @ORM\Column(name="unexpected_columns", type="array", nullable=true)
+     */
+    private $unexpectedColumns;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="structure_violations", type="json", nullable=true)
+     */
+    private $structureViolations;
 
     public function __construct(string $filename, Import $import, User $user)
     {
@@ -171,4 +199,69 @@ class ImportFile
     {
         $this->savedAsFilename = $savedAsFilename;
     }
+
+    /**
+     * @return array|null
+     */
+    public function getExpectedValidColumns(): ?array
+    {
+        return $this->expectedValidColumns;
+    }
+
+    /**
+     * @param array|null $expectedValidColumns
+     */
+    public function setExpectedValidColumns(?array $expectedValidColumns): void
+    {
+        $this->expectedValidColumns = $expectedValidColumns;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getExpectedMissingColumns(): ?array
+    {
+        return $this->expectedMissingColumns;
+    }
+
+    /**
+     * @param array|null $expectedMissingColumns
+     */
+    public function setExpectedMissingColumns(?array $expectedMissingColumns): void
+    {
+        $this->expectedMissingColumns = $expectedMissingColumns;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getUnexpectedColumns(): ?array
+    {
+        return $this->unexpectedColumns;
+    }
+
+    /**
+     * @param array|null $unexpectedColumns
+     */
+    public function setUnexpectedColumns(?array $unexpectedColumns): void
+    {
+        $this->unexpectedColumns = $unexpectedColumns;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getStructureViolations(): ?string
+    {
+        return $this->structureViolations;
+    }
+
+    /**
+     * @param string|null $structureViolations
+     */
+    public function setStructureViolations(?string $structureViolations): void
+    {
+        $this->structureViolations = $structureViolations;
+    }
+
 }

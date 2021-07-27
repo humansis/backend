@@ -30,10 +30,6 @@ class ImportParser
 
         $headers = $this->getHeaders($worksheet);
 
-        if (!in_array('Head', $headers)) {
-            throw new InvalidImportException('File does not contains required column Head');
-        }
-
         $list = [];
         $household = [];
         for ($r = self::CONTENT_ROW; ; $r++) {
@@ -58,6 +54,22 @@ class ImportParser
         $list[] = $household;
 
         return $list;
+    }
+
+    /**
+     * @param File $file
+     *
+     * @return array
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     */
+    public function parseHeadersOnly(File $file): array
+    {
+        $reader = IOFactory::createReaderForFile($file->getRealPath());
+        $reader->setReadDataOnly(true);
+
+        $worksheet = $reader->load($file->getRealPath())->getActiveSheet();
+
+        return $this->getHeaders($worksheet);
     }
 
     /**
