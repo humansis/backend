@@ -52,23 +52,23 @@ class ImportFileMapper implements MapperInterface
         return $this->object->isLoaded();
     }
 
-    public function getExpectedColumns(): ?string
+    public function getExpectedColumns(): ?array
     {
         return $this->object->getExpectedValidColumns();
     }
 
-    public function getMissingColumns(): ?string
+    public function getMissingColumns(): ?array
     {
         return $this->object->getExpectedMissingColumns();
     }
 
-    public function getUnexpectedColumns(): ?string
+    public function getUnexpectedColumns(): ?array
     {
         return $this->object->getUnexpectedColumns();
     }
 
     public function getViolations(): ?string
     {
-        return $this->object->getHeaderViolations();
+        return $this->object->getStructureViolation();
     }
 }

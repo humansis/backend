@@ -5,7 +5,6 @@ namespace NewApiBundle\Entity;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Component\Import\Integrity\HeaderColumnReview;
 use UserBundle\Entity\User;
 
 /**
@@ -72,32 +71,32 @@ class ImportFile
     private $importQueues;
 
     /**
-     * @var string|null
+     * @var array|null
      *
-     * @ORM\Column(name="expected_valid_columns", type="json", nullable=true)
+     * @ORM\Column(name="expected_valid_columns", type="array", nullable=true)
      */
     private $expectedValidColumns;
 
     /**
-     * @var string|null
+     * @var array|null
      *
-     * @ORM\Column(name="expected_missing_columns", type="json", nullable=true)
+     * @ORM\Column(name="expected_missing_columns", type="array", nullable=true)
      */
     private $expectedMissingColumns;
 
     /**
-     * @var string|null
+     * @var array|null
      *
-     * @ORM\Column(name="unexpected_columns", type="json", nullable=true)
+     * @ORM\Column(name="unexpected_columns", type="array", nullable=true)
      */
     private $unexpectedColumns;
 
     /**
      * @var string|null
      *
-     * @ORM\Column(name="header_violations", type="json", nullable=true)
+     * @ORM\Column(name="structure_violation", type="json", nullable=true)
      */
-    private $headerViolations;
+    private $structureViolation;
 
     public function __construct(string $filename, Import $import, User $user)
     {
@@ -202,49 +201,49 @@ class ImportFile
     }
 
     /**
-     * @return string|null
+     * @return array|null
      */
-    public function getExpectedValidColumns(): ?string
+    public function getExpectedValidColumns(): ?array
     {
         return $this->expectedValidColumns;
     }
 
     /**
-     * @param string|null $expectedValidColumns
+     * @param array|null $expectedValidColumns
      */
-    public function setExpectedValidColumns(?string $expectedValidColumns): void
+    public function setExpectedValidColumns(?array $expectedValidColumns): void
     {
         $this->expectedValidColumns = $expectedValidColumns;
     }
 
     /**
-     * @return string|null
+     * @return array|null
      */
-    public function getExpectedMissingColumns(): ?string
+    public function getExpectedMissingColumns(): ?array
     {
         return $this->expectedMissingColumns;
     }
 
     /**
-     * @param string|null $expectedMissingColumns
+     * @param array|null $expectedMissingColumns
      */
-    public function setExpectedMissingColumns(?string $expectedMissingColumns): void
+    public function setExpectedMissingColumns(?array $expectedMissingColumns): void
     {
         $this->expectedMissingColumns = $expectedMissingColumns;
     }
 
     /**
-     * @return string|null
+     * @return array|null
      */
-    public function getUnexpectedColumns(): ?string
+    public function getUnexpectedColumns(): ?array
     {
         return $this->unexpectedColumns;
     }
 
     /**
-     * @param string|null $unexpectedColumns
+     * @param array|null $unexpectedColumns
      */
-    public function setUnexpectedColumns(?string $unexpectedColumns): void
+    public function setUnexpectedColumns(?array $unexpectedColumns): void
     {
         $this->unexpectedColumns = $unexpectedColumns;
     }
@@ -252,17 +251,17 @@ class ImportFile
     /**
      * @return string|null
      */
-    public function getHeaderViolations(): ?string
+    public function getStructureViolation(): ?string
     {
-        return $this->headerViolations;
+        return $this->structureViolation;
     }
 
     /**
-     * @param string|null $headerViolations
+     * @param string|null $structureViolation
      */
-    public function setHeaderViolations(?string $headerViolations): void
+    public function setStructureViolation(?string $structureViolation): void
     {
-        $this->headerViolations = $headerViolations;
+        $this->structureViolation = $structureViolation;
     }
 
 }
