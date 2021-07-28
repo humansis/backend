@@ -2,21 +2,17 @@
 
 namespace DistributionBundle\Entity;
 
-use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use CommonBundle\Entity\Location;
 use CommonBundle\Utils\ExportableInterface;
-use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Query\Expr\Select;
 use InvalidArgumentException;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
 
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
-use BeneficiaryBundle\Entity\Household;
 use TransactionBundle\Entity\Transaction;
 
 /**
@@ -101,11 +97,12 @@ class Assistance implements ExportableInterface
     private $project;
 
     /**
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\SelectionCriteria", mappedBy="assistance")
+     * @var AssistanceSelection
      *
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
+     * @ORM\OneToOne(targetEntity="DistributionBundle\Entity\AssistanceSelection", cascade={"persist"})
+     * @ORM\JoinColumn(name="assistance_selection_id", nullable=false)
      */
-    private $selectionCriteria;
+    private $assistanceSelection;
 
     /**
      * @var boolean
@@ -212,9 +209,9 @@ class Assistance implements ExportableInterface
     public function __construct()
     {
         $this->reportingDistribution = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->selectionCriteria = new \Doctrine\Common\Collections\ArrayCollection();
         $this->distributionBeneficiaries = new \Doctrine\Common\Collections\ArrayCollection();
         $this->commodities = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->assistanceSelection = new AssistanceSelection();
         $this->setUpdatedOn(new \DateTime());
     }
 
@@ -473,10 +470,8 @@ class Assistance implements ExportableInterface
      */
     public function addSelectionCriterion(\DistributionBundle\Entity\SelectionCriteria $selectionCriterion)
     {
-        if (null === $this->selectionCriteria) {
-            $this->selectionCriteria = new \Doctrine\Common\Collections\ArrayCollection();
-        }
-        $this->selectionCriteria[] = $selectionCriterion;
+        $this->getAssistanceSelection()->getSelectionCriteria()->add($selectionCriterion);
+        $selectionCriterion->setAssistanceSelection($this->getAssistanceSelection());
 
         return $this;
     }
@@ -490,17 +485,24 @@ class Assistance implements ExportableInterface
      */
     public function removeSelectionCriterion(\DistributionBundle\Entity\SelectionCriteria $selectionCriterion)
     {
-        return $this->selectionCriteria->removeElement($selectionCriterion);
+        return $this->getAssistanceSelection()->getSelectionCriteria()->removeElement($selectionCriterion);
     }
 
     /**
      * Get selectionCriteria.
      *
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
+     *
      * @return \Doctrine\Common\Collections\Collection
      */
     public function getSelectionCriteria()
     {
-        return $this->selectionCriteria;
+        return $this->getAssistanceSelection()->getSelectionCriteria();
+    }
+
+    public function getAssistanceSelection(): AssistanceSelection
+    {
+        return $this->assistanceSelection;
     }
 
     /**
