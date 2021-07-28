@@ -86,6 +86,20 @@ class ImportQueue
      */
     private $importQueueDuplicitiesTheirs;
 
+    /**
+     * @var \DateTimeInterface|null
+     *
+     * @ORM\Column(name="identity_checked_at", type="datetimetz", nullable=true)
+     */
+    private $identityCheckedAt;
+
+    /**
+     * @var \DateTimeInterface|null
+     *
+     * @ORM\Column(name="similarity_checked_at", type="datetimetz", nullable=true)
+     */
+    private $similarityCheckedAt;
+
     public function __construct(Import $import, ImportFile $file, array $content)
     {
         $this->import = $import;
@@ -232,4 +246,37 @@ class ImportQueue
     {
         return $this->importBeneficiaryDuplicities;
     }
+
+    /**
+     * @return \DateTimeInterface|null
+     */
+    public function getIdentityCheckedAt(): ?\DateTimeInterface
+    {
+        return $this->identityCheckedAt;
+    }
+
+    /**
+     * @param \DateTimeInterface|null $identityCheckedAt
+     */
+    public function setIdentityCheckedAt(?\DateTimeInterface $identityCheckedAt): void
+    {
+        $this->identityCheckedAt = $identityCheckedAt;
+    }
+
+    /**
+     * @return \DateTimeInterface|null
+     */
+    public function getSimilarityCheckedAt(): ?\DateTimeInterface
+    {
+        return $this->similarityCheckedAt;
+    }
+
+    /**
+     * @param \DateTimeInterface|null $similarityCheckedAt
+     */
+    public function setSimilarityCheckedAt(?\DateTimeInterface $similarityCheckedAt): void
+    {
+        $this->similarityCheckedAt = $similarityCheckedAt;
+    }
+
 }
