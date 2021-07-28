@@ -267,6 +267,14 @@ class HouseholdService
         return $household;
     }
 
+
+    /**
+     * @param Household            $household
+     * @param BeneficiaryInputType $beneficiaryInputType
+     *
+     * @return Beneficiary|null
+     * @throws Exception
+     */
     private function tryToPairBeneficiaryInHousehold(Household $household, BeneficiaryInputType $beneficiaryInputType): ?Beneficiary
     {
         if (!is_null($beneficiaryInputType->getId())) {
@@ -282,18 +290,19 @@ class HouseholdService
         /** @var BeneficiaryRepository $beneficiaryRepository */
         $beneficiaryRepository = $this->em->getRepository(Beneficiary::class);
 
-        $existingBeneficiariesByName = $beneficiaryRepository->findByName(
-            $beneficiaryInputType->getLocalGivenName(),
-            $beneficiaryInputType->getLocalParentsName(),
-            $beneficiaryInputType->getLocalFamilyName(),
-            $beneficiaryInputType->getGender(),
-            $household
-        );
+        $existingBeneficiariesByNationalId = [];
+        foreach ($beneficiaryInputType->getNationalIdCards() as $nationalIdCard) {
+            $existingBeneficiariesByNationalId[] = $beneficiaryRepository->findIdentity($nationalIdCard->getType(), $nationalIdCard->getNumber(), null, $household);
+        }
 
-        if (count($existingBeneficiariesByName)>1) throw new Exception("too much duplicities");
+        if (!empty($existingBeneficiariesByNationalId)) {
+            $existingBeneficiariesByNationalId = array_merge(...$existingBeneficiariesByNationalId);
+        }
 
-        if (!empty($existingBeneficiariesByName)) {
-            return $existingBeneficiariesByName[0];
+        if (count($existingBeneficiariesByNationalId)>1) throw new Exception("too much duplicities (found ".count($existingBeneficiariesByNationalId).")");
+
+        if (!empty($existingBeneficiariesByNationalId)) {
+            return $existingBeneficiariesByNationalId[0];
         }
 
         return null;
