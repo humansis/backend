@@ -10,31 +10,40 @@ use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
+use NewApiBundle\Repository\ImportQueueRepository;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class IntegrityChecker
 {
+    const BATCH_SIZE = 1;
+
     /** @var ValidatorInterface */
     private $validator;
-
     /** @var EntityManagerInterface */
     private $entityManager;
+    /** @var ImportQueueRepository */
+    private $queueRepository;
 
     public function __construct(ValidatorInterface $validator, EntityManagerInterface $entityManager)
     {
         $this->validator = $validator;
         $this->entityManager = $entityManager;
+        $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
     }
 
-    public function check(Import $import): void
+    /**
+     * @param Import   $import
+     * @param int|null $batchSize if null => all
+     */
+    public function check(Import $import, ?int $batchSize = null): void
     {
         if (ImportState::INTEGRITY_CHECKING !== $import->getState()) {
             throw new \BadMethodCallException('Unable to execute checker. Import is not ready to integrity check.');
         }
 
-        foreach ($this->getItemsToCheck($import) as $i => $item) {
+        foreach ($this->queueRepository->getItemsToIntegrityCheck($import, $batchSize) as $i => $item) {
             $this->checkOne($item);
 
             if ($i % 500 === 0) {
@@ -44,8 +53,7 @@ class IntegrityChecker
 
         $this->entityManager->flush();
 
-        $queue = $this->getItemsToCheck($import);
-        if (0 === count($queue)) {
+        if (0 === $this->queueRepository->countItemsToIntegrityCheck($import)) {
             $isInvalid = $this->isImportQueueInvalid($import);
             $import->setState($isInvalid ? ImportState::INTEGRITY_CHECK_FAILED : ImportState::INTEGRITY_CHECK_CORRECT);
 
@@ -94,18 +102,9 @@ class IntegrityChecker
             $item->setState(ImportQueueState::VALID);
         }
 
-        $this->entityManager->persist($item);
-    }
+        // $item->setIntegrityCheckedAt(new \DateTime());
 
-    /**
-     * @param Import $import
-     *
-     * @return ImportQueue[]
-     */
-    private function getItemsToCheck(Import $import): iterable
-    {
-        return $this->entityManager->getRepository(ImportQueue::class)
-            ->findBy(['import' => $import, 'state' => ImportQueueState::NEW]);
+        $this->entityManager->persist($item);
     }
 
     /**

@@ -78,4 +78,99 @@ class ImportQueueRepository extends EntityRepository
             ->getQuery()->getResult();
 
     }
+    /**
+     * @param Import   $import
+     * @param int|null $batchSize if null => all
+     *
+     * @return ImportQueue[]
+     */
+    public function getItemsToIntegrityCheck(Import $import, ?int $batchSize = null): iterable
+    {
+        return $this->findBy([
+            'import' => $import,
+            'state' => ImportQueueState::NEW,
+        ], ['id' => 'asc'], $batchSize);
+    }
+
+    public function countItemsToIntegrityCheck(Import $import): int
+    {
+        return $this->count([
+            'import' => $import,
+            'state' => ImportQueueState::NEW,
+        ]);
+    }
+
+    /**
+     * @param Import   $import
+     * @param int|null $batchSize if null => all
+     *
+     * @return ImportQueue[]
+     */
+    public function getItemsToIdentityCheck(Import $import, ?int $batchSize = null): iterable
+    {
+        return $this->findBy([
+            'import' => $import,
+            'state' => ImportQueueState::VALID,
+            'identityCheckedAt' => null
+        ], ['id' => 'asc'], $batchSize);
+    }
+
+    public function countItemsToIdentityCheck(Import $import): int
+    {
+        return $this->count([
+            'import' => $import,
+            'state' => ImportQueueState::VALID,
+            'identityCheckedAt' => null
+        ]);
+    }
+
+    /**
+     * @param Import   $import
+     * @param int|null $batchSize if null => all
+     *
+     * @return ImportQueue[]
+     */
+    public function getItemsToSimilarityCheck(Import $import, ?int $batchSize = null): iterable
+    {
+        return $this->findBy([
+            'import' => $import,
+            'state' => [ImportQueueState::VALID, ImportQueueState::SUSPICIOUS],
+            'similarityCheckedAt' => null
+        ], ['id' => 'asc'], $batchSize);
+    }
+
+    public function countItemsToSimilarityCheck(Import $import): int
+    {
+        $qb = $this->createQueryBuilder('iq')
+            ->select('count(iq) as cnt')
+            ->andWhere('iq.import = :import')
+            ->andWhere('iq.state IN (:states)')
+            ->andWhere('iq.similarityCheckedAt IS NULL')
+            ->setParameter('import', $import)
+            ->setParameter('states', [ImportQueueState::VALID, ImportQueueState::SUSPICIOUS])
+        ;
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * @param Import   $import
+     * @param int|null $batchSize if null => all
+     *
+     * @return ImportQueue[]
+     */
+    public function getSuspiciousItemsToUserCheck(Import $import, ?int $batchSize = null): iterable
+    {
+        $qb = $this->createQueryBuilder('iq')
+            ->andWhere('iq.import = :import')
+            ->andWhere('iq.state IN (:states)')
+            ->join('iq.duplicities', 'dup')
+            ->andWhere('dup.decideAt IS NULL')
+            ->setParameter('import', $import)
+            ->setParameter('states', [ImportQueueState::SUSPICIOUS])
+        ;
+        if ($batchSize) {
+            $qb->setMaxResults($batchSize);
+        }
+        return $qb->getQuery()->getResult();
+    }
 }

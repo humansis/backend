@@ -11,6 +11,7 @@ use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
+use NewApiBundle\Repository\ImportQueueRepository;
 use Psr\Log\LoggerInterface;
 
 class SimilarityChecker
@@ -19,22 +20,27 @@ class SimilarityChecker
 
     /** @var EntityManagerInterface */
     private $entityManager;
+    /** @var ImportQueueRepository */
+    private $queueRepository;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->entityManager = $entityManager;
         $this->logger = $logger;
+        $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
     }
 
-    public function check(Import $import)
+    /**
+     * @param Import   $import
+     * @param int|null $batchSize if null => all
+     */
+    public function check(Import $import, ?int $batchSize = null)
     {
         if (ImportState::SIMILARITY_CHECKING !== $import->getState()) {
             throw new \BadMethodCallException('Unable to execute checker. Import is not ready to check.');
         }
 
-        $this->preCheck($import);
-
-        foreach ($this->getItemsToCheck($import) as $i => $item) {
+        foreach ($this->queueRepository->getItemsToSimilarityCheck($import, $batchSize) as $i => $item) {
             $this->checkOne($item);
 
             if ($i % 500 === 0) {
@@ -44,51 +50,40 @@ class SimilarityChecker
 
         $this->entityManager->flush();
 
-        $this->postCheck($import);
+        $queueSize = $this->queueRepository->countItemsToSimilarityCheck($import);
+        if (0 === $queueSize) {
+            $this->logImportInfo($import, 'Batch ended - nothing left, similarity checking ends');
+            $this->postCheck($import);
+        } else {
+            $this->logImportInfo($import, "Batch ended - $queueSize items left, similarity checking continues");
+        }
     }
 
     protected function checkOne(ImportQueue $item)
     {
-        $found = false;
-
         // TODO: similarity check
 
-        switch ($item->getState()) {
-            case ImportQueueState::TO_CREATE:
-            case ImportQueueState::TO_LINK:
-            case ImportQueueState::TO_IGNORE:
-                // nothing, already decided
-                break;
-            case ImportQueueState::INVALID_EXPORTED:
-                // nothing, ignore
-                break;
-            default:
-                $item->setState(ImportQueueState::TO_CREATE);
-                break;
-        }
+        $item->setSimilarityCheckedAt(new \DateTime());
 
         $this->entityManager->persist($item);
     }
 
-    private function preCheck(Import $import)
-    {
-        $this->entityManager->createQueryBuilder()
-            ->update(ImportQueue::class, 'iq')
-            ->set('iq.state', '?1')
-            ->andWhere('iq.import = ?2')
-            ->andWhere('iq.state = ?3')
-            ->setParameter('1', ImportQueueState::NEW)
-            ->setParameter('2', $import->getId())
-            ->setParameter('3', ImportQueueState::VALID)
-            ->getQuery()
-            ->execute();
-    }
-
     private function postCheck(Import $import)
     {
-        // $isInvalid = $this->isImportQueueInvalid($import);
-        // $import->setState($isInvalid ? ImportState::SIMILARITY_CHECK_CORRECT : ImportState::SIMILARITY_CHECK_FAILED);
-        $import->setState(ImportState::SIMILARITY_CHECK_CORRECT);
+        $isSuspicious = count($this->queueRepository->getSuspiciousItemsToUserCheck($import)) > 0;
+        $import->setState($isSuspicious ? ImportState::SIMILARITY_CHECK_FAILED : ImportState::SIMILARITY_CHECK_CORRECT);
+
+        $newCheckedImportQueues = $this->entityManager->getRepository(ImportQueue::class)
+            ->findBy([
+                'import' => $import,
+                'state' => ImportQueueState::VALID,
+            ]);
+
+        /** @var ImportQueue $importQueue */
+        foreach ($newCheckedImportQueues as $importQueue) {
+            $importQueue->setState(ImportQueueState::TO_CREATE);
+            $this->entityManager->persist($importQueue);
+        }
 
         $this->entityManager->persist($import);
         $this->entityManager->flush();
@@ -98,23 +93,12 @@ class SimilarityChecker
     /**
      * @param Import $import
      *
-     * @return ImportQueue[]
-     */
-    private function getItemsToCheck(Import $import): iterable
-    {
-        return $this->entityManager->getRepository(ImportQueue::class)
-            ->findBy(['import' => $import, 'state' => ImportQueueState::NEW]);
-    }
-
-    /**
-     * @param Import $import
-     *
      * @return bool
      */
-    public function isImportQueueInvalid(Import $import): bool
+    public function isImportQueueSuspicious(Import $import): bool
     {
         $queue = $this->entityManager->getRepository(ImportQueue::class)
-            ->findBy(['import' => $import, 'state' => ImportQueueState::SUSPICIOUS]);
+            ->findBy(['import' => $import, 'state' => ImportQueueState::SUSPICIOUS, 'decidedAt' => null]);
 
         return count($queue) > 0;
     }

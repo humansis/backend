@@ -233,12 +233,12 @@ class ImportService
 
         switch ($import->getState()) {
             case ImportState::IDENTITY_CHECK_FAILED:
-                if (!$this->identityChecker->isImportQueueInvalid($import)) {
+                if (!$this->identityChecker->isImportQueueSuspicious($import)) {
                     $import->setState(ImportState::IDENTITY_CHECK_CORRECT);
                 }
                 break;
             case ImportState::SIMILARITY_CHECK_FAILED:
-                if (!$this->similarityChecker->isImportQueueInvalid($import)) {
+                if (!$this->similarityChecker->isImportQueueSuspicious($import)) {
                     $import->setState(ImportState::SIMILARITY_CHECK_CORRECT);
                 }
         }
@@ -246,22 +246,34 @@ class ImportService
         $this->em->flush();
     }
 
-    public function checkIntegrity(Import $import): void
+    /**
+     * @param Import   $import
+     * @param int|null $batchSize if null => all
+     */
+    public function checkIntegrity(Import $import, ?int $batchSize = null): void
     {
-        $this->integrityChecker->check($import);
+        $this->integrityChecker->check($import, $batchSize);
         if (ImportState::INTEGRITY_CHECK_FAILED === $import->getState()) {
             $this->importInvalidFileService->generateFile($import);
         }
     }
 
-    public function checkIdentity(Import $import): void
+    /**
+     * @param Import   $import
+     * @param int|null $batchSize if null => all
+     */
+    public function checkIdentity(Import $import, ?int $batchSize = null): void
     {
-        $this->identityChecker->check($import);
+        $this->identityChecker->check($import, $batchSize);
     }
 
-    public function checkSimilarity(Import $import): void
+    /**
+     * @param Import   $import
+     * @param int|null $batchSize if null => all
+     */
+    public function checkSimilarity(Import $import, ?int $batchSize = null): void
     {
-        $this->similarityChecker->check($import);
+        $this->similarityChecker->check($import, $batchSize);
     }
 
     public function finish(Import $import): void
@@ -334,6 +346,8 @@ class ImportService
             ]);
             foreach ($conflictQueue as $item) {
                 $item->setState(ImportQueueState::VALID);
+                $item->setIdentityCheckedAt(null);
+                $item->setSimilarityCheckedAt(null);
                 $this->em->persist($item);
             }
             $this->em->persist($conflictImport);
