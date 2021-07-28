@@ -82,7 +82,12 @@ class HouseholdControllerTest extends BMSServiceTestCase
             'supportOrganizationName' => 'some organisation',
             'incomeSpentOnFood' => 0,
             'houseIncome' => null,
-            'countrySpecificAnswers' => [],
+            'countrySpecificAnswers' => [ //for KHM
+                [
+                    'countrySpecificId' => 1,
+                    'answer' => '2',
+                ]
+            ],
             'residenceAddress' => [
                 'number' => 'string',
                 'street' => 'string',
