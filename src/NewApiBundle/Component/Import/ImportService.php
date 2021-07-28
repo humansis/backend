@@ -258,14 +258,22 @@ class ImportService
         }
     }
 
-    public function checkIdentity(Import $import): void
+    /**
+     * @param Import   $import
+     * @param int|null $batchSize if null => all
+     */
+    public function checkIdentity(Import $import, ?int $batchSize = null): void
     {
-        $this->identityChecker->check($import);
+        $this->identityChecker->check($import, $batchSize);
     }
 
-    public function checkSimilarity(Import $import): void
+    /**
+     * @param Import   $import
+     * @param int|null $batchSize if null => all
+     */
+    public function checkSimilarity(Import $import, ?int $batchSize = null): void
     {
-        $this->similarityChecker->check($import);
+        $this->similarityChecker->check($import, $batchSize);
     }
 
     public function finish(Import $import): void

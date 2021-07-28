@@ -26,7 +26,11 @@ class SimilarityChecker
         $this->logger = $logger;
     }
 
-    public function check(Import $import)
+    /**
+     * @param Import   $import
+     * @param int|null $batchSize if null => all
+     */
+    public function check(Import $import, ?int $batchSize = null)
     {
         if (ImportState::SIMILARITY_CHECKING !== $import->getState()) {
             throw new \BadMethodCallException('Unable to execute checker. Import is not ready to check.');
@@ -34,7 +38,7 @@ class SimilarityChecker
 
         $this->preCheck($import);
 
-        foreach ($this->getItemsToCheck($import) as $i => $item) {
+        foreach ($this->getItemsToCheck($import, $batchSize) as $i => $item) {
             $this->checkOne($item);
 
             if ($i % 500 === 0) {
@@ -96,14 +100,15 @@ class SimilarityChecker
     }
 
     /**
-     * @param Import $import
+     * @param Import   $import
+     * @param int|null $batchSize if null => all
      *
      * @return ImportQueue[]
      */
-    private function getItemsToCheck(Import $import): iterable
+    private function getItemsToCheck(Import $import, ?int $batchSize = null): iterable
     {
         return $this->entityManager->getRepository(ImportQueue::class)
-            ->findBy(['import' => $import, 'state' => ImportQueueState::NEW]);
+            ->findBy(['import' => $import, 'state' => ImportQueueState::NEW], ['id' => 'asc'], $batchSize);
     }
 
     /**
