@@ -16,6 +16,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class IntegrityChecker
 {
+    const BATCH_SIZE = 1;
+
     /** @var ValidatorInterface */
     private $validator;
 
@@ -28,13 +30,17 @@ class IntegrityChecker
         $this->entityManager = $entityManager;
     }
 
-    public function check(Import $import): void
+    /**
+     * @param Import   $import
+     * @param int|null $batchSize if null => all
+     */
+    public function check(Import $import, ?int $batchSize = null): void
     {
         if (ImportState::INTEGRITY_CHECKING !== $import->getState()) {
             throw new \BadMethodCallException('Unable to execute checker. Import is not ready to integrity check.');
         }
 
-        foreach ($this->getItemsToCheck($import) as $i => $item) {
+        foreach ($this->getItemsToCheck($import, $batchSize) as $i => $item) {
             $this->checkOne($item);
 
             if ($i % 500 === 0) {
@@ -44,8 +50,8 @@ class IntegrityChecker
 
         $this->entityManager->flush();
 
-        $queue = $this->getItemsToCheck($import);
-        if (0 === count($queue)) {
+        $queueCount = $this->countItemsToCheck($import);
+        if (0 === $queueCount) {
             $isInvalid = $this->isImportQueueInvalid($import);
             $import->setState($isInvalid ? ImportState::INTEGRITY_CHECK_FAILED : ImportState::INTEGRITY_CHECK_CORRECT);
 
@@ -98,14 +104,22 @@ class IntegrityChecker
     }
 
     /**
-     * @param Import $import
+     * @param Import   $import
+     * @param int|null $batchSize if null => all
      *
      * @return ImportQueue[]
      */
-    private function getItemsToCheck(Import $import): iterable
+    private function getItemsToCheck(Import $import, ?int $batchSize = null): iterable
     {
         return $this->entityManager->getRepository(ImportQueue::class)
-            ->findBy(['import' => $import, 'state' => ImportQueueState::NEW]);
+            ->findBy(['import' => $import, 'state' => ImportQueueState::NEW], ['id' => 'asc'], $batchSize);
+
+    }
+
+    private function countItemsToCheck(Import $import): int
+    {
+        return $this->entityManager->getRepository(ImportQueue::class)
+            ->count(['import' => $import, 'state' => ImportQueueState::NEW]);
     }
 
     /**

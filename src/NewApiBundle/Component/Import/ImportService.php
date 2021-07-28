@@ -246,9 +246,13 @@ class ImportService
         $this->em->flush();
     }
 
-    public function checkIntegrity(Import $import): void
+    /**
+     * @param Import   $import
+     * @param int|null $batchSize if null => all
+     */
+    public function checkIntegrity(Import $import, ?int $batchSize = null): void
     {
-        $this->integrityChecker->check($import);
+        $this->integrityChecker->check($import, $batchSize);
         if (ImportState::INTEGRITY_CHECK_FAILED === $import->getState()) {
             $this->importInvalidFileService->generateFile($import);
         }

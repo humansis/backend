@@ -55,7 +55,7 @@ class IntegrityCheckCommand extends AbstractImportQueueCommand
             $output->writeln($import->getTitle());
 
             try {
-                $this->importService->checkIntegrity($import);
+                $this->importService->checkIntegrity($import, $this->batchSize);
 
                 $statistics = $this->importService->getStatistics($import);
                 if (ImportState::INTEGRITY_CHECK_CORRECT === $import->getState()) {
