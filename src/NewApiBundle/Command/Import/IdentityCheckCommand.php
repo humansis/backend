@@ -53,7 +53,7 @@ class IdentityCheckCommand extends AbstractImportQueueCommand
             $output->writeln($import->getTitle());
 
             try {
-                $this->importService->checkIdentity($import);
+                $this->importService->checkIdentity($import, $this->batchSize);
 
                 if (ImportState::IDENTITY_CHECK_CORRECT === $import->getState()) {
                     $this->logImportDebug($import, "Identity check found no duplicities");

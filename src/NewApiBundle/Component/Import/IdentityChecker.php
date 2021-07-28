@@ -11,6 +11,7 @@ use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
+use NewApiBundle\Repository\ImportQueueRepository;
 use Psr\Log\LoggerInterface;
 
 class IdentityChecker
@@ -19,11 +20,14 @@ class IdentityChecker
 
     /** @var EntityManagerInterface */
     private $entityManager;
+    /** @var ImportQueueRepository */
+    private $queueRepository;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->entityManager = $entityManager;
         $this->logger = $logger;
+        $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
     }
 
     /**
@@ -36,9 +40,7 @@ class IdentityChecker
             throw new \BadMethodCallException('Unable to execute checker. Import is not ready to check.');
         }
 
-        $this->preCheck($import);
-
-        foreach ($this->getItemsToCheck($import, $batchSize) as $i => $item) {
+        foreach ($this->queueRepository->getItemsToIdentityCheck($import, $batchSize) as $i => $item) {
             $this->checkOne($item);
 
             if ($i % 500 === 0) {
@@ -48,7 +50,13 @@ class IdentityChecker
 
         $this->entityManager->flush();
 
-        $this->postCheck($import);
+        $queueSize = $this->queueRepository->countItemsToIdentityCheck($import);
+        if (0 === $queueSize) {
+            $this->logImportInfo($import, 'Batch ended - nothing left, identity checking ends');
+            $this->postCheck($import);
+        } else {
+            $this->logImportInfo($import, "Batch ended - $queueSize items left, identity checking continues");
+        }
     }
 
     protected function checkOne(ImportQueue $item)
@@ -84,62 +92,37 @@ class IdentityChecker
 
             if (count($bnfDuplicities) > 0) {
                 $this->logImportInfo($item->getImport(), "Found ".count($bnfDuplicities)." duplicities for {$c['ID Type']} {$c['ID Number']}");
-                $found = true;
+                $item->setState(ImportQueueState::SUSPICIOUS);
             } else {
                 $this->logImportDebug($item->getImport(), "Found no duplicities");
             }
 
             foreach ($bnfDuplicities as $bnf) {
-
                 if (!array_key_exists($bnf->getHousehold()->getId(), $duplicities)) {
-                    $duplicities[$bnf->getHousehold()->getId()] = new ImportBeneficiaryDuplicity($item, $bnf->getHousehold());
-                    $duplicities[$bnf->getHousehold()->getId()]->setDecideAt(new \DateTime('now'));
+                    $duplicity = new ImportBeneficiaryDuplicity($item, $bnf->getHousehold());
+                    $duplicity->setDecideAt(new \DateTime('now'));
+                    $item->getImportBeneficiaryDuplicities()->add($duplicity);
+                    $this->entityManager->persist($duplicity);
+
+                    $duplicities[$bnf->getHousehold()->getId()] = $duplicity;
                 }
                 $importDuplicity = $duplicities[$bnf->getHousehold()->getId()];
                 $importDuplicity->addReason("Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
 
-                $this->entityManager->persist($item);
-                $this->entityManager->persist($importDuplicity);
                 $this->logImportInfo($item->getImport(),
                     "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
             }
             $index++;
         }
 
-        $item->setState($found ? ImportQueueState::SUSPICIOUS : ImportQueueState::VALID);
+        $item->setIdentityCheckedAt(new \DateTime());
         $this->entityManager->persist($item);
-    }
-
-    private function preCheck(Import $import)
-    {
-        //does not work - doctrine won't arrange queries in proper order
-        /*$this->entityManager->createQueryBuilder()
-            ->update(ImportQueue::class, 'iq')
-            ->set('iq.state', '?1')
-            ->andWhere('iq.import = ?2')
-            ->setParameter('1', ImportQueueState::NEW)
-            ->setParameter('2', $import->getId())
-            ->getQuery()
-            ->execute();*/
-
-        $importQueues = $this->entityManager->getRepository(ImportQueue::class)
-            ->findBy([
-                'import' => $import,
-                'state' => ImportQueueState::VALID,
-            ]);
-
-        /** @var ImportQueue $importQueue */
-        foreach ($importQueues as $importQueue) {
-            $importQueue->setState(ImportQueueState::NEW);
-        }
-
-        $this->entityManager->flush();
     }
 
     private function postCheck(Import $import)
     {
-        $isInvalid = $this->isImportQueueInvalid($import);
-        $import->setState($isInvalid ? ImportState::IDENTITY_CHECK_FAILED : ImportState::IDENTITY_CHECK_CORRECT);
+        $isSuspicious = $this->isImportQueueSuspicious($import);
+        $import->setState($isSuspicious ? ImportState::IDENTITY_CHECK_FAILED : ImportState::IDENTITY_CHECK_CORRECT);
 
         $this->entityManager->persist($import);
         $this->entityManager->flush();
@@ -147,23 +130,11 @@ class IdentityChecker
     }
 
     /**
-     * @param Import   $import
-     * @param int|null $batchSize if null => all
-     *
-     * @return ImportQueue[]
-     */
-    private function getItemsToCheck(Import $import, ?int $batchSize = null): iterable
-    {
-        return $this->entityManager->getRepository(ImportQueue::class)
-            ->findBy(['import' => $import, 'state' => ImportQueueState::NEW], ['id' => 'asc'], $batchSize);
-    }
-
-    /**
      * @param Import $import
      *
      * @return bool
      */
-    public function isImportQueueInvalid(Import $import): bool
+    public function isImportQueueSuspicious(Import $import): bool
     {
         $queue = $this->entityManager->getRepository(ImportQueue::class)
             ->findBy(['import' => $import, 'state' => ImportQueueState::SUSPICIOUS]);

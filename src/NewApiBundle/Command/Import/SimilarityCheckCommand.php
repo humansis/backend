@@ -53,7 +53,7 @@ class SimilarityCheckCommand extends AbstractImportQueueCommand
         /** @var Import $import */
         foreach ($imports as $import) {
             try {
-                $this->importService->checkSimilarity($import);
+                $this->importService->checkSimilarity($import, $this->batchSize);
 
                 if (ImportState::SIMILARITY_CHECK_CORRECT === $import->getState()) {
                     $this->logImportDebug($import, "Similarity check found no duplicities");
