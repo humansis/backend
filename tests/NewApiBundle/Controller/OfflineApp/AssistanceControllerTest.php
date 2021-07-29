@@ -56,6 +56,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "name": "*",
             "dateDistribution": "*",
             "type": "*",
+            "target": "*",
             "projectId": "*",
             "locationId": "*",
             "commodityIds": ["*"],

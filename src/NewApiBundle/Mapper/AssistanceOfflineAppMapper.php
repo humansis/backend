@@ -62,6 +62,11 @@ class AssistanceOfflineAppMapper implements MapperInterface
         return $this->object->getProject()->getId();
     }
 
+    public function getTarget(): string
+    {
+        return $this->object->getTargetType();
+    }
+
     public function getType(): string
     {
         return $this->object->getAssistanceType();
