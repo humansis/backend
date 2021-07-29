@@ -72,6 +72,33 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'isHead' => true,
                     'vulnerabilityCriteriaIds' => [$vulnerabilityCriterion->getId()],
                 ],
+                [
+                    'dateOfBirth' => '2000-12-01',
+                    'localFamilyName' => 'Simpson',
+                    'localGivenName' => 'Homer',
+                    'enFamilyName' => null,
+                    'enGivenName' => null,
+                    'gender' => 'M',
+                    'residencyStatus' => ResidencyStatus::REFUGEE,
+                    'nationalIdCards' => [
+                        [
+                            'number' => '022-33-1548',
+                            'type' => NationalId::TYPE_NATIONAL_ID,
+                        ],
+                    ],
+                    'phones' => [
+                        [
+                            'prefix' => '420',
+                            'number' => '123456789',
+                            'type' => 'Landline',
+                            'proxy' => true,
+                        ],
+                    ],
+                    'referralType' => '1',
+                    'referralComment' => 'string',
+                    'isHead' => false,
+                    'vulnerabilityCriteriaIds' => [$vulnerabilityCriterion->getId()],
+                ],
             ],
             'incomeLevel' => 0,
             'foodConsumptionScore' => 0,
@@ -170,6 +197,17 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
         $camp = self::$container->get('doctrine')->getRepository(Camp::class)->findBy([])[0];
 
+        /** @var Household $household */
+        $household = $this->em->getRepository(Household::class)->find($id);
+        $householdHead = $household->getHouseholdHead();
+
+        $member = null;
+        foreach ($household->getBeneficiaries() as $beneficiary) {
+            if (!$beneficiary->isHead()) {
+                $member = $beneficiary;
+            }
+        }
+
         $this->request('PUT', '/api/basic/web-app/v1/households/'.$id, [
             'livelihood' => Livelihood::FARMING_AGRICULTURE,
             'iso3' => 'KHM',
@@ -181,6 +219,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             'latitude' => null,
             'beneficiaries' => [
                 [
+                    'id' => $householdHead->getId(),
                     'dateOfBirth' => '2000-12-01',
                     'localFamilyName' => 'Bond',
                     'localGivenName' => 'James',
@@ -205,6 +244,34 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'referralType' => '1',
                     'referralComment' => 'string',
                     'isHead' => true,
+                    'vulnerabilityCriteriaIds' => [$vulnerabilityCriterion->getId()],
+                ],
+                [
+                    'id' => $member->getId(),
+                    'dateOfBirth' => '2000-12-01',
+                    'localFamilyName' => 'Simpson',
+                    'localGivenName' => 'Homer',
+                    'enFamilyName' => null,
+                    'enGivenName' => null,
+                    'gender' => 'M',
+                    'residencyStatus' => ResidencyStatus::REFUGEE,
+                    'nationalIdCards' => [
+                        [
+                            'number' => '022-33-1548',
+                            'type' => NationalId::TYPE_NATIONAL_ID,
+                        ],
+                    ],
+                    'phones' => [
+                        [
+                            'prefix' => '420',
+                            'number' => '123456789',
+                            'type' => 'Landline',
+                            'proxy' => true,
+                        ],
+                    ],
+                    'referralType' => '1',
+                    'referralComment' => 'string',
+                    'isHead' => false,
                     'vulnerabilityCriteriaIds' => [$vulnerabilityCriterion->getId()],
                 ],
             ],
@@ -285,6 +352,8 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('proxyEnParentsName', $result);
         $this->assertArrayHasKey('proxyNationalIdCardId', $result);
         $this->assertArrayHasKey('proxyPhoneId', $result);
+
+        $this->assertEquals(2, $household->getBeneficiaries()->count());
 
         return $id;
     }

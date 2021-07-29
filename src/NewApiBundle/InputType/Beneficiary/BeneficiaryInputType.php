@@ -394,7 +394,7 @@ class BeneficiaryInputType implements InputTypeInterface
     /**
      * @return int|null
      */
-    public function getId(): ?int
+    public function getId()
     {
         return $this->id;
     }
@@ -402,7 +402,7 @@ class BeneficiaryInputType implements InputTypeInterface
     /**
      * @param int|null $id
      */
-    public function setId(?int $id): void
+    public function setId($id)
     {
         $this->id = $id;
     }
