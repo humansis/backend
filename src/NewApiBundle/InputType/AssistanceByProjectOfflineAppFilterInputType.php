@@ -14,7 +14,7 @@ class AssistanceByProjectOfflineAppFilterInputType extends AbstractFilterInputTy
     protected $type;
 
     /**
-     * @Assert\Type("boolean")
+     * @Assert\Choice({0, 1}, message="Invalid boolean value. Accepted are 0,1, given {{ value }}.")
      */
     protected $completed;
 
@@ -46,7 +46,7 @@ class AssistanceByProjectOfflineAppFilterInputType extends AbstractFilterInputTy
 
     public function getCompleted(): bool
     {
-        return $this->completed;
+        return (bool) $this->completed;
     }
 
     public function hasModalityTypes(): bool
