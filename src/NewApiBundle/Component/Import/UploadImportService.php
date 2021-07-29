@@ -27,12 +27,16 @@ class UploadImportService
     /** @var string */
     private $uploadDirectory;
 
-    public function __construct(EntityManagerInterface $em, string $uploadDirectory)
+    /** @var ImportFileValidator */
+    private $importFileValidator;
+
+    public function __construct(EntityManagerInterface $em, string $uploadDirectory, ImportFileValidator $importFileValidator)
     {
         $this->parser = new ImportParser();
         $this->em = $em;
         $this->sqlCollection = new InsertQueryCollection($em);
         $this->uploadDirectory = $uploadDirectory;
+        $this->importFileValidator = $importFileValidator;
     }
 
     /**
@@ -46,6 +50,9 @@ class UploadImportService
     {
         if ($importFile->isLoaded()) {
             throw new InvalidArgumentException('This import file is already loaded in database.');
+        }
+        if (null !== $importFile->getStructureViolations()) {
+            throw new InvalidArgumentException('This import file has serious structure issues.');
         }
 
         $fileToImport = new File($this->uploadDirectory.'/'.$importFile->getSavedAsFilename());
@@ -99,6 +106,8 @@ class UploadImportService
 
         $importFile = new ImportFile($uploadedFile->getClientOriginalName(), $import, $user);
         $importFile->setSavedAsFilename($savedAsFilename);
+
+        $this->importFileValidator->validate($importFile);
 
         $this->em->persist($importFile);
         $this->em->flush();

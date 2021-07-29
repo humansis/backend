@@ -5,6 +5,7 @@ namespace Tests\NewApiBundle\Component\Import;
 
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Person;
+use NewApiBundle\Component\Import\ImportFileValidator;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\InputType\DuplicityResolveInputType;
@@ -74,6 +75,7 @@ class ImportTest extends KernelTestCase
         $this->uploadService = new UploadImportService(
             $this->entityManager,
             $kernel->getContainer()->getParameter('import.uploadedFilesDirectory'),
+            $kernel->getContainer()->get(ImportFileValidator::class)
         );
         $this->projectService = $kernel->getContainer()->get('project.project_service');
 
@@ -105,6 +107,13 @@ class ImportTest extends KernelTestCase
             'minimal csv' => ['KHM-Import-2HH-3HHM-55HHM.csv', 2, 60, 1],
             'minimal ods' => ['KHM-Import-2HH-3HHM-24HHM.ods', 2, 29, 2],
             'minimal xlsx' => ['KHM-Import-4HH-0HHM-0HHM.xlsx', 4, 4, 4],
+        ];
+    }
+
+    public function incorrectFiles(): array
+    {
+        return [
+            'missing mandatory columns' => ['import_missing_simple_mandatory_columns.ods'],
         ];
     }
 
@@ -551,6 +560,43 @@ class ImportTest extends KernelTestCase
             'import' => $import->getId(),
         ]);
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:clean failed");
+    }
+
+    /**
+     * @dataProvider incorrectFiles
+     * @param string $fileName
+     */
+    public function testIncorrectImportFileInIntegrityCheck(string $fileName): void
+    {
+        // create import
+        $createImportInput = new ImportCreateInputType();
+        $createImportInput->setTitle('incorrect file test');
+        $createImportInput->setDescription($fileName);
+        $createImportInput->setProjectId($this->project->getId());
+        $import = $this->importService->create($createImportInput, $this->getUser());
+
+        // add file into import
+        $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
+
+        $fs = new Filesystem();
+        $fs->copy(__DIR__.'/../../Resources/'.$fileName, $uploadedFilePath, true);
+
+        $file = new UploadedFile($uploadedFilePath, $fileName, null, null, true);
+        $importFile = $this->uploadService->uploadFile($import, $file, $this->getUser());
+
+        try {
+            $this->uploadService->load($importFile);
+            $this->fail('Upload of incorrect file should throw exception');
+        } catch (\InvalidArgumentException $exception) {
+            // it is expected
+        }
+
+        // start integrity check
+        $this->importService->patch($import, new ImportPatchInputType(ImportState::INTEGRITY_CHECKING));
+
+        $this->assertEquals(ImportState::INTEGRITY_CHECK_FAILED, $import->getState());
+        $queueCount = $this->entityManager->getRepository(ImportQueue::class)->count(['import' => $import]);
+        $this->assertEquals(0, $queueCount, 'There should be no queue item saved');
     }
 
     private function createBlankHousehold(Project $project): Household

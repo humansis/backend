@@ -206,6 +206,7 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '%import.uploadedFilesDirectory%'
+            - '@NewApiBundle\Component\Import\ImportFileValidator'
         public: true
 
     NewApiBundle\Component\Import\IntegrityChecker:
@@ -237,7 +238,6 @@ services:
         arguments:
             - '@NewApiBundle\Component\Import\ImportService'
             - '@NewApiBundle\Component\Import\UploadImportService'
-            - '@NewApiBundle\Component\Import\ImportFileValidator'
             - '%import.invalidFilesDirectory%'
             - '%import.maxFileSizeToLoad%'
     NewApiBundle\Component\Smartcard\SmartcardPurchaseService:
@@ -246,3 +246,4 @@ services:
     NewApiBundle\Component\Import\ImportFileValidator:
         arguments:
             - '%import.uploadedFilesDirectory%'
+        public: true
