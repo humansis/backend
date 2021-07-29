@@ -32,6 +32,6 @@ class ModalityCodelistController extends AbstractController
             $data[] = new CodeItem($type->getName(), $type->getName());
         }
 
-        return $this->json(new Paginator($data));
+        return $this->json($data);
     }
 }
