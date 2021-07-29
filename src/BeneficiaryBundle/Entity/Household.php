@@ -114,7 +114,7 @@ class Household extends AbstractBeneficiary
     private $countrySpecificAnswers;
 
     /**
-     * @var Beneficiary
+     * @var Collection|Beneficiary[]
      *
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Beneficiary", mappedBy="household", cascade={"persist"})
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers"})
@@ -476,7 +476,7 @@ class Household extends AbstractBeneficiary
     /**
      * Get beneficiaries.
      *
-     * @return Collection
+     * @return Collection|Beneficiary[]
      */
     public function getBeneficiaries()
     {

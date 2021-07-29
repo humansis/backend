@@ -273,7 +273,7 @@ class HouseholdService
             /** @var Beneficiary|null $beneficiary */
             $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy([
                 'id' => $beneficiaryInputType->getId(),
-                'beneficiary' => $household,
+                'household' => $household,
             ]);
 
             return $beneficiary;
