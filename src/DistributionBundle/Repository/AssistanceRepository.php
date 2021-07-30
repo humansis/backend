@@ -313,7 +313,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
         if ($filter->hasNotModalityTypes()) {
             $qbr->join('dd.commodities', 'c')
                 ->join('c.modalityType', 'm', 'WITH', 'm.name NOT IN (:modalityTypes)')
-                ->setParameter('modalityTypes', $filter->getModalityTypes());
+                ->setParameter('modalityTypes', $filter->getNotModalityTypes());
         }
 
         return $qbr->getQuery()->getResult();
