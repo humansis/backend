@@ -5,6 +5,7 @@ namespace DistributionBundle\Repository;
 use DistributionBundle\Entity\Commodity;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\InputType\CommodityFilterInputType;
+use NewApiBundle\InputType\CommodityOfflineFilterInputType;
 
 /**
  * CommodityRepository
@@ -24,6 +25,29 @@ class CommodityRepository extends \Doctrine\ORM\EntityRepository
         $qbr = $this->createQueryBuilder('c')
                 ->andWhere('c.id IN (:ids)')
                 ->setParameter('ids', $filter->getIds());
+
+        return new Paginator($qbr);
+    }
+
+    /**
+     * @param CommodityOfflineFilterInputType $filter
+     * @param string                          $country
+     *
+     * @return Paginator|Commodity[]
+     */
+    public function findOfflineByParams(string $country, CommodityOfflineFilterInputType $filter): Paginator
+    {
+        $qbr = $this->createQueryBuilder('c')
+            ->join('c.assistance', 'a')
+            ->join('a.project', 'p')
+            ->andWhere('p.iso3 = :country')
+            ->setParameter('country', $country);
+
+        if ($filter->hasNotModalityTypes()) {
+            $qbr->join('c.modalityType', 'm')
+                ->andWhere('m.name NOT IN (:modalityTypes)')
+                ->setParameter('modalityTypes', $filter->getNotModalityTypes());
+        }
 
         return new Paginator($qbr);
     }
