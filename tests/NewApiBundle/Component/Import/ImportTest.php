@@ -351,6 +351,104 @@ class ImportTest extends KernelTestCase
         // $this->assertCount($expectedBeneficiaryCount, array_unique($beneficiaryIds), "Some duplicities was saved instead of updated");
     }
 
+    public function testUpdateSimpleDuplicity()
+    {
+        $testFiles = [
+            'first' => 'import_update_household_first_run.ods',
+            'second' => 'import_update_household_second_run.ods',
+        ];
+
+        $imports = [];
+        foreach (['first', 'second'] as $runName) {
+            // create import
+            $createImportInput = new ImportCreateInputType();
+            $createImportInput->setTitle($runName.' call of unit test');
+            $createImportInput->setProjectId($this->project->getId());
+            $import = $this->importService->create($createImportInput, $this->getUser());
+
+            // add file into import
+            $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
+
+            $fs = new Filesystem();
+            $fs->copy(__DIR__.'/../../Resources/'.$testFiles[$runName], $uploadedFilePath, true);
+
+            $file = new UploadedFile($uploadedFilePath, $testFiles[$runName], null, null, true);
+            $importFile = $this->uploadService->uploadFile($import, $file, $this->getUser());
+            $this->uploadService->load($importFile);
+
+            // start integrity check
+            $this->importService->updateStatus($import, ImportState::INTEGRITY_CHECKING);
+
+            $checkIntegrityCommand = $this->application->find('app:import:integrity');
+            (new CommandTester($checkIntegrityCommand))->execute(['import' => $import->getId()]);
+
+            // start identity check
+            $this->importService->updateStatus($import, ImportState::IDENTITY_CHECKING);
+
+            $checkIdentityCommand = $this->application->find('app:import:identity');
+            (new CommandTester($checkIdentityCommand))->execute(['import' => $import->getId()]);
+
+            // start similarity check
+            $this->importService->updateStatus($import,ImportState::SIMILARITY_CHECKING);
+
+            $checkSimilarityCommand = $this->application->find('app:import:similarity');
+            (new CommandTester($checkSimilarityCommand))->execute(['import' => $import->getId()]);
+
+            $imports[$runName] = $import;
+        }
+
+        // finish first
+        $firstImport = $imports['first'];
+        $this->importService->updateStatus($firstImport,ImportState::IMPORTING);
+
+        $finishCommand = $this->application->find('app:import:finish');
+        (new CommandTester($finishCommand))->execute(['import' => $firstImport->getId()]);
+
+        $this->entityManager->refresh($firstImport);
+
+        $firstImportBeneficiary = $firstImport->getImportBeneficiaries()[0]->getBeneficiary();
+        $this->assertEquals(1, $firstImport->getImportBeneficiaries()->count());
+        $this->assertEquals('John', $firstImportBeneficiary->getPerson()->getLocalGivenName());
+
+        //check identity again on second import
+        $secondImport = $imports['second'];
+
+        $checkIdentityCommand = $this->application->find('app:import:identity');
+        (new CommandTester($checkIdentityCommand))->execute(['import' => $secondImport->getId()]);
+        $this->entityManager->refresh($secondImport);
+
+        // resolve all as duplicity on second import to update and continue
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $secondImport, 'state' => ImportQueueState::SUSPICIOUS]);
+        foreach ($queue as $item) {
+            $duplicityResolve = new DuplicityResolveInputType();
+            $duplicityResolve->setStatus(ImportQueueState::TO_UPDATE);
+            $duplicityResolve->setAcceptedDuplicityId($item->getDuplicities()[0]->getId());
+            $this->importService->resolveDuplicity($item, $duplicityResolve, $this->getUser());
+        }
+
+        // start similarity check on second import
+        $this->importService->updateStatus($secondImport, ImportState::SIMILARITY_CHECKING);
+
+        $checkSimilarityCommand = $this->application->find('app:import:similarity');
+        $commandTester = new CommandTester($checkSimilarityCommand);
+        $commandTester->execute(['import' => $secondImport->getId()]);
+
+        // finish second import
+        $this->importService->updateStatus($secondImport, ImportState::IMPORTING);
+
+        $finishCommand = $this->application->find('app:import:finish');
+        $commandTester = new CommandTester($finishCommand);
+        $commandTester->execute(['import' => $secondImport->getId()]);
+
+        $secondImportBeneficiary = $secondImport->getImportBeneficiaries()[0]->getBeneficiary();
+        $this->assertEquals(1, $secondImport->getImportBeneficiaries()->count());
+        $this->assertEquals('William', $secondImportBeneficiary->getPerson()->getLocalGivenName());
+
+        // test, if beneficiary was really updated and not created
+        $this->assertEquals($firstImportBeneficiary->getId(), $secondImportBeneficiary->getId());
+        $this->assertEquals(1, $secondImportBeneficiary->getHousehold()->getBeneficiaries()->count());
+    }
+
     public function testErrorInIntegrityCheck()
     {
         // create import

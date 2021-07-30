@@ -84,10 +84,10 @@ class IdentityChecker
                 continue;
             }
 
-            $bnfDuplicities = $this->entityManager->getRepository(Beneficiary::class)->findIdentityByNationalId(
-                $item->getImport()->getProject()->getIso3(),
+            $bnfDuplicities = $this->entityManager->getRepository(Beneficiary::class)->findIdentity(
                 (string) $c['ID Type'],
-                (string) $c['ID Number']
+                (string) $c['ID Number'],
+                $item->getImport()->getProject()->getIso3()
             );
 
             if (count($bnfDuplicities) > 0) {

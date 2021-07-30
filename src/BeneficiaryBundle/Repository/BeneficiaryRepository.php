@@ -154,22 +154,31 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function findIdentityByNationalId(string $iso3, string $idType, string $idNumber)
+    public function findIdentity(string $idType, string $idNumber, ?string $iso3 = null, ?Household $household = null)
     {
-        return $this->createQueryBuilder('b')
+        $qb = $this->createQueryBuilder('b')
             ->join('b.person', 'p')
             ->join('b.household', 'hh')
-            ->join('hh.projects', 'project')
             ->join('p.nationalIds', 'id')
             ->andWhere('b.archived = 0')
             ->andWhere('hh.archived = 0')
             ->andWhere('id.idNumber = :idNumber')
             ->andWhere('id.idType = :idType')
-            ->andWhere('project.iso3 = :country')
             ->setParameter('idNumber', $idNumber)
-            ->setParameter('idType', $idType)
-            ->setParameter('country', $iso3)
-            ->getQuery()
+            ->setParameter('idType', $idType);
+
+        if (null !== $iso3) {
+            $qb->join('hh.projects', 'project')
+                ->andWhere('project.iso3 = :country')
+                ->setParameter('country', $iso3);
+        }
+
+        if (null !== $household) {
+            $qb->andWhere('hh.id = :hhId')
+                ->setParameter('hhId', $household->getId());
+        }
+
+        return $qb->getQuery()
             ->getResult();
     }
 
