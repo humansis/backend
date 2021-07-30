@@ -16,7 +16,7 @@ class AssistanceMapper implements MapperInterface
      */
     public function supports(object $object, $format = null, array $context = null): bool
     {
-        return $object instanceof Assistance && isset($context[self::NEW_API]) && true === $context[self::NEW_API];
+        return $object instanceof Assistance && isset($context[self::NEW_API]) && true === $context[self::NEW_API] && !isset($context['offline-app']);
     }
 
     /**

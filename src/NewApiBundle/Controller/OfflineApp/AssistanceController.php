@@ -43,8 +43,8 @@ class AssistanceController extends AbstractController
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $fn = function (Assistance $assistance) {
-            return $assistance->getId().',';
+        $fn = function ($carry, Assistance $assistance) {
+            return $carry.$assistance->getId().',';
         };
 
         /** @var AssistanceRepository $repository */
