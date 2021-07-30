@@ -29,6 +29,17 @@ class AssistanceByProjectOfflineAppFilterInputType extends AbstractFilterInputTy
      */
     protected $modalityTypes;
 
+    /**
+     * @Assert\Type("array")
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Type("string", groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
+     */
+    protected $notModalityTypes;
+
     public function hasType(): bool
     {
         return $this->has('type');
@@ -57,5 +68,15 @@ class AssistanceByProjectOfflineAppFilterInputType extends AbstractFilterInputTy
     public function getModalityTypes(): array
     {
         return $this->modalityTypes;
+    }
+
+    public function hasNotModalityTypes(): bool
+    {
+        return $this->has('notModalityTypes');
+    }
+
+    public function getNotModalityTypes(): array
+    {
+        return $this->notModalityTypes;
     }
 }
