@@ -43,7 +43,7 @@ class ImportInvalidFileMapper implements MapperInterface
         return $this->object->getFilename();
     }
 
-    public function getCreatedAt()
+    public function getUploadedDate(): string
     {
         return $this->object->getCreatedAt()->format(\DateTimeInterface::ISO8601);
     }

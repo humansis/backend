@@ -411,7 +411,7 @@ class ImportControllerTest extends BMSServiceTestCase
                 {
                     "id": "*",
                     "name": "*",
-                    "createdAt": "*",
+                    "uploadedDate": "*",
                     "invalidQueueCount": "*"
                 }
             ]}', $this->client->getResponse()->getContent()
