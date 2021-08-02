@@ -47,4 +47,9 @@ class ImportInvalidFileMapper implements MapperInterface
     {
         return $this->object->getCreatedAt()->format(\DateTimeInterface::ISO8601);
     }
+
+    public function getInvalidQueueCount(): int
+    {
+        return $this->object->getInvalidQueueCount();
+    }
 }

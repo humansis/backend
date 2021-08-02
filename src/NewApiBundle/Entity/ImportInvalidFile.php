@@ -41,6 +41,13 @@ class ImportInvalidFile
      */
     private $createdAt;
 
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="invalid_queue_count", type="integer", nullable=false)
+     */
+    private $invalidQueueCount = 0;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
@@ -109,4 +116,21 @@ class ImportInvalidFile
     {
         $this->createdAt = $createdAt;
     }
+
+    /**
+     * @return int
+     */
+    public function getInvalidQueueCount(): int
+    {
+        return $this->invalidQueueCount;
+    }
+
+    /**
+     * @param int $invalidQueueCount
+     */
+    public function setInvalidQueueCount(int $invalidQueueCount): void
+    {
+        $this->invalidQueueCount = $invalidQueueCount;
+    }
+
 }

@@ -59,6 +59,7 @@ class ImportInvalidFileService
         $importInvalidFile = new ImportInvalidFile();
         $importInvalidFile->setFilename($fileName);
         $importInvalidFile->setImport($import);
+        $importInvalidFile->setInvalidQueueCount(count($invalidEntries));
 
         $this->em->persist($importInvalidFile);
         $this->em->flush();
