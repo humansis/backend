@@ -22,6 +22,13 @@ class ProductUpdateInputType implements InputTypeInterface
     private $image;
 
     /**
+     * @var int|null
+     *
+     * @Assert\Type("integer")
+     */
+    private $productCategoryId;
+
+    /**
      * @return string|null
      */
     public function getUnit()
@@ -45,5 +52,21 @@ class ProductUpdateInputType implements InputTypeInterface
     public function setImage($image)
     {
         $this->image = $image;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getProductCategoryId()
+    {
+        return $this->productCategoryId;
+    }
+
+    /**
+     * @param int|null $productCategoryId
+     */
+    public function setProductCategoryId($productCategoryId)
+    {
+        $this->productCategoryId = $productCategoryId;
     }
 }

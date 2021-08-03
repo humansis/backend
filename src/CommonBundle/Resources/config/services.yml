@@ -296,6 +296,10 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
+    CommonBundle\DataFixtures\ProductCategoryFixtures:
+        tags:
+            - { name: doctrine.fixture.orm }
+
 
 
 #######################################################################################

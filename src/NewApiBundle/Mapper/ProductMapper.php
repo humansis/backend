@@ -57,4 +57,13 @@ class ProductMapper implements MapperInterface
     {
         return $this->object->getCountryISO3();
     }
+
+    public function getProductCategoryId(): ?int
+    {
+        if (null === $this->object->getProductCategory()) {
+            return null;
+        }
+
+        return $this->object->getProductCategory()->getId();
+    }
 }

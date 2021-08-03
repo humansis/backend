@@ -3,6 +3,7 @@
 namespace Tests\NewApiBundle\Controller;
 
 use Exception;
+use NewApiBundle\Entity\ProductCategory;
 use Tests\BMSServiceTestCase;
 
 class ProductControllerTest extends BMSServiceTestCase
@@ -22,11 +23,19 @@ class ProductControllerTest extends BMSServiceTestCase
 
     public function testCreate()
     {
+        /** @var ProductCategory|null $productCategory */
+        $productCategory = self::$container->get('doctrine')->getRepository(ProductCategory::class)->findOneBy([]);
+
+        if (!$productCategory instanceof ProductCategory) {
+            $this->markTestSkipped('There needs to be at least one product category in system to complete this test');
+        }
+
         $this->request('POST', '/api/basic/web-app/v1/products', [
             'name' => 'Test product',
             'unit' => 'Kg',
             'image' => 'http://example.org/image.jpg',
             'iso3' => 'KHM',
+            'productCategoryId' => $productCategory->getId(),
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -41,6 +50,7 @@ class ProductControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('unit', $result);
         $this->assertArrayHasKey('image', $result);
         $this->assertArrayHasKey('iso3', $result);
+        $this->assertArrayHasKey('productCategoryId', $result);
 
         return $result['id'];
     }
@@ -66,6 +76,7 @@ class ProductControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('unit', $result);
         $this->assertArrayHasKey('image', $result);
         $this->assertArrayHasKey('iso3', $result);
+        $this->assertArrayHasKey('productCategoryId', $result);
         $this->assertNull($result['unit']);
 
         return $id;
@@ -90,6 +101,7 @@ class ProductControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('unit', $result);
         $this->assertArrayHasKey('image', $result);
         $this->assertArrayHasKey('iso3', $result);
+        $this->assertArrayHasKey('productCategoryId', $result);
         $this->assertNull($result['unit']);
 
         return $id;
