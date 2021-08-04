@@ -10,16 +10,17 @@ variables:
   USERNAME: "PIN Deploy"
 
 stages:
- - test
- - backup_db
- - backup_code
- - report_starting
- - deploy_dev
- - deploy_test
- - deploy_stage
- - deploy_prod
- - report_finished
- - upload_db
+  - static_analysis
+  - test
+  - backup_db
+  - backup_code
+  - report_starting
+  - deploy_dev
+  - deploy_test
+  - deploy_stage
+  - deploy_prod
+  - report_finished
+  - upload_db
 
 .prepare_ssh: &prepare_ssh
   before_script:
@@ -333,12 +334,12 @@ deploy prod DCA:
     - branches
   when: manual
 
-  static_analysis:
-      stage: static_analysis
-      script:
-          - apt-get update
-          - apt install -y curl git unzip
-          - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-          - cd symfony
-          - php /usr/local/bin/composer install -o --ignore-platform-reqs --no-scripts
-          - php -d memory_limit=-1 vendor/bin/phpstan analyse -l 3 src/
+static_analysis:
+  image: php:7.4-fpm
+  stage: static_analysis
+  script:
+    - apt-get update
+    - apt install -y curl git unzip
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    - php /usr/local/bin/composer install -o --ignore-platform-reqs --no-scripts
+    - php -d memory_limit=-1 vendor/bin/phpstan analyse -l 1 src/
