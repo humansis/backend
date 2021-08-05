@@ -140,6 +140,10 @@ class ImportService
             throw new BadRequestHttpException("Already running import can't be cancelled.");
         }
 
+        if ($status === $import->getState()) {
+            throw new BadRequestHttpException("You can't set same status twice.");
+        }
+
         $before = $import->getState();
         $import->setState($status);
 

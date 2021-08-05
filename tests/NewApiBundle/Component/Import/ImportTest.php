@@ -25,6 +25,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use UserBundle\Entity\User;
 
 class ImportTest extends KernelTestCase
@@ -138,6 +139,13 @@ class ImportTest extends KernelTestCase
 
         // start integrity check
         $this->importService->updateStatus($import, ImportState::INTEGRITY_CHECKING);
+
+        try {
+            $this->importService->updateStatus($import, ImportState::INTEGRITY_CHECKING);
+            $this->fail('Should failed with double starting integrity check');
+        } catch (BadRequestHttpException $exception) {
+            // expected
+        }
 
         $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import]);
         $this->assertCount($expectedHouseholdCount, $queue);
