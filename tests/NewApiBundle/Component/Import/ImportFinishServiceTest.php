@@ -104,6 +104,24 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager->persist($this->importFile);
     }
 
+    public function testEmpty()
+    {
+        $this->importService->finish($this->import);
+
+        $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
+        $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
+
+        $originLinks = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
+            'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
+        ]);
+        $this->assertEmpty($originLinks, "Origin beneficiary shouldn't have any import link");
+
+        $links = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
+            'import' => $this->import->getId()
+        ]);
+        $this->assertCount(0, $links, "There should be only one link");
+    }
+
     public function testPlainCreate()
     {
         $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
