@@ -119,7 +119,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $links = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
             'import' => $this->import->getId()
         ]);
-        $this->assertCount(0, $links, "There should be only one link");
+        $this->assertCount(0, $links, "There should be no link");
     }
 
     public function testPlainCreate()
@@ -240,6 +240,35 @@ class ImportFinishServiceTest extends KernelTestCase
             'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
         ]);
         $this->assertEmpty($originLinks, "Origin beneficiary shouldn't have any import link");
+    }
+
+    public function testUndecided()
+    {
+        $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
+        $queueItem->setState(ImportQueueState::SUSPICIOUS);
+        $duplicity = new ImportBeneficiaryDuplicity($queueItem, $this->originHousehold);
+        $duplicity->setState(ImportDuplicityState::DUPLICITY_CANDIDATE);
+        $duplicity->setDecideAt(new \DateTime());
+        $duplicity->setDecideBy($this->getUser());
+        $queueItem->getDuplicities()->add($duplicity);
+        $this->entityManager->persist($queueItem);
+        $this->entityManager->persist($duplicity);
+        $this->entityManager->flush();
+
+        $this->importService->finish($this->import);
+
+        $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
+        $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
+
+        $originLinks = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
+            'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
+        ]);
+        $this->assertEmpty($originLinks, "Origin beneficiary shouldn't have any import link");
+
+        $links = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
+            'import' => $this->import->getId()
+        ]);
+        $this->assertCount(0, $links, "There should be no link");
     }
 
     protected function tearDown()
