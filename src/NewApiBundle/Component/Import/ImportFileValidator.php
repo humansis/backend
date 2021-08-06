@@ -47,7 +47,7 @@ class ImportFileValidator
         } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
             $violation = new ImportFileViolation('Unable to read provided file. File is malformed or it has unsupported format.');
 
-            $importFile->setStructureViolations(json_encode([$violation]));
+            $importFile->setStructureViolations([$violation]);
 
             $this->em->persist($importFile);
             $this->em->flush();
@@ -79,7 +79,7 @@ class ImportFileValidator
         }
 
         if (!empty($fileViolations)) {
-            $importFile->setStructureViolations(json_encode($fileViolations));
+            $importFile->setStructureViolations($fileViolations);
         }
 
         $this->em->persist($importFile);
