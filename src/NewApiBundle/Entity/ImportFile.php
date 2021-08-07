@@ -73,21 +73,21 @@ class ImportFile
     /**
      * @var array|null
      *
-     * @ORM\Column(name="expected_valid_columns", type="array", nullable=true)
+     * @ORM\Column(name="expected_valid_columns", type="simple_array", nullable=true)
      */
     private $expectedValidColumns;
 
     /**
      * @var array|null
      *
-     * @ORM\Column(name="expected_missing_columns", type="array", nullable=true)
+     * @ORM\Column(name="expected_missing_columns", type="simple_array", nullable=true)
      */
     private $expectedMissingColumns;
 
     /**
      * @var array|null
      *
-     * @ORM\Column(name="unexpected_columns", type="array", nullable=true)
+     * @ORM\Column(name="unexpected_columns", type="simple_array", nullable=true)
      */
     private $unexpectedColumns;
 
@@ -251,15 +251,15 @@ class ImportFile
     /**
      * @return string|null
      */
-    public function getStructureViolations(): ?string
+    public function getStructureViolations(): ?array
     {
         return $this->structureViolations;
     }
 
     /**
-     * @param string|null $structureViolations
+     * @param array|null $structureViolations
      */
-    public function setStructureViolations(?string $structureViolations): void
+    public function setStructureViolations(?array $structureViolations): void
     {
         $this->structureViolations = $structureViolations;
     }

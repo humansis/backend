@@ -97,10 +97,9 @@ class ImportControllerTest extends BMSServiceTestCase
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         if ($expectingViolation) {
-            $this->assertJsonFragment('[{
-                "columns": [],
-                "message": "*" 
-            }]', $result['data'][0]['violations']);
+            $this->assertIsArray($result['data'][0]['violations']);
+            $this->assertArrayHasKey('columns', $result['data'][0]['violations'][0]);
+            $this->assertArrayHasKey('message', $result['data'][0]['violations'][0]);
         } else {
             $this->assertEquals(null, $result['data'][0]['violations']);
         }
@@ -383,6 +382,13 @@ class ImportControllerTest extends BMSServiceTestCase
                 }
             ]}', $this->client->getResponse()->getContent()
         );
+
+        $response = json_decode($this->client->getResponse()->getContent(), true);
+        // var_dump($response);
+        // $this->assertIsArray($response['data'][0]['expectedColumns']);
+        // $this->assertIsArray($response['data'][0]['missingColumns']);
+        // $this->assertIsArray($response['data'][0]['unexpectedColumns']);
+        // $this->assertIsArray($response['data'][0]['violations']);
 
         return $importFile->getId();
     }

@@ -67,7 +67,7 @@ class ImportFileMapper implements MapperInterface
         return $this->object->getUnexpectedColumns();
     }
 
-    public function getViolations(): ?string
+    public function getViolations(): ?array
     {
         return $this->object->getStructureViolations();
     }
