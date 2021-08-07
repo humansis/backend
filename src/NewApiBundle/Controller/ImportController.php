@@ -43,11 +43,6 @@ class ImportController extends AbstractController
     private $uploadImportService;
 
     /**
-     * @var ImportFileValidator
-     */
-    private $importFileValidator;
-
-    /**
      * @var string
      */
     private $importInvalidFilesDirectory;
@@ -57,11 +52,10 @@ class ImportController extends AbstractController
      */
     private $maxFileSizeToLoad;
 
-    public function __construct(ImportService $importService, UploadImportService $uploadImportService, ImportFileValidator $importFileValidator, string $importInvalidFilesDirectory, int $maxFileSizeToLoad)
+    public function __construct(ImportService $importService, UploadImportService $uploadImportService, string $importInvalidFilesDirectory, int $maxFileSizeToLoad)
     {
         $this->importService = $importService;
         $this->uploadImportService = $uploadImportService;
-        $this->importFileValidator = $importFileValidator;
         $this->importInvalidFilesDirectory = $importInvalidFilesDirectory;
         $this->maxFileSizeToLoad = $maxFileSizeToLoad;
     }
@@ -196,8 +190,6 @@ class ImportController extends AbstractController
             $fileSize = $file->getSize();
 
             $importFiles[] = $uploadedFile = $this->uploadImportService->uploadFile($import, $file, $user);
-
-            $this->importFileValidator->validate($uploadedFile);
 
             if ($fileSize < $this->maxFileSizeToLoad * 1024 * 1024 && empty($uploadedFile->getStructureViolations())) {
                 $this->uploadImportService->load($uploadedFile);

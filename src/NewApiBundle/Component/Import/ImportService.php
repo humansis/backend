@@ -253,6 +253,13 @@ class ImportService
      */
     public function checkIntegrity(Import $import, ?int $batchSize = null): void
     {
+        if (0 === $this->em->getRepository(ImportFile::class)->count([
+                'import' => $import,
+                'structureViolations' => null,
+            ])) {
+            $import->setState(ImportState::INTEGRITY_CHECK_FAILED);
+            return;
+        }
         $this->integrityChecker->check($import, $batchSize);
         if (ImportState::INTEGRITY_CHECK_FAILED === $import->getState()) {
             $this->importInvalidFileService->generateFile($import);
