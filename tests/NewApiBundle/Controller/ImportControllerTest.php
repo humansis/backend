@@ -350,7 +350,7 @@ class ImportControllerTest extends BMSServiceTestCase
             /** @var ImportFile $importFile */
             $importFile = $this->em->createQueryBuilder()->select('if')
                 ->from(ImportFile::class, 'if')
-                ->where('if.structureViolations IS NOT NULL')
+                ->where('if.structureViolations IS NOT NULL and if.isLoaded = true')
                 ->setMaxResults(1)
                 ->getQuery()->getSingleResult();
         } catch (NoResultException $e) {
@@ -382,13 +382,6 @@ class ImportControllerTest extends BMSServiceTestCase
                 }
             ]}', $this->client->getResponse()->getContent()
         );
-
-        $response = json_decode($this->client->getResponse()->getContent(), true);
-        // var_dump($response);
-        // $this->assertIsArray($response['data'][0]['expectedColumns']);
-        // $this->assertIsArray($response['data'][0]['missingColumns']);
-        // $this->assertIsArray($response['data'][0]['unexpectedColumns']);
-        // $this->assertIsArray($response['data'][0]['violations']);
 
         return $importFile->getId();
     }
