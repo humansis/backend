@@ -303,6 +303,7 @@ class ImportControllerTest extends BMSServiceTestCase
         /** @var ImportFile|null $importFile */
         $importFile = $this->em->getRepository(ImportFile::class)->findOneBy([
             'structureViolations' => null,
+            'isLoaded' => true,
         ]);
 
         if (is_null($importFile)) {
