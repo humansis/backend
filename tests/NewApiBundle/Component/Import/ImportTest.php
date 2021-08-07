@@ -574,6 +574,9 @@ class ImportTest extends KernelTestCase
      */
     public function testIncorrectImportFileInIntegrityCheck(string $fileName): void
     {
+        $this->project = $this->createBlankProject(self::TEST_COUNTRY, [__METHOD__, $fileName]);
+        $this->originHousehold = $this->createBlankHousehold($this->project);
+
         // create import
         $createImportInput = new ImportCreateInputType();
         $createImportInput->setTitle('incorrect file test');
