@@ -32,33 +32,80 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getResult();
     }
     
-    public function getByNames(string $adm1, ?string $adm2, ?string $adm3, ?string $adm4): ?Location
+    public function getByNames(string $countryIso3, string $adm1, ?string $adm2, ?string $adm3, ?string $adm4): ?Location
     {
         $qb = $this->createQueryBuilder('l');
         $qb->setMaxResults(1);
-        $qb->join('l.adm1', 'adm1')
-            ->andWhere('adm1.name = :adm1')
-            ->setParameter('adm1', $adm1);
-        
-        if (null !== $adm2) {
-            $qb->join('l.adm2', 'adm2')
-                ->andWhere('adm2.name = :adm2')
+
+        if (null !== $adm4) {
+            $qb->join('l.adm4', 'adm4')
+                ->andWhere('adm4.name LIKE :adm4')
+                ->setParameter('adm4', $adm4);
+
+            $qb->join('adm4.adm3', 'adm3')
+                ->andWhere('adm3.name LIKE :adm3')
+                ->setParameter('adm3', $adm3);
+
+            $qb->join('adm3.adm2', 'adm2')
+                ->andWhere('adm2.name LIKE :adm2')
                 ->setParameter('adm2', $adm2);
+
+            $qb->join('adm2.adm1', 'adm1')
+                ->andWhere('adm1.name LIKE :adm1')
+                ->andWhere('adm1.countryISO3 = :country')
+                ->setParameter('adm1', $adm1)
+                ->setParameter('country', $countryIso3)
+            ;
+
+            return $qb->getQuery()->getOneOrNullResult();
         }
 
         if (null !== $adm3) {
             $qb->join('l.adm3', 'adm3')
-                ->andWhere('adm3.name = :adm3')
+                ->andWhere('adm3.name LIKE :adm3')
                 ->setParameter('adm3', $adm3);
+
+            $qb->join('adm3.adm2', 'adm2')
+                ->andWhere('adm2.name LIKE :adm2')
+                ->setParameter('adm2', $adm2);
+
+            $qb->join('adm2.adm1', 'adm1')
+                ->andWhere('adm1.name LIKE :adm1')
+                ->andWhere('adm1.countryISO3 = :country')
+                ->setParameter('adm1', $adm1)
+                ->setParameter('country', $countryIso3)
+            ;
+
+            return $qb->getQuery()->getOneOrNullResult();
         }
 
-        if (null !== $adm4) {
-            $qb->join('l.adm4', 'adm4')
-                ->andWhere('adm4.name = :adm4')
-                ->setParameter('adm4', $adm4);
+        if (null !== $adm2) {
+            $qb->join('l.adm2', 'adm2')
+                ->andWhere('adm2.name LIKE :adm2')
+                ->setParameter('adm2', $adm2);
+
+            $qb->join('adm2.adm1', 'adm1')
+                ->andWhere('adm1.name LIKE :adm1')
+                ->andWhere('adm1.countryISO3 = :country')
+                ->setParameter('adm1', $adm1)
+                ->setParameter('country', $countryIso3)
+            ;
+
+            return $qb->getQuery()->getOneOrNullResult();
         }
 
-        return $qb->getQuery()->getSingleResult();
+        if (null !== $adm1) {
+            $qb->join('l.adm1', 'adm1')
+                ->andWhere('adm1.name LIKE :adm1')
+                ->andWhere('adm1.countryISO3 = :country')
+                ->setParameter('adm1', $adm1)
+                ->setParameter('country', $countryIso3)
+            ;
+
+            return $qb->getQuery()->getOneOrNullResult();
+        }
+
+        return null;
     }
 
     /**

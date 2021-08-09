@@ -521,7 +521,7 @@ class ImportTest extends KernelTestCase
         $project->setNotes(get_class($this));
         $project->setStartDate(new \DateTime());
         $project->setEndDate(new \DateTime());
-        $project->setIso3('SYR');
+        $project->setIso3('QTI');
         $this->entityManager->persist($project);
         $this->entityManager->flush();
 

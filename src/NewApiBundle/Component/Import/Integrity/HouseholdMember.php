@@ -8,6 +8,7 @@ use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
+use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Validator\Constraints\ImportDate;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -314,9 +315,14 @@ class HouseholdMember
         if (!$this->adm1) {
             return true;
         }
-        $adm = $this->entityManager->getRepository(Adm1::class)->findOneBy(['countryISO3' => $this->countryIso3, 'name' => $this->adm1]);
-
-        return null !== $adm;
+        $location = $this->entityManager->getRepository(Location::class)->getByNames(
+            $this->countryIso3,
+            $this->adm1,
+            null,
+            null,
+            null
+        );
+        return null !== $location;
     }
 
     /**
@@ -327,11 +333,14 @@ class HouseholdMember
         if (!$this->adm2) {
             return true;
         }
-
-        $adm1 = $this->entityManager->getRepository(Adm1::class)->findOneBy(['name' => $this->adm1, 'countryISO3' => $this->countryIso3]);
-        $adm2 = $this->entityManager->getRepository(Adm2::class)->findOneBy(['name' => $this->adm2, 'adm1' => $adm1]);
-
-        return null !== $adm2;
+        $location = $this->entityManager->getRepository(Location::class)->getByNames(
+            $this->countryIso3,
+            $this->adm1,
+            $this->adm2,
+            null,
+            null
+        );
+        return null !== $location;
     }
 
     /**
@@ -343,11 +352,14 @@ class HouseholdMember
             return true;
         }
 
-        $adm1 = $this->entityManager->getRepository(Adm1::class)->findOneBy(['name' => $this->adm1, 'countryISO3' => $this->countryIso3]);
-        $adm2 = $this->entityManager->getRepository(Adm2::class)->findOneBy(['name' => $this->adm2, 'adm1' => $adm1]);
-        $adm3 = $this->entityManager->getRepository(Adm3::class)->findOneBy(['name' => $this->adm3, 'adm2' => $adm2]);
-
-        return null !== $adm3;
+        $location = $this->entityManager->getRepository(Location::class)->getByNames(
+            $this->countryIso3,
+            $this->adm1,
+            $this->adm2,
+            $this->adm3,
+            null
+        );
+        return null !== $location;
     }
 
     /**
@@ -358,13 +370,14 @@ class HouseholdMember
         if (!$this->adm4) {
             return true;
         }
-
-        $adm1 = $this->entityManager->getRepository(Adm1::class)->findOneBy(['name' => $this->adm1, 'countryISO3' => $this->countryIso3]);
-        $adm2 = $this->entityManager->getRepository(Adm2::class)->findOneBy(['name' => $this->adm2, 'adm1' => $adm1]);
-        $adm3 = $this->entityManager->getRepository(Adm3::class)->findOneBy(['name' => $this->adm3, 'adm2' => $adm2]);
-        $adm4 = $this->entityManager->getRepository(Adm4::class)->findOneBy(['name' => $this->adm4, 'adm3' => $adm3]);
-
-        return null !== $adm4;
+        $location = $this->entityManager->getRepository(Location::class)->getByNames(
+            $this->countryIso3,
+            $this->adm1,
+            $this->adm2,
+            $this->adm3,
+            $this->adm4
+        );
+        return null !== $location;
     }
 
     /**
