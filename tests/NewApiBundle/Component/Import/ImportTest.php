@@ -89,24 +89,15 @@ class ImportTest extends KernelTestCase
             }
         }
 
-        $this->project = new Project();
-        $this->project->setName(uniqid());
-        $this->project->setNotes(get_class($this));
-        $this->project->setStartDate(new \DateTime());
-        $this->project->setEndDate(new \DateTime());
-        $this->project->setIso3(self::TEST_COUNTRY);
-        $this->entityManager->persist($this->project);
-        $this->entityManager->flush();
-
-        $this->originHousehold = $this->createBlankHousehold($this->project);
     }
 
     public function correctFiles(): array
     {
-        return [ // filename, HH count, BNF count, duplicity in reimport
-            'minimal csv' => ['KHM-Import-2HH-3HHM-55HHM.csv', 2, 60, 1],
-            'minimal ods' => ['KHM-Import-2HH-3HHM-24HHM.ods', 2, 29, 2],
-            'minimal xlsx' => ['KHM-Import-4HH-0HHM-0HHM.xlsx', 4, 4, 4],
+        return [ // ISO3-filename, HH count, BNF count, duplicity in reimport
+            'minimal csv' => ['KHM', 'KHM-Import-2HH-3HHM-55HHM.csv', 2, 60, 1],
+            'minimal ods' => ['KHM', 'KHM-Import-2HH-3HHM-24HHM.ods', 2, 29, 2],
+            'minimal xlsx' => ['KHM', 'KHM-Import-4HH-0HHM-0HHM.xlsx', 4, 4, 4],
+            'camp only' => ['SYR', 'SYR-only-camp-1HH.xlsx', 1, 7, 1],
         ];
     }
 
@@ -120,8 +111,11 @@ class ImportTest extends KernelTestCase
     /**
      * @dataProvider correctFiles
      */
-    public function testMinimalWorkflow(string $filename, int $expectedHouseholdCount, int $expectedBeneficiaryCount)
+    public function testMinimalWorkflow(string $country, string $filename, int $expectedHouseholdCount, int $expectedBeneficiaryCount)
     {
+        $this->project = $this->createBlankProject($country, [__METHOD__, $filename]);
+        $this->originHousehold = $this->createBlankHousehold($this->project);
+
         // create import
         $createImportInput = new ImportCreateInputType();
         $createImportInput->setTitle('testMinimalWorkflow test');
@@ -229,8 +223,11 @@ class ImportTest extends KernelTestCase
     /**
      * @dataProvider correctFiles
      */
-    public function testRepeatedUploadSameFile(string $filename, int $expectedHouseholdCount, int $expectedBeneficiaryCount, int $expectedDuplicities)
+    public function testRepeatedUploadSameFile(string $country, string $filename, int $expectedHouseholdCount, int $expectedBeneficiaryCount, int $expectedDuplicities)
     {
+        $this->project = $this->createBlankProject($country, [__METHOD__, $filename]);
+        $this->originHousehold = $this->createBlankHousehold($this->project);
+
         $imports = [];
         foreach (['first', 'second'] as $runName) {
             // create import
@@ -370,6 +367,9 @@ class ImportTest extends KernelTestCase
 
     public function testUpdateSimpleDuplicity()
     {
+        $this->project = $this->createBlankProject(self::TEST_COUNTRY, [__METHOD__]);
+        $this->originHousehold = $this->createBlankHousehold($this->project);
+
         $testFiles = [
             'first' => 'import_update_household_first_run.ods',
             'second' => 'import_update_household_second_run.ods',
@@ -468,6 +468,9 @@ class ImportTest extends KernelTestCase
 
     public function testErrorInIntegrityCheck()
     {
+        $this->project = $this->createBlankProject(self::TEST_COUNTRY, [__METHOD__]);
+        $this->originHousehold = $this->createBlankHousehold($this->project);
+
         // create import
         $createImportInput = new ImportCreateInputType();
         $createImportInput->setTitle('unit test '.__CLASS__);
@@ -507,15 +510,18 @@ class ImportTest extends KernelTestCase
     /**
      * @dataProvider correctFiles
      */
-    public function testWrongCountryIntegrityCheck(string $filename)
+    public function testWrongCountryIntegrityCheck(string $country, string $filename)
     {
+        $this->project = $this->createBlankProject($country, [__METHOD__, $filename]);
+        $this->originHousehold = $this->createBlankHousehold($this->project);
+
         // SYR project
         $project = new Project();
         $project->setName(uniqid());
         $project->setNotes(get_class($this));
         $project->setStartDate(new \DateTime());
         $project->setEndDate(new \DateTime());
-        $project->setIso3('SYR');
+        $project->setIso3('QTI');
         $this->entityManager->persist($project);
         $this->entityManager->flush();
 
@@ -568,6 +574,9 @@ class ImportTest extends KernelTestCase
      */
     public function testIncorrectImportFileInIntegrityCheck(string $fileName): void
     {
+        $this->project = $this->createBlankProject(self::TEST_COUNTRY, [__METHOD__, $fileName]);
+        $this->originHousehold = $this->createBlankHousehold($this->project);
+
         // create import
         $createImportInput = new ImportCreateInputType();
         $createImportInput->setTitle('incorrect file test');
@@ -597,6 +606,19 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(ImportState::INTEGRITY_CHECK_FAILED, $import->getState());
         $queueCount = $this->entityManager->getRepository(ImportQueue::class)->count(['import' => $import]);
         $this->assertEquals(0, $queueCount, 'There should be no queue item saved');
+    }
+
+    private function createBlankProject(string $country, array $notes): Project
+    {
+        $project = new Project();
+        $project->setName(uniqid());
+        $project->setNotes(implode("\n", $notes));
+        $project->setStartDate(new \DateTime());
+        $project->setEndDate(new \DateTime());
+        $project->setIso3($country);
+        $this->entityManager->persist($project);
+        $this->entityManager->flush();
+        return $project;
     }
 
     private function createBlankHousehold(Project $project): Household

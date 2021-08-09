@@ -195,7 +195,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     public function getImported(Import $import)
     {
         $qb = $this->createQueryBuilder('b');
-        $q = $qb->leftJoin('b.importBeneficiaries', 'ib')
+        $q = $qb->innerJoin('b.importBeneficiaries', 'ib')
             ->where('ib.import = :import')
             ->setParameter('import', $import);
 

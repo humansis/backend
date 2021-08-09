@@ -88,7 +88,7 @@ trait HouseholdInputBuilderTrait
         }
 
         $locationRepository = $this->entityManager->getRepository(Location::class);
-        $locationByAdms = $locationRepository->getByNames($this->adm1, $this->adm2, $this->adm3, $this->adm4);
+        $locationByAdms = $locationRepository->getByNames($this->countryIso3, $this->adm1, $this->adm2, $this->adm3, $this->adm4);
         if (null !== $locationByAdms) {
             $address = new ResidenceAddressInputType();
             $address->setNumber($this->addressStreet);
