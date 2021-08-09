@@ -97,7 +97,7 @@ class ImportTest extends KernelTestCase
             'minimal csv' => ['KHM', 'KHM-Import-2HH-3HHM-55HHM.csv', 2, 60, 1],
             'minimal ods' => ['KHM', 'KHM-Import-2HH-3HHM-24HHM.ods', 2, 29, 2],
             'minimal xlsx' => ['KHM', 'KHM-Import-4HH-0HHM-0HHM.xlsx', 4, 4, 4],
-            'camp only' => ['SYR', 'SYR-only-camp-1HH.xlsx', 1, 1, 0],
+            'camp only' => ['SYR', 'SYR-only-camp-1HH.xlsx', 1, 7, 1],
         ];
     }
 
