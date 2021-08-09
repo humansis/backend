@@ -253,6 +253,7 @@ class ImportService
      */
     public function checkIntegrity(Import $import, ?int $batchSize = null): void
     {
+        // fail if there is no valid file
         if (0 === $this->em->getRepository(ImportFile::class)->count([
                 'import' => $import,
                 'structureViolations' => null,
@@ -272,6 +273,14 @@ class ImportService
      */
     public function checkIdentity(Import $import, ?int $batchSize = null): void
     {
+        // fail if there is no valid queue items
+        if (0 === $this->em->getRepository(ImportQueue::class)->count([
+                'import' => $import,
+                'state' => ImportQueueState::VALID,
+            ])) {
+            $import->setState(ImportState::IDENTITY_CHECK_FAILED);
+            return;
+        }
         $this->identityChecker->check($import, $batchSize);
     }
 

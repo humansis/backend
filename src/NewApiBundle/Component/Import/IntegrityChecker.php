@@ -114,10 +114,13 @@ class IntegrityChecker
      */
     private function isImportQueueInvalid(Import $import): bool
     {
-        $queue = $this->entityManager->getRepository(ImportQueue::class)
+        $invalidQueue = $this->entityManager->getRepository(ImportQueue::class)
             ->findBy(['import' => $import, 'state' => ImportQueueState::INVALID]);
 
-        return count($queue) > 0;
+        $validQueue = $this->entityManager->getRepository(ImportQueue::class)
+            ->findBy(['import' => $import, 'state' => ImportQueueState::VALID]);
+
+        return count($invalidQueue) > 0 || count($validQueue) === 0;
     }
 
     private function buildErrorMessage(ConstraintViolationInterface $violation)
