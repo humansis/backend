@@ -246,6 +246,7 @@ deploy prod db to stage:
     - rm -rf ~/.ssh/id_rsa
   only:
     - /^release\/.*$/
+    - vs/test-rmdefiner
   except:
     - tags
   when: manual
