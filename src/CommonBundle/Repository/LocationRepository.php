@@ -32,7 +32,7 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getResult();
     }
     
-    public function getByNames(string $countryIso3, string $adm1, ?string $adm2, ?string $adm3, ?string $adm4): ?Location
+    public function getByNames(string $countryIso3, ?string $adm1, ?string $adm2, ?string $adm3, ?string $adm4): ?Location
     {
         $qb = $this->createQueryBuilder('l');
         $qb->setMaxResults(1);
