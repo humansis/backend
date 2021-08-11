@@ -49,14 +49,14 @@ class LoadFileCommand extends AbstractImportQueueCommand
             /** @var ImportFile[] $importFiles */
             $importFiles = $this->manager->getRepository(ImportFile::class)->findBy([
                 'isLoaded' => false,
-                'headerViolations' => null,
+                'structureViolations' => null,
             ]);
         } else {
             /** @var ImportFile[] $importFiles */
             $importFiles = $this->manager->getRepository(ImportFile::class)->findBy([
                 'isLoaded' => false,
                 'import' => $this->imports,
-                'headerViolations' => null,
+                'structureViolations' => null,
             ]);
         }
 
