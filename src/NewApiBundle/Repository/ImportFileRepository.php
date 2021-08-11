@@ -19,7 +19,7 @@ class ImportFileRepository extends EntityRepository
     {
         return $this->createQueryBuilder('if')
             ->andWhere('if.import = :import')
-            ->andWhere('if.headerViolations IS NULL')
+            ->andWhere('if.structureViolations IS NULL')
             ->setParameter('import', $import)
             ->getQuery()->getResult();
     }
