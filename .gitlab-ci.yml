@@ -72,6 +72,7 @@ backup-db:
   script:
     - mysqldump --quick --skip-lock-tables --single-transaction --set-gtid-purged=OFF -h ${RDS_HOSTNAME} -u ${RDS_USERNAME_PROD} -p"${RDS_PASSWORD_PROD}" ${RDS_DB_NAME_PROD} | pv > db.sql
     - export DB_NAME=backup_$(date '+%Y_%m_%d')_${CI_PIPELINE_ID}
+    - sed -i -e 's/DEFINER[ ]=[ ][^*]**/*/' db.sql
     - mysql -h ${RDS_HOSTNAME} -u ${RDS_USERNAME_PROD} -p"${RDS_PASSWORD_PROD}" -e "CREATE DATABASE ${DB_NAME} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
     - pv --bytes --eta --progress db.sql | mysql -h ${RDS_HOSTNAME} -u ${RDS_USERNAME_PROD} -p"${RDS_PASSWORD_PROD}" ${DB_NAME}
   after_script:
