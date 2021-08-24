@@ -243,6 +243,13 @@ class SmartcardService
         return $purchaseDeposit->getAssistanceBeneficiary()->getAssistance()->getProject()->getId();
     }
 
+    /**
+     * @param array             $deposits
+     * @param DateTimeInterface $purchaseDate
+     *
+     * @return SmartcardDeposit
+     * @deprecated it works bad, dont use it
+     */
     private function getDeposit(array $deposits, DateTimeInterface $purchaseDate): SmartcardDeposit
     {
         usort($deposits, function (SmartcardDeposit $d1, SmartcardDeposit $d2) {
@@ -254,6 +261,7 @@ class SmartcardService
                 return $deposit;
             }
         }
+        return $deposit;
     }
 
     protected function createSuspiciousSmartcard(string $serialNumber, DateTimeInterface $createdAt): Smartcard
