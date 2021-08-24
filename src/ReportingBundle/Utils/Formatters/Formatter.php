@@ -90,7 +90,7 @@ class Formatter implements FormatterInterface
 
         switch ($typeGraph) {
             case "stackbar":
-                $result = CsvFormatter::formatWithSeries();
+                $result = 'not working';
                 break;
             case "pie":
             case "bar":

@@ -15,7 +15,7 @@ class CsvFormatter
      * @return void
      * @throws \Exception
      */
-    public function formatWithSeries()
+    public static function formatWithSeries()
     {
         throw new \Exception('Not implemented');
     }
@@ -26,7 +26,7 @@ class CsvFormatter
      * @param array $dataComputed
      * @return array
      */
-    public function formatWithoutSeries($dataComputed)
+    public static function formatWithoutSeries($dataComputed)
     {
         return $dataComputed;
     }
@@ -39,7 +39,7 @@ class CsvFormatter
      * @param array $dataComputed
      * @return array
      */
-    public function formatWithDateSeries($dataComputed)
+    public static function formatWithDateSeries($dataComputed)
     {
         if (count($dataComputed) === 0) {
             return $dataComputed;
