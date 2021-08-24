@@ -3,7 +3,7 @@
 
 namespace BeneficiaryBundle\Utils;
 
-use BeneficiaryBundle\Utils\ImportProvider\DefaultApiProvider;
+use BeneficiaryBundle\Utils\ImportProvider\DefaultAPIProvider;
 use CommonBundle\Entity\OrganizationServices;
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
@@ -21,7 +21,7 @@ class APIImportService
     /** @var ContainerInterface $container */
     private $container;
 
-    /** @var DefaultApiProvider $apiProvider */
+    /** @var DefaultAPIProvider $apiProvider */
     private $apiProvider;
 
     /**
@@ -61,14 +61,14 @@ class APIImportService
      * Get the API provider corresponding to the current country
      * @param  string $countryISO3 iso3 code of the country
      * @param string $provider
-     * @return DefaultApiProvider|object
+     * @return DefaultAPIProvider|object
      * @throws \Exception
      */
     private function getApiProviderForCountry(string $countryISO3, string $provider)
     {
         $provider = $this->container->get('beneficiary.' . strtolower($countryISO3) . '_api_provider_' . $provider);
 
-        if (! ($provider instanceof DefaultApiProvider)) {
+        if (! ($provider instanceof DefaultAPIProvider)) {
             throw new \Exception("The API provider " . $provider . " for " . $countryISO3 . "is not properly defined");
         }
         return $provider;
