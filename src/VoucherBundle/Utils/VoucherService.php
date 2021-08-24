@@ -251,6 +251,7 @@ class VoucherService
     {
         $booklets = null;
         $exportableCount = 0;
+        $exportableTable = [];
 
         if ($ids) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
