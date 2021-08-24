@@ -80,7 +80,7 @@ trait HouseholdInputBuilderTrait
             $household->setAssets($assets);
         }
 
-        foreach ($this->countrySpecifics ?? [] as $countrySpecificId => $answer) {
+        foreach ($this->countrySpecifics as $countrySpecificId => $answer) {
             $specificAnswer = new CountrySpecificsAnswerInputType();
             $specificAnswer->setCountrySpecificId($countrySpecificId);
             $specificAnswer->setAnswer($answer);
