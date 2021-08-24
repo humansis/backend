@@ -635,37 +635,37 @@ class UserService
         }
     }
 
-    /**
+    /* *
      * @param $code
      * @param $environment
      * @return User
      */
-    public function loginLinkedIn(string $code, string $environment)
-    {
-        $httpClient = HttpClient::create();
-        $parameters = $this->environments['linkedIn'][$environment];
-        
-        $response = $httpClient->request('POST', $parameters['provider_url'], [
-            'body' => [
-                'grant_type' => 'authorization_code',
-                'code' => $code,
-                'redirect_uri' => $parameters['front_url'],
-                'client_id' => $parameters['client_id'],
-                'client_secret' => $this->linkedInSecret,
-            ],
-            'headers' => [
-                'Content-Type' => 'application/x-www-form-urlencoded',
-                'Accept' => '*/*',
-            ]
-        ]);
-
-        $statusCode = $response->getStatusCode();
-        if ($statusCode === 200) {
-            $content = $response->toArray();
-        } else {
-            throw new \Exception("There was a problem with the LinkedIn request: could not get token"); 
-        }
-    }
+    // public function loginLinkedIn(string $code, string $environment)
+    // {
+    //     $httpClient = HttpClient::create();
+    //     $parameters = $this->environments['linkedIn'][$environment];
+    //
+    //     $response = $httpClient->request('POST', $parameters['provider_url'], [
+    //         'body' => [
+    //             'grant_type' => 'authorization_code',
+    //             'code' => $code,
+    //             'redirect_uri' => $parameters['front_url'],
+    //             'client_id' => $parameters['client_id'],
+    //             'client_secret' => '$this->linkedInSecret',
+    //         ],
+    //         'headers' => [
+    //             'Content-Type' => 'application/x-www-form-urlencoded',
+    //             'Accept' => '*/*',
+    //         ]
+    //     ]);
+    //
+    //     $statusCode = $response->getStatusCode();
+    //     if ($statusCode === 200) {
+    //         $content = $response->toArray();
+    //     } else {
+    //         throw new \Exception("There was a problem with the LinkedIn request: could not get token");
+    //     }
+    // }
 
     /**
      * @param $code
