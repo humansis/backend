@@ -221,6 +221,9 @@ class LocationService
             /** @var Location $location */
             $location = $distribution->getLocation();
 
+            $adm = 'adm0';
+            $code = $countryIso3;
+            $location_name = $countryIso3;
             if (!empty($location->getAdm1())) {
                 $adm = "adm1";
                 $location_name = $location->getAdm1()->getName();
