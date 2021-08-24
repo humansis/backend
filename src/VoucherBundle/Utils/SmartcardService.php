@@ -255,6 +255,7 @@ class SmartcardService
         usort($deposits, function (SmartcardDeposit $d1, SmartcardDeposit $d2) {
             return $d2->getCreatedAt()->getTimestamp() - $d1->getCreatedAt()->getTimestamp();
         });
+        $deposit = null;
         /** @var SmartcardDeposit $deposit */
         foreach ($deposits as $deposit) {
             if ($deposit->getCreatedAt()->getTimestamp() <= $purchaseDate->getTimestamp()) {
