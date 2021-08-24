@@ -50,5 +50,6 @@ class ReportingDataIndicatorAddCommand extends ContainerAwareCommand
             '============',
             'Data loaded',
         ]);
+        return 0;
     }
 }
