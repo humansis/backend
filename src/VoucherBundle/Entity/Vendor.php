@@ -2,6 +2,7 @@
 
 namespace VoucherBundle\Entity;
 
+use CommonBundle\Entity\Location;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
@@ -105,7 +106,6 @@ class Vendor implements ExportableInterface
 
     public function __construct()
     {
-        $this->vouchers = new ArrayCollection();
         $this->archived = false;
     }
 
