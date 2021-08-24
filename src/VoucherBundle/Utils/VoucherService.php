@@ -51,11 +51,12 @@ class VoucherService
      * Creates a new Voucher entity
      *
      * @param array $vouchersData
-     * @return mixed
+     * @return array
      * @throws \Exception
      */
     public function create(array $vouchersData, $flush = true)
     {
+        $vouchers = [];
         try {
             $currentId = array_key_exists('lastId', $vouchersData) ? $vouchersData['lastId'] + 1 : $this->getLastId() + 1;
             for ($x = 0; $x < $vouchersData['number_vouchers']; $x++) {
@@ -66,7 +67,7 @@ class VoucherService
                 $booklet = $voucherData['booklet'];
                 $code = $this->generateCode($voucherData, $currentId);
 
-                $voucher = new Voucher($code, $voucherData['value'], $booklet);
+                $vouchers[] = $voucher = new Voucher($code, $voucherData['value'], $booklet);
                 $booklet->getVouchers()->add($voucher);
                 $currentId++;
 
@@ -79,7 +80,7 @@ class VoucherService
         } catch (\Exception $e) {
             throw $e;
         }
-        return $voucher;
+        return $vouchers;
     }
 
 
