@@ -7,7 +7,7 @@ use CommonBundle\Entity\OrganizationServices;
 use CommonBundle\Entity\Service;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 use FOS\UserBundle\Doctrine\UserManager;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
