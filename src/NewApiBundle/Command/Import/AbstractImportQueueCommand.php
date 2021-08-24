@@ -62,6 +62,7 @@ abstract class AbstractImportQueueCommand extends Command
                 throw new \InvalidArgumentException('Argument Import must be ID or title of existing Import. No such found.');
             }
         }
+        return 0;
     }
 
     /**

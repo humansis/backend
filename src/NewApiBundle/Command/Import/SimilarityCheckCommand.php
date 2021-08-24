@@ -70,5 +70,6 @@ class SimilarityCheckCommand extends AbstractImportQueueCommand
         $this->manager->flush();
 
         $output->writeln('Done');
+        return 0;
     }
 }
