@@ -299,6 +299,8 @@ class VoucherService
     public function exportToPdf($ids, string $countryIso3, $filters)
     {
         $booklets = null;
+        $exportableTable = [];
+
         if ($ids) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids)->getResult();
         } else if ($filters) {
