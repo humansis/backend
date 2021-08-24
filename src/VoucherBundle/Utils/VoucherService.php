@@ -250,6 +250,7 @@ class VoucherService
     public function exportToCsv(string $type, string $countryIso3, $ids, $filters)
     {
         $booklets = null;
+        $exportableCount = 0;
 
         if ($ids) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
