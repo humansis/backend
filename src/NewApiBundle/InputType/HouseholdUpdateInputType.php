@@ -820,5 +820,6 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
         foreach ($this->getBeneficiaries() as $beneficiaryInputType) {
             if ($beneficiaryInputType->isHead()) return $beneficiaryInputType;
         }
+        throw new \InvalidArgumentException('There must be head');
     }
 }
