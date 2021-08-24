@@ -3,6 +3,7 @@
 namespace TransactionBundle\Utils\Provider;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Psr\Log\LoggerInterface;
 use TransactionBundle\Entity\Transaction;
 use DistributionBundle\Entity\Assistance;
@@ -68,7 +69,7 @@ abstract class DefaultFinancialProvider
      * @param  AssistanceBeneficiary $assistanceBeneficiary
      * @param  float $amount
      * @param  string $currency
-     * @return void
+     * @return Transaction
      * @throws \Exception
      */
     public function sendMoneyToOne(
@@ -153,6 +154,7 @@ abstract class DefaultFinancialProvider
                     $this->logger->debug("Money sending: Recipient omitted - already sent", [$beneficiary, $assistanceBeneficiary]);
                     array_push($response['already_sent'], $assistanceBeneficiary);
                 } else {
+                    $amountSent = 0;
                     if ($cache->has($assistance->getId() . '-amount_sent')) {
                         $amountSent = $cache->get($assistance->getId() . '-amount_sent');
                     }
@@ -224,6 +226,8 @@ abstract class DefaultFinancialProvider
         }
         return $response;
     }
+
+    public abstract function updateStatusTransaction(Transaction $transaction): Transaction;
 
     /**
      * Create transaction
