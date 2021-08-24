@@ -291,6 +291,8 @@ class DistributionCSVService
                         ]
                     ]
                 ];
+            } else {
+                throw new \Exception('There is no address ofr camp');
             }
 
             $phones = [];
