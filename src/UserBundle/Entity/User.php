@@ -476,6 +476,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     public function setTwoFactorAuthentication($twoFactorAuthentication)
     {
         $this->twoFactorAuthentication = $twoFactorAuthentication;
+        return $this;
     }
 
     /**

@@ -45,7 +45,7 @@ class WsseListener implements ListenerInterface
             // To deny the authentication clear the token. This will redirect to the login page.
             // Make sure to only clear your token, not those of other authentication listeners.
             $token = $this->tokenStorage->getToken();
-            if ($token instanceof WsseUserToken && $this->providerKey === $token->getProviderKey()) {
+            if ($token instanceof WsseUserToken && null === $token->getProviderKey()) {
                 $this->tokenStorage->setToken(null);
             }
 
