@@ -57,6 +57,12 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             'salt' => 'fhn91jwIbBnFAgZjQZA3mE4XUrjYzWfOoZDcjt/9',
             'roles' => 'ROLE_ADMIN'
         ],
+        'test' => [
+            'email' => 'test@example.org',
+            'passwd' => '',
+            'salt' => '',
+            'roles' => 'ROLE_ADMIN'
+        ],
     ];
 
     private $singleCountryUsers = [
