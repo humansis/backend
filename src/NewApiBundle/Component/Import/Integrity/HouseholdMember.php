@@ -381,7 +381,7 @@ class HouseholdMember
     }
 
     /**
-     * @Assert\Choice(choices=\BeneficiaryBundle\Entity\Household::ASSETS, multiple=true)
+     * @Assert\Choice(callback={"BeneficiaryBundle\Enum\HouseholdAssets", "keys"}, multiple=true)
      * @return array
      */
     public function getAssets(): array

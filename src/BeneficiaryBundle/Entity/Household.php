@@ -2,6 +2,7 @@
 
 namespace BeneficiaryBundle\Entity;
 
+use BeneficiaryBundle\Enum\HouseholdAssets;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -19,16 +20,6 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class Household extends AbstractBeneficiary
 {
-    const ASSETS = [
-        0 => 'A/C',
-        1 => 'Agricultural Land',
-        2 => 'Car',
-        3 => 'Flatscreen TV',
-        4 => 'Livestock',
-        5 => 'Motorbike',
-        6 => 'Washing Machine',
-    ];
-
     const SHELTER_STATUSES = [
         1 => 'Tent',
         2 => 'Makeshift Shelter',
@@ -277,7 +268,7 @@ class Household extends AbstractBeneficiary
     public function setAssets($assets): self
     {
         foreach ((array) $assets as $asset) {
-            if (!isset(self::ASSETS[$asset])) {
+            if (!HouseholdAssets::hasKey($asset)) {
                 throw new InvalidArgumentException(sprintf('Argument 1 contain invalid asset key %d.', $asset));
             }
         }

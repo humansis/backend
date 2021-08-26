@@ -68,7 +68,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      * @Assert\NotNull
      * @Assert\All(
      *     constraints={
-     *         @Assert\Choice(callback="assets", strict=true, groups={"Strict"})
+     *         @Assert\Choice(callback={"BeneficiaryBundle\Enum\HouseholdAssets", "keys"}, strict=true, groups={"Strict"})
      *     },
      *     groups={"Strict"}
      * )
@@ -242,16 +242,6 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      * @Assert\Valid
      */
     private $proxyPhone;
-
-    final public static function assets()
-    {
-        $keys = [];
-        foreach (Household::ASSETS as $key => $value) {
-            $keys[] = (int) $key;
-        }
-
-        return $keys;
-    }
 
     final public static function shelterStatuses()
     {

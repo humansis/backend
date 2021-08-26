@@ -7,6 +7,7 @@ use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use BeneficiaryBundle\Enum\HouseholdAssets;
 use BeneficiaryBundle\Utils\ExcelColumnsGenerator;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
@@ -723,19 +724,7 @@ class CSVToArrayMapper
     private function mapAssets(&$formattedHouseholdArray)
     {
         if (isset($formattedHouseholdArray['assets'])) {
-            $assets = [];
-            foreach (explode(',', $formattedHouseholdArray['assets']) as $value) {
-                foreach (Household::ASSETS as $id => $asset) {
-                    if (0 === strcasecmp(trim($value), $asset)) {
-                        $assets[] = $id;
-                        continue 2;
-                    }
-                }
-
-                throw new \InvalidArgumentException("'$value' is not valid asset.");
-            }
-
-            $formattedHouseholdArray['assets'] = $assets;
+            $formattedHouseholdArray['assets'] = HouseholdAssets::getKeys(explode(',', $formattedHouseholdArray['assets']));
         }
     }
 

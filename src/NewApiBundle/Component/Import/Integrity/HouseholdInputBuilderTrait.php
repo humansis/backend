@@ -5,6 +5,7 @@ namespace NewApiBundle\Component\Import\Integrity;
 
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Enum\HouseholdAssets;
 use CommonBundle\Entity\Location;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
@@ -78,11 +79,7 @@ trait HouseholdInputBuilderTrait
         }
 
         if (null !== $this->assets) {
-            $assets = [];
-            foreach (explode(',', $this->assets) as $assetName) {
-                $assets[] = array_search($assetName, Household::ASSETS);
-            }
-            $household->setAssets($assets);
+            $household->setAssets(HouseholdAssets::getKeys($this->assets));
         }
 
         foreach ($this->countrySpecifics as $countrySpecificId => $answer) {

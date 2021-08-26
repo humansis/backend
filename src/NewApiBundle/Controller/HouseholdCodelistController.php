@@ -7,6 +7,7 @@ namespace NewApiBundle\Controller;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\Referral;
+use BeneficiaryBundle\Enum\HouseholdAssets;
 use CommonBundle\Pagination\Paginator;
 use NewApiBundle\Component\Codelist\CodeItem;
 use NewApiBundle\Component\Codelist\CodeLists;
@@ -42,7 +43,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function getAssets(): JsonResponse
     {
-        $data = CodeLists::mapArray(Household::ASSETS);
+        $data = CodeLists::mapArray(HouseholdAssets::all());
 
         return $this->json(new Paginator($data));
     }

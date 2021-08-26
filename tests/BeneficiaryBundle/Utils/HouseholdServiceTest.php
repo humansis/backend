@@ -5,6 +5,7 @@ namespace Tests\BeneficiaryBundle\Utils;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\NationalId;
+use BeneficiaryBundle\Enum\HouseholdAssets;
 use BeneficiaryBundle\Enum\ResidencyStatus;
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -350,7 +351,7 @@ class HouseholdServiceTest extends KernelTestCase
         $householdCreateInputType = new HouseholdCreateInputType();
         $householdCreateInputType->setProjectIds([$project->getId()]);
         $householdCreateInputType->setIso3('KHM');
-        $householdCreateInputType->setAssets([current(array_keys(Household::ASSETS))]);
+        $householdCreateInputType->setAssets([current(array_keys(HouseholdAssets::all()))]);
         $householdCreateInputType->setShelterStatus(3);
 
         $addressData = new ResidenceAddressInputType();
@@ -379,7 +380,7 @@ class HouseholdServiceTest extends KernelTestCase
         $householdUpdateInputType = new HouseholdUpdateInputType();
         $householdUpdateInputType->setProjectIds([$project->getId()]);
         $householdUpdateInputType->setIso3('KHM');
-        $householdUpdateInputType->setAssets([current(array_keys(Household::ASSETS))]);
+        $householdUpdateInputType->setAssets([current(array_keys(HouseholdAssets::all()))]);
         $householdCreateInputType->setShelterStatus(2);
 
         $beneficiaryInputType->setResidencyStatus(ResidencyStatus::IDP);

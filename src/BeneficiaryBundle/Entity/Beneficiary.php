@@ -2,6 +2,7 @@
 
 namespace BeneficiaryBundle\Entity;
 
+use BeneficiaryBundle\Enum\HouseholdAssets;
 use CommonBundle\Utils\ExportableInterface;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -686,7 +687,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
         $assets = [];
         foreach ((array) $this->getHousehold()->getAssets() as $type) {
-            $assets[] = Household::ASSETS[$type];
+            $assets[] = HouseholdAssets::getByKey($type);
         }
 
         $supportReceivedTypes = [];
@@ -788,9 +789,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
             $livelihood = Livelihood::translate($this->getHousehold()->getLivelihood());
         }
 
-        $assets = array_map(function ($value) {
-            return Household::ASSETS[$value];
-        }, (array) $this->getHousehold()->getAssets());
+        $assets = HouseholdAssets::getByKeys($this->getHousehold()->getAssets());
 
         $shelterStatus = null;
         if (null !== $this->getHousehold()->getShelterStatus()) {
