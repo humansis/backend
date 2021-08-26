@@ -57,7 +57,12 @@ trait HouseholdInputBuilderTrait
         $household->setLivelihood($this->livelihood);
         $household->setEnumeratorName($this->enumeratorName);
         $household->setShelterStatus($this->shelterStatus);
-        $household->setSupportDateReceived($this->supportDateReceived);
+        if (!empty($this->supportDateReceived)) {
+            $household->setSupportDateReceived($this->supportDateReceived);
+        } else {
+            $household->setSupportDateReceived(null);
+        }
+
 
         if (null !== $this->livelihood) {
             $hoodKey = array_search($this->livelihood, Livelihood::TRANSLATIONS);
