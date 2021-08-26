@@ -91,7 +91,7 @@ trait HouseholdInputBuilderTrait
         $locationByAdms = $locationRepository->getByNames($this->countryIso3, $this->adm1, $this->adm2, $this->adm3, $this->adm4);
         if (null !== $locationByAdms) {
             $address = new ResidenceAddressInputType();
-            $address->setNumber($this->addressStreet);
+            $address->setStreet($this->addressStreet);
             $address->setPostcode($this->addressPostcode);
             $address->setNumber($this->addressNumber);
             $address->setLocationId($locationByAdms->getId());
