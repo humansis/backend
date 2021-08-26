@@ -3,6 +3,7 @@
 namespace BeneficiaryBundle\Entity;
 
 use BeneficiaryBundle\Enum\HouseholdAssets;
+use BeneficiaryBundle\Enum\HouseholdShelterStatuses;
 use CommonBundle\Utils\ExportableInterface;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -697,7 +698,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
         $shelterStatus = '';
         if ($this->getHousehold()->getShelterStatus()) {
-            $shelterStatus = Household::SHELTER_STATUSES[$this->getHousehold()->getShelterStatus()];
+            $shelterStatus = HouseholdShelterStatuses::getByKey($this->getHousehold()->getShelterStatus());
         }
 
         $tempBenef = [
@@ -793,7 +794,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
         $shelterStatus = null;
         if (null !== $this->getHousehold()->getShelterStatus()) {
-            $shelterStatus = Household::SHELTER_STATUSES[$this->getHousehold()->getShelterStatus()];
+            $shelterStatus = HouseholdShelterStatuses::getByKey($this->getHousehold()->getShelterStatus());
         }
 
         $supportReceivedTypes = array_map(function ($value) {

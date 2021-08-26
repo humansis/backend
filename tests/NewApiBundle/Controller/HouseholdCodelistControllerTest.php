@@ -5,6 +5,7 @@ namespace Tests\NewApiBundle\Controller;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Enum\HouseholdAssets;
+use BeneficiaryBundle\Enum\HouseholdShelterStatuses;
 use Exception;
 use ProjectBundle\Enum\Livelihood;
 use Tests\BMSServiceTestCase;
@@ -86,7 +87,7 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
         $this->assertIsArray($result['data']);
-        $this->assertEquals(count(Household::SHELTER_STATUSES), $result['totalCount']);
+        $this->assertEquals(count(HouseholdShelterStatuses::all()), $result['totalCount']);
     }
 
     /**

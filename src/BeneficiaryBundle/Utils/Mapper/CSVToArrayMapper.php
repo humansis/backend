@@ -8,6 +8,7 @@ use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\HouseholdAssets;
+use BeneficiaryBundle\Enum\HouseholdShelterStatuses;
 use BeneficiaryBundle\Utils\ExcelColumnsGenerator;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
@@ -710,14 +711,12 @@ class CSVToArrayMapper
     private function mapShelterStatus(&$formattedHouseholdArray)
     {
         if (isset($formattedHouseholdArray['shelter_status'])) {
-            foreach (Household::SHELTER_STATUSES as $id => $status) {
-                if (0 === strcasecmp(trim($formattedHouseholdArray['shelter_status']), $status)) {
-                    $formattedHouseholdArray['shelter_status'] = $id;
-                    return;
-                }
-            }
+            $hss = HouseholdShelterStatuses::getByKey($formattedHouseholdArray['shelter_status']);
+            $formattedHouseholdArray['shelter_status'] = $hss;
 
-            throw new \InvalidArgumentException("'{$formattedHouseholdArray['shelter_status']}' is not valid shelter status.");
+            if (null === $hss) {
+                throw new \InvalidArgumentException("'{$formattedHouseholdArray['shelter_status']}' is not valid shelter status.");
+            }
         }
     }
 

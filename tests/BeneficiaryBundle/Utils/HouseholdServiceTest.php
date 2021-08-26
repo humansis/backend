@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Enum\HouseholdAssets;
+use BeneficiaryBundle\Enum\HouseholdShelterStatuses;
 use BeneficiaryBundle\Enum\ResidencyStatus;
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -352,7 +353,7 @@ class HouseholdServiceTest extends KernelTestCase
         $householdCreateInputType->setProjectIds([$project->getId()]);
         $householdCreateInputType->setIso3('KHM');
         $householdCreateInputType->setAssets([current(array_keys(HouseholdAssets::all()))]);
-        $householdCreateInputType->setShelterStatus(3);
+        $householdCreateInputType->setShelterStatus(HouseholdShelterStatuses::getKey(HouseholdShelterStatuses::MAKESHIFT_SHELTER));
 
         $addressData = new ResidenceAddressInputType();
         $addressData->setLocationId(1);

@@ -76,7 +76,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     private $assets;
 
     /**
-     * @Assert\Choice(callback="shelterStatuses", strict=true)
+     * @Assert\Choice(callback={"BeneficiaryBundle\Enum\HouseholdShelterStatuses", "keys"}, strict=true)
      */
     private $shelterStatus;
 
@@ -242,16 +242,6 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      * @Assert\Valid
      */
     private $proxyPhone;
-
-    final public static function shelterStatuses()
-    {
-        $keys = [];
-        foreach (Household::SHELTER_STATUSES as $key => $value) {
-            $keys[] = (int) $key;
-        }
-
-        return $keys;
-    }
 
     final public static function supportReceivedTypes()
     {

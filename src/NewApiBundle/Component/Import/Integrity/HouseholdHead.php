@@ -218,7 +218,7 @@ class HouseholdHead
     protected $idNumber;
 
     /**
-     * @Assert\Choice(choices=\BeneficiaryBundle\Entity\Household::SHELTER_STATUSES)
+     * @Assert\Choice(callback={"BeneficiaryBundle\Enum\HouseholdShelterStatuses", "keys"})
      */
     protected $shelterStatus;
 

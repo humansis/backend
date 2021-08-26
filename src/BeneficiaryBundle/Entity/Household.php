@@ -3,6 +3,7 @@
 namespace BeneficiaryBundle\Entity;
 
 use BeneficiaryBundle\Enum\HouseholdAssets;
+use BeneficiaryBundle\Enum\HouseholdShelterStatuses;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -20,19 +21,6 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class Household extends AbstractBeneficiary
 {
-    const SHELTER_STATUSES = [
-        1 => 'Tent',
-        2 => 'Makeshift Shelter',
-        3 => 'Transitional Shelter',
-        4 => 'House/Apartment - Severely Damaged',
-        5 => 'House/Apartment - Moderately Damaged',
-        6 => 'House/Apartment - Not Damaged',
-        7 => 'Room or Space in Public Building',
-        8 => 'Room or Space in Unfinished Building',
-        9 => 'Other',
-        10 => 'House/Apartment - Lightly Damaged',
-    ];
-
     const SUPPORT_RECIEVED_TYPES = [
         0 => 'MPCA',
         1 => 'Cash for Work',
@@ -293,8 +281,8 @@ class Household extends AbstractBeneficiary
      */
     public function setShelterStatus(?int $shelterStatus): self
     {
-        if (null !== $shelterStatus && !isset(self::SHELTER_STATUSES[$shelterStatus])) {
-            throw new InvalidArgumentException(sprintf('Argument 1 is not valid shelter status key.'));
+        if (null !== $shelterStatus && !HouseholdShelterStatuses::hasKey($shelterStatus)) {
+            throw new InvalidArgumentException(sprintf('Argument 1 is not valid shelter status key: '.$shelterStatus));
         }
 
         $this->shelterStatus = $shelterStatus;
