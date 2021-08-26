@@ -523,9 +523,14 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      *
      * @return Beneficiary
      */
-    public function setResidencyStatus($residencyStatus): self
+    public function setResidencyStatus(string $residencyStatus): self
     {
-        $this->residencyStatus = $residencyStatus;
+        if ('idp' === strtolower($residencyStatus)) {
+            $this->residencyStatus = 'IDP';
+        } else {
+            $this->residencyStatus = strtolower($residencyStatus);
+        }
+
         return $this;
     }
 
