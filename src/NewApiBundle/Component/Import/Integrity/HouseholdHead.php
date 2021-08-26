@@ -442,7 +442,7 @@ class HouseholdHead
     }
 
     /**
-     * @Assert\Choice(choices=\BeneficiaryBundle\Entity\Household::SUPPORT_RECIEVED_TYPES, multiple=true)
+     * @Assert\Choice(callback={"BeneficiaryBundle\Enum\HouseholdSupportReceivedTypes", "all"}, multiple=true)
      * @return array
      */
     public function getSupportReceivedTypes(): array

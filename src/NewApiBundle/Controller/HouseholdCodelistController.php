@@ -9,6 +9,7 @@ use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\Referral;
 use BeneficiaryBundle\Enum\HouseholdAssets;
 use BeneficiaryBundle\Enum\HouseholdShelterStatuses;
+use BeneficiaryBundle\Enum\HouseholdSupportReceivedTypes;
 use CommonBundle\Pagination\Paginator;
 use NewApiBundle\Component\Codelist\CodeItem;
 use NewApiBundle\Component\Codelist\CodeLists;
@@ -56,7 +57,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function supportReceivedTypes(): JsonResponse
     {
-        $data = CodeLists::mapArray(Household::SUPPORT_RECIEVED_TYPES);
+        $data = CodeLists::mapArray(HouseholdSupportReceivedTypes::all());
 
         return $this->json(new Paginator($data));
     }

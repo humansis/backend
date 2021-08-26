@@ -4,6 +4,7 @@ namespace BeneficiaryBundle\Entity;
 
 use BeneficiaryBundle\Enum\HouseholdAssets;
 use BeneficiaryBundle\Enum\HouseholdShelterStatuses;
+use BeneficiaryBundle\Enum\HouseholdSupportReceivedTypes;
 use CommonBundle\Utils\ExportableInterface;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -692,8 +693,8 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         }
 
         $supportReceivedTypes = [];
-        foreach ((array) $this->getHousehold()->getShelterStatus() as $type) {
-            $supportReceivedTypes[] = Household::SUPPORT_RECIEVED_TYPES[$type];
+        if (null !== $this->getHousehold()->getShelterStatus()) {
+            $supportReceivedTypes = HouseholdSupportReceivedTypes::getByKeys($this->getHousehold()->getShelterStatus());
         }
 
         $shelterStatus = '';
@@ -797,9 +798,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
             $shelterStatus = HouseholdShelterStatuses::getByKey($this->getHousehold()->getShelterStatus());
         }
 
-        $supportReceivedTypes = array_map(function ($value) {
-            return Household::SUPPORT_RECIEVED_TYPES[$value];
-        }, (array) $this->getHousehold()->getSupportReceivedTypes());
+        $supportReceivedTypes = HouseholdSupportReceivedTypes::getByKeys($this->getHousehold()->getSupportReceivedTypes());
 
         $supportDateReceived = null;
         if (null !== $this->getHousehold()->getSupportDateReceived()) {

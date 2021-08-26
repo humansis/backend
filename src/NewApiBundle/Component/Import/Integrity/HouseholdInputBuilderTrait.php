@@ -6,6 +6,7 @@ namespace NewApiBundle\Component\Import\Integrity;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Enum\HouseholdAssets;
+use BeneficiaryBundle\Enum\HouseholdSupportReceivedTypes;
 use CommonBundle\Entity\Location;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
@@ -71,11 +72,7 @@ trait HouseholdInputBuilderTrait
         }
 
         if (null !== $this->supportReceivedTypes) {
-            $receivedTypes = [];
-            foreach (explode(',', $this->supportReceivedTypes) as $typeName) {
-                $receivedTypes[] = array_search($typeName, Household::SUPPORT_RECIEVED_TYPES);
-            }
-            $household->setSupportReceivedTypes($receivedTypes);
+            $household->setSupportReceivedTypes(HouseholdSupportReceivedTypes::getKeys(explode(',', $this->supportReceivedTypes)));
         }
 
         if (null !== $this->assets) {

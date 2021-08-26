@@ -9,6 +9,7 @@ use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\HouseholdAssets;
 use BeneficiaryBundle\Enum\HouseholdShelterStatuses;
+use BeneficiaryBundle\Enum\HouseholdSupportReceivedTypes;
 use BeneficiaryBundle\Utils\ExcelColumnsGenerator;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
@@ -741,18 +742,7 @@ class CSVToArrayMapper
     private function mapSupportReceivedTypes(&$formattedHouseholdArray)
     {
         if (isset($formattedHouseholdArray['support_received_types'])) {
-            $types = [];
-            foreach (explode(',', $formattedHouseholdArray['support_received_types']) as $value) {
-                foreach (Household::SUPPORT_RECIEVED_TYPES as $id => $type) {
-                    if (0 === strcasecmp(trim($value), $type)) {
-                        $types[] = $id;
-                        continue 2;
-                    }
-                }
-
-                throw new \InvalidArgumentException("'$value' is not valid support received type.");
-            }
-
+            $types = HouseholdSupportReceivedTypes::getByKeys($formattedHouseholdArray['support_received_types']);
             $formattedHouseholdArray['support_received_types'] = $types;
         }
     }

@@ -149,7 +149,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *         @Assert\Choice(callback="supportReceivedTypes", strict=true, groups={"Strict"})
+     *         @Assert\Choice(callback={"BeneficiaryBundle\Enum\HouseholdSupportReceivedTypes", "keys"}, strict=true, groups={"Strict"})
      *     },
      *     groups={"Strict"}
      * )
@@ -242,16 +242,6 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      * @Assert\Valid
      */
     private $proxyPhone;
-
-    final public static function supportReceivedTypes()
-    {
-        $keys = [];
-        foreach (Household::SUPPORT_RECIEVED_TYPES as $key => $value) {
-            $keys[] = (string) $key;
-        }
-
-        return $keys;
-    }
 
     /**
      * @return string
@@ -493,7 +483,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     }
 
     /**
-     * @return int|null
+     * @return array
      */
     public function getSupportReceivedTypes()
     {
@@ -501,11 +491,14 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     }
 
     /**
-     * @param int|null $supportReceivedTypes
+     * @param array $supportReceivedTypes
      */
     public function setSupportReceivedTypes($supportReceivedTypes)
     {
-        $this->supportReceivedTypes = $supportReceivedTypes;
+        $this->supportReceivedTypes = [];
+        foreach ($supportReceivedTypes as $type) {
+            $this->supportReceivedTypes[] = (int) $type;
+        }
     }
 
     /**

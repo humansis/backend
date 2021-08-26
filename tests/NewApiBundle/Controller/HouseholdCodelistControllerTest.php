@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Enum\HouseholdAssets;
 use BeneficiaryBundle\Enum\HouseholdShelterStatuses;
+use BeneficiaryBundle\Enum\HouseholdSupportReceivedTypes;
 use Exception;
 use ProjectBundle\Enum\Livelihood;
 use Tests\BMSServiceTestCase;
@@ -68,7 +69,7 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
-            "totalCount": '.count(Household::SUPPORT_RECIEVED_TYPES).',
+            "totalCount": '.count(HouseholdSupportReceivedTypes::all()).',
             "data": "*"
         }', $this->client->getResponse()->getContent());
     }
