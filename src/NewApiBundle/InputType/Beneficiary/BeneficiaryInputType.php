@@ -116,17 +116,12 @@ class BeneficiaryInputType implements InputTypeInterface
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *         @Assert\Choice(callback="vulnerabilities", strict=true, groups={"Strict"})
+     *         @Assert\Choice(callback={"BeneficiaryBundle\Enum\Vulnerabilities", "keys"}, strict=true, groups={"Strict"})
      *     },
      *     groups={"Strict"}
      * )
      */
     private $vulnerabilityCriteria = [];
-
-    public static function vulnerabilities(): array
-    {
-        return array_keys(\BeneficiaryBundle\Entity\VulnerabilityCriterion::all());
-    }
 
     /**
      * @return \DateTimeInterface

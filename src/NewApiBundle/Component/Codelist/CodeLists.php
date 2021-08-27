@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Component\Codelist;
 
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use BeneficiaryBundle\Enum\Vulnerabilities;
 use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\DTO\Sector;
 
@@ -49,7 +50,7 @@ class CodeLists
         /* @var VulnerabilityCriterion $criterion */
         foreach ($criteria as $criterion) {
             if ($criterion->isActive()) {
-                $data[] = new CodeItem($criterion->getFieldString(), VulnerabilityCriterion::all()[$criterion->getFieldString()]);
+                $data[] = new CodeItem($criterion->getFieldString(), Vulnerabilities::getByKey($criterion->getFieldString()));
             }
         }
 

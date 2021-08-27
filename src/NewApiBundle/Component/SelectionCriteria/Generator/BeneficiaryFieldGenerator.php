@@ -5,6 +5,7 @@ namespace NewApiBundle\Component\SelectionCriteria\Generator;
 
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;
+use BeneficiaryBundle\Enum\Vulnerabilities;
 use BeneficiaryBundle\Repository\VulnerabilityCriterionRepository;
 use NewApiBundle\Component\SelectionCriteria\FieldGeneratorInterface;
 use NewApiBundle\Component\SelectionCriteria\Structure\Field;
@@ -30,7 +31,7 @@ class BeneficiaryFieldGenerator implements FieldGeneratorInterface
         yield new Field('hasNotBeenInDistributionsSince', 'Has Not Been In Distribution Since', ['='], 'date', [self::class, 'validateDate']);
 
         foreach ($this->vulnerabilityCriterionRepository->findAllActive() as $vulnerabilityCriterion) {
-            yield new Field($vulnerabilityCriterion->getFieldString(), VulnerabilityCriterion::all()[$vulnerabilityCriterion->getFieldString()], ['='], 'boolean');
+            yield new Field($vulnerabilityCriterion->getFieldString(), Vulnerabilities::getByKey($vulnerabilityCriterion->getFieldString()), ['='], 'boolean');
         }
     }
 
