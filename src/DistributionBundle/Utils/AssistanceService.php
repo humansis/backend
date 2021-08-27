@@ -7,6 +7,7 @@ use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Entity\Person;
+use BeneficiaryBundle\Enum\PersonGender;
 use BeneficiaryBundle\Model\Vulnerability\CategoryEnum;
 use CommonBundle\Utils\LocationService;
 use DistributionBundle\DBAL\AssistanceTypeEnum;
@@ -513,8 +514,8 @@ class AssistanceService
         {
             $idps = $bnfRepo->countByResidencyStatus($assistance, "IDP");
             $residents = $bnfRepo->countByResidencyStatus($assistance, "resident");
-            $maleHHH = $bnfRepo->countHouseholdHeadsByGender($assistance, Person::GENDER_MALE);
-            $femaleHHH = $bnfRepo->countHouseholdHeadsByGender($assistance, Person::GENDER_FEMALE);
+            $maleHHH = $bnfRepo->countHouseholdHeadsByGender($assistance, PersonGender::getKey(PersonGender::MALE));
+            $femaleHHH = $bnfRepo->countHouseholdHeadsByGender($assistance, PersonGender::getKey(PersonGender::FEMALE));
             $maleChildrenUnder23month = $bnfRepo->countByAgeAndByGender($assistance, 1, 0, 2, $assistance->getDateDistribution());
             $femaleChildrenUnder23month = $bnfRepo->countByAgeAndByGender($assistance, 0, 0, 2, $assistance->getDateDistribution());
             $maleChildrenUnder5years = $bnfRepo->countByAgeAndByGender($assistance, 1, 2, 6, $assistance->getDateDistribution());

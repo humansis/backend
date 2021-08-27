@@ -10,6 +10,7 @@ use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\HouseholdAssets;
 use BeneficiaryBundle\Enum\HouseholdShelterStatuses;
 use BeneficiaryBundle\Enum\HouseholdSupportReceivedTypes;
+use BeneficiaryBundle\Enum\PersonGender;
 use BeneficiaryBundle\Utils\ExcelColumnsGenerator;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
@@ -536,11 +537,7 @@ class CSVToArrayMapper
     {
         $gender_string = trim($formattedHouseholdArray['beneficiaries']['gender']);
 
-        if (strcasecmp(trim($gender_string), 'Male') === 0 || strcasecmp(trim($gender_string), 'M') === 0) {
-            $formattedHouseholdArray['beneficiaries']['gender'] = \BeneficiaryBundle\Entity\Person::GENDER_MALE;
-        } else if (strcasecmp(trim($gender_string), 'Female') === 0 || strcasecmp(trim($gender_string), 'F') === 0) {
-            $formattedHouseholdArray['beneficiaries']['gender'] = \BeneficiaryBundle\Entity\Person::GENDER_FEMALE;
-        }
+        $formattedHouseholdArray['beneficiaries']['gender'] = PersonGender::getKey($gender_string);
     }
 
     /**

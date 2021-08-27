@@ -10,6 +10,7 @@ use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\Referral;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use BeneficiaryBundle\Enum\PersonGender;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use CommonBundle\Controller\ExportController;
 use Doctrine\ORM\EntityManagerInterface;
@@ -124,7 +125,7 @@ class BeneficiaryService
     {
         $beneficiaryPerson = $beneficiary->getPerson();
 
-        $beneficiaryPerson->setGender($inputType->getGender())
+        $beneficiaryPerson->setGender(PersonGender::getKey($inputType->getGender()))
             ->setDateOfBirth($inputType->getDateOfBirth())
             ->setEnGivenName($inputType->getEnGivenName())
             ->setEnFamilyName($inputType->getEnFamilyName())
@@ -204,7 +205,7 @@ class BeneficiaryService
         }
 
         $person = $beneficiary->getPerson();
-        $person->setGender($inputType->getGender())
+        $person->setGender(PersonGender::getKey($inputType->getGender()))
             ->setDateOfBirth($inputType->getDateOfBirth())
             ->setEnFamilyName($inputType->getEnFamilyName())
             ->setEnGivenName($inputType->getEnGivenName())
@@ -261,11 +262,7 @@ class BeneficiaryService
      */
     public function updateOrCreate(Household $household, array $beneficiaryArray, $flush)
     {
-        if ($beneficiaryArray["gender"] === 'Male' || $beneficiaryArray["gender"] === 'M') {
-            $beneficiaryArray["gender"] = Person::GENDER_MALE;
-        } elseif ($beneficiaryArray["gender"] === 'Female' || $beneficiaryArray["gender"] === 'F') {
-            $beneficiaryArray["gender"] = Person::GENDER_FEMALE;
-        }
+        $beneficiaryArray["gender"] = PersonGender::getKey($beneficiaryArray["gender"]);
 
         if (array_key_exists('phone1_type', $beneficiaryArray)) {
             unset($beneficiaryArray['phone1_type']);

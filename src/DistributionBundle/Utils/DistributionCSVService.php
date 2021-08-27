@@ -9,6 +9,7 @@ use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\Camp;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use BeneficiaryBundle\Enum\PersonGender;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
@@ -119,11 +120,7 @@ class DistributionCSVService
             $beneficiaryWithKey = array();
             foreach ($headers as $index => $key) {
                 if ($key == "gender") {
-                    if (strcasecmp(trim($beneficiaryArray[$index]), 'Male') === 0 || strcasecmp(trim($beneficiaryArray[$index]), 'M') === 0) {
-                        $beneficiaryArray[$index] = Person::GENDER_MALE;
-                    } else {
-                        $beneficiaryArray[$index] = Person::GENDER_FEMALE;
-                    }
+                    $beneficiaryArray[$index] = PersonGender::getKey($beneficiaryArray[$index]);
                 }
 
                 $beneficiaryWithKey[$key] = $beneficiaryArray[$index];
@@ -441,7 +438,7 @@ class DistributionCSVService
             $toUpdate->setEnFamilyName($beneficiaryToUpdate['enFamilyName']);
             $toUpdate->setLocalGivenName($beneficiaryToUpdate['localGivenName']);
             $toUpdate->setLocalFamilyName($beneficiaryToUpdate['localFamilyName']);
-            $toUpdate->setGender($beneficiaryToUpdate['gender']);
+            $toUpdate->setGender(PersonGender::getKey($beneficiaryToUpdate['gender']));
             $toUpdate->setStatus(($beneficiaryToUpdate['head']) === 'true' ? 1 : 0);
             $toUpdate->setResidencyStatus($beneficiaryToUpdate['residencyStatus']);
             $toUpdate->setDateOfBirth(\DateTime::createFromFormat('d-m-Y', $beneficiaryToUpdate['dateOfBirth']));

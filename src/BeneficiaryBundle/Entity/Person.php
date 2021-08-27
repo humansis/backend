@@ -2,6 +2,7 @@
 
 namespace BeneficiaryBundle\Entity;
 
+use BeneficiaryBundle\Enum\PersonGender;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -19,9 +20,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Person
 {
-    const GENDER_FEMALE = 0;
-    const GENDER_MALE = 1;
-
     /**
      * @var int
      *
@@ -68,6 +66,7 @@ class Person
 
     /**
      * @var int|null
+     * @see PersonGender::keys()
      *
      * @ORM\Column(name="gender", type="smallint", nullable=true)
      * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedAssistance", "FullBeneficiary"})

@@ -6,6 +6,7 @@ namespace NewApiBundle\InputType\Beneficiary;
 
 use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Entity\Referral;
+use BeneficiaryBundle\Enum\PersonGender;
 use NewApiBundle\Request\InputTypeInterface;
 use NewApiBundle\Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -236,17 +237,11 @@ class BeneficiaryInputType implements InputTypeInterface
     }
 
     /**
-     * @return int one of Person::GENDER_*
+     * @return string
      */
     public function getGender()
     {
-        if ('M' === $this->gender) {
-            return Person::GENDER_MALE;
-        } elseif ('F' === $this->gender) {
-            return Person::GENDER_FEMALE;
-        }
-
-        throw new \InvalidArgumentException('Invalid gender');
+        return $this->gender;
     }
 
     /**

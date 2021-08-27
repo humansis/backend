@@ -3,6 +3,7 @@
 
 namespace CommonBundle\DataFixtures\Beneficiaries;
 
+use BeneficiaryBundle\Enum\PersonGender;
 use BeneficiaryBundle\Utils\HouseholdService;
 use CommonBundle\DataFixtures\ProjectFixtures;
 use CommonBundle\DataFixtures\VulnerabilityCriterionFixtures;
@@ -64,7 +65,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                     "en_family_name" => "Tester",
                     "local_given_name" => "Test",
                     "local_family_name" => "Tester",
-                    "gender" => \BeneficiaryBundle\Entity\Person::GENDER_FEMALE,
+                    "gender" => PersonGender::getKey(PersonGender::FEMALE),
                     "status" => "1",
                     "residency_status" => "resident",
                     "date_of_birth" => "10-10-1996",
@@ -129,7 +130,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                       "en_family_name" => "Tester",
                       "local_given_name" => "Test",
                       "local_family_name" => "Tester",
-                      "gender" => \BeneficiaryBundle\Entity\Person::GENDER_FEMALE,
+                      "gender" => PersonGender::getKey(PersonGender::FEMALE),
                       "status" => "1",
                       "residency_status" => "resident",
                       "date_of_birth" => "10-10-1996",
@@ -149,7 +150,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                       "en_family_name" => "Tester",
                       "local_given_name" => "Test2",
                       "local_family_name" => "Tester",
-                      "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
+                      "gender" => PersonGender::getKey(PersonGender::MALE),
                       "status" => "0",
                       "residency_status" => "IDP",
                       "date_of_birth" => "10-11-1996",
@@ -169,7 +170,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                       "en_family_name" => "Tester",
                       "local_given_name" => "Test4",
                       "local_family_name" => "Tester",
-                      "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
+                      "gender" => PersonGender::getKey(PersonGender::MALE),
                       "status" => "0",
                       "residency_status" => "refugee",
                       "date_of_birth" => "10-12-1995",
@@ -189,7 +190,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                       "en_family_name" => "Tester",
                       "local_given_name" => "Test5",
                       "local_family_name" => "Tester",
-                      "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
+                      "gender" => PersonGender::getKey(PersonGender::MALE),
                       "status" => "0",
                       "residency_status" => "resident",
                       "date_of_birth" => "14-10-2000",
@@ -255,7 +256,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                         "en_family_name" => "Bis",
                         "local_given_name" => "Test6",
                         "local_family_name" => "Bis",
-                        "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
+                        "gender" => PersonGender::getKey(PersonGender::MALE),
                         "status" => "1",
                         "residency_status" => "resident",
                         "date_of_birth" => "14-10-1995",
@@ -275,7 +276,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                         "en_family_name" => "Bis",
                         "local_given_name" => "Test7",
                         "local_family_name" => "Bis",
-                        "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
+                        "gender" => PersonGender::getKey(PersonGender::MALE),
                         "status" => "0",
                         "residency_status" => "resident",
                         "date_of_birth" => "15-10-1989",
@@ -295,7 +296,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                         "en_family_name" => "Bis",
                         "local_given_name" => "Test8",
                         "local_family_name" => "Bis",
-                        "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
+                        "gender" => PersonGender::getKey(PersonGender::MALE),
                         "status" => "0",
                         "residency_status" => "resident",
                         "date_of_birth" => "15-10-1990",
@@ -315,7 +316,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                         "en_family_name" => "Bis",
                         "local_given_name" => "Test9",
                         "local_family_name" => "Bis",
-                        "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
+                        "gender" => PersonGender::getKey(PersonGender::MALE),
                         "status" => "0",
                         "residency_status" => "resident",
                         "date_of_birth" => "15-08-1989",

@@ -15,7 +15,7 @@ trait EnumKeyValueTransformationTrait
         return array_keys(self::$values);
     }
 
-    public static function getByKey(string $key): ?string
+    public static function getByKey($key): ?string
     {
         if (array_key_exists($key, self::$values)) {
             return self::$values[$key];
@@ -39,6 +39,13 @@ trait EnumKeyValueTransformationTrait
         foreach (self::$values as $key => $originalValue) {
             if (strtolower($originalValue) == strtolower(trim($value))) {
                 return $key;
+            }
+        }
+        foreach (self::$alternatives ?? [] as $originalValue => $alternativeValues) {
+            foreach ($alternativeValues as $alternativeValue) {
+                if (strtolower($alternativeValue) == strtolower(trim($value))) {
+                    return self::getKey($originalValue);
+                }
             }
         }
         return null;

@@ -11,6 +11,7 @@ use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use BeneficiaryBundle\Enum\PersonGender;
 use BeneficiaryBundle\Utils\HouseholdService;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
@@ -112,7 +113,7 @@ class BMSServiceTestCase extends KernelTestCase
                 "local_family_name" => "NAME_TEST",
                 "en_parents_name" => "PARENTSNAME_TEST_EN",
                 "local_parents_name" => "PARENTSNAME_TEST_LOCAL",
-                "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
+                "gender" => 1,
                 "status" => "1",
                 "residency_status" => "IDP",
                 "date_of_birth" => "10-06-1999",
@@ -146,7 +147,7 @@ class BMSServiceTestCase extends KernelTestCase
                 "local_family_name" => "FAMILYNAME_TEST",
                 "en_parents_name" => "PARENTSNAME_TEST_EN",
                 "local_parents_name" => "PARENTSNAME_TEST_LOCAL",
-                "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
+                "gender" => 1,
                 "status" => 0,
                 "residency_status" => "resident",
                 "date_of_birth" => "10-06-1976",
@@ -180,7 +181,7 @@ class BMSServiceTestCase extends KernelTestCase
                 "local_family_name" => "FAMILYNAME_TEST",
                 "en_parents_name" => "PARENTSNAME_TEST_EN",
                 "local_parents_name" => "PARENTSNAME_TEST_LOCAL",
-                "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
+                "gender" => 1,
                 "status" => 0,
                 "residency_status" => "returnee",
                 "date_of_birth" => "10-06-1976",

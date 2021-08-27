@@ -16,6 +16,7 @@ use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use BeneficiaryBundle\Enum\PersonGender;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use CommonBundle\Entity\Location;
@@ -452,9 +453,9 @@ class HouseholdService
             foreach ($householdArray["beneficiaries"] as $beneficiaryToSave) {
                 try {
                     if ($beneficiaryToSave['gender'] === 'Male') {
-                        $beneficiaryToSave['gender'] = Person::GENDER_MALE;
+                        $beneficiaryToSave['gender'] = PersonGender::getKey(PersonGender::MALE);
                     } elseif ($beneficiaryToSave['gender'] === 'Female') {
-                        $beneficiaryToSave['gender'] = Person::GENDER_FEMALE;
+                        $beneficiaryToSave['gender'] = PersonGender::getKey(PersonGender::FEMALE);
                     }
 
                     $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);
@@ -879,7 +880,7 @@ class HouseholdService
             }
 
             $data['beneficiaries'][] = [
-                'gender' => $bnf->getGender(),
+                'gender' => PersonGender::getKey($bnf->getGender()),
                 'date_of_birth' => $bnf->getDateOfBirth()->format('d-m-Y'),
                 'en_family_name' => $bnf->getEnFamilyName(),
                 'en_given_name' => $bnf->getEnGivenName(),
