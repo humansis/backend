@@ -27,6 +27,7 @@ use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\SmartcardRedemptionBatch;
 use VoucherBundle\Entity\Vendor;
+use VoucherBundle\Enum\SmartcardStates;
 use VoucherBundle\InputType\SmartcardPurchaseDeprecated as SmartcardPurchaseDeprecatedInput;
 use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
 use VoucherBundle\InputType\SmartcardRedemtionBatch as RedemptionBatchInput;
@@ -243,9 +244,9 @@ class SmartcardController extends Controller
         }
 
         $possibleFlow = [
-            Smartcard::STATE_UNASSIGNED => Smartcard::STATE_ACTIVE,
-            Smartcard::STATE_ACTIVE => [Smartcard::STATE_INACTIVE, Smartcard::STATE_CANCELLED],
-            Smartcard::STATE_INACTIVE => Smartcard::STATE_CANCELLED,
+            SmartcardStates::UNASSIGNED => SmartcardStates::ACTIVE,
+            SmartcardStates::ACTIVE => [SmartcardStates::INACTIVE, SmartcardStates::CANCELLED],
+            SmartcardStates::INACTIVE => SmartcardStates::CANCELLED,
         ];
 
         if ($smartcard->getState() !== $newState && isset($possibleFlow[$smartcard->getState()])) {

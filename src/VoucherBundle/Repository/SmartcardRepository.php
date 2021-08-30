@@ -4,6 +4,7 @@ namespace VoucherBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use VoucherBundle\Entity\Smartcard;
+use VoucherBundle\Enum\SmartcardStates;
 
 /**
  * Class SmartcardRepository.
@@ -39,7 +40,7 @@ class SmartcardRepository extends EntityRepository
             ->andWhere('p.iso3 = :countryCode')
             ->andWhere('s.state != :smartcardState')
             ->setParameter('countryCode', $countryCode)
-            ->setParameter('smartcardState', Smartcard::STATE_ACTIVE);
+            ->setParameter('smartcardState', SmartcardStates::ACTIVE);
 
         return $qb->getQuery()->getResult('plain_values_hydrator');
     }

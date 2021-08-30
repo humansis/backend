@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+use VoucherBundle\Enum\SmartcardStates;
 
 /**
  * Smartcard instance used by one Beneficiary
@@ -65,7 +66,8 @@ class Smartcard
     private $purchases;
 
     /**
-     * @var string one of self::STATE_*
+     * @var string
+     * @see SmartcardStates::all()
      *
      * @ORM\Column(name="state", type="string", length=10, nullable=false)
      * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})

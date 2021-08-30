@@ -16,6 +16,7 @@ use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\SmartcardRedemptionBatch;
 use VoucherBundle\Entity\Vendor;
+use VoucherBundle\Enum\SmartcardStates;
 use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
 use VoucherBundle\InputType\SmartcardPurchaseDeprecated as SmartcardPurchaseDeprecatedInput;
 use VoucherBundle\Model\PurchaseService;
@@ -42,7 +43,7 @@ class SmartcardService
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
         if (!$smartcard) {
             $smartcard = new Smartcard($serialNumber, $createdAt);
-            $smartcard->setState(Smartcard::STATE_ACTIVE);
+            $smartcard->setState(SmartcardStates::ACTIVE);
         }
 
         if ($smartcard->getBeneficiary() && $smartcard->getBeneficiary()->getId() !== $beneficiaryId) {
@@ -268,7 +269,7 @@ class SmartcardService
     protected function createSuspiciousSmartcard(string $serialNumber, DateTimeInterface $createdAt): Smartcard
     {
         $smartcard = new Smartcard($serialNumber, $createdAt);
-        $smartcard->setState(Smartcard::STATE_ACTIVE);
+        $smartcard->setState(SmartcardStates::ACTIVE);
         $smartcard->setSuspicious(true, 'Smartcard does not exists in database');
 
         $this->em->persist($smartcard);
