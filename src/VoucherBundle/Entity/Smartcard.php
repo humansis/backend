@@ -10,7 +10,7 @@ use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
- * Smartcard.
+ * Smartcard instance used by one Beneficiary
  *
  * @ORM\Table(name="smartcard")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\SmartcardRepository")
