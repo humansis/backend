@@ -25,7 +25,7 @@ abstract class AbstractImportQueueCommand extends Command
     /** @var ImportService */
     protected $importService;
     /** @var int */
-    protected $batchSize = 200;
+    protected $batchSize = 10;
 
     /**
      * AbstractImportQueueCommand constructor.
