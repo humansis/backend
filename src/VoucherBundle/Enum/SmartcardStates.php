@@ -17,8 +17,20 @@ class SmartcardStates
         self::CANCELLED,
     ];
 
+    protected static $possibleFlow = [
+        SmartcardStates::UNASSIGNED => [SmartcardStates::ACTIVE],
+        SmartcardStates::ACTIVE => [SmartcardStates::INACTIVE, SmartcardStates::CANCELLED],
+        SmartcardStates::INACTIVE => [SmartcardStates::CANCELLED],
+        SmartcardStates::CANCELLED => [],
+    ];
+
     public static function all()
     {
         return self::$values;
+    }
+
+    public static function isTransitionAllowed(string $stateFrom, string $stateTo): bool
+    {
+        return in_array($stateTo, self::$possibleFlow[$stateFrom]);
     }
 }

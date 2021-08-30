@@ -243,14 +243,8 @@ class SmartcardController extends Controller
             $newState = $request->request->get('state');
         }
 
-        $possibleFlow = [
-            SmartcardStates::UNASSIGNED => SmartcardStates::ACTIVE,
-            SmartcardStates::ACTIVE => [SmartcardStates::INACTIVE, SmartcardStates::CANCELLED],
-            SmartcardStates::INACTIVE => SmartcardStates::CANCELLED,
-        ];
-
-        if ($smartcard->getState() !== $newState && isset($possibleFlow[$smartcard->getState()])) {
-            if (!in_array($newState, $possibleFlow[$smartcard->getState()])) {
+        if ($smartcard->getState() !== $newState) {
+            if (!SmartcardStates::isTransitionAllowed($smartcard->getState(), $newState)) {
                 throw new BadRequestHttpException('Is not possible change state from '.$smartcard->getState().' to '.$newState);
             }
 
