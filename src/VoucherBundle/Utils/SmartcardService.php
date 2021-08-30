@@ -40,7 +40,7 @@ class SmartcardService
     public function register(string $serialNumber, string $beneficiaryId, DateTime $createdAt): Smartcard
     {
         /** @var Smartcard $smartcard */
-        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
+        $smartcard = $this->em->getRepository(Smartcard::class)->findActiveBySerialNumber($serialNumber);
         if (!$smartcard) {
             $smartcard = new Smartcard($serialNumber, $createdAt);
             $smartcard->setState(SmartcardStates::ACTIVE);
@@ -68,13 +68,26 @@ class SmartcardService
 
     public function deposit(string $serialNumber, int $distributionId, $value, $balance, DateTimeInterface $createdAt, User $user): SmartcardDeposit
     {
-        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
+        $smartcard = $this->em->getRepository(Smartcard::class)->findActiveBySerialNumber($serialNumber);
         if (!$smartcard) {
             $smartcard = $this->createSuspiciousSmartcard($serialNumber, $createdAt);
         }
 
-        if (!$smartcard->isActive()) {
-            $smartcard->setSuspicious(true, 'Smartcard is in '.$smartcard->getState().' state');
+        switch ($smartcard->getState()) {
+            case SmartcardStates::UNASSIGNED:
+                if ($smartcard->getBeneficiary()) {
+                    $smartcard->setSuspicious(true, 'Smartcard is in '.$smartcard->getState().' state but has assigned beneficiary.');
+                    $smartcard->setState(SmartcardStates::ACTIVE);
+                } else {
+                    throw new NotFoundHttpException('Smartcard is in '.$smartcard->getState().' state and does not have assigned beneficiary.');
+                }
+                break;
+            case SmartcardStates::ACTIVE: break; // nothing, all right
+            case SmartcardStates::CANCELLED:
+            case SmartcardStates::INACTIVE:
+                $smartcard->setSuspicious(true, 'Smartcard is in '.$smartcard->getState().' state');
+                $smartcard = $this->createSuspiciousSmartcard($serialNumber, $createdAt);
+                break;
         }
 
         $distribution = $this->em->getRepository(Assistance::class)->find($distributionId);
@@ -131,7 +144,7 @@ class SmartcardService
             throw new \InvalidArgumentException('Argument 3 must be of type '.SmartcardPurchaseInput::class.' or '.SmartcardPurchaseDeprecatedInput::class);
         }
 
-        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
+        $smartcard = $this->em->getRepository(Smartcard::class)->findActiveBySerialNumber($serialNumber);
         if (!$smartcard) {
             $smartcard = $this->createSuspiciousSmartcard($serialNumber, $data->getCreatedAt());
         }

@@ -13,11 +13,13 @@ use VoucherBundle\Enum\SmartcardStates;
  */
 class SmartcardRepository extends EntityRepository
 {
-    public function findBySerialNumber(string $serialNumber): ?Smartcard
+    public function findActiveBySerialNumber(string $serialNumber): ?Smartcard
     {
         $qb = $this->createQueryBuilder('s')
             ->andWhere('s.serialNumber = :serialNumber')
-            ->setParameter('serialNumber', strtoupper($serialNumber));
+            ->andWhere('s.state = :state')
+            ->setParameter('serialNumber', strtoupper($serialNumber))
+            ->setParameter('state', SmartcardStates::ACTIVE);
 
         return $qb->getQuery()->getOneOrNullResult();
     }
