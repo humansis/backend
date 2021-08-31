@@ -15,6 +15,7 @@ use \ReportingBundle\Entity\ReportingIndicator;
 use \ReportingBundle\Entity\ReportingProject;
 use \ReportingBundle\Entity\ReportingValue;
 use Doctrine\ORM\EntityManager;
+use Exception;
 
 use ReportingBundle\Utils\Model\IndicatorInterface;
 
@@ -48,8 +49,8 @@ class DataFillersProject
      */
     public function getReferenceId(string $code)
     {
-        $this->repository = $this->em->getRepository(ReportingIndicator::class);
-        $qb = $this->repository->createQueryBuilder('ri')
+        $repository = $this->em->getRepository(ReportingIndicator::class);
+        $qb = $repository->createQueryBuilder('ri')
                                ->Where('ri.code = :code')
                                     ->setParameter('code', $code);
         return $qb->getQuery()->getSingleResult();
@@ -68,8 +69,8 @@ class DataFillersProject
      */
     public function BMS_Project_D()
     {
-        $this->repository = $this->em->getRepository(Donor::class);
-        $qb = $this->repository->createQueryBuilder('d')
+        $repository = $this->em->getRepository(Donor::class);
+        $qb = $repository->createQueryBuilder('d')
             ->innerJoin('d.projects', 'p')
             ->select('d.shortname as donor', 'p.id as project')
             ->groupBy('donor, project');
@@ -110,8 +111,8 @@ class DataFillersProject
         $results = [];
         foreach ($projects as $project) {
             foreach ($project->getHouseholds() as $household) {
-                $this->repository = $this->em->getRepository(Beneficiary::class);
-                $qb = $this->repository->createQueryBuilder('b')
+                $repository = $this->em->getRepository(Beneficiary::class);
+                $qb = $repository->createQueryBuilder('b')
                                         ->leftjoin('b.household', 'h')
                                         ->where('h.id = :household')
                                             ->setParameter('household', $household->getId())
@@ -166,8 +167,8 @@ class DataFillersProject
         $results = [];
         foreach ($projects as $project) {
             foreach ($project->getHouseholds() as $household) {
-                $this->repository = $this->em->getRepository(Beneficiary::class);
-                $qb = $this->repository->createQueryBuilder('b')
+                $repository = $this->em->getRepository(Beneficiary::class);
+                $qb = $repository->createQueryBuilder('b')
                                         ->leftjoin('b.household', 'h')
                                         ->where('h.id = :household')
                                             ->setParameter('household', $household->getId())
@@ -219,8 +220,8 @@ class DataFillersProject
     public function BMSU_Project_TVSV()
     {
         //Get all vulnerability criterion
-        $this->repository = $this->em->getRepository(VulnerabilityCriterion::class);
-        $vulnerabilityCriterion = $this->repository->findAll();
+        $repository = $this->em->getRepository(VulnerabilityCriterion::class);
+        $vulnerabilityCriterion = $repository->findAll();
 
         $projects = $this->getProjects();
 
@@ -229,8 +230,8 @@ class DataFillersProject
         foreach ($projects as $project) {
             $byProject = [];
             foreach ($project->getHouseholds() as $household) {
-                $this->repository = $this->em->getRepository(Beneficiary::class);
-                $qb = $this->repository->createQueryBuilder('b')
+                $repository = $this->em->getRepository(Beneficiary::class);
+                $qb = $repository->createQueryBuilder('b')
                                         ->leftjoin('b.vulnerabilityCriteria', 'vc')
                                         ->leftjoin('b.household', 'h')
                                         ->where('h.id = :household')
@@ -304,16 +305,16 @@ class DataFillersProject
     public function BMSU_Project_TVS()
     {
         //Get all vulnerability criterion
-        $this->repository = $this->em->getRepository(VulnerabilityCriterion::class);
-        $vulnerabilityCriterion = $this->repository->findAll();
+        $repository = $this->em->getRepository(VulnerabilityCriterion::class);
+        $vulnerabilityCriterion = $repository->findAll();
 
         $projects = $this->getProjects();
         $results = [];
         //Search all vulnerability criterion foreach beneficiary in a project  and count the vulnerability served
         foreach ($projects as $project) {
             foreach ($project->getHouseholds() as $household) {
-                $this->repository = $this->em->getRepository(Beneficiary::class);
-                $qb = $this->repository->createQueryBuilder('b')
+                $repository = $this->em->getRepository(Beneficiary::class);
+                $qb = $repository->createQueryBuilder('b')
                                         ->leftjoin('b.vulnerabilityCriteria', 'vc')
                                         ->leftjoin('b.household', 'h')
                                         ->where('h.id = :household')
@@ -372,8 +373,8 @@ class DataFillersProject
         foreach ($projects as $project) {
             $results = [];
             foreach ($project->getHouseholds() as $household) {
-                $this->repository = $this->em->getRepository(Household::class);
-                $qb = $this->repository->createQueryBuilder('h')
+                $repository = $this->em->getRepository(Household::class);
+                $qb = $repository->createQueryBuilder('h')
                                         ->where('h.id = :household')
                                             ->setParameter('household', $household->getId())
                                         ->select("count(h.id) as value");
@@ -424,8 +425,8 @@ class DataFillersProject
     {
         $projects = $this->getProjects();
         foreach ($projects as $project) {
-            $this->repository = $this->em->getRepository(AssistanceBeneficiary::class);
-            $qb = $this->repository->createQueryBuilder('db')
+            $repository = $this->em->getRepository(AssistanceBeneficiary::class);
+            $qb = $repository->createQueryBuilder('db')
                 ->leftjoin('db.assistance', 'dd')
                 ->leftJoin('dd.project', 'p')
                 ->where('p.id = :project')
@@ -475,8 +476,8 @@ class DataFillersProject
             $results = [];
             foreach ($project->getHouseholds() as $household) {
                 foreach ($household->getBeneficiaries() as $beneficiary) {
-                    $this->repository = $this->em->getRepository(Beneficiary::class);
-                    $qb = $this->repository->createQueryBuilder('b')
+                    $repository = $this->em->getRepository(Beneficiary::class);
+                    $qb = $repository->createQueryBuilder('b')
                                         ->leftjoin('b.household', 'h')
                                         ->where('h.id = :household')
                                             ->setParameter('household', $household->getId())

@@ -132,6 +132,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
 
                 foreach ($village['HouseholdMembers'] as $householdMember) {
                     // Name
+                    $fullName = null;
                     for ($i = 0; $i < strlen($householdMember['MemberName']); $i++) {
                         if ($householdMember['MemberName'][$i] == ' ') {
                             $fullName = explode(' ', $householdMember['MemberName']);
@@ -311,8 +312,9 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
                 $this->em->persist($beneficiary);
                 $beneficiariesPersisted[] = $beneficiary;
             }
+            return count($beneficiariesPersisted);
         }
-        return count($beneficiariesPersisted);
+        return 0;
     }
 
     /**

@@ -12,7 +12,7 @@ use DistributionBundle\Mapper\AssistanceCommunityMapper;
 use DistributionBundle\Mapper\AssistanceInstitutionMapper;
 use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use DistributionBundle\Utils\AssistanceService;
-use DistributionBundle\Utils\DistributionCsvService;
+use DistributionBundle\Utils\DistributionCSVService;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -940,7 +940,7 @@ class AssistanceController extends Controller
 
         $countryIso3 =  $request->request->get('__country');
 
-        /** @var DistributionCsvService $distributionCsvService */
+        /** @var DistributionCSVService $distributionCsvService */
         $distributionCsvService = $this->get('distribution.distribution_csv_service');
 
         if ($request->query->get('step')) {

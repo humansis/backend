@@ -782,17 +782,18 @@ class UserController extends Controller
      */
     public function loginLinkedIn(Request $request)
     {
-        try {
-            $code = $request->request->get('code');
-            $environment = $request->request->get('environment');
-            $user = $this->get('user.user_service')->loginLinkedIn($code, $environment);
-        } catch (\Exception $exception) {
-            return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
-        }
-        
-        /** @var Serializer $serializer */
-        $serializer = $this->get('serializer');
-        $userJson = $serializer->serialize($user, 'json', ['groups' => ['FullUser']]);
-        return new Response($userJson);
+        return new Response('Not Implemented', Response::HTTP_NOT_IMPLEMENTED);
+        // try {
+        //     $code = $request->request->get('code');
+        //     $environment = $request->request->get('environment');
+        //     $user = $this->get('user.user_service')->loginLinkedIn($code, $environment);
+        // } catch (\Exception $exception) {
+        //     return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+        // }
+        //
+        // /** @var Serializer $serializer */
+        // $serializer = $this->get('serializer');
+        // $userJson = $serializer->serialize($user, 'json', ['groups' => ['FullUser']]);
+        // return new Response($userJson);
     }
 }

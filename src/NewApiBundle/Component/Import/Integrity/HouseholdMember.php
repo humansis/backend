@@ -292,6 +292,11 @@ class HouseholdMember
     /** @var string */
     private $countryIso3;
 
+    /**
+     * @Assert\Count(max="0")
+     */
+    protected $countrySpecifics = [];
+
     /** @var EntityManagerInterface */
     private $entityManager;
 

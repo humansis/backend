@@ -67,5 +67,7 @@ class IdentityCheckCommand extends AbstractImportQueueCommand
         }
 
         $output->writeln('Done');
+
+        return 0;
     }
 }

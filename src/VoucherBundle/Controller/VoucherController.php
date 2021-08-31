@@ -90,7 +90,7 @@ class VoucherController extends Controller
         }
 
         $voucherJson = $serializer->serialize(
-            $return,
+            array_pop($return),
             'json',
             ['groups' => ['FullVoucher'], 'datetime_format' => 'd-m-Y']
         );

@@ -3,7 +3,9 @@
 
 namespace DistributionBundle\Repository;
 
+use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use ProjectBundle\Entity\Project;
 

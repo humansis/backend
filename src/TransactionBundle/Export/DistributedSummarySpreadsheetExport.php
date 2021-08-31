@@ -188,6 +188,7 @@ class DistributedSummarySpreadsheetExport
         if ($adm instanceof Adm4) {
             return [$adm->getAdm3()->getAdm2()->getAdm1()->getName(), $adm->getAdm3()->getAdm2()->getName(), $adm->getAdm3()->getName(), $adm->getName()];
         }
+        return [null, null, null, null];
     }
 }
 

@@ -14,6 +14,7 @@ use ReportingBundle\Entity\ReportingCountry;
 use ProjectBundle\Entity\Project;
 use DistributionBundle\Entity\Assistance;
 use \TransactionBundle\Entity\Transaction;
+use Exception;
 
 /**
  * Class DataFillersCountry

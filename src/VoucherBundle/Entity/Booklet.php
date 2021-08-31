@@ -333,6 +333,8 @@ class Booklet implements ExportableInterface
             $status = 'Used';
         } elseif ($this->getStatus() === 3) {
             $status = 'Deactivated';
+        } else {
+            $status = 'Unknown';
         }
 
         $password = empty($this->getPassword()) ? 'No' : 'Yes';

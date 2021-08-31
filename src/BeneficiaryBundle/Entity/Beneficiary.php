@@ -866,8 +866,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     {
         foreach ($this->smartcards as $smartcard) {
             if ($smartcard->isActive()) {
-                $this->smartcard = $smartcard->getSerialNumber();
-                return $this->smartcard;
+                return $smartcard->getSerialNumber();
             }
         }
 

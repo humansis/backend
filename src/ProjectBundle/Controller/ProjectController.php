@@ -213,6 +213,7 @@ class ProjectController extends Controller
     {
         try {
             $this->get('project.project_service')->delete($project);
+            return new Response('', Response::HTTP_OK);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
