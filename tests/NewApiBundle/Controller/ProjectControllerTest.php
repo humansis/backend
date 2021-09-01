@@ -41,6 +41,8 @@ class ProjectControllerTest extends BMSServiceTestCase
             'startDate' => '2010-10-10T00:00:00+0000',
             'endDate' => '2011-10-10T00:00:00+0000',
             'sectors' => [SectorEnum::FOOD_SECURITY],
+            'projectInvoiceAddressLocal' => 'Local invoice address',
+            'projectInvoiceAddressEnglish' => 'English invoice address'
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -64,6 +66,8 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('deletable', $result);
         $this->assertContains(SectorEnum::FOOD_SECURITY, $result['sectors']);
         $this->assertSame([], $result['donorIds']);
+        $this->assertArrayHasKey('projectInvoiceAddressLocal', $result);
+        $this->assertArrayHasKey('projectInvoiceAddressEnglish', $result);
 
         return $result['id'];
     }
@@ -106,6 +110,8 @@ class ProjectControllerTest extends BMSServiceTestCase
             'startDate' => '2010-10-10T00:00:00+0000',
             'endDate' => '2011-10-10T00:00:00+0000',
             'sectors' => [SectorEnum::EARLY_RECOVERY, SectorEnum::CAMP_MANAGEMENT],
+            'projectInvoiceAddressLocal' => 'Local invoice address',
+            'projectInvoiceAddressEnglish' => 'English invoice address'
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -130,6 +136,8 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->assertContains(SectorEnum::EARLY_RECOVERY, $result['sectors']);
         $this->assertContains(SectorEnum::CAMP_MANAGEMENT, $result['sectors']);
         $this->assertNotContains(SectorEnum::FOOD_SECURITY, $result['sectors']);
+        $this->assertArrayHasKey('projectInvoiceAddressLocal', $result);
+        $this->assertArrayHasKey('projectInvoiceAddressEnglish', $result);
 
         return $id;
     }
@@ -160,6 +168,8 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('donorIds', $result);
         $this->assertArrayHasKey('numberOfHouseholds', $result);
         $this->assertArrayHasKey('deletable', $result);
+        $this->assertArrayHasKey('projectInvoiceAddressLocal', $result);
+        $this->assertArrayHasKey('projectInvoiceAddressEnglish', $result);
 
         return $id;
     }
