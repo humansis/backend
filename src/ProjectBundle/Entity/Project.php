@@ -715,10 +715,14 @@ class Project implements ExportableInterface
 
     /**
      * @param string|null $projectInvoiceAddressLocal
+     *
+     * @return Project
      */
-    public function setProjectInvoiceAddressLocal(?string $projectInvoiceAddressLocal): void
+    public function setProjectInvoiceAddressLocal(?string $projectInvoiceAddressLocal): Project
     {
         $this->projectInvoiceAddressLocal = $projectInvoiceAddressLocal;
+
+        return $this;
     }
 
     /**
@@ -731,10 +735,14 @@ class Project implements ExportableInterface
 
     /**
      * @param string|null $projectInvoiceAddressEnglish
+     *
+     * @return Project
      */
-    public function setProjectInvoiceAddressEnglish(?string $projectInvoiceAddressEnglish): void
+    public function setProjectInvoiceAddressEnglish(?string $projectInvoiceAddressEnglish): Project
     {
         $this->projectInvoiceAddressEnglish = $projectInvoiceAddressEnglish;
+
+        return $this;
     }
 
 }

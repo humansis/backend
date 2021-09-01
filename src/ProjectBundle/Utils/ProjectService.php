@@ -208,7 +208,9 @@ class ProjectService
             ->setIso3($inputType->getIso3())
             ->setTarget($inputType->getTarget())
             ->setNotes($inputType->getNotes())
-            ->setSectors($inputType->getSectors());
+            ->setSectors($inputType->getSectors())
+            ->setProjectInvoiceAddressLocal($inputType->getProjectInvoiceAddressLocal())
+            ->setProjectInvoiceAddressEnglish($inputType->getProjectInvoiceAddressEnglish());
 
         foreach ($inputType->getDonorIds() as $id) {
             $donor = $this->em->getRepository(Donor::class)->find($id);
@@ -318,7 +320,9 @@ class ProjectService
             ->setIso3($inputType->getIso3())
             ->setTarget($inputType->getTarget())
             ->setNotes($inputType->getNotes())
-            ->setSectors($inputType->getSectors());
+            ->setSectors($inputType->getSectors())
+            ->setProjectInvoiceAddressLocal($inputType->getProjectInvoiceAddressLocal())
+            ->setProjectInvoiceAddressEnglish($inputType->getProjectInvoiceAddressEnglish());
 
         $project->removeDonors();
         foreach ($inputType->getDonorIds() as $id) {

@@ -119,4 +119,14 @@ class ProjectMapper implements MapperInterface
     {
         return $this->beneficiaryRepository->countAllInProject($this->object);
     }
+
+    public function getProjectInvoiceAddressLocal(): ?string
+    {
+        return $this->object->getProjectInvoiceAddressLocal();
+    }
+
+    public function getProjectInvoiceAddressEnglish(): ?string
+    {
+        return $this->object->getProjectInvoiceAddressEnglish();
+    }
 }
