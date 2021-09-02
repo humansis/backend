@@ -91,6 +91,14 @@ class Smartcard
     private $createdAt;
 
     /**
+     * @var \DateTimeInterface
+     *
+     * @ORM\Column(name="reused_at", type="datetime", nullable=true)
+     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
+     */
+    private $reusedAt;
+
+    /**
      * @var bool
      *
      * @ORM\Column(name="suspicious", type="boolean", nullable=false)
@@ -276,6 +284,22 @@ class Smartcard
     public function getCreatedAt(): \DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    /**
+     * @return \DateTimeInterface
+     */
+    public function getReusedAt(): \DateTimeInterface
+    {
+        return $this->reusedAt;
+    }
+
+    /**
+     * @param \DateTimeInterface $reusedAt
+     */
+    public function setReusedAt(\DateTimeInterface $reusedAt): void
+    {
+        $this->reusedAt = $reusedAt;
     }
 
     public function addDeposit(SmartcardDeposit $deposit): self

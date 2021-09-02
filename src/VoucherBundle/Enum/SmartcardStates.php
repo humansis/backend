@@ -8,12 +8,14 @@ class SmartcardStates
     const UNASSIGNED = 'unassigned';
     const ACTIVE = 'active';
     const INACTIVE = 'inactive';
+    const REUSED = 'reused';
     const CANCELLED = 'cancelled';
 
     protected static $values = [
         self::UNASSIGNED,
         self::ACTIVE,
         self::INACTIVE,
+        self::REUSED,
         self::CANCELLED,
     ];
 
@@ -21,6 +23,7 @@ class SmartcardStates
         SmartcardStates::UNASSIGNED => [SmartcardStates::ACTIVE],
         SmartcardStates::ACTIVE => [SmartcardStates::INACTIVE, SmartcardStates::CANCELLED],
         SmartcardStates::INACTIVE => [SmartcardStates::CANCELLED],
+        SmartcardStates::REUSED => [],
         SmartcardStates::CANCELLED => [],
     ];
 
