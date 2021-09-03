@@ -37,6 +37,7 @@ class SmartcardRepository extends EntityRepository
     public function disableBySerialNumber(string $serialNumber, string $state = SmartcardStates::REUSED, ?\DateTimeInterface $timeOfEvent = null): void
     {
         $this->createQueryBuilder('s')
+            ->update()
             ->set('s.state', ':disableState')
             ->set('s.disabledAt', ':when')
             ->andWhere('s.serialNumber = :serialNumber')
