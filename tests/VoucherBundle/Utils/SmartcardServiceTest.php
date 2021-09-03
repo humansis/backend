@@ -188,7 +188,7 @@ class SmartcardServiceTest extends KernelTestCase
                         'value' => $action[1],
                         'currency' => $action[2],
                     ]]);
-                    $this->smartcardService->purchase($this->smartcardNumber, $purchase);
+                    $this->smartcardService->purchaseWithoutReusingSC($this->smartcardNumber, $purchase);
                     break;
                 case 'deposit':
                     $this->smartcardService->deposit(

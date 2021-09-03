@@ -2,7 +2,10 @@
 
 namespace VoucherBundle\Repository;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Enum\SmartcardStates;
 
@@ -13,15 +16,35 @@ use VoucherBundle\Enum\SmartcardStates;
  */
 class SmartcardRepository extends EntityRepository
 {
-    public function findActiveBySerialNumber(string $serialNumber): ?Smartcard
+    public function findBySerialNumber(string $serialNumber, Beneficiary $beneficiary): ?Smartcard
     {
         $qb = $this->createQueryBuilder('s')
             ->andWhere('s.serialNumber = :serialNumber')
-            ->andWhere('s.state = :state')
+            ->andWhere('s.beneficiary = :beneficiary')
             ->setParameter('serialNumber', strtoupper($serialNumber))
-            ->setParameter('state', SmartcardStates::ACTIVE);
+            ->setParameter('beneficiary', $beneficiary)
+            ->orderBy('s.disabledAt', 'desc')
+            ->setMaxResults(1)
+        ;
 
-        return $qb->getQuery()->getOneOrNullResult();
+        try {
+            return $qb->getQuery()->getSingleResult();
+        } catch (NoResultException $e) {
+            return null;
+        }
+    }
+
+    public function disableBySerialNumber(string $serialNumber, string $state = SmartcardStates::REUSED, ?\DateTimeInterface $timeOfEvent = null): void
+    {
+        $this->createQueryBuilder('s')
+            ->set('s.state', ':disableState')
+            ->set('s.disabledAt', ':when')
+            ->andWhere('s.serialNumber = :serialNumber')
+            ->setParameter('serialNumber', strtoupper($serialNumber))
+            ->setParameter('disableState', $state)
+            ->setParameter('when', $timeOfEvent)
+            ->getQuery()
+            ->execute();
     }
 
     /**

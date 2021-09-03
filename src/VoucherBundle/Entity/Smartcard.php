@@ -93,10 +93,10 @@ class Smartcard
     /**
      * @var \DateTimeInterface
      *
-     * @ORM\Column(name="reused_at", type="datetime", nullable=true)
+     * @ORM\Column(name="disabled_at", type="datetime", nullable=true)
      * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
      */
-    private $reusedAt;
+    private $disabledAt;
 
     /**
      * @var bool
@@ -287,19 +287,19 @@ class Smartcard
     }
 
     /**
-     * @return \DateTimeInterface
+     * @return \DateTimeInterface|null
      */
-    public function getReusedAt(): \DateTimeInterface
+    public function getDisabledAt(): ?\DateTimeInterface
     {
-        return $this->reusedAt;
+        return $this->disabledAt;
     }
 
     /**
-     * @param \DateTimeInterface $reusedAt
+     * @param \DateTimeInterface $disabledAt
      */
-    public function setReusedAt(\DateTimeInterface $reusedAt): void
+    public function setDisabledAt(\DateTimeInterface $disabledAt): void
     {
-        $this->reusedAt = $reusedAt;
+        $this->disabledAt = $disabledAt;
     }
 
     public function addDeposit(SmartcardDeposit $deposit): self
