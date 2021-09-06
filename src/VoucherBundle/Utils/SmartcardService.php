@@ -167,7 +167,7 @@ class SmartcardService
         return $this->purchaseService->purchaseSmartcard($smartcard, $data);
     }
 
-    public function getActualSmartcard(string $serialNumber, Beneficiary $beneficiary, DateTimeInterface $dateOfEvent): Smartcard
+    public function getActualSmartcard(string $serialNumber, ?Beneficiary $beneficiary, DateTimeInterface $dateOfEvent): Smartcard
     {
         $repo = $this->em->getRepository(Smartcard::class);
         $smartcard = $repo->findBySerialNumber($serialNumber, $beneficiary);

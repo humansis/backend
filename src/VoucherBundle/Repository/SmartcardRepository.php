@@ -16,16 +16,22 @@ use VoucherBundle\Enum\SmartcardStates;
  */
 class SmartcardRepository extends EntityRepository
 {
-    public function findBySerialNumber(string $serialNumber, Beneficiary $beneficiary): ?Smartcard
+    public function findBySerialNumber(string $serialNumber, ?Beneficiary $beneficiary): ?Smartcard
     {
         $qb = $this->createQueryBuilder('s')
             ->andWhere('s.serialNumber = :serialNumber')
-            ->andWhere('s.beneficiary = :beneficiary')
             ->setParameter('serialNumber', strtoupper($serialNumber))
-            ->setParameter('beneficiary', $beneficiary)
             ->orderBy('s.disabledAt', 'desc')
             ->setMaxResults(1)
         ;
+        if (null !== $beneficiary) {
+            $qb
+                ->andWhere('s.beneficiary = :beneficiary')
+                ->setParameter('beneficiary', $beneficiary)
+                ;
+        } else {
+            $qb->andWhere('s.beneficiary IS NULL');
+        }
 
         try {
             return $qb->getQuery()->getSingleResult();
