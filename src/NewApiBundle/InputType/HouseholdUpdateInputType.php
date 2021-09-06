@@ -65,7 +65,6 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
 
     /**
      * @Assert\Type("array")
-     * @Assert\NotNull
      * @Assert\All(
      *     constraints={
      *         @Assert\Choice(callback="assets", strict=true, groups={"Strict"})
