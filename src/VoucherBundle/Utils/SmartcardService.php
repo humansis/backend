@@ -42,6 +42,7 @@ class SmartcardService
         /** @var Beneficiary $beneficiary */
         $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryId);
         $smartcard = $this->getActualSmartcard($serialNumber, $beneficiary, $createdAt);
+        $smartcard->setSuspicious(false, null);
 
         if ($beneficiary) {
             $smartcard->setBeneficiary($beneficiary);
@@ -182,6 +183,9 @@ class SmartcardService
             if (SmartcardStates::ACTIVE === $smartcard->getState()
                 || $eventWasBeforeDisable) {
                 return $smartcard;
+            }else {
+                $smartcard->setSuspicious(true, "Using disabled card");
+                return $smartcard;
             }
         }
 
@@ -190,6 +194,7 @@ class SmartcardService
         $smartcard = new Smartcard($serialNumber, $dateOfEvent);
         $smartcard->setState(SmartcardStates::ACTIVE);
         $smartcard->setBeneficiary($beneficiary);
+        $smartcard->setSuspicious(true, "Smartcard made adhoc");
         $this->em->persist($smartcard);
         return $smartcard;
     }

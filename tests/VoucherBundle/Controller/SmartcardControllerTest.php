@@ -237,6 +237,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
                     'id' => 1, // @todo replace for fixture
                     'value' => 400,
                     'quantity' => 1.2,
+                    'currency' => 'USD'
                 ],
             ],
             'vendorId' => 1,
@@ -577,6 +578,11 @@ class SmartcardControllerTest extends BMSServiceTestCase
     {
         $nonexistentSmarcard = '123ABCDE';
 
+        foreach ($this->em->getRepository(Smartcard::class)->findBy(['serialNumber'=>$nonexistentSmarcard]) as $smartcard) {
+            $this->em->remove($smartcard);
+        }
+        $this->em->flush();
+
         /** @var \DistributionBundle\Entity\ModalityType $modalityType */
         $modalityType = $this->em->getRepository(\DistributionBundle\Entity\ModalityType::class)->findOneBy(['name' => 'Smartcard']);
         /** @var \DistributionBundle\Entity\Commodity $commodity */
@@ -591,6 +597,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
                         'id' => 1, // @todo replace for fixture
                         'value' => 200,
                         'quantity' => 1,
+                        'currency' => 'USD',
                     ],
                 ],
                 'vendorId' => 1,
@@ -599,6 +606,17 @@ class SmartcardControllerTest extends BMSServiceTestCase
             ]));
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+
+        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($nonexistentSmarcard, $beneficiary);
+        $this->assertNotNull($smartcard, "Smartcard missing");
+        $value = 0;
+        foreach ($smartcard->getPurchases() as $purchase) {
+            foreach ($purchase->getRecords() as $record) {
+                $value += $record->getValue();
+            }
+        }
+        $this->assertCount(1, $smartcard->getPurchases());
+        $this->assertEquals(200, $value);
 
         return [$nonexistentSmarcard, $assistance, $beneficiary];
     }

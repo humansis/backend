@@ -22,6 +22,7 @@ class SmartcardRepository extends EntityRepository
             ->andWhere('s.serialNumber = :serialNumber')
             ->setParameter('serialNumber', strtoupper($serialNumber))
             ->orderBy('s.disabledAt', 'desc')
+            ->orderBy('s.createdAt', 'desc')
             ->setMaxResults(1)
         ;
         if (null !== $beneficiary) {
