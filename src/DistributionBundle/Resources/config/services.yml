@@ -118,6 +118,13 @@ services:
             - "@request_validator"
             - "@beneficiary.csv_to_array_mapper"
 
+    distribution.export_legacy.smartcard_invoice:
+        class: DistributionBundle\Export\SmartcardInvoiceLegacyExport
+        arguments:
+            - '@translator'
+            - '@CommonBundle\Mapper\LocationMapper'
+        public: true
+
     distribution.export.smartcard_invoice:
         class: DistributionBundle\Export\SmartcardInvoiceExport
         arguments:

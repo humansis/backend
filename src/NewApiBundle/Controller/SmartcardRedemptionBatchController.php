@@ -32,6 +32,19 @@ class SmartcardRedemptionBatchController extends AbstractController
     }
 
     /**
+     * @Rest\Get("/smartcard-redemption-batches/{id}/legacy-exports")
+     * @ParamConverter("redemptionBatch", class="VoucherBundle\Entity\SmartcardRedemptionBatch")
+     *
+     * @param SmartcardRedemptionBatch $redemptionBatch
+     *
+     * @return JsonResponse
+     */
+    public function legacyExport(SmartcardRedemptionBatch $redemptionBatch): Response
+    {
+        return $this->forward(SmartcardController::class.'::exportLegacy', ['batch' => $redemptionBatch]);
+    }
+
+    /**
      * @Rest\Get("/web-app/v1/vendors/{id}/smartcard-redemption-batches")
      *
      * @param Vendor $vendor
