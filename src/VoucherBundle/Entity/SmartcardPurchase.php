@@ -137,6 +137,15 @@ class SmartcardPurchase
         $this->records->add(SmartcardPurchaseRecord::create($this, $product, $quantity, $value, $currency));
     }
 
+    public function getRecordsValue(): float
+    {
+        $purchased = 0;
+        foreach ($this->getRecords() as $record) {
+            $purchased += $record->getValue();
+        }
+        return $purchased;
+    }
+
     /**
      * @return DateTimeInterface
      */
