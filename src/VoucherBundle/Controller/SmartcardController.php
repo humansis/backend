@@ -450,7 +450,6 @@ class SmartcardController extends Controller
 
         $errors = $this->get('validator')->validate($data);
         if (count($errors) > 0) {
-            var_dump($errors);
             $this->container->get('logger')->error('validation errors: '.((string) $errors));
             // Changed by PIN-1637: it is needed for one specific period of syncing and need to be reverted after vendor app change
             // throw new \RuntimeException((string) $errors);

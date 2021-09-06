@@ -57,9 +57,6 @@ class SmartcardService
 
     public function deposit(string $serialNumber, int $distributionId, ?int $beneficiaryId, $value, $balance, DateTimeInterface $createdAt, User $user): SmartcardDeposit
     {
-        var_dump($serialNumber);
-        var_dump($distributionId);
-        var_dump($beneficiaryId);
         $distribution = $this->em->getRepository(Assistance::class)->find($distributionId);
         if (!$distribution) {
             throw new NotFoundHttpException('Distribution does not exist.');
@@ -163,8 +160,8 @@ class SmartcardService
         if (!$beneficiary) {
             throw new NotFoundHttpException('Beneficiary ID must exist');
         }
-
         $smartcard = $this->getActualSmartcard($serialNumber, $beneficiary, $data->getCreatedAt());
+        $this->em->persist($smartcard);
         return $this->purchaseService->purchaseSmartcard($smartcard, $data);
     }
 

@@ -103,9 +103,6 @@ class SmartcardControllerTest extends BMSServiceTestCase
     {
         $assistance = $this->someSmartcardAssistance();
         $ab = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy(['assistance'=>$assistance, 'removed'=>false]);
-        var_dump($ab->getId());
-        var_dump($ab->getAssistance()->getId());
-        var_dump($ab->getBeneficiary()->getId());
         $bnf = $ab->getBeneficiary();
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC', $bnf);
 
@@ -147,35 +144,6 @@ class SmartcardControllerTest extends BMSServiceTestCase
         ]);
 
         $this->assertTrue($this->client->getResponse()->isClientError(), 'Request failed: '.$this->client->getResponse()->getContent());
-    }
-
-    public function testDepositToSmartcardOfOtherBeneficiary()
-    {
-        $depositor = $this->em->getRepository(User::class)->findOneBy([]);
-        $assistanceBeneficiary = $this->someSmartcardAssistance()->getDistributionBeneficiaries()->get(0);
-        $bnf = $assistanceBeneficiary->getBeneficiary();
-
-        $SCRepo = $this->em->getRepository(Smartcard::class);
-        /** @var Smartcard $smartcard */
-        $smartcard = $SCRepo->findBySerialNumber('1234ABC', $bnf);
-        $smartcard->setState(SmartcardStates::ACTIVE);
-        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $assistanceBeneficiary, 1000, null, new \DateTime('now')));
-
-        $this->em->persist($smartcard);
-        $this->em->flush();
-
-        $otherBeneficiary = $this->someSmartcardAssistance()->getDistributionBeneficiaries()->get(1)->getBeneficiary();
-
-        $this->request('PATCH', '/api/wsse/offline-app/v3/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
-            'value' => 500,
-            'createdAt' => '2020-02-02T12:00:00+0200',
-            'beneficiaryId' => $otherBeneficiary->getId(),
-        ]);
-
-        $smartcard1 = $SCRepo->findBySerialNumber('1234ABC', $bnf);
-        $smartcard2 = $SCRepo->findBySerialNumber('1234ABC', $bnf);
-
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
     }
 
     public function testPurchase()
