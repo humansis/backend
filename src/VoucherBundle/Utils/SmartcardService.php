@@ -16,6 +16,7 @@ use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\SmartcardRedemptionBatch;
 use VoucherBundle\Entity\Vendor;
+use VoucherBundle\Enum\SmartcardStates;
 use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
 use VoucherBundle\InputType\SmartcardPurchaseDeprecated as SmartcardPurchaseDeprecatedInput;
 use VoucherBundle\Model\PurchaseService;
@@ -38,26 +39,15 @@ class SmartcardService
 
     public function register(string $serialNumber, string $beneficiaryId, DateTime $createdAt): Smartcard
     {
-        /** @var Smartcard $smartcard */
-        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
-        if (!$smartcard) {
-            $smartcard = new Smartcard($serialNumber, $createdAt);
-            $smartcard->setState(Smartcard::STATE_ACTIVE);
-        }
-
-        if ($smartcard->getBeneficiary() && $smartcard->getBeneficiary()->getId() !== $beneficiaryId) {
-            $smartcard->setSuspicious(true, sprintf('Beneficiary changed. #%s -> #%s',
-                $smartcard->getBeneficiary()->getId(),
-                $beneficiaryId
-            ));
-        }
-
         /** @var Beneficiary $beneficiary */
         $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryId);
+        $smartcard = $this->getActualSmartcard($serialNumber, $beneficiary, $createdAt);
+        $smartcard->setSuspicious(false, null);
+
         if ($beneficiary) {
             $smartcard->setBeneficiary($beneficiary);
         } else {
-            $smartcard->setSuspicious(true, 'Beneficiary does not exists');
+            $smartcard->setSuspicious(true, "Beneficiary #$beneficiaryId does not exists");
         }
 
         $this->em->persist($smartcard);
@@ -65,32 +55,33 @@ class SmartcardService
         return $smartcard;
     }
 
-    public function deposit(string $serialNumber, int $distributionId, $value, $balance, DateTimeInterface $createdAt, User $user): SmartcardDeposit
+    public function deposit(string $serialNumber, int $distributionId, ?int $beneficiaryId, $value, $balance, DateTimeInterface $createdAt, User $user): SmartcardDeposit
     {
-        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
-        if (!$smartcard) {
-            $smartcard = $this->createSuspiciousSmartcard($serialNumber, $createdAt);
-        }
-
-        if (!$smartcard->isActive()) {
-            $smartcard->setSuspicious(true, 'Smartcard is in '.$smartcard->getState().' state');
-        }
-
         $distribution = $this->em->getRepository(Assistance::class)->find($distributionId);
         if (!$distribution) {
             throw new NotFoundHttpException('Distribution does not exist.');
         }
-        if (!$smartcard->getBeneficiary()) {
-            throw new NotFoundHttpException('Smartcard does not have assigned beneficiary.');
+        $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy([
+            'id' => $beneficiaryId,
+            'archived' => false,
+        ]);
+        if (!$beneficiary) {
+            throw new NotFoundHttpException('Beneficiary ID must exist');
         }
 
         $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findByDistributionAndBeneficiary(
             $distribution,
-            $smartcard->getBeneficiary()
+            $beneficiary
         );
 
         if (!$assistanceBeneficiary) {
             throw new NotFoundHttpException("Distribution does not have smartcard's beneficiary.");
+        }
+
+        $smartcard = $this->getActualSmartcard($serialNumber, $beneficiary, $createdAt);
+
+        if (!$smartcard->getBeneficiary()) {
+            throw new NotFoundHttpException('Smartcard does not have assigned beneficiary.');
         }
 
         $deposit = SmartcardDeposit::create(
@@ -124,13 +115,17 @@ class SmartcardService
         return $deposit;
     }
 
-    public function purchase(string $serialNumber, $data): SmartcardPurchase
+    /**
+     * @deprecated use version with SC reuse
+     * @see self::purchase
+     */
+    public function purchaseWithoutReusingSC(string $serialNumber, $data): SmartcardPurchase
     {
         if ($data instanceof SmartcardPurchaseInput && $data instanceof SmartcardPurchaseDeprecatedInput) {
             throw new \InvalidArgumentException('Argument 3 must be of type '.SmartcardPurchaseInput::class.' or '.SmartcardPurchaseDeprecatedInput::class);
         }
 
-        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($serialNumber);
+        $smartcard = $this->em->getRepository(Smartcard::class)->findOneBy(['serialNumber' => $serialNumber]);
         if (!$smartcard) {
             $smartcard = $this->createSuspiciousSmartcard($serialNumber, $data->getCreatedAt());
         }
@@ -151,6 +146,54 @@ class SmartcardService
         }
 
         return $this->purchaseService->purchaseSmartcard($smartcard, $data);
+    }
+
+    public function purchase(string $serialNumber, $data): SmartcardPurchase
+    {
+        if (!$data instanceof SmartcardPurchaseInput) {
+            throw new \InvalidArgumentException('Argument 3 must be of type '.SmartcardPurchaseInput::class);
+        }
+        $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy([
+            'id' => $data->getBeneficiaryId(),
+            'archived' => false,
+        ]);
+        if (!$beneficiary) {
+            throw new NotFoundHttpException('Beneficiary ID must exist');
+        }
+        $smartcard = $this->getActualSmartcard($serialNumber, $beneficiary, $data->getCreatedAt());
+        $this->em->persist($smartcard);
+        return $this->purchaseService->purchaseSmartcard($smartcard, $data);
+    }
+
+    public function getActualSmartcard(string $serialNumber, ?Beneficiary $beneficiary, DateTimeInterface $dateOfEvent): Smartcard
+    {
+        $repo = $this->em->getRepository(Smartcard::class);
+        $smartcard = $repo->findBySerialNumber($serialNumber, $beneficiary);
+
+        if ($smartcard
+            && $smartcard->getBeneficiary()
+            && $smartcard->getBeneficiary()->getId() === $beneficiary->getId()
+        ) {
+            $eventWasBeforeDisable = $smartcard->getDisabledAt()
+                && $smartcard->getDisabledAt()->getTimestamp() > $dateOfEvent->getTimestamp();
+
+            if (SmartcardStates::ACTIVE === $smartcard->getState()
+                || $eventWasBeforeDisable) {
+                return $smartcard;
+            }else {
+                $smartcard->setSuspicious(true, "Using disabled card");
+                return $smartcard;
+            }
+        }
+
+        $repo->disableBySerialNumber($serialNumber, SmartcardStates::REUSED, $dateOfEvent);
+
+        $smartcard = new Smartcard($serialNumber, $dateOfEvent);
+        $smartcard->setState(SmartcardStates::ACTIVE);
+        $smartcard->setBeneficiary($beneficiary);
+        $smartcard->setSuspicious(true, "Smartcard made adhoc");
+        $this->em->persist($smartcard);
+        return $smartcard;
     }
 
     public function getRedemptionCandidates(Vendor $vendor): array
@@ -268,7 +311,7 @@ class SmartcardService
     protected function createSuspiciousSmartcard(string $serialNumber, DateTimeInterface $createdAt): Smartcard
     {
         $smartcard = new Smartcard($serialNumber, $createdAt);
-        $smartcard->setState(Smartcard::STATE_ACTIVE);
+        $smartcard->setState(SmartcardStates::ACTIVE);
         $smartcard->setSuspicious(true, 'Smartcard does not exists in database');
 
         $this->em->persist($smartcard);

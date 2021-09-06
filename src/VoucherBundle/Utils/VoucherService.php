@@ -182,7 +182,6 @@ class VoucherService
         $check = $this->checkBatch($batch);
 
         if ($check->hasInvalidVouchers()) {
-            var_dump($check->jsonSerialize());
             throw new \InvalidArgumentException("Invalid voucher batch");
         }
 

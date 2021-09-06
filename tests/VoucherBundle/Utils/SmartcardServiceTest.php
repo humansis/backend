@@ -2,14 +2,18 @@
 
 namespace VoucherBundle\Tests\Utils;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use UserBundle\Entity\User;
 use VoucherBundle\DTO\PurchaseRedemptionBatch;
 use VoucherBundle\Entity\Product;
+use VoucherBundle\Entity\Smartcard;
+use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\InputType\SmartcardPurchase;
 use VoucherBundle\InputType\SmartcardRedemtionBatch;
@@ -56,6 +60,10 @@ class SmartcardServiceTest extends KernelTestCase
         $assistanceA1 = 51; // USD
         $assistanceA2 = 241; // SYP
         $assistanceB1 = 242; // USD
+        $beneficiaryA1 = 2;
+        $beneficiaryA2 = 4;
+        $beneficiaryB1 = 250;
+        $beneficiaryB2 = 252;
 
         return [
             'vendor has nothing' => [
@@ -64,22 +72,22 @@ class SmartcardServiceTest extends KernelTestCase
             ],
             'purchase alone' => [
                 [
-                    ['purchase', 300.1, 'USD'],
+                    [$beneficiaryA1, 'purchase', 300.1, 'USD'],
                 ],
                 [] // purchase without project cant be redeemed
             ],
             'deposit alone' => [
                 [
-                    ['register', $assistanceA1],
-                    ['deposit', 20.112, 'USD', $assistanceA1],
+                    [$beneficiaryA1, 'register', $assistanceA1],
+                    [$beneficiaryA1, 'deposit', 20.112, 'USD', $assistanceA1],
                 ],
                 [], // there is nothing to redeem
             ],
             'trivial' => [
                 [
-                    ['register', $assistanceA1],
-                    ['deposit', 300.1, 'USD', $assistanceA1],
-                    ['purchase', 500.8, 'USD'],
+                    [$beneficiaryA1, 'register', $assistanceA1],
+                    [$beneficiaryA1, 'deposit', 300.1, 'USD', $assistanceA1],
+                    [$beneficiaryA1, 'purchase', 500.8, 'USD'],
                 ],
                 [
                     [500.8, 'USD', $projectA],
@@ -87,12 +95,12 @@ class SmartcardServiceTest extends KernelTestCase
             ],
             'multiproject' => [
                 [
-                    ['register', $assistanceA1],
-                    ['deposit', 100, 'USD', $assistanceA1],
-                    ['purchase', 200, 'USD'],
-                    ['register', $assistanceB1],
-                    ['deposit', 20, 'USD', $assistanceB1],
-                    ['purchase', 40, 'USD'],
+                    [$beneficiaryA1, 'register', $assistanceA1],
+                    [$beneficiaryA1, 'deposit', 100, 'USD', $assistanceA1],
+                    [$beneficiaryA1, 'purchase', 200, 'USD'],
+                    [$beneficiaryB1, 'register', $assistanceB1],
+                    [$beneficiaryB1, 'deposit', 20, 'USD', $assistanceB1],
+                    [$beneficiaryB1, 'purchase', 40, 'USD'],
                 ],
                 [
                     [200, 'USD', $projectA],
@@ -101,11 +109,11 @@ class SmartcardServiceTest extends KernelTestCase
             ],
             'multicurrency' => [
                 [
-                    ['register', $assistanceA1],
-                    ['deposit', 100, 'USD', $assistanceA1],
-                    ['purchase', 200, 'USD'],
-                    ['deposit', 20, 'SYP', $assistanceA2],
-                    ['purchase', 40, 'SYP'],
+                    [$beneficiaryA1, 'register', $assistanceA1],
+                    [$beneficiaryA1, 'deposit', 100, 'USD', $assistanceA1],
+                    [$beneficiaryA1, 'purchase', 200, 'USD'],
+                    [$beneficiaryA1, 'deposit', 20, 'SYP', $assistanceA2],
+                    [$beneficiaryA1, 'purchase', 40, 'SYP'],
                 ],
                 [
                     [200, 'USD', $projectA],
@@ -114,12 +122,12 @@ class SmartcardServiceTest extends KernelTestCase
             ],
             'multiproject and multicurrency' => [
                 [
-                    ['register', $assistanceA2],
-                    ['deposit', 100, 'SYP', $assistanceA2],
-                    ['purchase', 200, 'SYP'],
-                    ['register', $assistanceB1],
-                    ['deposit', 20, 'USD', $assistanceB1],
-                    ['purchase', 40, 'USD'],
+                    [$beneficiaryA1, 'register', $assistanceA2],
+                    [$beneficiaryA1, 'deposit', 100, 'SYP', $assistanceA2],
+                    [$beneficiaryA1, 'purchase', 200, 'SYP'],
+                    [$beneficiaryA1, 'register', $assistanceB1],
+                    [$beneficiaryA1, 'deposit', 20, 'USD', $assistanceB1],
+                    [$beneficiaryA1, 'purchase', 40, 'USD'],
                 ],
                 [
                     [200, 'SYP', $projectA],
@@ -128,25 +136,25 @@ class SmartcardServiceTest extends KernelTestCase
             ],
             'chaos' => [
                 [
-                    ['register', $assistanceA1],
-                    ['deposit', 100, 'USD', $assistanceA1],
-                    ['purchase', 10, 'USD'],
-                    ['purchase', 20, 'USD'],
-                    ['purchase', 30, 'USD'],
-                    ['purchase', 40, 'USD'],
-                    ['register', $assistanceA2],
-                    ['deposit', 20, 'SYP', $assistanceA2],
-                    ['purchase', 40, 'SYP'],
-                    ['register', $assistanceB1],
-                    ['deposit', 500, 'USD', $assistanceB1],
-                    ['purchase', 40, 'USD'],
-                    ['deposit', 500, 'USD', $assistanceB1],
-                    ['purchase', 40, 'USD'],
-                    ['register', $assistanceA2],
-                    ['deposit', 1000, 'SYP', $assistanceA2],
-                    ['purchase', 100, 'SYP'],
-                    ['purchase', 100, 'SYP'],
-                    ['purchase', 100, 'SYP'],
+                    [$beneficiaryA1, 'register', $assistanceA1],
+                    [$beneficiaryA1, 'deposit', 100, 'USD', $assistanceA1],
+                    [$beneficiaryA1, 'purchase', 10, 'USD'],
+                    [$beneficiaryA1, 'purchase', 20, 'USD'],
+                    [$beneficiaryA1, 'purchase', 30, 'USD'],
+                    [$beneficiaryA1, 'purchase', 40, 'USD'],
+                    [$beneficiaryA2, 'register', $assistanceA2],
+                    [$beneficiaryA2, 'deposit', 20, 'SYP', $assistanceA2],
+                    [$beneficiaryA2, 'purchase', 40, 'SYP'],
+                    [$beneficiaryB1, 'register', $assistanceB1],
+                    [$beneficiaryB1, 'deposit', 500, 'USD', $assistanceB1],
+                    [$beneficiaryB1, 'purchase', 40, 'USD'],
+                    [$beneficiaryB1, 'deposit', 500, 'USD', $assistanceB1],
+                    [$beneficiaryB1, 'purchase', 40, 'USD'],
+                    [$beneficiaryA1, 'register', $assistanceA2],
+                    [$beneficiaryA1, 'deposit', 1000, 'SYP', $assistanceA2],
+                    [$beneficiaryA1, 'purchase', 100, 'SYP'],
+                    [$beneficiaryA1, 'purchase', 100, 'SYP'],
+                    [$beneficiaryA1, 'purchase', 100, 'SYP'],
                 ],
                 [
                     [100, 'USD', $projectA],
@@ -169,33 +177,37 @@ class SmartcardServiceTest extends KernelTestCase
         $product = $this->em->getRepository(Product::class)->findOneBy(['countryISO3'=>'SYR']);
 
         $date = \DateTime::createFromFormat('Y-m-d', '2000-01-01');
-        foreach ($actions as $action) {
-            switch ($action[0]) {
+        foreach ($actions as $actionData) {
+            switch ($actionData[1]) {
                 case 'register':
-                    $assistanceId = $action[1];
+                    [$beneficiaryId, $action, $assistanceId] = $actionData;
                     /** @var Assistance $assistance */
                     $assistance = $this->em->getRepository(Assistance::class)->find($assistanceId);
                     $beneficiary = $assistance->getDistributionBeneficiaries()->get(0)->getBeneficiary();
-                    $this->smartcardService->register($this->smartcardNumber, $beneficiary->getId(), $date);
+                    $this->smartcardService->register($this->smartcardNumber, $beneficiaryId, $date);
                     break;
                 case 'purchase':
+                    [$beneficiaryId, $action, $value, $currency] = $actionData;
                     $purchase = new SmartcardPurchase();
                     $purchase->setVendorId($this->vendor->getId());
                     $purchase->setCreatedAt($date);
                     $purchase->setProducts([[
                         'id' => $product->getId(),
                         'quantity' => 2.5,
-                        'value' => $action[1],
-                        'currency' => $action[2],
+                        'value' => $value,
+                        'currency' => $currency,
                     ]]);
+                    $purchase->setBeneficiaryId($beneficiaryId);
                     $this->smartcardService->purchase($this->smartcardNumber, $purchase);
                     break;
                 case 'deposit':
+                    [$beneficiaryId, $action, $value, $currency, $assistanceId] = $actionData;
                     $this->smartcardService->deposit(
                         $this->smartcardNumber,
-                        $action[3], // assistanceId
-                        $action[1],
-                        $action[1], // balance is rewritten by new value
+                        $assistanceId, // assistanceId
+                        $beneficiaryId, // beneficiaryId
+                        $value,
+                        $value, // balance is rewritten by new value
                         $date,
                         $admin
                     );
@@ -221,6 +233,195 @@ class SmartcardServiceTest extends KernelTestCase
             $this->assertEquals($candidateToSave->getCurrency(), $batch->getCurrency(), "Redemption currency of batch is different");
             $this->assertEquals($candidateToSave->getProjectId(), $batch->getProject()->getId(), "Redemption project is of batch is different");
             $this->assertEquals($candidateToSave->getPurchasesCount(), $batch->getPurchases()->count(), "Redemption purchase count of batch is different");
+        }
+    }
+
+    public function validSmartcardReuseFlows(): array
+    {
+        $projectA = 3;
+        $projectB = 10;
+        $assistanceA1 = 51; // USD
+        $beneficiary1 = 70;
+        $beneficiary2 = 71;
+        $beneficiary3 = 72;
+
+        $times = [];
+        $times[1] = '2000-01-01';
+        $times[2] = '2000-02-01';
+        $times[3] = '2000-03-01';
+        $times[4] = '2000-04-01';
+        $times[5] = '2000-05-01';
+        $times[6] = '2000-06-01';
+        $times[7] = '2000-07-01';
+        $times[8] = '2000-08-01';
+        $times[9] = '2000-09-01';
+
+        /**
+         * deposit = 100 USD
+         * purchase = 10 USD in 2 products
+         */
+        return [
+            'standard full flow' => [
+                [
+                    [$times[1], $beneficiary1, ['register', 'deposit', 'purchase']],
+                    [$times[2], $beneficiary2, ['register', 'deposit', 'purchase']],
+                    [$times[3], $beneficiary3, ['register', 'deposit', 'purchase']],
+                ],
+                [
+                    $beneficiary1 => ['distributed'=>100, 'purchased' => 10],
+                    $beneficiary2 => ['distributed'=>100, 'purchased' => 10],
+                    $beneficiary3 => ['distributed'=>100, 'purchased' => 10],
+                ]
+            ],
+            'standard lazy flow' => [
+                [
+                    [$times[1], $beneficiary1, ['deposit', 'purchase']],
+                    [$times[2], $beneficiary2, ['deposit', 'purchase']],
+                    [$times[3], $beneficiary3, ['deposit', 'purchase']],
+                ],
+                [
+                    $beneficiary1 => ['distributed'=>100, 'purchased' => 10],
+                    $beneficiary2 => ['distributed'=>100, 'purchased' => 10],
+                    $beneficiary3 => ['distributed'=>100, 'purchased' => 10],
+                ]
+            ],
+            'standard lazy vendor flow' => [
+                [
+                    [$times[1], $beneficiary1, ['register', 'deposit']],
+                    [$times[3], $beneficiary2, ['register', 'deposit']],
+                    [$times[5], $beneficiary3, ['register', 'deposit']],
+                    [$times[2], $beneficiary1, ['purchase']],
+                    [$times[4], $beneficiary2, ['purchase']],
+                    [$times[6], $beneficiary3, ['purchase']],
+                ],
+                [
+                    $beneficiary1 => ['distributed'=>100, 'purchased' => 10],
+                    $beneficiary2 => ['distributed'=>100, 'purchased' => 10],
+                    $beneficiary3 => ['distributed'=>100, 'purchased' => 10],
+                ]
+            ],
+            'standard lazy distributor flow' => [
+                [
+                    [$times[2], $beneficiary1, ['purchase']],
+                    [$times[4], $beneficiary2, ['purchase']],
+                    [$times[6], $beneficiary3, ['purchase']],
+                    [$times[1], $beneficiary1, ['register', 'deposit']],
+                    [$times[3], $beneficiary2, ['register', 'deposit']],
+                    [$times[5], $beneficiary3, ['register', 'deposit']],
+
+                ],
+                [
+                    $beneficiary1 => ['distributed'=>100, 'purchased' => 10],
+                    $beneficiary2 => ['distributed'=>100, 'purchased' => 10],
+                    $beneficiary3 => ['distributed'=>100, 'purchased' => 10],
+                ]
+            ],
+            'two lazy distributors in reverse order' => [
+                [
+                    [$times[3], $beneficiary1, ['purchase']],
+                    [$times[6], $beneficiary2, ['purchase']],
+                    [$times[9], $beneficiary3, ['purchase']],
+                    [$times[2], $beneficiary1, ['deposit']],
+                    [$times[5], $beneficiary2, ['deposit']],
+                    [$times[8], $beneficiary3, ['deposit']],
+                    [$times[1], $beneficiary1, ['register']],
+                    [$times[4], $beneficiary2, ['register']],
+                    [$times[7], $beneficiary3, ['register']],
+                ],
+                [
+                    $beneficiary1 => ['distributed'=>100, 'purchased' => 10],
+                    $beneficiary2 => ['distributed'=>100, 'purchased' => 10],
+                    $beneficiary3 => ['distributed'=>100, 'purchased' => 10],
+                ]
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider validSmartcardReuseFlows
+     *
+     * @param array $actions
+     * @param array $expectedResults
+     */
+    public function testSmartcardReuseFlows(array $actions, array $expectedResults): void
+    {
+        $admin = $this->em->getRepository(User::class)->find(1);
+        $assistanceId = 51; // USD
+        $serialNumber = '111222333';
+        $allTestingBeneficiaries = [70, 71, 72];
+
+        $beneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findBy([
+            'beneficiary' => $allTestingBeneficiaries,
+            'assistance' => $assistanceId,
+        ]);
+        $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(['assistanceBeneficiary'=>$beneficiary]);
+        foreach ($deposits as $deposit) {
+            $this->em->remove($deposit);
+        }
+        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['beneficiary'=>$allTestingBeneficiaries]);
+        $purchases = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->findBy(['smartcard'=>$smartcards]);
+        $purchased = 0;
+        foreach ($purchases as $purchase) {
+            $this->em->remove($purchase);
+        }
+        $this->em->flush();
+
+        foreach ($actions as $preparedAction) {
+            list($dateOfEvent, $beneficiaryId, $subActions) = $preparedAction;
+            foreach ($subActions as $action) {
+                switch ($action) {
+                    case 'register':
+                        $this->smartcardService->register($serialNumber, $beneficiaryId, \DateTime::createFromFormat('Y-m-d', $dateOfEvent));
+                        break;
+                    case 'deposit':
+                        $this->smartcardService->deposit($serialNumber, $assistanceId, $beneficiaryId, 100, null, \DateTime::createFromFormat('Y-m-d', $dateOfEvent), $admin);
+                        break;
+                    case 'purchase':
+                        $purchaseData = new SmartcardPurchase();
+                        $purchaseData->setBeneficiaryId($beneficiaryId);
+                        $purchaseData->setCreatedAt(\DateTime::createFromFormat('Y-m-d', $dateOfEvent));
+                        $purchaseData->setVendorId(1);
+                        $purchaseData->setProducts([
+                            [
+                                'id' => 1,
+                                'quantity' => 1,
+                                'value' => 2,
+                                'currency' => 'USD',
+                            ],
+                            [
+                                'id' => 2,
+                                'quantity' => 1,
+                                'value' => 8,
+                                'currency' => 'USD',
+                            ]
+                        ]);
+                        $this->smartcardService->purchase($serialNumber, $purchaseData);
+                        break;
+                    default:
+                        $this->fail('Wrong test data. Unknown action '.$action);
+                }
+            }
+        }
+
+        foreach ($expectedResults as $beneficiaryId => $values) {
+            $beneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findBy([
+                'beneficiary' => $beneficiaryId,
+                'assistance' => $assistanceId,
+                ]);
+            $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(['assistanceBeneficiary'=>$beneficiary]);
+            $distributed = 0;
+            foreach ($deposits as $deposit) {
+                $distributed += $deposit->getValue();
+            }
+            $this->assertEquals($values['distributed'], $distributed, "Wrong distributed amount");
+
+            $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['beneficiary'=>$beneficiaryId]);
+            $purchases = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->findBy(['smartcard'=>$smartcards]);
+            $purchased = 0;
+            foreach ($purchases as $purchase) {
+                $purchased += $purchase->getRecordsValue();
+            }
+            $this->assertEquals($values['purchased'], $purchased, "Wrong purchased amount");
         }
     }
 

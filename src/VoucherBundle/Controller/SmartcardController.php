@@ -27,6 +27,7 @@ use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\SmartcardRedemptionBatch;
 use VoucherBundle\Entity\Vendor;
+use VoucherBundle\Enum\SmartcardStates;
 use VoucherBundle\InputType\SmartcardPurchaseDeprecated as SmartcardPurchaseDeprecatedInput;
 use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
 use VoucherBundle\InputType\SmartcardRedemtionBatch as RedemptionBatchInput;
@@ -242,14 +243,8 @@ class SmartcardController extends Controller
             $newState = $request->request->get('state');
         }
 
-        $possibleFlow = [
-            Smartcard::STATE_UNASSIGNED => Smartcard::STATE_ACTIVE,
-            Smartcard::STATE_ACTIVE => [Smartcard::STATE_INACTIVE, Smartcard::STATE_CANCELLED],
-            Smartcard::STATE_INACTIVE => Smartcard::STATE_CANCELLED,
-        ];
-
-        if ($smartcard->getState() !== $newState && isset($possibleFlow[$smartcard->getState()])) {
-            if (!in_array($newState, $possibleFlow[$smartcard->getState()])) {
+        if ($smartcard->getState() !== $newState) {
+            if (!SmartcardStates::isTransitionAllowed($smartcard->getState(), $newState)) {
                 throw new BadRequestHttpException('Is not possible change state from '.$smartcard->getState().' to '.$newState);
             }
 
@@ -321,6 +316,7 @@ class SmartcardController extends Controller
         $deposit = $this->get('smartcard_service')->deposit(
             $request->get('serialNumber'),
             $request->request->getInt('distributionId'),
+            null,
             $request->request->get('value'),
             null,
             \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
@@ -336,6 +332,7 @@ class SmartcardController extends Controller
      * Put money to smartcard. If smartcard does not exists, it will be created.
      *
      * @Rest\Patch("/offline-app/v2/smartcards/{serialNumber}/deposit")
+     * @Rest\Patch("/offline-app/v3/smartcards/{serialNumber}/deposit")
      * @ParamConverter("smartcard")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER') or is_granted('ROLE_ENUMERATOR')")
      *
@@ -394,8 +391,9 @@ class SmartcardController extends Controller
         $deposit = $this->get('smartcard_service')->deposit(
             $request->get('serialNumber'),
             $request->request->getInt('distributionId'),
+            $request->request->get('beneficiaryId'),
             $request->request->get('value'),
-            $request->request->get('balance'),
+            null,
             \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
             $this->getUser()
         );
@@ -458,7 +456,7 @@ class SmartcardController extends Controller
             return new Response();
         }
 
-        $purchase = $this->get('smartcard_service')->purchase($request->get('serialNumber'), $data);
+        $purchase = $this->get('smartcard_service')->purchaseWithoutReusingSC($request->get('serialNumber'), $data);
 
         $json = $this->get('serializer')->serialize($purchase->getSmartcard(), 'json', ['groups' => ['SmartcardOverview']]);
 
@@ -471,31 +469,40 @@ class SmartcardController extends Controller
      * @Rest\Patch("/vendor-app/v2/smartcards/{serialNumber}/purchase")
      * @Security("is_granted('ROLE_VENDOR')")
      *
-     * @SWG\Tag(name="Smartcards")
-     * @SWG\Tag(name="Vendor App")
+     * @param Request $request
      *
-     * @SWG\Parameter(
-     *     name="serialNumber",
-     *     in="path",
-     *     type="string",
-     *     required=true,
-     *     description="Serial number (GUID) of smartcard"
-     * )
+     * @return Response
      *
-     * @SWG\Parameter(name="purchase from smartcard",
-     *     in="body",
-     *     required=true,
-     *     type="object",
-     *     @Model(type=SmartcardPurchaseInput::class)
-     * )
+     * @throws EntityNotFoundException
      *
-     * @SWG\Response(
-     *     response=200,
-     *     description="Smartcard succesfully registered to system",
-     *     @Model(type=Smartcard::class, groups={"SmartcardOverview"})
-     * )
+     * @deprecated
+     */
+    public function purchaseDeprecated2(Request $request): Response
+    {
+        /** @var SmartcardPurchaseInput $data */
+        $data = $this->get('serializer')->deserialize($request->getContent(), SmartcardPurchaseInput::class, 'json');
+
+        $errors = $this->get('validator')->validate($data);
+        if (count($errors) > 0) {
+            $this->container->get('logger')->error('validation errors: '.((string) $errors));
+            // Changed by PIN-1637: it is needed for one specific period of syncing and need to be reverted after vendor app change
+            // throw new \RuntimeException((string) $errors);
+            return new Response();
+        }
+
+        $purchase = $this->get('smartcard_service')->purchaseWithoutReusingSC($request->get('serialNumber'), $data);
+
+        $json = $this->get('serializer')->serialize($purchase->getSmartcard(), 'json', ['groups' => ['SmartcardOverview']]);
+
+        return new Response($json);
+    }
+
+    /**
+     * Purchase goods from smartcard. If smartcard does not exists, it will be created.
      *
-     * @SWG\Response(response=400, description="Product does not exists.")
+     * @Rest\Patch("/vendor-app/v3/smartcards/{serialNumber}/purchase")
+     * @Security("is_granted('ROLE_VENDOR')")
+     *
      *
      * @param Request $request
      *

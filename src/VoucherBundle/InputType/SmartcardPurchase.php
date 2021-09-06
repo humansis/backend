@@ -31,6 +31,14 @@ class SmartcardPurchase
     private $vendorId;
 
     /**
+     * @var int ID of beneficiary/holder
+     *
+     * @Assert\Type("int")
+     * @ Assert\NotBlank() // will be required later
+     */
+    private $beneficiaryId;
+
+    /**
      * @var \DateTimeInterface
      *
      * @Assert\DateTime()
@@ -68,6 +76,22 @@ class SmartcardPurchase
     public function setVendorId(int $vendorId): void
     {
         $this->vendorId = $vendorId;
+    }
+
+    /**
+     * @return ?int
+     */
+    public function getBeneficiaryId(): ?int
+    {
+        return $this->beneficiaryId;
+    }
+
+    /**
+     * @param ?int $beneficiaryId
+     */
+    public function setBeneficiaryId(?int $beneficiaryId): void
+    {
+        $this->beneficiaryId = $beneficiaryId;
     }
 
     /**
