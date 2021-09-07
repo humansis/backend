@@ -240,6 +240,9 @@ services:
             - '@NewApiBundle\Component\Import\UploadImportService'
             - '%import.invalidFilesDirectory%'
             - '%import.maxFileSizeToLoad%'
+
+    NewApiBundle\Component\Product\ProductCategoryService:
+
     NewApiBundle\Component\Smartcard\SmartcardPurchaseService:
         arguments: [ '@smartcard_purchase.repository' ]
 

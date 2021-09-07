@@ -4,10 +4,9 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use CommonBundle\Pagination\Paginator;
+use NewApiBundle\Component\Product\ProductCategoryService;
 use NewApiBundle\Entity\ProductCategory;
-use NewApiBundle\InputType\InstitutionCreateInputType;
 use NewApiBundle\InputType\ProductCategoryInputType;
-use NewApiBundle\ProductCategoryService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
