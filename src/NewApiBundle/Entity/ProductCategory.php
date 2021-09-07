@@ -54,10 +54,11 @@ class ProductCategory
      */
     private $products;
 
-    public function __construct(string $name)
+    public function __construct(string $name, string $type)
     {
         $this->name = $name;
         $this->products = new ArrayCollection();
+        $this->type = $type;
     }
 
     /**

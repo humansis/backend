@@ -55,6 +55,8 @@ class ProductCategoryController extends AbstractController
     public function create(ProductCategoryInputType $inputType): JsonResponse
     {
         $productCategory = $this->productCategoryService->create($inputType);
+        $this->getDoctrine()->getManager()->persist($productCategory);
+        $this->getDoctrine()->getManager()->flush();
 
         return $this->json($productCategory);
     }
