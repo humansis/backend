@@ -32,7 +32,7 @@ class SmartcardRedemptionBatchController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/smartcard-redemption-batches/{id}/legacy-exports")
+     * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/legacy-exports")
      * @ParamConverter("redemptionBatch", class="VoucherBundle\Entity\SmartcardRedemptionBatch")
      *
      * @param SmartcardRedemptionBatch $redemptionBatch
