@@ -71,9 +71,9 @@ class SmartcardRepository extends EntityRepository
             ->join('b.household', 'h')
             ->join('h.projects', 'p')
             ->andWhere('p.iso3 = :countryCode')
-            ->andWhere('s.state != :smartcardState')
+            ->andWhere('s.state IN (:smartcardBlockedStates)')
             ->setParameter('countryCode', $countryCode)
-            ->setParameter('smartcardState', SmartcardStates::ACTIVE);
+            ->setParameter('smartcardBlockedStates', [SmartcardStates::UNASSIGNED, SmartcardStates::INACTIVE, SmartcardStates::CANCELLED]);
 
         return $qb->getQuery()->getResult('plain_values_hydrator');
     }
