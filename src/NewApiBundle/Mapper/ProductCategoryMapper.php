@@ -42,4 +42,9 @@ class ProductCategoryMapper implements MapperInterface
     {
         return $this->object->getName();
     }
+
+    public function getType(): string
+    {
+        return $this->object->getType();
+    }
 }

@@ -34,6 +34,7 @@ class ProductCategoryController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/product-categories")
+     * @Rest\Get("/vendor-app/v1/product-categories")
      *
      * @return JsonResponse
      */
