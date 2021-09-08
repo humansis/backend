@@ -73,6 +73,20 @@ class Product implements ExportableInterface
     private $productCategory;
 
     /**
+     * @var float|null
+     *
+     * @ORM\Column(name="unit_price", type="decimal", type="decimal", precision=10, scale=2, nullable=true)
+     */
+    private $unitPrice;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="currency", type="string", length=3, nullable=true)
+     */
+    private $currency;
+
+    /**
      * Get id.
      *
      * @return int
@@ -228,9 +242,47 @@ class Product implements ExportableInterface
     /**
      * @param ProductCategory|null $productCategory
      */
-    public function setProductCategory(?ProductCategory $productCategory): void
+    public function setProductCategory(?ProductCategory $productCategory): self
     {
         $this->productCategory = $productCategory;
+
+        return $this;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getUnitPrice(): ?float
+    {
+        return $this->unitPrice;
+    }
+
+    /**
+     * @param float|null $unitPrice
+     */
+    public function setUnitPrice(?float $unitPrice): self
+    {
+        $this->unitPrice = $unitPrice;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCurrency(): ?string
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @param string|null $currency
+     */
+    public function setCurrency(?string $currency): self
+    {
+        $this->currency = $currency;
+
+        return $this;
     }
 
 }

@@ -66,4 +66,14 @@ class ProductMapper implements MapperInterface
 
         return $this->object->getProductCategory()->getId();
     }
+
+    public function getUnitPrice(): ?float
+    {
+        return $this->object->getUnitPrice();
+    }
+
+    public function getCurrency(): ?string
+    {
+        return $this->object->getCurrency();
+    }
 }

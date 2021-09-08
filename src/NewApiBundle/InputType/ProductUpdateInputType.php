@@ -29,6 +29,20 @@ class ProductUpdateInputType implements InputTypeInterface
     private $productCategoryId;
 
     /**
+     * @var numeric|null
+     *
+     * @Assert\Type("numeric")
+     */
+    private $unitPrice;
+
+    /**
+     * @var string|null
+     *
+     * @Assert\Type("string")
+     */
+    private $currency;
+
+    /**
      * @return string|null
      */
     public function getUnit()
@@ -68,5 +82,37 @@ class ProductUpdateInputType implements InputTypeInterface
     public function setProductCategoryId($productCategoryId)
     {
         $this->productCategoryId = $productCategoryId;
+    }
+
+    /**
+     * @return float|int|string|null
+     */
+    public function getUnitPrice()
+    {
+        return $this->unitPrice;
+    }
+
+    /**
+     * @param float|int|string|null $unitPrice
+     */
+    public function setUnitPrice($unitPrice): void
+    {
+        $this->unitPrice = $unitPrice;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCurrency(): ?string
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @param string|null $currency
+     */
+    public function setCurrency(?string $currency): void
+    {
+        $this->currency = $currency;
     }
 }

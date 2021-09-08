@@ -4,6 +4,7 @@ namespace Tests\NewApiBundle\Controller;
 
 use Exception;
 use NewApiBundle\Entity\ProductCategory;
+use NewApiBundle\Enum\ProductCategoryType;
 use Tests\BMSServiceTestCase;
 
 class ProductControllerTest extends BMSServiceTestCase
@@ -24,7 +25,7 @@ class ProductControllerTest extends BMSServiceTestCase
     public function testCreate()
     {
         /** @var ProductCategory|null $productCategory */
-        $productCategory = self::$container->get('doctrine')->getRepository(ProductCategory::class)->findOneBy([]);
+        $productCategory = self::$container->get('doctrine')->getRepository(ProductCategory::class)->findOneBy(['type' => ProductCategoryType::FOOD]);
 
         if (!$productCategory instanceof ProductCategory) {
             $this->markTestSkipped('There needs to be at least one product category in system to complete this test');
@@ -52,7 +53,57 @@ class ProductControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('iso3', $result);
         $this->assertArrayHasKey('productCategoryId', $result);
 
+        $this->assertEquals('Test product', $result['name']);
+        $this->assertEquals('Kg', $result['unit']);
+        $this->assertEquals('http://example.org/image.jpg', $result['image']);
+        $this->assertEquals('KHM', $result['iso3']);
+        $this->assertEquals($productCategory->getId(), $result['productCategoryId']);
+
         return $result['id'];
+    }
+
+    public function testCreateCashback()
+    {
+        /** @var ProductCategory|null $productCategory */
+        $productCategory = self::$container->get('doctrine')->getRepository(ProductCategory::class)->findOneBy(['type' => ProductCategoryType::CASHBACK]);
+
+        if (!$productCategory instanceof ProductCategory) {
+            $this->markTestSkipped('There needs to be at least one product category in system to complete this test');
+        }
+
+        $this->request('POST', '/api/basic/web-app/v1/products', [
+            'name' => 'Give money',
+            'unit' => null,
+            'image' => 'http://example.org/image.jpg',
+            'iso3' => 'KHM',
+            'productCategoryId' => $productCategory->getId(),
+            'unitPrice' => 10.85,
+            'currency' => 'USD',
+        ]);
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('id', $result);
+        $this->assertArrayHasKey('name', $result);
+        $this->assertArrayHasKey('unit', $result);
+        $this->assertArrayHasKey('image', $result);
+        $this->assertArrayHasKey('iso3', $result);
+        $this->assertArrayHasKey('productCategoryId', $result);
+        $this->assertArrayHasKey('unitPrice', $result);
+        $this->assertArrayHasKey('currency', $result);
+
+        $this->assertEquals('Give money', $result['name']);
+        $this->assertNull($result['unit']);
+        $this->assertEquals('http://example.org/image.jpg', $result['image']);
+        $this->assertEquals('KHM', $result['iso3']);
+        $this->assertEquals('USD', $result['currency']);
+        $this->assertEquals(10.85, $result['unitPrice']);
+        $this->assertEquals($productCategory->getId(), $result['productCategoryId']);
     }
 
     /**

@@ -80,7 +80,10 @@ class ProductService
             ->setImage($productData->getImage())
             ->setUnit($productData->getUnit())
             ->setCountryISO3($productData->getIso3())
-            ->setArchived(false);
+            ->setUnitPrice($productData->getUnitPrice())
+            ->setCurrency($productData->getCurrency())
+            ->setArchived(false)
+        ;
 
         if (null !== $productData->getProductCategoryId()) {
             /** @var ProductCategory|null $productCategory */
@@ -143,7 +146,10 @@ class ProductService
     {
         $product
             ->setUnit($productData->getUnit())
-            ->setImage($productData->getImage());
+            ->setImage($productData->getImage())
+            ->setUnitPrice($productData->getUnitPrice())
+            ->setCurrency($productData->getCurrency())
+        ;
 
         if (null !== $productData->getProductCategoryId()) {
             /** @var ProductCategory|null $productCategory */
