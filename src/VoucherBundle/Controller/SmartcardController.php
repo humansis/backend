@@ -743,7 +743,7 @@ class SmartcardController extends Controller
     }
 
     /**
-     * @Rest\Get("/smartcards/batch/{id}/legacy-export")
+     * @Rest\Get("/web-app/v1/smartcards/batch/{id}/legacy-export")
      *
      * @SWG\Tag(name="Export")
      *
