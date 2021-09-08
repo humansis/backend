@@ -245,6 +245,9 @@ class SmartcardServiceTest extends KernelTestCase
         $beneficiary2 = 71;
         $beneficiary3 = 72;
 
+        $vendorA = 3;
+        $vendorB = 5;
+
         $times = [];
         $times[1] = '2000-01-01';
         $times[2] = '2000-02-01';
@@ -263,26 +266,34 @@ class SmartcardServiceTest extends KernelTestCase
         return [
             'standard full flow' => [
                 [
-                    [$times[1], $beneficiary1, ['register', 'deposit', 'purchase']],
-                    [$times[2], $beneficiary2, ['register', 'deposit', 'purchase']],
-                    [$times[3], $beneficiary3, ['register', 'deposit', 'purchase']],
+                    [$times[1], $beneficiary1, ['register', 'deposit', 'purchase'], $vendorA],
+                    [$times[2], $beneficiary2, ['register', 'deposit', 'purchase'], $vendorA],
+                    [$times[3], $beneficiary3, ['register', 'deposit', 'purchase'], $vendorA],
                 ],
                 [
                     $beneficiary1 => ['distributed'=>100, 'purchased' => 10],
                     $beneficiary2 => ['distributed'=>100, 'purchased' => 10],
                     $beneficiary3 => ['distributed'=>100, 'purchased' => 10],
+                ],
+                [
+                    $vendorA => ['purchases'=>3, 'records'=>6, 'value'=>30],
+                    $vendorB => null,
                 ]
             ],
             'standard lazy flow' => [
                 [
-                    [$times[1], $beneficiary1, ['deposit', 'purchase']],
-                    [$times[2], $beneficiary2, ['deposit', 'purchase']],
-                    [$times[3], $beneficiary3, ['deposit', 'purchase']],
+                    [$times[1], $beneficiary1, ['deposit', 'purchase'], $vendorA],
+                    [$times[2], $beneficiary2, ['deposit', 'purchase'], $vendorA],
+                    [$times[3], $beneficiary3, ['deposit', 'purchase'], $vendorA],
                 ],
                 [
                     $beneficiary1 => ['distributed'=>100, 'purchased' => 10],
                     $beneficiary2 => ['distributed'=>100, 'purchased' => 10],
                     $beneficiary3 => ['distributed'=>100, 'purchased' => 10],
+                ],
+                [
+                    $vendorA => ['purchases'=>3, 'records'=>6, 'value'=>30],
+                    $vendorB => null,
                 ]
             ],
             'standard lazy vendor flow' => [
@@ -290,21 +301,25 @@ class SmartcardServiceTest extends KernelTestCase
                     [$times[1], $beneficiary1, ['register', 'deposit']],
                     [$times[3], $beneficiary2, ['register', 'deposit']],
                     [$times[5], $beneficiary3, ['register', 'deposit']],
-                    [$times[2], $beneficiary1, ['purchase']],
-                    [$times[4], $beneficiary2, ['purchase']],
-                    [$times[6], $beneficiary3, ['purchase']],
+                    [$times[2], $beneficiary1, ['purchase'], $vendorA],
+                    [$times[4], $beneficiary2, ['purchase'], $vendorA],
+                    [$times[6], $beneficiary3, ['purchase'], $vendorA],
                 ],
                 [
                     $beneficiary1 => ['distributed'=>100, 'purchased' => 10],
                     $beneficiary2 => ['distributed'=>100, 'purchased' => 10],
                     $beneficiary3 => ['distributed'=>100, 'purchased' => 10],
+                ],
+                [
+                    $vendorA => ['purchases'=>3, 'records'=>6, 'value'=>30],
+                    $vendorB => null,
                 ]
             ],
             'standard lazy distributor flow' => [
                 [
-                    [$times[2], $beneficiary1, ['purchase']],
-                    [$times[4], $beneficiary2, ['purchase']],
-                    [$times[6], $beneficiary3, ['purchase']],
+                    [$times[2], $beneficiary1, ['purchase'], $vendorA],
+                    [$times[4], $beneficiary2, ['purchase'], $vendorA],
+                    [$times[6], $beneficiary3, ['purchase'], $vendorA],
                     [$times[1], $beneficiary1, ['register', 'deposit']],
                     [$times[3], $beneficiary2, ['register', 'deposit']],
                     [$times[5], $beneficiary3, ['register', 'deposit']],
@@ -314,13 +329,17 @@ class SmartcardServiceTest extends KernelTestCase
                     $beneficiary1 => ['distributed'=>100, 'purchased' => 10],
                     $beneficiary2 => ['distributed'=>100, 'purchased' => 10],
                     $beneficiary3 => ['distributed'=>100, 'purchased' => 10],
+                ],
+                [
+                    $vendorA => ['purchases'=>3, 'records'=>6, 'value'=>30],
+                    $vendorB => null,
                 ]
             ],
             'two lazy distributors in reverse order' => [
                 [
-                    [$times[3], $beneficiary1, ['purchase']],
-                    [$times[6], $beneficiary2, ['purchase']],
-                    [$times[9], $beneficiary3, ['purchase']],
+                    [$times[3], $beneficiary1, ['purchase'], $vendorA],
+                    [$times[6], $beneficiary2, ['purchase'], $vendorA],
+                    [$times[9], $beneficiary3, ['purchase'], $vendorA],
                     [$times[2], $beneficiary1, ['deposit']],
                     [$times[5], $beneficiary2, ['deposit']],
                     [$times[8], $beneficiary3, ['deposit']],
@@ -332,6 +351,48 @@ class SmartcardServiceTest extends KernelTestCase
                     $beneficiary1 => ['distributed'=>100, 'purchased' => 10],
                     $beneficiary2 => ['distributed'=>100, 'purchased' => 10],
                     $beneficiary3 => ['distributed'=>100, 'purchased' => 10],
+                ],
+                [
+                    $vendorA => ['purchases'=>3, 'records'=>6, 'value'=>30],
+                    $vendorB => null,
+                ]
+            ],
+            'incomplete purchases' => [
+                [
+                    [$times[3], $beneficiary1, ['purchase'], $vendorA],
+                    [$times[6], $beneficiary2, ['purchase'], $vendorA],
+                    [$times[9], $beneficiary3, ['purchase'], $vendorA],
+                ],
+                [
+                    $beneficiary1 => ['distributed'=>0, 'purchased' => 10],
+                    $beneficiary2 => ['distributed'=>0, 'purchased' => 10],
+                    $beneficiary3 => ['distributed'=>0, 'purchased' => 10],
+                ],
+                [
+                    // $vendorA => ['purchases'=>3, 'records'=>6, 'value'=>30], I'm not sure if it is correct
+                    $vendorA => null,
+                    $vendorB => null,
+                ]
+            ],
+            'incomplete purchases in wrong order' => [
+                [
+                    [$times[1], $beneficiary1, ['purchase'], $vendorA],
+                    [$times[2], $beneficiary2, ['purchase'], $vendorA],
+                    [$times[5], $beneficiary3, ['purchase'], $vendorA],
+                    [$times[3], $beneficiary1, ['purchase'], $vendorB],
+                    [$times[6], $beneficiary2, ['purchase'], $vendorB],
+                    [$times[9], $beneficiary3, ['purchase'], $vendorB],
+                ],
+                [
+                    $beneficiary1 => ['distributed'=>0, 'purchased' => 20],
+                    $beneficiary2 => ['distributed'=>0, 'purchased' => 20],
+                    $beneficiary3 => ['distributed'=>0, 'purchased' => 20],
+                ],
+                [
+                    // $vendorA => ['purchases'=>3, 'records'=>6, 'value'=>30], I'm not sure if it is correct
+                    // $vendorB => ['purchases'=>3, 'records'=>6, 'value'=>30], I'm not sure if it is correct
+                    $vendorA => null,
+                    $vendorB => null,
                 ]
             ],
         ];
@@ -341,11 +402,13 @@ class SmartcardServiceTest extends KernelTestCase
      * @dataProvider validSmartcardReuseFlows
      *
      * @param array $actions
-     * @param array $expectedResults
+     * @param array $expectedBeneficiaryResults
+     * @param array $expectedVendorResults
      */
-    public function testSmartcardReuseFlows(array $actions, array $expectedResults): void
+    public function testSmartcardReuseFlows(array $actions, array $expectedBeneficiaryResults, array $expectedVendorResults): void
     {
         $admin = $this->em->getRepository(User::class)->find(1);
+        $projectA = 3;
         $assistanceId = 51; // USD
         $serialNumber = '111222333';
         $allTestingBeneficiaries = [70, 71, 72];
@@ -360,7 +423,6 @@ class SmartcardServiceTest extends KernelTestCase
         }
         $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['beneficiary'=>$allTestingBeneficiaries]);
         $purchases = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->findBy(['smartcard'=>$smartcards]);
-        $purchased = 0;
         foreach ($purchases as $purchase) {
             $this->em->remove($purchase);
         }
@@ -377,10 +439,11 @@ class SmartcardServiceTest extends KernelTestCase
                         $this->smartcardService->deposit($serialNumber, $assistanceId, $beneficiaryId, 100, null, \DateTime::createFromFormat('Y-m-d', $dateOfEvent), $admin);
                         break;
                     case 'purchase':
+                        $vendorId = $preparedAction[3];
                         $purchaseData = new SmartcardPurchase();
                         $purchaseData->setBeneficiaryId($beneficiaryId);
                         $purchaseData->setCreatedAt(\DateTime::createFromFormat('Y-m-d', $dateOfEvent));
-                        $purchaseData->setVendorId(1);
+                        $purchaseData->setVendorId($vendorId);
                         $purchaseData->setProducts([
                             [
                                 'id' => 1,
@@ -403,7 +466,7 @@ class SmartcardServiceTest extends KernelTestCase
             }
         }
 
-        foreach ($expectedResults as $beneficiaryId => $values) {
+        foreach ($expectedBeneficiaryResults as $beneficiaryId => $values) {
             $beneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findBy([
                 'beneficiary' => $beneficiaryId,
                 'assistance' => $assistanceId,
@@ -422,6 +485,23 @@ class SmartcardServiceTest extends KernelTestCase
                 $purchased += $purchase->getRecordsValue();
             }
             $this->assertEquals($values['purchased'], $purchased, "Wrong purchased amount");
+        }
+
+        foreach ($expectedVendorResults as $vendorId => $values) {
+            $vendor = $this->em->getRepository(Vendor::class)->find($vendorId);
+            $redemptionCandidates = $this->smartcardService->getRedemptionCandidates($vendor);
+            if (is_array($values)) {
+                $this->assertCount(1, $redemptionCandidates, "Wrong number of invoice candidates");
+                /** @var PurchaseRedemptionBatch $invoice */
+                $invoice = $redemptionCandidates[0];
+                $this->assertEquals($values['purchases'], $invoice->getPurchasesCount(), "Wrong redeemable purchases count");
+                $this->assertEquals($values['value'], $invoice->getValue(), "Wrong redeemable value");
+                $this->assertEquals($projectA, $invoice->getProjectId(), "Wrong redeemable project");
+            } elseif (null === $values) {
+                $this->assertEmpty($redemptionCandidates, "Wrong number of invoice candidates");
+            } else {
+                $this->fail("Wrong test data.");
+            }
         }
     }
 
