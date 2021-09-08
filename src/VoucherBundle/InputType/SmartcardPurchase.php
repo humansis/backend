@@ -16,7 +16,11 @@ class SmartcardPurchase
      *          "id" = @Assert\Type("int"),
      *          "quantity" = @Assert\Type("numeric"),
      *          "value" = @Assert\Type("numeric"),
-     *          "currency" = @Assert\Type("string"),
+     *          "currency" = {
+     *              @Assert\Type("string"),
+     *              @Assert\NotBlank(message="Currency can't be empty"),
+     *              @Assert\Length(min="3",max="3",allowEmptyString=false)
+     *          },
      *      })
      * })
      */
