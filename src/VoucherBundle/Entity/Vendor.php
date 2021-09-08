@@ -408,10 +408,14 @@ class Vendor implements ExportableInterface
 
     /**
      * @param bool $canSellFood
+     *
+     * @return Vendor
      */
-    public function setCanSellFood(bool $canSellFood): void
+    public function setCanSellFood(bool $canSellFood): self
     {
         $this->canSellFood = $canSellFood;
+
+        return $this;
     }
 
     /**
@@ -424,10 +428,14 @@ class Vendor implements ExportableInterface
 
     /**
      * @param bool $canSellNonFood
+     *
+     * @return Vendor
      */
-    public function setCanSellNonFood(bool $canSellNonFood): void
+    public function setCanSellNonFood(bool $canSellNonFood): self
     {
         $this->canSellNonFood = $canSellNonFood;
+
+        return $this;
     }
 
     /**
@@ -440,10 +448,14 @@ class Vendor implements ExportableInterface
 
     /**
      * @param bool $canSellCashback
+     *
+     * @return Vendor
      */
-    public function setCanSellCashback(bool $canSellCashback): void
+    public function setCanSellCashback(bool $canSellCashback): self
     {
         $this->canSellCashback = $canSellCashback;
+
+        return $this;
     }
 
 }

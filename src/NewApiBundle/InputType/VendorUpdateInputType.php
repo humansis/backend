@@ -57,6 +57,24 @@ class VendorUpdateInputType implements InputTypeInterface
     private $contractNo;
 
     /**
+     * @var bool
+     * @Assert\Type("bool")
+     */
+    private $canSellFood = true;
+
+    /**
+     * @var bool
+     * @Assert\Type("bool")
+     */
+    private $canSellNonFood = true;
+
+    /**
+     * @var bool
+     * @Assert\Type("bool")
+     */
+    private $canSellCashback = true;
+
+    /**
      * @return string|null
      */
     public function getShop()
@@ -183,4 +201,53 @@ class VendorUpdateInputType implements InputTypeInterface
     {
         $this->contractNo = $contractNo;
     }
+
+    /**
+     * @return bool
+     */
+    public function isCanSellFood(): bool
+    {
+        return $this->canSellFood;
+    }
+
+    /**
+     * @param bool $canSellFood
+     */
+    public function setCanSellFood($canSellFood): void
+    {
+        $this->canSellFood = $canSellFood;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCanSellNonFood(): bool
+    {
+        return $this->canSellNonFood;
+    }
+
+    /**
+     * @param bool $canSellNonFood
+     */
+    public function setCanSellNonFood($canSellNonFood): void
+    {
+        $this->canSellNonFood = $canSellNonFood;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCanSellCashback(): bool
+    {
+        return $this->canSellCashback;
+    }
+
+    /**
+     * @param bool $canSellCashback
+     */
+    public function setCanSellCashback($canSellCashback): void
+    {
+        $this->canSellCashback = $canSellCashback;
+    }
+
 }

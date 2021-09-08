@@ -54,7 +54,7 @@ class VendorControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There needs to be at least one user in system which is not assigned to any vendor to complete this test');
         }
 
-        $this->request('POST', '/api/basic/web-app/v1/vendors', [
+        $this->request('POST', '/api/basic/web-app/v1/vendors', $data = [
             'shop' => 'test shop',
             'name' => $this->vendorUsername,
             'addressStreet' => 'test street',
@@ -64,6 +64,9 @@ class VendorControllerTest extends BMSServiceTestCase
             'userId' => $users[0]->getId(),
             'vendorNo' => 'v-10',
             'contractNo' => 'c-10',
+            'canSellFood' => false,
+            'canSellNonFood' => false,
+            'canSellCashback' => false,
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -87,6 +90,17 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('adm4Id', $result);
         $this->assertArrayHasKey('vendorNo', $result);
         $this->assertArrayHasKey('contractNo', $result);
+        $this->assertArrayHasKey('canSellFood', $result);
+        $this->assertArrayHasKey('canSellNonFood', $result);
+        $this->assertArrayHasKey('canSellCashback', $result);
+
+        $this->assertEquals($data['shop'], $result['shop']);
+        $this->assertEquals($data['addressPostcode'], $result['addressPostcode']);
+        $this->assertEquals($data['vendorNo'], $result['vendorNo']);
+        $this->assertEquals($data['contractNo'], $result['contractNo']);
+        $this->assertEquals($data['canSellFood'], $result['canSellFood']);
+        $this->assertEquals($data['canSellNonFood'], $result['canSellNonFood']);
+        $this->assertEquals($data['canSellCashback'], $result['canSellCashback']);
 
         return $result;
     }
@@ -101,7 +115,7 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(array $vendor)
     {
-        $data = [
+        $this->request('PUT', '/api/basic/web-app/v1/vendors/'.$vendor['id'], $data = [
             'shop' => 'edited',
             'name' => $this->vendorUsername,
             'addressStreet' => $vendor['addressStreet'],
@@ -110,9 +124,10 @@ class VendorControllerTest extends BMSServiceTestCase
             'locationId' => $vendor['locationId'],
             'vendorNo' => 'v-10-changed',
             'contractNo' => 'c-10-changed',
-        ];
-
-        $this->request('PUT', '/api/basic/web-app/v1/vendors/'.$vendor['id'], $data);
+            'canSellFood' => true,
+            'canSellNonFood' => true,
+            'canSellCashback' => true,
+        ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -135,11 +150,17 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('adm4Id', $result);
         $this->assertArrayHasKey('vendorNo', $result);
         $this->assertArrayHasKey('contractNo', $result);
+        $this->assertArrayHasKey('canSellFood', $result);
+        $this->assertArrayHasKey('canSellNonFood', $result);
+        $this->assertArrayHasKey('canSellCashback', $result);
 
         $this->assertEquals($data['shop'], $result['shop']);
         $this->assertEquals($data['addressPostcode'], $result['addressPostcode']);
         $this->assertEquals($data['vendorNo'], $result['vendorNo']);
         $this->assertEquals($data['contractNo'], $result['contractNo']);
+        $this->assertEquals($data['canSellFood'], $result['canSellFood']);
+        $this->assertEquals($data['canSellNonFood'], $result['canSellNonFood']);
+        $this->assertEquals($data['canSellCashback'], $result['canSellCashback']);
 
         return $result['id'];
     }

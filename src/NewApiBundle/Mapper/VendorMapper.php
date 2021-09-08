@@ -96,4 +96,20 @@ class VendorMapper implements MapperInterface
     {
         return $this->object->getContractNo();
     }
+
+    public function getCanSellFood(): bool
+    {
+        return $this->object->canSellFood();
+    }
+
+    public function getCanSellNonFood(): bool
+    {
+        return $this->object->canSellNonFood();
+    }
+
+    public function getCanSellCashback(): bool
+    {
+        return $this->object->canSellCashback();
+    }
+
 }
