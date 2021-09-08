@@ -42,6 +42,7 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('name', $result);
+        $this->assertArrayHasKey('type', $result);
     }
 
     /**
@@ -57,7 +58,7 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
         );
 
         $this->assertJsonFragment(
-            '{"totalCount": "*", "data": [{"id": "*", "name": "*"}]}',
+            '{"totalCount": "*", "data": [{"id": "*", "name": "*", "type": "*"}]}',
             $this->client->getResponse()->getContent()
         );
     }
