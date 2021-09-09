@@ -66,6 +66,7 @@ class ProductController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/products")
+     * @Rest\Get("/vendor-app/v2/products")
      *
      * @param Request                $request
      * @param ProductFilterInputType $filter
