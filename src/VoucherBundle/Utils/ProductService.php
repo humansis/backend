@@ -5,8 +5,10 @@ namespace VoucherBundle\Utils;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\Entity\ProductCategory;
+use NewApiBundle\Enum\ProductCategoryType;
 use NewApiBundle\InputType\ProductCreateInputType;
 use NewApiBundle\InputType\ProductUpdateInputType;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use VoucherBundle\Entity\Product;
 use Psr\Container\ContainerInterface;
@@ -91,6 +93,10 @@ class ProductService
 
             if (!$productCategory instanceof ProductCategory) {
                 throw new EntityNotFoundException('ProductCategory with ID '. $productData->getProductCategoryId() . ' not found');
+            }
+
+            if (ProductCategoryType::CASHBACK === $productCategory->getType() && (empty($product->getUnitPrice()) || empty($product->getCurrency()))) {
+                throw new BadRequestHttpException("Cashback must have unitPrice and currency");
             }
 
             $product->setProductCategory($productCategory);

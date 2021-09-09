@@ -6,9 +6,12 @@ namespace NewApiBundle\Controller;
 use CommonBundle\Pagination\Paginator;
 use NewApiBundle\Component\Product\ProductCategoryService;
 use NewApiBundle\Entity\ProductCategory;
+use NewApiBundle\InputType\ProductCategoryFilterInputType;
 use NewApiBundle\InputType\ProductCategoryInputType;
+use NewApiBundle\InputType\ProductCategoryOrderInputType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Symfony\Component\HttpFoundation\Request;
 
 class ProductCategoryController extends AbstractController
 {
@@ -38,12 +41,12 @@ class ProductCategoryController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function list(): JsonResponse
+    public function list(Request $request, ProductCategoryFilterInputType $filter, ProductCategoryOrderInputType $sort): JsonResponse
     {
         $data = $this->getDoctrine()->getRepository(ProductCategory::class)
-            ->findAll();
+            ->findByFilter($filter, $sort);
 
-        return $this->json(new Paginator($data));
+        return $this->json($data);
     }
 
     /**
