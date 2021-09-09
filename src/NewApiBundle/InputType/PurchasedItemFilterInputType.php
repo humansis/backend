@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\InputType;
 
 use NewApiBundle\InputType\FilterFragment\FulltextFilterTrait;
+use NewApiBundle\InputType\FilterFragment\LocationFilterTrait;
 use NewApiBundle\InputType\FilterFragment\ProjectFilterTrait;
 use NewApiBundle\InputType\FilterFragment\VendorFilterTrait;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
@@ -18,17 +19,7 @@ class PurchasedItemFilterInputType extends AbstractFilterInputType
     use FulltextFilterTrait;
     use ProjectFilterTrait;
     use VendorFilterTrait;
-
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("int", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $locations;
+    use LocationFilterTrait;
 
     /**
      * @Assert\Type("array")
@@ -85,19 +76,6 @@ class PurchasedItemFilterInputType extends AbstractFilterInputType
     public function getModalityTypes(): array
     {
         return $this->modalityTypes;
-    }
-
-    public function hasLocations(): bool
-    {
-        return $this->has('locations');
-    }
-
-    /**
-     * @return int[]
-     */
-    public function getLocations(): array
-    {
-        return $this->locations;
     }
 
     public function hasAssistances(): bool

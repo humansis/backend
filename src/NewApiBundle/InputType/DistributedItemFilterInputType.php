@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\InputType;
 
 use NewApiBundle\InputType\FilterFragment\FulltextFilterTrait;
+use NewApiBundle\InputType\FilterFragment\LocationFilterTrait;
 use NewApiBundle\InputType\FilterFragment\ProjectFilterTrait;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use NewApiBundle\Validator\Constraints\Iso8601;
@@ -16,17 +17,7 @@ class DistributedItemFilterInputType extends AbstractFilterInputType
 {
     use FulltextFilterTrait;
     use ProjectFilterTrait;
-
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("int", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $locations;
+    use LocationFilterTrait;
 
     /**
      * @Assert\Type("array")
@@ -84,11 +75,6 @@ class DistributedItemFilterInputType extends AbstractFilterInputType
         return $this->modalityTypes;
     }
 
-    public function hasLocations(): bool
-    {
-        return $this->has('locations');
-    }
-
     /**
      * @return string[]
      */
@@ -126,14 +112,6 @@ class DistributedItemFilterInputType extends AbstractFilterInputType
     public function hasDateTo(): bool
     {
         return $this->has('dateTo');
-    }
-
-    /**
-     * @return int[]
-     */
-    public function getLocations(): array
-    {
-        return $this->locations;
     }
 
     public function hasAssistances(): bool

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\InputType;
 
 use NewApiBundle\InputType\FilterFragment\FulltextFilterTrait;
+use NewApiBundle\InputType\FilterFragment\LocationFilterTrait;
 use NewApiBundle\InputType\FilterFragment\PrimaryIdFilterTrait;
 use NewApiBundle\InputType\FilterFragment\ProjectFilterTrait;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
@@ -17,6 +18,7 @@ class HouseholdFilterInputType extends AbstractFilterInputType
     use PrimaryIdFilterTrait;
     use FulltextFilterTrait;
     use ProjectFilterTrait;
+    use LocationFilterTrait;
 
     /**
      * @Assert\Choice({"M", "F"})
@@ -77,17 +79,6 @@ class HouseholdFilterInputType extends AbstractFilterInputType
      * )
      */
     protected $livelihoods;
-
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("integer", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $locations;
 
     public static function vulnerabilities(): array
     {
@@ -152,15 +143,5 @@ class HouseholdFilterInputType extends AbstractFilterInputType
     public function getLivelihoods()
     {
         return $this->livelihoods;
-    }
-
-    public function hasLocations(): bool
-    {
-        return $this->has('locations');
-    }
-
-    public function getLocations()
-    {
-        return $this->locations;
     }
 }
