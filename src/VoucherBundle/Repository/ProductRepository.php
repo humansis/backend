@@ -65,6 +65,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
     ): Paginator
     {
         $qb = $this->createQueryBuilder('p')
+            ->join('p.productCategory', 'c')
             ->andWhere('p.archived = 0')
             ->andWhere('p.countryISO3 = :countryIso3')
             ->setParameter('countryIso3', $countryIso3);
@@ -84,7 +85,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
                 if ($vendor->canSellFood()) $sellableCategoryTypes[] = ProductCategoryType::FOOD;
                 if ($vendor->canSellNonFood()) $sellableCategoryTypes[] = ProductCategoryType::NONFOOD;
                 if ($vendor->canSellCashback()) $sellableCategoryTypes[] = ProductCategoryType::CASHBACK;
-                $qb->join('p.productCategory', 'c');
+
                 $qb->andWhere('c.type in (:availableTypes)')
                     ->setParameter('availableTypes', $sellableCategoryTypes)
                 ;
@@ -112,6 +113,9 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
                         break;
                     case ProductOrderInputType::SORT_BY_UNIT:
                         $qb->orderBy('p.unit', $direction);
+                        break;
+                    case ProductOrderInputType::SORT_BY_CATEGORY:
+                        $qb->orderBy('c.name', $direction);
                         break;
                     default:
                         throw new \InvalidArgumentException('Invalid order directive '.$name);
