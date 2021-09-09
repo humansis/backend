@@ -2,19 +2,13 @@
 
 namespace VoucherBundle\Utils;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use CommonBundle\Entity\Logs;
-use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityNotFoundException;
+use NewApiBundle\Entity\ProductCategory;
 use NewApiBundle\InputType\ProductCreateInputType;
 use NewApiBundle\InputType\ProductUpdateInputType;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use VoucherBundle\Entity\Product;
-use VoucherBundle\Entity\Voucher;
 use Psr\Container\ContainerInterface;
 
 class ProductService
@@ -77,6 +71,7 @@ class ProductService
      * @param ProductCreateInputType $productData
      *
      * @return Product
+     * @throws EntityNotFoundException
      */
     public function create(ProductCreateInputType $productData)
     {
@@ -85,7 +80,23 @@ class ProductService
             ->setImage($productData->getImage())
             ->setUnit($productData->getUnit())
             ->setCountryISO3($productData->getIso3())
-            ->setArchived(false);
+            ->setUnitPrice($productData->getUnitPrice())
+            ->setCurrency($productData->getCurrency())
+            ->setArchived(false)
+        ;
+
+        if (null !== $productData->getProductCategoryId()) {
+            /** @var ProductCategory|null $productCategory */
+            $productCategory = $this->em->getRepository(ProductCategory::class)->find($productData->getProductCategoryId());
+
+            if (!$productCategory instanceof ProductCategory) {
+                throw new EntityNotFoundException('ProductCategory with ID '. $productData->getProductCategoryId() . ' not found');
+            }
+
+            $product->setProductCategory($productCategory);
+        } else {
+            $product->setProductCategory(null);
+        }
 
         $this->em->persist($product);
         $this->em->flush();
@@ -129,12 +140,29 @@ class ProductService
      * @param ProductUpdateInputType $productData
      *
      * @return Product
+     * @throws EntityNotFoundException
      */
     public function update(Product $product, ProductUpdateInputType $productData)
     {
         $product
             ->setUnit($productData->getUnit())
-            ->setImage($productData->getImage());
+            ->setImage($productData->getImage())
+            ->setUnitPrice($productData->getUnitPrice())
+            ->setCurrency($productData->getCurrency())
+        ;
+
+        if (null !== $productData->getProductCategoryId()) {
+            /** @var ProductCategory|null $productCategory */
+            $productCategory = $this->em->getRepository(ProductCategory::class)->find($productData->getProductCategoryId());
+
+            if (!$productCategory instanceof ProductCategory) {
+                throw new EntityNotFoundException('ProductCategory with ID '. $productData->getProductCategoryId() . ' not found');
+            }
+
+            $product->setProductCategory($productCategory);
+        } else {
+            $product->setProductCategory(null);
+        }
 
         $this->em->persist($product);
         $this->em->flush();

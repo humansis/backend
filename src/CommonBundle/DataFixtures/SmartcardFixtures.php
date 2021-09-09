@@ -141,6 +141,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
             BeneficiaryTestFixtures::class,
             VendorFixtures::class,
             AssistanceFixtures::class,
+            ProductFixtures::class,
         ];
     }
 }

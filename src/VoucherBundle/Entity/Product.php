@@ -2,9 +2,8 @@
 
 namespace VoucherBundle\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\ProductCategory;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
 
@@ -65,6 +64,27 @@ class Product implements ExportableInterface
      * @SymfonyGroups({"FullProduct"})
      */
     private $countryISO3;
+
+    /**
+     * @var ProductCategory|null
+     *
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ProductCategory", inversedBy="products")
+     */
+    private $productCategory;
+
+    /**
+     * @var float|null
+     *
+     * @ORM\Column(name="unit_price", type="decimal", type="decimal", precision=10, scale=2, nullable=true)
+     */
+    private $unitPrice;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="currency", type="string", length=3, nullable=true)
+     */
+    private $currency;
 
     /**
      * Get id.
@@ -209,6 +229,60 @@ class Product implements ExportableInterface
         ];
 
         return $finalArray;
+    }
+
+    /**
+     * @return ProductCategory|null
+     */
+    public function getProductCategory(): ?ProductCategory
+    {
+        return $this->productCategory;
+    }
+
+    /**
+     * @param ProductCategory|null $productCategory
+     */
+    public function setProductCategory(?ProductCategory $productCategory): self
+    {
+        $this->productCategory = $productCategory;
+
+        return $this;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getUnitPrice(): ?float
+    {
+        return $this->unitPrice;
+    }
+
+    /**
+     * @param float|null $unitPrice
+     */
+    public function setUnitPrice(?float $unitPrice): self
+    {
+        $this->unitPrice = $unitPrice;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCurrency(): ?string
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @param string|null $currency
+     */
+    public function setCurrency(?string $currency): self
+    {
+        $this->currency = $currency;
+
+        return $this;
     }
 
 }

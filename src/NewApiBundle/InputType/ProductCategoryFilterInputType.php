@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @Assert\GroupSequence({"ProductFilterInputType", "Strict"})
  */
-class ProductFilterInputType extends AbstractFilterInputType
+class ProductCategoryFilterInputType extends AbstractFilterInputType
 {
     use PrimaryIdFilterTrait;
     use FulltextFilterTrait;

@@ -104,6 +104,27 @@ class Vendor implements ExportableInterface
      */
     private $contractNo;
 
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="can_sell_food", type="boolean")
+     */
+    private $canSellFood = true;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="can_sell_non_food", type="boolean")
+     */
+    private $canSellNonFood = true;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="can_sell_cashback", type="boolean")
+     */
+    private $canSellCashback = true;
+
     public function __construct()
     {
         $this->archived = false;
@@ -376,4 +397,65 @@ class Vendor implements ExportableInterface
 
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function canSellFood(): bool
+    {
+        return $this->canSellFood;
+    }
+
+    /**
+     * @param bool $canSellFood
+     *
+     * @return Vendor
+     */
+    public function setCanSellFood(bool $canSellFood): self
+    {
+        $this->canSellFood = $canSellFood;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function canSellNonFood(): bool
+    {
+        return $this->canSellNonFood;
+    }
+
+    /**
+     * @param bool $canSellNonFood
+     *
+     * @return Vendor
+     */
+    public function setCanSellNonFood(bool $canSellNonFood): self
+    {
+        $this->canSellNonFood = $canSellNonFood;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function canSellCashback(): bool
+    {
+        return $this->canSellCashback;
+    }
+
+    /**
+     * @param bool $canSellCashback
+     *
+     * @return Vendor
+     */
+    public function setCanSellCashback(bool $canSellCashback): self
+    {
+        $this->canSellCashback = $canSellCashback;
+
+        return $this;
+    }
+
 }
