@@ -5,6 +5,7 @@ namespace NewApiBundle\InputType;
 
 use NewApiBundle\InputType\FilterFragment\FulltextFilterTrait;
 use NewApiBundle\InputType\FilterFragment\ProjectFilterTrait;
+use NewApiBundle\InputType\FilterFragment\VendorFilterTrait;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use NewApiBundle\Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -16,6 +17,7 @@ class PurchasedItemFilterInputType extends AbstractFilterInputType
 {
     use FulltextFilterTrait;
     use ProjectFilterTrait;
+    use VendorFilterTrait;
 
     /**
      * @Assert\Type("array")
@@ -39,16 +41,6 @@ class PurchasedItemFilterInputType extends AbstractFilterInputType
      */
     protected $assistances;
 
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("int", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $vendors;
 
     /**
      * @Assert\Type("array")
@@ -119,19 +111,6 @@ class PurchasedItemFilterInputType extends AbstractFilterInputType
     public function getAssistances(): array
     {
         return $this->assistances;
-    }
-
-    public function hasVendors(): bool
-    {
-        return $this->has('vendors');
-    }
-
-    /**
-     * @return int[]
-     */
-    public function getVendors()
-    {
-        return $this->vendors;
     }
 
     public function hasBeneficiaryTypes(): bool
