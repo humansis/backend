@@ -81,7 +81,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
             }
             if ($filter->hasVendors()) {
                 $vendor = $this->getEntityManager()->getRepository(Vendor::class)->findOneBy(['id'=>$filter->getVendors()]);
-                $sellableCategoryTypes = ['somebullshit'];
+                $sellableCategoryTypes = [];
                 if ($vendor->canSellFood()) $sellableCategoryTypes[] = ProductCategoryType::FOOD;
                 if ($vendor->canSellNonFood()) $sellableCategoryTypes[] = ProductCategoryType::NONFOOD;
                 if ($vendor->canSellCashback()) $sellableCategoryTypes[] = ProductCategoryType::CASHBACK;
