@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\InputType\FilterFragment\FulltextFilterTrait;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use NewApiBundle\Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -12,6 +13,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class PurchasedItemFilterInputType extends AbstractFilterInputType
 {
+    use FulltextFilterTrait;
+
     /**
      * @Assert\Type("array")
      * @Assert\All(
@@ -66,11 +69,6 @@ class PurchasedItemFilterInputType extends AbstractFilterInputType
      * )
      */
     protected $modalityTypes;
-
-    /**
-     * @Assert\Type("scalar")
-     */
-    protected $fulltext;
 
     /**
      * @Assert\Type("array")
@@ -195,15 +193,5 @@ class PurchasedItemFilterInputType extends AbstractFilterInputType
     public function hasDateTo(): bool
     {
         return $this->has('dateTo');
-    }
-
-    public function hasFulltext(): bool
-    {
-        return $this->has('fulltext');
-    }
-
-    public function getFulltext()
-    {
-        return $this->fulltext;
     }
 }

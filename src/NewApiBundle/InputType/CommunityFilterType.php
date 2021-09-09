@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\InputType\FilterFragment\FulltextFilterTrait;
+use NewApiBundle\InputType\FilterFragment\PrimaryIdFilterTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 
@@ -12,22 +14,8 @@ use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
  */
 class CommunityFilterType extends AbstractFilterInputType
 {
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("int", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $id;
-
-    /**
-     * @var string
-     * @Assert\Type("scalar")
-     */
-    protected $fulltext;
+    use PrimaryIdFilterTrait;
+    use FulltextFilterTrait;
 
     /**
      * @Assert\Type("array")
@@ -39,32 +27,6 @@ class CommunityFilterType extends AbstractFilterInputType
      * )
      */
     protected $projects;
-
-    public function hasIds(): bool
-    {
-        return $this->has('id');
-    }
-
-    public function getIds(): array
-    {
-        return $this->id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFulltext()
-    {
-        return $this->fulltext;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasFulltext(): bool
-    {
-        return $this->has('fulltext');
-    }
 
     public function hasProjects(): bool
     {

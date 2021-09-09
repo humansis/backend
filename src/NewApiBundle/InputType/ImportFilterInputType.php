@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\InputType\FilterFragment\FulltextFilterTrait;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -11,11 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class ImportFilterInputType extends AbstractFilterInputType
 {
-    /**
-     * @var string
-     * @Assert\Type("scalar")
-     */
-    protected $fulltext;
+    use FulltextFilterTrait;
 
     /**
      * @Assert\Type("array")
@@ -38,19 +35,6 @@ class ImportFilterInputType extends AbstractFilterInputType
      * )
      */
     protected $projects;
-
-    public function hasFulltext(): bool
-    {
-        return $this->has('fulltext');
-    }
-
-    /**
-     * @return string
-     */
-    public function getFulltext()
-    {
-        return $this->fulltext;
-    }
 
     public function hasStatus(): bool
     {
