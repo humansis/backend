@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\InputType\FilterFragment\FulltextFilterTrait;
+use NewApiBundle\InputType\FilterFragment\LocationFilterTrait;
+use NewApiBundle\InputType\FilterFragment\ProjectFilterTrait;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use NewApiBundle\Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -12,27 +15,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class DistributedItemFilterInputType extends AbstractFilterInputType
 {
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("int", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $projects;
-
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("int", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $locations;
+    use FulltextFilterTrait;
+    use ProjectFilterTrait;
+    use LocationFilterTrait;
 
     /**
      * @Assert\Type("array")
@@ -77,24 +62,6 @@ class DistributedItemFilterInputType extends AbstractFilterInputType
      */
     protected $dateTo;
 
-    /**
-     * @Assert\Type("scalar")
-     */
-    protected $fulltext;
-
-    public function hasProjects(): bool
-    {
-        return $this->has('projects');
-    }
-
-    /**
-     * @return int[]
-     */
-    public function getProjects(): array
-    {
-        return $this->projects;
-    }
-
     public function hasModalityTypes(): bool
     {
         return $this->has('modalityTypes');
@@ -106,11 +73,6 @@ class DistributedItemFilterInputType extends AbstractFilterInputType
     public function getModalityTypes(): array
     {
         return $this->modalityTypes;
-    }
-
-    public function hasLocations(): bool
-    {
-        return $this->has('locations');
     }
 
     /**
@@ -152,14 +114,6 @@ class DistributedItemFilterInputType extends AbstractFilterInputType
         return $this->has('dateTo');
     }
 
-    /**
-     * @return int[]
-     */
-    public function getLocations(): array
-    {
-        return $this->locations;
-    }
-
     public function hasAssistances(): bool
     {
         return $this->has('assistances');
@@ -171,15 +125,5 @@ class DistributedItemFilterInputType extends AbstractFilterInputType
     public function getAssistances(): array
     {
         return $this->assistances;
-    }
-
-    public function hasFulltext(): bool
-    {
-        return $this->has('fulltext');
-    }
-
-    public function getFulltext()
-    {
-        return $this->fulltext;
     }
 }
