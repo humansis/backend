@@ -10,7 +10,7 @@ use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @Assert\GroupSequence({"ProductFilterInputType", "Strict"})
+ * @Assert\GroupSequence({"ProductCategoryFilterInputType", "Strict"})
  */
 class ProductCategoryFilterInputType extends AbstractFilterInputType
 {
