@@ -91,6 +91,10 @@ class CommonController extends AbstractController
             $data[] = ['key' => $key, 'svg' => $svg];
         }
 
+        foreach ($this->getParameter('icons_product_category_types') as $key => $svg) {
+            $data[] = ['key' => $key, 'svg' => $svg];
+        }
+
         return $this->json($data);
     }
 
