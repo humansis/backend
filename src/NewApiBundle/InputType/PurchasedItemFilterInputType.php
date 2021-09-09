@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\InputType;
 
 use NewApiBundle\InputType\FilterFragment\FulltextFilterTrait;
+use NewApiBundle\InputType\FilterFragment\ProjectFilterTrait;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use NewApiBundle\Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -14,17 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class PurchasedItemFilterInputType extends AbstractFilterInputType
 {
     use FulltextFilterTrait;
-
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("int", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $projects;
+    use ProjectFilterTrait;
 
     /**
      * @Assert\Type("array")
@@ -90,19 +81,6 @@ class PurchasedItemFilterInputType extends AbstractFilterInputType
      * @Iso8601
      */
     protected $dateTo;
-
-    public function hasProjects(): bool
-    {
-        return $this->has('projects');
-    }
-
-    /**
-     * @return int[]
-     */
-    public function getProjects(): array
-    {
-        return $this->projects;
-    }
 
     public function hasModalityTypes(): bool
     {

@@ -5,6 +5,7 @@ namespace NewApiBundle\InputType;
 
 use NewApiBundle\InputType\FilterFragment\FulltextFilterTrait;
 use NewApiBundle\InputType\FilterFragment\PrimaryIdFilterTrait;
+use NewApiBundle\InputType\FilterFragment\ProjectFilterTrait;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -15,22 +16,12 @@ class HouseholdFilterInputType extends AbstractFilterInputType
 {
     use PrimaryIdFilterTrait;
     use FulltextFilterTrait;
+    use ProjectFilterTrait;
 
     /**
      * @Assert\Choice({"M", "F"})
      */
     protected $gender;
-
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("integer", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $projects;
 
     /**
      * @Assert\Type("array")
@@ -111,16 +102,6 @@ class HouseholdFilterInputType extends AbstractFilterInputType
     public function getGender()
     {
         return $this->gender;
-    }
-
-    public function hasProjects(): bool
-    {
-        return $this->has('projects');
-    }
-
-    public function getProjects()
-    {
-        return $this->projects;
     }
 
     public function hasVulnerabilities(): bool

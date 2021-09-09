@@ -4,12 +4,14 @@ declare(strict_types=1);
 namespace NewApiBundle\InputType;
 
 use NewApiBundle\InputType\FilterFragment\PrimaryIdFilterTrait;
+use NewApiBundle\InputType\FilterFragment\ProjectFilterTrait;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class AssistanceFilterInputType extends AbstractFilterInputType
 {
     use PrimaryIdFilterTrait;
+    use ProjectFilterTrait;
 
     /**
      * @Assert\Type("boolean")
@@ -20,17 +22,6 @@ class AssistanceFilterInputType extends AbstractFilterInputType
      * @Assert\Choice(callback={"DistributionBundle\Enum\AssistanceType", "values"})
      */
     protected $type;
-
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("int", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $projects;
 
     /**
      * @Assert\Type("array")
@@ -72,19 +63,6 @@ class AssistanceFilterInputType extends AbstractFilterInputType
     public function getType(): string
     {
         return $this->type;
-    }
-
-    public function hasProjects(): bool
-    {
-        return $this->has('projects');
-    }
-
-    /**
-     * @return int[]
-     */
-    public function getProjects(): array
-    {
-        return $this->projects;
     }
 
     public function hasModalityTypes(): bool
