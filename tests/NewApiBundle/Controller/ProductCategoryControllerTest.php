@@ -115,17 +115,18 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        $this->request('GET', '/api/basic/web-app/v1/product-categories');
+        $this->request('GET', '/api/basic/web-app/v1/product-categories?sort[]=name.asc&filter[id][]=1');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
             'Request failed: '.$this->client->getResponse()->getContent()
         );
 
-        $this->assertJsonFragment(
-            '{"totalCount": "*", "data": [{"id": "*", "name": "*", "type": "*", "image": "*"}]}',
-            $this->client->getResponse()->getContent()
-        );
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertArrayHasKey('data', $result);
     }
 
     public function validFilterCombinationsForCategoryTypes(): array

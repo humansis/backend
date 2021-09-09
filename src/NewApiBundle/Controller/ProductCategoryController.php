@@ -46,7 +46,7 @@ class ProductCategoryController extends AbstractController
         $data = $this->getDoctrine()->getRepository(ProductCategory::class)
             ->findByFilter($filter, $sort);
 
-        return $this->json(new Paginator($data));
+        return $this->json($data);
     }
 
     /**
