@@ -15,4 +15,13 @@ class ProductCategoryService
 
         return $category;
     }
+
+    public function update(ProductCategory $productCategory, ProductCategoryInputType $inputType): ProductCategory
+    {
+        $productCategory->setName($inputType->getName());
+        $productCategory->setType($inputType->getType());
+        $productCategory->setImage($inputType->getImage());
+
+        return $productCategory;
+    }
 }

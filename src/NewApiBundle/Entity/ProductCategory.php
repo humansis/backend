@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Enum\ImportState;
+use NewApiBundle\Enum\ProductCategoryType;
 use VoucherBundle\Entity\Product;
 
 /**
@@ -106,7 +107,7 @@ class ProductCategory
      */
     public function setType(string $type): void
     {
-        if (!in_array($type, ImportState::values())) {
+        if (!in_array($type, ProductCategoryType::values())) {
             throw new \InvalidArgumentException('Invalid argument. '.$type.' is not valid Product category type');
         }
 

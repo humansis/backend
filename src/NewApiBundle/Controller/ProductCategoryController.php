@@ -23,13 +23,13 @@ class ProductCategoryController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/product-categories/{id}")
      *
-     * @param ProductCategory $institution
+     * @param ProductCategory $productCategory
      *
      * @return JsonResponse
      */
-    public function item(ProductCategory $institution): JsonResponse
+    public function item(ProductCategory $productCategory): JsonResponse
     {
-        return $this->json($institution);
+        return $this->json($productCategory);
     }
 
     /**
@@ -59,6 +59,22 @@ class ProductCategoryController extends AbstractController
         $this->getDoctrine()->getManager()->persist($productCategory);
         $this->getDoctrine()->getManager()->flush();
 
+        return $this->json($productCategory);
+    }
+
+    /**
+     * @Rest\Post("/web-app/v1/product-categories/{id}")
+     *
+     * @param ProductCategory          $productCategory
+     * @param ProductCategoryInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function update(ProductCategory $productCategory, ProductCategoryInputType $inputType): JsonResponse
+    {
+        $productCategory = $this->productCategoryService->update($productCategory, $inputType);
+        $this->getDoctrine()->getManager()->persist($productCategory);
+        $this->getDoctrine()->getManager()->flush();
         return $this->json($productCategory);
     }
 }

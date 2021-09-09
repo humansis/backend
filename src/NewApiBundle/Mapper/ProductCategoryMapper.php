@@ -47,4 +47,9 @@ class ProductCategoryMapper implements MapperInterface
     {
         return $this->object->getType();
     }
+
+    public function getImage(): ?string
+    {
+        return $this->object->getImage();
+    }
 }
