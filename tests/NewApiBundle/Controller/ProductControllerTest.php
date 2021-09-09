@@ -2,10 +2,13 @@
 
 namespace Tests\NewApiBundle\Controller;
 
+use CommonBundle\DataFixtures\VendorFixtures;
 use Exception;
 use NewApiBundle\Entity\ProductCategory;
 use NewApiBundle\Enum\ProductCategoryType;
 use Tests\BMSServiceTestCase;
+use VoucherBundle\Entity\Product;
+use VoucherBundle\Entity\Vendor;
 
 class ProductControllerTest extends BMSServiceTestCase
 {
@@ -174,6 +177,60 @@ class ProductControllerTest extends BMSServiceTestCase
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
+    }
+
+    public function validFilterCombinationsForCategoryTypes(): array
+    {
+        return [ // food, nonfood, cashback, limit for products in DB
+            'no products' => [false, false, false],
+            'only food' => [true, false, false],
+            'only non-food' => [false, true, false],
+            'only cashback' => [false, false, true],
+            'without cashback' => [true, true, false],
+            'all products' => [true, true, true],
+        ];
+    }
+
+    /**
+     * @dataProvider validFilterCombinationsForCategoryTypes
+     */
+    public function testListFilteredByVendor(bool $canSellFood, bool $canSellNonFood, bool $canSellCashback)
+    {
+        /** @var Vendor $vendor */
+        $vendor = $this->em->getRepository(Vendor::class)->findOneBy(['name' => VendorFixtures::VENDOR_KHM_NAME], ['id' => 'asc']);
+        if (!$vendor) {
+            $this->fail('Vendor from SYR missing');
+        }
+        $foods = $this->em->getRepository(Product::class)->getByCategoryType('KHM', ProductCategoryType::FOOD);
+        $nonfoods = $this->em->getRepository(Product::class)->getByCategoryType('KHM', ProductCategoryType::NONFOOD);
+        $cashbacks = $this->em->getRepository(Product::class)->getByCategoryType('KHM', ProductCategoryType::CASHBACK);
+        if (empty($foods) || empty($nonfoods) || empty($cashbacks)) {
+            $this->fail('There are missing products');
+        }
+        $vendor->setCanSellFood($canSellFood);
+        $vendor->setCanSellNonFood($canSellNonFood);
+        $vendor->setCanSellCashback($canSellCashback);
+        $this->em->persist($vendor);
+        $this->em->flush();
+        $this->em->clear();
+
+        $expectedFilteredProducts = 0;
+        if ($canSellFood) $expectedFilteredProducts += count($foods);
+        if ($canSellNonFood) $expectedFilteredProducts += count($nonfoods);
+        if ($canSellCashback) $expectedFilteredProducts += count($cashbacks);
+
+        $this->request('GET', '/api/basic/web-app/v1/products?sort[]=name.asc&filter[vendors][]='.$vendor->getId());
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertEquals($expectedFilteredProducts, $result['totalCount']);
+
     }
 
     /**

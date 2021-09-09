@@ -7,21 +7,24 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Entity\ProductCategory;
+use NewApiBundle\Enum\ProductCategoryType;
 use VoucherBundle\Entity\Product;
 
 class ProductFixtures extends Fixture implements DependentFixtureInterface
 {
     private $data = [
-        ['soap', 'Unit', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a1505596a4.jpg', 0, 2, 'SYR'],
-        ['toothbrush', 'Unit', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a15252e30e.jpg', 0, 2],
-        ['pear', 'KG', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a158059d28.jpg', 0, 1],
-        ['rice', 'KG', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a154759a4d.jpg', 0, 1],
-        ['flour', 'KG', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a159580fdf.jpg', 0,  1],
-        ['toothpaste', 'Unit', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a15a54ae7f.jpg', 0, 2, 'SYR'],
-        ['apple', 'KG', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a15d379307.jpeg', 0, 1, 'SYR'],
-        ['cherry', 'KG', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a160605fe0.jpg', 0, 1],
-        ['book', 'Unit', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a161a9d3dd.png', 0, 2],
-        ['cake', 'Unit', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a162f9cdeb.jpg', 0, 1],
+        ['soap', 'Unit', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a1505596a4.jpg', 0, ProductCategoryType::FOOD, 'SYR'],
+        ['toothbrush', 'Unit', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a15252e30e.jpg', 0, ProductCategoryType::NONFOOD],
+        ['pear', 'KG', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a158059d28.jpg', 0, ProductCategoryType::FOOD],
+        ['rice', 'KG', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a154759a4d.jpg', 0, ProductCategoryType::FOOD],
+        ['flour', 'KG', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a159580fdf.jpg', 0,  ProductCategoryType::FOOD],
+        ['toothpaste', 'Unit', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a15a54ae7f.jpg', 0, ProductCategoryType::NONFOOD, 'SYR'],
+        ['apple', 'KG', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a15d379307.jpeg', 0, ProductCategoryType::FOOD, 'SYR'],
+        ['cherry', 'KG', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a160605fe0.jpg', 0, ProductCategoryType::FOOD],
+        ['book', 'Unit', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a161a9d3dd.png', 0, ProductCategoryType::NONFOOD],
+        ['cake', 'Unit', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a162f9cdeb.jpg', 0, ProductCategoryType::FOOD],
+        ['cashback', 'Unit', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a162f9cdeb.jpg', 0, ProductCategoryType::CASHBACK],
+        ['REMOVED!!!', 'Unit', 'https://s3.eu-central-1.amazonaws.com/files-testing.bmstaging.info/products/5c8a162f9cdeb.jpg', 1, ProductCategoryType::FOOD],
 
     ];
 
@@ -51,6 +54,11 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
                 ->setProductCategory($this->findCategory($manager, $datum[4]))
                 ;
 
+            if ($datum[4] == ProductCategoryType::CASHBACK) {
+                $product->setCurrency('CZK');
+                $product->setUnitPrice(10.24);
+            }
+
             if (isset($datum[5]) & !empty($datum[5])) {
                 $product->setCountryISO3($datum[5]);
                 $manager->persist($product);
@@ -66,17 +74,16 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
         }
     }
 
-
     /**
      * @param ObjectManager $manager
-     * @param int           $id
+     * @param string        $type
      *
      * @return ProductCategory
      */
-    private function findCategory(ObjectManager $manager, int $id)
+    private function findCategory(ObjectManager $manager, string $type)
     {
         /** @var ProductCategory $productCategory */
-        $productCategory = $manager->getRepository(ProductCategory::class)->find($id);
+        $productCategory = $manager->getRepository(ProductCategory::class)->findOneByType($type);
 
         return $productCategory;
     }
