@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6d50f9122be5d57079ac70573b29dd40",
+    "content-hash": "a02259fb7d43bf1bd0542761804fe3fa",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -6564,6 +6564,82 @@
             "time": "2021-01-07T16:49:33+00:00"
         },
         {
+            "name": "symfony/polyfill-php81",
+            "version": "v1.23.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-php81.git",
+                "reference": "e66119f3de95efc359483f810c4c3e6436279436"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-php81/zipball/e66119f3de95efc359483f810c4c3e6436279436",
+                "reference": "e66119f3de95efc359483f810c4c3e6436279436",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.23-dev"
+                },
+                "thanks": {
+                    "name": "symfony/polyfill",
+                    "url": "https://github.com/symfony/polyfill"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Polyfill\\Php81\\": ""
+                },
+                "files": [
+                    "bootstrap.php"
+                ],
+                "classmap": [
+                    "Resources/stubs"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill backporting some PHP 8.1+ features to lower PHP versions",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "polyfill",
+                "portable",
+                "shim"
+            ],
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2021-05-21T13:25:03+00:00"
+        },
+        {
             "name": "symfony/string",
             "version": "v5.2.6",
             "source": {
@@ -6721,16 +6797,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v4.4.21",
+            "version": "v4.4.30",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "0139b7a74507b39b1ace35fa5544be5aee1dca5f"
+                "reference": "7f3a52493554912a2a8df0cd71d6f4d5b6f519ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/0139b7a74507b39b1ace35fa5544be5aee1dca5f",
-                "reference": "0139b7a74507b39b1ace35fa5544be5aee1dca5f",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/7f3a52493554912a2a8df0cd71d6f4d5b6f519ed",
+                "reference": "7f3a52493554912a2a8df0cd71d6f4d5b6f519ed",
                 "shasum": ""
             },
             "require": {
@@ -6742,7 +6818,7 @@
                 "psr/cache": "^1.0|^2.0",
                 "psr/container": "^1.0",
                 "psr/link": "^1.0",
-                "psr/log": "~1.0",
+                "psr/log": "^1|^2",
                 "symfony/contracts": "^1.1.8",
                 "symfony/polyfill-ctype": "~1.8",
                 "symfony/polyfill-intl-icu": "~1.0",
@@ -6750,7 +6826,8 @@
                 "symfony/polyfill-mbstring": "~1.0",
                 "symfony/polyfill-php72": "~1.5",
                 "symfony/polyfill-php73": "^1.11",
-                "symfony/polyfill-php80": "^1.15",
+                "symfony/polyfill-php80": "^1.16",
+                "symfony/polyfill-php81": "^1.22",
                 "twig/twig": "^1.43|^2.13|^3.0.4"
             },
             "conflict": {
@@ -6770,7 +6847,7 @@
                 "psr/event-dispatcher-implementation": "1.0",
                 "psr/http-client-implementation": "1.0",
                 "psr/link-implementation": "1.0",
-                "psr/log-implementation": "1.0",
+                "psr/log-implementation": "1.0|2.0",
                 "psr/simple-cache-implementation": "1.0",
                 "symfony/cache-implementation": "1.0|2.0",
                 "symfony/event-dispatcher-implementation": "1.1",
@@ -6846,11 +6923,10 @@
                 "cache/integration-tests": "dev-master",
                 "composer/package-versions-deprecated": "^1.8",
                 "doctrine/annotations": "^1.10.4",
-                "doctrine/cache": "~1.6",
+                "doctrine/cache": "^1.6|^2.0",
                 "doctrine/collections": "~1.0",
                 "doctrine/data-fixtures": "^1.1",
                 "doctrine/dbal": "^2.6|^3.0",
-                "doctrine/doctrine-bundle": "^1.5|^2.0",
                 "doctrine/orm": "^2.6.3",
                 "egulias/email-validator": "^2.1.10|^3.1",
                 "guzzlehttp/promises": "^1.4",
@@ -6919,7 +6995,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-03-29T05:11:20+00:00"
+            "time": "2021-08-30T12:27:33+00:00"
         },
         {
             "name": "tecnickcom/tcpdf",
@@ -8822,5 +8898,5 @@
     "platform-overrides": {
         "php": "7.3"
     },
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "1.1.0"
 }
