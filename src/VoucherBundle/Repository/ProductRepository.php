@@ -67,6 +67,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         $qb = $this->createQueryBuilder('p')
             ->join('p.productCategory', 'c')
             ->andWhere('p.archived = 0')
+            ->andWhere('c.archived = 0')
             ->andWhere('p.countryISO3 = :countryIso3')
             ->setParameter('countryIso3', $countryIso3);
 

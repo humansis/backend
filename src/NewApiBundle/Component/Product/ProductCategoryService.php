@@ -24,4 +24,9 @@ class ProductCategoryService
 
         return $productCategory;
     }
+
+    public function archive(ProductCategory $category)
+    {
+        $category->setArchived(true);
+    }
 }

@@ -49,6 +49,13 @@ class ProductCategory
     private $image;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(name="archived", type="boolean", nullable=false)
+     */
+    private $archived = false;
+
+    /**
      * @var Collection|Product[]
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Product", mappedBy="productCategory")
@@ -129,4 +136,21 @@ class ProductCategory
     {
         $this->image = $image;
     }
+
+    /**
+     * @return bool
+     */
+    public function isArchived(): bool
+    {
+        return $this->archived;
+    }
+
+    /**
+     * @param bool $archived
+     */
+    public function setArchived(bool $archived): void
+    {
+        $this->archived = $archived;
+    }
+
 }

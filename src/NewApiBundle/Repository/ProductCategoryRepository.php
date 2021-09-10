@@ -19,7 +19,8 @@ class ProductCategoryRepository extends EntityRepository
         ?Pagination $pagination = null
     ): Paginator
     {
-        $qb = $this->createQueryBuilder('c');
+        $qb = $this->createQueryBuilder('c')
+            ->where('c.archived = 0');
 
         if ($filter) {
             if ($filter->hasIds()) {

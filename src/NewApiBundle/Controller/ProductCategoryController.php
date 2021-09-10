@@ -12,6 +12,8 @@ use NewApiBundle\InputType\ProductCategoryOrderInputType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use VoucherBundle\Entity\Product;
 
 class ProductCategoryController extends AbstractController
 {
@@ -79,5 +81,21 @@ class ProductCategoryController extends AbstractController
         $this->getDoctrine()->getManager()->persist($productCategory);
         $this->getDoctrine()->getManager()->flush();
         return $this->json($productCategory);
+    }
+
+    /**
+     * @Rest\Delete("/web-app/v1/product-categories/{id}")
+     *
+     * @param ProductCategory $productCategory
+     *
+     * @return JsonResponse
+     */
+    public function delete(ProductCategory $productCategory): JsonResponse
+    {
+        $this->productCategoryService->archive($productCategory);
+        $this->getDoctrine()->getManager()->persist($productCategory);
+        $this->getDoctrine()->getManager()->flush();
+
+        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 }
