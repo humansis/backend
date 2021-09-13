@@ -200,7 +200,7 @@ class BeneficiaryService
             ->setUpdatedOn(new \DateTime());
 
         foreach ($inputType->getVulnerabilityCriteria() as $id => $vulnerability_criterion) {
-            $beneficiary->addVulnerabilityCriterion($this->getVulnerabilityCriterion($id));
+            $beneficiary->addVulnerabilityCriterion($this->getVulnerabilityCriterion($vulnerability_criterion));
         }
 
         $person = $beneficiary->getPerson();
@@ -390,10 +390,14 @@ class BeneficiaryService
     public function getVulnerabilityCriterion($vulnerabilityCriterionId)
     {
         /** @var VulnerabilityCriterion $vulnerabilityCriterion */
-        $vulnerabilityCriterion = $this->em->getRepository(VulnerabilityCriterion::class)->find($vulnerabilityCriterionId);
+        $vulnerabilityCriterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy(['fieldString' => $vulnerabilityCriterionId]);
+
+        if (!$vulnerabilityCriterion) {
+            $vulnerabilityCriterion = $this->em->getRepository(VulnerabilityCriterion::class)->find($vulnerabilityCriterionId);
+        }
 
         if (!$vulnerabilityCriterion instanceof VulnerabilityCriterion) {
-            throw new \Exception("This vulnerability doesn't exist.");
+            throw new \Exception("Vulnerability $vulnerabilityCriterionId doesn't exist.");
         }
         return $vulnerabilityCriterion;
     }
