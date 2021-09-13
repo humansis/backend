@@ -32,7 +32,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
     public function testCreate()
     {
         $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
-        $vulnerabilityCriterion = self::$container->get('doctrine')->getRepository(VulnerabilityCriterion::class)->findBy([])[0];
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
         $this->request('POST', '/api/basic/web-app/v1/households', [
@@ -70,7 +69,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'referralType' => '1',
                     'referralComment' => 'string',
                     'isHead' => true,
-                    'vulnerabilityCriteriaIds' => [$vulnerabilityCriterion->getId()],
+                    'vulnerabilityCriteria' => [VulnerabilityCriterion::CRITERION_DISABLED],
                 ],
                 [
                     'dateOfBirth' => '2000-12-01',
@@ -97,7 +96,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'referralType' => '1',
                     'referralComment' => 'string',
                     'isHead' => false,
-                    'vulnerabilityCriteriaIds' => [$vulnerabilityCriterion->getId()],
+                    'vulnerabilityCriteria' => [VulnerabilityCriterion::CRITERION_DISABLED, VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL],
                 ],
             ],
             'incomeLevel' => 0,
@@ -244,7 +243,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'referralType' => '1',
                     'referralComment' => 'string',
                     'isHead' => true,
-                    'vulnerabilityCriteriaIds' => [$vulnerabilityCriterion->getId()],
+                    'vulnerabilityCriteria' => [VulnerabilityCriterion::CRITERION_DISABLED],
                 ],
                 [
                     'id' => $member->getId(),
@@ -272,7 +271,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'referralType' => '1',
                     'referralComment' => 'string',
                     'isHead' => false,
-                    'vulnerabilityCriteriaIds' => [$vulnerabilityCriterion->getId()],
+                    'vulnerabilityCriteria' => [],
                 ],
             ],
             'incomeLevel' => 0,
