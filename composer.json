@@ -63,6 +63,7 @@
 		"symfony/swiftmailer-bundle": "^3",
 		"symfony/symfony": "^4.4",
 		"symfony/templating": "^4.4",
+		"symfony/workflow": "^4.4",
 		"tecnickcom/tcpdf": "^6.2",
 		"twig/twig": "^1.0||^2.0"
 	},
