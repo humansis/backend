@@ -14,6 +14,9 @@ class ReflexiveFiller
     private $callbackMap = [];
 
     /** @var string[] */
+    private $callbackCollectionMap = [];
+
+    /** @var string[] */
     private $propertiesToIgnore = [];
 
     public function fillBy(object $filledObject, object $sourceObject): void
@@ -41,6 +44,15 @@ class ReflexiveFiller
             }
             echo " => ".$targetPropertyName."\n";
 
+            if (array_key_exists($sourceProperty->getName(), $this->callbackCollectionMap) && is_iterable($sourceValue)) {
+                $callback = $this->callbackCollectionMap[$sourceProperty->getName()];
+                $newCollection = [];
+                foreach ($sourceValue as $key => $item) {
+                    $newCollection[$key] = $callback($key, $item, $filledObject);
+                }
+                $sourceValue = $newCollection;
+            }
+
             $propertyAccessor->setValue($filledObject, $targetPropertyName, $sourceValue);
         }
     }
@@ -53,6 +65,11 @@ class ReflexiveFiller
     public function callback(string $sourceProperty, callable $callback)
     {
         $this->callbackMap[$sourceProperty] = $callback;
+    }
+
+    public function foreach(string $sourceProperty, callable $callback)
+    {
+        $this->callbackCollectionMap[$sourceProperty] = $callback;
     }
 
     public function ignore($propertiesToIgnore): void

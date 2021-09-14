@@ -112,7 +112,8 @@ class InstitutionService
         $institution = new Institution();
         
         $filler = new ReflexiveFiller();
-        $filler->ignore(['projectIds']);
+        // $filler->ignore(['projectIds']);
+        $filler->map('projectIds', 'projects');
         $filler->map('contactGivenName', 'contactName');
         $filler->map('contactFamilyName', 'contactFamilyName');
         $filler->callback('address', function (AddressInputType $addressType, Institution $entity) {
@@ -138,17 +139,15 @@ class InstitutionService
             $filler = new ReflexiveFiller();
             $filler->fillBy($entity->getPhone(), $phoneInputType);
         });
-
-        $filler->fillBy($institution, $inputType);
-
-        foreach ($inputType->getProjectIds() as $id) {
+        $filler->foreach('projectIds', function ($key, int $id, Institution $institution) {
             $project = $this->em->getRepository(Project::class)->find($id);
             if (!$project) {
                 throw new EntityNotFoundException('project', $id);
             }
+            return $project;
+        });
 
-            $institution->addProject($project);
-        }
+        $filler->fillBy($institution, $inputType);
 
         $this->em->persist($institution);
         $this->em->flush();
