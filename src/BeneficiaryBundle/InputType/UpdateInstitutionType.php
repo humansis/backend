@@ -23,49 +23,49 @@ class UpdateInstitutionType implements InputTypeInterface
      * @var BeneficiaryAddressType|null
      * @Assert\Valid()
      */
-    private $address;
+    protected $address;
     /**
      * @var string|null
      * @Assert\Length(max="255")
      */
-    private $latitude;
+    protected $latitude;
     /**
      * @var string|null
      * @Assert\Length(max="255")
      */
-    private $longitude;
+    protected $longitude;
     /**
      * @var NationalIdType|null
      * @Assert\Valid()
      */
-    private $national_id;
+    protected $national_id;
     /**
      * @var string|null
      * @Assert\Length(max="255")
      * @Assert\Expression("this.getPhoneNumber() == null or value != null")
      */
-    private $phone_prefix;
+    protected $phone_prefix;
     /**
      * @var string|null
      * @Assert\Length(max="255")
      * @Assert\Expression("this.getPhoneNumber() == null or value != null")
      */
-    private $phone_type;
+    protected $phone_type;
     /**
      * @var string|null
      * @Assert\Length(max="255")
      */
-    private $phone_number;
+    protected $phone_number;
     /**
      * @var string|null
      * @Assert\Length(max="255")
      */
-    private $contact_name;
+    protected $contact_name;
     /**
      * @var string|null
      * @Assert\Length(max="255")
      */
-    private $contact_family_name;
+    protected $contact_family_name;
     /**
      * @var int[]
      * @Assert\NotNull

@@ -167,9 +167,17 @@ class InstitutionService
         $institution = new Institution();
         
         $filler = new ReflexiveFiller();
-        $filler->ignore(['projectIds', 'address', 'nationalIdCard', 'phone']);
-        $filler->map('contactGivenName', 'contactName');
+        $filler->ignore(['address', 'nationalIdCard', 'phone', 'phone_prefix', 'phone_type', 'phone_number']);
+        $filler->map('contact_name', 'contactName');
         $filler->map('contactFamilyName', 'contactFamilyName');
+        $filler->foreach('projects', function ($key, int $id) {
+            $project = $this->em->getRepository(Project::class)->find($id);
+            if (!$project) {
+                throw new EntityNotFoundException('project', $id);
+            }
+            return $project;
+        });
+
         $filler->fillBy($institution, $institutionType);
         
         if ($institutionType->getPhoneNumber()) {
@@ -196,15 +204,7 @@ class InstitutionService
                 $addressType->getNumber(),
                 $addressType->getPostcode(),
                 $location
-                ));
-        }
-
-        foreach ($institutionType->getProjects() as $projectId) {
-            $project = $this->em->getRepository(Project::class)->find($projectId);
-            if (null === $project) {
-                throw new \InvalidArgumentException("Project $projectId doesn't exist");
-            }
-            $institution->addProject($project);
+            ));
         }
 
         return $institution;
