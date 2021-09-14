@@ -42,7 +42,7 @@ class DummyEntityObject3
     /**
      * @return string
      */
-    public function simpleName(): string
+    public function veryLongname(): string
     {
         return $this->veryLong_name;
     }
