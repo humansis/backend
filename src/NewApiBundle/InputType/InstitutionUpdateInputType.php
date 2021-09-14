@@ -22,66 +22,66 @@ class InstitutionUpdateInputType implements InputTypeInterface
      *     groups={"Strict"}
      * )
      */
-    private $projectIds = [];
+    protected $projectIds = [];
 
     /**
      * @Assert\Type("string")
      * @Assert\Length(max="45")
      */
-    private $longitude;
+    protected $longitude;
 
     /**
      * @Assert\Type("string")
      * @Assert\Length(max="45")
      */
-    private $latitude;
+    protected $latitude;
 
     /**
      * @Assert\Type("string")
      * @Assert\Length(max="255")
      * @Assert\NotNull
      */
-    private $name;
+    protected $name;
 
     /**
      * @Assert\Type("string")
      * @Assert\Length(max="255")
      */
-    private $contactGivenName;
+    protected $contactGivenName;
 
     /**
      * @Assert\Type("string")
      * @Assert\Length(max="255")
      */
-    private $contactFamilyName;
+    protected $contactFamilyName;
 
     /**
      * @Assert\Type("string")
      * @Assert\Length(max="255")
      * @Assert\NotNull
      */
-    private $type;
+    protected $type;
 
     /**
      * @var AddressInputType
      *
      * @Assert\Valid
      */
-    private $address;
+    protected $address;
 
     /**
      * @var NationalIdCardInputType
      *
      * @Assert\Valid
      */
-    private $nationalIdCard;
+    protected $nationalIdCard;
 
     /**
      * @var PhoneInputType
      *
      * @Assert\Valid
      */
-    private $phone;
+    protected $phone;
 
     /**
      * @return int[]

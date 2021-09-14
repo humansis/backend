@@ -14,6 +14,7 @@ use CommonBundle\Utils\LocationService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
+use NewApiBundle\Api\ReflexiveFiller;
 use NewApiBundle\InputType\InstitutionCreateInputType;
 use NewApiBundle\InputType\InstitutionUpdateInputType;
 use ProjectBundle\Entity\Project;
@@ -106,12 +107,12 @@ class InstitutionService
     public function create(InstitutionCreateInputType $inputType): Institution
     {
         $institution = new Institution();
-        $institution->setName($inputType->getName());
-        $institution->setType($inputType->getType());
-        $institution->setLongitude($inputType->getLongitude());
-        $institution->setLatitude($inputType->getLatitude());
-        $institution->setContactName($inputType->getContactGivenName());
-        $institution->setContactFamilyName($inputType->getContactFamilyName());
+        
+        $filler = new ReflexiveFiller();
+        $filler->ignore(['projectIds', 'address', 'nationalIdCard', 'phone']);
+        $filler->map('contactGivenName', 'contactName');
+        $filler->map('contactFamilyName', 'contactFamilyName');
+        $filler->fillBy($institution, $inputType);
 
         foreach ($inputType->getProjectIds() as $id) {
             $project = $this->em->getRepository(Project::class)->find($id);
@@ -139,10 +140,9 @@ class InstitutionService
 
         if ($inputType->getPhone()) {
             $institution->setPhone(new Phone());
-            $institution->getPhone()->setType($inputType->getPhone()->getType());
-            $institution->getPhone()->setPrefix($inputType->getPhone()->getPrefix());
-            $institution->getPhone()->setNumber($inputType->getPhone()->getNumber());
-            $institution->getPhone()->setProxy($inputType->getPhone()->getProxy());
+
+            $filler = new ReflexiveFiller();
+            $filler->fillBy($institution->getPhone(), $inputType->getPhone());
         }
 
         if ($inputType->getNationalIdCard()) {
@@ -169,12 +169,13 @@ class InstitutionService
     public function createDeprecated(GlobalInputType\Country $country, InputType\NewInstitutionType $institutionType): Institution
     {
         $institution = new Institution();
-        $institution->setName($institutionType->getName());
-        $institution->setType($institutionType->getType());
-        $institution->setLongitude($institutionType->getLongitude());
-        $institution->setLatitude($institutionType->getLatitude());
-        $institution->setContactName($institutionType->getContactName());
-        $institution->setContactFamilyName($institutionType->getContactFamilyName());
+        
+        $filler = new ReflexiveFiller();
+        $filler->ignore(['projectIds', 'address', 'nationalIdCard', 'phone']);
+        $filler->map('contactGivenName', 'contactName');
+        $filler->map('contactFamilyName', 'contactFamilyName');
+        $filler->fillBy($institution, $institutionType);
+        
         if ($institutionType->getPhoneNumber()) {
             $institution->setPhone(new Phone());
             $institution->getPhone()->setType($institutionType->getPhoneType());
@@ -185,9 +186,9 @@ class InstitutionService
 
         if ($institutionType->getNationalId() !== null && !$institutionType->getNationalId()->isEmpty()) {
             $institution->setNationalId(new NationalId());
-            $institution->getNationalId()->setIdNumber($institutionType->getNationalId()->getNumber());
-            $institution->getNationalId()->setIdNumber($institutionType->getNationalId()->getNumber());
-            $institution->getNationalId()->setIdType($institutionType->getNationalId()->getType());
+
+            $filler = new ReflexiveFiller();
+            $filler->fillBy($institution->getPhone(), $institutionType->getNationalId());
         }
 
         if ($institutionType->getAddress() !== null) {
