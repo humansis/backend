@@ -26,7 +26,7 @@ class ReflexiveFillerTest extends TestCase
 
         foreach ($testSources as $sourceName => $source) {
             $filler = new ReflexiveFiller();
-            $filler->fillBy($target, $source);
+            $filler->fill($target, $source);
             $this->assertEquals(true, $target->isArchived(), "$sourceName has wrong archived attribute");
             $this->assertEquals('nameXXX', $target->getSimpleName(), "$sourceName has wrong name attribute");
         }
@@ -44,7 +44,7 @@ class ReflexiveFillerTest extends TestCase
         $filler->map('removed', 'archived');
         $filler->map('veryLong_name', 'simpleName');
         $filler->map('things', 'items');
-        $filler->fillBy($target, $source);
+        $filler->fill($target, $source);
         $this->assertEquals(true, $target->isArchived(), "wrong archived attribute");
         $this->assertEquals('nameXXX', $target->getSimpleName(), "wrong name attribute");
     }
@@ -60,7 +60,7 @@ class ReflexiveFillerTest extends TestCase
         $filler = new ReflexiveFiller();
         $filler->map('removed', 'archived');
         $filler->ignore(['veryLong_name', 'things']);
-        $filler->fillBy($target, $source);
+        $filler->fill($target, $source);
         $this->assertEquals(true, $target->isArchived(), "wrong archived attribute");
         $this->assertEquals('placeholder', $target->getSimpleName(), "wrong name attribute");
     }

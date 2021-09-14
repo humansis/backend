@@ -16,7 +16,7 @@ class ReflexiveFiller
      */
     private $propertyHooks = [];
 
-    public function fillBy(object $filledObject, object $sourceObject): void
+    public function fill(object $filledObject, object $sourceObject): object
     {
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
         $sourceReflection = new \ReflectionClass($sourceObject);
@@ -68,6 +68,8 @@ class ReflexiveFiller
 
             $propertyAccessor->setValue($filledObject, $targetPropertyName, $targetValue);
         }
+
+         return $filledObject;
     }
 
     public function map(string $sourceProperty, string $targetProperty, ?callable $transformation = null)

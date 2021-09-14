@@ -109,8 +109,6 @@ class InstitutionService
 
     public function create(InstitutionCreateInputType $inputType): Institution
     {
-        $institution = new Institution();
-        
         $filler = new ReflexiveFiller();
         $filler->map('contactGivenName', 'contactName');
         $filler->map('contactFamilyName', 'contactFamilyName');
@@ -135,7 +133,7 @@ class InstitutionService
             $entity->setPhone(new Phone());
 
             $filler = new ReflexiveFiller();
-            $filler->fillBy($entity->getPhone(), $phoneInputType);
+            $filler->fill($entity->getPhone(), $phoneInputType);
         });
         $filler->mapEach('projectIds', 'projects', function ($key, int $id) {
             $project = $this->em->getRepository(Project::class)->find($id);
@@ -144,8 +142,7 @@ class InstitutionService
             }
             return $project;
         });
-
-        $filler->fillBy($institution, $inputType);
+        $institution = $filler->fill(new Institution(), $inputType);
 
         $this->em->persist($institution);
         $this->em->flush();
@@ -164,8 +161,6 @@ class InstitutionService
      */
     public function createDeprecated(GlobalInputType\Country $country, InputType\NewInstitutionType $institutionType): Institution
     {
-        $institution = new Institution();
-        
         $filler = new ReflexiveFiller();
         $filler->ignore(['address', 'nationalIdCard', 'phone', 'phone_prefix', 'phone_type', 'phone_number']);
         $filler->map('contact_name', 'contactName');
@@ -178,7 +173,7 @@ class InstitutionService
             return $project;
         });
 
-        $filler->fillBy($institution, $institutionType);
+        $institution = $filler->fill(new Institution(), $institutionType);
         
         if ($institutionType->getPhoneNumber()) {
             $institution->setPhone(new Phone());
@@ -192,7 +187,7 @@ class InstitutionService
             $institution->setNationalId(new NationalId());
 
             $filler = new ReflexiveFiller();
-            $filler->fillBy($institution->getPhone(), $institutionType->getNationalId());
+            $filler->fill($institution->getPhone(), $institutionType->getNationalId());
         }
 
         if ($institutionType->getAddress() !== null) {
