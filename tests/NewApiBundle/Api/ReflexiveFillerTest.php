@@ -43,8 +43,25 @@ class ReflexiveFillerTest extends TestCase
         $filler = new ReflexiveFiller();
         $filler->map('removed', 'archived');
         $filler->map('veryLong_name', 'simpleName');
+        $filler->map('things', 'items');
         $filler->fillBy($target, $source);
         $this->assertEquals(true, $target->isArchived(), "wrong archived attribute");
         $this->assertEquals('nameXXX', $target->getSimpleName(), "wrong name attribute");
+    }
+
+    public function testIgnorePropertyToPropertyTransfer(): void
+    {
+        $target = new DummyEntityObject();
+
+        $source = new DummyEntityObject3();
+        $source->setRemoved(true);
+        $source->setVeryLongname('nameXXX');
+
+        $filler = new ReflexiveFiller();
+        $filler->map('removed', 'archived');
+        $filler->ignore(['veryLong_name', 'things']);
+        $filler->fillBy($target, $source);
+        $this->assertEquals(true, $target->isArchived(), "wrong archived attribute");
+        $this->assertEquals('placeholder', $target->getSimpleName(), "wrong name attribute");
     }
 }

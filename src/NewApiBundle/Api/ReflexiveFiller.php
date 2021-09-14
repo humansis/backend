@@ -10,6 +10,9 @@ class ReflexiveFiller
     /** @var string[] */
     private $directMap = [];
 
+    /** @var string[] */
+    private $propertiesToIgnore = [];
+
     public function fillBy(object $filledObject, object $sourceObject): void
     {
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
@@ -17,6 +20,8 @@ class ReflexiveFiller
 
         foreach ($sourceReflection->getProperties() as $sourceProperty) {
             $sourcePropertyName = $sourceProperty->getName();
+            if (in_array($sourcePropertyName, $this->propertiesToIgnore)) continue;
+
             $sourceValue = $propertyAccessor->getValue($sourceObject, $sourcePropertyName);
 
             if (array_key_exists($sourceProperty->getName(), $this->directMap)) {
@@ -32,5 +37,16 @@ class ReflexiveFiller
     public function map(string $sourceProperty, string $targetProperty)
     {
         $this->directMap[$sourceProperty] = $targetProperty;
+    }
+
+    public function ignore($propertiesToIgnore): void
+    {
+        if (is_array($propertiesToIgnore)) {
+            foreach ($propertiesToIgnore as $property) {
+                $this->propertiesToIgnore[] = $property;
+            }
+        } else {
+            $this->propertiesToIgnore[] = $propertiesToIgnore;
+        }
     }
 }
