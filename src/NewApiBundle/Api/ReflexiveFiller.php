@@ -7,17 +7,14 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class ReflexiveFiller
 {
-    /** @var string[] */
-    private $directMap = [];
+    const TARGET_PROPERTY = 0;
+    const TRANSFORM_ALL = 1;
+    const TRANSFORM_EACH = 2;
 
-    /** @var string[] */
-    private $callbackMap = [];
-
-    /** @var string[] */
-    private $callbackCollectionMap = [];
-
-    /** @var string[] */
-    private $propertiesToIgnore = [];
+    /**
+     * @var array string => callable|['property','transformation'=>callable,'foreach'=>callable]|null
+     */
+    private $propertyHooks = [];
 
     public function fillBy(object $filledObject, object $sourceObject): void
     {
@@ -26,60 +23,96 @@ class ReflexiveFiller
 
         foreach ($sourceReflection->getProperties() as $sourceProperty) {
             $sourcePropertyName = $sourceProperty->getName();
-            if (in_array($sourcePropertyName, $this->propertiesToIgnore)) continue;
-
-            echo $sourcePropertyName;
             $sourceValue = $propertyAccessor->getValue($sourceObject, $sourcePropertyName);
 
-            if (array_key_exists($sourceProperty->getName(), $this->callbackMap)) {
-                $callback = $this->callbackMap[$sourceProperty->getName()];
-                $callback($sourceValue, $filledObject);
+            // default way => map property to same name without changes
+            if (!array_key_exists($sourcePropertyName, $this->propertyHooks)) {
+                $propertyAccessor->setValue($filledObject, $sourcePropertyName, $sourceValue);
                 continue;
             }
 
-            if (array_key_exists($sourceProperty->getName(), $this->directMap)) {
-                $targetPropertyName = $this->directMap[$sourceProperty->getName()];
-            } else {
-                $targetPropertyName = $sourceProperty->getName();
-            }
-            echo " => ".$targetPropertyName."\n";
+            $hook = $this->propertyHooks[$sourcePropertyName];
 
-            if (array_key_exists($sourceProperty->getName(), $this->callbackCollectionMap) && is_iterable($sourceValue)) {
-                $callback = $this->callbackCollectionMap[$sourceProperty->getName()];
+            // ignore property
+            if (null === $hook) continue;
+
+            if (is_callable($hook)) {
+                $hook($sourceValue, $filledObject);
+                continue;
+            }
+
+            if (array_key_exists(self::TARGET_PROPERTY, $hook)) {
+                $targetPropertyName = $hook[self::TARGET_PROPERTY];
+            } else {
+                $targetPropertyName = $sourcePropertyName;
+            }
+
+            if (array_key_exists(self::TRANSFORM_ALL, $hook) && null !== $hook[self::TRANSFORM_ALL]) {
+                $callback = $hook[self::TRANSFORM_ALL];
+                $targetValue = $callback($sourceValue, $filledObject);
+            } else {
+                $targetValue = $sourceValue;
+            }
+
+            if (array_key_exists(self::TRANSFORM_EACH, $hook)
+                && is_iterable($targetValue)
+                && null !== $hook[self::TRANSFORM_EACH]
+            ) {
+                $callback = $hook[self::TRANSFORM_EACH];
                 $newCollection = [];
-                foreach ($sourceValue as $key => $item) {
+                foreach ($targetValue as $key => $item) {
                     $newCollection[$key] = $callback($key, $item, $filledObject);
                 }
-                $sourceValue = $newCollection;
+                $targetValue = $newCollection;
             }
 
-            $propertyAccessor->setValue($filledObject, $targetPropertyName, $sourceValue);
+            $propertyAccessor->setValue($filledObject, $targetPropertyName, $targetValue);
         }
     }
 
-    public function map(string $sourceProperty, string $targetProperty)
+    public function map(string $sourceProperty, string $targetProperty, ?callable $transformation = null)
     {
-        $this->directMap[$sourceProperty] = $targetProperty;
+        $this->propertyHooks[$sourceProperty] = [
+            self::TARGET_PROPERTY => $targetProperty,
+            self::TRANSFORM_ALL => $transformation,
+        ];
+    }
+
+    public function mapEach(string $sourceProperty, string $targetProperty, callable $itemTransformation)
+    {
+        $this->propertyHooks[$sourceProperty] = [
+            self::TARGET_PROPERTY => $targetProperty,
+            self::TRANSFORM_EACH => $itemTransformation,
+        ];
     }
 
     public function callback(string $sourceProperty, callable $callback)
     {
-        $this->callbackMap[$sourceProperty] = $callback;
+        $this->propertyHooks[$sourceProperty] = $callback;
     }
 
     public function foreach(string $sourceProperty, callable $callback)
     {
-        $this->callbackCollectionMap[$sourceProperty] = $callback;
+        $this->propertyHooks[$sourceProperty] = [
+            self::TRANSFORM_EACH => $callback,
+        ];
+    }
+
+    public function transform(string $sourceProperty, callable $callback)
+    {
+        $this->propertyHooks[$sourceProperty] = [
+            self::TRANSFORM_ALL => $callback,
+        ];
     }
 
     public function ignore($propertiesToIgnore): void
     {
         if (is_array($propertiesToIgnore)) {
             foreach ($propertiesToIgnore as $property) {
-                $this->propertiesToIgnore[] = $property;
+                $this->propertyHooks[$property] = null;
             }
         } else {
-            $this->propertiesToIgnore[] = $propertiesToIgnore;
+            $this->propertyHooks[$propertiesToIgnore] = null;
         }
     }
 }

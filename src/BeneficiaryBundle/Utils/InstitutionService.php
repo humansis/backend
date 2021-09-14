@@ -112,21 +112,19 @@ class InstitutionService
         $institution = new Institution();
         
         $filler = new ReflexiveFiller();
-        // $filler->ignore(['projectIds']);
-        $filler->map('projectIds', 'projects');
         $filler->map('contactGivenName', 'contactName');
         $filler->map('contactFamilyName', 'contactFamilyName');
-        $filler->callback('address', function (AddressInputType $addressType, Institution $entity) {
+        $filler->transform('address', function (AddressInputType $addressType) {
             /** @var Location|null $location */
             $location = $this->em->getRepository(Location::class)
                 ->find($addressType->getLocationId());
 
-            $entity->setAddress(Address::create(
+            return Address::create(
                 $addressType->getStreet(),
                 $addressType->getNumber(),
                 $addressType->getPostcode(),
                 $location
-            ));
+            );
         });
         $filler->callback('nationalIdCard', function (NationalIdCardInputType $cardType, Institution $entity) {
             $entity->setNationalId(new NationalId());
@@ -139,7 +137,7 @@ class InstitutionService
             $filler = new ReflexiveFiller();
             $filler->fillBy($entity->getPhone(), $phoneInputType);
         });
-        $filler->foreach('projectIds', function ($key, int $id, Institution $institution) {
+        $filler->mapEach('projectIds', 'projects', function ($key, int $id) {
             $project = $this->em->getRepository(Project::class)->find($id);
             if (!$project) {
                 throw new EntityNotFoundException('project', $id);
