@@ -15,6 +15,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\Api\ReflexiveFiller;
+use NewApiBundle\InputType\Beneficiary\AddressInputType;
+use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
+use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\InputType\InstitutionCreateInputType;
 use NewApiBundle\InputType\InstitutionUpdateInputType;
 use ProjectBundle\Entity\Project;
@@ -109,9 +112,33 @@ class InstitutionService
         $institution = new Institution();
         
         $filler = new ReflexiveFiller();
-        $filler->ignore(['projectIds', 'address', 'nationalIdCard', 'phone']);
+        $filler->ignore(['projectIds']);
         $filler->map('contactGivenName', 'contactName');
         $filler->map('contactFamilyName', 'contactFamilyName');
+        $filler->callback('address', function (AddressInputType $addressType, Institution $entity) {
+            /** @var Location|null $location */
+            $location = $this->em->getRepository(Location::class)
+                ->find($addressType->getLocationId());
+
+            $entity->setAddress(Address::create(
+                $addressType->getStreet(),
+                $addressType->getNumber(),
+                $addressType->getPostcode(),
+                $location
+            ));
+        });
+        $filler->callback('nationalIdCard', function (NationalIdCardInputType $cardType, Institution $entity) {
+            $entity->setNationalId(new NationalId());
+            $entity->getNationalId()->setIdNumber($cardType->getNumber());
+            $entity->getNationalId()->setIdType($cardType->getType());
+        });
+        $filler->callback('phone', function (PhoneInputType $phoneInputType, Institution $entity) {
+            $entity->setPhone(new Phone());
+
+            $filler = new ReflexiveFiller();
+            $filler->fillBy($entity->getPhone(), $phoneInputType);
+        });
+
         $filler->fillBy($institution, $inputType);
 
         foreach ($inputType->getProjectIds() as $id) {
@@ -121,34 +148,6 @@ class InstitutionService
             }
 
             $institution->addProject($project);
-        }
-
-        if ($inputType->getAddress()) {
-            $addressType = $inputType->getAddress();
-
-            /** @var Location|null $location */
-            $location = $this->em->getRepository(Location::class)
-                ->find($addressType->getLocationId());
-
-            $institution->setAddress(Address::create(
-                $addressType->getStreet(),
-                $addressType->getNumber(),
-                $addressType->getPostcode(),
-                $location
-            ));
-        }
-
-        if ($inputType->getPhone()) {
-            $institution->setPhone(new Phone());
-
-            $filler = new ReflexiveFiller();
-            $filler->fillBy($institution->getPhone(), $inputType->getPhone());
-        }
-
-        if ($inputType->getNationalIdCard()) {
-            $institution->setNationalId(new NationalId());
-            $institution->getNationalId()->setIdNumber($inputType->getNationalIdCard()->getNumber());
-            $institution->getNationalId()->setIdType($inputType->getNationalIdCard()->getType());
         }
 
         $this->em->persist($institution);
