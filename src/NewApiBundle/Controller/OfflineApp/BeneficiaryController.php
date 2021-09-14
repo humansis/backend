@@ -13,7 +13,7 @@ class BeneficiaryController extends AbstractController
 {
 
     /**
-     * @Rest\Get("/offline-app/v1/beneficiaries")
+     * @Rest\Get("/offline-app/v2/beneficiaries")
      *
      * @param Request                    $request
      * @param BeneficiaryFilterInputType $filter
