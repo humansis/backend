@@ -36,7 +36,12 @@ class BookletController extends AbstractController
         $list = $this->getDoctrine()->getRepository(Booklet::class)
             ->findByParams($countryIso3, $filter, $orderBy, $pagination);
 
-        return $this->json($list);
+        $response = $this->json($list);
+        $response->setEtag(md5($response->getContent()));
+        $response->setPublic();
+        $response->isNotModified($request);
+
+        return $response;
     }
 
 }

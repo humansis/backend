@@ -28,7 +28,12 @@ class TransactionController extends AbstractController
         $repository = $this->getDoctrine()->getRepository(Transaction::class);
         $data = $repository->findByParams($filter);
 
-        return $this->json($data);
+        $response = $this->json($data);
+        $response->setEtag(md5($response->getContent()));
+        $response->setPublic();
+        $response->isNotModified($request);
+
+        return $response;
     }
 
 }

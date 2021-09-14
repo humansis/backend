@@ -50,6 +50,11 @@ class GeneralReliefItemController extends AbstractController
         $list = $this->getDoctrine()->getRepository(GeneralReliefItem::class)
             ->findByParams($filter, $pagination);
 
-        return $this->json($list);
+        $response = $this->json($list);
+        $response->setEtag(md5($response->getContent()));
+        $response->setPublic();
+        $response->isNotModified($request);
+
+        return $response;
     }
 }

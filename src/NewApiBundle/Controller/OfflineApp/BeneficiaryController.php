@@ -7,6 +7,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Controller\AbstractController;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class BeneficiaryController extends AbstractController
 {
@@ -14,14 +15,20 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/offline-app/v1/beneficiaries")
      *
+     * @param Request                    $request
      * @param BeneficiaryFilterInputType $filter
      *
      * @return JsonResponse
      */
-    public function beneficiaries(BeneficiaryFilterInputType $filter): JsonResponse
+    public function beneficiaries(Request $request, BeneficiaryFilterInputType $filter): JsonResponse
     {
         $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByParams($filter);
 
-        return $this->json($beneficiaries);
+        $response = $this->json($beneficiaries);
+        $response->setEtag(md5($response->getContent()));
+        $response->setPublic();
+        $response->isNotModified($request);
+
+        return $response;
     }
 }
