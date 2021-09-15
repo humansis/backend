@@ -331,7 +331,7 @@ class SmartcardController extends Controller
                 'depositV1',
                 $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
                 $request->get('serialNumber', 'missing'),
-                $request->getContent()
+                json_encode($request->request->all())
             );
             throw $exception;
         }
@@ -408,12 +408,11 @@ class SmartcardController extends Controller
                 $this->getUser()
             );
         } catch (\Exception $exception) {
-            $this->get('logger')->error($request->getContent());
             $this->writeData(
                 'depositV23',
                 $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
                 $request->get('serialNumber', 'missing'),
-                $request->getContent()
+                json_encode($request->request->all())
             );
             throw $exception;
         }
@@ -475,7 +474,7 @@ class SmartcardController extends Controller
                 'purchaseV1',
                 $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
                 $request->get('serialNumber', 'missing'),
-                $request->getContent()
+                json_encode($request->request->all())
             );
             // Changed by PIN-1637: it is needed for one specific period of syncing and need to be reverted after vendor app change
             // throw new \RuntimeException((string) $errors);
@@ -489,7 +488,7 @@ class SmartcardController extends Controller
                 'purchaseV1',
                 $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
                 $request->get('serialNumber', 'missing'),
-                $request->getContent()
+                json_encode($request->request->all())
             );
             throw $exception;
         }
@@ -527,7 +526,7 @@ class SmartcardController extends Controller
                 'purchaseV2',
                 $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
                 $request->get('serialNumber', 'missing'),
-                $request->getContent()
+                json_encode($request->request->all())
             );
             return new Response();
         }
@@ -539,7 +538,7 @@ class SmartcardController extends Controller
                 'purchaseV2',
                 $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
                 $request->get('serialNumber', 'missing'),
-                $request->getContent()
+                json_encode($request->request->all())
             );
             throw $exception;
         }
@@ -569,14 +568,14 @@ class SmartcardController extends Controller
 
         $errors = $this->get('validator')->validate($data);
         if (count($errors) > 0) {
-            $this->container->get('logger')->error('validation errors: '.((string) $errors).' data: '.$request->getContent());
+            $this->container->get('logger')->error('validation errors: '.((string) $errors).' data: '.json_encode($request->request->all()));
             // Changed by PIN-1637: it is needed for one specific period of syncing and need to be reverted after vendor app change
             // throw new \RuntimeException((string) $errors);
             $this->writeData(
                 'purchaseV3',
                 $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
                 $request->get('serialNumber', 'missing'),
-                $request->getContent()
+                json_encode($request->request->all())
             );
             return new Response();
         }
@@ -588,7 +587,7 @@ class SmartcardController extends Controller
                 'purchaseV3',
                 $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
                 $request->get('serialNumber', 'missing'),
-                $request->getContent()
+                json_encode($request->request->all())
             );
             throw $exception;
         }
