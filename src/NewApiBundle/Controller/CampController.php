@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\Camp;
 use CommonBundle\Entity\Location;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\InputType\CampFilterInputType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -13,26 +14,40 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class CampController extends AbstractController
 {
     /**
-     * @Rest\Get("/camps")
+     * @Rest\Get("/web-app/v1/camps")
      *
-     * @param Request $request
+     * @param Request             $request
+     * @param CampFilterInputType $filterInputType
      *
      * @return JsonResponse
      */
-    public function camps(Request $request): JsonResponse
+    public function camps(Request $request, CampFilterInputType $filterInputType): JsonResponse
     {
         $countryIso3 = $request->headers->get('country', false);
         if (!$countryIso3) {
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $beneficiaries = $this->getDoctrine()->getRepository(Camp::class)->findByCountry($countryIso3);
+        $beneficiaries = $this->getDoctrine()->getRepository(Camp::class)->findByCountry($countryIso3, $filterInputType);
 
         return $this->json(new Paginator($beneficiaries));
     }
 
+
     /**
-     * @Rest\Get("locations/{id}/camps")
+     * @Rest\Get("/web-app/v1/camps/{id}")
+     *
+     * @param Camp $camp
+     *
+     * @return JsonResponse
+     */
+    public function camp(Camp $camp): JsonResponse
+    {
+        return $this->json($camp);
+    }
+
+    /**
+     * @Rest\Get("/web-app/v1/locations/{id}/camps")
      *
      * @param Location $location
      *

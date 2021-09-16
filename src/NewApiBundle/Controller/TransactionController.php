@@ -19,7 +19,7 @@ use TransactionBundle\Repository\TransactionRepository;
 class TransactionController extends AbstractController
 {
     /**
-     * @Rest\Get("/transactions")
+     * @Rest\Get("/web-app/v1/transactions")
      *
      * @param Request                    $request
      * @param TransactionFilterInputType $filter
@@ -36,7 +36,7 @@ class TransactionController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/assistances/{id}/transactions")
+     * @Rest\Post("/web-app/v1/assistances/{id}/transactions")
      *
      * @param Assistance $assistance
      * @param Request    $request
@@ -56,7 +56,7 @@ class TransactionController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/assistances/{id}/transactions/emails")
+     * @Rest\Post("/web-app/v1/assistances/{id}/transactions/emails")
      * @ParamConverter("assistance", options={"mapping": {"id": "id"}})
      *
      * @param Assistance $assistance
@@ -71,7 +71,7 @@ class TransactionController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/transactions/statuses")
+     * @Rest\Get("/web-app/v1/transactions/statuses")
      *
      * @return JsonResponse
      */

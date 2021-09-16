@@ -10,6 +10,11 @@ services:
         tags:
             - { name: 'console.command' }
 
+    CommonBundle\Command\AdmCSV2XMLCommand:
+        public: true
+        tags:
+            - { name: 'console.command' }
+
     CommonBundle\Command\ClearCacheImportCommand:
         public: true
         tags:
@@ -205,6 +210,11 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
+    CommonBundle\DataFixtures\ImportFixtures:
+        public: true
+        tags:
+            - { name: doctrine.fixture.orm }
+
     CommonBundle\DataFixtures\Beneficiaries\AssistanceBeneficiaryFixtures:
         public: true
         arguments:
@@ -283,6 +293,10 @@ services:
             - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\RoleFixtures:
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    CommonBundle\DataFixtures\ProductCategoryFixtures:
         tags:
             - { name: doctrine.fixture.orm }
 

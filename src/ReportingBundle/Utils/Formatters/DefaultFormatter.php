@@ -15,7 +15,7 @@ class DefaultFormatter
      * @param array $dataComputed
      * @return array
      */
-    public function formatWithSeries($dataComputed)
+    public static function formatWithSeries($dataComputed)
     {
         $data = [];
         $names = [];
@@ -51,7 +51,7 @@ class DefaultFormatter
      * @param array $dataComputed
      * @return array
      */
-    public function formatWithoutSeries($dataComputed)
+    public static function formatWithoutSeries($dataComputed)
     {
         return $dataComputed;
     }
@@ -64,7 +64,7 @@ class DefaultFormatter
      * @param array $dataComputed
      * @return array
      */
-    public function formatWithDateSeries($dataComputed)
+    public static function formatWithDateSeries($dataComputed)
     {
         $data = [];
         $names = [];

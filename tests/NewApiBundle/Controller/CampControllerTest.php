@@ -24,7 +24,7 @@ class CampControllerTest extends BMSServiceTestCase
 
     public function testCamps()
     {
-        $this->request('GET', '/api/basic/camps');
+        $this->request('GET', '/api/basic/web-app/v1/camps');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -33,6 +33,38 @@ class CampControllerTest extends BMSServiceTestCase
         $this->assertJsonFragment('{
             "totalCount": "*",
             "data": "*"}', $this->client->getResponse()->getContent()
+        );
+    }
+
+    public function testCamp()
+    {
+        try {
+            $campId = $this->em->createQueryBuilder()
+                ->select('c.id')
+                ->from(Camp::class, 'c')
+                ->setMaxResults(1)
+                ->getQuery()
+                ->getSingleScalarResult();
+        } catch (NoResultException $e) {
+            $this->markTestSkipped('You need to have at least one camp with location in system');
+            return;
+        }
+
+        $this->request('GET', '/api/basic/web-app/v1/camps/'.$campId);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{
+            "id": '.$campId.',
+            "name": "*",
+            "locationId": "*",
+            "adm1Id": "*",
+            "adm2Id": "*",
+            "adm3Id": "*",
+            "adm4Id": "*"
+        }', $this->client->getResponse()->getContent()
         );
     }
 
@@ -52,7 +84,7 @@ class CampControllerTest extends BMSServiceTestCase
             return;
         }
 
-        $this->request('GET', "/api/basic/locations/$locationId/camps");
+        $this->request('GET', "/api/basic/web-app/v1/locations/$locationId/camps");
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

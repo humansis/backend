@@ -147,7 +147,11 @@ class VendorService
             ->setArchived(false)
             ->setUser($user)
             ->setVendorNo($inputType->getVendorNo())
-            ->setContractNo($inputType->getContractNo());
+            ->setContractNo($inputType->getContractNo())
+            ->setCanSellFood($inputType->isCanSellFood())
+            ->setCanSellNonFood($inputType->isCanSellNonFood())
+            ->setCanSellCashback($inputType->isCanSellCashback())
+        ;
 
         $this->em->persist($vendor);
         $this->em->flush();
@@ -233,7 +237,11 @@ class VendorService
             ->setAddressPostcode($inputType->getAddressPostcode())
             ->setLocation($location)
             ->setVendorNo($inputType->getVendorNo())
-            ->setContractNo($inputType->getContractNo());
+            ->setContractNo($inputType->getContractNo())
+            ->setCanSellFood($inputType->isCanSellFood())
+            ->setCanSellNonFood($inputType->isCanSellNonFood())
+            ->setCanSellCashback($inputType->isCanSellCashback())
+        ;
 
         $this->em->persist($vendor);
         $this->em->flush();

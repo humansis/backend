@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 class InstitutionController extends AbstractController
 {
     /**
-     * @Rest\Get("/institutions/{id}")
+     * @Rest\Get("/web-app/v1/institutions/{id}")
      *
      * @param Institution $institution
      *
@@ -35,7 +35,7 @@ class InstitutionController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/institutions")
+     * @Rest\Get("/web-app/v1/institutions")
      *
      * @param Request                    $request
      * @param Pagination                 $pagination
@@ -57,7 +57,7 @@ class InstitutionController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/institutions")
+     * @Rest\Post("/web-app/v1/institutions")
      *
      * @param InstitutionCreateInputType $inputType
      *
@@ -71,7 +71,7 @@ class InstitutionController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/institutions/{id}")
+     * @Rest\Put("/web-app/v1/institutions/{id}")
      *
      * @param Institution                $institution
      * @param InstitutionUpdateInputType $inputType
@@ -86,7 +86,7 @@ class InstitutionController extends AbstractController
     }
 
     /**
-     * @Rest\Delete("/institutions/{id}")
+     * @Rest\Delete("/web-app/v1/institutions/{id}")
      *
      * @param Institution $institution
      *
@@ -100,7 +100,7 @@ class InstitutionController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/projects/{id}/institutions")
+     * @Rest\Get("/web-app/v1/projects/{id}/institutions")
      *
      * @param Project $project
      *

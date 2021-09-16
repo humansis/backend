@@ -54,6 +54,7 @@ class RequestConverter implements ParamConverterInterface
             }
             throw new BadRequestDataException('Bad request body: '.implode(' | ', $messages));
         }
+        return true;
     }
 
     private function toString($value): string

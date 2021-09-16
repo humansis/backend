@@ -191,16 +191,16 @@ class LocationService
     public function getAllCamps(array $filters)
     {
         if (array_key_exists('adm1', $filters)) {
-            $camps = $this->em->getRepository(Camp::class)->findByAdm1($filters['adm1']);
+            return $this->em->getRepository(Camp::class)->findByAdm1($filters['adm1']);
         } else if (array_key_exists('adm2', $filters)) {
-            $camps = $this->em->getRepository(Camp::class)->findByAdm2($filters['adm2']);
+            return $this->em->getRepository(Camp::class)->findByAdm2($filters['adm2']);
         } else if (array_key_exists('adm3', $filters)) {
-            $camps = $this->em->getRepository(Camp::class)->findByAdm3($filters['adm3']);
+            return $this->em->getRepository(Camp::class)->findByAdm3($filters['adm3']);
         } else if (array_key_exists('adm4', $filters)) {
-            $camps = $this->em->getRepository(Camp::class)->findByAdm4($filters['adm4']);
+            return $this->em->getRepository(Camp::class)->findByAdm4($filters['adm4']);
         }
 
-        return $camps;
+        return [];
     }
 
     /**
@@ -221,6 +221,9 @@ class LocationService
             /** @var Location $location */
             $location = $distribution->getLocation();
 
+            $adm = 'adm0';
+            $code = $countryIso3;
+            $location_name = $countryIso3;
             if (!empty($location->getAdm1())) {
                 $adm = "adm1";
                 $location_name = $location->getAdm1()->getName();

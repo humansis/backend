@@ -843,12 +843,13 @@ class Assistance implements ExportableInterface
                 }
             }
         } else {
+            $commodityIndex = null;
             foreach ($this->getCommodities() as $index => $commodityInList) {
                 if ($commodityInList->getId() === $commodity->getId()) {
                     $commodityIndex = $index;
                 }
             }
-            if (!$assistanceBeneficiary->getGeneralReliefs()) {
+            if (!$assistanceBeneficiary->getGeneralReliefs() || null == $commodityIndex) {
                 return 0;
             }
             $correspondingGeneralRelief = $assistanceBeneficiary->getGeneralReliefs()[$commodityIndex];

@@ -2,8 +2,12 @@
 
 namespace VoucherBundle\Repository;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use VoucherBundle\Entity\Smartcard;
+use VoucherBundle\Enum\SmartcardStates;
 
 /**
  * Class SmartcardRepository.
@@ -12,13 +16,43 @@ use VoucherBundle\Entity\Smartcard;
  */
 class SmartcardRepository extends EntityRepository
 {
-    public function findBySerialNumber(string $serialNumber): ?Smartcard
+    public function findBySerialNumber(string $serialNumber, ?Beneficiary $beneficiary): ?Smartcard
     {
         $qb = $this->createQueryBuilder('s')
             ->andWhere('s.serialNumber = :serialNumber')
-            ->setParameter('serialNumber', strtoupper($serialNumber));
+            ->setParameter('serialNumber', strtoupper($serialNumber))
+            ->orderBy('s.disabledAt', 'desc')
+            ->orderBy('s.createdAt', 'desc')
+            ->setMaxResults(1)
+        ;
+        if (null !== $beneficiary) {
+            $qb
+                ->andWhere('s.beneficiary = :beneficiary')
+                ->setParameter('beneficiary', $beneficiary)
+                ;
+        } else {
+            $qb->andWhere('s.beneficiary IS NULL');
+        }
 
-        return $qb->getQuery()->getOneOrNullResult();
+        try {
+            return $qb->getQuery()->getSingleResult();
+        } catch (NoResultException $e) {
+            return null;
+        }
+    }
+
+    public function disableBySerialNumber(string $serialNumber, string $state = SmartcardStates::REUSED, ?\DateTimeInterface $timeOfEvent = null): void
+    {
+        $this->createQueryBuilder('s')
+            ->update()
+            ->set('s.state', ':disableState')
+            ->set('s.disabledAt', ':when')
+            ->andWhere('s.serialNumber = :serialNumber')
+            ->setParameter('serialNumber', strtoupper($serialNumber))
+            ->setParameter('disableState', $state)
+            ->setParameter('when', $timeOfEvent)
+            ->getQuery()
+            ->execute();
     }
 
     /**
@@ -37,9 +71,9 @@ class SmartcardRepository extends EntityRepository
             ->join('b.household', 'h')
             ->join('h.projects', 'p')
             ->andWhere('p.iso3 = :countryCode')
-            ->andWhere('s.state != :smartcardState')
+            ->andWhere('s.state IN (:smartcardBlockedStates)')
             ->setParameter('countryCode', $countryCode)
-            ->setParameter('smartcardState', Smartcard::STATE_ACTIVE);
+            ->setParameter('smartcardBlockedStates', [SmartcardStates::UNASSIGNED, SmartcardStates::INACTIVE, SmartcardStates::CANCELLED]);
 
         return $qb->getQuery()->getResult('plain_values_hydrator');
     }

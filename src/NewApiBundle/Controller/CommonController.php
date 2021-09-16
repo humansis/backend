@@ -30,7 +30,7 @@ class CommonController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/summaries")
+     * @Rest\Get("/web-app/v1/summaries")
      *
      * @param Request $request
      *
@@ -70,7 +70,7 @@ class CommonController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/icons")
+     * @Rest\Get("/web-app/v1/icons")
      * @Cache(expires="+5 days", public=true)
      *
      * @return JsonResponse
@@ -91,11 +91,15 @@ class CommonController extends AbstractController
             $data[] = ['key' => $key, 'svg' => $svg];
         }
 
+        foreach ($this->getParameter('icons_product_category_types') as $key => $svg) {
+            $data[] = ['key' => $key, 'svg' => $svg];
+        }
+
         return $this->json($data);
     }
 
     /**
-     * @Rest\Get("/languages")
+     * @Rest\Get("/web-app/v1/languages")
      * @Cache(expires="+5 days", public=true)
      *
      * @return JsonResponse
@@ -115,7 +119,7 @@ class CommonController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/currencies")
+     * @Rest\Get("/web-app/v1/currencies")
      * @Cache(expires="+5 days", public=true)
      *
      * @return JsonResponse
@@ -135,7 +139,7 @@ class CommonController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/translations/{language}")
+     * @Rest\Get("/web-app/v1/translations/{language}")
      * @Cache(expires="+5 days", public=true)
      *
      * @param string $language
@@ -158,7 +162,7 @@ class CommonController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/adms")
+     * @Rest\Get("/web-app/v1/adms")
      *
      * @param Request $request
      *

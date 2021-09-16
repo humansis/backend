@@ -32,10 +32,9 @@ class HouseholdControllerTest extends BMSServiceTestCase
     public function testCreate()
     {
         $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
-        $vulnerabilityCriterion = self::$container->get('doctrine')->getRepository(VulnerabilityCriterion::class)->findBy([])[0];
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
 
-        $this->request('POST', '/api/basic/households', [
+        $this->request('POST', '/api/basic/web-app/v1/households', [
             'livelihood' => Livelihood::DAILY_LABOUR,
             'iso3' => 'KHM',
             'assets' => ['1'],
@@ -70,7 +69,34 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'referralType' => '1',
                     'referralComment' => 'string',
                     'isHead' => true,
-                    'vulnerabilityCriteriaIds' => [$vulnerabilityCriterion->getId()],
+                    'vulnerabilityCriteria' => [VulnerabilityCriterion::CRITERION_DISABLED],
+                ],
+                [
+                    'dateOfBirth' => '2000-12-01',
+                    'localFamilyName' => 'Simpson',
+                    'localGivenName' => 'Homer',
+                    'enFamilyName' => null,
+                    'enGivenName' => null,
+                    'gender' => 'M',
+                    'residencyStatus' => ResidencyStatus::REFUGEE,
+                    'nationalIdCards' => [
+                        [
+                            'number' => '022-33-1548',
+                            'type' => NationalId::TYPE_NATIONAL_ID,
+                        ],
+                    ],
+                    'phones' => [
+                        [
+                            'prefix' => '420',
+                            'number' => '123456789',
+                            'type' => 'Landline',
+                            'proxy' => true,
+                        ],
+                    ],
+                    'referralType' => '1',
+                    'referralComment' => 'string',
+                    'isHead' => false,
+                    'vulnerabilityCriteria' => [VulnerabilityCriterion::CRITERION_DISABLED, VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL],
                 ],
             ],
             'incomeLevel' => 0,
@@ -82,7 +108,12 @@ class HouseholdControllerTest extends BMSServiceTestCase
             'supportOrganizationName' => 'some organisation',
             'incomeSpentOnFood' => 0,
             'houseIncome' => null,
-            'countrySpecificAnswers' => [],
+            'countrySpecificAnswers' => [ //for KHM
+                [
+                    'countrySpecificId' => 1,
+                    'answer' => '2',
+                ]
+            ],
             'residenceAddress' => [
                 'number' => 'string',
                 'street' => 'string',
@@ -165,7 +196,18 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
         $camp = self::$container->get('doctrine')->getRepository(Camp::class)->findBy([])[0];
 
-        $this->request('PUT', '/api/basic/households/'.$id, [
+        /** @var Household $household */
+        $household = $this->em->getRepository(Household::class)->find($id);
+        $householdHead = $household->getHouseholdHead();
+
+        $member = null;
+        foreach ($household->getBeneficiaries() as $beneficiary) {
+            if (!$beneficiary->isHead()) {
+                $member = $beneficiary;
+            }
+        }
+
+        $this->request('PUT', '/api/basic/web-app/v1/households/'.$id, [
             'livelihood' => Livelihood::FARMING_AGRICULTURE,
             'iso3' => 'KHM',
             'assets' => ['1', '2'],
@@ -176,6 +218,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             'latitude' => null,
             'beneficiaries' => [
                 [
+                    'id' => $householdHead->getId(),
                     'dateOfBirth' => '2000-12-01',
                     'localFamilyName' => 'Bond',
                     'localGivenName' => 'James',
@@ -200,7 +243,35 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'referralType' => '1',
                     'referralComment' => 'string',
                     'isHead' => true,
-                    'vulnerabilityCriteriaIds' => [$vulnerabilityCriterion->getId()],
+                    'vulnerabilityCriteria' => [VulnerabilityCriterion::CRITERION_DISABLED],
+                ],
+                [
+                    'id' => $member->getId(),
+                    'dateOfBirth' => '2000-12-01',
+                    'localFamilyName' => 'Simpson',
+                    'localGivenName' => 'Homer',
+                    'enFamilyName' => null,
+                    'enGivenName' => null,
+                    'gender' => 'M',
+                    'residencyStatus' => ResidencyStatus::REFUGEE,
+                    'nationalIdCards' => [
+                        [
+                            'number' => '022-33-1548',
+                            'type' => NationalId::TYPE_NATIONAL_ID,
+                        ],
+                    ],
+                    'phones' => [
+                        [
+                            'prefix' => '420',
+                            'number' => '123456789',
+                            'type' => 'Landline',
+                            'proxy' => true,
+                        ],
+                    ],
+                    'referralType' => '1',
+                    'referralComment' => 'string',
+                    'isHead' => false,
+                    'vulnerabilityCriteria' => [],
                 ],
             ],
             'incomeLevel' => 0,
@@ -281,6 +352,8 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('proxyNationalIdCardId', $result);
         $this->assertArrayHasKey('proxyPhoneId', $result);
 
+        $this->assertEquals(2, $household->getBeneficiaries()->count());
+
         return $id;
     }
 
@@ -289,7 +362,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/households/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/households/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -339,7 +412,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        $this->request('GET', '/api/basic/households?sort[]=localFirstName.asc&filter[gender]=F');
+        $this->request('GET', '/api/basic/web-app/v1/households?sort[]=localFirstName.asc&filter[gender]=F');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -357,7 +430,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        $this->request('DELETE', '/api/basic/households/'.$id);
+        $this->request('DELETE', '/api/basic/web-app/v1/households/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
 
@@ -369,7 +442,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        $this->request('GET', '/api/basic/households/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/households/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }
@@ -384,7 +457,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $project = $em->getRepository(Project::class)->findOneBy([]);
         $household = $em->getRepository(Household::class)->findOneBy([], ['id'=>'desc']);
 
-        $this->request('PUT', '/api/basic/projects/'.$project->getId().'/households', [
+        $this->request('PUT', '/api/basic/web-app/v1/projects/'.$project->getId().'/households', [
             'householdIds' => [$household->getId()],
         ]);
 

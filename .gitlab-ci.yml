@@ -10,16 +10,17 @@ variables:
   USERNAME: "PIN Deploy"
 
 stages:
- - test
- - backup_db
- - backup_code
- - report_starting
- - deploy_dev
- - deploy_test
- - deploy_stage
- - deploy_prod
- - report_finished
- - upload_db
+  - static_analysis
+  - test
+  - backup_db
+  - backup_code
+  - report_starting
+  - deploy_dev
+  - deploy_test
+  - deploy_stage
+  - deploy_prod
+  - report_finished
+  - upload_db
 
 .prepare_ssh: &prepare_ssh
   before_script:
@@ -72,6 +73,7 @@ backup-db:
   script:
     - mysqldump --quick --skip-lock-tables --single-transaction --set-gtid-purged=OFF -h ${RDS_HOSTNAME} -u ${RDS_USERNAME_PROD} -p"${RDS_PASSWORD_PROD}" ${RDS_DB_NAME_PROD} | pv > db.sql
     - export DB_NAME=backup_$(date '+%Y_%m_%d')_${CI_PIPELINE_ID}
+    - sed -i -e 's/DEFINER[ ]=[ ][^*]**/*/' db.sql
     - mysql -h ${RDS_HOSTNAME} -u ${RDS_USERNAME_PROD} -p"${RDS_PASSWORD_PROD}" -e "CREATE DATABASE ${DB_NAME} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
     - pv --bytes --eta --progress db.sql | mysql -h ${RDS_HOSTNAME} -u ${RDS_USERNAME_PROD} -p"${RDS_PASSWORD_PROD}" ${DB_NAME}
   after_script:
@@ -234,6 +236,7 @@ deploy prod db to stage:
   script:
     - mysqldump --quick --skip-lock-tables --single-transaction --set-gtid-purged=OFF -h ${RDS_HOSTNAME_PROD} -u ${RDS_USERNAME_PROD} -p"${RDS_PASSWORD_PROD}" ${RDS_DB_NAME_PROD} | pv > db.sql
     - mysql -h ${RDS_HOSTNAME_STAGE} -u ${RDS_USERNAME_STAGE} -p"${RDS_PASSWORD_STAGE}" -e "DROP DATABASE ${DATABASE_NAME}"
+    - sed -i -e 's/DEFINER[ ]*=[ ]*[^*]*\*/\*/' db.sql
     - mysql -h ${RDS_HOSTNAME_STAGE} -u ${RDS_USERNAME_STAGE} -p"${RDS_PASSWORD_STAGE}" -e "CREATE DATABASE ${DATABASE_NAME} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
     - pv --bytes --eta --progress db.sql | mysql -h ${RDS_HOSTNAME_STAGE} -u ${RDS_USERNAME_STAGE} -p"${RDS_PASSWORD_STAGE}" ${DATABASE_NAME}
     - export command="sed -i -e \"s/${RDS_DB_NAME_STAGE}/${DATABASE_NAME}/g\" /var/www/html/bms_api/app/config/parameters.yml"
@@ -269,7 +272,7 @@ deploy test DCA fixtures:
     - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
   <<: *remove_key
   only:
-    - master
+    - dca_master
   when: manual
 
 deploy test DCA keep DB:
@@ -288,7 +291,7 @@ deploy test DCA keep DB:
     - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
   <<: *remove_key
   only:
-    - master
+    - dca_master
   when: manual
 
 deploy test DCA prod DB:
@@ -307,7 +310,7 @@ deploy test DCA prod DB:
     - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
   <<: *remove_key
   only:
-    - master
+    - dca_master
   when: manual
 
 deploy prod DCA:
@@ -326,7 +329,17 @@ deploy prod DCA:
     - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
   <<: *remove_key
   only:
-    - /^v.*$/
+    - /^dca-v.*$/
   except:
     - branches
   when: manual
+
+static_analysis:
+  image: php:7.4-fpm
+  stage: static_analysis
+  script:
+    - apt-get update
+    - apt install -y curl git unzip
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    - php /usr/local/bin/composer install -o --ignore-platform-reqs --no-scripts
+    - php -d memory_limit=-1 vendor/bin/phpstan analyse -l 1 src/

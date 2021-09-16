@@ -10,21 +10,21 @@ use Symfony\Component\Validator\Constraints as Assert;
 class ResidenceAddressInputType implements InputTypeInterface
 {
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      * @Assert\Length(max="45")
      * @Assert\NotBlank
      */
     private $number;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      * @Assert\Length(max="255")
      * @Assert\NotBlank
      */
     private $street;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      * @Assert\Length(max="45")
      * @Assert\NotBlank
      */

@@ -3,21 +3,17 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\InputType\FilterFragment\LocationFilterTrait;
+use NewApiBundle\InputType\FilterFragment\PrimaryIdFilterTrait;
+use NewApiBundle\InputType\FilterFragment\ProjectFilterTrait;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class AssistanceFilterInputType extends AbstractFilterInputType
 {
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("int", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $id;
+    use PrimaryIdFilterTrait;
+    use ProjectFilterTrait;
+    use LocationFilterTrait;
 
     /**
      * @Assert\Type("boolean")
@@ -33,44 +29,12 @@ class AssistanceFilterInputType extends AbstractFilterInputType
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *         @Assert\Type("int", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $projects;
-
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("int", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $locations;
-
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
      *         @Assert\Type("string", groups={"Strict"})
      *     },
      *     groups={"Strict"}
      * )
      */
     protected $modalityTypes;
-
-    public function hasIds(): bool
-    {
-        return $this->has('id');
-    }
-
-    public function getIds(): array
-    {
-        return $this->id;
-    }
 
     public function hasUpcomingOnly(): bool
     {
@@ -92,19 +56,6 @@ class AssistanceFilterInputType extends AbstractFilterInputType
         return $this->type;
     }
 
-    public function hasProjects(): bool
-    {
-        return $this->has('projects');
-    }
-
-    /**
-     * @return int[]
-     */
-    public function getProjects(): array
-    {
-        return $this->projects;
-    }
-
     public function hasModalityTypes(): bool
     {
         return $this->has('modalityTypes');
@@ -116,18 +67,5 @@ class AssistanceFilterInputType extends AbstractFilterInputType
     public function getModalityTypes(): array
     {
         return $this->modalityTypes;
-    }
-
-    public function hasLocations(): bool
-    {
-        return $this->has('locations');
-    }
-
-    /**
-     * @return int[]
-     */
-    public function getLocations(): array
-    {
-        return $this->locations;
     }
 }

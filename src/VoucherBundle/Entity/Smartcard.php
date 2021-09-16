@@ -8,9 +8,10 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+use VoucherBundle\Enum\SmartcardStates;
 
 /**
- * Smartcard.
+ * Smartcard instance used by one Beneficiary
  *
  * @ORM\Table(name="smartcard")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\SmartcardRepository")
@@ -65,7 +66,8 @@ class Smartcard
     private $purchases;
 
     /**
-     * @var string one of self::STATE_*
+     * @var string
+     * @see SmartcardStates::all()
      *
      * @ORM\Column(name="state", type="string", length=10, nullable=false)
      * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
@@ -87,6 +89,14 @@ class Smartcard
      * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
      */
     private $createdAt;
+
+    /**
+     * @var \DateTimeInterface
+     *
+     * @ORM\Column(name="disabled_at", type="datetime", nullable=true)
+     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
+     */
+    private $disabledAt;
 
     /**
      * @var bool
@@ -274,6 +284,22 @@ class Smartcard
     public function getCreatedAt(): \DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    /**
+     * @return \DateTimeInterface|null
+     */
+    public function getDisabledAt(): ?\DateTimeInterface
+    {
+        return $this->disabledAt;
+    }
+
+    /**
+     * @param \DateTimeInterface $disabledAt
+     */
+    public function setDisabledAt(\DateTimeInterface $disabledAt): void
+    {
+        $this->disabledAt = $disabledAt;
     }
 
     public function addDeposit(SmartcardDeposit $deposit): self

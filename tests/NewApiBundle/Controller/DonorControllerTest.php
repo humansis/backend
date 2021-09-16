@@ -22,7 +22,7 @@ class DonorControllerTest extends BMSServiceTestCase
 
     public function testCreate()
     {
-        $this->request('POST', '/api/basic/donors', [
+        $this->request('POST', '/api/basic/web-app/v1/donors', [
             'fullname' => 'Test Donor',
             'shortname' => 'TD',
         ]);
@@ -48,7 +48,7 @@ class DonorControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        $this->request('PUT', '/api/basic/donors/'.$id, [
+        $this->request('PUT', '/api/basic/web-app/v1/donors/'.$id, [
             'fullname' => 'Test Donor',
             'shortname' => 'TD',
             'notes' => 'some note',
@@ -75,7 +75,7 @@ class DonorControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/donors/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/donors/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -98,7 +98,7 @@ class DonorControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        $this->request('GET', '/api/basic/donors?sort[]=fullname.asc&filter[fulltext]=test&filter[id][]=1');
+        $this->request('GET', '/api/basic/web-app/v1/donors?sort[]=fullname.asc&filter[fulltext]=test&filter[id][]=1');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -116,7 +116,7 @@ class DonorControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        $this->request('DELETE', '/api/basic/donors/'.$id);
+        $this->request('DELETE', '/api/basic/web-app/v1/donors/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
 
@@ -128,7 +128,7 @@ class DonorControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        $this->request('GET', '/api/basic/donors/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/donors/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }

@@ -9,6 +9,7 @@ use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use InvalidArgumentException;
+use NewApiBundle\Entity\Import;
 use NewApiBundle\InputType\AddHouseholdsToProjectInputType;
 use NewApiBundle\InputType\ProjectCreateInputType;
 use NewApiBundle\InputType\ProjectUpdateInputType;
@@ -421,14 +422,15 @@ class ProjectService
         $assistance = $this->em->getRepository(Assistance::class)->findByProject($project);
 
         if (0 === $assistance->count()) {
-            try {
-                foreach ($project->getSectors()->getValues() as $projectSector) {
-                    $this->em->remove($projectSector);
-                }
-                $this->em->remove($project);
-            } catch (\Exception $error) {
-                throw new \Exception("Error deleting project");
+            $imports = $this->em->getRepository(Import::class)->findBy(['project'=>$project]);
+            /** @var Import $import */
+            foreach ($imports as $import) {
+                $this->em->remove($import);
             }
+            foreach ($project->getSectors()->getValues() as $projectSector) {
+                $this->em->remove($projectSector);
+            }
+            $this->em->remove($project);
         } else {
             if (!$this->checkIfAllDistributionClosed($assistance)) {
                 throw new \Exception("You can't delete this project as it has an unfinished distribution");

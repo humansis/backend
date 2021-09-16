@@ -49,7 +49,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             return;
         }
 
-        $this->request('GET', '/api/basic/assistances/'.$assistanceId.'/assistances-beneficiaries?sort[]=id.desc');
+        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-beneficiaries?sort[]=id.desc');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -91,7 +91,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             return;
         }
 
-        $this->request('GET', '/api/basic/assistances/'.$assistanceId.'/assistances-institutions?sort[]=id.desc');
+        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-institutions?sort[]=id.desc');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -133,7 +133,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             return;
         }
 
-        $this->request('GET', '/api/basic/assistances/'.$assistanceId.'/assistances-communities?sort[]=id.desc');
+        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-communities?sort[]=id.desc');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -170,7 +170,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
         ]);
         $beneficiary = $em->getRepository(Beneficiary::class)->findOneBy([], ['id'=>'desc']);
 
-        $this->request('PUT', '/api/basic/assistances/'.$assistance->getId().'/assistances-beneficiaries', [
+        $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/assistances-beneficiaries', [
             'beneficiaryIds' => [$beneficiary->getId()],
             'justification' => 'test',
             'added' => true,
@@ -191,7 +191,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
     {
         list($assistanceId, $beneficiaryId) = $data;
 
-        $this->request('PUT', '/api/basic/assistances/'.$assistanceId.'/assistances-beneficiaries', [
+        $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-beneficiaries', [
             'beneficiaryIds' => [$beneficiaryId],
             'justification' => 'test',
             'removed' => true,
@@ -218,7 +218,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
         ]);
         $institution = $em->getRepository(Institution::class)->findOneBy([], ['id'=>'desc']);
 
-        $this->request('PUT', '/api/basic/assistances/'.$assistance->getId().'/assistances-institutions', [
+        $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/assistances-institutions', [
             'institutionIds' => [$institution->getId()],
             'justification' => 'test',
             'added' => true,
@@ -239,7 +239,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
     {
         list($assistanceId, $institutionId) = $data;
 
-        $this->request('PUT', '/api/basic/assistances/'.$assistanceId.'/assistances-institutions', [
+        $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-institutions', [
             'institutionIds' => [$institutionId],
             'justification' => 'test',
             'removed' => true,
@@ -266,7 +266,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
         ]);
         $community = $em->getRepository(Community::class)->findOneBy([], ['id'=>'desc']);
 
-        $this->request('PUT', '/api/basic/assistances/'.$assistance->getId().'/assistances-communities', [
+        $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/assistances-communities', [
             'communityIds' => [$community->getId()],
             'justification' => 'test',
             'added' => true,
@@ -287,7 +287,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
     {
         list($assistanceId, $communityId) = $data;
 
-        $this->request('PUT', '/api/basic/assistances/'.$assistanceId.'/assistances-communities', [
+        $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-communities', [
             'communityIds' => [$communityId],
             'justification' => 'test',
             'removed' => true,

@@ -30,7 +30,7 @@ class CommonControllerTest extends BMSServiceTestCase
      */
     public function testGetSummaries()
     {
-        $this->request('GET', '/api/basic/summaries?code[]=total_registrations&code[]=active_projects', ['country' => 'KHM']);
+        $this->request('GET', '/api/basic/web-app/v1/summaries?code[]=total_registrations&code[]=active_projects', ['country' => 'KHM']);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -49,7 +49,7 @@ class CommonControllerTest extends BMSServiceTestCase
      */
     public function testGetIcons()
     {
-        $this->request('GET', '/api/basic/icons');
+        $this->request('GET', '/api/basic/web-app/v1/icons');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -66,7 +66,7 @@ class CommonControllerTest extends BMSServiceTestCase
      */
     public function testGetCurrencies()
     {
-        $this->request('GET', '/api/basic/currencies');
+        $this->request('GET', '/api/basic/web-app/v1/currencies');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -82,7 +82,7 @@ class CommonControllerTest extends BMSServiceTestCase
      */
     public function testGetLanguages()
     {
-        $this->request('GET', '/api/basic/languages');
+        $this->request('GET', '/api/basic/web-app/v1/languages');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -98,7 +98,7 @@ class CommonControllerTest extends BMSServiceTestCase
      */
     public function testGetTranslations()
     {
-        $this->request('GET', '/api/basic/translations/en');
+        $this->request('GET', '/api/basic/web-app/v1/translations/en');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -112,7 +112,7 @@ class CommonControllerTest extends BMSServiceTestCase
      */
     public function testGetAdmsNames()
     {
-        $this->request('GET', '/api/basic/adms');
+        $this->request('GET', '/api/basic/web-app/v1/adms');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

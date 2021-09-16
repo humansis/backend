@@ -13,6 +13,7 @@ use \DistributionBundle\Entity\AssistanceBeneficiary;
 use \DistributionBundle\Entity\Assistance;
 use \DistributionBundle\Entity\Commodity;
 use \BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use Exception;
 
 /**
  * Class DataFillersDistribution

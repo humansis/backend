@@ -37,7 +37,7 @@ class DistributedItemControllerTest extends BMSServiceTestCase
             $this->markTestSkipped("There is no household in distibuted items.");
         }
 
-        $this->request('GET', '/api/basic/households/'.$householdId.'/distributed-items');
+        $this->request('GET', '/api/basic/web-app/v1/households/'.$householdId.'/distributed-items');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -83,7 +83,7 @@ class DistributedItemControllerTest extends BMSServiceTestCase
             $this->markTestSkipped("There is no beneficiary in distibuted items.");
         }
 
-        $this->request('GET', '/api/basic/beneficiaries/'.$beneficiaryId.'/distributed-items');
+        $this->request('GET', '/api/basic/web-app/v1/beneficiaries/'.$beneficiaryId.'/distributed-items');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -115,7 +115,7 @@ class DistributedItemControllerTest extends BMSServiceTestCase
 
     public function testFindByParams()
     {
-        $this->request('GET', '/api/basic/distributed-items?filter[fulltext]=a&filter[projects][]=1&filter[dateFrom]=2020-01-01&filter[beneficiaryTypes][]=Beneficiary'.
+        $this->request('GET', '/api/basic/web-app/v1/distributed-items?filter[fulltext]=a&filter[projects][]=1&filter[dateFrom]=2020-01-01&filter[beneficiaryTypes][]=Beneficiary'.
         '&sort[]=dateDistribution.asc&sort[]=beneficiaryId.asc&sort[]=amount.asc');
 
         $this->assertTrue(

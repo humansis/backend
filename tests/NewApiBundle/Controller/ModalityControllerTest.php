@@ -27,7 +27,7 @@ class ModalityControllerTest extends BMSServiceTestCase
      */
     public function testGetModalities()
     {
-        $this->request('GET', '/api/basic/modalities');
+        $this->request('GET', '/api/basic/web-app/v1/modalities');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -48,7 +48,7 @@ class ModalityControllerTest extends BMSServiceTestCase
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $modality = $em->getRepository(Modality::class)->findBy([])[0];
 
-        $this->request('GET', '/api/basic/modalities/'.$modality->getName().'/types');
+        $this->request('GET', '/api/basic/web-app/v1/modalities/'.$modality->getName().'/types');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

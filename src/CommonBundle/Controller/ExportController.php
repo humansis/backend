@@ -78,7 +78,7 @@ class ExportController extends Controller
                 $countryIso3 = $request->request->get("__country");
                 $filters = $request->request->get('filters');
                 $ids = $request->request->get('ids');
-                $filename = $this->get('beneficiary.beneficiary_service')->exportToCsv($type, $countryIso3, $filters, $ids);
+                $filename = $this->get('beneficiary.beneficiary_service')->exportToCsvDeprecated($type, $countryIso3, $filters, $ids);
             } elseif ($request->query->get('users')) {
                 $filename = $this->get('user.user_service')->exportToCsv($type);
             } elseif ($request->query->get('countries')) {
@@ -149,6 +149,8 @@ class ExportController extends Controller
             } elseif ($request->query->get('vendors')) {
                 $countryIso3 = $request->request->get("__country");
                 $filename = $this->get('voucher.vendor_service')->exportToCsv($type, $countryIso3);
+            } else {
+                return new JsonResponse('No export selected', Response::HTTP_BAD_REQUEST);
             }
 
             // Create binary file to send

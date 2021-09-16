@@ -26,7 +26,7 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
         /** @var Assistance $assistance */
         $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy([])[0];
 
-        $this->request('GET', '/api/basic/assistances/'.$assistance->getId().'/statistics');
+        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/statistics');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -48,7 +48,7 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
         /** @var Assistance $assistance */
         $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy(['archived' => false])[0];
 
-        $this->request('GET', '/api/basic/assistances/statistics?filter[id][]='.$assistance->getId(), ['country' => 'KHM']);
+        $this->request('GET', '/api/basic/web-app/v1/assistances/statistics?filter[id][]='.$assistance->getId(), ['country' => 'KHM']);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

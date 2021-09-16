@@ -26,7 +26,7 @@ class InstitutionCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetLocationTypes()
     {
-        $this->request('GET', '/api/basic/institutions/types');
+        $this->request('GET', '/api/basic/web-app/v1/institutions/types');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

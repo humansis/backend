@@ -30,7 +30,7 @@ class BookletControllerTest extends BMSServiceTestCase
     {
         $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
 
-        $this->request('POST', '/api/basic/booklets/batches', [
+        $this->request('POST', '/api/basic/web-app/v1/booklets/batches', [
             'iso3' => 'KHM',
             'quantityOfBooklets' => 5,
             'quantityOfVouchers' => 2,
@@ -50,7 +50,7 @@ class BookletControllerTest extends BMSServiceTestCase
     {
         $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([])[0];
 
-        $this->request('PUT', '/api/basic/booklets/'.$booklet->getId(), [
+        $this->request('PUT', '/api/basic/web-app/v1/booklets/'.$booklet->getId(), [
             'quantityOfVouchers' => 2,
             'values' => [333],
             'password' => null,
@@ -70,7 +70,7 @@ class BookletControllerTest extends BMSServiceTestCase
     {
         $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([])[0];
 
-        $this->request('GET', '/api/basic/booklets/'.$booklet->getId());
+        $this->request('GET', '/api/basic/web-app/v1/booklets/'.$booklet->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -98,7 +98,7 @@ class BookletControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        $this->request('GET', '/api/basic/booklets?sort[]=value.asc&filter[fulltext]=KHM');
+        $this->request('GET', '/api/basic/web-app/v1/booklets?sort[]=value.asc&filter[fulltext]=KHM');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -118,7 +118,7 @@ class BookletControllerTest extends BMSServiceTestCase
     {
         $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([], ['id' => 'desc'], 1)[0];
 
-        $this->request('DELETE', '/api/basic/booklets/'.$booklet->getId());
+        $this->request('DELETE', '/api/basic/web-app/v1/booklets/'.$booklet->getId());
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
     }
@@ -144,7 +144,7 @@ class BookletControllerTest extends BMSServiceTestCase
 
         $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED])[0];
 
-        $this->request('PUT', '/api/basic/assistances/'.$result['assistanceId'].'/beneficiaries/'.$result['beneficiaryId'].'/booklets/'.$booklet->getCode());
+        $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$result['assistanceId'].'/beneficiaries/'.$result['beneficiaryId'].'/booklets/'.$booklet->getCode());
 
         $this->assertTrue(
             $this->client->getResponse()->isEmpty(),
@@ -179,7 +179,7 @@ class BookletControllerTest extends BMSServiceTestCase
 
         $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED])[0];
 
-        $this->request('PUT', '/api/basic/assistances/'.$result['assistanceId'].'/communities/'.$result['communityId'].'/booklets/'.$booklet->getCode());
+        $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$result['assistanceId'].'/communities/'.$result['communityId'].'/booklets/'.$booklet->getCode());
 
         $this->assertTrue(
             $this->client->getResponse()->isEmpty(),
@@ -214,7 +214,7 @@ class BookletControllerTest extends BMSServiceTestCase
 
         $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED])[0];
 
-        $this->request('PUT', '/api/basic/assistances/'.$result['assistanceId'].'/institutions/'.$result['institutionId'].'/booklets/'.$booklet->getCode());
+        $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$result['assistanceId'].'/institutions/'.$result['institutionId'].'/booklets/'.$booklet->getCode());
 
         $this->assertTrue(
             $this->client->getResponse()->isEmpty(),

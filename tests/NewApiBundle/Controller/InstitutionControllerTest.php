@@ -42,7 +42,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There needs to be at least one location in system to complete this test');
         }
 
-        $this->request('POST', '/api/basic/institutions', [
+        $this->request('POST', '/api/basic/web-app/v1/institutions', [
             'longitude' => 'test longitude',
             'latitude' => 'test latitude',
             'name' => 'test name',
@@ -137,7 +137,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
             ],
         ];
 
-        $this->request('PUT', '/api/basic/institutions/'.$id, $data);
+        $this->request('PUT', '/api/basic/web-app/v1/institutions/'.$id, $data);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -175,7 +175,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/institutions/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/institutions/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -208,7 +208,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        $this->request('GET', '/api/basic/institutions?sort[]=name.asc&filter[projects][]=1&filter[fulltext]=a');
+        $this->request('GET', '/api/basic/web-app/v1/institutions?sort[]=name.asc&filter[projects][]=1&filter[fulltext]=a');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -232,7 +232,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        $this->request('DELETE', '/api/basic/institutions/'.$id);
+        $this->request('DELETE', '/api/basic/web-app/v1/institutions/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
 
@@ -249,7 +249,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        $this->request('GET', '/api/basic/institutions/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/institutions/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }
@@ -266,7 +266,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There is no institution to be tested');
         }
 
-        $this->request('GET', '/api/basic/projects/'.$institution->getProjects()[0]->getId().'/institutions');
+        $this->request('GET', '/api/basic/web-app/v1/projects/'.$institution->getProjects()[0]->getId().'/institutions');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

@@ -16,6 +16,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 class BeneficiaryInputType implements InputTypeInterface
 {
     /**
+     * @var int|null
+     * @Assert\Type("integer")
+     */
+    private $id;
+
+    /**
      * @Iso8601
      * @Assert\NotBlank
      * @Assert\NotNull
@@ -346,12 +352,19 @@ class BeneficiaryInputType implements InputTypeInterface
         $this->referralComment = $referralComment;
     }
 
+    public function hasReferral(): bool
+    {
+        return null !== $this->referralType
+            && null !== $this->referralComment
+            ;
+    }
+
     /**
      * @return boolean
      */
     public function isHead()
     {
-        return $this->isHead;
+        return $this->isHead === true;
     }
 
     /**
@@ -376,5 +389,21 @@ class BeneficiaryInputType implements InputTypeInterface
     public function setVulnerabilityCriteria($vulnerabilityCriteria)
     {
         $this->vulnerabilityCriteria = $vulnerabilityCriteria;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int|null $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
     }
 }

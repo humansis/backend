@@ -20,12 +20,13 @@ class HouseholdLocationRepository extends \Doctrine\ORM\EntityRepository
     {
         $qbr = $this->createQueryBuilder('hl');
 
+        $qbr->andWhere('hl.type = :type')
+            ->setParameter('type', HouseholdLocation::LOCATION_TYPE_CAMP);
+
         if ($filter) {
             if ($filter->hasIds()) {
                 $qbr->andWhere('hl.id IN (:ids)')
-                    ->andWhere('hl.type = :type')
-                    ->setParameter('ids', $filter->getIds())
-                    ->setParameter('type', HouseholdLocation::LOCATION_TYPE_CAMP);
+                    ->setParameter('ids', $filter->getIds());
             }
         }
 
@@ -36,12 +37,13 @@ class HouseholdLocationRepository extends \Doctrine\ORM\EntityRepository
     {
         $qbr = $this->createQueryBuilder('hl');
 
+        $qbr->andWhere('hl.type = :type')
+            ->setParameter('type', HouseholdLocation::LOCATION_TYPE_RESIDENCE);
+
         if ($filter) {
             if ($filter->hasIds()) {
                 $qbr->andWhere('hl.id IN (:ids)')
-                    ->andWhere('hl.type = :type')
-                    ->setParameter('ids', $filter->getIds())
-                    ->setParameter('type', HouseholdLocation::LOCATION_TYPE_RESIDENCE);
+                    ->setParameter('ids', $filter->getIds());
             }
         }
 
@@ -52,12 +54,13 @@ class HouseholdLocationRepository extends \Doctrine\ORM\EntityRepository
     {
         $qbr = $this->createQueryBuilder('hl');
 
+        $qbr->andWhere('hl.type = :type')
+            ->setParameter('type', HouseholdLocation::LOCATION_TYPE_SETTLEMENT);
+
         if ($filter) {
             if ($filter->hasIds()) {
                 $qbr->andWhere('hl.id IN (:ids)')
-                    ->andWhere('hl.type = :type')
-                    ->setParameter('ids', $filter->getIds())
-                    ->setParameter('type', HouseholdLocation::LOCATION_TYPE_SETTLEMENT);
+                    ->setParameter('ids', $filter->getIds());
             }
         }
 

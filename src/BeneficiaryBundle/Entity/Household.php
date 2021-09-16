@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 // use Symfony\Component\Serializer\Annotation\ as JMS_Type;
 use InvalidArgumentException;
+use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -113,9 +114,9 @@ class Household extends AbstractBeneficiary
     private $countrySpecificAnswers;
 
     /**
-     * @var Beneficiary
+     * @var Collection|Beneficiary[]
      *
-     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Beneficiary", mappedBy="household")
+     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Beneficiary", mappedBy="household", cascade={"persist"})
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers"})
      */
     private $beneficiaries;
@@ -215,6 +216,13 @@ class Household extends AbstractBeneficiary
     private $proxy;
 
     /**
+     * @var ImportBeneficiaryDuplicity[]|Collection
+     *
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiaryDuplicity", mappedBy="theirs", cascade={"remove"})
+     */
+    private $importBeneficiaryDuplicities;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -223,6 +231,7 @@ class Household extends AbstractBeneficiary
         $this->countrySpecificAnswers = new ArrayCollection();
         $this->beneficiaries = new ArrayCollection();
         $this->householdLocations = new ArrayCollection();
+        $this->importBeneficiaryDuplicities = new ArrayCollection();
 
         $this->assets = [];
         $this->supportReceivedTypes = [];
@@ -467,7 +476,7 @@ class Household extends AbstractBeneficiary
     /**
      * Get beneficiaries.
      *
-     * @return Collection
+     * @return Collection|Beneficiary[]
      */
     public function getBeneficiaries()
     {
@@ -779,5 +788,13 @@ class Household extends AbstractBeneficiary
     public function setProxy(?Person $proxy): void
     {
         $this->proxy = $proxy;
+    }
+
+    /**
+     * @return Collection|ImportBeneficiaryDuplicity[]
+     */
+    public function getImportBeneficiaryDuplicities()
+    {
+        return $this->importBeneficiaryDuplicities;
     }
 }

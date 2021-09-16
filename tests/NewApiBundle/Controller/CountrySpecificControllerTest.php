@@ -23,7 +23,7 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
 
     public function testCreate()
     {
-        $this->request('POST', '/api/basic/country-specifics', [
+        $this->request('POST', '/api/basic/web-app/v1/country-specifics', [
             'field' => 'Country specific field',
             'type' => 'number',
             'iso3' => 'KHM',
@@ -49,7 +49,7 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        $this->request('PUT', '/api/basic/country-specifics/'.$id, [
+        $this->request('PUT', '/api/basic/web-app/v1/country-specifics/'.$id, [
             'field' => 'Country specific field',
             'type' => 'text',
 
@@ -75,7 +75,7 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/country-specifics/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/country-specifics/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -97,7 +97,7 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        $this->request('DELETE', '/api/basic/country-specifics/'.$id);
+        $this->request('DELETE', '/api/basic/web-app/v1/country-specifics/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
 
@@ -109,7 +109,7 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        $this->request('GET', '/api/basic/country-specifics/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/country-specifics/'.$id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }
@@ -119,7 +119,7 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
         /** @var CountrySpecificAnswer $answer */
         $answer = self::$container->get('doctrine')->getRepository(CountrySpecificAnswer::class)->findBy([])[0];
 
-        $this->request('GET', '/api/basic/country-specifics/answers/'.$answer->getId());
+        $this->request('GET', '/api/basic/web-app/v1/country-specifics/answers/'.$answer->getId());
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

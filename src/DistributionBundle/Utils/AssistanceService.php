@@ -23,6 +23,7 @@ use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\GeneralReliefItemUpdateInputType;
+use NewApiBundle\InputType\GeneralReliefPatchInputType;
 use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
@@ -173,6 +174,42 @@ class AssistanceService
         $beneficiaries = $this->em->getRepository(\BeneficiaryBundle\Entity\AbstractBeneficiary::class)->findBy(['id' => $ids]);
 
         return new \CommonBundle\Pagination\Paginator($beneficiaries, $count);
+    }
+
+    /**
+     * @param AssistanceCreateInputType $inputType
+     * @param Pagination                $pagination
+     *
+     * @return \CommonBundle\Pagination\Paginator|\DistributionBundle\DTO\VulnerabilityScore[]
+     * @throws EntityNotFoundException
+     * @throws \BeneficiaryBundle\Exception\CsvParserException
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public function findVulnerabilityScores(AssistanceCreateInputType $inputType, Pagination $pagination)
+    {
+        $project = $this->em->getRepository(Project::class)->find($inputType->getProjectId());
+        if (!$project) {
+            throw new \Doctrine\ORM\EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
+        }
+
+        $filters = $this->mapping($inputType);
+        $filters['criteria'] = $filters['selection_criteria'];
+
+        $result = $this->criteriaAssistanceService->load($filters, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false);
+        $ids = array_keys($result['finalArray']);
+        $count = count($ids);
+
+        $ids = array_slice($ids, $pagination->getOffset(), $pagination->getSize());
+
+        $list = [];
+        foreach ($ids as $id) {
+            $beneficiary = $this->em->getRepository(\BeneficiaryBundle\Entity\AbstractBeneficiary::class)->find($id);
+            $list[] = new \DistributionBundle\DTO\VulnerabilityScore($beneficiary, $result['finalArray'][$id]);
+        }
+
+        return new \CommonBundle\Pagination\Paginator($list, $count);
     }
 
     public function create(AssistanceCreateInputType $inputType)
@@ -722,6 +759,30 @@ class AssistanceService
         $numberIncomplete = $this->em->getRepository(GeneralReliefItem::class)->countNonDistributed($assistance);
 
         return array($successArray, $errorArray, $numberIncomplete);
+    }
+
+    /**
+     * Set general relief item attributes
+     *
+     * @param GeneralReliefItem           $gri
+     * @param GeneralReliefPatchInputType $input
+     */
+    public function patchGeneralReliefItem(GeneralReliefItem $gri, GeneralReliefPatchInputType $input)
+    {
+        if ($input->isDistributedSet()) {
+            if ($input->getDistributed()) {
+                $gri->setDistributedAt(new \DateTime($input->getDateOfDistribution()));
+            } else {
+                $gri->setDistributedAt(null);
+            }
+        }
+
+        if ($input->isNoteSet()) {
+            $gri->setNotes($input->getNote());
+        }
+
+        $this->em->persist($gri);
+        $this->em->flush();
     }
 
     /**

@@ -38,7 +38,7 @@ class PurchasedItemControllerTest extends BMSServiceTestCase
             $this->markTestSkipped("There is no household in purchased items.");
         }
 
-        $this->request('GET', '/api/basic/households/'.$householdId.'/purchased-items');
+        $this->request('GET', '/api/basic/web-app/v1/households/'.$householdId.'/purchased-items');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -66,7 +66,7 @@ class PurchasedItemControllerTest extends BMSServiceTestCase
             $this->markTestSkipped("There is no beneficiary in purchased items.");
         }
 
-        $this->request('GET', '/api/basic/beneficiaries/'.$beneficiaryId.'/purchased-items');
+        $this->request('GET', '/api/basic/web-app/v1/beneficiaries/'.$beneficiaryId.'/purchased-items');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -80,7 +80,7 @@ class PurchasedItemControllerTest extends BMSServiceTestCase
 
     public function testFindByParams()
     {
-        $this->request('GET', '/api/basic/purchased-items?filter[fulltext]=a&filter[projects][]=1&filter[beneficiaryTypes][]=Beneficiary&sort[]=value.asc&sort[]=datePurchase.desc');
+        $this->request('GET', '/api/basic/web-app/v1/purchased-items?filter[fulltext]=a&filter[projects][]=1&filter[beneficiaryTypes][]=Beneficiary&sort[]=value.asc&sort[]=datePurchase.desc');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

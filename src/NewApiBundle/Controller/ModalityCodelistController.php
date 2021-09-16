@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class ModalityCodelistController extends AbstractController
 {
     /**
-     * @Rest\Get("/modalities")
+     * @Rest\Get("/web-app/v1/modalities")
      *
      * @return JsonResponse
      */
@@ -34,7 +34,7 @@ class ModalityCodelistController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/modalities/types")
+     * @Rest\Get("/web-app/v1/modalities/types")
      *
      * @return JsonResponse
      */
@@ -52,7 +52,7 @@ class ModalityCodelistController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/modalities/{code}/types")
+     * @Rest\Get("/web-app/v1/modalities/{code}/types")
      *
      * @param string $code
      *

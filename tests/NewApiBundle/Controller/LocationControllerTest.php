@@ -21,7 +21,7 @@ class LocationControllerTest extends BMSServiceTestCase
 
     public function testGetCountries()
     {
-        $this->request('GET', '/api/basic/countries');
+        $this->request('GET', '/api/basic/web-app/v1/countries');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -40,12 +40,32 @@ class LocationControllerTest extends BMSServiceTestCase
         return $result['data'][0]['iso3'];
     }
 
+    public function testGetUserCountries()
+    {
+        $this->request('GET', '/api/basic/web-app/v1/users/'.$this->getTestUser(self::USER_TESTER)->getId().'/countries');
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertSame($this->getTestUser(self::USER_TESTER)->getCountries()->count(), $result['totalCount']);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertIsArray($result['data']);
+        $this->assertArrayHasKey('name', $result['data'][0]);
+        $this->assertArrayHasKey('iso3', $result['data'][0]);
+        $this->assertArrayHasKey('currency', $result['data'][0]);
+    }
+
     /**
      * @depends testGetCountries
      */
     public function testGetCountry($iso3)
     {
-        $this->request('GET', '/api/basic/countries/'.$iso3);
+        $this->request('GET', '/api/basic/web-app/v1/countries/'.$iso3);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -64,7 +84,7 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetListOfAdm1()
     {
-        $this->request('GET', '/api/basic/adm1');
+        $this->request('GET', '/api/basic/web-app/v1/adm1');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -90,7 +110,7 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetListOfAdm1Filtered()
     {
-        $this->request('GET', '/api/basic/adm1?filter[id][]=1');
+        $this->request('GET', '/api/basic/web-app/v1/adm1?filter[id][]=1');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -114,7 +134,7 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetDetailOfAdm1($id)
     {
-        $this->request('GET', '/api/basic/adm1/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/adm1/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -135,7 +155,7 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetListOfAdm2($id)
     {
-        $this->request('GET', '/api/basic/adm1/'.$id.'/adm2');
+        $this->request('GET', '/api/basic/web-app/v1/adm1/'.$id.'/adm2');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -158,7 +178,7 @@ class LocationControllerTest extends BMSServiceTestCase
 
     public function testGetListOfAdm2Filtered()
     {
-        $this->request('GET', '/api/basic/adm2?filter[id][]=1');
+        $this->request('GET', '/api/basic/web-app/v1/adm2?filter[id][]=1');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -182,7 +202,7 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetDetailOfAdm2($id)
     {
-        $this->request('GET', '/api/basic/adm2/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/adm2/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -203,7 +223,7 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetListOfAdm3($id)
     {
-        $this->request('GET', '/api/basic/adm2/'.$id.'/adm3');
+        $this->request('GET', '/api/basic/web-app/v1/adm2/'.$id.'/adm3');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -226,7 +246,7 @@ class LocationControllerTest extends BMSServiceTestCase
 
     public function testGetListOfAdm3Filtered()
     {
-        $this->request('GET', '/api/basic/adm3?filter[id][]=1');
+        $this->request('GET', '/api/basic/web-app/v1/adm3?filter[id][]=1');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -250,7 +270,7 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetDetailOfAdm3($id)
     {
-        $this->request('GET', '/api/basic/adm3/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/adm3/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -271,7 +291,7 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetListOfAdm4($id)
     {
-        $this->request('GET', '/api/basic/adm3/'.$id.'/adm4');
+        $this->request('GET', '/api/basic/web-app/v1/adm3/'.$id.'/adm4');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -294,7 +314,7 @@ class LocationControllerTest extends BMSServiceTestCase
 
     public function testGetListOfAdm4Filtered()
     {
-        $this->request('GET', '/api/basic/adm4?filter[id][]=1');
+        $this->request('GET', '/api/basic/web-app/v1/adm4?filter[id][]=1');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -318,7 +338,7 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetDetailOfAdm4($id)
     {
-        $this->request('GET', '/api/basic/adm4/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/adm4/'.$id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -343,7 +363,7 @@ class LocationControllerTest extends BMSServiceTestCase
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $location = $em->getRepository(Location::class)->findBy([])[0];
 
-        $this->request('GET', '/api/basic/locations?filter[id][]='.$location->getId());
+        $this->request('GET', '/api/basic/web-app/v1/locations?filter[id][]='.$location->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

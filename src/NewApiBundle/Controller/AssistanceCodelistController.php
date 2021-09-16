@@ -37,7 +37,7 @@ class AssistanceCodelistController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/assistances/targets")
+     * @Rest\Get("/web-app/v1/assistances/targets")
      *
      * @param AssistanceTargetFilterInputType $targetTypeFilterType
      *
@@ -57,7 +57,7 @@ class AssistanceCodelistController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/assistances/types")
+     * @Rest\Get("/web-app/v1/assistances/types")
      *
      * @param AssistanceTypeFilterInputType $typeSubsectorInputType
      * @return JsonResponse

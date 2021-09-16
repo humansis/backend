@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class BeneficiaryCodelistController extends AbstractController
 {
     /**
-     * @Rest\Get("/beneficiaries/types")
+     * @Rest\Get("/web-app/v1/beneficiaries/types")
      *
      * @return JsonResponse
      */
@@ -34,7 +34,7 @@ class BeneficiaryCodelistController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/beneficiaries/referral-types")
+     * @Rest\Get("/web-app/v1/beneficiaries/referral-types")
      *
      * @return JsonResponse
      */
@@ -46,7 +46,7 @@ class BeneficiaryCodelistController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/beneficiaries/residency-statuses")
+     * @Rest\Get("/web-app/v1/beneficiaries/residency-statuses")
      *
      * @return JsonResponse
      */
@@ -58,7 +58,7 @@ class BeneficiaryCodelistController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/beneficiaries/vulnerability-criteria")
+     * @Rest\Get("/web-app/v1/beneficiaries/vulnerability-criteria")
      *
      * @return JsonResponse
      */
@@ -71,7 +71,7 @@ class BeneficiaryCodelistController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/beneficiaries/national-ids/types")
+     * @Rest\Get("/web-app/v1/beneficiaries/national-ids/types")
      *
      * @return JsonResponse
      */
@@ -83,7 +83,7 @@ class BeneficiaryCodelistController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/beneficiaries/phones/types")
+     * @Rest\Get("/web-app/v1/beneficiaries/phones/types")
      *
      * @return JsonResponse
      */

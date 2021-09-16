@@ -13,6 +13,7 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\Entity\Import;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\Request\Pagination;
@@ -83,19 +84,31 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $q->getQuery()->getResult();
     }
 
-    public function findByName(string $givenName, ?string $parentsName, string $familyName)
+    public function findByName(string $givenName, ?string $parentsName, string $familyName, ?int $gender = null, Household $household = null)
     {
-        return $this->createQueryBuilder('b')
+        $qbr =  $this->createQueryBuilder('b')
             ->leftJoin('b.household', 'hh')
             ->join('b.person', 'p')
             ->andWhere('hh.archived = 0')
             ->andWhere('p.localGivenName = :givenName')
-            ->andWhere('p.localParentsName = :parentsName')
+            ->andWhere('(p.localParentsName = :parentsName OR (p.localParentsName IS NULL AND :parentsName IS NULL) )')
             ->andWhere('p.localFamilyName = :familyName')
             ->setParameter('givenName', $givenName)
             ->setParameter('parentsName', $parentsName)
-            ->setParameter('familyName', $familyName)
-            ->getQuery()
+            ->setParameter('familyName', $familyName);
+
+        if (null !== $gender) {
+            $qbr
+                ->andWhere('p.gender = :gender')
+                ->setParameter('gender', $gender);
+        }
+
+        if (!is_null($household)) {
+            $qbr->andWhere('hh.id = :hhId')
+                ->setParameter('hhId', $household->getId());
+        }
+
+        return $qbr->getQuery()
             ->getResult();
     }
 
@@ -141,12 +154,50 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
+    public function findIdentity(string $idType, string $idNumber, ?string $iso3 = null, ?Household $household = null)
+    {
+        $qb = $this->createQueryBuilder('b')
+            ->join('b.person', 'p')
+            ->join('b.household', 'hh')
+            ->join('p.nationalIds', 'id')
+            ->andWhere('b.archived = 0')
+            ->andWhere('hh.archived = 0')
+            ->andWhere('id.idNumber = :idNumber')
+            ->andWhere('id.idType = :idType')
+            ->setParameter('idNumber', $idNumber)
+            ->setParameter('idType', $idType);
+
+        if (null !== $iso3) {
+            $qb->join('hh.projects', 'project')
+                ->andWhere('project.iso3 = :country')
+                ->setParameter('country', $iso3);
+        }
+
+        if (null !== $household) {
+            $qb->andWhere('hh.id = :hhId')
+                ->setParameter('hhId', $household->getId());
+        }
+
+        return $qb->getQuery()
+            ->getResult();
+    }
+
     public function getAllofDistribution(Assistance $assistance)
     {
         $qb = $this->createQueryBuilder('b');
         $q = $qb->leftJoin('b.assistanceBeneficiary', 'db')
             ->where('db.assistance = :assistance')
             ->setParameter('assistance', $assistance);
+
+        return $q->getQuery()->getResult();
+    }
+
+    public function getImported(Import $import)
+    {
+        $qb = $this->createQueryBuilder('b');
+        $q = $qb->innerJoin('b.importBeneficiaries', 'ib')
+            ->where('ib.import = :import')
+            ->setParameter('import', $import);
 
         return $q->getQuery()->getResult();
     }

@@ -3,10 +3,12 @@
 namespace VoucherBundle\Repository;
 
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\Enum\ProductCategoryType;
 use NewApiBundle\InputType\ProductFilterInputType;
 use NewApiBundle\InputType\ProductOrderInputType;
 use NewApiBundle\Request\Pagination;
 use VoucherBundle\Entity\Product;
+use VoucherBundle\Entity\Vendor;
 
 /**
  * ProductRepository
@@ -31,6 +33,22 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    public function getByCategoryType(?string $country, string $categoryType)
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->join('p.productCategory', 'c')
+            ->where('c.type = :type')
+            ->andWhere('p.archived = 0')
+            ->setParameter('type', $categoryType);
+
+        if ($country) {
+            $qb->andWhere('p.countryISO3 = :country')
+                ->setParameter('country', $country);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
     /**
      * @param string                      $countryIso3
      * @param ProductFilterInputType|null $filter
@@ -47,6 +65,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
     ): Paginator
     {
         $qb = $this->createQueryBuilder('p')
+            ->leftJoin('p.productCategory', 'c')
             ->andWhere('p.archived = 0')
             ->andWhere('p.countryISO3 = :countryIso3')
             ->setParameter('countryIso3', $countryIso3);
@@ -59,6 +78,23 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
             if ($filter->hasFulltext()) {
                 $qb->andWhere('(p.id LIKE :fulltext OR p.name LIKE :fulltext OR p.unit LIKE :fulltext)')
                     ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+            }
+            if ($filter->hasVendors()) {
+                $vendor = $this->getEntityManager()->getRepository(Vendor::class)->findOneBy(['id'=>$filter->getVendors()]);
+                $sellableCategoryTypes = [];
+                if ($vendor->canSellFood()) $sellableCategoryTypes[] = ProductCategoryType::FOOD;
+                if ($vendor->canSellNonFood()) $sellableCategoryTypes[] = ProductCategoryType::NONFOOD;
+                if ($vendor->canSellCashback()) $sellableCategoryTypes[] = ProductCategoryType::CASHBACK;
+
+                $qb->andWhere('p.productCategory IS NOT NULL');
+                $qb->andWhere('c.type in (:availableTypes)')
+                    ->setParameter('availableTypes', $sellableCategoryTypes)
+                ;
+                if ($vendor->getLocation() && $vendor->getLocation()->getAdm1() && $vendor->getLocation()->getAdm1()->getCountryISO3()) {
+                    $qb->andWhere('p.countryISO3 = :vendorCountry')
+                        ->setParameter('vendorCountry', $vendor->getLocation()->getAdm1()->getCountryISO3())
+                    ;
+                }
             }
         }
 
@@ -78,6 +114,9 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
                         break;
                     case ProductOrderInputType::SORT_BY_UNIT:
                         $qb->orderBy('p.unit', $direction);
+                        break;
+                    case ProductOrderInputType::SORT_BY_CATEGORY:
+                        $qb->orderBy('c.name', $direction);
                         break;
                     default:
                         throw new \InvalidArgumentException('Invalid order directive '.$name);

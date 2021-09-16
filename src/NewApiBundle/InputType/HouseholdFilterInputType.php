@@ -3,6 +3,10 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\InputType\FilterFragment\FulltextFilterTrait;
+use NewApiBundle\InputType\FilterFragment\LocationFilterTrait;
+use NewApiBundle\InputType\FilterFragment\PrimaryIdFilterTrait;
+use NewApiBundle\InputType\FilterFragment\ProjectFilterTrait;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -11,26 +15,15 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class HouseholdFilterInputType extends AbstractFilterInputType
 {
-    /**
-     * @Assert\Type("scalar")
-     */
-    protected $fulltext;
+    use PrimaryIdFilterTrait;
+    use FulltextFilterTrait;
+    use ProjectFilterTrait;
+    use LocationFilterTrait;
 
     /**
      * @Assert\Choice({"M", "F"})
      */
     protected $gender;
-
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("integer", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $projects;
 
     /**
      * @Assert\Type("array")
@@ -87,30 +80,9 @@ class HouseholdFilterInputType extends AbstractFilterInputType
      */
     protected $livelihoods;
 
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("integer", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $locations;
-
     public static function vulnerabilities(): array
     {
         return array_keys(\BeneficiaryBundle\Entity\VulnerabilityCriterion::all());
-    }
-
-    public function hasFulltext(): bool
-    {
-        return $this->has('fulltext');
-    }
-
-    public function getFulltext()
-    {
-        return $this->fulltext;
     }
 
     public function hasGender(): bool
@@ -121,16 +93,6 @@ class HouseholdFilterInputType extends AbstractFilterInputType
     public function getGender()
     {
         return $this->gender;
-    }
-
-    public function hasProjects(): bool
-    {
-        return $this->has('projects');
-    }
-
-    public function getProjects()
-    {
-        return $this->projects;
     }
 
     public function hasVulnerabilities(): bool
@@ -181,15 +143,5 @@ class HouseholdFilterInputType extends AbstractFilterInputType
     public function getLivelihoods()
     {
         return $this->livelihoods;
-    }
-
-    public function hasLocations(): bool
-    {
-        return $this->has('locations');
-    }
-
-    public function getLocations()
-    {
-        return $this->locations;
     }
 }

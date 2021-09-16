@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class AssistanceCommodityController extends AbstractController
 {
     /**
-     * @Rest\Get("/assistances/commodities")
+     * @Rest\Get("/web-app/v1/assistances/commodities")
      *
      * @param CommodityFilterInputType $filter
      *
@@ -26,7 +26,7 @@ class AssistanceCommodityController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/assistances/{id}/commodities")
+     * @Rest\Get("/web-app/v1/assistances/{id}/commodities")
      *
      * @param Assistance $assistance
      *
