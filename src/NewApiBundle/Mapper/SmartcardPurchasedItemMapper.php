@@ -34,6 +34,11 @@ class SmartcardPurchasedItemMapper implements MapperInterface
         throw new \InvalidArgumentException('Invalid argument. It should be instance of '.SmartcardPurchasedItem::class.', '.get_class($object).' given.');
     }
 
+    public function getHouseholdId(): int
+    {
+        return $this->object->getHousehold()->getId();
+    }
+
     public function getBeneficiaryId(): int
     {
         return $this->object->getBeneficiary()->getId();
@@ -104,14 +109,14 @@ class SmartcardPurchasedItemMapper implements MapperInterface
         return $this->object->getCurrency();
     }
 
-    public function getInvoiceNumber(): ?string
-    {
-        return $this->object->getInvoiceNumber();
-    }
-
     public function getVendorId(): int
     {
         return $this->object->getVendor()->getId();
+    }
+
+    public function getInvoiceNumber(): ?string
+    {
+        return $this->object->getInvoiceNumber();
     }
 
     public function getContractNumber(): ?string

@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Entity;
 
-use BeneficiaryBundle\Entity\AbstractBeneficiary;
+use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
 use ProjectBundle\Entity\Project;
@@ -42,11 +43,18 @@ class SmartcardPurchasedItem
     private $location;
 
     /**
-     * @var AbstractBeneficiary
+     * @var Beneficiary
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\AbstractBeneficiary")
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary")
      */
     private $beneficiary;
+
+    /**
+     * @var Household
+     *
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household")
+     */
+    private $household;
 
     /**
      * @var Assistance
@@ -133,9 +141,9 @@ class SmartcardPurchasedItem
 
 
     /**
-     * @return AbstractBeneficiary
+     * @return Beneficiary
      */
-    public function getBeneficiary(): AbstractBeneficiary
+    public function getBeneficiary(): Beneficiary
     {
         return $this->beneficiary;
     }
@@ -211,6 +219,14 @@ class SmartcardPurchasedItem
     public function getCurrency()
     {
         return $this->currency;
+    }
+
+    /**
+     * @return Household
+     */
+    public function getHousehold(): Household
+    {
+        return $this->household;
     }
 
 }
