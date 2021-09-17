@@ -57,7 +57,7 @@ class SmartcardPurchasedItemRepository  extends EntityRepository
                     ->leftJoin("hhm.person", 'p2')
                     ->leftJoin("hhm.household", 'hh')
                     ->leftJoin('p2.nationalIds', 'ni2')
-                    ->andWhere("hh.id = IDENTITY(pi.beneficiary)")
+                    ->andWhere("hh.id = IDENTITY(pi.household)")
                     ->andWhere("(p2.localGivenName LIKE :fulltextLike OR 
                                 p2.localFamilyName LIKE :fulltextLike OR
                                 p2.localParentsName LIKE :fulltextLike OR
@@ -68,9 +68,9 @@ class SmartcardPurchasedItemRepository  extends EntityRepository
 
                 $qbr->join('pi.vendor', 'v');
                 $qbr->andWhere("IDENTITY(pi.beneficiary) = :fulltext 
-                        OR (pi.beneficiaryType = 'Beneficiary' AND EXISTS($subQueryForBNFFulltext))
-                        OR (pi.beneficiaryType = 'Household' AND EXISTS($subQueryForHHFulltext))
-                        OR pi.carrierNumber LIKE :fulltextLike
+                        OR EXISTS($subQueryForBNFFulltext)
+                        OR EXISTS($subQueryForHHFulltext)
+                        OR pi.smartcardCode LIKE :fulltextLike
                         OR v.vendorNo LIKE :fulltextLike
                         OR pi.invoiceNumber LIKE :fulltext
                         ")
