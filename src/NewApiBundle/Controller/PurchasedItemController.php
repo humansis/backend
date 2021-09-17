@@ -7,10 +7,13 @@ namespace NewApiBundle\Controller;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Entity\SmartcardPurchasedItem;
+use NewApiBundle\Export\SmartcardPurchasedItemSpreadsheet;
 use NewApiBundle\InputType\PurchasedItemFilterInputType;
 use NewApiBundle\InputType\PurchasedItemOrderInputType;
+use NewApiBundle\InputType\SmartcardPurchasedItemFilterInputType;
+use NewApiBundle\Repository\SmartcardPurchasedItemRepository;
 use NewApiBundle\Request\Pagination;
-use ProjectBundle\Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -22,6 +25,14 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class PurchasedItemController extends AbstractController
 {
+    /** @var SmartcardPurchasedItemSpreadsheet */
+    private $smartcardPurchasedItemSpreadsheet;
+
+    public function __construct(SmartcardPurchasedItemSpreadsheet $smartcardPurchasedItemSpreadsheet)
+    {
+        $this->smartcardPurchasedItemSpreadsheet = $smartcardPurchasedItemSpreadsheet;
+    }
+
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/{id}/purchased-items")
      * @ParamConverter("beneficiary")
@@ -62,6 +73,8 @@ class PurchasedItemController extends AbstractController
      * @Rest\Get("/web-app/v1/purchased-items")
      *
      * @return JsonResponse
+     *
+     * @deprecated This endpoint is deprecated and will be removed soon
      */
     public function list(
         Request $request,
@@ -89,6 +102,8 @@ class PurchasedItemController extends AbstractController
      * @param PurchasedItemFilterInputType $filter
      *
      * @return Response
+     *
+     * @deprecated This endpoint is deprecated and will be removed soon
      */
     public function summaryExports(Request $request, PurchasedItemFilterInputType $filter): Response
     {
@@ -97,6 +112,57 @@ class PurchasedItemController extends AbstractController
         }
 
         $filename = $this->get('export.purchased_summary.spreadsheet')->export($request->headers->get('country'), $request->get('type'), $filter);
+
+        $response = new BinaryFileResponse($filename);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
+
+        return $response;
+    }
+
+    /**
+     * @Rest\Get("/web-app/v1/smartcards-purchased-items")
+     *
+     * @param Request                               $request
+     * @param SmartcardPurchasedItemFilterInputType $filterInputType
+     * @param PurchasedItemOrderInputType           $order
+     * @param Pagination                            $pagination
+     *
+     * @return JsonResponse
+     */
+    public function listSmartcardItems(
+        Request $request,
+        SmartcardPurchasedItemFilterInputType $filterInputType,
+        PurchasedItemOrderInputType $order,
+        Pagination $pagination
+    ): JsonResponse
+    {
+        if (!$request->headers->has('country')) {
+            throw $this->createNotFoundException('Missing header attribute country');
+        }
+
+        /** @var SmartcardPurchasedItemRepository $repository */
+        $repository = $this->getDoctrine()->getRepository(SmartcardPurchasedItem::class);
+
+        $data = $repository->findByParams($request->headers->get('country'), $filterInputType, $order, $pagination);
+
+        return $this->json($data);
+    }
+
+    /**
+     * @Rest\Get("/web-app/v1/smartcards-purchased-items/exports")
+     *
+     * @param Request                      $request
+     * @param SmartcardPurchasedItemFilterInputType $filter
+     *
+     * @return Response
+     */
+    public function exportSmartcardItems(Request $request, SmartcardPurchasedItemFilterInputType $filter): Response
+    {
+        if (!$request->headers->has('country')) {
+            throw $this->createNotFoundException('Missing header attribute country');
+        }
+
+        $filename = $this->smartcardPurchasedItemSpreadsheet->export($request->headers->get('country'), $request->get('type'), $filter);
 
         $response = new BinaryFileResponse($filename);
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));

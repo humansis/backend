@@ -22,6 +22,13 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Symfony\Component\Translation\TranslatorInterface;
 
+/**
+ * Class PurchasedSummarySpreadsheetExport
+ *
+ * @package TransactionBundle\Export
+ *
+ * @deprecated This class is deprecated and will be removed soon
+ */
 class PurchasedSummarySpreadsheetExport
 {
     /** @var TranslatorInterface */
