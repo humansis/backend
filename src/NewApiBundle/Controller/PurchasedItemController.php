@@ -120,7 +120,7 @@ class PurchasedItemController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/web-app/v1/smartcards-purchased-items")
+     * @Rest\Get("/web-app/v1/smartcard-purchased-items")
      *
      * @param Request                               $request
      * @param SmartcardPurchasedItemFilterInputType $filterInputType
@@ -149,7 +149,7 @@ class PurchasedItemController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/web-app/v1/smartcards-purchased-items/exports")
+     * @Rest\Get("/web-app/v1/smartcard-purchased-items/exports")
      *
      * @param Request                      $request
      * @param SmartcardPurchasedItemFilterInputType $filter
