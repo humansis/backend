@@ -116,6 +116,11 @@ class SmartcardPurchasedItem
     private $currency;
 
     /**
+     * @ORM\Column(name="id_number", type="string")
+     */
+    private $idNumber;
+
+    /**
      * @return string
      */
     public function getId(): string
@@ -229,4 +234,11 @@ class SmartcardPurchasedItem
         return $this->household;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getIdNumber(): ?string
+    {
+        return $this->idNumber;
+    }
 }
