@@ -315,23 +315,6 @@ class SmartcardInvoiceExport
         $worksheet->getRowDimension($row2)->setRowHeight(20);
         self::setImportantInfo($worksheet, "B$row1:J$row2");
         self::setSmallBorder($worksheet, "H$row1:J$row2");
-
-        // $worksheet->getStyle("$column$row1:$column$row2")->getFont()
-        //     ->setBold(true)
-        //     ->setSize(15)
-        //     ->setName('Arial');
-        // $worksheet->getStyle("$column$row3:$column$row3")->getFont()
-        //     ->setBold(false)
-        //     ->setSize(10)
-        //     ->setName('Arial');
-        // $worksheet->getStyle("$column$row1:$column$row3")->getAlignment()
-        //     ->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        // $worksheet->getStyle("$column$row1:$column$row3")->getBorders()
-        //     ->getOutline()
-        //     ->setBorderStyle(Border::BORDER_THIN);
-        // $worksheet->getStyle("$column$row1:$column$row3")->getBorders()
-        //     ->getInside()
-        //     ->setBorderStyle(Border::BORDER_NONE);
     }
 
     private static function buildBody(Worksheet $worksheet,
