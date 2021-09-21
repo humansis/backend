@@ -90,6 +90,20 @@ class SmartcardRedemptionBatch implements JsonSerializable
     private $vendorNo;
 
     /**
+     * @var string|null
+     *
+     * @ORM\Column(name="project_invoice_address_local", type="text", nullable=true, options={"default" : null})
+     */
+    private $projectInvoiceAddressLocal;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="project_invoice_address_english", type="text", nullable=true, options={"default" : null})
+     */
+    private $projectInvoiceAddressEnglish;
+
+    /**
      * @var Collection|SmartcardPurchase[]
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardPurchase", mappedBy="redemptionBatch", cascade={"persist"}, orphanRemoval=false)
@@ -130,6 +144,9 @@ class SmartcardRedemptionBatch implements JsonSerializable
         $this->purchases = new ArrayCollection($purchases);
         $this->contractNo = $contractNo;
         $this->vendorNo = $vendorNo;
+
+        $this->projectInvoiceAddressLocal = $project->getProjectInvoiceAddressLocal();
+        $this->projectInvoiceAddressEnglish = $project->getProjectInvoiceAddressEnglish();
     }
 
     /**
@@ -277,5 +294,38 @@ class SmartcardRedemptionBatch implements JsonSerializable
             'project_id' => $this->getProject() ? $this->getProject()->getId() : null,
             'project_name' => $this->getProject() ? $this->getProject()->getName() : null,
         ];
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getProjectInvoiceAddressLocal(): ?string
+    {
+        return $this->projectInvoiceAddressLocal;
+    }
+
+    /**
+     * @param string|null $projectInvoiceAddressLocal
+     */
+    public function setProjectInvoiceAddressLocal(?string $projectInvoiceAddressLocal): void
+    {
+        $this->projectInvoiceAddressLocal = $projectInvoiceAddressLocal;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getProjectInvoiceAddressEnglish(): ?string
+    {
+        return $this->projectInvoiceAddressEnglish;
+    }
+
+
+    /**
+     * @param string|null $projectInvoiceAddressEnglish
+     */
+    public function setProjectInvoiceAddressEnglish(?string $projectInvoiceAddressEnglish): void
+    {
+        $this->projectInvoiceAddressEnglish = $projectInvoiceAddressEnglish;
     }
 }
