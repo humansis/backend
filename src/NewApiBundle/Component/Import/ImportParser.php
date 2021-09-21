@@ -8,6 +8,7 @@ use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Symfony\Component\HttpFoundation\File\File;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class ImportParser
 {
@@ -24,7 +25,6 @@ class ImportParser
     public function parse(File $file)
     {
         $reader = IOFactory::createReaderForFile($file->getRealPath());
-        $reader->setReadDataOnly(true);
 
         $worksheet = $reader->load($file->getRealPath())->getActiveSheet();
 
@@ -132,6 +132,10 @@ class ImportParser
     private static function value(?Cell $cell)
     {
         if ($cell) {
+            if (Date::isDateTime($cell)) {
+                return Date::excelToDateTimeObject($cell->getValue())->format('d-m-Y');
+            }
+
             return is_string($cell->getValue()) ? trim($cell->getValue()) : $cell->getValue();
         }
 
