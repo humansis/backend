@@ -12,6 +12,7 @@
             <trans-unit id="Vendor No."><source>Vendor No.</source><target>رقم التاجر</target></trans-unit>
             <trans-unit id="Contract No."><source>Contract No.</source><target> رقم العقد</target></trans-unit>
             <trans-unit id="Payment Method"><source>Payment Method</source><target>طريقة الدفع</target></trans-unit>
+            <trans-unit id="Project"><source>Project</source><target>المشروع</target></trans-unit>
             <trans-unit id="Cash"><source>Cash</source><target>نقداً</target></trans-unit>
             <trans-unit id="Cheque"><source>Cheque</source><target>شيك</target></trans-unit>
             <trans-unit id="Bank"><source>Bank</source><target>بنك</target></trans-unit>

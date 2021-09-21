@@ -241,14 +241,16 @@ class SmartcardInvoiceExport
 
         // structure
         $worksheet->mergeCells("B$row1:B$row3");
-        $worksheet->mergeCells("F$row1:G$row3");
+        $worksheet->mergeCells("F$row1:G$row1");
+        $worksheet->mergeCells("F$row2:G$row3");
         $worksheet->mergeCells("C$row1:C$row3");
         // data
         $worksheet->setCellValue("B$row1", self::addTrans($translator, 'Contract No.', self::EOL));
         $worksheet->setCellValue("C$row1", $batch->getContractNo());
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Period Start', 'D', $row1);
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Period End', 'E', $row1);
-        $worksheet->setCellValue("F$row1", self::addTrans($translator, 'Payment Method', self::EOL));
+        $worksheet->setCellValue("F$row1", self::addTrans($translator, 'Project'));
+        $worksheet->setCellValue("F$row2", $batch->getProject() ? $batch->getProject()->getName() : '~');
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Cash', 'H', $row1);
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Cheque', 'I', $row1);
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Bank', 'J', $row1);
@@ -281,6 +283,8 @@ class SmartcardInvoiceExport
         self::setSmallBorder($worksheet, "B$row3:J$row3");
         self::setSmallBorder($worksheet, "B$row1");
         self::setSmallBorder($worksheet, "F$row1");
+        $worksheet->getStyle("F$row2")->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
     }
 
     private static function buildBodyHeader(Worksheet $worksheet, TranslatorInterface $translator, int $row): void
