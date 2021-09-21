@@ -9,6 +9,7 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManager;
 use ProjectBundle\Entity\Project;
+use ProjectBundle\Repository\ProjectRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
@@ -244,7 +245,10 @@ class SmartcardService
             }
         }
 
+        /** @var ProjectRepository $projectRepository */
         $projectRepository = $this->em->getRepository(Project::class);
+
+        /** @var Project|null $project */
         $project = $projectRepository->find($projectId);
 
         $redemptionBath = new SmartcardRedemptionBatch(

@@ -150,3 +150,6 @@ php:
   Env. variables = AWS_SECRET_KEY=x;SES_USERNAME=x;SES_PASSWORD=x;RDS_HOSTNAME=db;RDS_PORT=3306;RDS_DB_NAME=bms;RDS_USERNAME=bms_user;RDS_PASSWORD=aA123;GOOGLE_CLIENT=aaa;HID_SECRET=bbb;MOBILE_MASTER_KEY=aaaa;MOBILE_APP_VERSION=0;MOBILE_APP_ID=0
   ```
 - OK
+
+#### PhpStorm Code Style
+Code style file humansis.xml is located in root directory 

@@ -144,6 +144,19 @@ class Project implements ExportableInterface
      */
     private $distributions;
 
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="project_invoice_address_local", type="text", nullable=true, options={"default" : null})
+     */
+    private $projectInvoiceAddressLocal = null;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="project_invoice_address_english", type="text", nullable=true, options={"default" : null})
+     */
+    private $projectInvoiceAddressEnglish = null;
 
     /**
      * Constructor
@@ -691,4 +704,45 @@ class Project implements ExportableInterface
         
         $this->setNumberOfHouseholds(intval($em->getRepository(Household::class)->countUnarchivedByProject($entity)));
     }
+
+    /**
+     * @return string|null
+     */
+    public function getProjectInvoiceAddressLocal(): ?string
+    {
+        return $this->projectInvoiceAddressLocal;
+    }
+
+    /**
+     * @param string|null $projectInvoiceAddressLocal
+     *
+     * @return Project
+     */
+    public function setProjectInvoiceAddressLocal(?string $projectInvoiceAddressLocal): Project
+    {
+        $this->projectInvoiceAddressLocal = $projectInvoiceAddressLocal;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getProjectInvoiceAddressEnglish(): ?string
+    {
+        return $this->projectInvoiceAddressEnglish;
+    }
+
+    /**
+     * @param string|null $projectInvoiceAddressEnglish
+     *
+     * @return Project
+     */
+    public function setProjectInvoiceAddressEnglish(?string $projectInvoiceAddressEnglish): Project
+    {
+        $this->projectInvoiceAddressEnglish = $projectInvoiceAddressEnglish;
+
+        return $this;
+    }
+
 }

@@ -178,12 +178,14 @@ class SmartcardInvoiceExport
         // data
         self::undertranslatedSmallHeadline($worksheet, $translator, "Customer", "B", $row1);
         $worksheet->setCellValue("C$row1", self::addTrans($translator, $organization->getName(), self::EOL));
-        $countryIso3 = self::extractCountryIso3($batch->getVendor());
-        if ($countryIso3 == 'ALL') {
+
+        if (null === $batch->getProjectInvoiceAddressLocal() && null === $batch->getProjectInvoiceAddressEnglish()) {
             $worksheet->setCellValue("E$row1", $translator->trans("{$organization->getName()} address missing", [], 'invoice'));
         } else {
-            $worksheet->setCellValue("E$row1", $translator->trans("{$organization->getName()} address in $countryIso3", [], 'invoice'));
+            $worksheet->setCellValue("E$row1",$batch->getProjectInvoiceAddressEnglish() . "\n" . $batch->getProjectInvoiceAddressLocal());
+            $worksheet->getStyle("E$row1")->getAlignment()->setWrapText(true);
         }
+
         $worksheet->setCellValue("I$row1", $batch->getRedeemedAt()->format(self::DATE_FORMAT));
         self::undertranslatedSmallHeadline($worksheet, $translator, "Invoice Date", "H", $row1);
         // style
