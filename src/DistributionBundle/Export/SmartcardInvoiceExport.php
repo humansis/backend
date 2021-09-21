@@ -349,13 +349,6 @@ class SmartcardInvoiceExport
 
         self::buildBodyHeader($worksheet, $translator, $row1);
 
-        // $currency = '';
-        // foreach ($batch->getPurchases() as $purchase) {
-        //     $currency = $purchase->getSmartcard()->getCurrency();
-        //     break;
-        // }
-        // $foodValue = $this->purchaseRepository->countPurchasesRecordsByBatch($batch);
-
         // ----------------------- Prices by CategoryType
         self::buildBodyLine(
             $worksheet,
@@ -381,12 +374,22 @@ class SmartcardInvoiceExport
             $currency,
             $row2+4
         );
+        self::setSmallBorder($worksheet, "B".$row2.":J".($row2+5));
 
         $rowEnd = $row2+5;
-        // $worksheet->getStyle("B$row2:G$rowEnd")->getFont()->getColor()->setRGB('C0C0C0');
+
+        // ----------------------- info
+        $row1 = $rowEnd + 1;
+        $worksheet->mergeCells("B$row1:J$row1");
+        self::sidetranslated($worksheet, $translator, 'Itemized breakdown in Annex I', "B", $row1);
+        // style
+        self::setMinorText($worksheet, "B$row1");
+        $worksheet->getStyle("B$row1")->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $worksheet->getRowDimension($row1)->setRowHeight(15);
 
         // ----------------------- Total
-        $row1 = $rowEnd + 1;
+        $row1 = $row1 + 2;
         // structure
         $worksheet->mergeCells("B$row1:G$row1");
         $worksheet->mergeCells("H$row1:I$row1");
