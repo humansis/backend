@@ -292,27 +292,40 @@ class SmartcardInvoiceExport
         $worksheet->getRowDimension($row)->setRowHeight(30);
     }
 
-    private static function buildBodyLine(Worksheet $worksheet, TranslatorInterface $translator, string $mainText, string $descriptionText, string $value, string $currency, int $row1): void
+    private static function buildBodyLine(Worksheet $worksheet, TranslatorInterface $translator, string $mainText, string $value, string $currency, int $row1): void
     {
         $row2 = $row1 + 1;
-        $row3 = $row1 + 2;
 
         // structure
-        $worksheet->mergeCells("B$row1:G$row1");
-        $worksheet->mergeCells("B$row2:G$row2");
-        $worksheet->mergeCells("B$row3:G$row3");
-        $worksheet->mergeCells("H$row1:I$row3");
-        $worksheet->mergeCells("J$row1:J$row3");
+        $worksheet->mergeCells("B$row1:G$row2");
+        $worksheet->mergeCells("H$row1:I$row2");
+        $worksheet->mergeCells("J$row1:J$row2");
         // data
-        self::undertranslatedBodyLine($worksheet, $translator, $mainText, $descriptionText, "B", $row1);
+        $worksheet->setCellValue("B$row1", self::addTrans($translator, $mainText, self::EOL));
         $worksheet->setCellValue('H'.$row1, $value);
         $worksheet->setCellValue('J'.$row1, $currency);
         // style
         $worksheet->getRowDimension($row1)->setRowHeight(20);
         $worksheet->getRowDimension($row2)->setRowHeight(20);
-        $worksheet->getRowDimension($row3)->setRowHeight(20);
-        self::setImportantInfo($worksheet, "H$row1:J$row3");
-        self::setSmallBorder($worksheet, "H$row1:J$row3");
+        self::setImportantInfo($worksheet, "B$row1:J$row2");
+        self::setSmallBorder($worksheet, "H$row1:J$row2");
+
+        // $worksheet->getStyle("$column$row1:$column$row2")->getFont()
+        //     ->setBold(true)
+        //     ->setSize(15)
+        //     ->setName('Arial');
+        // $worksheet->getStyle("$column$row3:$column$row3")->getFont()
+        //     ->setBold(false)
+        //     ->setSize(10)
+        //     ->setName('Arial');
+        // $worksheet->getStyle("$column$row1:$column$row3")->getAlignment()
+        //     ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        // $worksheet->getStyle("$column$row1:$column$row3")->getBorders()
+        //     ->getOutline()
+        //     ->setBorderStyle(Border::BORDER_THIN);
+        // $worksheet->getStyle("$column$row1:$column$row3")->getBorders()
+        //     ->getInside()
+        //     ->setBorderStyle(Border::BORDER_NONE);
     }
 
     private static function buildBody(Worksheet $worksheet, TranslatorInterface $translator, SmartcardRedemptionBatch $batch, int $row1): int
@@ -328,33 +341,37 @@ class SmartcardInvoiceExport
             break;
         }
 
-        // ----------------------- Food items
+        // ----------------------- Prices by CategoryType
         self::buildBodyLine(
             $worksheet,
             $translator,
             'SmartCards redemption payment - Food Items',
-            'Itemized breakdown in Annex I',
             sprintf('%.2f', $batch->getValue()),
             $currency,
             $row2
         );
-
-        // ----------------------- Cash
-        $rowFrom = $row2 + 3;
-        $rowTo = $rowFrom + 3;
         self::buildBodyLine(
             $worksheet,
             $translator,
-            'SmartCards redemption payment - Cash',
-            '',
-            '',
-            '',
-            $rowFrom
+            'SmartCards redemption payment - Non-Food Items',
+            sprintf('%.2f', $batch->getValue()),
+            $currency,
+            $row2+2
         );
-        $worksheet->getStyle("B$rowFrom:G$rowTo")->getFont()->getColor()->setRGB('C0C0C0');
+        self::buildBodyLine(
+            $worksheet,
+            $translator,
+            'SmartCards redemption payment - Cashback',
+            sprintf('%.2f', $batch->getValue()),
+            $currency,
+            $row2+4
+        );
+
+        $rowEnd = $row2+5;
+        // $worksheet->getStyle("B$row2:G$rowEnd")->getFont()->getColor()->setRGB('C0C0C0');
 
         // ----------------------- Total
-        $row1 = $rowTo + 1;
+        $row1 = $rowEnd + 1;
         // structure
         $worksheet->mergeCells("B$row1:G$row1");
         $worksheet->mergeCells("H$row1:I$row1");
@@ -561,33 +578,6 @@ class SmartcardInvoiceExport
             ->getOutline()
             ->setBorderStyle(Border::BORDER_THIN);
         $worksheet->getStyle($column.$row.':'.$column.($row+1))->getBorders()
-            ->getInside()
-            ->setBorderStyle(Border::BORDER_NONE);
-    }
-
-    private static function undertranslatedBodyLine(Worksheet $worksheet, TranslatorInterface $translator, string $importantInfo, string $description, string $column, int $row1, ?string $color = null): void
-    {
-        $row2 = $row1 + 1;
-        $row3 = $row1 + 2;
-
-        $worksheet->setCellValue($column.$row1, $importantInfo);
-        $worksheet->setCellValue($column.$row2, self::translate($translator, $importantInfo));
-        $worksheet->setCellValue($column.$row3, self::addTrans($translator, $description));
-
-        $worksheet->getStyle("$column$row1:$column$row2")->getFont()
-            ->setBold(true)
-            ->setSize(15)
-            ->setName('Arial');
-        $worksheet->getStyle("$column$row3:$column$row3")->getFont()
-            ->setBold(false)
-            ->setSize(10)
-            ->setName('Arial');
-        $worksheet->getStyle("$column$row1:$column$row3")->getAlignment()
-            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $worksheet->getStyle("$column$row1:$column$row3")->getBorders()
-            ->getOutline()
-            ->setBorderStyle(Border::BORDER_THIN);
-        $worksheet->getStyle("$column$row1:$column$row3")->getBorders()
             ->getInside()
             ->setBorderStyle(Border::BORDER_NONE);
     }
