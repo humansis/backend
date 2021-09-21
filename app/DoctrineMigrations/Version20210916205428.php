@@ -30,12 +30,20 @@ final class Version20210916205428 extends AbstractMigration
                 spr.value,
                 sp.vendor_id,
                 LPAD(srb.id, 6, 0) AS invoice_number,
-                spr.currency
+                spr.currency,
+                ni.id_number
             FROM smartcard_purchase_record spr
             LEFT JOIN smartcard_purchase sp ON sp.id = spr.smartcard_purchase_id
             LEFT JOIN smartcard s ON sp.smartcard_id = s.id
             LEFT JOIN smartcard_redemption_batch srb ON sp.redemption_batch_id = srb.id
             LEFT JOIN beneficiary b ON s.beneficiary_id = b.id
+            LEFT JOIN person p ON b.person_id = p.id
+            LEFT JOIN national_id ni ON ni.id = ( -- to ensure that only 1 (first one) national id will be joined and no duplicities occur
+                SELECT national_id.id
+                FROM national_id
+                WHERE national_id.person_id = p.id
+                LIMIT 1
+                )
 
             JOIN smartcard_deposit sd ON sd.id = (
                 SELECT dep.id

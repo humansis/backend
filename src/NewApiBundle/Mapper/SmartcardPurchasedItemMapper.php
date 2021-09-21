@@ -123,4 +123,9 @@ class SmartcardPurchasedItemMapper implements MapperInterface
     {
         return $this->object->getVendor()->getContractNo();
     }
+
+    public function getIdNumber(): ?string
+    {
+        return $this->object->getIdNumber();
+    }
 }
