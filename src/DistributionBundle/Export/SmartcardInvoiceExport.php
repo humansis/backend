@@ -23,7 +23,7 @@ use VoucherBundle\Repository\SmartcardPurchaseRepository;
 
 class SmartcardInvoiceExport
 {
-    const TEMPLATE_VERSION = '1.2';
+    const TEMPLATE_VERSION = '1.3';
     const DATE_FORMAT = 'j-n-y';
     const EOL = "\r\n";
 
