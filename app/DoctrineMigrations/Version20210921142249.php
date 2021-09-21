@@ -15,7 +15,7 @@ final class Version20210921142249 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('DROP VIEW view_purchased_smartcard_item');
+        $this->addSql('DROP VIEW view_smartcard_purchased_item');
         $this->addSql('CREATE VIEW view_smartcard_purchased_item AS
             SELECT
                 spr.id,
@@ -64,6 +64,6 @@ final class Version20210921142249 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('DROP VIEW view_purchased_smartcard_item');
+        $this->addSql('DROP VIEW view_smartcard_purchased_item');
     }
 }
