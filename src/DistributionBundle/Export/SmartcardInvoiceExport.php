@@ -127,9 +127,9 @@ class SmartcardInvoiceExport
      */
     private static function buildHeaderFirstLineBoxes(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, SmartcardRedemptionBatch $batch): void
     {
-        $worksheet->getRowDimension('2')->setRowHeight(24.02);
-        $worksheet->getRowDimension('3')->setRowHeight(19.70);
-        $worksheet->getRowDimension('5')->setRowHeight(26.80);
+        $worksheet->getRowDimension(2)->setRowHeight(24.02);
+        $worksheet->getRowDimension(3)->setRowHeight(19.70);
+        $worksheet->getRowDimension(5)->setRowHeight(26.80);
 
         // Temporary Invoice No. box
         $countryIso3 = self::extractCountryIso3($batch->getVendor());
