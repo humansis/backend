@@ -423,12 +423,12 @@ class SmartcardInvoiceExport
         $row2 = $lineStart + 3;
         $worksheet->mergeCells("B$row1:C$row1");
         $worksheet->mergeCells("B$row2:C$row2");
+        $worksheet->mergeCells("D$row1:F$row1");
+        $worksheet->mergeCells("D$row2:F$row2");
         $worksheet->mergeCells("G$row1:H$row1");
         $worksheet->mergeCells("G$row2:H$row2");
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Item', "B", $row1);
-        self::undertranslatedSmallHeadline($worksheet, $translator, 'Quantity', "D", $row1);
-        self::undertranslatedSmallHeadline($worksheet, $translator, 'Unit', "E", $row1);
-        self::undertranslatedSmallHeadline($worksheet, $translator, 'Unit Price', "F", $row1);
+        self::undertranslatedSmallHeadline($worksheet, $translator, 'Item type', "D", $row1);
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Total Amount per Item', "G", $row1);
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Currency', "I", $row1);
         $worksheet->getRowDimension($row1)->setRowHeight(18);
@@ -443,15 +443,19 @@ class SmartcardInvoiceExport
         foreach ($purchasedProducts as $purchasedProduct) {
             ++$lineStart;
             $worksheet->mergeCells("B$lineStart:C$lineStart");
+            $worksheet->mergeCells("D$lineStart:F$lineStart");
             $worksheet->mergeCells("G$lineStart:H$lineStart");
             self::sidetranslated($worksheet, $translator, $purchasedProduct['name'], "B", $lineStart);
             // temporary removed because PIN-1651: current data are incorrect, distributed by Qty 1 for everything
             // $worksheet->setCellValue('D'.$lineStart, $purchasedProduct['quantity']);
             // self::sidetranslated($worksheet, $translator, $purchasedProduct['unit'], "E", $lineStart);
-            $worksheet->setCellValue('F'.$lineStart, '');
+            $worksheet->setCellValue('D'.$lineStart, self::addTrans($translator, $purchasedProduct['categoryType']));
             $worksheet->setCellValue('G'.$lineStart, sprintf('%.2f', $purchasedProduct['value']));
             $worksheet->setCellValue('I'.$lineStart, $purchasedProduct['currency']);
+
             self::setSmallBorder($worksheet, "B$lineStart:I$lineStart");
+            $worksheet->getStyle('D'.$lineStart)->getAlignment()
+                ->setHorizontal(Alignment::HORIZONTAL_CENTER);
         }
 
         // total

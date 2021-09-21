@@ -48,6 +48,10 @@
             <trans-unit id="purchase_date"><source>purchase_date</source><target>Date</target></trans-unit>
             <trans-unit id="purchase_time"><source>purchase_time</source><target>Time</target></trans-unit>
             <trans-unit id="Item"><source>Item</source><target>المادة</target></trans-unit>
+            <trans-unit id="Item type"><source>Item type</source><target>نوع المادة</target></trans-unit>
+            <trans-unit id="Food"><source>Food</source><target>طعام</target></trans-unit>
+            <trans-unit id="Non-Food"><source>Non-Food</source><target>غير الغذائية</target></trans-unit>
+            <trans-unit id="Cashback"><source>Cashback</source><target>استرداد النقود</target></trans-unit>
             <trans-unit id="purchase_unit"><source>purchase_unit</source><target>Unit</target></trans-unit>
             <trans-unit id="purchase_item_total"><source>purchase_item_total</source><target>Total per Item</target></trans-unit>
             <trans-unit id="Total per Vendor and Period"><source>Total per Vendor and Period</source><target>الإجمالي لكل بائع والفترة</target></trans-unit>
