@@ -6,6 +6,7 @@ namespace DistributionBundle\Export;
 
 use CommonBundle\Entity\Organization;
 use CommonBundle\Mapper\LocationMapper;
+use NewApiBundle\Enum\ProductCategoryType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -57,13 +58,18 @@ class SmartcardInvoiceExport
 
         $this->translator->setLocale($language);
 
+        $foodValue = $this->purchaseRepository->sumPurchasesRecordsByCategoryType($batch, ProductCategoryType::FOOD);
+        $nonFoodValue = $this->purchaseRepository->sumPurchasesRecordsByCategoryType($batch, ProductCategoryType::NONFOOD);
+        $cashValue = $this->purchaseRepository->sumPurchasesRecordsByCategoryType($batch, ProductCategoryType::CASHBACK);
+        $currency = $batch->getCurrency();
+
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
 
         self::formatCells($worksheet);
 
         $lastRow = self::buildHeader($worksheet, $this->translator, $organization, $batch, $this->locationMapper);
-        $lastRow = self::buildBody($worksheet, $this->translator, $batch, $lastRow + 1);
+        $lastRow = self::buildBody($worksheet, $this->translator, $batch->getValue(), $foodValue, $nonFoodValue, $cashValue, $currency, $lastRow + 1);
         $lastRow = self::buildFooter($worksheet, $this->translator, $organization, $user, $lastRow + 3);
         $lastRow = self::buildAnnex($worksheet, $this->translator, $this->purchaseRepository, $batch, $lastRow + 2);
         self::buildFooter($worksheet, $this->translator, $organization, $user, $lastRow + 3);
@@ -277,7 +283,7 @@ class SmartcardInvoiceExport
         self::setSmallBorder($worksheet, "F$row1");
     }
 
-    private static function buildBodyHeader(Worksheet $worksheet, TranslatorInterface $translator, SmartcardRedemptionBatch $batch, int $row): void
+    private static function buildBodyHeader(Worksheet $worksheet, TranslatorInterface $translator, int $row): void
     {
         // structure
         $worksheet->mergeCells("B$row:G$row");
@@ -328,25 +334,34 @@ class SmartcardInvoiceExport
         //     ->setBorderStyle(Border::BORDER_NONE);
     }
 
-    private static function buildBody(Worksheet $worksheet, TranslatorInterface $translator, SmartcardRedemptionBatch $batch, int $row1): int
+    private static function buildBody(Worksheet $worksheet,
+                                      TranslatorInterface $translator,
+                                      string $totalValue,
+                                      string $foodValue,
+                                      string $nonFoodValue,
+                                      string $cashValue,
+                                      string $currency,
+                                      int $row1
+    ): int
     {
         $row2 = $row1 + 1;
         $row3 = $row1 + 2;
 
-        self::buildBodyHeader($worksheet, $translator, $batch, $row1);
+        self::buildBodyHeader($worksheet, $translator, $row1);
 
-        $currency = '';
-        foreach ($batch->getPurchases() as $purchase) {
-            $currency = $purchase->getSmartcard()->getCurrency();
-            break;
-        }
+        // $currency = '';
+        // foreach ($batch->getPurchases() as $purchase) {
+        //     $currency = $purchase->getSmartcard()->getCurrency();
+        //     break;
+        // }
+        // $foodValue = $this->purchaseRepository->countPurchasesRecordsByBatch($batch);
 
         // ----------------------- Prices by CategoryType
         self::buildBodyLine(
             $worksheet,
             $translator,
             'SmartCards redemption payment - Food Items',
-            sprintf('%.2f', $batch->getValue()),
+            sprintf('%.2f', $foodValue),
             $currency,
             $row2
         );
@@ -354,7 +369,7 @@ class SmartcardInvoiceExport
             $worksheet,
             $translator,
             'SmartCards redemption payment - Non-Food Items',
-            sprintf('%.2f', $batch->getValue()),
+            sprintf('%.2f', $nonFoodValue),
             $currency,
             $row2+2
         );
@@ -362,7 +377,7 @@ class SmartcardInvoiceExport
             $worksheet,
             $translator,
             'SmartCards redemption payment - Cashback',
-            sprintf('%.2f', $batch->getValue()),
+            sprintf('%.2f', $cashValue),
             $currency,
             $row2+4
         );
@@ -377,7 +392,7 @@ class SmartcardInvoiceExport
         $worksheet->mergeCells("H$row1:I$row1");
         // data
         self::sidetranslatedSmallHeadline($worksheet, $translator, 'Total Amount to be Paid', "B", $row1);
-        $worksheet->setCellValue("H".$row1, sprintf("%.2f", $batch->getValue()));
+        $worksheet->setCellValue("H".$row1, sprintf("%.2f", $totalValue));
         $worksheet->setCellValue("J".$row1, $currency);
         // style
         $worksheet->getRowDimension($row1)->setRowHeight(30);

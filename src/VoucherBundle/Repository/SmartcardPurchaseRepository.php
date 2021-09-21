@@ -158,6 +158,31 @@ class SmartcardPurchaseRepository extends EntityRepository
         return $qb->getQuery()->getArrayResult();
     }
 
+    public function sumPurchasesRecordsByCategoryType(SmartcardRedemptionBatch $batch, $productCategoryType): ?string
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select('SUM(pr.value) as value')
+            ->join('p.records', 'pr')
+            ->join('pr.product', 'prod')
+            ->join('prod.productCategory', 'category')
+            ->andWhere('IDENTITY(p.redemptionBatch) = :batch')
+            ->andWhere('category.type = :type')
+            ->andWhere('pr.currency = :currency')
+            ->setParameter('type', $productCategoryType)
+            ->setParameter('currency', $batch->getCurrency())
+            ->setParameter('batch', $batch)
+            ->groupBy('p.redemptionBatch')
+        ;
+
+        try {
+            return $qb->getQuery()->getSingleScalarResult();
+        } catch (NoResultException $e) {
+            return "-";
+        } catch (NonUniqueResultException $e) {
+            return "Error: ".$e->getMessage();
+        }
+    }
+
     /**
      * @param SmartcardRedemptionBatch $batch
      *
