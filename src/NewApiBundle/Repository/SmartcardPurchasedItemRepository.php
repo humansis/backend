@@ -132,7 +132,7 @@ class SmartcardPurchasedItemRepository  extends EntityRepository
                 ->setFirstResult($pagination->getOffset());
         }
 
-        $qbr->addOrderBy('pi.datePurchase', 'ASC');
+        $qbr->addOrderBy('pi.datePurchase', 'DESC');
 
         return new Paginator($qbr);
     }
