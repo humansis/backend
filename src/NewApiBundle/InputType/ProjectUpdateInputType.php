@@ -90,16 +90,16 @@ class ProjectUpdateInputType implements InputTypeInterface
     /**
      * @var string|null
      * @Assert\Type("string")
-     * @Assert\NotBlank(allowNull=true)
+     * @Assert\NotNull
      */
-    private $projectInvoiceAddressLocal = null;
+    private $projectInvoiceAddressLocal = '';
 
     /**
      * @var string|null
      * @Assert\Type("string")
-     * @Assert\NotBlank(allowNull=true)
+     * @Assert\NotNull
      */
-    private $projectInvoiceAddressEnglish = null;
+    private $projectInvoiceAddressEnglish = '';
 
     /**
      * @return string
@@ -243,33 +243,33 @@ class ProjectUpdateInputType implements InputTypeInterface
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getProjectInvoiceAddressLocal(): ?string
+    public function getProjectInvoiceAddressLocal(): string
     {
         return $this->projectInvoiceAddressLocal;
     }
 
     /**
-     * @param string|null $projectInvoiceAddressLocal
+     * @param string $projectInvoiceAddressLocal
      */
-    public function setProjectInvoiceAddressLocal(?string $projectInvoiceAddressLocal): void
+    public function setProjectInvoiceAddressLocal($projectInvoiceAddressLocal): void
     {
         $this->projectInvoiceAddressLocal = $projectInvoiceAddressLocal;
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getProjectInvoiceAddressEnglish(): ?string
+    public function getProjectInvoiceAddressEnglish(): string
     {
         return $this->projectInvoiceAddressEnglish;
     }
 
     /**
-     * @param string|null $projectInvoiceAddressEnglish
+     * @param string $projectInvoiceAddressEnglish
      */
-    public function setProjectInvoiceAddressEnglish(?string $projectInvoiceAddressEnglish): void
+    public function setProjectInvoiceAddressEnglish($projectInvoiceAddressEnglish): void
     {
         $this->projectInvoiceAddressEnglish = $projectInvoiceAddressEnglish;
     }
