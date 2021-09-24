@@ -101,10 +101,10 @@ class SmartcardPurchasedItemMapper implements MapperInterface
 
     public function getValue(): string
     {
-        return (string) $this->object->getValue();
+        return $this->object->getValue();
     }
 
-    public function getCurrency(): string
+    public function getCurrency(): ?string
     {
         return $this->object->getCurrency();
     }
