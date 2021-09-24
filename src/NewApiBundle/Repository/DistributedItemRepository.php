@@ -114,7 +114,7 @@ class DistributedItemRepository extends EntityRepository
                 ->setFirstResult($pagination->getOffset());
         }
 
-        $qbr->addOrderBy('di.dateDistribution', 'ASC');
+        $qbr->addOrderBy('di.dateDistribution', 'DESC');
 
         return new Paginator($qbr);
     }
