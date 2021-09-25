@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1030e6223c3e3978c664bdebe5b9ac5b",
+    "content-hash": "773337641a8fe0b89e1651e1ffb2fdcf",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -2776,7 +2776,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab-public.quanti.cz/fuxv/user-app-api.git",
-                "reference": "672a4b0a0caa33c89df0ff5929ab2a2086e2d810"
+                "reference": "688393002394bf0dff10eae946f2e26c5cd94312"
             },
             "type": "library",
             "license": [
@@ -2789,15 +2789,15 @@
                 }
             ],
             "description": "OpenAPI definition of interface with mobile application for users",
-            "time": "2021-09-25T11:55:30+00:00"
+            "time": "2021-09-25T14:34:10+00:00"
         },
         {
             "name": "humansis/user-app-legacy-api",
-            "version": "v0.0.1",
+            "version": "v0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://gitlab-public.quanti.cz/fuxv/user-app-api.git",
-                "reference": "v0.0.1"
+                "reference": "v0.1.0"
             },
             "type": "library"
         },
@@ -2807,7 +2807,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab-public.quanti.cz/fuxv/vendor-app-api.git",
-                "reference": "9b4950b0f4fccae29ce33b081d43eeeee46e3503"
+                "reference": "d39153d267aa5755ae139787427c29410a4c0876"
             },
             "type": "library",
             "license": [
@@ -2820,15 +2820,15 @@
                 }
             ],
             "description": "OpenAPI definition of interface with mobile application for vendors",
-            "time": "2021-09-25T11:55:23+00:00"
+            "time": "2021-09-25T14:13:01+00:00"
         },
         {
             "name": "humansis/vendor-app-legacy-api",
-            "version": "v0.0.1",
+            "version": "v0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://gitlab-public.quanti.cz/fuxv/vendor-app-api.git",
-                "reference": "v0.0.1"
+                "reference": "v0.1.0"
             },
             "type": "library"
         },
@@ -2838,7 +2838,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab-public.quanti.cz/fuxv/web-api.git",
-                "reference": "aa0456517801c92dec12a5e0d8856eccb344d6ca"
+                "reference": "59f699bb97d584c54348b135605db77f09b7b054"
             },
             "type": "library",
             "license": [
@@ -2851,7 +2851,7 @@
                 }
             ],
             "description": "OpenAPI definition of interface with frontend",
-            "time": "2021-09-25T13:51:12+00:00"
+            "time": "2021-09-25T13:57:26+00:00"
         },
         {
             "name": "incenteev/composer-parameter-handler",

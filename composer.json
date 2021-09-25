@@ -90,11 +90,11 @@
 			"type": "package",
 			"package": {
 				"name": "humansis/vendor-app-legacy-api",
-				"version": "v0.0.1",
+				"version": "v0.1.0",
 				"source": {
 					"url": "https://gitlab-public.quanti.cz/fuxv/vendor-app-api.git",
 					"type": "git",
-					"reference": "v0.0.1"
+					"reference": "v0.1.0"
 				}
 			}
 		},
@@ -106,11 +106,11 @@
 			"type": "package",
 			"package": {
 				"name": "humansis/user-app-legacy-api",
-				"version": "v0.0.1",
+				"version": "v0.1.0",
 				"source": {
 					"url": "https://gitlab-public.quanti.cz/fuxv/user-app-api.git",
 					"type": "git",
-					"reference": "v0.0.1"
+					"reference": "v0.1.0"
 				}
 			}
 		}
