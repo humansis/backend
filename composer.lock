@@ -2838,7 +2838,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab-public.quanti.cz/fuxv/web-api.git",
-                "reference": "eb399b0b97425e96c6751e7490195bd429bd8544"
+                "reference": "aa0456517801c92dec12a5e0d8856eccb344d6ca"
             },
             "type": "library",
             "license": [
@@ -2851,7 +2851,7 @@
                 }
             ],
             "description": "OpenAPI definition of interface with frontend",
-            "time": "2021-09-25T11:55:16+00:00"
+            "time": "2021-09-25T13:51:12+00:00"
         },
         {
             "name": "incenteev/composer-parameter-handler",
