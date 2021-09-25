@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "321135f51c5198165756060037d5b102",
+    "content-hash": "1030e6223c3e3978c664bdebe5b9ac5b",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -54,16 +54,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.194.0",
+            "version": "3.194.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "3b4787381bd747753059a223b801ea5eb7d11780"
+                "reference": "33f755378debdbc7e010157811fc47aebf090c53"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/3b4787381bd747753059a223b801ea5eb7d11780",
-                "reference": "3b4787381bd747753059a223b801ea5eb7d11780",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/33f755378debdbc7e010157811fc47aebf090c53",
+                "reference": "33f755378debdbc7e010157811fc47aebf090c53",
                 "shasum": ""
             },
             "require": {
@@ -136,7 +136,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2021-09-16T18:16:59+00:00"
+            "time": "2021-09-24T18:25:24+00:00"
         },
         {
             "name": "beberlei/doctrineextensions",
@@ -2339,16 +2339,16 @@
         },
         {
             "name": "google/apiclient",
-            "version": "v2.10.1",
+            "version": "v2.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-api-php-client.git",
-                "reference": "11871e94006ce7a419bb6124d51b6f9ace3f679b"
+                "reference": "7db9eb40c8ba887e81c0fe84f2888a967396cdfb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-api-php-client/zipball/11871e94006ce7a419bb6124d51b6f9ace3f679b",
-                "reference": "11871e94006ce7a419bb6124d51b6f9ace3f679b",
+                "url": "https://api.github.com/repos/googleapis/google-api-php-client/zipball/7db9eb40c8ba887e81c0fe84f2888a967396cdfb",
+                "reference": "7db9eb40c8ba887e81c0fe84f2888a967396cdfb",
                 "shasum": ""
             },
             "require": {
@@ -2356,8 +2356,8 @@
                 "google/apiclient-services": "~0.200",
                 "google/auth": "^1.10",
                 "guzzlehttp/guzzle": "~5.3.3||~6.0||~7.0",
-                "guzzlehttp/psr7": "^1.2",
-                "monolog/monolog": "^1.17|^2.0",
+                "guzzlehttp/psr7": "^1.7||^2.0.0",
+                "monolog/monolog": "^1.17||^2.0",
                 "php": "^5.6|^7.0|^8.0",
                 "phpseclib/phpseclib": "~2.0||^3.0.2"
             },
@@ -2366,10 +2366,12 @@
                 "composer/composer": "^1.10.22",
                 "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
                 "phpcompatibility/php-compatibility": "^9.2",
-                "phpunit/phpunit": "^5.7||^8.5.13",
+                "phpspec/prophecy-phpunit": "^1.1||^2.0",
+                "phpunit/phpunit": "^5.7.21 || ^6.0 || ^7.0 || ^8.0 || ^9.0",
                 "squizlabs/php_codesniffer": "~2.3",
                 "symfony/css-selector": "~2.1",
-                "symfony/dom-crawler": "~2.1"
+                "symfony/dom-crawler": "~2.1",
+                "yoast/phpunit-polyfills": "^1.0"
             },
             "suggest": {
                 "cache/filesystem-adapter": "For caching certs and tokens (using Google\\Client::setCache)"
@@ -2400,20 +2402,20 @@
             "keywords": [
                 "google"
             ],
-            "time": "2021-06-25T14:25:44+00:00"
+            "time": "2021-09-20T21:15:55+00:00"
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.212.0",
+            "version": "v0.213.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-api-php-client-services.git",
-                "reference": "2c4bd512502ad9cdfec8ea711ea1592c79d345e5"
+                "reference": "260311821505438eb9208b068da0d849b8ea9baa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/2c4bd512502ad9cdfec8ea711ea1592c79d345e5",
-                "reference": "2c4bd512502ad9cdfec8ea711ea1592c79d345e5",
+                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/260311821505438eb9208b068da0d849b8ea9baa",
+                "reference": "260311821505438eb9208b068da0d849b8ea9baa",
                 "shasum": ""
             },
             "require": {
@@ -2440,7 +2442,7 @@
             "keywords": [
                 "google"
             ],
-            "time": "2021-09-12T11:18:27+00:00"
+            "time": "2021-09-19T11:18:26+00:00"
         },
         {
             "name": "google/auth",
@@ -2769,14 +2771,87 @@
             "time": "2021-04-26T09:17:50+00:00"
         },
         {
-            "name": "humansis/api",
-            "version": "1.0.0",
+            "name": "humansis/user-app-api",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://gitlab-public.quanti.cz/humansis/web-platform/web-api.git",
-                "reference": "develop"
+                "url": "https://gitlab-public.quanti.cz/fuxv/user-app-api.git",
+                "reference": "672a4b0a0caa33c89df0ff5929ab2a2086e2d810"
             },
-            "type": "api-definition"
+            "type": "library",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Vit Fux",
+                    "email": "fuxv@quanti.cz"
+                }
+            ],
+            "description": "OpenAPI definition of interface with mobile application for users",
+            "time": "2021-09-25T11:55:30+00:00"
+        },
+        {
+            "name": "humansis/user-app-legacy-api",
+            "version": "v0.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://gitlab-public.quanti.cz/fuxv/user-app-api.git",
+                "reference": "v0.0.1"
+            },
+            "type": "library"
+        },
+        {
+            "name": "humansis/vendor-app-api",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://gitlab-public.quanti.cz/fuxv/vendor-app-api.git",
+                "reference": "9b4950b0f4fccae29ce33b081d43eeeee46e3503"
+            },
+            "type": "library",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Vit Fux",
+                    "email": "fuxv@quanti.cz"
+                }
+            ],
+            "description": "OpenAPI definition of interface with mobile application for vendors",
+            "time": "2021-09-25T11:55:23+00:00"
+        },
+        {
+            "name": "humansis/vendor-app-legacy-api",
+            "version": "v0.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://gitlab-public.quanti.cz/fuxv/vendor-app-api.git",
+                "reference": "v0.0.1"
+            },
+            "type": "library"
+        },
+        {
+            "name": "humansis/web-api",
+            "version": "dev-develop",
+            "source": {
+                "type": "git",
+                "url": "https://gitlab-public.quanti.cz/fuxv/web-api.git",
+                "reference": "eb399b0b97425e96c6751e7490195bd429bd8544"
+            },
+            "type": "library",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Vit Fux",
+                    "email": "fuxv@quanti.cz"
+                }
+            ],
+            "description": "OpenAPI definition of interface with frontend",
+            "time": "2021-09-25T11:55:16+00:00"
         },
         {
             "name": "incenteev/composer-parameter-handler",
@@ -9019,7 +9094,10 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "jrk/levenshtein-bundle": 20,
-        "relief_applications/symfony-request-validator-bundle": 20
+        "relief_applications/symfony-request-validator-bundle": 20,
+        "humansis/web-api": 20,
+        "humansis/vendor-app-api": 20,
+        "humansis/user-app-api": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
