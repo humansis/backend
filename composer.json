@@ -16,7 +16,12 @@
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"Tests\\": "tests/"
+			"Tests\\": "tests/",
+			"Humansis\\WebApi\\": "vendor/humansis/web-api-sdk",
+			"Humansis\\VendorAppApi\\": "vendor/humansis/vendor-app-api-sdk",
+			"Humansis\\VendorAppLegacyApi\\": "vendor/humansis/vendor-app-legacy-api-sdk",
+			"Humansis\\UserAppApi\\": "vendor/humansis/user-app-api-sdk",
+			"Humansis\\UserAppLegacyApi\\": "vendor/humansis/user-app-legacy-api-sdk"
 		},
 		"files": [
 			"vendor/symfony/symfony/src/Symfony/Component/VarDumper/Resources/functions/dump.php"
