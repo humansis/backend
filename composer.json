@@ -64,7 +64,9 @@
 		"symfony/templating": "^4.4",
 		"tecnickcom/tcpdf": "^6.2",
 		"twig/twig": "^1.0||^2.0",
-		"humansis/api": "1.*"
+		"humansis/web-api": "dev-develop",
+		"humansis/vendor-app-api": "dev-master",
+		"humansis/user-app-api": "dev-master"
 	},
 	"require-dev": {
 		"doctrine/coding-standard": "^5.0",
@@ -75,17 +77,16 @@
 	},
 	"repositories": [
 		{
-			"type": "package",
-			"package": {
-				"name": "humansis/api",
-				"type": "api-definition",
-				"source": {
-					"url": "https://gitlab-public.quanti.cz/humansis/web-platform/web-api.git",
-					"type": "git",
-					"reference": "develop"
-				},
-				"version": "1.0.0"
-			}
+			"url": "https://gitlab-public.quanti.cz/fuxv/web-api.git",
+			"type": "git"
+		},
+		{
+			"url": "https://gitlab-public.quanti.cz/fuxv/vendor-app-api.git",
+			"type": "git"
+		},
+		{
+			"url": "https://gitlab-public.quanti.cz/fuxv/user-app-api.git",
+			"type": "git"
 		}
 	],
 	"scripts": {

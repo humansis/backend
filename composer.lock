@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "321135f51c5198165756060037d5b102",
+    "content-hash": "a99a92ffa9429303dc8490df89284170",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -2769,14 +2769,67 @@
             "time": "2021-04-26T09:17:50+00:00"
         },
         {
-            "name": "humansis/api",
-            "version": "1.0.0",
+            "name": "humansis/user-app-api",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://gitlab-public.quanti.cz/humansis/web-platform/web-api.git",
-                "reference": "develop"
+                "url": "https://gitlab-public.quanti.cz/fuxv/user-app-api.git",
+                "reference": "672a4b0a0caa33c89df0ff5929ab2a2086e2d810"
             },
-            "type": "api-definition"
+            "type": "library",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Vit Fux",
+                    "email": "fuxv@quanti.cz"
+                }
+            ],
+            "description": "OpenAPI definition of interface with mobile application for users",
+            "time": "2021-09-25T11:55:30+00:00"
+        },
+        {
+            "name": "humansis/vendor-app-api",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://gitlab-public.quanti.cz/fuxv/vendor-app-api.git",
+                "reference": "9b4950b0f4fccae29ce33b081d43eeeee46e3503"
+            },
+            "type": "library",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Vit Fux",
+                    "email": "fuxv@quanti.cz"
+                }
+            ],
+            "description": "OpenAPI definition of interface with mobile application for vendors",
+            "time": "2021-09-25T11:55:23+00:00"
+        },
+        {
+            "name": "humansis/web-api",
+            "version": "dev-develop",
+            "source": {
+                "type": "git",
+                "url": "https://gitlab-public.quanti.cz/fuxv/web-api.git",
+                "reference": "eb399b0b97425e96c6751e7490195bd429bd8544"
+            },
+            "type": "library",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Vit Fux",
+                    "email": "fuxv@quanti.cz"
+                }
+            ],
+            "description": "OpenAPI definition of interface with frontend",
+            "time": "2021-09-25T11:55:16+00:00"
         },
         {
             "name": "incenteev/composer-parameter-handler",
@@ -7614,6 +7667,16 @@
             "time": "2019-01-31T13:22:30+00:00"
         },
         {
+            "name": "humansis/api",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://gitlab-public.quanti.cz/humansis/web-platform/web-api.git",
+                "reference": "develop"
+            },
+            "type": "api-definition"
+        },
+        {
             "name": "mashape/unirest-php",
             "version": "v3.0.4",
             "source": {
@@ -9019,7 +9082,10 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "jrk/levenshtein-bundle": 20,
-        "relief_applications/symfony-request-validator-bundle": 20
+        "relief_applications/symfony-request-validator-bundle": 20,
+        "humansis/web-api": 20,
+        "humansis/vendor-app-api": 20,
+        "humansis/user-app-api": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
