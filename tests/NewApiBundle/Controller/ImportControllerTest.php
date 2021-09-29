@@ -156,9 +156,13 @@ class ImportControllerTest extends BMSServiceTestCase
     public function patchDataProvider(): array
     {
         return [
+            'title change' => [
+                'title',
+                'New title',
+            ],
             'status change' => [
                 'status',
-                ImportState::INTEGRITY_CHECKING,
+                ImportState::CANCELED,
             ],
             'description change' => [
                 'description',
@@ -185,6 +189,12 @@ class ImportControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: '.$this->client->getResponse()->getContent()
         );
+
+        $this->request('GET', '/api/basic/web-app/v1/imports/'.$id);
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertEquals($value, $result[$parameter]);
     }
 
     public function testGetDuplicities()
