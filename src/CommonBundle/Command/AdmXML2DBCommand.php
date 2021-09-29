@@ -26,6 +26,7 @@ class AdmXML2DBCommand extends ContainerAwareCommand
             ->setDescription('Interactive import ADM into DB')
             ->addArgument('country', InputArgument::IS_ARRAY, 'Country iso3 code')
             ->addOption('all', null, InputOption::VALUE_NONE, 'Use all known locations')
+            ->addOption('limit', null, InputOption::VALUE_REQUIRED, 'Adm count limit per country')
             ;
     }
 
@@ -60,6 +61,9 @@ class AdmXML2DBCommand extends ContainerAwareCommand
             $output->writeln("Importing file $countryFile");
 
             $importer = new LocationImporter($this->getContainer()->get('doctrine.orm.default_entity_manager'), $countryFile);
+            if ($input->hasOption('limit')) {
+                $importer->setLimit($input->getOption('limit'));
+            }
 
             $progressBar = new ProgressBar($output, $importer->getCount());
             $progressBar->start();

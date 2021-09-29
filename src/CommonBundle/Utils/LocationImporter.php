@@ -118,7 +118,7 @@ class LocationImporter
                 ];
             }
 
-            if (null !== $this->limit && ++$i >= $this->limit) {
+            if (null !== $this->limit && ++$i > $this->limit) {
                 break;
             }
         }
