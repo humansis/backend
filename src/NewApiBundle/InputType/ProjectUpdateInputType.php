@@ -88,6 +88,20 @@ class ProjectUpdateInputType implements InputTypeInterface
     private $donorIds = [];
 
     /**
+     * @var string|null
+     * @Assert\Type("string")
+     * @Assert\NotNull
+     */
+    private $projectInvoiceAddressLocal = '';
+
+    /**
+     * @var string|null
+     * @Assert\Type("string")
+     * @Assert\NotNull
+     */
+    private $projectInvoiceAddressEnglish = '';
+
+    /**
      * @return string
      */
     public function getName()
@@ -226,5 +240,37 @@ class ProjectUpdateInputType implements InputTypeInterface
     public function setDonorIds($donorIds)
     {
         $this->donorIds = $donorIds;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProjectInvoiceAddressLocal(): string
+    {
+        return $this->projectInvoiceAddressLocal;
+    }
+
+    /**
+     * @param string $projectInvoiceAddressLocal
+     */
+    public function setProjectInvoiceAddressLocal($projectInvoiceAddressLocal): void
+    {
+        $this->projectInvoiceAddressLocal = $projectInvoiceAddressLocal;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProjectInvoiceAddressEnglish(): string
+    {
+        return $this->projectInvoiceAddressEnglish;
+    }
+
+    /**
+     * @param string $projectInvoiceAddressEnglish
+     */
+    public function setProjectInvoiceAddressEnglish($projectInvoiceAddressEnglish): void
+    {
+        $this->projectInvoiceAddressEnglish = $projectInvoiceAddressEnglish;
     }
 }
