@@ -54,7 +54,7 @@ class Donor implements ExportableInterface
     private $dateAdded;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(name="notes", type="string", length=255, nullable=true)
      *
@@ -263,15 +263,14 @@ class Donor implements ExportableInterface
         ];
     }
 
-
      /**
      * Set logo.
      *
-     * @param string $logo
+     * @param string|null $logo
      *
      * @return Donor
      */
-    public function setLogo($logo)
+    public function setLogo(?string $logo): self
     {
         $this->logo = $logo;
 
@@ -281,9 +280,9 @@ class Donor implements ExportableInterface
     /**
      * Get logo.
      *
-     * @return string
+     * @return string|null
      */
-    public function getLogo()
+    public function getLogo(): ?string
     {
         return $this->logo;
     }
