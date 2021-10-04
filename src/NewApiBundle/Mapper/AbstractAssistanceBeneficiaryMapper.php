@@ -54,13 +54,6 @@ abstract class AbstractAssistanceBeneficiaryMapper implements MapperInterface
         }, $this->object->getGeneralReliefs()->toArray());
     }
 
-    public function getTransactionIds(): array
-    {
-        return array_map(function (Transaction $transaction) {
-            return $transaction->getId();
-        }, $this->object->getTransactions()->toArray());
-    }
-
     public function getSmartcardDepositIds(): array
     {
         return array_map(function (SmartcardDeposit $smartcardDeposit) {

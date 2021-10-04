@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Mapper;
 
 use BeneficiaryBundle\Entity\Community;
+use TransactionBundle\Entity\Transaction;
 
 class AssistanceCommunityMapper extends AbstractAssistanceBeneficiaryMapper
 {
@@ -15,5 +16,12 @@ class AssistanceCommunityMapper extends AbstractAssistanceBeneficiaryMapper
     public function getCommunityId(): int
     {
         return $this->object->getBeneficiary()->getId();
+    }
+
+    public function getTransactionIds(): array
+    {
+        return array_map(function (Transaction $transaction) {
+            return $transaction->getId();
+        }, $this->object->getTransactions()->toArray());
     }
 }
