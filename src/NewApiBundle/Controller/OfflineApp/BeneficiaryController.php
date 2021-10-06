@@ -19,6 +19,7 @@ class BeneficiaryController extends AbstractController
      * @param BeneficiaryFilterInputType $filter
      *
      * @return JsonResponse
+     * @deprecated Application require only one beneficiary at a time
      */
     public function beneficiaries(Request $request, BeneficiaryFilterInputType $filter): JsonResponse
     {
@@ -30,5 +31,18 @@ class BeneficiaryController extends AbstractController
         $response->isNotModified($request);
 
         return $response;
+    }
+
+    /**
+     * @Rest\Get("/offline-app/v2/beneficiary/{id}")
+     *
+     * @param Request     $request
+     * @param Beneficiary $beneficiary
+     *
+     * @return JsonResponse
+     */
+    public function beneficiary(Request $request, Beneficiary $beneficiary): JsonResponse
+    {
+        return $this->json($beneficiary, 200, [], ['offline-app' => true]);
     }
 }
