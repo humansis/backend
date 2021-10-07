@@ -40,7 +40,13 @@
 		"friendsofsymfony/user-bundle": "^2.1",
 		"google/apiclient": "^2.2",
 		"graylog2/gelf-php": "^1.7",
+		"humansis/user-app-api": "1.*",
+		"humansis/user-app-legacy-api": "1.*",
+		"humansis/vendor-app-api": "1.*",
+		"humansis/vendor-app-legacy-api": "1.*",
+		"humansis/web-api": "1.*",
 		"incenteev/composer-parameter-handler": "^2.0",
+		"jms/serializer": "^3.14",
 		"jrk/levenshtein-bundle": "dev-master",
 		"knplabs/knp-gaufrette-bundle": "^0.5.3",
 		"lexik/jwt-authentication-bundle": "^2.11",
@@ -63,12 +69,7 @@
 		"symfony/symfony": "^4.4",
 		"symfony/templating": "^4.4",
 		"tecnickcom/tcpdf": "^6.2",
-		"twig/twig": "^1.0||^2.0",
-		"humansis/web-api": "dev-develop",
-		"humansis/vendor-app-api": "dev-master",
-		"humansis/vendor-app-legacy-api": "*",
-		"humansis/user-app-api": "dev-master",
-		"humansis/user-app-legacy-api": "*"
+		"twig/twig": "^1.0||^2.0"
 	},
 	"require-dev": {
 		"doctrine/coding-standard": "^5.0",
@@ -79,38 +80,38 @@
 	},
 	"repositories": [
 		{
-			"url": "https://gitlab-public.quanti.cz/fuxv/web-api.git",
+			"url": "https://gitlab-public.quanti.cz/humansis/api/webapp.git",
 			"type": "git"
 		},
 		{
-			"url": "https://gitlab-public.quanti.cz/fuxv/vendor-app-api.git",
+			"url": "https://gitlab-public.quanti.cz/humansis/api/vendorapp.git",
 			"type": "git"
 		},
 		{
 			"type": "package",
 			"package": {
 				"name": "humansis/vendor-app-legacy-api",
-				"version": "v0.1.0",
+				"version": "v1.0.0",
 				"source": {
-					"url": "https://gitlab-public.quanti.cz/fuxv/vendor-app-api.git",
+					"url": "https://gitlab-public.quanti.cz/humansis/api/vendorapp.git",
 					"type": "git",
-					"reference": "v0.1.0"
+					"reference": "v1.0.0"
 				}
 			}
 		},
 		{
-			"url": "https://gitlab-public.quanti.cz/fuxv/user-app-api.git",
+			"url": "https://gitlab-public.quanti.cz/humansis/api/userapp.git",
 			"type": "git"
 		},
 		{
 			"type": "package",
 			"package": {
 				"name": "humansis/user-app-legacy-api",
-				"version": "v0.1.0",
+				"version": "v1.0.0",
 				"source": {
-					"url": "https://gitlab-public.quanti.cz/fuxv/user-app-api.git",
+					"url": "https://gitlab-public.quanti.cz/humansis/api/userapp.git",
 					"type": "git",
-					"reference": "v0.1.0"
+					"reference": "v1.0.0"
 				}
 			}
 		}
