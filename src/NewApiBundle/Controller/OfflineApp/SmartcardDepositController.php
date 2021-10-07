@@ -34,4 +34,22 @@ class SmartcardDepositController extends AbstractController
 
         return $response;
     }
+
+    /**
+     * @Rest\Get("/offline-app/v1/last-smartcard-deposit/{id}")
+     *
+     * @param SmartcardDeposit $smartcardDeposit
+     * @param Request          $request
+     *
+     * @return JsonResponse
+     */
+    public function lastSmartcardDeposit(SmartcardDeposit $smartcardDeposit, Request $request): JsonResponse
+    {
+        $response = $this->json($smartcardDeposit);
+        $response->setEtag(md5($response->getContent()));
+        $response->setPublic();
+        $response->isNotModified($request);
+
+        return $response;
+    }
 }
