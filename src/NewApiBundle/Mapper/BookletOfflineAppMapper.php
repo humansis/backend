@@ -6,7 +6,7 @@ namespace NewApiBundle\Mapper;
 use NewApiBundle\Serializer\MapperInterface;
 use VoucherBundle\Entity\Booklet;
 
-class BookletMapper implements MapperInterface
+class BookletOfflineAppMapper implements MapperInterface
 {
     /** @var Booklet */
     private $object;
@@ -18,7 +18,7 @@ class BookletMapper implements MapperInterface
     {
         return $object instanceof Booklet &&
             isset($context[self::NEW_API]) && true === $context[self::NEW_API] &&
-            !isset($context['offline-app']);
+            isset($context['offline-app']) && $context['offline-app'] === true;
     }
 
     /**
@@ -60,7 +60,7 @@ class BookletMapper implements MapperInterface
         return $this->object->getTotalValue();
     }
 
-    public function getIndividualValues(): array
+    public function getVoucherValues(): array
     {
         $fn = function (\VoucherBundle\Entity\Voucher $item) {
             return $item->getValue();
