@@ -10,6 +10,7 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Repository\AssistanceRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Entity\AssistanceStatistics;
+use NewApiBundle\Export\VulnerabilityScoreExport;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\AssistanceFilterInputType;
 use NewApiBundle\InputType\AssistanceOrderInputType;
@@ -18,13 +19,24 @@ use NewApiBundle\InputType\ProjectsAssistanceFilterInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 
 class AssistanceController extends AbstractController
 {
+    /** @var VulnerabilityScoreExport */
+    private $vulnerabilityScoreExport;
+
+    public function __construct(VulnerabilityScoreExport $vulnerabilityScoreExport)
+    {
+        $this->vulnerabilityScoreExport = $vulnerabilityScoreExport;
+    }
+
     /**
      * @Rest\Get("/web-app/v1/assistances/statistics")
      *
@@ -126,8 +138,12 @@ class AssistanceController extends AbstractController
      */
     public function update(Request $request, Assistance $assistance): JsonResponse
     {
-        if ($request->request->get('validated', false)) {
-            $this->get('distribution.assistance_service')->validateDistribution($assistance);
+        if ($request->request->has('validated')) {
+            if ($request->request->get('validated', true)) {
+                $this->get('distribution.assistance_service')->validateDistribution($assistance);
+            } else {
+                $this->get('distribution.assistance_service')->unvalidateDistribution($assistance);
+            }
         }
 
         if ($request->request->get('completed', false)) {
@@ -169,6 +185,37 @@ class AssistanceController extends AbstractController
         $request->query->add(['officialDistributions' => $project->getId()]);
 
         return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
+    }
+
+    /**
+     * @Rest\Get("/web-app/v1/assistances/{id}/vulnerability-scores/exports")
+     *
+     * @param Assistance $assistance
+     * @param Request    $request
+     *
+     * @return Response
+     */
+    public function vulnerabilityScoresExports(Assistance $assistance, Request $request): Response
+    {
+        if (!$request->query->has('type')) {
+            throw $this->createNotFoundException('Missing query attribute type');
+        }
+
+        $filename = $this->vulnerabilityScoreExport->export($assistance, $request->query->get('type'));
+        if (!$filename) {
+            throw $this->createNotFoundException();
+        }
+
+        $response = new BinaryFileResponse(getcwd().'/'.$filename);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
+        $response->deleteFileAfterSend(true);
+
+        $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
+        if ($mimeTypeGuesser->isGuesserSupported()) {
+            $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType(getcwd().'/'.$filename));
+        }
+
+        return $response;
     }
 
     /**

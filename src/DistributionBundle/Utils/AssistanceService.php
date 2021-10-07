@@ -21,6 +21,7 @@ use DistributionBundle\Utils\Retriever\AbstractRetriever;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
+use NewApiBundle\Entity\AssistanceStatistics;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\GeneralReliefItemUpdateInputType;
 use NewApiBundle\InputType\GeneralReliefPatchInputType;
@@ -131,6 +132,30 @@ class AssistanceService
         } catch (\Exception $e) {
             throw $e;
         }
+    }
+
+    /**
+     * @param Assistance $assistance
+     */
+    public function unvalidateDistribution(Assistance $assistance): void
+    {
+        if ($this->isDistributionStarted($assistance)) {
+            throw new \InvalidArgumentException('Unable to unvalidate the assistance. Assistance is already started.');
+        }
+
+        $assistance
+            ->setValidated(false)
+            ->setUpdatedOn(null);
+
+        foreach ($assistance->getDistributionBeneficiaries() as $distributionBeneficiary) {
+            /** @var AssistanceBeneficiary $distributionBeneficiary */
+            foreach ($distributionBeneficiary->getGeneralReliefs() as $gri) {
+                $this->em->remove($gri);
+            }
+        }
+
+        $this->em->persist($assistance);
+        $this->em->flush();
     }
 
     /**
@@ -831,8 +856,27 @@ class AssistanceService
             $this->em->remove($criterion);
         }
         foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+            /** @var AssistanceBeneficiary $assistanceBeneficiary */
             foreach ($assistanceBeneficiary->getGeneralReliefs() as $relief) {
                 $this->em->remove($relief);
+            }
+            foreach ($assistanceBeneficiary->getTransactions() as $transaction) {
+                $this->em->remove($transaction);
+            }
+            foreach ($assistanceBeneficiary->getSmartcardDeposits() as $deposit) {
+                $this->em->remove($deposit);
+            }
+            foreach ($assistanceBeneficiary->getBooklets() as $booklet) {
+                foreach ($booklet->getVouchers() as $voucher) {
+                    foreach ($voucher->getVoucherPurchase() as $voucherPurchase) {
+                        foreach ($voucherPurchase->getRecords() as $record) {
+                            $this->em->remove($record);
+                        }
+                        $this->em->remove($voucherPurchase);
+                    }
+                    $this->em->remove($voucher);
+                }
+                $this->em->remove($booklet);
             }
             $this->em->remove($assistanceBeneficiary);
         }
@@ -908,6 +952,7 @@ class AssistanceService
             'assistance_type' => $inputType->getType(),
             'target_type' => $inputType->getTarget(),
             'date_distribution' => $inputType->getDateDistribution(),
+            'date_expiration' => $inputType->getDateExpiration(),
             'project' => ['id' => $inputType->getProjectId()],
             'location' => $locationArray,
             'sector' => $inputType->getSector(),
@@ -1064,5 +1109,20 @@ class AssistanceService
     {
         $beneficiaries = $this->em->getRepository(Beneficiary::class)->getNotRemovedofDistribution($assistance);
         return $this->container->get('export_csv_service')->export($beneficiaries, 'beneficiaryInDistribution', $type);
+    }
+
+    /**
+     * Check if possible to revert validate state of assistance
+     *
+     * @param Assistance $assistance
+     *
+     * @return bool
+     */
+    public function isDistributionStarted(Assistance $assistance): bool
+    {
+        /** @var AssistanceStatistics $statistics */
+        $statistics = $this->em->getRepository(AssistanceStatistics::class)->findByAssistance($assistance);
+
+        return empty($statistics->getAmountDistributed());
     }
 }
