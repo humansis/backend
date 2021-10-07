@@ -55,11 +55,6 @@ class BookletOfflineAppMapper implements MapperInterface
         return (string) $this->object->getStatus();
     }
 
-    public function getTotalValue(): int
-    {
-        return $this->object->getTotalValue();
-    }
-
     public function getVoucherValues(): array
     {
         $fn = function (\VoucherBundle\Entity\Voucher $item) {
@@ -67,20 +62,6 @@ class BookletOfflineAppMapper implements MapperInterface
         };
 
         return array_map($fn, $this->object->getVouchers()->toArray());
-    }
-
-    public function getQuantityOfVouchers(): int
-    {
-        return $this->object->getNumberVouchers();
-    }
-
-    public function getQuantityOfUsedVouchers(): int
-    {
-        $fn = function ($ax, \VoucherBundle\Entity\Voucher $dx) {
-            return $ax + ($dx->getUsedAt() ? 1 : 0);
-        };
-
-        return array_reduce($this->object->getVouchers()->toArray(), $fn, 0);
     }
 
     public function getProjectId(): ?int
@@ -107,10 +88,5 @@ class BookletOfflineAppMapper implements MapperInterface
         }
 
         return true;
-    }
-
-    public function getDistributed(): bool
-    {
-        return Booklet::DISTRIBUTED === $this->object->getStatus();
     }
 }
