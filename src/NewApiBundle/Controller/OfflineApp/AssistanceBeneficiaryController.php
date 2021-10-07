@@ -52,7 +52,7 @@ class AssistanceBeneficiaryController extends AbstractController
 
         $assistanceBeneficiaries = $this->getDoctrine()->getRepository(AssistanceBeneficiary::class)->findBeneficiariesByAssistance($assistance, $filter, $orderBy, $pagination);
 
-        $response = $this->json($assistanceBeneficiaries);
+        $response = $this->json($assistanceBeneficiaries, 200, [], ['offline-app' => true]);
         $response->setEtag(md5($response->getContent()));
         $response->setPublic();
         $response->isNotModified($request);

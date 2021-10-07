@@ -4,15 +4,14 @@ declare(strict_types=1);
 namespace NewApiBundle\Mapper;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use VoucherBundle\Entity\SmartcardDeposit;
 
-class AssistanceBeneficiaryMapper extends AbstractAssistanceBeneficiaryMapper
+class AssistanceBeneficiaryOfflineAppMapper extends AbstractAssistanceBeneficiaryMapper
 {
     public function supports(object $object, $format = null, array $context = null): bool
     {
         return parent::supports($object, $format, $context) &&
             $object->getBeneficiary() instanceof Beneficiary &&
-            !isset($context['offline-app']);
+            isset($context['offline-app']) && $context['offline-app'] === true;
     }
 
     public function getBeneficiaryId(): int
@@ -20,10 +19,8 @@ class AssistanceBeneficiaryMapper extends AbstractAssistanceBeneficiaryMapper
         return $this->object->getBeneficiary()->getId();
     }
 
-    public function getSmartcardDepositIds(): array
+    public function getLastSmartcardDepositId(): ?int
     {
-        return array_map(function (SmartcardDeposit $smartcardDeposit) {
-            return $smartcardDeposit->getId();
-        }, $this->object->getSmartcardDeposits()->toArray());
+        return $this->object->getSmartcardDeposits()->last() ?: null;
     }
 }
