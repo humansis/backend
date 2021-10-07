@@ -6,7 +6,7 @@ namespace NewApiBundle\Mapper;
 use DistributionBundle\Entity\GeneralReliefItem;
 use NewApiBundle\Serializer\MapperInterface;
 
-class GeneralReliefItemMapper implements MapperInterface
+class GeneralReliefItemOfflineAppMapper implements MapperInterface
 {
     /** @var GeneralReliefItem */
     private $object;
@@ -18,7 +18,7 @@ class GeneralReliefItemMapper implements MapperInterface
     {
         return $object instanceof GeneralReliefItem &&
             isset($context[self::NEW_API]) && true === $context[self::NEW_API] &&
-            !isset($context['offline-app']);
+            isset($context['offline-app']) && $context['offline-app'] === true;
     }
 
     /**
@@ -40,18 +40,8 @@ class GeneralReliefItemMapper implements MapperInterface
         return $this->object->getId();
     }
 
-    public function getDistributed(): bool
-    {
-        return null !== $this->object->getDistributedAt();
-    }
-
     public function getDateOfDistribution(): ?string
     {
         return $this->object->getDistributedAt() ? $this->object->getDistributedAt()->format(\DateTime::ISO8601) : null;
-    }
-
-    public function getNote(): ?string
-    {
-        return $this->object->getNotes();
     }
 }
