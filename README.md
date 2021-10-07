@@ -153,3 +153,13 @@ php:
 
 #### PhpStorm Code Style
 Code style file humansis.xml is located in root directory 
+
+#### Makefile
+Docker and others already described commands are accessible from Makefile
+* recreate -> fully delete all containers and database and recreate full app (migrations, fixtures, unit tests)
+* stop -> stop containers
+* start -> start containers
+* restart -> restart containers
+* clean -> Recreate DB, migrate migrations, load fixtures, start cron service
+* cron-launch -> Start the cron service
+* test -> Run phpunit tests
