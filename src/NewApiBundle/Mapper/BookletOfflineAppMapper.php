@@ -8,6 +8,8 @@ use VoucherBundle\Entity\Booklet;
 
 class BookletOfflineAppMapper implements MapperInterface
 {
+    use MapperContextTrait;
+
     /** @var Booklet */
     private $object;
 
@@ -16,9 +18,7 @@ class BookletOfflineAppMapper implements MapperInterface
      */
     public function supports(object $object, $format = null, array $context = null): bool
     {
-        return $object instanceof Booklet &&
-            isset($context[self::NEW_API]) && true === $context[self::NEW_API] &&
-            isset($context['offline-app']) && $context['offline-app'] === true;
+        return $object instanceof Booklet && $this->isOfflineApp($context);
     }
 
     /**

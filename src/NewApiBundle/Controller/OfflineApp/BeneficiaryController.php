@@ -4,12 +4,13 @@ namespace NewApiBundle\Controller\OfflineApp;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Controller\AbstractController;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
+use NewApiBundle\Serializer\MapperInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
-class BeneficiaryController extends AbstractController
+class BeneficiaryController extends AbstractOfflineAppController
 {
 
     /**
@@ -25,7 +26,7 @@ class BeneficiaryController extends AbstractController
     {
         $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByParams($filter);
 
-        $response = $this->json($beneficiaries);
+        $response = $this->json($beneficiaries, Response::HTTP_OK, [], [MapperInterface::OFFLINE_APP => false]);
         $response->setEtag(md5($response->getContent()));
         $response->setPublic();
         $response->isNotModified($request);
@@ -36,13 +37,12 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/offline-app/v2/beneficiary/{id}")
      *
-     * @param Request     $request
      * @param Beneficiary $beneficiary
      *
      * @return JsonResponse
      */
-    public function beneficiary(Request $request, Beneficiary $beneficiary): JsonResponse
+    public function beneficiary(Beneficiary $beneficiary): JsonResponse
     {
-        return $this->json($beneficiary, 200, [], ['offline-app' => true]);
+        return $this->json($beneficiary);
     }
 }

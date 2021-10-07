@@ -8,6 +8,8 @@ use NewApiBundle\Serializer\MapperInterface;
 
 class GeneralReliefItemOfflineAppMapper implements MapperInterface
 {
+    use MapperContextTrait;
+
     /** @var GeneralReliefItem */
     private $object;
 
@@ -16,9 +18,7 @@ class GeneralReliefItemOfflineAppMapper implements MapperInterface
      */
     public function supports(object $object, $format = null, array $context = null): bool
     {
-        return $object instanceof GeneralReliefItem &&
-            isset($context[self::NEW_API]) && true === $context[self::NEW_API] &&
-            isset($context['offline-app']) && $context['offline-app'] === true;
+        return $object instanceof GeneralReliefItem && $this->isOfflineApp($context);
     }
 
     /**

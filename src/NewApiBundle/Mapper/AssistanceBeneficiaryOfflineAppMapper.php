@@ -7,11 +7,13 @@ use BeneficiaryBundle\Entity\Beneficiary;
 
 class AssistanceBeneficiaryOfflineAppMapper extends AbstractAssistanceBeneficiaryMapper
 {
+    use MapperContextTrait;
+
     public function supports(object $object, $format = null, array $context = null): bool
     {
         return parent::supports($object, $format, $context) &&
             $object->getBeneficiary() instanceof Beneficiary &&
-            isset($context['offline-app']) && $context['offline-app'] === true;
+            $this->isOfflineApp($context);
     }
 
     public function getBeneficiaryId(): int

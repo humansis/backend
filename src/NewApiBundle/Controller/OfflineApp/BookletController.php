@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller\OfflineApp;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Controller\AbstractController;
 use NewApiBundle\InputType\BookletFilterInputType;
 use NewApiBundle\InputType\BookletOrderInputType;
 use NewApiBundle\Request\Pagination;
@@ -14,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use VoucherBundle\Entity\Booklet;
 
-class BookletController extends AbstractController
+class BookletController extends AbstractOfflineAppController
 {
     /**
      * @Rest\Get("/offline-app/v1/booklets")
@@ -36,7 +35,7 @@ class BookletController extends AbstractController
         $list = $this->getDoctrine()->getRepository(Booklet::class)
             ->findByParams($countryIso3, $filter, $orderBy, $pagination);
 
-        $response = $this->json($list, 200, [], ['offline-app' => true]);
+        $response = $this->json($list);
         $response->setEtag(md5($response->getContent()));
         $response->setPublic();
         $response->isNotModified($request);
