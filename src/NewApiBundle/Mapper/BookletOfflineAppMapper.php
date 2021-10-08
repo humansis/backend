@@ -6,8 +6,10 @@ namespace NewApiBundle\Mapper;
 use NewApiBundle\Serializer\MapperInterface;
 use VoucherBundle\Entity\Booklet;
 
-class BookletMapper implements MapperInterface
+class BookletOfflineAppMapper implements MapperInterface
 {
+    use MapperContextTrait;
+
     /** @var Booklet */
     private $object;
 
@@ -16,9 +18,7 @@ class BookletMapper implements MapperInterface
      */
     public function supports(object $object, $format = null, array $context = null): bool
     {
-        return $object instanceof Booklet &&
-            isset($context[self::NEW_API]) && true === $context[self::NEW_API] &&
-            !isset($context['offline-app']);
+        return $object instanceof Booklet && $this->isOfflineApp($context);
     }
 
     /**
@@ -55,32 +55,13 @@ class BookletMapper implements MapperInterface
         return (string) $this->object->getStatus();
     }
 
-    public function getTotalValue(): int
-    {
-        return $this->object->getTotalValue();
-    }
-
-    public function getIndividualValues(): array
+    public function getVoucherValues(): array
     {
         $fn = function (\VoucherBundle\Entity\Voucher $item) {
             return $item->getValue();
         };
 
         return array_map($fn, $this->object->getVouchers()->toArray());
-    }
-
-    public function getQuantityOfVouchers(): int
-    {
-        return $this->object->getNumberVouchers();
-    }
-
-    public function getQuantityOfUsedVouchers(): int
-    {
-        $fn = function ($ax, \VoucherBundle\Entity\Voucher $dx) {
-            return $ax + ($dx->getUsedAt() ? 1 : 0);
-        };
-
-        return array_reduce($this->object->getVouchers()->toArray(), $fn, 0);
     }
 
     public function getProjectId(): ?int
@@ -107,10 +88,5 @@ class BookletMapper implements MapperInterface
         }
 
         return true;
-    }
-
-    public function getDistributed(): bool
-    {
-        return Booklet::DISTRIBUTED === $this->object->getStatus();
     }
 }

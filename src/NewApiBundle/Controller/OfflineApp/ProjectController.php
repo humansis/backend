@@ -5,26 +5,13 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller\OfflineApp;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Controller\AbstractController;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class ProjectController extends AbstractController
+class ProjectController extends AbstractOfflineAppController
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function json($data, $status = 200, $headers = [], $context = []): JsonResponse
-    {
-        if (!isset($context['offline-app'])) {
-            $context['offline-app'] = true;
-        }
-
-        return parent::json($data, $status, $headers, $context);
-    }
-
     /**
      * @Rest\Get("/offline-app/v2/projects")
      *

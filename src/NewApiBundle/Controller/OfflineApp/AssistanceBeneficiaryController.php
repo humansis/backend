@@ -5,14 +5,6 @@ namespace NewApiBundle\Controller\OfflineApp;
 
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
-use DistributionBundle\Enum\AssistanceTargetType;
-use DistributionBundle\Utils\AssistanceBeneficiaryService;
-use Exception;
-use InvalidArgumentException;
-use NewApiBundle\Controller\AbstractController;
-use NewApiBundle\InputType\AddRemoveBeneficiaryToAssistanceInputType;
-use NewApiBundle\InputType\AddRemoveCommunityToAssistanceInputType;
-use NewApiBundle\InputType\AddRemoveInstitutionToAssistanceInputType;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\InputType\CommunityFilterType;
@@ -20,12 +12,13 @@ use NewApiBundle\InputType\CommunityOrderInputType;
 use NewApiBundle\InputType\InstitutionFilterInputType;
 use NewApiBundle\InputType\InstitutionOrderInputType;
 use NewApiBundle\Request\Pagination;
+use NewApiBundle\Serializer\MapperInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class AssistanceBeneficiaryController extends AbstractController
+class AssistanceBeneficiaryController extends AbstractOfflineAppController
 {
     /**
      * @Rest\Get("/offline-app/v2/assistances/{id}/assistances-beneficiaries")
@@ -85,7 +78,7 @@ class AssistanceBeneficiaryController extends AbstractController
 
         $assistanceInstitutions = $this->getDoctrine()->getRepository(AssistanceBeneficiary::class)->findInstitutionsByAssistance($assistance, $filter, $orderBy, $pagination);
 
-        $response = $this->json($assistanceInstitutions);
+        $response = $this->json($assistanceInstitutions, Response::HTTP_OK, [], [MapperInterface::OFFLINE_APP => false]);
         $response->setEtag(md5($response->getContent()));
         $response->setPublic();
         $response->isNotModified($request);
@@ -118,7 +111,7 @@ class AssistanceBeneficiaryController extends AbstractController
 
         $assistanceCommunities = $this->getDoctrine()->getRepository(AssistanceBeneficiary::class)->findCommunitiesByAssistance($assistance, $filter, $orderBy, $pagination);
 
-        $response = $this->json($assistanceCommunities);
+        $response = $this->json($assistanceCommunities, Response::HTTP_OK, [], [MapperInterface::OFFLINE_APP => false]);
         $response->setEtag(md5($response->getContent()));
         $response->setPublic();
         $response->isNotModified($request);
