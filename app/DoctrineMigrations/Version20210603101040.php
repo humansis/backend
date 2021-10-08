@@ -22,17 +22,21 @@ final class Version20210603101040 extends AbstractMigration
 
         $this->addSql('
             ALTER TABLE assistance
-                ADD assistance_selection_id INT NOT NULL,
+                ADD assistance_selection_id INT,
                 ADD CONSTRAINT FK_1B4F85F2E48EFE78 FOREIGN KEY (assistance_selection_id) REFERENCES assistance_selection (id)');
 
         $this->addSql('UPDATE assistance SET assistance_selection_id=id');
 
+        $this->addSql('ALTER TABLE assistance CHANGE COLUMN assistance_selection_id assistance_selection_id INT NOT NULL');
+
         $this->addSql('
             ALTER TABLE selection_criteria
-                ADD assistance_selection_id INT NOT NULL,
+                ADD assistance_selection_id INT,
                 ADD CONSTRAINT FK_61BAEEC9A68DFFCF FOREIGN KEY (assistance_selection_id) REFERENCES assistance_selection (id)');
 
         $this->addSql('UPDATE selection_criteria SET assistance_selection_id=assistance_id');
+
+        $this->addSql('ALTER TABLE selection_criteria CHANGE COLUMN assistance_selection_id assistance_selection_id INT NOT NULL');
 
         $this->addSql('
             ALTER TABLE selection_criteria
