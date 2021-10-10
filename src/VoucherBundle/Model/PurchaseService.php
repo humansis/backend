@@ -63,10 +63,15 @@ class PurchaseService
      * @return SmartcardPurchase
      *
      * @throws EntityNotFoundException
+     * @throws \Exception
      */
     public function purchaseSmartcard(Smartcard $smartcard, SmartcardPurchaseInput $input): SmartcardPurchase
     {
         $purchase = SmartcardPurchase::create($smartcard, $this->getVendor($input->getVendorId()), $input->getCreatedAt());
+        $purchaseRepository = $this->em->getRepository(SmartcardPurchase::class);
+        if ($purchaseRepository->findOneBy(['hash' => $purchase->getHash()])) {
+            throw new \Exception("Duplicity purchase.");
+        }
 
         foreach ($input->getProducts() as $item) {
             $product = $this->getProduct($item['id']);
