@@ -75,17 +75,25 @@ class SmartcardPurchase
      */
     private $redemptionBatch;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="hash", type="text")
+     */
+    private $hash;
+
     protected function __construct()
     {
         $this->records = new ArrayCollection();
     }
 
-    public static function create(Smartcard $smartcard, Vendor $vendor, DateTimeInterface $createdAt)
+    public static function create(Smartcard $smartcard, Vendor $vendor, DateTimeInterface $createdAt): SmartcardPurchase
     {
         $entity = new self();
         $entity->vendor = $vendor;
         $entity->createdAt = $createdAt;
         $entity->smartcard = $smartcard;
+        $entity->hash = md5($entity->smartcard->getBeneficiary()->getId() . $vendor->getId() . $createdAt);
 
         $smartcard->addPurchase($entity);
 
@@ -185,6 +193,22 @@ class SmartcardPurchase
     public function getCurrency(): string
     {
         return $this->getRecords()->first()->getCurrency();
+    }
+
+    /**
+     * @return string
+     */
+    public function getHash(): string
+    {
+        return $this->hash;
+    }
+
+    /**
+     * @param string $hash
+     */
+    public function setHash(string $hash): void
+    {
+        $this->hash = $hash;
     }
 
 }
