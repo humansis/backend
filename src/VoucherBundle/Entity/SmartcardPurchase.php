@@ -93,7 +93,7 @@ class SmartcardPurchase
         $entity->vendor = $vendor;
         $entity->createdAt = $createdAt;
         $entity->smartcard = $smartcard;
-        $entity->hash = md5($entity->smartcard->getBeneficiary()->getId() . $vendor->getId() . $createdAt);
+        $entity->hash = md5($entity->smartcard->getBeneficiary()->getId() . $vendor->getId() . $createdAt->getTimestamp());
 
         $smartcard->addPurchase($entity);
 
