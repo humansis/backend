@@ -38,8 +38,8 @@ class AssistanceSelectionMapper implements MapperInterface
         return $this->object->getId();
     }
 
-    public function getThresold(): int
+    public function getThreshold(): int
     {
-        return $this->object->getThresold();
+        return $this->object->getThreshold();
     }
 }

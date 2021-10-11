@@ -18,7 +18,7 @@ final class Version20210603101040 extends AbstractMigration
                 PRIMARY KEY(id)
             ) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB');
 
-        $this->addSql('INSERT INTO assistance_selection (id, threshold) SELECT assistance_id, 0 FROM selection_criteria GROUP BY assistance_id');
+        $this->addSql('INSERT INTO assistance_selection (id, threshold) SELECT id, 0 FROM assistance');
 
         $this->addSql('
             ALTER TABLE assistance

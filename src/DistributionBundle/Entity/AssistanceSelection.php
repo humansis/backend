@@ -26,7 +26,7 @@ class AssistanceSelection
      *
      * @ORM\Column(name="threshold", type="integer", nullable=false)
      */
-    private $thresold = 0;
+    private $threshold = 0;
 
     /**
      * @var Collection|SelectionCriteria[]
@@ -51,17 +51,17 @@ class AssistanceSelection
     /**
      * @return int
      */
-    public function getThresold(): int
+    public function getThreshold(): int
     {
-        return $this->thresold;
+        return $this->threshold;
     }
 
     /**
-     * @param int $thresold
+     * @param int $threshold
      */
-    public function setThresold(int $thresold): void
+    public function setThreshold(int $threshold): void
     {
-        $this->thresold = $thresold;
+        $this->threshold = $threshold;
     }
 
     /**
