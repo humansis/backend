@@ -175,10 +175,11 @@ class AssistanceService
                     $generalRelief = new GeneralReliefItem();
                     $generalRelief->setAssistanceBeneficiary($beneficiary);
                     $this->em->persist($generalRelief);
-
-                    if ($commodity->getModalityType()->getName() === \NewApiBundle\Enum\ModalityType::SMART_CARD) {
-                        $this->createABC($beneficiary, $commodity);
-                    }
+                }
+            }
+            if ($commodity->getModalityType()->getName() === \NewApiBundle\Enum\ModalityType::SMART_CARD) {
+                foreach ($beneficiaries as $beneficiary) {
+                    $this->createReliefPackage($beneficiary, $commodity);
                 }
             }
         }
@@ -187,7 +188,7 @@ class AssistanceService
         return $assistance;
     }
 
-    private function createABC(AssistanceBeneficiary $assistanceBeneficiary, Commodity $commodity): void
+    private function createReliefPackage(AssistanceBeneficiary $assistanceBeneficiary, Commodity $commodity): void
     {
         $reliefPackage = new ReliefPackage(
             $assistanceBeneficiary,
