@@ -166,7 +166,7 @@ class AssistanceService
      * @return Assistance
      * @throws \Exception
      */
-    public function setCommoditiesToNewBeneficiaries(Assistance $assistance, array $beneficiaries): Assistance
+    public function setCommoditiesToNewBeneficiaries(Assistance $assistance, iterable $beneficiaries): Assistance
     {
         $commodities = $assistance->getCommodities();
         foreach ($commodities as $commodity) {
