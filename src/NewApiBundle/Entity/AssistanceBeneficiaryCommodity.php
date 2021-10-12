@@ -11,7 +11,6 @@ use NewApiBundle\Enum\AssistanceBeneficiaryCommodityState;
 use VoucherBundle\Entity\SmartcardDeposit;
 
 /**
- * @ORM\Entity()
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\AssistanceBeneficiaryCommodityRepository")
  * @ORM\HasLifecycleCallbacks
  */
@@ -45,7 +44,7 @@ class AssistanceBeneficiaryCommodity
     /**
      * @var string
      *
-     * @ORM\Column(name="state", type="enum_modality_type", nullable=false)
+     * @ORM\Column(name="modality_type", type="enum_modality_type", nullable=false)
      */
     private $modalityType;
 
@@ -61,7 +60,7 @@ class AssistanceBeneficiaryCommodity
      *
      * Not in use right now. Prepared for partial assists.
      *
-     * @ORM\Column(name="amount_to_distribute", type="decimal", precision=10, scale=2)
+     * @ORM\Column(name="amount_distributed", type="decimal", precision=10, scale=2)
      */
     private $amountDistributed;
 
