@@ -8,8 +8,9 @@ use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManager;
-use NewApiBundle\Entity\AssistanceBeneficiaryCommodity;
+use NewApiBundle\Entity\ReliefPackage;
 use NewApiBundle\Enum\AssistanceBeneficiaryCommodityState;
+use NewApiBundle\Enum\ReliefPackageState;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Repository\ProjectRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -72,11 +73,11 @@ class SmartcardService
             throw new NotFoundHttpException('Beneficiary ID must exist');
         }
 
-        /** @var AssistanceBeneficiaryCommodity $assistanceBeneficiaryCommodity */
-        $assistanceBeneficiaryCommodity = $this->em->getRepository(AssistanceBeneficiaryCommodity::class)
+        /** @var ReliefPackage $reliefPackage */
+        $reliefPackage = $this->em->getRepository(ReliefPackage::class)
             ->findForSmartcardByAssistanceBeneficiary($assistance, $beneficiary);
 
-        if (!$assistanceBeneficiaryCommodity || $assistanceBeneficiaryCommodity->getState() !== AssistanceBeneficiaryCommodityState::TO_DISTRIBUTE) {
+        if (!$reliefPackage || $reliefPackage->getState() !== ReliefPackageState::TO_DISTRIBUTE) {
             throw new NotFoundHttpException("There is nothing to distribute to beneficiary #{$beneficiary->getId()} in assistance #{$assistance->getId()}");
         }
 
@@ -89,7 +90,7 @@ class SmartcardService
         $deposit = SmartcardDeposit::create(
             $smartcard,
             $user,
-            $assistanceBeneficiaryCommodity,
+            $reliefPackage,
             (float) $value,
             null !== $balance ? (float) $balance : null,
             $distributedAt
@@ -97,10 +98,10 @@ class SmartcardService
 
         $smartcard->addDeposit($deposit);
 
-        $assistanceBeneficiaryCommodity->setState(AssistanceBeneficiaryCommodityState::DISTRIBUTED);
+        $reliefPackage->setState(ReliefPackageState::DISTRIBUTED);
 
         if (null === $smartcard->getCurrency()) {
-            $smartcard->setCurrency(self::findCurrency($assistanceBeneficiaryCommodity->getAssistanceBeneficiary()));
+            $smartcard->setCurrency(self::findCurrency($reliefPackage->getAssistanceBeneficiary()));
         }
 
         // for situation, that purchases are sync before any money were deposited, we need to fix missing currency
