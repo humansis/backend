@@ -7,14 +7,15 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\CreatedAt;
-use NewApiBundle\Enum\AssistanceBeneficiaryCommodityState;
+use NewApiBundle\Enum\ReliefPackageState;
 use VoucherBundle\Entity\SmartcardDeposit;
 
 /**
- * @ORM\Entity(repositoryClass="NewApiBundle\Repository\AssistanceBeneficiaryCommodityRepository")
+ * @ORM\Table(name="assistance_beneficiary_commodity")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ReliefPackageRepository")
  * @ORM\HasLifecycleCallbacks
  */
-class AssistanceBeneficiaryCommodity
+class ReliefPackage
 {
     use CreatedAt;
 
@@ -30,14 +31,14 @@ class AssistanceBeneficiaryCommodity
     /**
      * @var string
      *
-     * @ORM\Column(name="state", type="enum_assistance_beneficiary_commodity_state", nullable=false)
+     * @ORM\Column(name="state", type="enum_relief_package_state", nullable=false)
      */
     private $state; //TODO symfony/workflow
 
     /**
      * @var AssistanceBeneficiary
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", inversedBy="assistanceBeneficiaryCommodities")
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", inversedBy="reliefPackages")
      */
     private $assistanceBeneficiary;
 
@@ -76,7 +77,8 @@ class AssistanceBeneficiaryCommodity
      *
      * There should be only one deposit at this moment. One-to-many prepared for partial distribution
      *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\AssistanceBeneficiaryCommodity", mappedBy="assistanceBeneficiaryCommodity")
+     * @ORM\OneToMany(targetEntity="ReliefPackage", mappedBy="reliefPackage")
+     * @ORM\JoinColumn(name="assistance_beneficiary_commodity_id")
      */
     private $smartcardDeposits;
 
@@ -86,7 +88,7 @@ class AssistanceBeneficiaryCommodity
         string $modalityType,
         float $amountToDistribute,
         string $unit,
-        string $state = AssistanceBeneficiaryCommodityState::TO_DISTRIBUTE,
+        string $state = ReliefPackageState::TO_DISTRIBUTE,
         float $amountDistributed = 0.0
     )
     {

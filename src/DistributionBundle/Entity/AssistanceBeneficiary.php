@@ -6,7 +6,7 @@ use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\AssistanceBeneficiaryCommodity;
+use NewApiBundle\Entity\ReliefPackage;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Serializer\Annotation\MaxDepth as SymfonyMaxDepth;
 
@@ -84,18 +84,19 @@ class AssistanceBeneficiary
     private $vulnerabilityScores;
 
     /**
-     * @var Collection|AssistanceBeneficiaryCommodity[]
+     * @var Collection|ReliefPackage[]
      *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\AssistanceBeneficiaryCommodity", mappedBy="assistanceBeneficiary")
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ReliefPackage", mappedBy="assistanceBeneficiary")
+     * @ORM\JoinColumn(name="assistance_beneficiary_commodity_id")
      */
-    private $assistanceBeneficiaryCommodities;
+    private $reliefPackages;
 
     public function __construct()
     {
         $this->booklets = new ArrayCollection();
         $this->generalReliefs = new ArrayCollection();
         $this->transactions = new ArrayCollection();
-        $this->assistanceBeneficiaryCommodities = new ArrayCollection();
+        $this->reliefPackages = new ArrayCollection();
     }
 
     /**
@@ -210,8 +211,8 @@ class AssistanceBeneficiary
     public function getSmartcardDeposits(): iterable
     {
         $collection = new ArrayCollection();
-        foreach ($this->assistanceBeneficiaryCommodities as $commodity) {
-            foreach ($commodity->getSmartcardDeposits() as $deposit) {
+        foreach ($this->reliefPackages as $package) {
+            foreach ($package->getSmartcardDeposits() as $deposit) {
                 $collection->add($deposit);
             }
         }
@@ -434,10 +435,10 @@ class AssistanceBeneficiary
     }
 
     /**
-     * @return Collection|AssistanceBeneficiaryCommodity[]
+     * @return Collection|ReliefPackage[]
      */
-    public function getAssistanceBeneficiaryCommodities()
+    public function getReliefPackages()
     {
-        return $this->assistanceBeneficiaryCommodities;
+        return $this->reliefPackages;
     }
 }

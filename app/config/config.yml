@@ -121,7 +121,7 @@ doctrine:
             enum_import_queue_state: NewApiBundle\DBAL\ImportStateQueueEnum
             enum_import_duplicity_state: NewApiBundle\DBAL\ImportDuplicityStateEnum
             enum_product_category_type: NewApiBundle\DBAL\ProductCategoryTypeEnum
-            enum_assistance_beneficiary_commodity_state: NewApiBundle\DBAL\AssistanceBeneficiaryCommodityStateEnum
+            enum_relief_package_state: NewApiBundle\DBAL\ReliefPackageStateEnum
             enum_modality_type: NewApiBundle\DBAL\ModalityTypeEnum
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'

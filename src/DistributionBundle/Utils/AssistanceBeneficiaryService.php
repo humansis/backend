@@ -14,7 +14,7 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
-use NewApiBundle\Enum\AssistanceBeneficiaryCommodityState;
+use NewApiBundle\Enum\ReliefPackageState;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -276,9 +276,9 @@ class AssistanceBeneficiaryService
         $assistanceBeneficiary->setRemoved(1)
             ->setJustification($deletionData['justification']);
 
-        foreach ($assistanceBeneficiary->getAssistanceBeneficiaryCommodities() as $commodity) {
-            if (AssistanceBeneficiaryCommodityState::TO_DISTRIBUTE === $commodity->getState())
-                $commodity->setState(AssistanceBeneficiaryCommodityState::CANCELED);
+        foreach ($assistanceBeneficiary->getReliefPackages() as $commodity) {
+            if (ReliefPackageState::TO_DISTRIBUTE === $commodity->getState())
+                $commodity->setState(ReliefPackageState::CANCELED);
         }
 
         $this->em->persist($assistanceBeneficiary);

@@ -22,7 +22,7 @@ use DistributionBundle\Utils\Retriever\AbstractRetriever;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
-use NewApiBundle\Entity\AssistanceBeneficiaryCommodity;
+use NewApiBundle\Entity\ReliefPackage;
 use NewApiBundle\Entity\AssistanceStatistics;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\GeneralReliefItemUpdateInputType;
@@ -189,14 +189,14 @@ class AssistanceService
 
     private function createABC(AssistanceBeneficiary $assistanceBeneficiary, Commodity $commodity): void
     {
-        $assistanceBeneficiaryCommodity = new AssistanceBeneficiaryCommodity(
+        $reliefPackage = new ReliefPackage(
             $assistanceBeneficiary,
             $commodity->getModalityType()->getName(),
             $commodity->getValue(),
             $commodity->getUnit()
         );
 
-        $this->em->persist($assistanceBeneficiaryCommodity);
+        $this->em->persist($reliefPackage);
     }
 
     public function findByCriteria(AssistanceCreateInputType $inputType, Pagination $pagination)

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Enum;
 
-final class AssistanceBeneficiaryCommodityState
+final class ReliefPackageState
 {
     public const TO_DISTRIBUTE = 'To distribute';
     public const DISTRIBUTION_IN_PROGRESS = 'Distribution in progress';

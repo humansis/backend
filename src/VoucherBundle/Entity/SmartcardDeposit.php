@@ -5,7 +5,7 @@ namespace VoucherBundle\Entity;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\AssistanceBeneficiaryCommodity;
+use NewApiBundle\Entity\ReliefPackage;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 use UserBundle\Entity\User;
@@ -57,11 +57,12 @@ class SmartcardDeposit
     private $distributedAt;
 
     /**
-     * @var AssistanceBeneficiaryCommodity
+     * @var ReliefPackage
      *
-     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\AssistanceBeneficiaryCommodity", inversedBy="smartcardDeposits")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ReliefPackage", inversedBy="smartcardDeposits")
+     * @ORM\JoinColumn(name="assistance_beneficiary_commodity_id")
      */
-    private $assistanceBeneficiaryCommodity;
+    private $reliefPackage;
 
     /**
      * @var float
@@ -93,17 +94,17 @@ class SmartcardDeposit
     }
 
     public static function create(
-        Smartcard $smartcard,
-        User $distributedBy,
-        AssistanceBeneficiaryCommodity $assistanceBeneficiaryCommodity,
-        $value,
-        $balance,
+        Smartcard         $smartcard,
+        User              $distributedBy,
+        ReliefPackage     $reliefPackage,
+                          $value,
+                          $balance,
         DateTimeInterface $distributedAt
     ) {
         $entity = new self();
         $entity->distributedBy = $distributedBy;
         $entity->distributedAt = $distributedAt;
-        $entity->assistanceBeneficiaryCommodity = $assistanceBeneficiaryCommodity;
+        $entity->reliefPackage = $reliefPackage;
         $entity->value = $value;
         $entity->balance = $balance;
         $entity->smartcard = $smartcard;
@@ -158,19 +159,19 @@ class SmartcardDeposit
     }
 
     /**
-     * @return AssistanceBeneficiaryCommodity
+     * @return ReliefPackage
      */
-    public function getAssistanceBeneficiaryCommodity(): AssistanceBeneficiaryCommodity
+    public function getReliefPackage(): ReliefPackage
     {
-        return $this->assistanceBeneficiaryCommodity;
+        return $this->reliefPackage;
     }
 
     /**
-     * @param AssistanceBeneficiaryCommodity $assistanceBeneficiaryCommodity
+     * @param ReliefPackage $reliefPackage
      */
-    public function setAssistanceBeneficiaryCommodity(AssistanceBeneficiaryCommodity $assistanceBeneficiaryCommodity): void
+    public function setReliefPackage(ReliefPackage $reliefPackage): void
     {
-        $this->assistanceBeneficiaryCommodity = $assistanceBeneficiaryCommodity;
+        $this->reliefPackage = $reliefPackage;
     }
 
     /**
