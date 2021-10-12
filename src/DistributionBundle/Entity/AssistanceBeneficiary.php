@@ -3,10 +3,10 @@
 namespace DistributionBundle\Entity;
 
 use BeneficiaryBundle\Entity\AbstractBeneficiary;
-use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\AssistanceBeneficiaryCommodity;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Serializer\Annotation\MaxDepth as SymfonyMaxDepth;
 
@@ -91,12 +91,20 @@ class AssistanceBeneficiary
      */
     private $vulnerabilityScores;
 
+    /**
+     * @var Collection|AssistanceBeneficiaryCommodity[]
+     *
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\AssistanceBeneficiaryCommodity", mappedBy="assistanceBeneficiary")
+     */
+    private $assistanceBeneficiaryCommodities;
+
     public function __construct()
     {
         $this->booklets = new ArrayCollection();
         $this->generalReliefs = new ArrayCollection();
         $this->smartcardDeposits = new ArrayCollection();
         $this->transactions = new ArrayCollection();
+        $this->assistanceBeneficiaryCommodities = new ArrayCollection();
     }
 
     /**
@@ -426,5 +434,13 @@ class AssistanceBeneficiary
             }
         }
         return false;
+    }
+
+    /**
+     * @return Collection|AssistanceBeneficiaryCommodity[]
+     */
+    public function getAssistanceBeneficiaryCommodities()
+    {
+        return $this->assistanceBeneficiaryCommodities;
     }
 }

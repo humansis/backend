@@ -64,7 +64,7 @@ class SmartcardDepositMapper implements MapperInterface
 
     public function getDepositorId(): ?int
     {
-        return $this->object instanceof SmartcardDeposit ? $this->object->getDepositor()->getId() : null;
+        return $this->object instanceof SmartcardDeposit ? $this->object->getDistributedBy()->getId() : null;
     }
 
     public function getDistributed(): bool

@@ -4,8 +4,8 @@ namespace VoucherBundle\Entity;
 
 use DateTime;
 use DateTimeInterface;
-use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\AssistanceBeneficiaryCommodity;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 use UserBundle\Entity\User;
@@ -47,17 +47,21 @@ class SmartcardDeposit
      *
      * @SymfonyGroups({"FullSmartcard"})
      */
-    private $depositor;
+    private $distributedBy;
 
     /**
-     * @var AssistanceBeneficiary
+     * @var DateTime
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", inversedBy="smartcardDeposits")
-     * @ORM\JoinColumn(name="distribution_beneficiary_id", nullable=false)
-     *
-     * @SymfonyGroups({"FullSmartcard"})
+     * @ORM\Column(name="distributed_at", type="datetime", nullable=true)
      */
-    private $assistanceBeneficiary;
+    private $distributedAt;
+
+    /**
+     * @var AssistanceBeneficiaryCommodity
+     *
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\AssistanceBeneficiaryCommodity", inversedBy="smartcardDeposits")
+     */
+    private $assistanceBeneficiaryCommodity;
 
     /**
      * @var float
@@ -90,15 +94,17 @@ class SmartcardDeposit
 
     public static function create(
         Smartcard $smartcard,
-        User $depositor,
-        AssistanceBeneficiary $assistanceBeneficiary,
+        User $distributedBy,
+        AssistanceBeneficiaryCommodity $assistanceBeneficiaryCommodity,
         $value,
         $balance,
-        DateTimeInterface $createdAt
+        DateTimeInterface $createdAt,
+        DateTimeInterface $distributedAt
     ) {
         $entity = new self();
-        $entity->depositor = $depositor;
-        $entity->assistanceBeneficiary = $assistanceBeneficiary;
+        $entity->distributedBy = $distributedBy;
+        $entity->distributedAt = $distributedAt;
+        $entity->assistanceBeneficiaryCommodity = $assistanceBeneficiaryCommodity;
         $entity->value = $value;
         $entity->balance = $balance;
         $entity->createdAt = $createdAt;
@@ -130,17 +136,9 @@ class SmartcardDeposit
     /**
      * @return User
      */
-    public function getDepositor(): User
+    public function getDistributedBy(): User
     {
-        return $this->depositor;
-    }
-
-    /**
-     * @return AssistanceBeneficiary
-     */
-    public function getAssistanceBeneficiary(): AssistanceBeneficiary
-    {
-        return $this->assistanceBeneficiary;
+        return $this->distributedBy;
     }
 
     public function getValue(): float
@@ -159,5 +157,37 @@ class SmartcardDeposit
     public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    /**
+     * @return AssistanceBeneficiaryCommodity
+     */
+    public function getAssistanceBeneficiaryCommodity(): AssistanceBeneficiaryCommodity
+    {
+        return $this->assistanceBeneficiaryCommodity;
+    }
+
+    /**
+     * @param AssistanceBeneficiaryCommodity $assistanceBeneficiaryCommodity
+     */
+    public function setAssistanceBeneficiaryCommodity(AssistanceBeneficiaryCommodity $assistanceBeneficiaryCommodity): void
+    {
+        $this->assistanceBeneficiaryCommodity = $assistanceBeneficiaryCommodity;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getDistributedAt(): DateTime
+    {
+        return $this->distributedAt;
+    }
+
+    /**
+     * @param DateTime $distributedAt
+     */
+    public function setDistributedAt(DateTime $distributedAt): void
+    {
+        $this->distributedAt = $distributedAt;
     }
 }
