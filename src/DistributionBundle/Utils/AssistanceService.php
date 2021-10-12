@@ -4,12 +4,9 @@ namespace DistributionBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;
-use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Entity\Person;
-use BeneficiaryBundle\Model\Vulnerability\CategoryEnum;
 use CommonBundle\Utils\LocationService;
-use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\Commodity;
@@ -24,6 +21,7 @@ use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
 use NewApiBundle\Entity\ReliefPackage;
 use NewApiBundle\Entity\AssistanceStatistics;
+use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\GeneralReliefItemUpdateInputType;
 use NewApiBundle\InputType\GeneralReliefPatchInputType;
@@ -34,8 +32,6 @@ use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use VoucherBundle\Entity\Booklet;
-use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Voucher;
 
 /**
@@ -141,7 +137,7 @@ class AssistanceService
      */
     public function unvalidateDistribution(Assistance $assistance): void
     {
-        if ($this->isDistributionStarted($assistance)) {
+        if ($this->hasDistributionStarted($assistance)) {
             throw new \InvalidArgumentException('Unable to unvalidate the assistance. Assistance is already started.');
         }
 
@@ -149,10 +145,14 @@ class AssistanceService
             ->setValidated(false)
             ->setUpdatedOn(null);
 
-        foreach ($assistance->getDistributionBeneficiaries() as $distributionBeneficiary) {
-            /** @var AssistanceBeneficiary $distributionBeneficiary */
-            foreach ($distributionBeneficiary->getGeneralReliefs() as $gri) {
+        foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+            /** @var AssistanceBeneficiary $assistanceBeneficiary */
+            foreach ($assistanceBeneficiary->getGeneralReliefs() as $gri) {
                 $this->em->remove($gri);
+            }
+
+            foreach ($assistanceBeneficiary->getReliefPackages() as $package) {
+                $this->em->remove($package);
             }
         }
 
@@ -478,6 +478,14 @@ class AssistanceService
         if (!empty($assistance)) {
                 $assistance->setCompleted()
                                 ->setUpdatedOn(new \DateTime);         
+        }
+
+        /** @var AssistanceBeneficiary $assistanceBeneficiary */
+        foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+            /** @var ReliefPackage $reliefPackage */
+            foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
+                $reliefPackage->setState(ReliefPackageState::EXPIRED);
+            }
         }
 
         $this->em->persist($assistance);
@@ -862,10 +870,26 @@ class AssistanceService
      */
     public function delete(Assistance $assistance)
     {
-        if ($assistance->getValidated()) {
+        if ($assistance->getValidated()) { //TODO also completed? to discuss
             $this->archived($assistance);
 
+            /** @var AssistanceBeneficiary $assistanceBeneficiary */
+            foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+                /** @var ReliefPackage $reliefPackage */
+                foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
+                    $reliefPackage->setState(ReliefPackageState::CANCELED);
+                }
+            }
+
             return;
+        }
+
+        /** @var AssistanceBeneficiary $assistanceBeneficiary */
+        foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+            /** @var ReliefPackage $reliefPackage */
+            foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
+                $this->em->remove($reliefPackage);
+            }
         }
 
         foreach ($assistance->getCommodities() as $commodity) {
@@ -1136,7 +1160,7 @@ class AssistanceService
      *
      * @return bool
      */
-    public function isDistributionStarted(Assistance $assistance): bool
+    public function hasDistributionStarted(Assistance $assistance): bool
     {
         /** @var AssistanceStatistics $statistics */
         $statistics = $this->em->getRepository(AssistanceStatistics::class)->findByAssistance($assistance);

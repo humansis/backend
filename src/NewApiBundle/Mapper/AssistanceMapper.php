@@ -153,7 +153,7 @@ class AssistanceMapper implements MapperInterface
 
     public function getDistributionStarted(): bool
     {
-        return $this->service->isDistributionStarted($this->object);
+        return $this->service->hasDistributionStarted($this->object);
     }
 
     public function getDeletable(): bool
