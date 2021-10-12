@@ -98,7 +98,6 @@ class SmartcardDeposit
         AssistanceBeneficiaryCommodity $assistanceBeneficiaryCommodity,
         $value,
         $balance,
-        DateTimeInterface $createdAt,
         DateTimeInterface $distributedAt
     ) {
         $entity = new self();
@@ -107,7 +106,6 @@ class SmartcardDeposit
         $entity->assistanceBeneficiaryCommodity = $assistanceBeneficiaryCommodity;
         $entity->value = $value;
         $entity->balance = $balance;
-        $entity->createdAt = $createdAt;
         $entity->smartcard = $smartcard;
 
         $smartcard->addDeposit($entity);

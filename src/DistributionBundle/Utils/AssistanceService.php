@@ -12,6 +12,7 @@ use CommonBundle\Utils\LocationService;
 use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Entity\GeneralReliefItem;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
@@ -21,6 +22,7 @@ use DistributionBundle\Utils\Retriever\AbstractRetriever;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
+use NewApiBundle\Entity\AssistanceBeneficiaryCommodity;
 use NewApiBundle\Entity\AssistanceStatistics;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\GeneralReliefItemUpdateInputType;
@@ -160,11 +162,12 @@ class AssistanceService
 
     /**
      * @param Assistance $assistance
-     * @param $beneficiaries
+     * @param AssistanceBeneficiary[] $beneficiaries
      * @return Assistance
      * @throws \Exception
      */
-    public function setCommoditiesToNewBeneficiaries(Assistance $assistance, $beneficiaries) {
+    public function setCommoditiesToNewBeneficiaries(Assistance $assistance, array $beneficiaries): Assistance
+    {
         $commodities = $assistance->getCommodities();
         foreach ($commodities as $commodity) {
             if ($commodity->getModalityType()->isGeneralRelief()) {
@@ -172,12 +175,28 @@ class AssistanceService
                     $generalRelief = new GeneralReliefItem();
                     $generalRelief->setAssistanceBeneficiary($beneficiary);
                     $this->em->persist($generalRelief);
+
+                    if ($commodity->getModalityType()->getName() === \NewApiBundle\Enum\ModalityType::SMART_CARD) {
+                        $this->createABC($beneficiary, $commodity);
+                    }
                 }
             }
         }
         $this->em->flush();
 
         return $assistance;
+    }
+
+    private function createABC(AssistanceBeneficiary $assistanceBeneficiary, Commodity $commodity): void
+    {
+        $assistanceBeneficiaryCommodity = new AssistanceBeneficiaryCommodity(
+            $assistanceBeneficiary,
+            $commodity->getModalityType()->getName(),
+            $commodity->getValue(),
+            $commodity->getUnit()
+        );
+
+        $this->em->persist($assistanceBeneficiaryCommodity);
     }
 
     public function findByCriteria(AssistanceCreateInputType $inputType, Pagination $pagination)
