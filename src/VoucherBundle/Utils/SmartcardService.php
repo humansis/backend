@@ -95,7 +95,7 @@ class SmartcardService
         $deposit = SmartcardDeposit::create(
             $smartcard,
             $user,
-            $assistanceBeneficiaryCommodity,
+            $reliefPackage,
             (float) $value,
             null !== $balance ? (float) $balance : null,
             $distributedAt
