@@ -23,6 +23,6 @@ class AssistanceBeneficiaryOfflineAppMapper extends AbstractAssistanceBeneficiar
 
     public function getLastSmartcardDepositId(): ?int
     {
-        return $this->object->getSmartcardDeposits()->last() ?: null;
+        return $this->object->getSmartcardDeposits()->last() ? $this->object->getSmartcardDeposits()->last()->getId() : null;
     }
 }
