@@ -175,6 +175,10 @@ class AssistanceService
                     $generalRelief = new GeneralReliefItem();
                     $generalRelief->setAssistanceBeneficiary($beneficiary);
                     $this->em->persist($generalRelief);
+
+                    if ($commodity->getModalityType()->getName() === \NewApiBundle\Enum\ModalityType::SMART_CARD) {
+                        $this->createABC($beneficiary, $commodity);
+                    }
                 }
             }
             if ($commodity->getModalityType()->getName() === \NewApiBundle\Enum\ModalityType::SMART_CARD) {
