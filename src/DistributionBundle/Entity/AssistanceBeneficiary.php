@@ -77,14 +77,6 @@ class AssistanceBeneficiary
     private $generalReliefs;
 
     /**
-     * @var Collection|SmartcardDeposit[]
-     *
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardDeposit", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
-     * @ORM\OrderBy({"createdAt": "ASC"})
-     */
-    private $smartcardDeposits;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="content", type="json", nullable=true)
@@ -102,7 +94,6 @@ class AssistanceBeneficiary
     {
         $this->booklets = new ArrayCollection();
         $this->generalReliefs = new ArrayCollection();
-        $this->smartcardDeposits = new ArrayCollection();
         $this->transactions = new ArrayCollection();
         $this->assistanceBeneficiaryCommodities = new ArrayCollection();
     }
@@ -144,7 +135,7 @@ class AssistanceBeneficiary
         foreach ($this->getAssistance()->getCommodities() as $commodity) {
             /** @var Commodity $commodity */
             if ('Smartcard' === $commodity->getModalityType()->getName()) {
-                return count($this->smartcardDeposits) > 0;
+                return count($this->getSmartcardDeposits()) > 0;
             }
         }
 
@@ -158,7 +149,7 @@ class AssistanceBeneficiary
      */
     public function getSmartcardDistributedAt(): ?\DateTimeInterface
     {
-        foreach ($this->smartcardDeposits as $deposit) {
+        foreach ($this->getSmartcardDeposits() as $deposit) {
             return $deposit->getCreatedAt();
         }
 
@@ -216,9 +207,15 @@ class AssistanceBeneficiary
     /**
      * @return Collection|SmartcardDeposit[]
      */
-    public function getSmartcardDeposits()
+    public function getSmartcardDeposits(): iterable
     {
-        return $this->smartcardDeposits;
+        $collection = new ArrayCollection();
+        foreach ($this->assistanceBeneficiaryCommodities as $commodity) {
+            foreach ($commodity->getSmartcardDeposits() as $deposit) {
+                $collection->add($deposit);
+            }
+        }
+        return $collection;
     }
 
     /**
@@ -428,7 +425,7 @@ class AssistanceBeneficiary
                 return true;
             }
         }
-        foreach ($this->smartcardDeposits as $deposit) {
+        foreach ($this->getSmartcardDeposits() as $deposit) {
             if ($deposit->getSmartcard()->getBeneficiary() === $this->getBeneficiary()) {
                 return true;
             }

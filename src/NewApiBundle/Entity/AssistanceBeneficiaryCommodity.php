@@ -185,4 +185,20 @@ class AssistanceBeneficiaryCommodity
     {
         $this->unit = $unit;
     }
+
+    /**
+     * @return float
+     */
+    public function getAmountDistributed(): float
+    {
+        return $this->amountDistributed;
+    }
+
+    /**
+     * @return Collection|SmartcardDeposit[]
+     */
+    public function getSmartcardDeposits()
+    {
+        return $this->smartcardDeposits;
+    }
 }
