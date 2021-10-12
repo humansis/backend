@@ -68,7 +68,8 @@ class SmartcardPurchaseRepository extends EntityRepository
                 FROM
                     assistance AS a
                         INNER JOIN distribution_beneficiary AS db ON a.id = db.assistance_id
-                        INNER JOIN smartcard_deposit AS sd ON db.id = sd.distribution_beneficiary_id AND sd.used_at <= sp.used_at
+                        LEFT JOIN assistance_beneficiary_commodity abc ON abc.assistance_beneficiary_id=db.id
+                        INNER JOIN smartcard_deposit AS sd ON abc.id = sd.assistance_beneficiary_commodity_id AND sd.used_at <= sp.used_at
                 WHERE s.id = sd.smartcard_id
                 ORDER BY sd.used_at DESC, sd.id DESC 
                 LIMIT 1
