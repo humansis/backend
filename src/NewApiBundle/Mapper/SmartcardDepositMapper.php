@@ -74,6 +74,6 @@ class SmartcardDepositMapper implements MapperInterface
 
     public function getDateOfDistribution(): ?string
     {
-        return $this->object instanceof SmartcardDeposit ? $this->object->getCreatedAt()->format(\DateTime::ISO8601) : null;
+        return $this->object instanceof SmartcardDeposit ? $this->object->getDistributedAt()->format(\DateTimeInterface::ISO8601) : null;
     }
 }
