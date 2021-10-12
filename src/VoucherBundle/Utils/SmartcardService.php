@@ -8,6 +8,8 @@ use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManager;
+use NewApiBundle\Entity\AssistanceBeneficiaryCommodity;
+use NewApiBundle\Enum\AssistanceBeneficiaryCommodityState;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Repository\ProjectRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -56,11 +58,11 @@ class SmartcardService
         return $smartcard;
     }
 
-    public function deposit(string $serialNumber, int $distributionId, ?int $beneficiaryId, $value, $balance, DateTimeInterface $createdAt, User $user): SmartcardDeposit
+    public function deposit(string $serialNumber, int $assistanceId, ?int $beneficiaryId, $value, $balance, DateTimeInterface $distributedAt, User $user): SmartcardDeposit
     {
-        $distribution = $this->em->getRepository(Assistance::class)->find($distributionId);
-        if (!$distribution) {
-            throw new NotFoundHttpException('Distribution does not exist.');
+        $assistance = $this->em->getRepository(Assistance::class)->find($assistanceId);
+        if (!$assistance) {
+            throw new NotFoundHttpException('Assistance does not exist.');
         }
         $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy([
             'id' => $beneficiaryId,
@@ -70,16 +72,15 @@ class SmartcardService
             throw new NotFoundHttpException('Beneficiary ID must exist');
         }
 
-        $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findByDistributionAndBeneficiary(
-            $distribution,
-            $beneficiary
-        );
+        /** @var AssistanceBeneficiaryCommodity $assistanceBeneficiaryCommodity */
+        $assistanceBeneficiaryCommodity = $this->em->getRepository(AssistanceBeneficiaryCommodity::class)
+            ->findForSmartcardByAssistanceBeneficiary($assistance, $beneficiary);
 
-        if (!$assistanceBeneficiary) {
-            throw new NotFoundHttpException("Distribution does not have smartcard's beneficiary.");
+        if (!$assistanceBeneficiaryCommodity || $assistanceBeneficiaryCommodity->getState() !== AssistanceBeneficiaryCommodityState::TO_DISTRIBUTE) {
+            throw new NotFoundHttpException("There is nothing to distribute to beneficiary #{$beneficiary->getId()} in assistance #{$assistance->getId()}");
         }
 
-        $smartcard = $this->getActualSmartcard($serialNumber, $beneficiary, $createdAt);
+        $smartcard = $this->getActualSmartcard($serialNumber, $beneficiary, $distributedAt);
 
         if (!$smartcard->getBeneficiary()) {
             throw new NotFoundHttpException('Smartcard does not have assigned beneficiary.');
@@ -88,16 +89,18 @@ class SmartcardService
         $deposit = SmartcardDeposit::create(
             $smartcard,
             $user,
-            $assistanceBeneficiary,
+            $assistanceBeneficiaryCommodity,
             (float) $value,
             null !== $balance ? (float) $balance : null,
-            $createdAt
+            $distributedAt
         );
 
         $smartcard->addDeposit($deposit);
 
+        $assistanceBeneficiaryCommodity->setState(AssistanceBeneficiaryCommodityState::DISTRIBUTED);
+
         if (null === $smartcard->getCurrency()) {
-            $smartcard->setCurrency(self::findCurrency($assistanceBeneficiary));
+            $smartcard->setCurrency(self::findCurrency($assistanceBeneficiaryCommodity->getAssistanceBeneficiary()));
         }
 
         // for situation, that purchases are sync before any money were deposited, we need to fix missing currency
