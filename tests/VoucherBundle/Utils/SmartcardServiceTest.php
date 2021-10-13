@@ -8,6 +8,7 @@ use CommonBundle\Entity\Adm2;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Entity\ReliefPackage;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use UserBundle\Entity\User;
 use VoucherBundle\DTO\PurchaseRedemptionBatch;
@@ -417,7 +418,10 @@ class SmartcardServiceTest extends KernelTestCase
             'beneficiary' => $allTestingBeneficiaries,
             'assistance' => $assistanceId,
         ]);
-        $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(['assistanceBeneficiary'=>$beneficiary]);
+        $package = $this->em->getRepository(ReliefPackage::class)->findOneBy([
+            'assistanceBeneficiary' => $beneficiary,
+        ]);
+        $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(['reliefPackage'=>$package]);
         foreach ($deposits as $deposit) {
             $this->em->remove($deposit);
         }
