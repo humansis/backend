@@ -4,6 +4,7 @@ namespace VoucherBundle\Entity;
 
 use DateTime;
 use DateTimeInterface;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\ReliefPackage;
 use NewApiBundle\Enum\ModalityType;
