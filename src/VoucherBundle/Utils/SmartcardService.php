@@ -10,10 +10,11 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManager;
 use NewApiBundle\Entity\ReliefPackage;
 use NewApiBundle\Enum\AssistanceBeneficiaryCommodityState;
-use NewApiBundle\Enum\ReliefPackageState;
+use NewApiBundle\Workflow\ReliefPackageTransitions;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Repository\ProjectRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Workflow\Registry;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
@@ -35,10 +36,14 @@ class SmartcardService
     /** @var PurchaseService */
     private $purchaseService;
 
-    public function __construct(EntityManager $em, PurchaseService $purchaseService)
+    /** @var Registry $workflowRegistry */
+    private $workflowRegistry;
+
+    public function __construct(EntityManager $em, PurchaseService $purchaseService, Registry $workflowRegistry)
     {
         $this->em = $em;
         $this->purchaseService = $purchaseService;
+        $this->workflowRegistry = $workflowRegistry;
     }
 
     public function register(string $serialNumber, string $beneficiaryId, DateTime $createdAt): Smartcard
@@ -82,7 +87,9 @@ class SmartcardService
         $reliefPackage = $this->em->getRepository(ReliefPackage::class)
             ->findForSmartcardByAssistanceBeneficiary($assistance, $beneficiary);
 
-        if (!$reliefPackage || $reliefPackage->getState() !== ReliefPackageState::TO_DISTRIBUTE) {
+        $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
+
+        if (!$reliefPackage || !$reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
             throw new NotFoundHttpException("There is nothing to distribute to beneficiary #{$beneficiary->getId()} in assistance #{$assistance->getId()}");
         }
 
@@ -103,7 +110,7 @@ class SmartcardService
 
         $smartcard->addDeposit($deposit);
 
-        $reliefPackage->setState(ReliefPackageState::DISTRIBUTED);
+        $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::DISTRIBUTE);
 
         if (null === $smartcard->getCurrency()) {
             $smartcard->setCurrency(self::findCurrency($reliefPackage->getAssistanceBeneficiary()));

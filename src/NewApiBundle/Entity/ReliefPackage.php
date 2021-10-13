@@ -32,7 +32,7 @@ class ReliefPackage
      *
      * @ORM\Column(name="state", type="enum_relief_package_state", nullable=false)
      */
-    private $state; //TODO symfony/workflow
+    private $state;
 
     /**
      * @var AssistanceBeneficiary
@@ -120,14 +120,6 @@ class ReliefPackage
     public function getState(): string
     {
         return $this->state;
-    }
-
-    /**
-     * @param string $state
-     */
-    public function setState(string $state): void
-    {
-        $this->state = $state;
     }
 
     /**

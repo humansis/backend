@@ -21,17 +21,18 @@ use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
 use NewApiBundle\Entity\ReliefPackage;
 use NewApiBundle\Entity\AssistanceStatistics;
-use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\GeneralReliefItemUpdateInputType;
 use NewApiBundle\InputType\GeneralReliefPatchInputType;
 use NewApiBundle\Request\Pagination;
+use NewApiBundle\Workflow\ReliefPackageTransitions;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Workflow\Registry;
 use VoucherBundle\Entity\Voucher;
 
 /**
@@ -71,6 +72,9 @@ class AssistanceService
     /** @var FieldDbTransformer */
     private $fieldDbTransformer;
 
+    /** @var Registry $workflowRegistry */
+    private $workflowRegistry;
+
     /**
      * AssistanceService constructor.
      * @param EntityManagerInterface $entityManager
@@ -95,7 +99,8 @@ class AssistanceService
         CriteriaAssistanceService $criteriaAssistanceService,
         FieldDbTransformer $fieldDbTransformer,
         string $classRetrieverString,
-        ContainerInterface $container
+        ContainerInterface $container,
+        Registry $workflowRegistry
     ) {
         $this->em = $entityManager;
         $this->serializer = $serializer;
@@ -106,6 +111,8 @@ class AssistanceService
         $this->criteriaAssistanceService = $criteriaAssistanceService;
         $this->fieldDbTransformer = $fieldDbTransformer;
         $this->container = $container;
+        $this->workflowRegistry = $workflowRegistry;
+
         try {
             $class = new \ReflectionClass($classRetrieverString);
             $this->retriever = $class->newInstanceArgs([$this->em]);
@@ -490,7 +497,12 @@ class AssistanceService
         foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
             /** @var ReliefPackage $reliefPackage */
             foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
-                $reliefPackage->setState(ReliefPackageState::EXPIRED);
+
+                $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
+
+                if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::EXPIRE)) {
+                    $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::EXPIRE);
+                }
             }
         }
 
@@ -883,7 +895,11 @@ class AssistanceService
             foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
                 /** @var ReliefPackage $reliefPackage */
                 foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
-                    $reliefPackage->setState(ReliefPackageState::CANCELED);
+                    $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
+
+                    if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::CANCEL)) {
+                        $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::CANCEL);
+                    }
                 }
             }
 
