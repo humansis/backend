@@ -2,6 +2,7 @@
 
 namespace CommonBundle\DataFixtures;
 
+use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Beneficiary;
 use DateTimeImmutable;
 use DistributionBundle\Entity\Assistance;
@@ -9,6 +10,7 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Entity\ReliefPackage;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Smartcard;
@@ -79,14 +81,16 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
 
         $smartcard->setBeneficiary($ab->getBeneficiary());
         foreach (range(1, rand(2, 4)) as $i) {
-            $smartcard->addDeposit(SmartcardDeposit::create(
+            $deposit = SmartcardDeposit::create(
                 $smartcard,
                 $this->randomEntity(User::class, $manager),
                 $ab,
                 rand(1, 10000),
                 null,
                 new DateTimeImmutable("now-${i} days")
-            ));
+            );
+            $smartcard->addDeposit($deposit);
+            $manager->persist($deposit->getReliefPackage());
         }
 
         for ($j = 0; $j < rand(0, 50); ++$j) {

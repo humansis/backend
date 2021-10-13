@@ -124,14 +124,18 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
 
         $khmProjects = $manager->getRepository(Project::class)->findBy(['iso3' => 'KHM'], ['id' => 'asc']);
         $khmKhrAssistance = $this->loadSmartcardAssistance($manager, $khmProjects[0], 'KHR');
+        $this->distributionService->validateDistribution($khmKhrAssistance);
         $this->setReference(self::REF_SMARTCARD_ASSISTANCE_KHM_KHR, $khmKhrAssistance);
         $khmUsdAssistance = $this->loadSmartcardAssistance($manager, $khmProjects[1], 'USD');
+        $this->distributionService->validateDistribution($khmUsdAssistance);
         $this->setReference(self::REF_SMARTCARD_ASSISTANCE_KHM_USD, $khmUsdAssistance);
 
         $syrProjects = $manager->getRepository(Project::class)->findBy(['iso3' => 'SYR'], ['id' => 'asc']);
         $syrSypAssistance = $this->loadSmartcardAssistance($manager, $syrProjects[0], 'SYP');
+        $this->distributionService->validateDistribution($syrSypAssistance);
         $this->setReference(self::REF_SMARTCARD_ASSISTANCE_SYR_SYP, $syrSypAssistance);
         $syrUsdAssistance = $this->loadSmartcardAssistance($manager, $syrProjects[1], 'USD');
+        $this->distributionService->validateDistribution($syrUsdAssistance);
         $this->setReference(self::REF_SMARTCARD_ASSISTANCE_SYR_USD, $syrUsdAssistance);
     }
 

@@ -4,8 +4,11 @@ namespace VoucherBundle\Entity;
 
 use DateTime;
 use DateTimeInterface;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Enum\ModalityType;
+use NewApiBundle\Enum\ReliefPackageState;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 use UserBundle\Entity\User;
@@ -94,16 +97,26 @@ class SmartcardDeposit
     }
 
     public static function create(
-        Smartcard         $smartcard,
-        User              $distributedBy,
-        ReliefPackage     $reliefPackage,
-                          $value,
-                          $balance,
-        DateTimeInterface $distributedAt
+        Smartcard             $smartcard,
+        User                  $distributedBy,
+        AssistanceBeneficiary $assistanceBeneficiary,
+                              $value,
+                              $balance,
+        DateTimeInterface     $distributedAt
     ) {
+        $reliefPackage = new ReliefPackage(
+            $assistanceBeneficiary,
+            ModalityType::SMART_CARD,
+            $value,
+            $smartcard->getCurrency(),
+            ReliefPackageState::DISTRIBUTED,
+            $value
+        );
+
         $entity = new self();
         $entity->distributedBy = $distributedBy;
         $entity->distributedAt = $distributedAt;
+        $entity->createdAt = new DateTime();
         $entity->reliefPackage = $reliefPackage;
         $entity->value = $value;
         $entity->balance = $balance;

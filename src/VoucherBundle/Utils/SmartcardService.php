@@ -72,6 +72,11 @@ class SmartcardService
         if (!$beneficiary) {
             throw new NotFoundHttpException('Beneficiary ID must exist');
         }
+        $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy([
+            'beneficiary' => $beneficiary,
+            'assistance' => $assistance,
+            'removed' => 0,
+        ]);
 
         /** @var ReliefPackage $reliefPackage */
         $reliefPackage = $this->em->getRepository(ReliefPackage::class)
@@ -90,7 +95,7 @@ class SmartcardService
         $deposit = SmartcardDeposit::create(
             $smartcard,
             $user,
-            $reliefPackage,
+            $assistanceBeneficiary,
             (float) $value,
             null !== $balance ? (float) $balance : null,
             $distributedAt
@@ -285,13 +290,13 @@ class SmartcardService
         $deposits = $purchase->getSmartcard()->getDeposites()->toArray();
         $purchaseDeposit = $this->getDeposit($deposits, $purchase->getCreatedAt());
 
-        if (null === $purchaseDeposit->getAssistanceBeneficiary()->getAssistance()
-            || null === $purchaseDeposit->getAssistanceBeneficiary()->getAssistance()->getProject()
+        if (null === $purchaseDeposit->getReliefPackage()->getAssistanceBeneficiary()->getAssistance()
+            || null === $purchaseDeposit->getReliefPackage()->getAssistanceBeneficiary()->getAssistance()->getProject()
         ) {
             return null;
         }
 
-        return $purchaseDeposit->getAssistanceBeneficiary()->getAssistance()->getProject()->getId();
+        return $purchaseDeposit->getReliefPackage()->getAssistanceBeneficiary()->getAssistance()->getProject()->getId();
     }
 
     /**
