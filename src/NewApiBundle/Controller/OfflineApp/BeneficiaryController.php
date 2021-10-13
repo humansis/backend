@@ -38,11 +38,17 @@ class BeneficiaryController extends AbstractOfflineAppController
      * @Rest\Get("/offline-app/v2/beneficiary/{id}")
      *
      * @param Beneficiary $beneficiary
+     * @param Request     $request
      *
      * @return JsonResponse
      */
-    public function beneficiary(Beneficiary $beneficiary): JsonResponse
+    public function beneficiary(Beneficiary $beneficiary, Request $request): JsonResponse
     {
-        return $this->json($beneficiary);
+        $response = $this->json($beneficiary);
+        $response->setEtag(md5($response->getContent()));
+        $response->setPublic();
+        $response->isNotModified($request);
+
+        return $response;
     }
 }
