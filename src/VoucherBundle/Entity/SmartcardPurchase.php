@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace VoucherBundle\Entity;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -87,14 +88,14 @@ class SmartcardPurchase
         $this->records = new ArrayCollection();
     }
 
-    public static function create(Smartcard $smartcard, Vendor $vendor, DateTimeInterface $createdAt): SmartcardPurchase
+    public static function create(Smartcard $smartcard, Vendor $vendor, DateTimeInterface $createdAt, ?string $hash = null): SmartcardPurchase
     {
         $entity = new self();
         $entity->vendor = $vendor;
         $entity->createdAt = $createdAt;
         $entity->smartcard = $smartcard;
-        $entity->hash = md5($entity->smartcard->getBeneficiary()->getId() . $vendor->getId() . $createdAt->getTimestamp());
-
+        $beneficiary = $entity->smartcard->getBeneficiary();
+        $entity->hash = $hash ?: self::generateHash($beneficiary, $vendor, $createdAt);
         $smartcard->addPurchase($entity);
 
         return $entity;
@@ -209,6 +210,20 @@ class SmartcardPurchase
     public function setHash(string $hash): void
     {
         $this->hash = $hash;
+    }
+
+    /**
+     * @param Beneficiary|null  $beneficiary
+     * @param Vendor            $vendor
+     * @param DateTimeInterface $createdAt
+     *
+     * @return string
+     */
+    public static function generateHash(?Beneficiary $beneficiary, Vendor $vendor, DateTimeInterface $createdAt): string
+    {
+        $stringToHash = ($beneficiary ? $beneficiary->getId() : null).$vendor->getId().$createdAt->getTimestamp();
+
+        return md5($stringToHash);
     }
 
 }

@@ -4,6 +4,7 @@ namespace VoucherBundle\Model;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
+use Psr\Log\LoggerInterface;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Smartcard;
@@ -19,9 +20,13 @@ class PurchaseService
     /** @var EntityManagerInterface */
     private $em;
 
-    public function __construct(EntityManagerInterface $em)
+    /** @var LoggerInterface */
+    private $logger;
+
+    public function __construct(EntityManagerInterface $em, LoggerInterface $logger)
     {
         $this->em = $em;
+        $this->logger = $logger;
     }
 
     /**
@@ -67,10 +72,14 @@ class PurchaseService
      */
     public function purchaseSmartcard(Smartcard $smartcard, SmartcardPurchaseInput $input): SmartcardPurchase
     {
-        $purchase = SmartcardPurchase::create($smartcard, $this->getVendor($input->getVendorId()), $input->getCreatedAt());
+        $hash = SmartcardPurchase::generateHash($smartcard->getBeneficiary(), $this->getVendor($input->getVendorId()), $input->getCreatedAt());
         $purchaseRepository = $this->em->getRepository(SmartcardPurchase::class);
-        if ($purchaseRepository->findOneBy(['hash' => $purchase->getHash()])) {
-            throw new \Exception("Duplicity purchase.");
+        $purchase = $purchaseRepository->findOneBy(['hash' => $hash]);
+
+        if ($purchase) {
+            $this->logger->info("Purchase was already set. [hash: {$purchase->getHash()}]");
+        } else {
+            $purchase = SmartcardPurchase::create($smartcard, $this->getVendor($input->getVendorId()), $input->getCreatedAt(), $hash);
         }
 
         foreach ($input->getProducts() as $item) {
