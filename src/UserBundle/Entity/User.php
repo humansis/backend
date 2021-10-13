@@ -16,6 +16,7 @@ use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueueDuplicity;
 use NewApiBundle\Entity\Role;
+use NewApiBundle\Enum\RoleType;
 use RuntimeException;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -599,5 +600,19 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     public function getImportQueueDuplicities()
     {
         return $this->importQueueDuplicities;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        foreach ($this->getRoles() as $role) {
+            if ($role === RoleType::ADMIN) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
