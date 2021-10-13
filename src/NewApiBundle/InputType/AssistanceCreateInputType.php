@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\InputType\Assistance\CommodityInputType;
 use NewApiBundle\Request\InputTypeInterface;
 use NewApiBundle\Validator\Constraints\Country;
 use NewApiBundle\Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @Assert\GroupSequence({"AssistanceCreateInputType", "Strict"})
+ * @Assert\GroupSequence({"AssistanceCreateInputType", "Strict", "AdditionalChecks"})
  */
 class AssistanceCreateInputType implements InputTypeInterface
 {
@@ -143,6 +144,26 @@ class AssistanceCreateInputType implements InputTypeInterface
      * @Assert\Type("boolean")
      */
     private $validated = false;
+
+    /**
+     * @Assert\Type("boolean")
+     */
+    private $remoteDistributionAllowed;
+
+    /**
+     * @Assert\IsTrue(groups="AdditionalChecks", message="remoteDistributionAllowed must not be null if distribution is for smartcards. Null otherwise.")
+     */
+    public function isNotNullRemoteDistributionWhenSmartcard(): bool
+    {
+        /** @var CommodityInputType $commodity */
+        foreach ($this->commodities as $commodity) {
+            if ($commodity->getModalityType() === 'Smartcard') { //TODO modality type enum
+                return $this->remoteDistributionAllowed !== null;
+            }
+        }
+
+        return $this->remoteDistributionAllowed === null;
+    }
 
     /**
      * @return string
@@ -456,5 +477,21 @@ class AssistanceCreateInputType implements InputTypeInterface
     public function setValidated($validated)
     {
         $this->validated = $validated;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function getRemoteDistributionAllowed()
+    {
+        return $this->remoteDistributionAllowed;
+    }
+
+    /**
+     * @param bool|null $remoteDistributionAllowed
+     */
+    public function setRemoteDistributionAllowed($remoteDistributionAllowed)
+    {
+        $this->remoteDistributionAllowed = $remoteDistributionAllowed;
     }
 }

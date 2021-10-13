@@ -204,6 +204,13 @@ class Assistance implements ExportableInterface
     private $individualsTargeted;
 
     /**
+     * @var bool|null
+     *
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $remoteDistributionAllowed;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -883,6 +890,22 @@ class Assistance implements ExportableInterface
 
             return ($correspondingGeneralRelief && $correspondingGeneralRelief->getDistributedAt() ? $commodity->getValue() : 0);
         }
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function isRemoteDistributionAllowed(): ?bool
+    {
+        return $this->remoteDistributionAllowed;
+    }
+
+    /**
+     * @param bool|true $remoteDistributionAllowed
+     */
+    public function setRemoteDistributionAllowed(?bool $remoteDistributionAllowed): void
+    {
+        $this->remoteDistributionAllowed = $remoteDistributionAllowed;
     }
 
 }
