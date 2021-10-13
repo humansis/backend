@@ -475,7 +475,8 @@ class SmartcardServiceTest extends KernelTestCase
                 'beneficiary' => $beneficiaryId,
                 'assistance' => $assistanceId,
                 ]);
-            $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(['assistanceBeneficiary'=>$beneficiary]);
+            $package = $this->em->getRepository(ReliefPackage::class)->findBy(['assistanceBeneficiary'=>$beneficiary]);
+            $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(['reliefPackage'=>$package]);
             $distributed = 0;
             foreach ($deposits as $deposit) {
                 $distributed += $deposit->getValue();
