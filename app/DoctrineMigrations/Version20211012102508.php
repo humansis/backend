@@ -19,12 +19,12 @@ final class Version20211012102508 extends AbstractMigration
         $this->addSql('ALTER TABLE smartcard_deposit DROP FOREIGN KEY FK_FD578545EB8724B4');
         $this->addSql('DROP INDEX IDX_FD57854595AAFAA9 ON smartcard_deposit');
         $this->addSql('DROP INDEX IDX_FD578545EB8724B4 ON smartcard_deposit');
-        $this->addSql('ALTER TABLE smartcard_deposit ADD assistance_beneficiary_commodity_id INT DEFAULT NULL, ADD distributed_at DATETIME DEFAULT NULL');
+        $this->addSql('ALTER TABLE smartcard_deposit ADD relief_package_id INT DEFAULT NULL, ADD distributed_at DATETIME DEFAULT NULL');
         $this->addSql('ALTER TABLE smartcard_deposit RENAME COLUMN depositor_id TO distributed_by_id');
         $this->addSql('ALTER TABLE smartcard_deposit ADD CONSTRAINT FK_FD57854565F14916 FOREIGN KEY (distributed_by_id) REFERENCES `user` (id)');
-        $this->addSql('ALTER TABLE smartcard_deposit ADD CONSTRAINT FK_FD5785451E8DF071 FOREIGN KEY (assistance_beneficiary_commodity_id) REFERENCES relief_package (id)');
+        $this->addSql('ALTER TABLE smartcard_deposit ADD CONSTRAINT FK_FD5785451E8DF071 FOREIGN KEY (relief_package_id) REFERENCES relief_package (id)');
         $this->addSql('CREATE INDEX IDX_FD57854565F14916 ON smartcard_deposit (distributed_by_id)');
-        $this->addSql('CREATE INDEX IDX_FD5785451E8DF071 ON smartcard_deposit (assistance_beneficiary_commodity_id)');
+        $this->addSql('CREATE INDEX IDX_FD5785451E8DF071 ON smartcard_deposit (relief_package_id)');
 
         // all validated SC assistances must have one ABC
         $this->addSql("INSERT INTO relief_package (

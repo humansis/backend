@@ -63,7 +63,7 @@ class SmartcardDeposit
      * @var ReliefPackage
      *
      * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ReliefPackage", inversedBy="smartcardDeposits")
-     * @ORM\JoinColumn(name="assistance_beneficiary_commodity_id")
+     * @ORM\JoinColumn(name="relief_package_id")
      */
     private $reliefPackage;
 

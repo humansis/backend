@@ -77,11 +77,18 @@ class ReliefPackage
      * There should be only one deposit at this moment. One-to-many prepared for partial distribution
      *
      * @ORM\OneToMany(targetEntity="ReliefPackage", mappedBy="reliefPackage")
-     * @ORM\JoinColumn(name="assistance_beneficiary_commodity_id")
+     * @ORM\JoinColumn(name="relief_package_id")
      */
     private $smartcardDeposits;
 
-
+    /**
+     * @param AssistanceBeneficiary $assistanceBeneficiary
+     * @param string                $modalityType
+     * @param float                 $amountToDistribute
+     * @param string                $unit
+     * @param string                $state
+     * @param float                 $amountDistributed
+     */
     public function __construct(
         AssistanceBeneficiary $assistanceBeneficiary,
         string $modalityType,

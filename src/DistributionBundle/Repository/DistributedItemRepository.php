@@ -38,7 +38,7 @@ class DistributedItemRepository extends \Doctrine\ORM\EntityRepository
             JOIN distribution_beneficiary db ON ass.id=db.assistance_id
             -- smartcards
             LEFT JOIN assistance_beneficiary_commodity abc ON abc.assistance_beneficiary_id=db.id
-            LEFT JOIN smartcard_deposit sd ON sd.assistance_beneficiary_commodity_id=abc.id
+            LEFT JOIN smartcard_deposit sd ON sd.relief_package_id=abc.id
             -- mobile money
             LEFT JOIN transaction t ON t.distribution_beneficiary_id=db.id
             -- general reliefs
@@ -84,7 +84,7 @@ class DistributedItemRepository extends \Doctrine\ORM\EntityRepository
             JOIN beneficiary b ON b.id=db.beneficiary_id
             -- smartcards
             LEFT JOIN assistance_beneficiary_commodity abc ON abc.assistance_beneficiary_id=db.id
-            LEFT JOIN smartcard_deposit sd ON sd.assistance_beneficiary_commodity_id=abc.id
+            LEFT JOIN smartcard_deposit sd ON sd.relief_package_id=abc.id
             -- mobile money
             LEFT JOIN transaction t ON t.distribution_beneficiary_id=db.id
             -- general reliefs

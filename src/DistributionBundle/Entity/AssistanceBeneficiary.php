@@ -87,7 +87,7 @@ class AssistanceBeneficiary
      * @var Collection|ReliefPackage[]
      *
      * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ReliefPackage", mappedBy="assistanceBeneficiary")
-     * @ORM\JoinColumn(name="assistance_beneficiary_commodity_id")
+     * @ORM\JoinColumn(name="relief_package_id")
      */
     private $reliefPackages;
 
