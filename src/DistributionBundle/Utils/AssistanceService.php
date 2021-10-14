@@ -945,8 +945,6 @@ class AssistanceService
             ];
         }
 
-
-
         $distributionArray = [
             'countryIso3' => $inputType->getIso3(),
             'assistance_type' => $inputType->getType(),
@@ -963,6 +961,7 @@ class AssistanceService
             'households_targeted' => $inputType->getHouseholdsTargeted(),
             'individuals_targeted' => $inputType->getIndividualsTargeted(),
             'description' => $inputType->getDescription(),
+            'remoteDistributionAllowed' => $inputType->getRemoteDistributionAllowed(),
         ];
 
         foreach ($inputType->getCommodities() as $commodity) {

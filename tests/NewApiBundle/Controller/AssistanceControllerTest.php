@@ -104,13 +104,17 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testCreateDistribution()
     {
         /** @var Project $project */
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findOneBy([]);
 
         /** @var Location $location */
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findOneBy([]);
+
+        if (null === $project || null === $location) {
+            $this->markTestSkipped('There needs to be at least one project and location in system for completing this test');
+        }
 
         /** @var ModalityType $modalityType */
-        $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Cash'])[0];
+        $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Smartcard'])[0];
 
         $this->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
@@ -135,6 +139,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
                     'value' => '2020-01-01',
                 ],
             ],
+            'remoteDistributionAllowed' => false,
         ]);
 
         $this->assertTrue(
@@ -155,7 +160,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "householdsTargeted": "*",
             "individualsTargeted": "*",
             "description": "*",
-            "commodityIds": ["*"]
+            "commodityIds": ["*"],
+            "remoteDistributionAllowed": "*"
         }', $this->client->getResponse()->getContent());
     }
 

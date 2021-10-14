@@ -165,4 +165,9 @@ class AssistanceMapper implements MapperInterface
     {
         return $this->object->getAssistanceSelection()->getId();
     }
+
+    public function getRemoteDistributionAllowed(): ?bool
+    {
+        return $this->object->isRemoteDistributionAllowed();
+    }
 }
