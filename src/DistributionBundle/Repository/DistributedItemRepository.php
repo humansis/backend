@@ -30,7 +30,7 @@ class DistributedItemRepository extends \Doctrine\ORM\EntityRepository
                 ass.target_type,
                 db.beneficiary_id,
                 CASE
-                    WHEN sd.id IS NOT NULL THEN DATE_FORMAT(sd.used_at, "%Y-%m-%d")
+                    WHEN sd.id IS NOT NULL THEN DATE_FORMAT(sd.distributed_at, "%Y-%m-%d")
                     WHEN gri.id IS NOT NULL THEN DATE_FORMAT(gri.distributedAt, "%Y-%m-%d")
                     WHEN t.id IS NOT NULL THEN DATE_FORMAT(t.date_sent, "%Y-%m-%d")
                 END AS date_distribution
@@ -75,7 +75,7 @@ class DistributedItemRepository extends \Doctrine\ORM\EntityRepository
                 ass.target_type,
                 db.beneficiary_id,
                 CASE
-                    WHEN sd.id IS NOT NULL THEN DATE_FORMAT(sd.used_at, "%Y-%m-%d")
+                    WHEN sd.id IS NOT NULL THEN DATE_FORMAT(sd.distributed_at, "%Y-%m-%d")
                     WHEN gri.id IS NOT NULL THEN DATE_FORMAT(gri.distributedAt, "%Y-%m-%d")
                     WHEN t.id IS NOT NULL THEN DATE_FORMAT(t.date_sent, "%Y-%m-%d")
                 END AS date_distribution

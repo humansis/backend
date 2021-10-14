@@ -25,7 +25,7 @@ final class Version20211013130225 extends AbstractMigration
                 a.project_id,
                 a.location_id,
                 spr.product_id,
-                DATE_FORMAT(sd.used_at, "%Y-%m-%dT%TZ") AS date_distribution,
+                DATE_FORMAT(sd.distributed_at, "%Y-%m-%dT%TZ") AS date_distribution,
                 DATE_FORMAT(sp.used_at, "%Y-%m-%dT%TZ") AS date_purchase,
                 s.code as smartcard_code,
                 spr.value,
@@ -41,8 +41,8 @@ final class Version20211013130225 extends AbstractMigration
             JOIN smartcard_deposit sd ON sd.id = (
                 SELECT dep.id
                 FROM smartcard_deposit dep
-                WHERE sp.used_at > dep.used_at AND dep.smartcard_id = s.id
-                ORDER BY dep.used_at
+                WHERE sp.used_at > dep.distributed_at AND dep.smartcard_id = s.id
+                ORDER BY dep.distributed_at
                 LIMIT 1
                 )
 

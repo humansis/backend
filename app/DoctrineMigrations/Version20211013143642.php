@@ -39,7 +39,7 @@ final class Version20211013143642 extends AbstractMigration
                 c.id as commodity_id,
                 mt.name as modality_type,
                 CASE
-                    WHEN sd.id  IS NOT NULL THEN DATE_FORMAT(sd.used_at, "%Y-%m-%dT%TZ")
+                    WHEN sd.id  IS NOT NULL THEN DATE_FORMAT(sd.distributed_at, "%Y-%m-%dT%TZ")
                     WHEN b.id   IS NOT NULL THEN null
                 END AS date_distribution,
                 CASE

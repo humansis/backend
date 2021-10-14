@@ -22,9 +22,8 @@ trait CreatedAt
      */
     public function getCreatedAt(): DateTimeInterface
     {
-        //TODO check, if entity is annotated with @ORM\HasLifecycleCallbacks and throw proper error
         if (null === $this->createdAt) {
-            throw new RuntimeException('This has not been persisted yet.');
+            throw new RuntimeException('This entity has not been persisted yet.');
         }
 
         return $this->createdAt;

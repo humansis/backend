@@ -6,6 +6,7 @@ use DateTime;
 use DateTimeInterface;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\ReliefPackage;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
@@ -18,9 +19,12 @@ use UserBundle\Entity\User;
  *
  * @ORM\Table(name="smartcard_deposit")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\SmartcardDepositRepository")
+ * @ORM\HasLifecycleCallbacks
  */
 class SmartcardDeposit
 {
+    use CreatedAt;
+
     /**
      * @var int
      *
@@ -83,15 +87,6 @@ class SmartcardDeposit
      */
     private $balance;
 
-    /**
-     * @var DateTime
-     *
-     * @ORM\Column(name="used_at", type="datetime", nullable=true)
-     *
-     * @SymfonyGroups({"FullSmartcard"})
-     */
-    private $createdAt;
-
     protected function __construct()
     {
     }
@@ -116,7 +111,6 @@ class SmartcardDeposit
         $entity = new self();
         $entity->distributedBy = $distributedBy;
         $entity->distributedAt = $distributedAt;
-        $entity->createdAt = new DateTime();
         $entity->reliefPackage = $reliefPackage;
         $entity->value = $value;
         $entity->balance = $balance;
@@ -161,14 +155,6 @@ class SmartcardDeposit
     public function getBalance(): ?float
     {
         return $this->balance;
-    }
-
-    /**
-     * @return DateTimeInterface
-     */
-    public function getCreatedAt(): DateTimeInterface
-    {
-        return $this->createdAt;
     }
 
     /**

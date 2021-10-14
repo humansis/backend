@@ -37,7 +37,7 @@ final class Version20211013134052 extends AbstractMigration
                 c.id as commodity_id,
                 mt.name as modality_type,
                 CASE
-                    WHEN sd.id  IS NOT NULL THEN DATE_FORMAT(sd.used_at, "%Y-%m-%dT%TZ")
+                    WHEN sd.id  IS NOT NULL THEN DATE_FORMAT(sd.distributed_at, "%Y-%m-%dT%TZ")
                     WHEN t.id   IS NOT NULL THEN DATE_FORMAT(t.pickup_date, "%Y-%m-%dT%TZ")
                     WHEN gri.id IS NOT NULL THEN DATE_FORMAT(gri.distributedAt, "%Y-%m-%dT%TZ")
                     WHEN b.id   IS NOT NULL THEN DATE_FORMAT(b.used_at, "%Y-%m-%dT%TZ")
@@ -91,7 +91,7 @@ final class Version20211013134052 extends AbstractMigration
             ) AS b ON b.distribution_beneficiary_id=db.id
 
             WHERE (sd.id IS NOT NULL OR gri.id IS NOT NULL OR t.id IS NOT NULL OR b.id IS NOT NULL)
-                AND (sd.used_at IS NOT NULL OR t.pickup_date IS NOT NULL OR gri.distributedAt IS NOT NULL OR b.used_at)
+                AND (sd.distributed_at IS NOT NULL OR t.pickup_date IS NOT NULL OR gri.distributedAt IS NOT NULL OR b.used_at)
         ');
     }
 

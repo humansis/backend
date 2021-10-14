@@ -43,7 +43,7 @@ final class Version20211012102508 extends AbstractMigration
                                 c.value,
                                 IF(SUM(sd.value) IS NOT NULL, SUM(sd.value), 0),
                                 c.unit,
-                                IF(MIN(sd.used_at) IS NOT NULL, MIN(sd.used_at), NOW())
+                                IF(MIN(sd.distributed_at) IS NOT NULL, MIN(sd.distributed_at), NOW())
                             FROM
                                 distribution_beneficiary db
                                 INNER JOIN assistance as a on a.id = db.assistance_id
