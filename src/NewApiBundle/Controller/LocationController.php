@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use UserBundle\Entity\User;
+use UserBundle\Entity\UserProject;
 
 /**
  * @Cache(expires="+5 days", public=true)
@@ -57,24 +58,29 @@ class LocationController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function userCountries(User $user)
+    public function userCountries(User $user): JsonResponse
     {
-        if (0 === $user->getCountries()->count()) {
-            return $this->json(new Paginator($this->getParameter('app.countries')));
-        }
+        $allCountries = $this->getParameter('app.countries');
 
-        $data = [];
+        if ($user->isAdmin()) {
+            return $this->json(new Paginator($allCountries));
+        } else {
+            $projects = [];
+            $data = [];
 
-        /** @var \UserBundle\Entity\UserCountry $userCountry */
-        foreach ($user->getCountries() as $userCountry) {
-            foreach ($this->getParameter('app.countries') as $country) {
-                if ($userCountry->getIso3() === $country['iso3']) {
+            /** @var UserProject $userProject */
+            foreach ($user->getProjects() as $userProject) {
+                $projects[] = $userProject->getProject()->getIso3();
+            }
+
+            foreach ($allCountries as $country) {
+                if (in_array($country['iso3'], $projects)) {
                     $data[] = $country;
                 }
             }
-        }
 
-        return $this->json(new Paginator($data));
+            return $this->json(new Paginator($data));
+        }
     }
 
     /**

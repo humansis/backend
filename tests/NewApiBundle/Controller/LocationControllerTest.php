@@ -6,6 +6,7 @@ use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Tests\BMSServiceTestCase;
+use UserBundle\Entity\UserProject;
 
 class LocationControllerTest extends BMSServiceTestCase
 {
@@ -40,7 +41,7 @@ class LocationControllerTest extends BMSServiceTestCase
         return $result['data'][0]['iso3'];
     }
 
-    public function testGetUserCountries()
+    public function testGetUserCountriesAdmin()
     {
         $this->request('GET', '/api/basic/web-app/v1/users/'.$this->getTestUser(self::USER_TESTER)->getId().'/countries');
 
@@ -50,9 +51,48 @@ class LocationControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: '.$this->client->getResponse()->getContent()
         );
+
+        $allCountries = self::$container->getParameter('app.countries');
+
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
-        $this->assertSame($this->getTestUser(self::USER_TESTER)->getCountries()->count(), $result['totalCount']);
+        $this->assertSame(count($allCountries), $result['totalCount']);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertIsArray($result['data']);
+        $this->assertArrayHasKey('name', $result['data'][0]);
+        $this->assertArrayHasKey('iso3', $result['data'][0]);
+        $this->assertArrayHasKey('currency', $result['data'][0]);
+    }
+
+    public function testGetUserCountriesNoAdmin(): void
+    {
+        $this->request('GET', '/api/basic/web-app/v1/users/'.$this->getTestUser(self::USER_TESTER_VENDOR)->getId().'/countries');
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        $numberOfCountries = 0;
+        $projects = [];
+        $allCountries = self::$container->getParameter('app.countries');
+        $user = $this->getTestUser(self::USER_TESTER_VENDOR);
+
+        /** @var UserProject $userProject */
+        foreach ($user->getProjects() as $userProject) {
+            $projects[] = $userProject->getProject()->getIso3();
+        }
+
+        foreach($allCountries as $country){
+            if(in_array($country['iso3'], $projects)){
+                $numberOfCountries++;
+            }
+        }
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertSame($numberOfCountries, $result['totalCount']);
         $this->assertArrayHasKey('data', $result);
         $this->assertIsArray($result['data']);
         $this->assertArrayHasKey('name', $result['data'][0]);

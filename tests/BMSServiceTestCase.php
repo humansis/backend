@@ -12,8 +12,6 @@ use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Utils\HouseholdService;
-use DistributionBundle\Entity\AssistanceBeneficiary;
-use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Utils\CommodityService;
 use DistributionBundle\Utils\ConfigurationLoader;
 use DistributionBundle\Utils\CriteriaAssistanceService;
@@ -35,6 +33,7 @@ class BMSServiceTestCase extends KernelTestCase
     protected $client;
     const USER_PHPUNIT = 'phpunit';
     const USER_TESTER = 'test@example.org';
+    const USER_TESTER_VENDOR = 'vendor.eth@example.org';
 
     // SERVICES
 
