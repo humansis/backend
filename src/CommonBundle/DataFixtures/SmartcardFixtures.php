@@ -2,15 +2,13 @@
 
 namespace CommonBundle\DataFixtures;
 
-use BeneficiaryBundle\Entity\AbstractBeneficiary;
-use BeneficiaryBundle\Entity\Beneficiary;
 use DateTimeImmutable;
-use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Enum\ModalityType;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Smartcard;
@@ -81,10 +79,17 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
 
         $smartcard->setBeneficiary($ab->getBeneficiary());
         foreach (range(1, rand(2, 4)) as $i) {
+            $reliefPackage = new ReliefPackage(
+                $ab,
+                ModalityType::SMART_CARD,
+                $ab->getAssistance()->getCommodities()[0]->getValue(),
+                $ab->getAssistance()->getCommodities()[0]->getUnit(),
+            );
+
             $deposit = SmartcardDeposit::create(
                 $smartcard,
                 $this->randomEntity(User::class, $manager),
-                $ab,
+                $reliefPackage,
                 rand(1, 10000),
                 null,
                 new DateTimeImmutable("now-${i} days")

@@ -13,11 +13,11 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
 {
     public function findForSmartcardByAssistanceBeneficiary(Assistance $assistance, Beneficiary $beneficiary): ?ReliefPackage
     {
-        $qb = $this->createQueryBuilder('abc')
-            ->join('abc.assistanceBeneficiary', 'ab')
+        $qb = $this->createQueryBuilder('rp')
+            ->join('rp.assistanceBeneficiary', 'ab')
             ->andWhere('ab.assistance = :assistance')
             ->andWhere('ab.beneficiary = :beneficiary')
-            ->andWhere('abc.modalityType = :smartcardModality')
+            ->andWhere('rp.modalityType = :smartcardModality')
             ->setParameter('assistance', $assistance)
             ->setParameter('beneficiary', $beneficiary)
             ->setParameter('smartcardModality', ModalityType::SMART_CARD);

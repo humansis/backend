@@ -5,7 +5,7 @@ framework:
       marking_store:
         type: 'single_state'
         arguments:
-          - 'stage'
+          - 'state'
       supports:
         - NewApiBundle\Entity\ReliefPackage
       initial_marking: !php/const NewApiBundle\Enum\ReliefPackageState::TO_DISTRIBUTE

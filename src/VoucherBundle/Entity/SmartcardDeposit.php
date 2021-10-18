@@ -94,20 +94,11 @@ class SmartcardDeposit
     public static function create(
         Smartcard             $smartcard,
         User                  $distributedBy,
-        AssistanceBeneficiary $assistanceBeneficiary,
+        ReliefPackage         $reliefPackage,
                               $value,
                               $balance,
         DateTimeInterface     $distributedAt
     ) {
-        $reliefPackage = new ReliefPackage(
-            $assistanceBeneficiary,
-            ModalityType::SMART_CARD,
-            $value,
-            $smartcard->getCurrency(),
-            ReliefPackageState::DISTRIBUTED,
-            $value
-        );
-
         $entity = new self();
         $entity->distributedBy = $distributedBy;
         $entity->distributedAt = $distributedAt;

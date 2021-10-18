@@ -201,4 +201,12 @@ class ReliefPackage
     {
         return $this->smartcardDeposits;
     }
+
+    /**
+     * @param string $state
+     */
+    public function setState(string $state): void
+    {
+        $this->state = $state;
+    }
 }

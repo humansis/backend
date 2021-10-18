@@ -9,6 +9,7 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Enum\ModalityType;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use UserBundle\Entity\User;
 use VoucherBundle\DTO\PurchaseRedemptionBatch;
@@ -203,10 +204,30 @@ class SmartcardServiceTest extends KernelTestCase
                     break;
                 case 'deposit':
                     [$beneficiaryId, $action, $value, $currency, $assistanceId] = $actionData;
+
+                    /** @var Assistance $assistance */
+                    $assistance = $this->em->getRepository(Assistance::class)->find($assistanceId);
+                    /** @var Beneficiary $beneficiary */
+                    $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryId);
+
+                    $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy([
+                        'assistance' => $assistance,
+                        'beneficiary'=> $beneficiary
+                    ]);
+
+                    $reliefPackage = new ReliefPackage(
+                        $assistanceBeneficiary,
+                        ModalityType::SMART_CARD,
+                        $assistanceBeneficiary->getAssistance()->getCommodities()[0]->getValue(),
+                        $assistanceBeneficiary->getAssistance()->getCommodities()[0]->getUnit(),
+                    );
+
+                    $this->em->persist($reliefPackage);
+                    $this->em->flush();
+
                     $this->smartcardService->deposit(
                         $this->smartcardNumber,
-                        $assistanceId, // assistanceId
-                        $beneficiaryId, // beneficiaryId
+                        $reliefPackage->getId(),
                         $value,
                         $value, // balance is rewritten by new value
                         $date,
@@ -433,14 +454,34 @@ class SmartcardServiceTest extends KernelTestCase
         $this->em->flush();
 
         foreach ($actions as $preparedAction) {
-            list($dateOfEvent, $beneficiaryId, $subActions) = $preparedAction;
+            [$dateOfEvent, $beneficiaryId, $subActions] = $preparedAction;
             foreach ($subActions as $action) {
                 switch ($action) {
                     case 'register':
                         $this->smartcardService->register($serialNumber, $beneficiaryId, \DateTime::createFromFormat('Y-m-d', $dateOfEvent));
                         break;
                     case 'deposit':
-                        $this->smartcardService->deposit($serialNumber, $assistanceId, $beneficiaryId, 100, null, \DateTime::createFromFormat('Y-m-d', $dateOfEvent), $admin);
+                        /** @var Assistance $assistance */
+                        $assistance = $this->em->getRepository(Assistance::class)->find($assistanceId);
+                        /** @var Beneficiary $beneficiary */
+                        $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryId);
+
+                        $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy([
+                            'assistance' => $assistance,
+                            'beneficiary'=> $beneficiary
+                        ]);
+
+                        $reliefPackage = new ReliefPackage(
+                            $assistanceBeneficiary,
+                            ModalityType::SMART_CARD,
+                            $assistanceBeneficiary->getAssistance()->getCommodities()[0]->getValue(),
+                            $assistanceBeneficiary->getAssistance()->getCommodities()[0]->getUnit(),
+                        );
+
+                        $this->em->persist($reliefPackage);
+                        $this->em->flush();
+
+                        $this->smartcardService->deposit($serialNumber, $reliefPackage->getId(), 100, null, \DateTime::createFromFormat('Y-m-d', $dateOfEvent), $admin);
                         break;
                     case 'purchase':
                         $vendorId = $preparedAction[3];

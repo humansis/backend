@@ -64,36 +64,22 @@ class SmartcardService
         return $smartcard;
     }
 
-    public function deposit(string $serialNumber, int $assistanceId, ?int $beneficiaryId, $value, $balance, DateTimeInterface $distributedAt, User $user): SmartcardDeposit
+    public function deposit(string $serialNumber, int $reliefPackageId, $value, $balance, DateTimeInterface $distributedAt, User $user): SmartcardDeposit
     {
-        $assistance = $this->em->getRepository(Assistance::class)->find($assistanceId);
-        if (!$assistance) {
-            throw new NotFoundHttpException('Assistance does not exist.');
-        }
-        $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy([
-            'id' => $beneficiaryId,
-            'archived' => false,
-        ]);
-        if (!$beneficiary) {
-            throw new NotFoundHttpException('Beneficiary ID must exist');
-        }
-        $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy([
-            'beneficiary' => $beneficiary,
-            'assistance' => $assistance,
-            'removed' => 0,
-        ]);
+        /** @var ReliefPackage|null $reliefPackage */
+        $reliefPackage = $this->em->getRepository(ReliefPackage::class)->find($reliefPackageId);
 
-        /** @var ReliefPackage $reliefPackage */
-        $reliefPackage = $this->em->getRepository(ReliefPackage::class)
-            ->findForSmartcardByAssistanceBeneficiary($assistance, $beneficiary);
+        if (null === $reliefPackage) {
+            throw new NotFoundHttpException("Relief package #$reliefPackageId does not exist.");
+        }
 
         $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
 
-        if (!$reliefPackage || !$reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
-            throw new NotFoundHttpException("There is nothing to distribute to beneficiary #{$beneficiary->getId()} in assistance #{$assistance->getId()}");
+        if (!$reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
+            throw new NotFoundHttpException("Relief package #$reliefPackageId cannot be distributed.");
         }
 
-        $smartcard = $this->getActualSmartcard($serialNumber, $beneficiary, $distributedAt);
+        $smartcard = $this->getActualSmartcard($serialNumber, $reliefPackage->getAssistanceBeneficiary()->getBeneficiary(), $distributedAt);
 
         if (!$smartcard->getBeneficiary()) {
             throw new NotFoundHttpException('Smartcard does not have assigned beneficiary.');
@@ -102,7 +88,7 @@ class SmartcardService
         $deposit = SmartcardDeposit::create(
             $smartcard,
             $user,
-            $assistanceBeneficiary,
+            $reliefPackage,
             (float) $value,
             null !== $balance ? (float) $balance : null,
             $distributedAt
