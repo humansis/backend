@@ -77,7 +77,7 @@ class SmartcardPurchase
     private $redemptionBatch;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(name="hash", type="text")
      */
@@ -195,17 +195,17 @@ class SmartcardPurchase
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getHash(): string
+    public function getHash(): ?string
     {
         return $this->hash;
     }
 
     /**
-     * @param string $hash
+     * @param string|null $hash
      */
-    public function setHash(string $hash): void
+    public function setHash(?string $hash): void
     {
         $this->hash = $hash;
     }
