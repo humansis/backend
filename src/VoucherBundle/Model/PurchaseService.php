@@ -2,6 +2,8 @@
 
 namespace VoucherBundle\Model;
 
+use BeneficiaryBundle\Entity\Beneficiary;
+use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Psr\Log\LoggerInterface;
@@ -72,14 +74,15 @@ class PurchaseService
      */
     public function purchaseSmartcard(Smartcard $smartcard, SmartcardPurchaseInput $input): SmartcardPurchase
     {
-        $hash = SmartcardPurchase::generateHash($smartcard->getBeneficiary(), $this->getVendor($input->getVendorId()), $input->getCreatedAt());
+        $hash = $this->hashPurchase($smartcard->getBeneficiary(), $this->getVendor($input->getVendorId()), $input->getCreatedAt());
         $purchaseRepository = $this->em->getRepository(SmartcardPurchase::class);
         $purchase = $purchaseRepository->findOneBy(['hash' => $hash]);
 
         if ($purchase) {
             $this->logger->info("Purchase was already set. [hash: {$purchase->getHash()}]");
         } else {
-            $purchase = SmartcardPurchase::create($smartcard, $this->getVendor($input->getVendorId()), $input->getCreatedAt(), $hash);
+            $purchase = SmartcardPurchase::create($smartcard, $this->getVendor($input->getVendorId()), $input->getCreatedAt());
+            $purchase->setHash($hash);
         }
 
         foreach ($input->getProducts() as $item) {
@@ -93,6 +96,20 @@ class PurchaseService
         $this->em->flush();
 
         return $purchase;
+    }
+
+    /**
+     * @param Beneficiary|null   $beneficiary
+     * @param Vendor             $vendor
+     * @param DateTimeInterface $createdAt
+     *
+     * @return string
+     */
+    private function hashPurchase(?Beneficiary $beneficiary, Vendor $vendor, DateTimeInterface $createdAt): string
+    {
+        $stringToHash = ($beneficiary ? $beneficiary->getId() : null).$vendor->getId().$createdAt->getTimestamp();
+
+        return md5($stringToHash);
     }
 
     /**
