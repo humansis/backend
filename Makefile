@@ -18,10 +18,14 @@ restart: ## Docker: Restart containers
 	docker-compose restart
 
 recreate: ## Docker: Stop and remove all containers and start it again
-	docker-compose down --remove-orphans
-	docker-compose up --build
-	sleep 5;
-	$(MAKE) cleanAndTest
+	docker-compose down -v
+	rm -rf /docker/mysqldata
+	docker-compose up -d --force-recreate --build
+
+	#wait for initialize database
+	sleep 20;
+
+	$(MAKE) cache cleanAndTest
 
 cleanAndTest: ## Recreate DB, migrate migrations, load fixtures, clean cache of import CSV, start cron service and run unit tests
 	docker-compose exec php bash cleanAndTest
@@ -34,3 +38,6 @@ cron-launch: ## Start the cron service
 
 test: ## Run phpunit tests
 	docker-compose exec php bash -c 'vendor/bin/phpunit'
+
+cache: ## Remove cache
+	docker-compose exec php bash -c 'rm -rf var/cache'
