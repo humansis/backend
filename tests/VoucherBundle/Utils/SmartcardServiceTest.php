@@ -244,6 +244,13 @@ class SmartcardServiceTest extends KernelTestCase
         $this->assertCount(count($expectedResults), $batchCandidates, "Wrong count of redemption candidates");
         foreach ($batchCandidates as $candidate) {
             $this->assertContains([$candidate->getValue(), $candidate->getCurrency(), $candidate->getProjectId()], $expectedResults, "Result was unexpected");
+
+            foreach ($candidate->getPurchasesIds() as $purchaseId) {
+                /** @var SmartcardPurchase $purchase */
+                $purchase = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->find($purchaseId);
+                $this->assertNotNull($purchase, "Purchase must exists");
+                $this->assertEquals(2000, $purchase->getCreatedAt()->format('Y'), "Wrong purchase year");
+            }
         }
         // redeem test
         foreach ($batchCandidates as $candidateToSave) {
@@ -251,9 +258,13 @@ class SmartcardServiceTest extends KernelTestCase
             $batchRequest->setPurchases($candidateToSave->getPurchasesIds());
 
             $batch = $this->smartcardService->redeem($this->vendor, $batchRequest, $admin);
+
+            foreach ($batch->getPurchases() as $purchase) {
+                $this->assertEquals(2000, $purchase->getCreatedAt()->format('Y'), "Wrong purchase year");
+            }
             $this->assertEquals($candidateToSave->getValue(), $batch->getValue(), "Redemption value of batch is different");
             $this->assertEquals($candidateToSave->getCurrency(), $batch->getCurrency(), "Redemption currency of batch is different");
-            $this->assertEquals($candidateToSave->getProjectId(), $batch->getProject()->getId(), "Redemption project is of batch is different");
+            $this->assertEquals($candidateToSave->getProjectId(), $batch->getProject()->getId(), "Redemption project of batch is different");
             $this->assertEquals($candidateToSave->getPurchasesCount(), $batch->getPurchases()->count(), "Redemption purchase count of batch is different");
         }
     }

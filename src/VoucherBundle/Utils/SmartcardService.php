@@ -236,14 +236,15 @@ class SmartcardService
             if ($purchase->getCurrency() != $currency) {
                 throw new \InvalidArgumentException("Purchases have inconsistent currencies. {$purchase->getCurrency()} in {$purchase->getId()} is different than {$currency}");
             }
-            if (null === $this->extractPurchaseProjectId($purchase)) {
+            $extractedProjectId = $this->extractPurchaseProjectId($purchase);
+            if (null === $extractedProjectId) {
                 throw new \InvalidArgumentException("Purchase #{$purchase->getId()} has no project.");
             }
             if (null === $projectId) {
-                $projectId = $this->extractPurchaseProjectId($purchase);
+                $projectId = $extractedProjectId;
             }
-            if ($this->extractPurchaseProjectId($purchase) !== $projectId) {
-                throw new \InvalidArgumentException("Purchases have inconsistent currencies. Project #{$this->extractPurchaseProjectId($purchase)} in Purchase #{$purchase->getId()} is different than project of others: {$projectId}");
+            if ($extractedProjectId !== $projectId) {
+                throw new \InvalidArgumentException("Purchases have inconsistent currencies. Project #$extractedProjectId in Purchase #{$purchase->getId()} is different than project of others: {$projectId}");
             }
         }
 
@@ -281,15 +282,18 @@ class SmartcardService
             return null;
         }
         $deposits = $purchase->getSmartcard()->getDeposites()->toArray();
-        $purchaseDeposit = $this->getDeposit($deposits, $purchase->getCreatedAt());
+        $smartcardDeposit = $this->getDeposit($deposits, $purchase->getCreatedAt());
 
-        if (null === $purchaseDeposit->getReliefPackage()->getAssistanceBeneficiary()->getAssistance()
-            || null === $purchaseDeposit->getReliefPackage()->getAssistanceBeneficiary()->getAssistance()->getProject()
+        if (
+            null === $smartcardDeposit->getReliefPackage()
+            || null === $smartcardDeposit->getReliefPackage()->getAssistanceBeneficiary()
+            || null === $smartcardDeposit->getReliefPackage()->getAssistanceBeneficiary()->getAssistance()
+            || null === $smartcardDeposit->getReliefPackage()->getAssistanceBeneficiary()->getAssistance()->getProject()
         ) {
             return null;
         }
 
-        return $purchaseDeposit->getReliefPackage()->getAssistanceBeneficiary()->getAssistance()->getProject()->getId();
+        return $smartcardDeposit->getReliefPackage()->getAssistanceBeneficiary()->getAssistance()->getProject()->getId();
     }
 
     /**
@@ -302,12 +306,12 @@ class SmartcardService
     private function getDeposit(array $deposits, DateTimeInterface $purchaseDate): SmartcardDeposit
     {
         usort($deposits, function (SmartcardDeposit $d1, SmartcardDeposit $d2) {
-            return $d2->getCreatedAt()->getTimestamp() - $d1->getCreatedAt()->getTimestamp();
+            return $d2->getDistributedAt()->getTimestamp() - $d1->getDistributedAt()->getTimestamp();
         });
         $deposit = null;
         /** @var SmartcardDeposit $deposit */
         foreach ($deposits as $deposit) {
-            if ($deposit->getCreatedAt()->getTimestamp() <= $purchaseDate->getTimestamp()) {
+            if ($deposit->getDistributedAt()->getTimestamp() <= $purchaseDate->getTimestamp()) {
                 return $deposit;
             }
         }
