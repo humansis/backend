@@ -445,20 +445,29 @@ class SmartcardServiceTest extends KernelTestCase
         $assistanceId = 51; // USD
         $serialNumber = '111222333';
         $allTestingBeneficiaries = [70, 71, 72];
+        $allTestingVendors = [2, 3];
 
-        $beneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findBy([
+        $targets = $this->em->getRepository(AssistanceBeneficiary::class)->findBy([
             'beneficiary' => $allTestingBeneficiaries,
             'assistance' => $assistanceId,
         ]);
-        $package = $this->em->getRepository(ReliefPackage::class)->findOneBy([
-            'assistanceBeneficiary' => $beneficiary,
+        $this->assertCount(3, $targets, "All testing Beneficiaries must be in testing Assistance#$assistanceId");
+        $packages = $this->em->getRepository(ReliefPackage::class)->findBy([
+            'assistanceBeneficiary' => $targets,
         ]);
-        $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(['reliefPackage'=>$package]);
+        $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(['reliefPackage'=>$packages]);
+        foreach ($packages as $package) {
+            $this->em->remove($package);
+        }
         foreach ($deposits as $deposit) {
             $this->em->remove($deposit);
         }
         $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['beneficiary'=>$allTestingBeneficiaries]);
         $purchases = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->findBy(['smartcard'=>$smartcards]);
+        foreach ($purchases as $purchase) {
+            $this->em->remove($purchase);
+        }
+        $purchases = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->findBy(['vendor'=>$allTestingVendors]);
         foreach ($purchases as $purchase) {
             $this->em->remove($purchase);
         }
@@ -523,11 +532,11 @@ class SmartcardServiceTest extends KernelTestCase
         }
 
         foreach ($expectedBeneficiaryResults as $beneficiaryId => $values) {
-            $beneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findBy([
+            $target = $this->em->getRepository(AssistanceBeneficiary::class)->findBy([
                 'beneficiary' => $beneficiaryId,
                 'assistance' => $assistanceId,
                 ]);
-            $package = $this->em->getRepository(ReliefPackage::class)->findBy(['assistanceBeneficiary'=>$beneficiary]);
+            $package = $this->em->getRepository(ReliefPackage::class)->findBy(['assistanceBeneficiary'=>$target]);
             $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(['reliefPackage'=>$package]);
             $distributed = 0;
             foreach ($deposits as $deposit) {
