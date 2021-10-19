@@ -601,18 +601,4 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     {
         return $this->importQueueDuplicities;
     }
-
-    /**
-     * @return bool
-     */
-    public function isAdmin(): bool
-    {
-        foreach ($this->getRoles() as $role) {
-            if ($role === RoleType::ADMIN) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 }
