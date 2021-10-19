@@ -88,14 +88,12 @@ class SmartcardPurchase
         $this->records = new ArrayCollection();
     }
 
-    public static function create(Smartcard $smartcard, Vendor $vendor, DateTimeInterface $createdAt, ?string $hash = null): SmartcardPurchase
+    public static function create(Smartcard $smartcard, Vendor $vendor, DateTimeInterface $createdAt): SmartcardPurchase
     {
         $entity = new self();
         $entity->vendor = $vendor;
         $entity->createdAt = $createdAt;
         $entity->smartcard = $smartcard;
-        $beneficiary = $entity->smartcard->getBeneficiary();
-        $entity->hash = $hash ?: self::generateHash($beneficiary, $vendor, $createdAt);
         $smartcard->addPurchase($entity);
 
         return $entity;
@@ -211,19 +209,4 @@ class SmartcardPurchase
     {
         $this->hash = $hash;
     }
-
-    /**
-     * @param Beneficiary|null  $beneficiary
-     * @param Vendor            $vendor
-     * @param DateTimeInterface $createdAt
-     *
-     * @return string
-     */
-    public static function generateHash(?Beneficiary $beneficiary, Vendor $vendor, DateTimeInterface $createdAt): string
-    {
-        $stringToHash = ($beneficiary ? $beneficiary->getId() : null).$vendor->getId().$createdAt->getTimestamp();
-
-        return md5($stringToHash);
-    }
-
 }
