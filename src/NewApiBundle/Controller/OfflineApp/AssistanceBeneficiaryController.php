@@ -54,6 +54,39 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
     }
 
     /**
+     * @Rest\Get("/offline-app/v3/assistances/{id}/targets/beneficiaries")
+     *
+     * @param Request                    $request
+     * @param Assistance                 $assistance
+     * @param BeneficiaryFilterInputType $filter
+     * @param BeneficiaryOrderInputType  $orderBy
+     * @param Pagination                 $pagination
+     *
+     * @return JsonResponse
+     */
+    public function beneficiaryTargetByAssistance(
+        Request $request,
+        Assistance $assistance,
+        BeneficiaryFilterInputType $filter,
+        BeneficiaryOrderInputType $orderBy,
+        Pagination $pagination
+    ): JsonResponse
+    {
+        if ($assistance->getArchived()) {
+            throw $this->createNotFoundException();
+        }
+
+        $assistanceBeneficiaries = $this->getDoctrine()->getRepository(AssistanceBeneficiary::class)->findBeneficiariesByAssistance($assistance, $filter, $orderBy, $pagination);
+
+        $response = $this->json($assistanceBeneficiaries, Response::HTTP_OK, [], [MapperInterface::OFFLINE_APP => true, 'expanded' => true]);
+        $response->setEtag(md5($response->getContent()));
+        $response->setPublic();
+        $response->isNotModified($request);
+
+        return $response;
+    }
+
+    /**
      * @Rest\Get("/offline-app/v1/assistances/{id}/assistances-institutions")
      *
      * @param Request                    $request
