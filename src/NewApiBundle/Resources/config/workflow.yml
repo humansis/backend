@@ -1,0 +1,33 @@
+framework:
+  workflows:
+    reliefPackage:
+      type: 'state_machine'
+      marking_store:
+        type: 'single_state'
+        arguments:
+          - 'state'
+      supports:
+        - NewApiBundle\Entity\ReliefPackage
+      initial_marking: !php/const NewApiBundle\Enum\ReliefPackageState::TO_DISTRIBUTE
+      places:
+        - !php/const NewApiBundle\Enum\ReliefPackageState::TO_DISTRIBUTE
+        - !php/const NewApiBundle\Enum\ReliefPackageState::DISTRIBUTION_IN_PROGRESS
+        - !php/const NewApiBundle\Enum\ReliefPackageState::DISTRIBUTED
+        - !php/const NewApiBundle\Enum\ReliefPackageState::EXPIRED
+        - !php/const NewApiBundle\Enum\ReliefPackageState::CANCELED
+      transitions:
+        !php/const NewApiBundle\Workflow\ReliefPackageTransitions::START_PARTIAL_DISTRIBUTION:
+          from: !php/const NewApiBundle\Enum\ReliefPackageState::TO_DISTRIBUTE
+          to: !php/const NewApiBundle\Enum\ReliefPackageState::DISTRIBUTION_IN_PROGRESS
+        !php/const NewApiBundle\Workflow\ReliefPackageTransitions::FINISH_PARTIAL_DISTRIBUTION:
+          from: !php/const NewApiBundle\Enum\ReliefPackageState::DISTRIBUTION_IN_PROGRESS
+          to: !php/const NewApiBundle\Enum\ReliefPackageState::DISTRIBUTED
+        !php/const NewApiBundle\Workflow\ReliefPackageTransitions::DISTRIBUTE:
+          from: !php/const NewApiBundle\Enum\ReliefPackageState::TO_DISTRIBUTE
+          to: !php/const NewApiBundle\Enum\ReliefPackageState::DISTRIBUTED
+        !php/const NewApiBundle\Workflow\ReliefPackageTransitions::EXPIRE:
+          from: !php/const NewApiBundle\Enum\ReliefPackageState::TO_DISTRIBUTE
+          to: !php/const NewApiBundle\Enum\ReliefPackageState::EXPIRED
+        !php/const NewApiBundle\Workflow\ReliefPackageTransitions::CANCEL:
+          from: !php/const NewApiBundle\Enum\ReliefPackageState::TO_DISTRIBUTE
+          to: !php/const NewApiBundle\Enum\ReliefPackageState::CANCELED

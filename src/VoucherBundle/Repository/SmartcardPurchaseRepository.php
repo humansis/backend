@@ -68,9 +68,10 @@ class SmartcardPurchaseRepository extends EntityRepository
                 FROM
                     assistance AS a
                         INNER JOIN distribution_beneficiary AS db ON a.id = db.assistance_id
-                        INNER JOIN smartcard_deposit AS sd ON db.id = sd.distribution_beneficiary_id AND sd.used_at <= sp.used_at
+                        LEFT JOIN relief_package abc ON abc.assistance_beneficiary_id=db.id
+                        INNER JOIN smartcard_deposit AS sd ON abc.id = sd.relief_package_id AND sd.distributed_at <= sp.used_at
                 WHERE s.id = sd.smartcard_id
-                ORDER BY sd.used_at DESC, sd.id DESC 
+                ORDER BY sd.distributed_at DESC, sd.id DESC 
                 LIMIT 1
             ) AS projectId,
             SUM(spr.value) as purchaseValue,

@@ -30,14 +30,15 @@ class DistributedItemRepository extends \Doctrine\ORM\EntityRepository
                 ass.target_type,
                 db.beneficiary_id,
                 CASE
-                    WHEN sd.id IS NOT NULL THEN DATE_FORMAT(sd.used_at, "%Y-%m-%d")
+                    WHEN sd.id IS NOT NULL THEN DATE_FORMAT(sd.distributed_at, "%Y-%m-%d")
                     WHEN gri.id IS NOT NULL THEN DATE_FORMAT(gri.distributedAt, "%Y-%m-%d")
                     WHEN t.id IS NOT NULL THEN DATE_FORMAT(t.date_sent, "%Y-%m-%d")
                 END AS date_distribution
             FROM assistance ass
             JOIN distribution_beneficiary db ON ass.id=db.assistance_id
             -- smartcards
-            LEFT JOIN smartcard_deposit sd ON sd.distribution_beneficiary_id=db.id
+            LEFT JOIN relief_package pack ON pack.assistance_beneficiary_id=db.id
+            LEFT JOIN smartcard_deposit sd ON sd.relief_package_id=pack.id
             -- mobile money
             LEFT JOIN transaction t ON t.distribution_beneficiary_id=db.id
             -- general reliefs
@@ -74,7 +75,7 @@ class DistributedItemRepository extends \Doctrine\ORM\EntityRepository
                 ass.target_type,
                 db.beneficiary_id,
                 CASE
-                    WHEN sd.id IS NOT NULL THEN DATE_FORMAT(sd.used_at, "%Y-%m-%d")
+                    WHEN sd.id IS NOT NULL THEN DATE_FORMAT(sd.distributed_at, "%Y-%m-%d")
                     WHEN gri.id IS NOT NULL THEN DATE_FORMAT(gri.distributedAt, "%Y-%m-%d")
                     WHEN t.id IS NOT NULL THEN DATE_FORMAT(t.date_sent, "%Y-%m-%d")
                 END AS date_distribution
@@ -82,7 +83,8 @@ class DistributedItemRepository extends \Doctrine\ORM\EntityRepository
             JOIN distribution_beneficiary db ON ass.id=db.assistance_id
             JOIN beneficiary b ON b.id=db.beneficiary_id
             -- smartcards
-            LEFT JOIN smartcard_deposit sd ON sd.distribution_beneficiary_id=db.id
+            LEFT JOIN relief_package pack ON pack.assistance_beneficiary_id=db.id
+            LEFT JOIN smartcard_deposit sd ON sd.relief_package_id=pack.id
             -- mobile money
             LEFT JOIN transaction t ON t.distribution_beneficiary_id=db.id
             -- general reliefs

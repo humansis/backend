@@ -8,6 +8,8 @@ use CommonBundle\Entity\Adm2;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Enum\ModalityType;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use UserBundle\Entity\User;
 use VoucherBundle\DTO\PurchaseRedemptionBatch;
@@ -202,10 +204,30 @@ class SmartcardServiceTest extends KernelTestCase
                     break;
                 case 'deposit':
                     [$beneficiaryId, $action, $value, $currency, $assistanceId] = $actionData;
+
+                    /** @var Assistance $assistance */
+                    $assistance = $this->em->getRepository(Assistance::class)->find($assistanceId);
+                    /** @var Beneficiary $beneficiary */
+                    $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryId);
+
+                    $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy([
+                        'assistance' => $assistance,
+                        'beneficiary'=> $beneficiary
+                    ]);
+
+                    $reliefPackage = new ReliefPackage(
+                        $assistanceBeneficiary,
+                        ModalityType::SMART_CARD,
+                        $assistanceBeneficiary->getAssistance()->getCommodities()[0]->getValue(),
+                        $assistanceBeneficiary->getAssistance()->getCommodities()[0]->getUnit(),
+                    );
+
+                    $this->em->persist($reliefPackage);
+                    $this->em->flush();
+
                     $this->smartcardService->deposit(
                         $this->smartcardNumber,
-                        $assistanceId, // assistanceId
-                        $beneficiaryId, // beneficiaryId
+                        $reliefPackage->getId(),
                         $value,
                         $value, // balance is rewritten by new value
                         $date,
@@ -222,6 +244,13 @@ class SmartcardServiceTest extends KernelTestCase
         $this->assertCount(count($expectedResults), $batchCandidates, "Wrong count of redemption candidates");
         foreach ($batchCandidates as $candidate) {
             $this->assertContains([$candidate->getValue(), $candidate->getCurrency(), $candidate->getProjectId()], $expectedResults, "Result was unexpected");
+
+            foreach ($candidate->getPurchasesIds() as $purchaseId) {
+                /** @var SmartcardPurchase $purchase */
+                $purchase = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->find($purchaseId);
+                $this->assertNotNull($purchase, "Purchase must exists");
+                $this->assertEquals(2000, $purchase->getCreatedAt()->format('Y'), "Wrong purchase year");
+            }
         }
         // redeem test
         foreach ($batchCandidates as $candidateToSave) {
@@ -229,9 +258,13 @@ class SmartcardServiceTest extends KernelTestCase
             $batchRequest->setPurchases($candidateToSave->getPurchasesIds());
 
             $batch = $this->smartcardService->redeem($this->vendor, $batchRequest, $admin);
+
+            foreach ($batch->getPurchases() as $purchase) {
+                $this->assertEquals(2000, $purchase->getCreatedAt()->format('Y'), "Wrong purchase year");
+            }
             $this->assertEquals($candidateToSave->getValue(), $batch->getValue(), "Redemption value of batch is different");
             $this->assertEquals($candidateToSave->getCurrency(), $batch->getCurrency(), "Redemption currency of batch is different");
-            $this->assertEquals($candidateToSave->getProjectId(), $batch->getProject()->getId(), "Redemption project is of batch is different");
+            $this->assertEquals($candidateToSave->getProjectId(), $batch->getProject()->getId(), "Redemption project of batch is different");
             $this->assertEquals($candidateToSave->getPurchasesCount(), $batch->getPurchases()->count(), "Redemption purchase count of batch is different");
         }
     }
@@ -412,12 +445,20 @@ class SmartcardServiceTest extends KernelTestCase
         $assistanceId = 51; // USD
         $serialNumber = '111222333';
         $allTestingBeneficiaries = [70, 71, 72];
+        $allTestingVendors = [2, 3];
 
-        $beneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findBy([
+        $targets = $this->em->getRepository(AssistanceBeneficiary::class)->findBy([
             'beneficiary' => $allTestingBeneficiaries,
             'assistance' => $assistanceId,
         ]);
-        $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(['assistanceBeneficiary'=>$beneficiary]);
+        $this->assertCount(3, $targets, "All testing Beneficiaries must be in testing Assistance#$assistanceId");
+        $packages = $this->em->getRepository(ReliefPackage::class)->findBy([
+            'assistanceBeneficiary' => $targets,
+        ]);
+        $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(['reliefPackage'=>$packages]);
+        foreach ($packages as $package) {
+            $this->em->remove($package);
+        }
         foreach ($deposits as $deposit) {
             $this->em->remove($deposit);
         }
@@ -426,17 +467,41 @@ class SmartcardServiceTest extends KernelTestCase
         foreach ($purchases as $purchase) {
             $this->em->remove($purchase);
         }
+        $purchases = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->findBy(['vendor'=>$allTestingVendors]);
+        foreach ($purchases as $purchase) {
+            $this->em->remove($purchase);
+        }
         $this->em->flush();
 
         foreach ($actions as $preparedAction) {
-            list($dateOfEvent, $beneficiaryId, $subActions) = $preparedAction;
+            [$dateOfEvent, $beneficiaryId, $subActions] = $preparedAction;
             foreach ($subActions as $action) {
                 switch ($action) {
                     case 'register':
                         $this->smartcardService->register($serialNumber, $beneficiaryId, \DateTime::createFromFormat('Y-m-d', $dateOfEvent));
                         break;
                     case 'deposit':
-                        $this->smartcardService->deposit($serialNumber, $assistanceId, $beneficiaryId, 100, null, \DateTime::createFromFormat('Y-m-d', $dateOfEvent), $admin);
+                        /** @var Assistance $assistance */
+                        $assistance = $this->em->getRepository(Assistance::class)->find($assistanceId);
+                        /** @var Beneficiary $beneficiary */
+                        $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryId);
+
+                        $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy([
+                            'assistance' => $assistance,
+                            'beneficiary'=> $beneficiary
+                        ]);
+
+                        $reliefPackage = new ReliefPackage(
+                            $assistanceBeneficiary,
+                            ModalityType::SMART_CARD,
+                            $assistanceBeneficiary->getAssistance()->getCommodities()[0]->getValue(),
+                            $assistanceBeneficiary->getAssistance()->getCommodities()[0]->getUnit(),
+                        );
+
+                        $this->em->persist($reliefPackage);
+                        $this->em->flush();
+
+                        $this->smartcardService->deposit($serialNumber, $reliefPackage->getId(), 100, null, \DateTime::createFromFormat('Y-m-d', $dateOfEvent), $admin);
                         break;
                     case 'purchase':
                         $vendorId = $preparedAction[3];
@@ -467,11 +532,12 @@ class SmartcardServiceTest extends KernelTestCase
         }
 
         foreach ($expectedBeneficiaryResults as $beneficiaryId => $values) {
-            $beneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findBy([
+            $target = $this->em->getRepository(AssistanceBeneficiary::class)->findBy([
                 'beneficiary' => $beneficiaryId,
                 'assistance' => $assistanceId,
                 ]);
-            $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(['assistanceBeneficiary'=>$beneficiary]);
+            $package = $this->em->getRepository(ReliefPackage::class)->findBy(['assistanceBeneficiary'=>$target]);
+            $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(['reliefPackage'=>$package]);
             $distributed = 0;
             foreach ($deposits as $deposit) {
                 $distributed += $deposit->getValue();

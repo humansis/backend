@@ -6,6 +6,8 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\DataFixtures\VendorFixtures;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
+use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Enum\ModalityType;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\User;
 use VoucherBundle\DTO\PurchaseRedemptionBatch;
@@ -30,15 +32,6 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
-
-        $smartcardCount = $this->em->getRepository(Smartcard::class)->count(['serialNumber' => '1234ABC', 'state'=>SmartcardStates::ACTIVE]);
-        if ($smartcardCount == 0) {
-            $smartcard = new Smartcard('1234ABC', new \DateTime('now'));
-            $smartcard->setBeneficiary($this->someSmartcardAssistance()->getDistributionBeneficiaries()->get(0)->getBeneficiary());
-            $smartcard->setState(SmartcardStates::ACTIVE);
-            $this->em->persist($smartcard);
-            $this->em->flush();
-        }
     }
 
     protected function tearDown()
@@ -61,8 +54,6 @@ class SmartcardControllerTest extends BMSServiceTestCase
     {
         $this->removeSmartcards('1111111');
         $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([]);
-
-        $bnfId = $this->em->getRepository(Beneficiary::class)->findOneBy([])->getId();
 
         $this->request('POST', '/api/wsse/offline-app/v1/smartcards', [
             'serialNumber' => '1111111',
@@ -101,15 +92,16 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
     public function testDepositToSmartcard()
     {
-        $assistance = $this->someSmartcardAssistance();
-        $ab = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy(['assistance'=>$assistance, 'removed'=>false]);
+        $ab = $this->assistanceBeneficiaryWithoutRelief();
         $bnf = $ab->getBeneficiary();
-        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC', $bnf);
+        $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
 
-        $this->request('PATCH', '/api/wsse/offline-app/v2/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
+        $reliefPackage = $this->createReliefPackage($ab);
+
+        $this->request('PATCH', '/api/wsse/offline-app/v3/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
             'value' => 255.25,
             'balance' => 260.00,
-            'distributionId' => $assistance->getId(),
+            'reliefPackageId' => $reliefPackage->getId(),
             'createdAt' => '2020-02-02T12:00:00Z',
             'beneficiaryId' => $bnf->getId(),
         ]);
@@ -125,14 +117,24 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
     public function testDepositToInactiveSmartcard()
     {
+        //TODO this test passes, but deposit to inactive smartcard is still possible. In request is mission distributionId
+
         $depositor = $this->em->getRepository(User::class)->findOneBy([]);
-        $assistanceBeneficiary = $this->someSmartcardAssistance()->getDistributionBeneficiaries()->get(0);
+        /** @var AssistanceBeneficiary $assistanceBeneficiary */
+        $assistanceBeneficiary = $this->assistanceBeneficiaryWithoutRelief();
         $bnf = $assistanceBeneficiary->getBeneficiary();
 
         /** @var Smartcard $smartcard */
-        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC', $bnf);
+        $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
         $smartcard->setState(SmartcardStates::INACTIVE);
-        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $assistanceBeneficiary, 1000, null, new \DateTime('now')));
+        $smartcard->setBeneficiary($assistanceBeneficiary->getBeneficiary());
+
+        $reliefPackage = $this->createReliefPackage($assistanceBeneficiary);
+
+        $this->em->persist($reliefPackage);
+
+        $deposit = SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 1000, null, new \DateTime('now'));
+        $smartcard->addDeposit($deposit);
 
         $this->em->persist($smartcard);
         $this->em->flush();
@@ -149,11 +151,15 @@ class SmartcardControllerTest extends BMSServiceTestCase
     public function testPurchase()
     {
         $depositor = $this->em->getRepository(User::class)->findOneBy([]);
-        $assistanceBeneficiary = $this->someSmartcardAssistance()->getDistributionBeneficiaries()->get(0);
+        $assistanceBeneficiary = $this->assistanceBeneficiaryWithoutRelief();
         $bnf = $assistanceBeneficiary->getBeneficiary();
 
-        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC', $bnf);
-        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $assistanceBeneficiary, 600, null, new \DateTime('now')));
+        $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
+
+        $reliefPackage = $this->createReliefPackage($assistanceBeneficiary);
+
+        $deposit = SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 600, null, new \DateTime('now'));
+        $smartcard->addDeposit($deposit);
 
         $this->em->persist($smartcard);
         $this->em->flush();
@@ -188,12 +194,14 @@ class SmartcardControllerTest extends BMSServiceTestCase
     public function testPurchaseFromEmptySmartcard()
     {
         $depositor = $this->em->getRepository(User::class)->findOneBy([]);
-        $assistanceBeneficiary = $this->someSmartcardAssistance()->getDistributionBeneficiaries()->get(0);
-        $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([]);
+        $assistanceBeneficiary = $this->assistanceBeneficiaryWithoutRelief();
+        $bnf = $assistanceBeneficiary->getBeneficiary();
 
-        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC', $bnf);
+        $reliefPackage = $this->createReliefPackage($assistanceBeneficiary);
+
+        $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
         $smartcard->setState(SmartcardStates::INACTIVE);
-        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $assistanceBeneficiary, 100, null, new \DateTime('now')));
+        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 100, null, new \DateTime('now')));
 
         $this->em->persist($smartcard);
         $this->em->flush();
@@ -309,7 +317,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
     public function testChangeStateToInactive()
     {
         $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([]);
-        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC', $bnf);
+        $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
 
         $this->request('PATCH', '/api/wsse/offline-app/v1/smartcards/'.$smartcard->getSerialNumber(), [
             'state' => SmartcardStates::INACTIVE,
@@ -529,7 +537,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         /** @var PurchaseRedemptionBatch $redemptionCandidate */
         $redemptionCandidate = $repository->countPurchasesToRedeem($vendor)[0];
         $batchToRedeem = [
-            'purchases' => $redemptionCandidate->getPurchasesIds()
+            'purchases' => $redemptionCandidate->getPurchasesIds(),
         ];
 
         $crawler = $this->request('POST', '/api/wsse/smartcards/purchases/redeem-batch/'.$vendor->getId(), $batchToRedeem);
@@ -594,7 +602,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
      */
     public function testPurchasesShouldHaveCurrencyInNotPresentInRequestStep2($array)
     {
-        list($smartcard, $assistance, $beneficiary) = $array;
+        [$smartcard, $assistance, $beneficiary] = $array;
 
         $this->request('POST', '/api/wsse/offline-app/v1/smartcards', [
             'serialNumber' => $smartcard,
@@ -612,13 +620,19 @@ class SmartcardControllerTest extends BMSServiceTestCase
      */
     public function testPurchasesShouldHaveCurrencyInNotPresentInRequestStep3($array)
     {
-        list($nonexistentSmarcard, $distribution, $beneficiary) = $array;
+        [$nonexistentSmarcard, $distribution, $beneficiary] = $array;
+
+        $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy([
+            'assistance' => $distribution,
+            'beneficiary' => $beneficiary,
+        ]);
+
+        $reliefPackage = $this->createReliefPackage($assistanceBeneficiary);
 
         $this->request('PATCH', '/api/wsse/offline-app/v3/smartcards/'.$nonexistentSmarcard.'/deposit', [
             'value' => 500,
             'createdAt' => '2020-02-02T12:00:00+0001',
-            'distributionId' => $distribution->getId(),
-            'beneficiaryId' => $beneficiary->getId(),
+            'reliefPackageId' => $reliefPackage->getId(),
         ]);
 
         /** @var Smartcard $smartcard */
@@ -728,5 +742,69 @@ class SmartcardControllerTest extends BMSServiceTestCase
         }
 
         return null;
+    }
+
+    private function assistanceBeneficiaryWithoutRelief(): AssistanceBeneficiary
+    {
+        /** @var Assistance $assistance */
+        foreach ($this->em->getRepository(Assistance::class)->findAll() as $assistance) {
+            foreach ($assistance->getCommodities() as $commodity) {
+                if (ModalityType::SMART_CARD !== $commodity->getModalityType()->getName()) {
+                    continue 2;
+                }
+            }
+
+            foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+                if ($assistanceBeneficiary->getReliefPackages()->isEmpty()) {
+                    return $assistanceBeneficiary;
+                }
+            }
+        }
+
+        $assistanceBeneficiary = new AssistanceBeneficiary();
+        $assistanceBeneficiary->setAssistance($this->someSmartcardAssistance());
+        $assistanceBeneficiary->setBeneficiary($this->em->getRepository(Beneficiary::class)->findOneBy([]));
+
+        $this->em->persist($assistanceBeneficiary);
+
+        return $assistanceBeneficiary;
+    }
+
+    private function getSmartcardForBeneficiary(string $serialNumber, Beneficiary $beneficiary): Smartcard
+    {
+        /** @var Smartcard[] $smartcards */
+        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['serialNumber' => $serialNumber]);
+
+        foreach ($smartcards as $smartcard) {
+            if ($smartcard->getState() === SmartcardStates::ACTIVE) {
+                $smartcard->setBeneficiary($beneficiary);
+
+                return $smartcard;
+            }
+        }
+
+        $smartcard = new Smartcard($serialNumber, new \DateTime('now'));
+        $smartcard->setBeneficiary($beneficiary);
+        $smartcard->setState(SmartcardStates::ACTIVE);
+
+        $this->em->persist($smartcard);
+        $this->em->flush();
+
+        return $smartcard;
+    }
+
+    private function createReliefPackage(AssistanceBeneficiary $ab): ReliefPackage
+    {
+        $reliefPackage = new ReliefPackage(
+            $ab,
+            ModalityType::SMART_CARD,
+            $ab->getAssistance()->getCommodities()[0]->getValue(),
+            $ab->getAssistance()->getCommodities()[0]->getUnit(),
+        );
+
+        $this->em->persist($reliefPackage);
+        $this->em->flush();
+
+        return $reliefPackage;
     }
 }

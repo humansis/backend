@@ -616,7 +616,7 @@ class Assistance implements ExportableInterface
     /**
      * Get distributionBeneficiaries.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return \Doctrine\Common\Collections\Collection|AssistanceBeneficiary[]
      */
     public function getDistributionBeneficiaries()
     {

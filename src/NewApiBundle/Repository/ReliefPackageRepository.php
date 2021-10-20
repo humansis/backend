@@ -1,0 +1,27 @@
+<?php
+declare(strict_types=1);
+
+namespace NewApiBundle\Repository;
+
+
+use BeneficiaryBundle\Entity\Beneficiary;
+use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Enum\ModalityType;
+
+class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
+{
+    public function findForSmartcardByAssistanceBeneficiary(Assistance $assistance, Beneficiary $beneficiary): ?ReliefPackage
+    {
+        $qb = $this->createQueryBuilder('rp')
+            ->join('rp.assistanceBeneficiary', 'ab')
+            ->andWhere('ab.assistance = :assistance')
+            ->andWhere('ab.beneficiary = :beneficiary')
+            ->andWhere('rp.modalityType = :smartcardModality')
+            ->setParameter('assistance', $assistance)
+            ->setParameter('beneficiary', $beneficiary)
+            ->setParameter('smartcardModality', ModalityType::SMART_CARD);
+
+        return $qb->getQuery()->getOneOrNullResult();
+    }
+}

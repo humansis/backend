@@ -51,7 +51,10 @@ services:
 
     smartcard_service:
         class: VoucherBundle\Utils\SmartcardService
-        arguments: [ '@doctrine.orm.entity_manager', '@voucher.purchase_service' ]
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@voucher.purchase_service'
+            - '@workflow.registry'
         public: true
 
     VoucherBundle\Mapper\SmartcardMapper:

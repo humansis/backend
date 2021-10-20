@@ -3,10 +3,10 @@
 namespace DistributionBundle\Entity;
 
 use BeneficiaryBundle\Entity\AbstractBeneficiary;
-use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\ReliefPackage;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Serializer\Annotation\MaxDepth as SymfonyMaxDepth;
 
@@ -77,26 +77,26 @@ class AssistanceBeneficiary
     private $generalReliefs;
 
     /**
-     * @var Collection|SmartcardDeposit[]
-     *
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardDeposit", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
-     * @ORM\OrderBy({"createdAt": "ASC"})
-     */
-    private $smartcardDeposits;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="content", type="json", nullable=true)
      */
     private $vulnerabilityScores;
 
+    /**
+     * @var Collection|ReliefPackage[]
+     *
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ReliefPackage", mappedBy="assistanceBeneficiary")
+     * @ORM\JoinColumn(name="relief_package_id")
+     */
+    private $reliefPackages;
+
     public function __construct()
     {
         $this->booklets = new ArrayCollection();
         $this->generalReliefs = new ArrayCollection();
-        $this->smartcardDeposits = new ArrayCollection();
         $this->transactions = new ArrayCollection();
+        $this->reliefPackages = new ArrayCollection();
     }
 
     /**
@@ -136,7 +136,7 @@ class AssistanceBeneficiary
         foreach ($this->getAssistance()->getCommodities() as $commodity) {
             /** @var Commodity $commodity */
             if ('Smartcard' === $commodity->getModalityType()->getName()) {
-                return count($this->smartcardDeposits) > 0;
+                return count($this->getSmartcardDeposits()) > 0;
             }
         }
 
@@ -150,7 +150,7 @@ class AssistanceBeneficiary
      */
     public function getSmartcardDistributedAt(): ?\DateTimeInterface
     {
-        foreach ($this->smartcardDeposits as $deposit) {
+        foreach ($this->getSmartcardDeposits() as $deposit) {
             return $deposit->getCreatedAt();
         }
 
@@ -208,9 +208,15 @@ class AssistanceBeneficiary
     /**
      * @return Collection|SmartcardDeposit[]
      */
-    public function getSmartcardDeposits()
+    public function getSmartcardDeposits(): iterable
     {
-        return $this->smartcardDeposits;
+        $collection = new ArrayCollection();
+        foreach ($this->reliefPackages as $package) {
+            foreach ($package->getSmartcardDeposits() as $deposit) {
+                $collection->add($deposit);
+            }
+        }
+        return $collection;
     }
 
     /**
@@ -420,11 +426,19 @@ class AssistanceBeneficiary
                 return true;
             }
         }
-        foreach ($this->smartcardDeposits as $deposit) {
+        foreach ($this->getSmartcardDeposits() as $deposit) {
             if ($deposit->getSmartcard()->getBeneficiary() === $this->getBeneficiary()) {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * @return Collection|ReliefPackage[]
+     */
+    public function getReliefPackages()
+    {
+        return $this->reliefPackages;
     }
 }

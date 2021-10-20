@@ -91,23 +91,6 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         return (int) $result;
     }
 
-    /**
-     * @param Assistance $assistance
-     * @param Beneficiary      $beneficiary
-     *
-     * @return AssistanceBeneficiary|null
-     */
-    public function findByDistributionAndBeneficiary(Assistance $assistance, Beneficiary $beneficiary): ?AssistanceBeneficiary
-    {
-        $qb = $this->createQueryBuilder('db')
-            ->andWhere('db.assistance = :assistance')
-            ->andWhere('db.beneficiary = :beneficiary')
-            ->setParameter('assistance', $assistance)
-            ->setParameter('beneficiary', $beneficiary);
-
-        return $qb->getQuery()->getOneOrNullResult();
-    }
-
     public function findActiveByAssistance(Assistance $assistance): iterable
     {
         $qb = $this->createQueryBuilder('db')

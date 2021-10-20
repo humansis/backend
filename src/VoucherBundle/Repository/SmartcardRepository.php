@@ -16,7 +16,7 @@ use VoucherBundle\Enum\SmartcardStates;
  */
 class SmartcardRepository extends EntityRepository
 {
-    public function findBySerialNumber(string $serialNumber, ?Beneficiary $beneficiary): ?Smartcard
+    public function findBySerialNumber(string $serialNumber, ?Beneficiary $beneficiary = null): ?Smartcard
     {
         $qb = $this->createQueryBuilder('s')
             ->andWhere('s.serialNumber = :serialNumber')
