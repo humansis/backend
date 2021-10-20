@@ -7,6 +7,7 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\CreatedAt;
+use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
 use VoucherBundle\Entity\SmartcardDeposit;
 
@@ -98,8 +99,12 @@ class ReliefPackage
         float $amountDistributed = 0.0
     )
     {
+        if (!in_array($modalityType, ModalityType::values())) {
+            throw new \InvalidArgumentException("Argument '$modalityType' isn't valid ModalityType");
+        }
+
         $this->assistanceBeneficiary = $assistanceBeneficiary;
-        $this->modalityType = $modalityType; //TODO check enum values
+        $this->modalityType = $modalityType;
         $this->amountToDistribute = $amountToDistribute;
         $this->unit = $unit;
         $this->state = $state;
@@ -151,6 +156,9 @@ class ReliefPackage
      */
     public function setModalityType(string $modalityType): void
     {
+        if (!in_array($modalityType, ModalityType::values())) {
+            throw new \InvalidArgumentException("Argument '$modalityType' isn't valid ModalityType");
+        }
         $this->modalityType = $modalityType;
     }
 
