@@ -1,0 +1,30 @@
+<?php declare(strict_types=1);
+
+namespace Application\Migrations;
+
+use Doctrine\DBAL\Schema\Schema;
+use Doctrine\Migrations\AbstractMigration;
+
+/**
+ * Auto-generated Migration: Please modify to your needs!
+ */
+final class Version20211020143307 extends AbstractMigration
+{
+    public function up(Schema $schema) : void
+    {
+        // this up() migration is auto-generated, please modify it to your needs
+        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+
+        $this->addSql('ALTER TABLE synchronization_batch_deposit ADD state ENUM(\'Uploaded\', \'Correct\', \'Errors\', \'Archived\') NOT NULL COMMENT \'(DC2Type:enum_synchronization_batch_state)\'');
+        $this->addSql('ALTER TABLE synchronization_batch_purchase ADD state ENUM(\'Uploaded\', \'Correct\', \'Errors\', \'Archived\') NOT NULL COMMENT \'(DC2Type:enum_synchronization_batch_state)\'');
+    }
+
+    public function down(Schema $schema) : void
+    {
+        // this down() migration is auto-generated, please modify it to your needs
+        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+
+        $this->addSql('ALTER TABLE synchronization_batch_deposit DROP state');
+        $this->addSql('ALTER TABLE synchronization_batch_purchase DROP state');
+    }
+}

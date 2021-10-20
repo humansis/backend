@@ -19,6 +19,13 @@ abstract class AbstractSynchronizationBatch
     use CreationMetadata;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="state", type="enum_synchronization_batch_state", nullable=false)
+     */
+    private $state;
+
+    /**
      * @var array
      *
      * @ORM\Column(name="request_data", type="json", nullable=false)
@@ -45,6 +52,14 @@ abstract class AbstractSynchronizationBatch
     protected function __construct(array $requestData)
     {
         $this->requestData = $requestData;
+    }
+
+    /**
+     * @return string
+     */
+    public function getState(): string
+    {
+        return $this->state;
     }
 
     /**
