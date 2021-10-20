@@ -79,11 +79,13 @@ class PurchaseService
         $purchase = $purchaseRepository->findOneBy(['hash' => $hash]);
 
         if ($purchase) {
-            $this->logger->info("Purchase was already set. [hash: {$purchase->getHash()}]");
-        } else {
-            $purchase = SmartcardPurchase::create($smartcard, $this->getVendor($input->getVendorId()), $input->getCreatedAt());
-            $purchase->setHash($hash);
+            $this->logger->info("Purchase was already set. [beneficiary: {$smartcard->getBeneficiary()->getId()}, vendor: {$input->getVendorId()}, purchaseCreatedAt: {$input->getCreatedAt()->format(DateTimeInterface::ISO8601)}]");
+
+            return $purchase;
         }
+
+        $purchase = SmartcardPurchase::create($smartcard, $this->getVendor($input->getVendorId()), $input->getCreatedAt());
+        $purchase->setHash($hash);
 
         foreach ($input->getProducts() as $item) {
             $product = $this->getProduct($item['id']);
