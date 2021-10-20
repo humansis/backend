@@ -67,6 +67,7 @@ class VendorControllerTest extends BMSServiceTestCase
             'canSellFood' => false,
             'canSellNonFood' => false,
             'canSellCashback' => false,
+            'canDoRemoteDistributions' => true,
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -93,6 +94,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('canSellFood', $result);
         $this->assertArrayHasKey('canSellNonFood', $result);
         $this->assertArrayHasKey('canSellCashback', $result);
+        $this->assertArrayHasKey('canDoRemoteDistributions', $result);
 
         $this->assertEquals($data['shop'], $result['shop']);
         $this->assertEquals($data['addressPostcode'], $result['addressPostcode']);
@@ -127,6 +129,7 @@ class VendorControllerTest extends BMSServiceTestCase
             'canSellFood' => true,
             'canSellNonFood' => true,
             'canSellCashback' => true,
+            'canDoRemoteDistributions' => false,
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -153,6 +156,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('canSellFood', $result);
         $this->assertArrayHasKey('canSellNonFood', $result);
         $this->assertArrayHasKey('canSellCashback', $result);
+        $this->assertArrayHasKey('canDoRemoteDistributions', $result);
 
         $this->assertEquals($data['shop'], $result['shop']);
         $this->assertEquals($data['addressPostcode'], $result['addressPostcode']);
@@ -161,6 +165,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertEquals($data['canSellFood'], $result['canSellFood']);
         $this->assertEquals($data['canSellNonFood'], $result['canSellNonFood']);
         $this->assertEquals($data['canSellCashback'], $result['canSellCashback']);
+        $this->assertEquals($data['canDoRemoteDistributions'], $result['canDoRemoteDistributions']);
 
         return $result['id'];
     }
@@ -198,6 +203,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('adm4Id', $result);
         $this->assertArrayHasKey('vendorNo', $result);
         $this->assertArrayHasKey('contractNo', $result);
+        $this->assertArrayHasKey('canDoRemoteDistributions', $result);
 
         return $id;
     }

@@ -125,6 +125,13 @@ class Vendor implements ExportableInterface
      */
     private $canSellCashback = true;
 
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="can_do_remote_distributions", type="boolean", nullable=false)
+     */
+    private $canDoRemoteDistributions = false;
+
     public function __construct()
     {
         $this->archived = false;
@@ -458,4 +465,19 @@ class Vendor implements ExportableInterface
         return $this;
     }
 
+    /**
+     * @return bool
+     */
+    public function canDoRemoteDistributions(): bool
+    {
+        return $this->canDoRemoteDistributions;
+    }
+
+    /**
+     * @param bool $canDoRemoteDistributions
+     */
+    public function setCanDoRemoteDistributions(bool $canDoRemoteDistributions): void
+    {
+        $this->canDoRemoteDistributions = $canDoRemoteDistributions;
+    }
 }
