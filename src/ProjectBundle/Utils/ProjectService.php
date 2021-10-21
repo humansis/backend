@@ -314,7 +314,9 @@ class ProjectService
         ]);
 
         if (!empty($existingProjects) && $existingProjects[0]->getId() !== $project->getId()) {
-            throw new \RuntimeException('Project with the name '.$project->getName().' already exists');
+            throw new ConstraintViolationException(
+                new ConstraintViolation("Project with name \"{$inputType->getName()}\" already exists. Please choose different one.", null, [], 'name', 'name', true)
+            );
         }
 
         $project
