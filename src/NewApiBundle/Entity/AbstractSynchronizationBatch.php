@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\CreationMetadata;
 use NewApiBundle\Entity\Helper\Source;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use NewApiBundle\Enum\SynchronizationBatchState;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 /**
@@ -23,7 +24,7 @@ abstract class AbstractSynchronizationBatch
      *
      * @ORM\Column(name="state", type="enum_synchronization_batch_state", nullable=false)
      */
-    private $state;
+    private $state = SynchronizationBatchState::UPLOADED;
 
     /**
      * @var array
@@ -81,8 +82,12 @@ abstract class AbstractSynchronizationBatch
     /**
      * @param ConstraintViolationListInterface[] $violations
      */
-    public function setViolations(array $violations): void
+    public function setViolations(array $violations, ?\DateTimeInterface $validatedAt = null): void
     {
+        if ($this->state !== SynchronizationBatchState::UPLOADED) {
+            throw new \InvalidArgumentException("Violation shouldn't be added to processed batches");
+        }
+        $this->validatedAt = $validatedAt ?? new \DateTimeImmutable();
         $this->violations = $violations;
     }
 
@@ -97,14 +102,6 @@ abstract class AbstractSynchronizationBatch
     public function getValidatedAt(): ?\DateTimeInterface
     {
         return $this->validatedAt;
-    }
-
-    /**
-     * @param \DateTimeInterface|null $validatedAt
-     */
-    public function setValidatedAt(?\DateTimeInterface $validatedAt): void
-    {
-        $this->validatedAt = $validatedAt;
     }
 
 }
