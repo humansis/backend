@@ -5,14 +5,14 @@ namespace NewApiBundle\Entity\SynchronizationBatch;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\AbstractSynchronizationBatch;
+use NewApiBundle\Entity\SynchronizationBatch;
 use VoucherBundle\Entity\SmartcardPurchase;
 
 /**
- * @ORM\Entity
- * @ORM\Table(name="synchronization_batch_purchase")
+ * @ ORM\Entity
+ * @ ORM\Table(name="synchronization_batch_purchase")
  */
-class Purchases extends AbstractSynchronizationBatch
+class Purchases extends SynchronizationBatch
 {
     /**
      * @var SmartcardPurchase[]

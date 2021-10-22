@@ -123,6 +123,7 @@ doctrine:
             enum_import_queue_state: NewApiBundle\DBAL\ImportStateQueueEnum
             enum_import_duplicity_state: NewApiBundle\DBAL\ImportDuplicityStateEnum
             enum_product_category_type: NewApiBundle\DBAL\ProductCategoryTypeEnum
+            enum_synchronization_batch_validation_type: NewApiBundle\DBAL\SynchronizationBatchValidationTypeEnum
             enum_relief_package_state: NewApiBundle\DBAL\ReliefPackageStateEnum
             enum_modality_type: NewApiBundle\DBAL\ModalityTypeEnum
             enum_synchronization_batch_state: NewApiBundle\DBAL\SynchronizationBatchEnum

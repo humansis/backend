@@ -8,16 +8,30 @@ use NewApiBundle\Entity\Helper\CreationMetadata;
 use NewApiBundle\Entity\Helper\Source;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\SynchronizationBatchState;
+use NewApiBundle\Enum\SynchronizationBatchValidationType;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 /**
- * @ORM\MappedSuperclass()
+ * @ORM\Entity
+ * @ ORM\InheritanceType(value="SINGLE_TABLE")
+ * @ ORM\DiscriminatorColumn(name="validation_type", type="enum_synchronization_batch_validation_type")
+ * @ ORM\DiscriminatorMap({
+ *     "Deposits"="\NewApiBundle\Entity\SynchronizationBatch\Deposits",
+ *     "Purchases"="\NewApiBundle\Entity\SynchronizationBatch\Purchases"
+ * })
  */
-abstract class AbstractSynchronizationBatch
+class SynchronizationBatch
 {
     use StandardizedPrimaryKey;
     use Source;
     use CreationMetadata;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="validation_type", type="enum_synchronization_batch_validation_type", nullable=false)
+     */
+    private $validationType = SynchronizationBatchValidationType::DEPOSIT;
 
     /**
      * @var string
@@ -50,7 +64,7 @@ abstract class AbstractSynchronizationBatch
     /**
      * @param array $requestData
      */
-    protected function __construct(array $requestData)
+    public function __construct(array $requestData)
     {
         $this->requestData = $requestData;
     }
