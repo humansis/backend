@@ -170,7 +170,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             ],
             'vendorId' => 1,
             'beneficiaryId' => $bnf->getId(),
-            'createdAt' => '2020-02-02T12:00:00Z',
+            'createdAt' => '2020-02-02T11:11:11Z',
         ]);
 
         $this->client->request('PATCH', '/api/wsse/vendor-app/v3/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers, $content);
@@ -570,7 +570,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
                 ],
                 'vendorId' => 1,
                 'beneficiaryId' => $beneficiary->getId(),
-                'createdAt' => '2020-02-02T12:00:00Z',
+                'createdAt' => '2020-02-02T11:11:00Z',
             ]));
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
@@ -630,7 +630,94 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->assertNotNull($smartcard->getPurchases()[0]->getCurrency());
     }
 
-    private function someSmartcardAssistance(): Assistance
+    public function testDuplicityPurchase(): void
+    {
+        /** @var User $depositor */
+        $depositor = $this->em->getRepository(User::class)->findOneBy([]);
+        $assistanceBeneficiary = $this->someSmartcardAssistance()->getDistributionBeneficiaries()->get(0);
+        /** @var Beneficiary $bnf */
+        $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([]);
+
+        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC', $bnf);
+        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $assistanceBeneficiary, 600, null, new \DateTime('now')));
+
+        $this->em->persist($smartcard);
+        $this->em->flush();
+
+        $headers = ['HTTP_COUNTRY' => 'KHM'];
+        $requestBody = [
+            'products' => [
+                [
+                    'id' => 1, // @todo replace for fixture
+                    'value' => 300.25,
+                    'quantity' => 1.2,
+                    'currency' => 'USD',
+                ],
+            ],
+            'vendorId' => 1,
+            'beneficiaryId' => $bnf->getId(),
+            'createdAt' => '2020-02-02T11:00:00Z',
+        ];
+
+        //first request
+        $this->client->request('PATCH', '/api/wsse/vendor-app/v3/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers,
+            json_encode($requestBody));
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $content = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertArrayHasKey('value', $content);
+        $smartCardPurchasesCount1 = count($this->em->getRepository(SmartcardPurchase::class)->findAll());
+
+        $this->setUp();
+
+        //second request with the same bnfId+vendorId+createdAt
+        $this->client->request('PATCH', '/api/wsse/vendor-app/v3/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers,
+            json_encode($requestBody));
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $cnt = $this->client->getResponse()->getContent();
+        $content = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertArrayHasKey('value', $content);
+        $smartCardPurchasesCount2 = count($this->em->getRepository(SmartcardPurchase::class)->findAll());
+        $this->assertEquals($smartCardPurchasesCount1, $smartCardPurchasesCount2);
+
+        $this->setUp();
+
+        //third request with same bnfId+vendorId+ createdAt+1second
+        $requestBody['createdAt'] = '2020-02-02T11:00:01Z';
+        $this->client->request('PATCH', '/api/wsse/vendor-app/v3/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers,
+            json_encode($requestBody));
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $content = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertArrayHasKey('value', $content);
+        $smartCardPurchasesCount3 = count($this->em->getRepository(SmartcardPurchase::class)->findAll());
+        $this->assertGreaterThan($smartCardPurchasesCount1, $smartCardPurchasesCount3);
+
+        $this->setUp();
+
+        //fourth request with same bnfId+vendorId+ createdAt+2seconds
+        $requestBody['createdAt'] = '2020-02-02T11:00:02Z';
+        $this->client->request('PATCH', '/api/wsse/vendor-app/v3/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers,
+            json_encode($requestBody));
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $content = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertArrayHasKey('value', $content);
+        $smartCardPurchasesCount4 = count($this->em->getRepository(SmartcardPurchase::class)->findAll());
+        $this->assertGreaterThan($smartCardPurchasesCount3, $smartCardPurchasesCount4);
+        $this->assertGreaterThan($smartCardPurchasesCount1, $smartCardPurchasesCount4);
+
+        $this->setUp();
+
+        //fifth request with same bnfId+vendorId+ createdAt+2seconds
+        $this->client->request('PATCH', '/api/wsse/vendor-app/v3/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers,
+            json_encode($requestBody));
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $content = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertArrayHasKey('value', $content);
+        $smartCardPurchasesCount5 = count($this->em->getRepository(SmartcardPurchase::class)->findAll());
+        $this->assertGreaterThan($smartCardPurchasesCount3, $smartCardPurchasesCount5);
+        $this->assertEquals($smartCardPurchasesCount4, $smartCardPurchasesCount5);
+    }
+
+    private function someSmartcardAssistance(): ?Assistance
     {
         foreach ($this->em->getRepository(Assistance::class)->findAll() as $assistance) {
             foreach ($assistance->getCommodities() as $commodity) {
@@ -639,5 +726,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
                 }
             }
         }
+
+        return null;
     }
 }

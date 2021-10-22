@@ -251,11 +251,11 @@ class ProjectUpdateInputType implements InputTypeInterface
     }
 
     /**
-     * @param string $projectInvoiceAddressLocal
+     * @param string|null $projectInvoiceAddressLocal
      */
-    public function setProjectInvoiceAddressLocal($projectInvoiceAddressLocal): void
+    public function setProjectInvoiceAddressLocal(?string $projectInvoiceAddressLocal): void
     {
-        $this->projectInvoiceAddressLocal = $projectInvoiceAddressLocal;
+        $this->projectInvoiceAddressLocal = $projectInvoiceAddressLocal ?: '';
     }
 
     /**
@@ -267,10 +267,10 @@ class ProjectUpdateInputType implements InputTypeInterface
     }
 
     /**
-     * @param string $projectInvoiceAddressEnglish
+     * @param string|null $projectInvoiceAddressEnglish
      */
-    public function setProjectInvoiceAddressEnglish($projectInvoiceAddressEnglish): void
+    public function setProjectInvoiceAddressEnglish(?string $projectInvoiceAddressEnglish): void
     {
-        $this->projectInvoiceAddressEnglish = $projectInvoiceAddressEnglish;
+        $this->projectInvoiceAddressEnglish = $projectInvoiceAddressEnglish ?: '';
     }
 }

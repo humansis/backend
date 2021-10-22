@@ -377,7 +377,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testDistributionBeneficiariesVouchers($distribution)
     {
         $bookletService = self::$container->get('voucher.booklet_service');
-        $purchaseService = new PurchaseService($this->em);
+        $loggerService = self::$container->get('logger');
+        $purchaseService = new PurchaseService($this->em, $loggerService);
 
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
