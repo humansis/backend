@@ -4,7 +4,7 @@ docker run --rm \
   -i appdir/vendor/humansis/web-api/swagger.yaml \
   -g php-symfony \
   -c appdir/app/config/generator-webapi.yml \
-  -o appdir/src/HumansisWebApiBundle \
+  -o appdir/src/HumansisWebApiBundle
 
 docker run --rm \
   -v "${PWD}":/appdir openapitools/openapi-generator-cli generate \
