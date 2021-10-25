@@ -652,8 +652,10 @@ class SmartcardControllerTest extends BMSServiceTestCase
         /** @var Beneficiary $bnf */
         $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([]);
 
-        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1234ABC', $bnf);
-        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $assistanceBeneficiary, 600, null, new \DateTime('now')));
+        $reliefPackage = $this->createReliefPackage($assistanceBeneficiary);
+
+        $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
+        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 600, null, new \DateTime('now')));
 
         $this->em->persist($smartcard);
         $this->em->flush();
