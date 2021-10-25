@@ -5,7 +5,6 @@ docker run --rm \
   -g php-symfony \
   -c appdir/app/config/generator-webapi.yml \
   -o appdir/src/HumansisWebApiBundle \
-  --global-property models
 
 docker run --rm \
   -v "${PWD}":/appdir openapitools/openapi-generator-cli generate \

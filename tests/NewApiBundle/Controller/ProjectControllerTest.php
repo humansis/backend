@@ -3,6 +3,7 @@
 namespace Tests\NewApiBundle\Controller;
 
 use Exception;
+use Humansis\WebApi\HumansisWebApiBundleBundle;
 use ProjectBundle\DBAL\SectorEnum;
 use Tests\BMSServiceTestCase;
 
@@ -98,15 +99,15 @@ class ProjectControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        $this->request('PUT', '/api/basic/web-app/v1/projects/'.$id, [
-            'name' => $this->projectName,
-            'internalId' => 'TPX',
-            'iso3' => 'KHM',
-            'target' => 10,
-            'startDate' => '2010-10-10T00:00:00+0000',
-            'endDate' => '2011-10-10T00:00:00+0000',
-            'sectors' => [SectorEnum::EARLY_RECOVERY, SectorEnum::CAMP_MANAGEMENT],
-        ]);
+        $newProject = new \Humansis\WebApi\Model\Project();
+        $newProject->setName($this->projectName);
+        $newProject->setInternalId('TPX');
+        $newProject->setIso3('KHM');
+        $newProject->setTarget(10);
+        $newProject->setStartDate('2010-10-10T00:00:00+0000');
+        $newProject->setEndDate('2011-10-10T00:00:00+0000');
+        $newProject->setSectors([SectorEnum::EARLY_RECOVERY, SectorEnum::CAMP_MANAGEMENT]);
+        $this->request('PUT', '/api/basic/web-app/v1/projects/'.$id, $newProject);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
