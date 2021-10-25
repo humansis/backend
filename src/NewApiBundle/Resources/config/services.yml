@@ -285,3 +285,10 @@ services:
     NewApiBundle\Export\SmartcardPurchasedItemSpreadsheet:
         arguments:
             - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:SmartcardPurchasedItem")'
+
+    workflow.import.guard_subscriber:
+        class: NewApiBundle\EventSubscriber\ImportWorkflowSubscriber
+        arguments:
+            - "@doctrine.orm.entity_manager"
+        tags:
+            - { name: kernel.event_subscriber }

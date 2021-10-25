@@ -24,6 +24,9 @@ use NewApiBundle\Repository\ImportQueueRepository;
 use ProjectBundle\Entity\Project;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Workflow\Exception\LogicException;
+use Symfony\Component\Workflow\Exception\TransitionException;
+use Symfony\Component\Workflow\WorkflowInterface;
 use UserBundle\Entity\User;
 
 class ImportService
@@ -50,6 +53,9 @@ class ImportService
     /** @var SimilarityChecker */
     private $similarityChecker;
 
+    /** @var WorkflowInterface */
+    private $importStateMachine;
+
     public function __construct(
         EntityManagerInterface $em,
         HouseholdService $householdService,
@@ -57,7 +63,8 @@ class ImportService
         IntegrityChecker $integrityChecker,
         ImportInvalidFileService $importInvalidFileService,
         IdentityChecker $identityChecker,
-        SimilarityChecker $similarityChecker
+        SimilarityChecker $similarityChecker,
+        WorkflowInterface $importStateMachine
     )
     {
         $this->em = $em;
@@ -67,6 +74,7 @@ class ImportService
         $this->importInvalidFileService = $importInvalidFileService;
         $this->identityChecker = $identityChecker;
         $this->similarityChecker = $similarityChecker;
+        $this->importStateMachine = $importStateMachine;
     }
 
     public function create(ImportCreateInputType $inputType, User $user): Import
@@ -131,29 +139,15 @@ class ImportService
 
     public function updateStatus(Import $import, string $status): void
     {
-        // there can be only one running import in country in one time
-        if (ImportState::IMPORTING === $status
-            && !$this->em->getRepository(Import::class)
-                ->isCountryFreeFromImporting($import, $import->getProject()->getIso3())) {
-            throw new BadRequestHttpException("There can be only one finishing import in country in single time.");
-        }
-
-        // running import cant be cancelled
-        if (ImportState::CANCELED === $status
-            && ImportState::IMPORTING === $import->getState()) {
-            throw new BadRequestHttpException("Already running import can't be cancelled.");
-        }
-
-        if ($status === $import->getState()) {
-            throw new BadRequestHttpException("You can't set same status twice.");
-        }
-
         $before = $import->getState();
-        $import->setState($status);
-
-        $this->logImportInfo($import, "Changed state from '$before' to '{$import->getState()}'");
-
-        $this->em->flush();
+        try {
+            $this->importStateMachine->apply($import, $status);
+            $import->setState($status);
+            $this->logImportInfo($import, "Changed state from '$before' to '{$import->getState()}'");
+            $this->em->flush();
+        } catch (LogicException $exception) {
+            throw new BadRequestHttpException("You can't change state from '$before' to '$status'.");
+        }
     }
 
     public function removeFile(ImportFile $importFile)
