@@ -92,7 +92,7 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
         $stateMachines = self::$container->get('workflow.registry');
         $repository = $this->em->getRepository(SynchronizationBatch::class);
         $sync = $repository->find($id);
-        $stateMachines->get($sync)->apply($sync, SynchronizationBatchTransitions::MARK_CORRECT);
+        $stateMachines->get($sync)->apply($sync, SynchronizationBatchTransitions::COMPLETE_VALIDATION);
         $stateMachines->get($sync)->apply($sync, SynchronizationBatchTransitions::ARCHIVE);
         $this->em->persist($sync);
         $this->em->flush();
