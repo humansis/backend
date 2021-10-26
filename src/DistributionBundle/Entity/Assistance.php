@@ -211,6 +211,27 @@ class Assistance implements ExportableInterface
     private $remoteDistributionAllowed;
 
     /**
+     * @var numeric|null
+     *
+     * @ORM\Column(name="food_limit", type="decimal", nullable=true)
+     */
+    private $foodLimit;
+
+    /**
+     * @var numeric|null
+     *
+     * @ORM\Column(name="non_food_limit", type="decimal", nullable=true)
+     */
+    private $nonFoodLimit;
+
+    /**
+     * @var numeric|null
+     *
+     * @ORM\Column(name="cashback_limit", type="decimal", nullable=true)
+     */
+    private $cashbackLimit;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -906,6 +927,54 @@ class Assistance implements ExportableInterface
     public function setRemoteDistributionAllowed(?bool $remoteDistributionAllowed): void
     {
         $this->remoteDistributionAllowed = $remoteDistributionAllowed;
+    }
+
+    /**
+     * @return float|int|string|null
+     */
+    public function getFoodLimit()
+    {
+        return $this->foodLimit;
+    }
+
+    /**
+     * @param float|int|string|null $foodLimit
+     */
+    public function setFoodLimit($foodLimit): void
+    {
+        $this->foodLimit = $foodLimit;
+    }
+
+    /**
+     * @return float|int|string|null
+     */
+    public function getNonFoodLimit()
+    {
+        return $this->nonFoodLimit;
+    }
+
+    /**
+     * @param float|int|string|null $nonFoodLimit
+     */
+    public function setNonFoodLimit($nonFoodLimit): void
+    {
+        $this->nonFoodLimit = $nonFoodLimit;
+    }
+
+    /**
+     * @return float|int|string|null
+     */
+    public function getCashbackLimit()
+    {
+        return $this->cashbackLimit;
+    }
+
+    /**
+     * @param float|int|string|null $cashbackLimit
+     */
+    public function setCashbackLimit($cashbackLimit): void
+    {
+        $this->cashbackLimit = $cashbackLimit;
     }
 
 }

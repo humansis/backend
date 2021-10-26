@@ -57,6 +57,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "commodityIds": ['.implode(',', $commodityIds).'],
             "validated": '.($assistance->getValidated() ? 'true' : 'false').',
             "completed": '.($assistance->getCompleted() ? 'true' : 'false').',
+            "foodLimit": "*",
+            "nonFoodLimit": "*",
+            "cashbackLimit": "*",
             "deletable": '.($assistance->getValidated() ? 'false' : 'true').'
         }', $this->client->getResponse()->getContent());
     }
@@ -139,6 +142,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
                     'value' => '2020-01-01',
                 ],
             ],
+            'foodLimit' => 10.99,
+            'nonFoodLimit' => null,
+            'cashbackLimit' => 1024,
             'remoteDistributionAllowed' => false,
         ]);
 
@@ -161,6 +167,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "individualsTargeted": "*",
             "description": "*",
             "commodityIds": ["*"],
+            "foodLimit": 10.99,
+            "nonFoodLimit": null,
+            "cashbackLimit": 1024,
             "remoteDistributionAllowed": "*"
         }', $this->client->getResponse()->getContent());
     }
@@ -200,6 +209,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
                     'value' => '2020-01-01',
                 ],
             ],
+            'foodLimit' => null,
+            'nonFoodLimit' => null,
+            'cashbackLimit' => null,
         ]);
 
         $this->assertTrue(

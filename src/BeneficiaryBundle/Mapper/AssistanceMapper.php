@@ -101,6 +101,7 @@ class AssistanceMapper
             'name' => $assistance->getName(),
             'updated_on' => $assistance->getUpdatedOnDateTime()->format('d-m-Y H:i'),
             'date_distribution' => $assistance->getDateDistribution(),
+            'date_expiration' => $assistance->getDateExpiration(),
             'location' => $assistance->getLocation(),
             'project' => $assistance->getProject(),
             'selection_criteria' => $this->transformSelectionCriteria($assistance->getSelectionCriteria()),
@@ -158,6 +159,7 @@ class AssistanceMapper
             'name' => $assistance->getName(),
             'updated_on' => $assistance->getUpdatedOnDateTime()->format('d-m-Y H:i'),
             'date_distribution' => $assistance->getDateDistribution(),
+            'date_expiration' => $assistance->getDateExpiration(),
             'location' => $assistance->getLocation(),
             'project' => $assistance->getProject(),
             'selection_criteria' => $assistance->getSelectionCriteria(),
@@ -174,6 +176,10 @@ class AssistanceMapper
             'description' => $assistance->getDescription(),
             'households_targeted' => $assistance->getHouseholdsTargeted(),
             'individuals_targeted' => $assistance->getIndividualsTargeted(),
+            'foodLimit' => $assistance->getFoodLimit(),
+            'nonfoodLimit' => $assistance->getNonFoodLimit(),
+            'cashbackLimit' => $assistance->getCashbackLimit(),
+            'remoteDistributionAllowed' => $assistance->isRemoteDistributionAllowed(),
         ];
 
         return $assistanceArray;
