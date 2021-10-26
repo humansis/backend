@@ -95,6 +95,9 @@ class SynchronizationBatch
      */
     public function setState(string $state): void
     {
+        if (!in_array($state, SynchronizationBatchState::values())) {
+            throw new \InvalidArgumentException("Invalid ".get_class($this)." state: ".$state);
+        }
         $this->state = $state;
     }
 
