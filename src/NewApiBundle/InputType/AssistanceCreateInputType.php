@@ -146,6 +146,21 @@ class AssistanceCreateInputType implements InputTypeInterface
     private $validated = false;
 
     /**
+     * @Assert\Type("numeric")
+     */
+    private $foodLimit;
+
+    /**
+     * @Assert\Type("numeric")
+     */
+    private $nonFoodLimit;
+
+    /**
+     * @Assert\Type("numeric")
+     */
+    private $cashbackLimit;
+
+    /**
      * @Assert\Type("boolean")
      */
     private $remoteDistributionAllowed;
@@ -477,6 +492,54 @@ class AssistanceCreateInputType implements InputTypeInterface
     public function setValidated($validated)
     {
         $this->validated = $validated;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFoodLimit()
+    {
+        return $this->foodLimit;
+    }
+
+    /**
+     * @param mixed $foodLimit
+     */
+    public function setFoodLimit($foodLimit): void
+    {
+        $this->foodLimit = $foodLimit;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNonFoodLimit()
+    {
+        return $this->nonFoodLimit;
+    }
+
+    /**
+     * @param mixed $nonFoodLimit
+     */
+    public function setNonFoodLimit($nonFoodLimit): void
+    {
+        $this->nonFoodLimit = $nonFoodLimit;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCashbackLimit()
+    {
+        return $this->cashbackLimit;
+    }
+
+    /**
+     * @param mixed $cashbackLimit
+     */
+    public function setCashbackLimit($cashbackLimit): void
+    {
+        $this->cashbackLimit = $cashbackLimit;
     }
 
     /**

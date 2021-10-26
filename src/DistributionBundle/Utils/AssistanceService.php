@@ -1026,6 +1026,9 @@ class AssistanceService
             'households_targeted' => $inputType->getHouseholdsTargeted(),
             'individuals_targeted' => $inputType->getIndividualsTargeted(),
             'description' => $inputType->getDescription(),
+            'foodLimit' => $inputType->getFoodLimit(),
+            'nonfoodLimit' => $inputType->getNonFoodLimit(),
+            'cashbackLimit' => $inputType->getCashbackLimit(),
             'remoteDistributionAllowed' => $inputType->getRemoteDistributionAllowed(),
         ];
 

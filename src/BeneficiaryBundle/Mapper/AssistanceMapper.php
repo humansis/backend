@@ -174,10 +174,10 @@ class AssistanceMapper
             'description' => $assistance->getDescription(),
             'households_targeted' => $assistance->getHouseholdsTargeted(),
             'individuals_targeted' => $assistance->getIndividualsTargeted(),
-            'remoteDistributionAllowed' => $assistance->isRemoteDistributionAllowed(),
             'foodLimit' => $assistance->getFoodLimit(),
             'nonfoodLimit' => $assistance->getNonFoodLimit(),
             'cashbackLimit' => $assistance->getCashbackLimit(),
+            'remoteDistributionAllowed' => $assistance->isRemoteDistributionAllowed(),
         ];
 
         return $assistanceArray;
