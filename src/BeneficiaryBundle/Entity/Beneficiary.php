@@ -860,9 +860,9 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "ValidatedAssistance", "FullBeneficiary"})
-     * @return string
+     * @return string|null
      */
-    public function getSmartcard()
+    public function getSmartcardSerialNumber(): ?string
     {
         foreach ($this->smartcards as $smartcard) {
             if ($smartcard->isActive()) {
