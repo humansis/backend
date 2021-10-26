@@ -4,7 +4,8 @@ declare(strict_types=1);
 namespace NewApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\CreationMetadata;
+use NewApiBundle\Entity\Helper\CreatedAt;
+use NewApiBundle\Entity\Helper\CreatedBy;
 use NewApiBundle\Entity\Helper\Source;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\SynchronizationBatchState;
@@ -24,14 +25,15 @@ class SynchronizationBatch
 {
     use StandardizedPrimaryKey;
     use Source;
-    use CreationMetadata;
+    use CreatedAt;
+    use CreatedBy;
 
     /**
      * @var string
      *
      * @ORM\Column(name="validation_type", type="enum_synchronization_batch_validation_type", nullable=false)
      */
-    private $validationType = SynchronizationBatchValidationType::DEPOSIT;
+    private $validationType;
 
     /**
      * @var string
@@ -48,7 +50,7 @@ class SynchronizationBatch
     private $requestData;
 
     /**
-     * @var array<ConstraintViolationListInterface>
+     * @var ConstraintViolationListInterface[]
      *
      * @ORM\Column(name="violations", type="json", nullable=true)
      */
@@ -62,11 +64,13 @@ class SynchronizationBatch
     private $validatedAt;
 
     /**
-     * @param array $requestData
+     * @param array  $requestData
+     * @param string $validationType
      */
-    public function __construct(array $requestData)
+    public function __construct(array $requestData, string $validationType)
     {
         $this->requestData = $requestData;
+        $this->validationType = $validationType;
     }
 
     /**

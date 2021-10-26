@@ -7,15 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Enum\SourceType;
 use UserBundle\Entity\User;
 
-trait CreationMetadata
+trait CreatedBy
 {
-    /**
-     * @var \DateTimeInterface|null
-     *
-     * @ORM\Column(name="created_at", type="datetime", nullable=true)
-     */
-    private $createdAt;
-
     /**
      * @var User|null
      *
@@ -23,22 +16,6 @@ trait CreationMetadata
      * @ORM\JoinColumn(name="created_by_user_id")
      */
     private $createdBy;
-
-    /**
-     * @return \DateTimeInterface|null
-     */
-    public function getCreatedAt(): ?\DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * @param \DateTimeInterface|null $createdAt
-     */
-    public function setCreatedAt(?\DateTimeInterface $createdAt): void
-    {
-        $this->createdAt = $createdAt;
-    }
 
     /**
      * @return User|null
