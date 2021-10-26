@@ -21,10 +21,13 @@ use NewApiBundle\InputType\DuplicityResolveInputType;
 use NewApiBundle\InputType\ImportCreateInputType;
 use NewApiBundle\InputType\ImportPatchInputType;
 use NewApiBundle\Repository\ImportQueueRepository;
+use NewApiBundle\Workflow\Exception\WorkflowException;
+use NewApiBundle\Workflow\ImportTransitions;
 use ProjectBundle\Entity\Project;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Workflow\Exception\LogicException;
+use Symfony\Component\Workflow\Exception\NotEnabledTransitionException;
 use Symfony\Component\Workflow\Exception\TransitionException;
 use Symfony\Component\Workflow\WorkflowInterface;
 use UserBundle\Entity\User;
@@ -139,6 +142,7 @@ class ImportService
 
     public function updateStatus(Import $import, string $status): void
     {
+        $status = ImportState::IMPORTING;
         $before = $import->getState();
         try {
             $this->importStateMachine->apply($import, $status);
@@ -256,13 +260,24 @@ class ImportService
                 'import' => $import,
                 'structureViolations' => null,
             ])) {
-            $import->setState(ImportState::INTEGRITY_CHECK_FAILED);
-            return;
+
+            if ($this->importStateMachine->can($import, ImportTransitions::FAIL_INTEGRITY)) {
+                $this->importStateMachine->apply($import, ImportTransitions::FAIL_INTEGRITY);
+                $import->setState(ImportState::INTEGRITY_CHECK_FAILED);
+                $this->em->persist($import);
+                $this->em->flush();
+
+                return;
+            } else {
+                throw new WorkflowException('Unable to execute checker. Import is not ready to integrity check.');
+            }
         }
         $this->integrityChecker->check($import, $batchSize);
-        if (ImportState::INTEGRITY_CHECK_FAILED === $import->getState()) {
-            $this->importInvalidFileService->generateFile($import);
-        }
+
+        // moved to ImportWorkflowSubscriber
+        // if (ImportState::INTEGRITY_CHECK_FAILED === $import->getState()) {
+        //     $this->importInvalidFileService->generateFile($import);
+        // }
     }
 
     /**
@@ -276,8 +291,17 @@ class ImportService
                 'import' => $import,
                 'state' => ImportQueueState::VALID,
             ])) {
-            $import->setState(ImportState::IDENTITY_CHECK_FAILED);
-            return;
+
+            if ($this->importStateMachine->can($import, ImportTransitions::FAIL_IDENTITY)) {
+                $this->importStateMachine->apply($import, ImportTransitions::FAIL_IDENTITY);
+                $import->setState(ImportState::IDENTITY_CHECK_FAILED);
+                $this->em->persist($import);
+                $this->em->flush();
+
+                return;
+            } else {
+                throw new WorkflowException('Unable to execute checker. Import is not ready to check.');
+            }
         }
         $this->identityChecker->check($import, $batchSize);
     }
@@ -293,8 +317,8 @@ class ImportService
 
     public function finish(Import $import): void
     {
-        if (!in_array($import->getState(), [ImportState::IMPORTING])) {
-            throw new InvalidArgumentException('Wrong import status');
+        if ($import->getState() !== ImportState::IMPORTING) {
+            throw new WorkflowException('Wrong import status');
         }
 
         $queueRepo = $this->em->getRepository(ImportQueue::class);
@@ -348,26 +372,32 @@ class ImportService
             $this->removeFinishedQueue($item);
         }*/
 
-        $import->setState(ImportState::FINISHED);
-        $this->em->persist($import);
+        if($this->importStateMachine->can($import, ImportTransitions::FINISH)){
+            $this->importStateMachine->apply($import, ImportState::FINISHED);
+            $import->setState(ImportState::FINISHED);
+            $this->em->persist($import);
+        }
         $this->em->flush();
 
         $importConflicts = $this->em->getRepository(Import::class)->getConflictingImports($import);
         $this->logImportInfo($import, count($importConflicts)." conflicting imports to reset duplicity checks");
         foreach ($importConflicts as $conflictImport) {
-            $conflictImport->setState(ImportState::IDENTITY_CHECKING);
-            $conflictQueue = $queueRepo->findBy([
-                'import' => $conflictImport,
-            ]);
-            foreach ($conflictQueue as $item) {
-                $item->setState(ImportQueueState::VALID);
-                $item->setIdentityCheckedAt(null);
-                $item->setSimilarityCheckedAt(null);
-                $this->em->persist($item);
+            if ($this->importStateMachine->can($conflictImport, ImportTransitions::CHECK_IDENTITY)) {
+                $conflictImport->setState(ImportState::IDENTITY_CHECKING);
+                $conflictQueue = $queueRepo->findBy([
+                    'import' => $conflictImport,
+                ]);
+                foreach ($conflictQueue as $item) {
+                    $item->setState(ImportQueueState::VALID);
+                    $item->setIdentityCheckedAt(null);
+                    $item->setSimilarityCheckedAt(null);
+                    $this->em->persist($item);
+                }
+                $this->em->persist($conflictImport);
+                $this->em->flush();
+                $this->logImportInfo($conflictImport,
+                    "Duplicity checks of ".count($conflictQueue)." queue items reset because finish Import #{$import->getId()} ({$import->getTitle()})");
             }
-            $this->em->persist($conflictImport);
-            $this->em->flush();
-            $this->logImportInfo($conflictImport, "Duplicity checks of ".count($conflictQueue)." queue items reset because finish Import #{$import->getId()} ({$import->getTitle()})");
         }
     }
 

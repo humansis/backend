@@ -11,9 +11,12 @@ use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
+use NewApiBundle\Workflow\Exception\WorkflowException;
+use NewApiBundle\Workflow\ImportTransitions;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 class IntegrityChecker
 {
@@ -25,12 +28,18 @@ class IntegrityChecker
     private $entityManager;
     /** @var ImportQueueRepository */
     private $queueRepository;
+    /** @var WorkflowInterface */
+    private $importStateMachine;
 
-    public function __construct(ValidatorInterface $validator, EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        ValidatorInterface     $validator,
+        EntityManagerInterface $entityManager,
+        WorkflowInterface $importStateMachine
+    ) {
         $this->validator = $validator;
         $this->entityManager = $entityManager;
         $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
+        $this->importStateMachine = $importStateMachine;
     }
 
     /**
@@ -40,7 +49,7 @@ class IntegrityChecker
     public function check(Import $import, ?int $batchSize = null): void
     {
         if (ImportState::INTEGRITY_CHECKING !== $import->getState()) {
-            throw new \BadMethodCallException('Unable to execute checker. Import is not ready to integrity check.');
+            throw new WorkflowException('Unable to execute checker. Import is not ready to integrity check.');
         }
 
         foreach ($this->queueRepository->getItemsToIntegrityCheck($import, $batchSize) as $i => $item) {
@@ -55,10 +64,15 @@ class IntegrityChecker
 
         if (0 === $this->queueRepository->countItemsToIntegrityCheck($import)) {
             $isInvalid = $this->isImportQueueInvalid($import);
-            $import->setState($isInvalid ? ImportState::INTEGRITY_CHECK_FAILED : ImportState::INTEGRITY_CHECK_CORRECT);
+            $transition = $isInvalid ? ImportTransitions::FAIL_INTEGRITY : ImportTransitions::COMPLETE_INTEGRITY;
 
-            $this->entityManager->persist($import);
-            $this->entityManager->flush();
+            if ($this->importStateMachine->can($import, $transition)) {
+                $this->importStateMachine->apply($import, $transition);
+                $import->setState($isInvalid ? ImportState::INTEGRITY_CHECK_FAILED : ImportState::INTEGRITY_CHECK_CORRECT);
+
+                $this->entityManager->persist($import);
+                $this->entityManager->flush();
+            }
         }
     }
 

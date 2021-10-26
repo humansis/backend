@@ -127,7 +127,6 @@ class ImportRepository extends EntityRepository
             ->setParameter('conflictingStates', [
                 ImportState::IDENTITY_CHECKING,
                 ImportState::IDENTITY_CHECK_CORRECT,
-                ImportState::INTEGRITY_CHECK_FAILED,
                 ImportState::SIMILARITY_CHECKING,
                 ImportState::SIMILARITY_CHECK_CORRECT,
                 ImportState::SIMILARITY_CHECK_FAILED,

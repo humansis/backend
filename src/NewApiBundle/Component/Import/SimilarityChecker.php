@@ -3,16 +3,16 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\NationalId;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
+use NewApiBundle\Workflow\Exception\WorkflowException;
+use NewApiBundle\Workflow\ImportTransitions;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 class SimilarityChecker
 {
@@ -22,12 +22,15 @@ class SimilarityChecker
     private $entityManager;
     /** @var ImportQueueRepository */
     private $queueRepository;
+    /** @var WorkflowInterface */
+    private $importStateMachine;
 
-    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
+    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger, WorkflowInterface $importStateMachine)
     {
         $this->entityManager = $entityManager;
         $this->logger = $logger;
         $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
+        $this->importStateMachine = $importStateMachine;
     }
 
     /**
@@ -71,7 +74,12 @@ class SimilarityChecker
     private function postCheck(Import $import)
     {
         $isSuspicious = count($this->queueRepository->getSuspiciousItemsToUserCheck($import)) > 0;
-        $import->setState($isSuspicious ? ImportState::SIMILARITY_CHECK_FAILED : ImportState::SIMILARITY_CHECK_CORRECT);
+        $transition = $isSuspicious ? ImportTransitions::FAIL_SIMILARITY : ImportTransitions::COMPLETE_SIMILARITY;
+
+        if ($this->importStateMachine->can($import, $transition) === false) {
+            $this->importStateMachine->apply($import, $transition);
+            $import->setState($isSuspicious ? ImportState::SIMILARITY_CHECK_FAILED : ImportState::SIMILARITY_CHECK_CORRECT);
+        }
 
         $newCheckedImportQueues = $this->entityManager->getRepository(ImportQueue::class)
             ->findBy([

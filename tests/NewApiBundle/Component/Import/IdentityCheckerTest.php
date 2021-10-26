@@ -8,12 +8,20 @@ use NewApiBundle\Component\Import\IdentityChecker;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueueDuplicity;
 use NewApiBundle\Enum\ImportState;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 class IdentityCheckerTest extends KernelTestCase
 {
     /** @var EntityManagerInterface */
     private static $entityManager;
+
+    /** @var LoggerInterface */
+    private static $loggerInterface;
+
+    /** @var WorkflowInterface */
+    private static $importStateMachine;
 
     public static function setUpBeforeClass()
     {
@@ -22,6 +30,8 @@ class IdentityCheckerTest extends KernelTestCase
         $kernel = self::bootKernel();
 
         self::$entityManager = $kernel->getContainer()->get('doctrine')->getManager();
+        self::$loggerInterface = self::$container->get('logger');
+        self::$importStateMachine = self::$container->get('state_machine.import');
     }
 
     public function testSelfCheck()
@@ -30,7 +40,7 @@ class IdentityCheckerTest extends KernelTestCase
         $import = self::$entityManager->getRepository(Import::class)->findBy(['title' => 'test_fixtures'])[0];
         $import->setState(ImportState::IDENTITY_CHECKING);
 
-        $checker = new IdentityChecker(self::$entityManager);
+        $checker = new IdentityChecker(self::$entityManager, self::$loggerInterface, self::$importStateMachine);
         $checker->check($import);
 
         $count = self::$entityManager->createQueryBuilder()

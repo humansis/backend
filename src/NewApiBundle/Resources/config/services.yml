@@ -229,12 +229,13 @@ services:
         arguments:
             - "@validator"
             - "@doctrine.orm.entity_manager"
+        public: true
 
     NewApiBundle\Component\Import\IdentityChecker:
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@monolog.logger.import"
-            -
+
     NewApiBundle\Component\Import\SimilarityChecker:
         arguments:
             - "@doctrine.orm.entity_manager"
@@ -290,5 +291,6 @@ services:
         class: NewApiBundle\EventSubscriber\ImportWorkflowSubscriber
         arguments:
             - "@doctrine.orm.entity_manager"
+            - '@NewApiBundle\Component\Import\ImportInvalidFileService'
         tags:
             - { name: kernel.event_subscriber }

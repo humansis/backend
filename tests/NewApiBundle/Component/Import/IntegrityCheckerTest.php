@@ -13,6 +13,7 @@ use NewApiBundle\Enum\ImportState;
 use ProjectBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
 use UserBundle\Entity\User;
 
 class IntegrityCheckerTest extends KernelTestCase
@@ -23,6 +24,9 @@ class IntegrityCheckerTest extends KernelTestCase
     /** @var EntityManagerInterface */
     private static $entityManager;
 
+    /** @var WorkflowInterface */
+    private static $importStateMachine;
+
     public static function setUpBeforeClass()
     {
         parent::setUpBeforeClass();
@@ -31,6 +35,7 @@ class IntegrityCheckerTest extends KernelTestCase
 
         self::$validator = $kernel->getContainer()->get('validator');
         self::$entityManager = $kernel->getContainer()->get('doctrine')->getManager();
+        self::$importStateMachine = self::$container->get('state_machine.import');
     }
 
     public function testParseEmpty()
@@ -43,7 +48,7 @@ class IntegrityCheckerTest extends KernelTestCase
 
         $item = new ImportQueue($import, $file, [[/** empty row */]]);
 
-        $checker = new IntegrityChecker(self::$validator, self::$entityManager);
+        $checker = new IntegrityChecker(self::$validator, self::$entityManager, self::$importStateMachine);
 
         $method = new \ReflectionMethod($checker, 'checkOne');
         $method->setAccessible(true);
@@ -62,7 +67,7 @@ class IntegrityCheckerTest extends KernelTestCase
 
         $item = new ImportQueue($import, $file, json_decode(ImportFinishServiceTest::TEST_QUEUE_ITEM, true));
 
-        $checker = new IntegrityChecker(self::$validator, self::$entityManager);
+        $checker = new IntegrityChecker(self::$validator, self::$entityManager, self::$importStateMachine);
 
         $method = new \ReflectionMethod($checker, 'checkOne');
         $method->setAccessible(true);
@@ -86,7 +91,7 @@ class IntegrityCheckerTest extends KernelTestCase
         self::$entityManager->persist($item);
         self::$entityManager->flush();
 
-        $checker = new IntegrityChecker(self::$validator, self::$entityManager);
+        $checker = new IntegrityChecker(self::$validator, self::$entityManager, self::$importStateMachine);
         $checker->check($import);
 
         $queue = self::$entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import]);

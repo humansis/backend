@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace NewApiBundle\Component\Import;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\NationalId;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
@@ -12,7 +11,10 @@ use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
+use NewApiBundle\Workflow\Exception\WorkflowException;
+use NewApiBundle\Workflow\ImportTransitions;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 class IdentityChecker
 {
@@ -22,12 +24,15 @@ class IdentityChecker
     private $entityManager;
     /** @var ImportQueueRepository */
     private $queueRepository;
+    /** @var WorkflowInterface */
+    private $importStateMachine;
 
-    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
+    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger, WorkflowInterface $importStateMachine)
     {
         $this->entityManager = $entityManager;
         $this->logger = $logger;
         $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
+        $this->importStateMachine = $importStateMachine;
     }
 
     /**
@@ -37,7 +42,7 @@ class IdentityChecker
     public function check(Import $import, ?int $batchSize = null)
     {
         if (ImportState::IDENTITY_CHECKING !== $import->getState()) {
-            throw new \BadMethodCallException('Unable to execute checker. Import is not ready to check.');
+            throw new WorkflowException('Unable to execute checker. Import is not ready to check.');
         }
 
         foreach ($this->queueRepository->getItemsToIdentityCheck($import, $batchSize) as $i => $item) {
@@ -122,10 +127,15 @@ class IdentityChecker
     private function postCheck(Import $import)
     {
         $isSuspicious = $this->isImportQueueSuspicious($import);
-        $import->setState($isSuspicious ? ImportState::IDENTITY_CHECK_FAILED : ImportState::IDENTITY_CHECK_CORRECT);
+        $transition = $isSuspicious ? ImportTransitions::FAIL_IDENTITY : ImportTransitions::COMPLETE_IDENTITY;
 
-        $this->entityManager->persist($import);
-        $this->entityManager->flush();
+        if ($this->importStateMachine->can($import, $transition)) {
+            $this->importStateMachine->apply($import, $transition);
+            $import->setState($isSuspicious ? ImportState::IDENTITY_CHECK_FAILED : ImportState::IDENTITY_CHECK_CORRECT);
+            $this->entityManager->persist($import);
+            $this->entityManager->flush();
+        }
+
         $this->logImportDebug($import, "Ended with status ".$import->getState());
     }
 
