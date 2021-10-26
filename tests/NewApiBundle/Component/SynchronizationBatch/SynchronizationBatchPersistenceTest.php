@@ -7,6 +7,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityRepository;
 use NewApiBundle\Entity\SynchronizationBatch;
 use NewApiBundle\Entity\SynchronizationBatch\Deposits;
+use NewApiBundle\Enum\SynchronizationBatchValidationType;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -33,7 +34,7 @@ class SynchronizationBatchPersistenceTest extends WebTestCase
         $container = self::$kernel->getContainer();
         $this->manager = $container->get('doctrine.orm.default_entity_manager');
         $this->syncRepo = $this->manager->getRepository(SynchronizationBatch::class);
-        $this->sync = new SynchronizationBatch(['test'=>'xyz','array'=>[1,2,5,1024], 0=>0, false=>true]);
+        $this->sync = new SynchronizationBatch(['test'=>'xyz','array'=>[1,2,5,1024], 0=>0, false=>true], SynchronizationBatchValidationType::PURCHASE);
         $this->manager->persist($this->sync);
     }
 
