@@ -53,11 +53,6 @@ class DistributedItemMapper implements MapperInterface
         return $this->object->getDateDistribution() ? $this->object->getDateDistribution()->format(\DateTimeInterface::ISO8601) : null;
     }
 
-    public function getDateExpiration(): ?string
-    {
-        return $this->object->getDateDistribution() ? $this->object->getDateDistribution()->format(\DateTimeInterface::ISO8601) : null;
-    }
-
     public function getCommodityId(): int
     {
         return $this->object->getCommodity()->getId();

@@ -98,7 +98,6 @@ class DistributedItemControllerTest extends BMSServiceTestCase
                     "beneficiaryId": "*",
                     "assistanceId": "*",
                     "dateDistribution": "*",
-                    "dateExpiration": "*",
                     "commodityId": "*",
                     "amount": "*",
                     "locationId": "*",
