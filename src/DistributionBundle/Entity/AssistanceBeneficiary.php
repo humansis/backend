@@ -3,6 +3,7 @@
 namespace DistributionBundle\Entity;
 
 use BeneficiaryBundle\Entity\AbstractBeneficiary;
+use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -198,7 +199,7 @@ class AssistanceBeneficiary
     /**
      * Get beneficiary.
      *
-     * @return AbstractBeneficiary|null
+     * @return AbstractBeneficiary|Beneficiary|null
      */
     public function getBeneficiary()
     {
