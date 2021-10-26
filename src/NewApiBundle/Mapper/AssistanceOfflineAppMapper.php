@@ -57,9 +57,9 @@ class AssistanceOfflineAppMapper implements MapperInterface
         return $this->object->getDateDistribution()->format(\DateTimeInterface::ISO8601);
     }
 
-    public function getDateExpiration(): string
+    public function getDateExpiration(): ?string
     {
-        return $this->object->getDateExpiration()->format(\DateTimeInterface::ISO8601);
+        return $this->object->getDateExpiration() ? $this->object->getDateExpiration()->format(\DateTimeInterface::ISO8601) : null;
     }
 
     public function getProjectId(): int
