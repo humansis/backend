@@ -31,3 +31,35 @@ framework:
         !php/const NewApiBundle\Workflow\ReliefPackageTransitions::CANCEL:
           from: !php/const NewApiBundle\Enum\ReliefPackageState::TO_DISTRIBUTE
           to: !php/const NewApiBundle\Enum\ReliefPackageState::CANCELED
+    synchronizationBatch:
+      type: 'state_machine'
+      marking_store:
+        type: 'single_state'
+        arguments:
+          - 'state'
+      supports:
+        - NewApiBundle\Entity\SynchronizationBatch\Deposits
+        - NewApiBundle\Entity\SynchronizationBatch\Purchases
+      initial_marking: !php/const NewApiBundle\Enum\SynchronizationBatchState::UPLOADED
+      places:
+        - !php/const NewApiBundle\Enum\SynchronizationBatchState::UPLOADED
+        - !php/const NewApiBundle\Enum\SynchronizationBatchState::CORRECT
+        - !php/const NewApiBundle\Enum\SynchronizationBatchState::INCORRECT
+        - !php/const NewApiBundle\Enum\SynchronizationBatchState::ARCHIVED
+      transitions:
+        !php/const NewApiBundle\Workflow\SynchronizationBatchTransitions::MARK_CORRECT:
+          from:
+            - !php/const NewApiBundle\Enum\SynchronizationBatchState::UPLOADED
+          to:
+            - !php/const NewApiBundle\Enum\SynchronizationBatchState::CORRECT
+        !php/const NewApiBundle\Workflow\SynchronizationBatchTransitions::MARK_INCORRECT:
+          from:
+            - !php/const NewApiBundle\Enum\SynchronizationBatchState::UPLOADED
+          to:
+            - !php/const NewApiBundle\Enum\SynchronizationBatchState::INCORRECT
+        !php/const NewApiBundle\Workflow\SynchronizationBatchTransitions::ARCHIVE:
+          from:
+            - !php/const NewApiBundle\Enum\SynchronizationBatchState::UPLOADED
+            - !php/const NewApiBundle\Enum\SynchronizationBatchState::CORRECT
+            - !php/const NewApiBundle\Enum\SynchronizationBatchState::INCORRECT
+          to: !php/const NewApiBundle\Enum\SynchronizationBatchState::ARCHIVED

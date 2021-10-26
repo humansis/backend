@@ -113,6 +113,7 @@ doctrine:
             enum: string
         schema_filter: ~^(?!view_)~ # support views with prefix "view_"
         types:
+            enum_source_type: NewApiBundle\DBAL\SourceEnum
             enum_assistance_type: DistributionBundle\DBAL\AssistanceTypeEnum
             enum_assistance_target_type: DistributionBundle\DBAL\AssistanceTargetTypeEnum
             enum_livelihood: ProjectBundle\DBAL\LivelihoodEnum
@@ -122,8 +123,10 @@ doctrine:
             enum_import_queue_state: NewApiBundle\DBAL\ImportStateQueueEnum
             enum_import_duplicity_state: NewApiBundle\DBAL\ImportDuplicityStateEnum
             enum_product_category_type: NewApiBundle\DBAL\ProductCategoryTypeEnum
+            enum_synchronization_batch_validation_type: NewApiBundle\DBAL\SynchronizationBatchValidationTypeEnum
             enum_relief_package_state: NewApiBundle\DBAL\ReliefPackageStateEnum
             enum_modality_type: NewApiBundle\DBAL\ModalityTypeEnum
+            enum_synchronization_batch_state: NewApiBundle\DBAL\SynchronizationBatchEnum
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
