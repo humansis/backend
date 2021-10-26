@@ -27,6 +27,6 @@ trait SourceFilterTrait
 
     public function getSources()
     {
-        return $this->projects;
+        return $this->sources;
     }
 }
