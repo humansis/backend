@@ -38,6 +38,7 @@ framework:
         arguments:
           - 'state'
       supports:
+        - NewApiBundle\Entity\SynchronizationBatch
         - NewApiBundle\Entity\SynchronizationBatch\Deposits
         - NewApiBundle\Entity\SynchronizationBatch\Purchases
       initial_marking: !php/const NewApiBundle\Enum\SynchronizationBatchState::UPLOADED
