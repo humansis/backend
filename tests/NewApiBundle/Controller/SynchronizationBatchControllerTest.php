@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Tests\NewApiBundle\Controller;
 
 use NewApiBundle\Entity\SynchronizationBatch;
+use NewApiBundle\Enum\SourceType;
 use NewApiBundle\Enum\SynchronizationBatchValidationType;
 use NewApiBundle\Workflow\SynchronizationBatchTransitions;
 use Symfony\Component\Workflow\StateMachine;
@@ -27,6 +28,7 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
     public function testGet(): int
     {
         $sync = new SynchronizationBatch([], SynchronizationBatchValidationType::DEPOSIT);
+        $sync->setSource(SourceType::CLI);
         $sync->setCreatedBy($this->getTestUser(self::USER_TESTER));
         $this->em->persist($sync);
         $this->em->flush();
@@ -59,7 +61,7 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        $this->request('GET', '/api/basic/web-app/v1/syncs');
+        $this->request('GET', '/api/basic/web-app/v1/syncs?filter[states][]=Uploaded&filter[type]=Deposit&filter[sources][]=CLI');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -70,7 +72,7 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
-        
+
         foreach ($result['data'] as $resultItem) {
             $this->assertArrayHasKey('id', $resultItem);
             $this->assertArrayHasKey('source', $resultItem);
