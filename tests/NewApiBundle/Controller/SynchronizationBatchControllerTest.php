@@ -22,6 +22,27 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
         $this->client = self::$container->get('test.client');
     }
 
+    public function testCreate()
+    {
+        $this->request('POST', '/api/basic/vendor-app/v1/syncs/deposit', [
+            [],
+            ["sdfdsfsdf"],
+            [
+                'reliefPackageId' => 1024,
+                'createdAt' => '2010-10-10T00:00:00+0000',
+                'smartcardSerialNumber' => 'ASDF123',
+                'balanceBefore' => 0,
+                'balanceAfter' => 1000,
+            ],
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertEmpty($this->client->getResponse()->getContent());
+    }
+
     /**
      * @return int
      */
