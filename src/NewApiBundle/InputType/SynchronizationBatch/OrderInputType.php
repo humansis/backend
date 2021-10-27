@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace NewApiBundle\InputType;
+namespace NewApiBundle\InputType\SynchronizationBatch;
 
 use NewApiBundle\Request\OrderInputType\AbstractSortInputType;
 
-class SynchronizationBatchOrderInputType extends AbstractSortInputType
+class OrderInputType extends AbstractSortInputType
 {
     const SORT_BY_ID = 'id';
     const SORT_BY_TYPE = 'type';
