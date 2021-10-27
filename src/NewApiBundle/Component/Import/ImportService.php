@@ -269,7 +269,7 @@ class ImportService
 
                 return;
             } else {
-                throw new WorkflowException('Unable to execute checker. Import is not ready to integrity check.');
+                throw new WorkflowException();
             }
         }
         $this->integrityChecker->check($import, $batchSize);
@@ -300,7 +300,7 @@ class ImportService
 
                 return;
             } else {
-                throw new WorkflowException('Unable to execute checker. Import is not ready to check.');
+                throw new WorkflowException();
             }
         }
         $this->identityChecker->check($import, $batchSize);
