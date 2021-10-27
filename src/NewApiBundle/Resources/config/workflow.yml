@@ -38,6 +38,7 @@ framework:
         arguments:
           - 'state'
       supports:
+        - NewApiBundle\Entity\SynchronizationBatch
         - NewApiBundle\Entity\SynchronizationBatch\Deposits
         - NewApiBundle\Entity\SynchronizationBatch\Purchases
       initial_marking: !php/const NewApiBundle\Enum\SynchronizationBatchState::UPLOADED
@@ -47,12 +48,12 @@ framework:
         - !php/const NewApiBundle\Enum\SynchronizationBatchState::INCORRECT
         - !php/const NewApiBundle\Enum\SynchronizationBatchState::ARCHIVED
       transitions:
-        !php/const NewApiBundle\Workflow\SynchronizationBatchTransitions::MARK_CORRECT:
+        !php/const NewApiBundle\Workflow\SynchronizationBatchTransitions::COMPLETE_VALIDATION:
           from:
             - !php/const NewApiBundle\Enum\SynchronizationBatchState::UPLOADED
           to:
             - !php/const NewApiBundle\Enum\SynchronizationBatchState::CORRECT
-        !php/const NewApiBundle\Workflow\SynchronizationBatchTransitions::MARK_INCORRECT:
+        !php/const NewApiBundle\Workflow\SynchronizationBatchTransitions::FAIL_VALIDATION:
           from:
             - !php/const NewApiBundle\Enum\SynchronizationBatchState::UPLOADED
           to:

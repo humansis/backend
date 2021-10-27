@@ -13,13 +13,14 @@ use NewApiBundle\Enum\SynchronizationBatchValidationType;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="\NewApiBundle\Repository\SynchronizationBatchRepository")
  * @ ORM\InheritanceType(value="SINGLE_TABLE")
  * @ ORM\DiscriminatorColumn(name="validation_type", type="enum_synchronization_batch_validation_type")
  * @ ORM\DiscriminatorMap({
  *     "Deposits"="\NewApiBundle\Entity\SynchronizationBatch\Deposits",
  *     "Purchases"="\NewApiBundle\Entity\SynchronizationBatch\Purchases"
  * })
+ * @ORM\HasLifecycleCallbacks
  */
 class SynchronizationBatch
 {
@@ -76,6 +77,33 @@ class SynchronizationBatch
     /**
      * @return string
      */
+    public function getValidationType(): string
+    {
+        return $this->validationType;
+    }
+
+    /**
+     * @param string $validationType
+     */
+    public function setValidationType(string $validationType): void
+    {
+        $this->validationType = $validationType;
+    }
+
+    /**
+     * @param string $state
+     */
+    public function setState(string $state): void
+    {
+        if (!in_array($state, SynchronizationBatchState::values())) {
+            throw new \InvalidArgumentException("Invalid ".get_class($this)." state: ".$state);
+        }
+        $this->state = $state;
+    }
+
+    /**
+     * @return string
+     */
     public function getState(): string
     {
         return $this->state;
@@ -90,9 +118,9 @@ class SynchronizationBatch
     }
 
     /**
-     * @return ConstraintViolationListInterface[]
+     * @return ConstraintViolationListInterface[]|null
      */
-    public function getViolations(): array
+    public function getViolations(): ?array
     {
         return $this->violations;
     }
