@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace NewApiBundle\InputType;
+namespace NewApiBundle\InputType\SynchronizationBatch;
 
 use NewApiBundle\Enum\SynchronizationBatchState;
 use NewApiBundle\Enum\SynchronizationBatchValidationType;
@@ -14,9 +14,9 @@ use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @Assert\GroupSequence({"SynchronizationBatchFilterInputType", "Strict"})
+ * @Assert\GroupSequence({"FilterInputType", "Strict"})
  */
-class SynchronizationBatchFilterInputType extends AbstractFilterInputType
+class FilterInputType extends AbstractFilterInputType
 {
     use PrimaryIdFilterTrait;
     use FulltextFilterTrait;
