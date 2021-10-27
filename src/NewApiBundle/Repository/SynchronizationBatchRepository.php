@@ -42,16 +42,16 @@ class SynchronizationBatchRepository extends EntityRepository
         if ($orderBy) {
             foreach ($orderBy->toArray() as $name => $direction) {
                 switch ($name) {
-                    case OrderInputType::SORT_BY_ID:
+                    case SynchronizationBatch\OrderInputType::SORT_BY_ID:
                         $qb->orderBy('s.id', $direction);
                         break;
-                    case OrderInputType::SORT_BY_SOURCE:
+                    case SynchronizationBatch\OrderInputType::SORT_BY_SOURCE:
                         $qb->orderBy('s.source', $direction);
                         break;
-                    case OrderInputType::SORT_BY_TYPE:
+                    case SynchronizationBatch\OrderInputType::SORT_BY_TYPE:
                         $qb->orderBy('s.validationType', $direction);
                         break;
-                    case OrderInputType::SORT_BY_DATE:
+                    case SynchronizationBatch\OrderInputType::SORT_BY_DATE:
                         $qb->orderBy('s.createdAt', $direction);
                         break;
                     default:
