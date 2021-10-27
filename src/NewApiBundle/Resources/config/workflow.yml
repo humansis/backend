@@ -101,3 +101,47 @@ framework:
             - !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECKING
             - !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_CORRECT
           to: !php/const NewApiBundle\Enum\ImportState::CANCELED
+
+    importQueue:
+      type: 'state_machine'
+      marking_store:
+        type: 'method'
+        property: 'state'
+      supports:
+        - NewApiBundle\Entity\ImportQueue
+      initial_marking: !php/const NewApiBundle\Enum\ImportQueueState::NEW
+      places:
+        - !php/const NewApiBundle\Enum\ImportQueueState::NEW
+        - !php/const NewApiBundle\Enum\ImportQueueState::VALID
+        - !php/const NewApiBundle\Enum\ImportQueueState::INVALID
+        - !php/const NewApiBundle\Enum\ImportQueueState::INVALID_EXPORTED
+        - !php/const NewApiBundle\Enum\ImportQueueState::SUSPICIOUS
+        - !php/const NewApiBundle\Enum\ImportQueueState::TO_CREATE
+        - !php/const NewApiBundle\Enum\ImportQueueState::TO_UPDATE
+        - !php/const NewApiBundle\Enum\ImportQueueState::TO_LINK
+        - !php/const NewApiBundle\Enum\ImportQueueState::TO_IGNORE
+      transitions:
+        !php/const NewApiBundle\Workflow\ImportQueueTransitions::VALIDATE:
+          from:
+            - !php/const NewApiBundle\Enum\ImportQueueState::NEW
+            - !php/const NewApiBundle\Enum\ImportQueueState::SUSPICIOUS
+            - !php/const NewApiBundle\Enum\ImportQueueState::TO_CREATE
+          to: !php/const NewApiBundle\Enum\ImportQueueState::VALID
+        !php/const NewApiBundle\Workflow\ImportQueueTransitions::INVALIDATE:
+          from: !php/const NewApiBundle\Enum\ImportQueueState::NEW
+          to: !php/const NewApiBundle\Enum\ImportQueueState::INVALID
+        !php/const NewApiBundle\Workflow\ImportQueueTransitions::SUSPICIOUS:
+          from: !php/const NewApiBundle\Enum\ImportQueueState::VALID
+          to: !php/const NewApiBundle\Enum\ImportQueueState::SUSPICIOUS
+        !php/const NewApiBundle\Workflow\ImportQueueTransitions::TO_CREATE:
+          from: !php/const NewApiBundle\Enum\ImportQueueState::VALID
+          to: !php/const NewApiBundle\Enum\ImportQueueState::TO_CREATE
+        !php/const NewApiBundle\Workflow\ImportQueueTransitions::TO_UPDATE:
+          from: !php/const NewApiBundle\Enum\ImportQueueState::SUSPICIOUS
+          to: !php/const NewApiBundle\Enum\ImportQueueState::TO_UPDATE
+        !php/const NewApiBundle\Workflow\ImportQueueTransitions::TO_IGNORE:
+          from: !php/const NewApiBundle\Enum\ImportQueueState::SUSPICIOUS
+          to: !php/const NewApiBundle\Enum\ImportQueueState::TO_IGNORE
+        !php/const NewApiBundle\Workflow\ImportQueueTransitions::TO_LINK:
+          from: !php/const NewApiBundle\Enum\ImportQueueState::SUSPICIOUS
+          to: !php/const NewApiBundle\Enum\ImportQueueState::TO_LINK

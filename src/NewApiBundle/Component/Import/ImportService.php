@@ -22,13 +22,12 @@ use NewApiBundle\InputType\ImportCreateInputType;
 use NewApiBundle\InputType\ImportPatchInputType;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\Exception\WorkflowException;
+use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
 use ProjectBundle\Entity\Project;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Workflow\Exception\LogicException;
-use Symfony\Component\Workflow\Exception\NotEnabledTransitionException;
-use Symfony\Component\Workflow\Exception\TransitionException;
 use Symfony\Component\Workflow\WorkflowInterface;
 use UserBundle\Entity\User;
 
@@ -59,6 +58,9 @@ class ImportService
     /** @var WorkflowInterface */
     private $importStateMachine;
 
+    /** @var WorkflowInterface */
+    private $importQueueStateMachine;
+
     public function __construct(
         EntityManagerInterface $em,
         HouseholdService $householdService,
@@ -67,7 +69,8 @@ class ImportService
         ImportInvalidFileService $importInvalidFileService,
         IdentityChecker $identityChecker,
         SimilarityChecker $similarityChecker,
-        WorkflowInterface $importStateMachine
+        WorkflowInterface $importStateMachine,
+        WorkflowInterface $importQueueStateMachine
     )
     {
         $this->em = $em;
@@ -78,6 +81,7 @@ class ImportService
         $this->identityChecker = $identityChecker;
         $this->similarityChecker = $similarityChecker;
         $this->importStateMachine = $importStateMachine;
+        $this->importQueueStateMachine = $importQueueStateMachine;
     }
 
     public function create(ImportCreateInputType $inputType, User $user): Import
@@ -142,7 +146,6 @@ class ImportService
 
     public function updateStatus(Import $import, string $status): void
     {
-        $status = ImportState::IMPORTING;
         $before = $import->getState();
         try {
             $this->importStateMachine->apply($import, $status);
@@ -182,7 +185,13 @@ class ImportService
 
     public function resolveDuplicity(ImportQueue $importQueue, DuplicityResolveInputType $inputType, User $user)
     {
-        $importQueue->setState($inputType->getStatus());
+        //TODO find transition by $inputType->getStatus() (now end status = transition name)
+        if ($this->importQueueStateMachine->can($importQueue, $inputType->getStatus())) {
+            $this->importQueueStateMachine->apply($importQueue, $inputType->getStatus());
+            $importQueue->setState($inputType->getStatus());
+        } else {
+            throw new WorkflowException('Import Queue is not in valid state.');
+        }
 
         /** @var ImportBeneficiaryDuplicity[] $duplicities */
         $duplicities = $this->em->getRepository(ImportBeneficiaryDuplicity::class)->findBy([
@@ -237,13 +246,23 @@ class ImportService
         switch ($import->getState()) {
             case ImportState::IDENTITY_CHECK_FAILED:
                 if (!$this->identityChecker->isImportQueueSuspicious($import)) {
+                    $importTransition = ImportTransitions::COMPLETE_IDENTITY;
                     $import->setState(ImportState::IDENTITY_CHECK_CORRECT);
                 }
                 break;
             case ImportState::SIMILARITY_CHECK_FAILED:
                 if (!$this->similarityChecker->isImportQueueSuspicious($import)) {
+                    $importTransition = ImportTransitions::COMPLETE_SIMILARITY;
                     $import->setState(ImportState::SIMILARITY_CHECK_CORRECT);
                 }
+        }
+
+        if (isset($importTransition)) {
+            if ($this->importStateMachine->can($import, ImportTransitions::COMPLETE_IDENTITY)) {
+                $this->importStateMachine->apply($import, ImportTransitions::COMPLETE_IDENTITY);
+            } else {
+                throw new WorkflowException('Import is in invalid state');
+            }
         }
 
         $this->em->flush();
@@ -388,10 +407,12 @@ class ImportService
                     'import' => $conflictImport,
                 ]);
                 foreach ($conflictQueue as $item) {
-                    $item->setState(ImportQueueState::VALID);
-                    $item->setIdentityCheckedAt(null);
-                    $item->setSimilarityCheckedAt(null);
-                    $this->em->persist($item);
+                    if ($this->importQueueStateMachine->can($item, ImportQueueTransitions::VALIDATE)) {
+                        $item->setState(ImportQueueState::VALID);
+                        $item->setIdentityCheckedAt(null);
+                        $item->setSimilarityCheckedAt(null);
+                        $this->em->persist($item);
+                    }
                 }
                 $this->em->persist($conflictImport);
                 $this->em->flush();

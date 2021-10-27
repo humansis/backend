@@ -4,7 +4,7 @@ namespace NewApiBundle\Workflow;
 
 use NewApiBundle\Enum\ImportState;
 
-class ImportTransitions
+final class ImportTransitions
 {
     public const
         CHECK_INTEGRITY = ImportState::INTEGRITY_CHECKING,

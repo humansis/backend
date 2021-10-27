@@ -12,6 +12,7 @@ use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\Exception\WorkflowException;
+use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
@@ -30,16 +31,20 @@ class IntegrityChecker
     private $queueRepository;
     /** @var WorkflowInterface */
     private $importStateMachine;
+    /** @var WorkflowInterface */
+    private $importQueueStateMachine;
 
     public function __construct(
         ValidatorInterface     $validator,
         EntityManagerInterface $entityManager,
-        WorkflowInterface $importStateMachine
+        WorkflowInterface      $importStateMachine,
+        WorkflowInterface      $importQueueStateMachine
     ) {
         $this->validator = $validator;
         $this->entityManager = $entityManager;
         $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
         $this->importStateMachine = $importStateMachine;
+        $this->importQueueStateMachine = $importQueueStateMachine;
     }
 
     /**
@@ -112,13 +117,19 @@ class IntegrityChecker
 
             $item->setMessage(json_encode($message));
             $item->setState(ImportQueueState::INVALID);
+            $transition = ImportQueueTransitions::INVALIDATE;
         } else {
             $item->setState(ImportQueueState::VALID);
+            $transition = ImportQueueTransitions::VALIDATE;
         }
 
-        // $item->setIntegrityCheckedAt(new \DateTime());
-
-        $this->entityManager->persist($item);
+        if ($this->importQueueStateMachine->can($item, $transition)) {
+            $this->importQueueStateMachine->apply($item, $transition);
+            // $item->setIntegrityCheckedAt(new \DateTime());
+            $this->entityManager->persist($item);
+        } else {
+            throw new WorkflowException();
+        }
     }
 
     /**

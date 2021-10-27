@@ -12,6 +12,7 @@ use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\Exception\WorkflowException;
+use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
@@ -24,15 +25,24 @@ class IdentityChecker
     private $entityManager;
     /** @var ImportQueueRepository */
     private $queueRepository;
+
     /** @var WorkflowInterface */
     private $importStateMachine;
 
-    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger, WorkflowInterface $importStateMachine)
-    {
+    /** @var WorkflowInterface */
+    private $importQueueStateMachine;
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        LoggerInterface        $logger,
+        WorkflowInterface      $importStateMachine,
+        WorkflowInterface      $importQueueStateMachine
+    ) {
         $this->entityManager = $entityManager;
         $this->logger = $logger;
         $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
         $this->importStateMachine = $importStateMachine;
+        $this->importQueueStateMachine = $importQueueStateMachine;
     }
 
     /**
@@ -98,6 +108,7 @@ class IdentityChecker
             if (count($bnfDuplicities) > 0) {
                 $this->logImportInfo($item->getImport(), "Found ".count($bnfDuplicities)." duplicities for {$c['ID Type']} {$c['ID Number']}");
                 $item->setState(ImportQueueState::SUSPICIOUS);
+                $transition = ImportQueueTransitions::SUSPICIOUS;
             } else {
                 $this->logImportDebug($item->getImport(), "Found no duplicities");
             }
@@ -118,6 +129,14 @@ class IdentityChecker
                     "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
             }
             $index++;
+        }
+
+        if (isset($transition)) {
+            if ($this->importQueueStateMachine->can($item, $transition)) {
+                $this->importQueueStateMachine->apply($item, $transition);
+            } else {
+                throw new WorkflowException('Import Queue is not in valid state');
+            }
         }
 
         $item->setIdentityCheckedAt(new \DateTime());

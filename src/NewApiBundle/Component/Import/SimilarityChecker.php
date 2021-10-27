@@ -10,6 +10,7 @@ use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\Exception\WorkflowException;
+use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
@@ -22,15 +23,24 @@ class SimilarityChecker
     private $entityManager;
     /** @var ImportQueueRepository */
     private $queueRepository;
+
     /** @var WorkflowInterface */
     private $importStateMachine;
 
-    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger, WorkflowInterface $importStateMachine)
-    {
+    /** @var WorkflowInterface */
+    private $importQueueStateMachine;
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        LoggerInterface        $logger,
+        WorkflowInterface      $importStateMachine,
+        WorkflowInterface      $importQueueStateMachine
+    ) {
         $this->entityManager = $entityManager;
         $this->logger = $logger;
         $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
         $this->importStateMachine = $importStateMachine;
+        $this->importQueueStateMachine = $importQueueStateMachine;
     }
 
     /**
@@ -89,8 +99,14 @@ class SimilarityChecker
 
         /** @var ImportQueue $importQueue */
         foreach ($newCheckedImportQueues as $importQueue) {
-            $importQueue->setState(ImportQueueState::TO_CREATE);
-            $this->entityManager->persist($importQueue);
+            $queueTransition = ImportQueueTransitions::TO_CREATE;
+            if ($this->importQueueStateMachine->can($importQueue, $queueTransition)) {
+                $this->importQueueStateMachine->apply($importQueue, $queueTransition);
+                $importQueue->setState(ImportQueueState::TO_CREATE);
+                $this->entityManager->persist($importQueue);
+            } else {
+                throw new WorkflowException('Import Queue is not in valid state.');
+            }
         }
 
         $this->entityManager->persist($import);
