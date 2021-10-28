@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\InputType\FilterFragment\DateIntervalFilterTrait;
 use NewApiBundle\InputType\FilterFragment\FulltextFilterTrait;
 use NewApiBundle\InputType\FilterFragment\LocationFilterTrait;
 use NewApiBundle\InputType\FilterFragment\ProjectFilterTrait;
@@ -20,6 +21,7 @@ class PurchasedItemFilterInputType extends AbstractFilterInputType
     use ProjectFilterTrait;
     use VendorFilterTrait;
     use LocationFilterTrait;
+    use DateIntervalFilterTrait;
 
     /**
      * @Assert\Type("array")
@@ -54,16 +56,6 @@ class PurchasedItemFilterInputType extends AbstractFilterInputType
      * )
      */
     protected $beneficiaryTypes;
-
-    /**
-     * @Iso8601
-     */
-    protected $dateFrom;
-
-    /**
-     * @Iso8601
-     */
-    protected $dateTo;
 
     public function hasModalityTypes(): bool
     {
@@ -102,31 +94,5 @@ class PurchasedItemFilterInputType extends AbstractFilterInputType
     public function getBeneficiaryTypes(): array
     {
         return $this->beneficiaryTypes;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDateFrom(): string
-    {
-        return $this->dateFrom;
-    }
-
-    public function hasDateFrom(): bool
-    {
-        return $this->has('dateFrom');
-    }
-
-    /**
-     * @return string
-     */
-    public function getDateTo(): string
-    {
-        return $this->dateTo;
-    }
-
-    public function hasDateTo(): bool
-    {
-        return $this->has('dateTo');
     }
 }

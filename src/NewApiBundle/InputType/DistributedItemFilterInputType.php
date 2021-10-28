@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\InputType\FilterFragment\DateIntervalFilterTrait;
 use NewApiBundle\InputType\FilterFragment\FulltextFilterTrait;
 use NewApiBundle\InputType\FilterFragment\LocationFilterTrait;
 use NewApiBundle\InputType\FilterFragment\ProjectFilterTrait;
@@ -18,6 +19,7 @@ class DistributedItemFilterInputType extends AbstractFilterInputType
     use FulltextFilterTrait;
     use ProjectFilterTrait;
     use LocationFilterTrait;
+    use DateIntervalFilterTrait;
 
     /**
      * @Assert\Type("array")
@@ -52,16 +54,6 @@ class DistributedItemFilterInputType extends AbstractFilterInputType
      */
     protected $beneficiaryTypes;
 
-    /**
-     * @Iso8601
-     */
-    protected $dateFrom;
-
-    /**
-     * @Iso8601
-     */
-    protected $dateTo;
-
     public function hasModalityTypes(): bool
     {
         return $this->has('modalityTypes');
@@ -86,32 +78,6 @@ class DistributedItemFilterInputType extends AbstractFilterInputType
     public function hasBeneficiaryTypes(): bool
     {
         return $this->has('beneficiaryTypes');
-    }
-
-    /**
-     * @return string
-     */
-    public function getDateFrom(): string
-    {
-        return $this->dateFrom;
-    }
-
-    public function hasDateFrom(): bool
-    {
-        return $this->has('dateFrom');
-    }
-
-    /**
-     * @return string
-     */
-    public function getDateTo(): string
-    {
-        return $this->dateTo;
-    }
-
-    public function hasDateTo(): bool
-    {
-        return $this->has('dateTo');
     }
 
     public function hasAssistances(): bool
