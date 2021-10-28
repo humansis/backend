@@ -1,4 +1,4 @@
-image: artifactory.quanti.cz/docker/mysql-ssh
+image: artifactory.quanti.cz/docker-local/alpine-ssh-git:dind
 
 include:
   - project: 'humansis/gitlab-ci-templates'
