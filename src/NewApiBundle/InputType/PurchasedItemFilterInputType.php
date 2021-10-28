@@ -7,6 +7,7 @@ use NewApiBundle\InputType\FilterFragment\AssistanceFilterTrait;
 use NewApiBundle\InputType\FilterFragment\DateIntervalFilterTrait;
 use NewApiBundle\InputType\FilterFragment\FulltextFilterTrait;
 use NewApiBundle\InputType\FilterFragment\LocationFilterTrait;
+use NewApiBundle\InputType\FilterFragment\ModalityTypeFilterTrait;
 use NewApiBundle\InputType\FilterFragment\ProjectFilterTrait;
 use NewApiBundle\InputType\FilterFragment\VendorFilterTrait;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
@@ -24,17 +25,7 @@ class PurchasedItemFilterInputType extends AbstractFilterInputType
     use LocationFilterTrait;
     use DateIntervalFilterTrait;
     use AssistanceFilterTrait;
-
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("string", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $modalityTypes;
+    use ModalityTypeFilterTrait;
 
     /**
      * @Assert\Type("array")
@@ -46,19 +37,6 @@ class PurchasedItemFilterInputType extends AbstractFilterInputType
      * )
      */
     protected $beneficiaryTypes;
-
-    public function hasModalityTypes(): bool
-    {
-        return $this->has('modalityTypes');
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getModalityTypes(): array
-    {
-        return $this->modalityTypes;
-    }
 
     public function hasBeneficiaryTypes(): bool
     {
