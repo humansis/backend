@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Tests\NewApiBundle\Controller;
 
 use NewApiBundle\Entity\SynchronizationBatch;
+use NewApiBundle\Entity\SynchronizationBatch\Deposits;
 use NewApiBundle\Enum\SourceType;
 use NewApiBundle\Enum\SynchronizationBatchValidationType;
 use NewApiBundle\Workflow\SynchronizationBatchTransitions;
@@ -48,7 +49,7 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
      */
     public function testGet(): int
     {
-        $sync = new SynchronizationBatch([], SynchronizationBatchValidationType::DEPOSIT);
+        $sync = new Deposits([]);
         $sync->setSource(SourceType::CLI);
         $sync->setCreatedBy($this->getTestUser(self::USER_TESTER));
         $this->em->persist($sync);

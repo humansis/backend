@@ -282,6 +282,13 @@ services:
     NewApiBundle\Component\Smartcard\SmartcardPurchaseService:
         arguments: [ '@smartcard_purchase.repository' ]
 
+    NewApiBundle\Component\Smartcard\SmartcardDepositService:
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@smartcard_service'
+            - '@workflow.registry'
+            - '@validator'
+
     NewApiBundle\Export\SmartcardPurchasedItemSpreadsheet:
         arguments:
             - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:SmartcardPurchasedItem")'

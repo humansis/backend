@@ -10,8 +10,7 @@ use NewApiBundle\Enum\SynchronizationBatchValidationType;
 use VoucherBundle\Entity\SmartcardPurchase;
 
 /**
- * @ ORM\Entity
- * @ ORM\Table(name="synchronization_batch_purchase")
+ * @ORM\Entity
  */
 class Purchases extends SynchronizationBatch
 {
@@ -22,7 +21,7 @@ class Purchases extends SynchronizationBatch
 
     public function __construct(array $requestData)
     {
-        parent::__construct($requestData, SynchronizationBatchValidationType::PURCHASE);
+        parent::__construct($requestData);
         $this->createdPurchases = new ArrayCollection();
     }
 

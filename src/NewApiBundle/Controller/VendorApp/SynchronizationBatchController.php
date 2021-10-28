@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller\VendorApp;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\Smartcard\SmartcardDepositService;
 use NewApiBundle\Entity\SynchronizationBatch;
 use NewApiBundle\Enum\SourceType;
 use NewApiBundle\Enum\SynchronizationBatchValidationType;
@@ -20,13 +21,15 @@ class SynchronizationBatchController extends AbstractVendorAppController
      *
      * @return Response
      */
-    public function create(Request $request): Response
+    public function create(Request $request, SmartcardDepositService $depositService): Response
     {
-        $sync = new SynchronizationBatch($request->request->all(), SynchronizationBatchValidationType::DEPOSIT);
+        $sync = new SynchronizationBatch\Deposits($request->request->all());
         $sync->setSource(SourceType::VENDOR_APP);
         $sync->setCreatedBy($this->getUser());
         $this->getDoctrine()->getManager()->persist($sync);
         $this->getDoctrine()->getManager()->flush();
+
+        $depositService->validateSync($sync);
 
         $response = new Response();
         $response->setStatusCode(Response::HTTP_NO_CONTENT);

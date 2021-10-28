@@ -47,7 +47,15 @@ class SynchronizationBatchMapper implements MapperInterface
 
     public function getValidationType(): string
     {
-        return $this->object->getValidationType();
+        switch (get_class($this->object))
+        {
+            case SynchronizationBatch\Deposits::class:
+                return 'Deposit';
+            case SynchronizationBatch\Purchases::class:
+                return 'Purchase';
+            default:
+                throw new \Exception("Unknown validation type");
+        }
     }
 
     public function getCreatedAt(): string
