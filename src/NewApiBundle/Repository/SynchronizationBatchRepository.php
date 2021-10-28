@@ -20,11 +20,15 @@ class SynchronizationBatchRepository extends EntityRepository
         if ($filter) {
             if ($filter->hasFulltext()) {
                 $qb->leftJoin('s.createdBy', 'u');
+                $qb->leftJoin('u.vendor', 'v');
                 $qb->andWhere('(
                     s.id LIKE :fulltextId OR
                     u.email LIKE :fulltext OR
                     u.username LIKE :fulltext OR
-                    u.id LIKE :fulltextId
+                    u.id LIKE :fulltextId OR
+                    v.vendorNo LIKE :fulltextId OR
+                    v.contractNo LIKE :fulltextId OR
+                    v.name LIKE :fulltext
                 )');
                 $qb->setParameter('fulltextId', $filter->getFulltext());
                 $qb->setParameter('fulltext', '%'.$filter->getFulltext().'%');
