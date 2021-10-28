@@ -8,6 +8,10 @@ include:
 variables:
   CHANNEL: "#pin_deployment"
   USERNAME: "PIN Deploy"
+  IMAGE_NAME: humansis-php
+  NGINX_IMAGE_NAME: humansis-nginx
+  REPOSITORY_NAME: pin-docker-local
+  REPOSITORY_URL: ${ARTIFACTORY_URL}
 
 stages:
   - static_analysis
@@ -18,6 +22,7 @@ stages:
   - deploy_dev
   - deploy_test
   - deploy_stage
+  - deploy_demo
   - deploy_prod
   - report_finished
   - upload_db
@@ -27,14 +32,9 @@ stages:
     - mkdir -p ~/.ssh
     - echo "${SSH_PRIVATE_KEY}" | tr -d '\r' > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
-    - ssh-keyscan -p 22 ${HOSTNAME} >> ~/.ssh/known_hosts
-    - >-
-      cat <<EOF > ~/.ssh/config
-
-      Host ${HOSTNAME}
-        PasswordAuthentication no
-        PreferredAuthentications publickey
-      EOF
+    - aws configure set aws_access_key_id ${deploy_aws_access_key_id}
+    - aws configure set aws_secret_access_key ${deploy_aws_secret_access_key}
+    - aws configure set default.region eu-central-1
 
 .remove_key: &remove_key
   after_script:
@@ -112,6 +112,7 @@ backup-code:
 
 deploy dev:
   stage: deploy_dev
+  image: artifactory.quanti.cz/docker-local/alpine-ssh-git:dind
   environment:
     name: dev
     url: https://apidev.humansis.org
@@ -123,14 +124,19 @@ deploy dev:
     CACHE_CLEAR_MODE: aggressive
   <<: *prepare_ssh
   script:
-    - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
+    - ./build-docker.sh
+    - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
+    - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
   <<: *remove_key
   only:
     - branches
   when: manual
+  tags:
+    - dind
 
 deploy test:
   stage: deploy_test
+  image: artifactory.quanti.cz/docker-local/alpine-ssh-git:dind
   environment:
     name: test
     url: https://apitest.humansis.org
@@ -142,12 +148,16 @@ deploy test:
     CACHE_CLEAR_MODE: aggressive
   <<: *prepare_ssh
   script:
-    - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
+    - ./build-docker.sh
+    - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
+    - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
   <<: *remove_key
   only:
     - /^develop$/
   except:
     - tags
+  tags:
+    - dind
 
 report starting:
   stage: report_starting
@@ -180,6 +190,31 @@ deploy stage:
     - /^release\/.*$/
   except:
     - tags
+
+deploy demo:
+  stage: deploy_demo
+  image: artifactory.quanti.cz/docker-local/alpine-ssh-git:dind
+  environment:
+    name: demo
+    url: https://apidemo.humansis.org
+  variables:
+    HOSTNAME: apidemo.humansis.org
+    ENVIRONMENT: demo
+    CLEAN_DATABASE: "true"
+    LOAD_FIXTURES: "test"
+    CACHE_CLEAR_MODE: aggressive
+  <<: *prepare_ssh
+  script:
+    - ./build-docker.sh
+    - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
+    - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
+  <<: *remove_key
+  only:
+    - /^release\/.*$
+    - /^v.*$/
+  when: manual
+  tags:
+    - dind
 
 deploy prod:
   stage: deploy_prod

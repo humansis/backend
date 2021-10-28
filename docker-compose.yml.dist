@@ -34,11 +34,12 @@ services:
         build:
             dockerfile: docker/dev/php/Dockerfile
             context: .
+        image: build_image
         depends_on:
             - db
         volumes:
-            - .:/var/www/html
-            - ./docker/dev/php/php.ini:/usr/local/etc/php/conf.d/99-overrides.ini
+            - ./app/config/parameters.yml:/var/www/html/app/config/parameters.yml
+        #    - ./docker/dev/php/php.ini:/usr/local/etc/php/conf.d/99-overrides.ini
         networks:
             - backend
             - database
