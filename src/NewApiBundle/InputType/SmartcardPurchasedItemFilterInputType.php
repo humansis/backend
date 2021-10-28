@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\InputType\FilterFragment\AssistanceFilterTrait;
 use NewApiBundle\InputType\FilterFragment\DateIntervalFilterTrait;
 use NewApiBundle\InputType\FilterFragment\FulltextFilterTrait;
 use NewApiBundle\InputType\FilterFragment\LocationFilterTrait;
@@ -22,28 +23,5 @@ class SmartcardPurchasedItemFilterInputType extends AbstractFilterInputType
     use VendorFilterTrait;
     use LocationFilterTrait;
     use DateIntervalFilterTrait;
-
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("int", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $assistances;
-
-    public function hasAssistances(): bool
-    {
-        return $this->has('assistances');
-    }
-
-    /**
-     * @return int[]
-     */
-    public function getAssistances(): array
-    {
-        return $this->assistances;
-    }
+    use AssistanceFilterTrait;
 }

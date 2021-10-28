@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\InputType\FilterFragment\AssistanceFilterTrait;
 use NewApiBundle\InputType\FilterFragment\DateIntervalFilterTrait;
 use NewApiBundle\InputType\FilterFragment\FulltextFilterTrait;
 use NewApiBundle\InputType\FilterFragment\LocationFilterTrait;
@@ -22,18 +23,7 @@ class PurchasedItemFilterInputType extends AbstractFilterInputType
     use VendorFilterTrait;
     use LocationFilterTrait;
     use DateIntervalFilterTrait;
-
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("int", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $assistances;
-
+    use AssistanceFilterTrait;
 
     /**
      * @Assert\Type("array")
@@ -68,19 +58,6 @@ class PurchasedItemFilterInputType extends AbstractFilterInputType
     public function getModalityTypes(): array
     {
         return $this->modalityTypes;
-    }
-
-    public function hasAssistances(): bool
-    {
-        return $this->has('assistances');
-    }
-
-    /**
-     * @return int[]
-     */
-    public function getAssistances(): array
-    {
-        return $this->assistances;
     }
 
     public function hasBeneficiaryTypes(): bool
