@@ -55,7 +55,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "id": "*",
             "name": "*",
             "dateDistribution": "*",
-            "dateExpiration": "*",
+            "expirationDate": "*",
             "type": "*",
             "target": "*",
             "projectId": "*",
@@ -63,6 +63,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "commodityIds": ["*"],
             "description": "*",
             "validated": "*",
+            "remote": "*",
+            "foodLimit": "*",
+            "nonfoodLimit": "*",
+            "cashbackLimit": "*",
             "completed": "*",
             "numberOfBeneficiaries": "*"
          }]', $this->client->getResponse()->getContent());
