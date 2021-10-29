@@ -57,7 +57,7 @@ class AssistanceOfflineAppMapper implements MapperInterface
         return $this->object->getDateDistribution()->format(\DateTimeInterface::ISO8601);
     }
 
-    public function getDateExpiration(): ?string
+    public function getExpirationDate(): ?string
     {
         return $this->object->getDateExpiration() ? $this->object->getDateExpiration()->format(\DateTimeInterface::ISO8601) : null;
     }
@@ -109,6 +109,26 @@ class AssistanceOfflineAppMapper implements MapperInterface
     public function getCompleted(): bool
     {
         return (bool) $this->object->getCompleted();
+    }
+
+    public function getFoodLimit(): ?int
+    {
+        return $this->object->getFoodLimit();
+    }
+
+    public function getNonfoodLimit(): ?int
+    {
+        return $this->object->getNonFoodLimit();
+    }
+
+    public function getCashbackLimit(): ?int
+    {
+        return $this->object->getCashbackLimit();
+    }
+
+    public function getRemote(): bool
+    {
+        return (bool) $this->object->isRemoteDistributionAllowed();
     }
 
     public function getNumberOfBeneficiaries(): int
