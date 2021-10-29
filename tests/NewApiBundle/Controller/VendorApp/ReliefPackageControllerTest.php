@@ -34,7 +34,7 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
 
         $this->em->flush();
 
-        $this->request('GET', "/api/basic/web-app/v1/vendors/{$vendor->getId()}/relief-packages");
+        $this->request('GET', "/api/basic/vendor-app/v1/vendors/{$vendor->getId()}/relief-packages");
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
