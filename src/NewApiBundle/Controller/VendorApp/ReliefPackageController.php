@@ -12,7 +12,7 @@ use VoucherBundle\Entity\Vendor;
 class ReliefPackageController extends AbstractVendorAppController
 {
     /**
-     * @Rest\Get("/web-app/v1/vendors/{id}/relief-packages")
+     * @Rest\Get("/vendor-app/v1/vendors/{id}/relief-packages")
      *
      * @param Request $request
      * @param Vendor  $vendor
