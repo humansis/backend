@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\InputType\FilterFragment\AssistanceFilterTrait;
+use NewApiBundle\InputType\FilterFragment\DateIntervalFilterTrait;
 use NewApiBundle\InputType\FilterFragment\FulltextFilterTrait;
 use NewApiBundle\InputType\FilterFragment\LocationFilterTrait;
 use NewApiBundle\InputType\FilterFragment\ProjectFilterTrait;
@@ -20,65 +22,6 @@ class SmartcardPurchasedItemFilterInputType extends AbstractFilterInputType
     use ProjectFilterTrait;
     use VendorFilterTrait;
     use LocationFilterTrait;
-
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("int", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $assistances;
-
-    /**
-     * @Iso8601
-     */
-    protected $dateFrom;
-
-    /**
-     * @Iso8601
-     */
-    protected $dateTo;
-
-
-    public function hasAssistances(): bool
-    {
-        return $this->has('assistances');
-    }
-
-    /**
-     * @return int[]
-     */
-    public function getAssistances(): array
-    {
-        return $this->assistances;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDateFrom(): string
-    {
-        return $this->dateFrom;
-    }
-
-    public function hasDateFrom(): bool
-    {
-        return $this->has('dateFrom');
-    }
-
-    /**
-     * @return string
-     */
-    public function getDateTo(): string
-    {
-        return $this->dateTo;
-    }
-
-    public function hasDateTo(): bool
-    {
-        return $this->has('dateTo');
-    }
+    use DateIntervalFilterTrait;
+    use AssistanceFilterTrait;
 }

@@ -34,7 +34,7 @@ class SynchronizationBatchPersistenceTest extends WebTestCase
         $container = self::$kernel->getContainer();
         $this->manager = $container->get('doctrine.orm.default_entity_manager');
         $this->syncRepo = $this->manager->getRepository(SynchronizationBatch::class);
-        $this->sync = new SynchronizationBatch(['test'=>'xyz','array'=>[1,2,5,1024], 0=>0, false=>true], SynchronizationBatchValidationType::PURCHASE);
+        $this->sync = new Deposits(['test'=>'xyz','array'=>[1,2,5,1024], 0=>0, false=>true]);
         $this->manager->persist($this->sync);
     }
 
@@ -44,12 +44,15 @@ class SynchronizationBatchPersistenceTest extends WebTestCase
         $testViolations->add(new ConstraintViolation("Test is wrong", null, [], null, 'test', 'xyz'));
         $arrayViolation = new ConstraintViolationList();
         $arrayViolation->add(new ConstraintViolation("5th array is wrong", null, [], null, 'array[3]', '5'));
-        $this->sync->setViolations(['test'=>serialize($testViolations),'array'=>[5=>serialize($arrayViolation)]]);
+        $this->sync->setViolations(['test'=>$testViolations,'array'=>[5=>$arrayViolation]]);
         $this->manager->flush();
 
         $this->assertNotNull($this->sync->getId(), "Sync wasn't saved");
         $sync = $this->syncRepo->find($this->sync->getId());
         $this->assertNotNull($sync, "Sync wasn't found");
+
+        $this->assertArrayHasKey('test', $this->sync->getViolations());
+        $this->assertArrayHasKey('array', $this->sync->getViolations());
     }
 
     protected function tearDown()

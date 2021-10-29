@@ -14,27 +14,20 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 /**
  * @ORM\Entity(repositoryClass="\NewApiBundle\Repository\SynchronizationBatchRepository")
- * @ ORM\InheritanceType(value="SINGLE_TABLE")
- * @ ORM\DiscriminatorColumn(name="validation_type", type="enum_synchronization_batch_validation_type")
- * @ ORM\DiscriminatorMap({
+ * @ORM\InheritanceType(value="SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="validationType", type="string")
+ * @ORM\DiscriminatorMap({
  *     "Deposits"="\NewApiBundle\Entity\SynchronizationBatch\Deposits",
  *     "Purchases"="\NewApiBundle\Entity\SynchronizationBatch\Purchases"
  * })
  * @ORM\HasLifecycleCallbacks
  */
-class SynchronizationBatch
+abstract class SynchronizationBatch
 {
     use StandardizedPrimaryKey;
     use Source;
     use CreatedAt;
     use CreatedBy;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="validation_type", type="enum_synchronization_batch_validation_type", nullable=false)
-     */
-    private $validationType;
 
     /**
      * @var string
@@ -51,7 +44,7 @@ class SynchronizationBatch
     private $requestData;
 
     /**
-     * @var ConstraintViolationListInterface[]
+     * @var string serialized ConstraintViolationListInterface[]
      *
      * @ORM\Column(name="violations", type="json", nullable=true)
      */
@@ -66,28 +59,10 @@ class SynchronizationBatch
 
     /**
      * @param array  $requestData
-     * @param string $validationType
      */
-    public function __construct(array $requestData, string $validationType)
+    protected function __construct(array $requestData)
     {
         $this->requestData = $requestData;
-        $this->validationType = $validationType;
-    }
-
-    /**
-     * @return string
-     */
-    public function getValidationType(): string
-    {
-        return $this->validationType;
-    }
-
-    /**
-     * @param string $validationType
-     */
-    public function setValidationType(string $validationType): void
-    {
-        $this->validationType = $validationType;
     }
 
     /**
@@ -122,7 +97,7 @@ class SynchronizationBatch
      */
     public function getViolations(): ?array
     {
-        return $this->violations;
+        return $this->violations ? unserialize($this->violations) : null;
     }
 
     /**
@@ -134,7 +109,7 @@ class SynchronizationBatch
             throw new \InvalidArgumentException("Violation shouldn't be added to processed batches");
         }
         $this->validatedAt = $validatedAt ?? new \DateTimeImmutable();
-        $this->violations = $violations;
+        $this->violations = serialize($violations);
     }
 
     public function addViolation($index, ConstraintViolationListInterface $violations): void

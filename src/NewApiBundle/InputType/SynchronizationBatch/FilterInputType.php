@@ -5,6 +5,7 @@ namespace NewApiBundle\InputType\SynchronizationBatch;
 
 use NewApiBundle\Enum\SynchronizationBatchState;
 use NewApiBundle\Enum\SynchronizationBatchValidationType;
+use NewApiBundle\InputType\FilterFragment\DateIntervalFilterTrait;
 use NewApiBundle\InputType\FilterFragment\FulltextFilterTrait;
 use NewApiBundle\InputType\FilterFragment\GenericStateFilterTrait;
 use NewApiBundle\InputType\FilterFragment\GenericTypeFilterTrait;
@@ -23,6 +24,7 @@ class FilterInputType extends AbstractFilterInputType
     use SourceFilterTrait;
     use GenericStateFilterTrait;
     use GenericTypeFilterTrait;
+    use DateIntervalFilterTrait;
 
     protected function availableStates(): array
     {

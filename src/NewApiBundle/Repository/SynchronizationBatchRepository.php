@@ -6,6 +6,8 @@ namespace NewApiBundle\Repository;
 use CommonBundle\InputType\Country;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\Entity\SynchronizationBatch\Deposits;
+use NewApiBundle\Entity\SynchronizationBatch\Purchases;
 use NewApiBundle\InputType\SynchronizationBatch;
 use NewApiBundle\Request\Pagination;
 
@@ -18,11 +20,15 @@ class SynchronizationBatchRepository extends EntityRepository
         if ($filter) {
             if ($filter->hasFulltext()) {
                 $qb->leftJoin('s.createdBy', 'u');
+                $qb->leftJoin('u.vendor', 'v');
                 $qb->andWhere('(
                     s.id LIKE :fulltextId OR
                     u.email LIKE :fulltext OR
                     u.username LIKE :fulltext OR
-                    u.id LIKE :fulltextId
+                    u.id LIKE :fulltextId OR
+                    v.vendorNo LIKE :fulltextId OR
+                    v.contractNo LIKE :fulltextId OR
+                    v.name LIKE :fulltext
                 )');
                 $qb->setParameter('fulltextId', $filter->getFulltext());
                 $qb->setParameter('fulltext', '%'.$filter->getFulltext().'%');
@@ -34,8 +40,9 @@ class SynchronizationBatchRepository extends EntityRepository
             }
 
             if ($filter->hasType()) {
-                $qb->andWhere('s.validationType = :type')
-                    ->setParameter('type', $filter->getType());
+                $qb->andWhere('s INSTANCE OF :type');
+                if ($filter->getType() == 'Deposit') $qb->setParameter('type', Deposits::class);
+                if ($filter->getType() == 'Purchase') $qb->setParameter('type', Purchases::class);
             }
         }
 
@@ -47,9 +54,6 @@ class SynchronizationBatchRepository extends EntityRepository
                         break;
                     case SynchronizationBatch\OrderInputType::SORT_BY_SOURCE:
                         $qb->orderBy('s.source', $direction);
-                        break;
-                    case SynchronizationBatch\OrderInputType::SORT_BY_TYPE:
-                        $qb->orderBy('s.validationType', $direction);
                         break;
                     case SynchronizationBatch\OrderInputType::SORT_BY_DATE:
                         $qb->orderBy('s.createdAt', $direction);

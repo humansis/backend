@@ -11,8 +11,7 @@ use NewApiBundle\Enum\SynchronizationBatchValidationType;
 use VoucherBundle\Entity\SmartcardDeposit;
 
 /**
- * @ ORM\Entity
- * @ ORM\Table(name="synchronization_batch_deposit")
+ * @ORM\Entity
  */
 class Deposits extends SynchronizationBatch
 {
@@ -23,7 +22,7 @@ class Deposits extends SynchronizationBatch
 
     public function __construct(array $requestData)
     {
-        parent::__construct($requestData, SynchronizationBatchValidationType::DEPOSIT);
+        parent::__construct($requestData);
         $this->createdDeposits = new ArrayCollection();
     }
 
