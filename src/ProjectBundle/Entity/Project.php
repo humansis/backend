@@ -765,7 +765,7 @@ class Project implements ExportableInterface
     /**
      * @param string[] $allowedProductCategoryTypes
      */
-    public function setAllowedProductCategoryTypes(array $allowedProductCategoryTypes): void
+    public function setAllowedProductCategoryTypes(array $allowedProductCategoryTypes): Project
     {
         foreach ($allowedProductCategoryTypes as $categoryType) {
             if (!in_array($categoryType, ProductCategoryType::values())) {
@@ -774,6 +774,8 @@ class Project implements ExportableInterface
         }
 
         $this->allowedProductCategoryTypes = $allowedProductCategoryTypes;
+
+        return $this;
     }
 
 }
