@@ -64,7 +64,7 @@ class SmartcardDeposit
     private $distributedAt;
 
     /**
-     * @var ReliefPackage
+     * @var ReliefPackage|null
      *
      * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ReliefPackage", inversedBy="smartcardDeposits")
      * @ORM\JoinColumn(name="relief_package_id")
@@ -149,17 +149,17 @@ class SmartcardDeposit
     }
 
     /**
-     * @return ReliefPackage
+     * @return ReliefPackage|null
      */
-    public function getReliefPackage(): ReliefPackage
+    public function getReliefPackage(): ?ReliefPackage
     {
         return $this->reliefPackage;
     }
 
     /**
-     * @param ReliefPackage $reliefPackage
+     * @param ReliefPackage|null $reliefPackage
      */
-    public function setReliefPackage(ReliefPackage $reliefPackage): void
+    public function setReliefPackage(?ReliefPackage $reliefPackage): void
     {
         $this->reliefPackage = $reliefPackage;
     }
