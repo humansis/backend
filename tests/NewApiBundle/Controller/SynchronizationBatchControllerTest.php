@@ -74,6 +74,7 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('rawData', $result);
         $this->assertArrayHasKey('violations', $result);
         $this->assertArrayHasKey('validatedAt', $result);
+        $this->assertArrayHasKey('vendorId', $result);
 
         return $sync->getId();
     }
@@ -105,6 +106,7 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('rawData', $resultItem);
             $this->assertArrayHasKey('violations', $resultItem);
             $this->assertArrayHasKey('validatedAt', $resultItem);
+            $this->assertArrayHasKey('vendorId', $resultItem);
         }
     }
 

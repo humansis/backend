@@ -68,6 +68,11 @@ class SynchronizationBatchMapper implements MapperInterface
         return $this->object->getCreatedBy()->getId();
     }
 
+    public function getVendorId(): ?int
+    {
+        return $this->object->getCreatedBy()->getVendor() ? $this->object->getCreatedBy()->getVendor()->getId() : null;
+    }
+
     public function getState(): string
     {
         return $this->object->getState();
