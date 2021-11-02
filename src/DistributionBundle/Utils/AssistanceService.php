@@ -1199,6 +1199,6 @@ class AssistanceService
         /** @var AssistanceStatistics $statistics */
         $statistics = $this->em->getRepository(AssistanceStatistics::class)->findByAssistance($assistance);
 
-        return empty($statistics->getAmountDistributed());
+        return $statistics->getAmountDistributed() > 0;
     }
 }
