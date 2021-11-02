@@ -210,7 +210,8 @@ class ProjectService
             ->setNotes($inputType->getNotes())
             ->setSectors($inputType->getSectors())
             ->setProjectInvoiceAddressLocal($inputType->getProjectInvoiceAddressLocal())
-            ->setProjectInvoiceAddressEnglish($inputType->getProjectInvoiceAddressEnglish());
+            ->setProjectInvoiceAddressEnglish($inputType->getProjectInvoiceAddressEnglish())
+            ->setAllowedProductCategoryTypes($inputType->getAllowedProductCategoryTypes());
 
         foreach ($inputType->getDonorIds() as $id) {
             $donor = $this->em->getRepository(Donor::class)->find($id);
@@ -322,7 +323,8 @@ class ProjectService
             ->setNotes($inputType->getNotes())
             ->setSectors($inputType->getSectors())
             ->setProjectInvoiceAddressLocal($inputType->getProjectInvoiceAddressLocal())
-            ->setProjectInvoiceAddressEnglish($inputType->getProjectInvoiceAddressEnglish());
+            ->setProjectInvoiceAddressEnglish($inputType->getProjectInvoiceAddressEnglish())
+            ->setAllowedProductCategoryTypes($inputType->getAllowedProductCategoryTypes());
 
         $project->removeDonors();
         foreach ($inputType->getDonorIds() as $id) {
