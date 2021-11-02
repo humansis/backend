@@ -8,6 +8,7 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Enum\AssistanceType;
 use Exception;
+use NewApiBundle\Enum\ProductCategoryType;
 use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
 
@@ -60,6 +61,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "foodLimit": "*",
             "nonFoodLimit": "*",
             "cashbackLimit": "*",
+            "allowedProductCategoryTypes": "*",
             "deletable": '.($assistance->getValidated() ? 'false' : 'true').'
         }', $this->client->getResponse()->getContent());
     }
@@ -146,6 +148,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'nonFoodLimit' => null,
             'cashbackLimit' => 1024,
             'remoteDistributionAllowed' => false,
+            'allowedProductCategoryTypes' => [ProductCategoryType::CASHBACK, ProductCategoryType::NONFOOD],
         ]);
 
         $this->assertTrue(
@@ -170,6 +173,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "foodLimit": 10.99,
             "nonFoodLimit": null,
             "cashbackLimit": 1024,
+            "allowedProductCategoryTypes": ["*"],
             "remoteDistributionAllowed": "*"
         }', $this->client->getResponse()->getContent());
     }
@@ -212,6 +216,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'foodLimit' => null,
             'nonFoodLimit' => null,
             'cashbackLimit' => null,
+            'allowedProductCategoryTypes' => [],
         ]);
 
         $this->assertTrue(
@@ -233,6 +238,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "individualsTargeted": "*",
             "deletable": true,
             "description": "*",
+            "allowedProductCategoryTypes": [],
+            "foodLimit": null,
+            "nonFoodLimit": null,
+            "cashbackLimit": null,
             "commodityIds": ["*"]
         }', $this->client->getResponse()->getContent());
     }
@@ -266,6 +275,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 ],
             ],
             'description' => 'test activity',
+            'allowedProductCategoryTypes' => [ProductCategoryType::CASHBACK, ProductCategoryType::NONFOOD],
         ]);
 
         $this->assertTrue(
@@ -315,6 +325,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'description' => 'test construction activity',
             'householdsTargeted' => 10,
             'individualsTargeted' => null,
+            'allowedProductCategoryTypes' => [ProductCategoryType::CASHBACK, ProductCategoryType::NONFOOD],
         ]);
 
         $this->assertTrue(

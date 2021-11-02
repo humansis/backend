@@ -232,6 +232,13 @@ class Assistance implements ExportableInterface
     private $cashbackLimit;
 
     /**
+     * @var string[]
+     *
+     * @ORM\Column(name="allowed_product_category_types", type="array", nullable=false)
+     */
+    private $allowedProductCategoryTypes;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -241,6 +248,7 @@ class Assistance implements ExportableInterface
         $this->commodities = new \Doctrine\Common\Collections\ArrayCollection();
         $this->assistanceSelection = new AssistanceSelection();
         $this->setUpdatedOn(new \DateTime());
+        $this->allowedProductCategoryTypes = [];
     }
 
     /**
@@ -975,6 +983,22 @@ class Assistance implements ExportableInterface
     public function setCashbackLimit($cashbackLimit): void
     {
         $this->cashbackLimit = $cashbackLimit;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getAllowedProductCategoryTypes(): array
+    {
+        return $this->allowedProductCategoryTypes;
+    }
+
+    /**
+     * @param string[] $allowedProductCategoryTypes
+     */
+    public function setAllowedProductCategoryTypes(array $allowedProductCategoryTypes): void
+    {
+        $this->allowedProductCategoryTypes = $allowedProductCategoryTypes;
     }
 
 }
