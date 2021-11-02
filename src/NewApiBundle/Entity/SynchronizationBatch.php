@@ -112,13 +112,22 @@ abstract class SynchronizationBatch
         $this->validatedAt = $validatedAt ?? new \DateTimeImmutable();
         $this->violations = [];
         foreach ($violations as $rowKey => $violationList) {
-            $oneLineViolations = [];
-            /** @var ConstraintViolationInterface $violation */
-            foreach ($violationList as $violation) {
-                $oneLineViolations[$violation->getPropertyPath()] = $violation->getMessage();
-            }
-            $this->violations[$rowKey] = $oneLineViolations;
+            $this->violations[$rowKey] = $this->serializeViolations($violationList);
         }
+    }
+
+    private function serializeViolations(ConstraintViolationListInterface $violationList): array
+    {
+        $data = [];
+        foreach ($violationList as $rowKey => $subViolation) {
+            if ($subViolation instanceof ConstraintViolationListInterface) {
+                $data[$rowKey] = $this->serializeViolations($subViolation);
+            }
+            if ($subViolation instanceof ConstraintViolationInterface) {
+                $data[$subViolation->getPropertyPath()][] = $subViolation->getMessage();
+            }
+        }
+        return $data;
     }
 
     public function addViolation($index, ConstraintViolationListInterface $violations): void
