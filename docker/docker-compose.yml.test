@@ -8,11 +8,12 @@ networks:
 
 services:
     php:
-        image: artifactory.quanti.cz/docker/humansis-php:test
+        build:
+            dockerfile: docker/stage/php/Dockerfile
+            context: .
         volumes:
-            - /opt/humansis/var:/var/www/html/var
-            - /opt/humansis/parameters.yml:/var/www/html/app/config/parameters.yml:ro
-            - /opt/humansis/jwt:/var/www/html/app/config/jwt:ro
+            - .:/var/www/html
+            - ./docker/dev/php/php.ini:/usr/local/etc/php/conf.d/99-overrides.ini
         networks:
             - backend
 
@@ -23,7 +24,7 @@ services:
         networks:
             - pma
         volumes:
-            - /opt/overrides/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
+            - ./docker/dev/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
         environment:
             PMA_HOST: %env(RDS_HOSTNAME)%
             PMA_ABSOLUTE_URI: https://apitest.humansis.org/pma_yzixy37h/
@@ -35,6 +36,6 @@ services:
         depends_on:
             - php
         volumes:
-            - /opt/overrides/nginx.conf:/etc/nginx/conf.d/default.conf
+            - ./docker/dev/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
         networks:
             - backend
