@@ -275,7 +275,15 @@ class AssistanceService
 
         $result = $this->createFromArray($inputType->getIso3(), $distributionArray);
 
-        return $result['distribution'];
+        /** @var Assistance $assistance */
+        $assistance = $result['distribution'];
+        $assistance->setFoodLimit($inputType->getFoodLimit());
+        $assistance->setNonFoodLimit($inputType->getNonFoodLimit());
+        $assistance->setCashbackLimit($inputType->getCashbackLimit());
+        $assistance->setRemoteDistributionAllowed($inputType->getRemoteDistributionAllowed());
+        $assistance->setAllowedProductCategoryTypes($inputType->getAllowedProductCategoryTypes());
+
+        return $assistance;
     }
 
     /**
@@ -1030,6 +1038,7 @@ class AssistanceService
             'nonfoodLimit' => $inputType->getNonFoodLimit(),
             'cashbackLimit' => $inputType->getCashbackLimit(),
             'remoteDistributionAllowed' => $inputType->getRemoteDistributionAllowed(),
+            'allowedProductCategoryTypes' => $inputType->getAllowedProductCategoryTypes(),
         ];
 
         foreach ($inputType->getCommodities() as $commodity) {

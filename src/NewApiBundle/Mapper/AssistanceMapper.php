@@ -171,18 +171,30 @@ class AssistanceMapper implements MapperInterface
         return $this->object->isRemoteDistributionAllowed();
     }
 
-    public function getFoodLimit(): ?float
+    /**
+     * @return float|int|string|null
+     */
+    public function getFoodLimit()
     {
         return $this->object->getFoodLimit();
     }
-
-    public function getNonFoodLimit(): ?float
+    /**
+     * @return float|int|string|null
+     */
+    public function getNonFoodLimit()
     {
         return $this->object->getNonFoodLimit();
     }
-
-    public function getCashbackLimit(): ?float
+    /**
+     * @return float|int|string|null
+     */
+    public function getCashbackLimit()
     {
         return $this->object->getCashbackLimit();
+    }
+
+    public function getAllowedProductCategoryTypes(): array
+    {
+        return $this->object->getAllowedProductCategoryTypes();
     }
 }

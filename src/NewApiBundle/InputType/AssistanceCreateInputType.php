@@ -166,6 +166,17 @@ class AssistanceCreateInputType implements InputTypeInterface
     private $remoteDistributionAllowed;
 
     /**
+     * @Assert\Type("array")
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Choice(callback={"NewApiBundle\Enum\ProductCategoryType", "values"}, strict=true, groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
+     */
+    private $allowedProductCategoryTypes;
+
+    /**
      * @Assert\IsTrue(groups="AdditionalChecks", message="remoteDistributionAllowed must not be null if distribution is for smartcards. Null otherwise.")
      */
     public function isNotNullRemoteDistributionWhenSmartcard(): bool
@@ -557,4 +568,21 @@ class AssistanceCreateInputType implements InputTypeInterface
     {
         $this->remoteDistributionAllowed = $remoteDistributionAllowed;
     }
+
+    /**
+     * @return array
+     */
+    public function getAllowedProductCategoryTypes()
+    {
+        return $this->allowedProductCategoryTypes;
+    }
+
+    /**
+     * @param array $allowedProductCategoryTypes
+     */
+    public function setAllowedProductCategoryTypes($allowedProductCategoryTypes): void
+    {
+        $this->allowedProductCategoryTypes = $allowedProductCategoryTypes;
+    }
+
 }
