@@ -22,7 +22,7 @@ else
 fi
 
 echo "Database schema upload..."
-mysqldump --no-data -h $DB_HOST -u $DB_USER $DUMP_DB > schema.sql
+mysqldump --no-data --set-gtid-purged=OFF -h $DB_HOST -u $DB_USER $DUMP_DB > schema.sql
 sed -i -e 's/DEFINER[ ]=[ ][^*]**/*/' schema.sql
 
 # mysql -h $DB_HOST -u $DB_USER -e "CREATE DATABASE $COPY_DB"
