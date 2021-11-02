@@ -78,8 +78,7 @@ class ReliefPackage
      *
      * There should be only one deposit at this moment. One-to-many prepared for partial distribution
      *
-     * @ORM\OneToMany(targetEntity="ReliefPackage", mappedBy="reliefPackage")
-     * @ORM\JoinColumn(name="relief_package_id")
+     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardDeposit", mappedBy="reliefPackage")
      */
     private $smartcardDeposits;
 
