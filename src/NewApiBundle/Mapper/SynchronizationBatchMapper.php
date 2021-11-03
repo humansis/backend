@@ -78,9 +78,9 @@ class SynchronizationBatchMapper implements MapperInterface
         return $this->object->getState();
     }
 
-    public function getRawData(): string
+    public function getRawData(): array
     {
-        return json_encode($this->object->getRequestData());
+        return $this->object->getRequestData();
     }
 
     public function getViolations(): ?string
