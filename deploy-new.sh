@@ -34,7 +34,7 @@ elif [[ $1 == "test" ]]; then
   EC2_ASG=test-asg
   JWT_CERT=$JWT_CERT_TEST
   JWT_KEY=$JWT_KEY_TEST
-  mv docker/docker-compose.yml.test docker-compose.yml
+  mv docker/docker-compose.yml.test-new docker-compose.yml
   bash apply_env_config.sh ${RDS_HOSTNAME_TEST} ${RDS_DB_NAME_TEST} ${RDS_USERNAME_TEST} ${RDS_PASSWORD_TEST} ${MOBILE_KEY_TEST} ${MOBILE_APP_VERSION_TEST} ${MOBILE_APP_ID_TEST} ${JWT_PASSPHRASE_TEST} ${GELF_SERVER_NAME_TEST}
 elif [[ $1 == "dev" ]]; then
   EC2_ASG=dev-asg
