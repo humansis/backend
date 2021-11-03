@@ -13,6 +13,7 @@ use NewApiBundle\Component\Smartcard\SmartcardDepositService;
 use NewApiBundle\Entity\SynchronizationBatch\Deposits;
 use TransactionBundle\Entity\Transaction;
 use TransactionBundle\Utils\Provider\KHMFinancialProvider;
+use UserBundle\Entity\User;
 
 class SynchronizationBatchFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -48,14 +49,17 @@ class SynchronizationBatchFixtures extends Fixture implements DependentFixtureIn
             // this fixtures are not for production environment
             return;
         }
+        $user = $this->getReference(UserFixtures::REF_VENDOR_SYR);
 
         foreach (self::DEPOSIT_SYNC_DATA as $syncData) {
             $sync = new Deposits($syncData);
+            $sync->setCreatedBy($user);
             $manager->persist($sync);
         }
         $manager->flush();
         foreach (self::DEPOSIT_SYNC_DATA as $syncData) {
             $sync = new Deposits($syncData);
+            $sync->setCreatedBy($user);
             $manager->persist($sync);
             $manager->flush();
 
