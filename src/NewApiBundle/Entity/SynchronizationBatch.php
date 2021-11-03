@@ -10,6 +10,7 @@ use NewApiBundle\Entity\Helper\Source;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\SynchronizationBatchState;
 use NewApiBundle\Enum\SynchronizationBatchValidationType;
+use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 /**
@@ -93,11 +94,11 @@ abstract class SynchronizationBatch
     }
 
     /**
-     * @return ConstraintViolationListInterface[]|null
+     * @return array[]|null
      */
     public function getViolations(): ?array
     {
-        return $this->violations ? unserialize($this->violations) : null;
+        return $this->violations;
     }
 
     /**
@@ -109,7 +110,24 @@ abstract class SynchronizationBatch
             throw new \InvalidArgumentException("Violation shouldn't be added to processed batches");
         }
         $this->validatedAt = $validatedAt ?? new \DateTimeImmutable();
-        $this->violations = serialize($violations);
+        $this->violations = [];
+        foreach ($violations as $rowKey => $violationList) {
+            $this->violations[$rowKey] = $this->serializeViolations($violationList);
+        }
+    }
+
+    private function serializeViolations(ConstraintViolationListInterface $violationList): array
+    {
+        $data = [];
+        foreach ($violationList as $rowKey => $subViolation) {
+            if ($subViolation instanceof ConstraintViolationListInterface) {
+                $data[$rowKey] = $this->serializeViolations($subViolation);
+            }
+            if ($subViolation instanceof ConstraintViolationInterface) {
+                $data[$subViolation->getPropertyPath()][] = $subViolation->getMessage();
+            }
+        }
+        return $data;
     }
 
     public function addViolation($index, ConstraintViolationListInterface $violations): void

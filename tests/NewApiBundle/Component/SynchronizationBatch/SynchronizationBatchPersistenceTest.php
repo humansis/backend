@@ -42,17 +42,19 @@ class SynchronizationBatchPersistenceTest extends WebTestCase
     {
         $testViolations = new ConstraintViolationList();
         $testViolations->add(new ConstraintViolation("Test is wrong", null, [], null, 'test', 'xyz'));
+        $testViolations->add(new ConstraintViolation("Test is somewhat weird", null, [], null, 'test', 'xyz'));
+        $testViolations->add(new ConstraintViolation("Test2 should be longer", null, [], null, 'test2', 'xyz'));
         $arrayViolation = new ConstraintViolationList();
         $arrayViolation->add(new ConstraintViolation("5th array is wrong", null, [], null, 'array[3]', '5'));
-        $this->sync->setViolations(['test'=>$testViolations,'array'=>[5=>$arrayViolation]]);
+        $this->sync->setViolations(['fst'=>$testViolations,'snd'=>$arrayViolation]);
         $this->manager->flush();
 
         $this->assertNotNull($this->sync->getId(), "Sync wasn't saved");
         $sync = $this->syncRepo->find($this->sync->getId());
         $this->assertNotNull($sync, "Sync wasn't found");
 
-        $this->assertArrayHasKey('test', $this->sync->getViolations());
-        $this->assertArrayHasKey('array', $this->sync->getViolations());
+        $this->assertArrayHasKey('fst', $this->sync->getViolations());
+        $this->assertArrayHasKey('snd', $this->sync->getViolations());
     }
 
     protected function tearDown()

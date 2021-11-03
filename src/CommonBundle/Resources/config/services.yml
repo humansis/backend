@@ -269,6 +269,14 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
+    CommonBundle\DataFixtures\SynchronizationBatchFixtures:
+        public: true
+        arguments:
+            - "@=service('kernel').getEnvironment()"
+            - "@NewApiBundle\\Component\\Smartcard\\SmartcardDepositService"
+        tags:
+            - { name: doctrine.fixture.orm }
+
     CommonBundle\DataFixtures\TransactionFixtures:
         public: true
         arguments:
