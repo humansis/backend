@@ -11,6 +11,7 @@ services:
         image: artifactory.quanti.cz/docker/humansis-php:test
         volumes:
             - /opt/humansis/var:/var/www/html/var
+            - /var/cache/humansis:/var/www/html/var/cache
             - /opt/humansis/parameters.yml:/var/www/html/app/config/parameters.yml:ro
             - /opt/humansis/jwt:/var/www/html/app/config/jwt:ro
         networks:
