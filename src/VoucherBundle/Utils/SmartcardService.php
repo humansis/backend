@@ -3,6 +3,7 @@
 namespace VoucherBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use CommonBundle\Exception\BadRequestDataException;
 use DateTime;
 use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
@@ -10,6 +11,8 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManager;
 use NewApiBundle\Entity\ReliefPackage;
 use NewApiBundle\Enum\AssistanceBeneficiaryCommodityState;
+use NewApiBundle\Enum\ModalityType;
+use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Repository\ProjectRepository;
@@ -62,6 +65,29 @@ class SmartcardService
         $this->em->persist($smartcard);
         $this->em->flush();
         return $smartcard;
+    }
+
+    public function depositLegacy(string $serialNumber, int $beneficiaryId, int $assistanceId, $value, $balanceBefore, $balanceAfter, DateTimeInterface $distributedAt, User $user): SmartcardDeposit
+    {
+        $target = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy([
+            'assistance' => $assistanceId,
+            'beneficiary' => $beneficiaryId,
+        ]);
+
+        if (null == $target) {
+            throw new BadRequestDataException("No beneficiary #$beneficiaryId in assistance #$assistanceId");
+        }
+
+        /** @var ReliefPackage|null $reliefPackage */
+        $reliefPackage = $this->em->getRepository(ReliefPackage::class)->findOneBy([
+            'state' => ReliefPackageState::TO_DISTRIBUTE,
+            'modalityType' => ModalityType::SMART_CARD,
+            'assistanceBeneficiary' => $target,
+        ]);
+        if (null == $reliefPackage) {
+            throw new BadRequestDataException("Nothing to distribute for beneficiary #$beneficiaryId in assistance #$assistanceId");
+        }
+        return $this->deposit($serialNumber, $reliefPackage->getId(), $value, $balanceBefore, $distributedAt, $user);
     }
 
     public function deposit(string $serialNumber, int $reliefPackageId, $value, $balance, DateTimeInterface $distributedAt, User $user): SmartcardDeposit

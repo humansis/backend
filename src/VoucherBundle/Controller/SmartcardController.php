@@ -318,13 +318,15 @@ class SmartcardController extends Controller
      *
      * @return Response
      */
-    public function deposit(Request $request): Response
+    public function legacyDeposit(Request $request): Response
     {
         try {
-            $deposit = $this->get('smartcard_service')->deposit(
+            $deposit = $this->get('smartcard_service')->depositLegacy(
                 $request->get('serialNumber'),
-                $request->request->getInt('reliefPackageId'),
+                $request->request->get('beneficiaryId'),
+                $request->request->getInt('distributionId'),
                 $request->request->get('value'),
+                null,
                 null,
                 \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
                 $this->getUser()
