@@ -63,22 +63,25 @@ class ReliefPackageVendorMapper implements MapperInterface
         return $this->object->getAssistanceBeneficiary()->getBeneficiary()->getSmartcardSerialNumber();
     }
 
-    //TODO
     public function getFoodLimit(): ?int
     {
-        return null;
+        $foodLimit = $this->object->getAssistanceBeneficiary()->getAssistance()->getFoodLimit();
+
+        return $foodLimit ? (int) $foodLimit : null;
     }
 
-    //TODO
     public function getNonfoodLimit(): ?int
     {
-        return null;
+        $nonFoodLimit = $this->object->getAssistanceBeneficiary()->getAssistance()->getNonFoodLimit();
+
+        return $nonFoodLimit ? (int) $nonFoodLimit : null;
     }
 
-    //TODO
     public function getCashbackLimit(): ?int
     {
-        return null;
+        $cashbackLimit = $this->object->getAssistanceBeneficiary()->getAssistance()->getCashbackLimit();
+
+        return $cashbackLimit ? (int) $cashbackLimit : null;
     }
 
     public function getExpirationDate(): ?string
