@@ -255,7 +255,7 @@ deploy demo:
     - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
   <<: *remove_key
   only:
-    - /^release\/.*$
+    - /^release\/.*$/
     - /^v.*$/
   when: manual
   tags:
