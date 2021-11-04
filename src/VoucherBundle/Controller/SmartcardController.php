@@ -318,7 +318,7 @@ class SmartcardController extends Controller
      *
      * @return Response
      */
-    public function deposit(Request $request): Response
+    public function legacyDeposit(Request $request): Response
     {
         try {
             $deposit = $this->get('smartcard_service')->deposit(
