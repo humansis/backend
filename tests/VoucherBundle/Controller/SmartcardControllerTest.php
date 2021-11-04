@@ -101,7 +101,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->request('PATCH', '/api/wsse/offline-app/v3/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
             'value' => 255.25,
             'balance' => 260.00,
-            'reliefPackageId' => $reliefPackage->getId(),
+            'distributionId' => $reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId(),
             'createdAt' => '2020-02-02T12:00:00Z',
             'beneficiaryId' => $bnf->getId(),
         ]);
@@ -632,7 +632,8 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->request('PATCH', '/api/wsse/offline-app/v3/smartcards/'.$nonexistentSmarcard.'/deposit', [
             'value' => 500,
             'createdAt' => '2020-02-02T12:00:00+0001',
-            'reliefPackageId' => $reliefPackage->getId(),
+            'beneficiaryId' => $reliefPackage->getAssistanceBeneficiary()->getBeneficiary()->getId(),
+            'distributionId' => $reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId(),
         ]);
 
         /** @var Smartcard $smartcard */
