@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller\VendorApp;
 
+use DistributionBundle\Entity\Assistance;
 use Exception;
 use NewApiBundle\Entity\ReliefPackage;
 use Tests\BMSServiceTestCase;
@@ -30,6 +31,11 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         $originalLocation = $vendor->getLocation();
 
         $reliefPackage = $this->em->getRepository(ReliefPackage::class)->findOneBy([]);
+
+        /** @var Assistance $assitance */
+        $assistance = $reliefPackage->getAssistanceBeneficiary()->getAssistance();
+        $assistance->setRemoteDistributionAllowed(true);
+
         $vendor->setLocation($reliefPackage->getAssistanceBeneficiary()->getAssistance()->getLocation());
 
         $this->em->flush();

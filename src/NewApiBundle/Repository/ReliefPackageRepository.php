@@ -62,7 +62,8 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
         }
 
         $qb->andWhere('rp.state = :state')
-            ->andWhere('(a.dateExpiration < :currentDate OR a.dateExpiration IS NULL)')
+            ->andWhere('(a.dateExpiration > :currentDate OR a.dateExpiration IS NULL)')
+            ->andWhere('a.remoteDistributionAllowed = true')
             ->setParameter('state', ReliefPackageState::TO_DISTRIBUTE)
             ->setParameter('currentDate', new \DateTime());
 
