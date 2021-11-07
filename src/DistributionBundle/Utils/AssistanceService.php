@@ -250,6 +250,8 @@ class AssistanceService
         if (!$project) {
             throw new \Doctrine\ORM\EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
         }
+        // FIXME: disabled for performance reasons, see PIN-2630 for further details
+        return new \CommonBundle\Pagination\Paginator([], -1);
 
         $filters = $this->mapping($inputType);
         $filters['criteria'] = $filters['selection_criteria'];
