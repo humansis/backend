@@ -172,23 +172,23 @@ class AssistanceMapper implements MapperInterface
     }
 
     /**
-     * @return float|int|string|null
+     * @return string|null
      */
-    public function getFoodLimit()
+    public function getFoodLimit(): ?string
     {
         return $this->object->getFoodLimit();
     }
     /**
-     * @return float|int|string|null
+     * @return string|null
      */
-    public function getNonFoodLimit()
+    public function getNonFoodLimit(): ?string
     {
         return $this->object->getNonFoodLimit();
     }
     /**
-     * @return float|int|string|null
+     * @return string|null
      */
-    public function getCashbackLimit()
+    public function getCashbackLimit(): ?string
     {
         return $this->object->getCashbackLimit();
     }

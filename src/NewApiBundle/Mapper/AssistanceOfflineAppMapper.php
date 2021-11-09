@@ -111,17 +111,17 @@ class AssistanceOfflineAppMapper implements MapperInterface
         return (bool) $this->object->getCompleted();
     }
 
-    public function getFoodLimit(): ?int
+    public function getFoodLimit(): ?string
     {
         return $this->object->getFoodLimit();
     }
 
-    public function getNonfoodLimit(): ?int
+    public function getNonfoodLimit(): ?string
     {
         return $this->object->getNonFoodLimit();
     }
 
-    public function getCashbackLimit(): ?int
+    public function getCashbackLimit(): ?string
     {
         return $this->object->getCashbackLimit();
     }

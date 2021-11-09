@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Mapper;
 
 use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Enum\ProductCategoryType;
 use NewApiBundle\Serializer\MapperInterface;
 
 class ReliefPackageVendorMapper implements MapperInterface
@@ -63,25 +64,31 @@ class ReliefPackageVendorMapper implements MapperInterface
         return $this->object->getAssistanceBeneficiary()->getBeneficiary()->getSmartcardSerialNumber();
     }
 
-    public function getFoodLimit(): ?int
+    public function getFoodLimit(): ?string
     {
-        $foodLimit = $this->object->getAssistanceBeneficiary()->getAssistance()->getFoodLimit();
+        if (!in_array(ProductCategoryType::FOOD, $this->object->getAssistanceBeneficiary()->getAssistance()->getAllowedProductCategoryTypes())) {
+            return '0.00';
+        }
 
-        return $foodLimit ? (int) $foodLimit : null;
+        return $this->object->getAssistanceBeneficiary()->getAssistance()->getFoodLimit();
     }
 
-    public function getNonfoodLimit(): ?int
+    public function getNonfoodLimit(): ?string
     {
-        $nonFoodLimit = $this->object->getAssistanceBeneficiary()->getAssistance()->getNonFoodLimit();
+        if (!in_array(ProductCategoryType::NONFOOD, $this->object->getAssistanceBeneficiary()->getAssistance()->getAllowedProductCategoryTypes())) {
+            return '0.00';
+        }
 
-        return $nonFoodLimit ? (int) $nonFoodLimit : null;
+        return $this->object->getAssistanceBeneficiary()->getAssistance()->getNonFoodLimit();
     }
 
-    public function getCashbackLimit(): ?int
+    public function getCashbackLimit(): ?string
     {
-        $cashbackLimit = $this->object->getAssistanceBeneficiary()->getAssistance()->getCashbackLimit();
+        if (!in_array(ProductCategoryType::CASHBACK, $this->object->getAssistanceBeneficiary()->getAssistance()->getAllowedProductCategoryTypes())) {
+            return '0.00';
+        }
 
-        return $cashbackLimit ? (int) $cashbackLimit : null;
+        return $this->object->getAssistanceBeneficiary()->getAssistance()->getCashbackLimit();
     }
 
     public function getExpirationDate(): ?string

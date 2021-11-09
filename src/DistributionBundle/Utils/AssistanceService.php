@@ -396,6 +396,14 @@ class AssistanceService
             $this->saveReceivers($distribution, $listReceivers);
         }
 
+        if (isset($distributionArray['allowedProductCategoryTypes'])) {
+            $distribution->setAllowedProductCategoryTypes($distributionArray['allowedProductCategoryTypes']);
+        }
+
+        if (isset($distributionArray['foodLimit'])) {
+            $distribution->setFoodLimit($distributionArray['foodLimit']);
+        }
+
         $this->em->persist($distribution);
         $this->em->flush();
 
