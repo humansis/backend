@@ -111,7 +111,7 @@ class TestReportImportCommand extends KernelTestCase
         $assistance = $this->prepareTestAssistance();
 
         /** @var User $user */
-        $user = $this->entityManager->getRepository(User::class)->findOneBy([]);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
 
         $wingMoneyImportCommand = $this->application->find('app:wing-money:import');
         $commandTester = new CommandTester($wingMoneyImportCommand);

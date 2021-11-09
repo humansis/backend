@@ -102,7 +102,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
 
         $assistanceBeneficiary = new AssistanceBeneficiary();
         $assistanceBeneficiary->setAssistance($this->someSmartcardAssistance());
-        $assistanceBeneficiary->setBeneficiary($this->em->getRepository(Beneficiary::class)->findOneBy([]));
+        $assistanceBeneficiary->setBeneficiary($this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']));
 
         $this->em->persist($assistanceBeneficiary);
 

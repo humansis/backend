@@ -194,7 +194,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             $currentAccess = $manager->getRepository(UserCountry::class)->findOneBy([
                 'user' => $instance,
                 'iso3' => $country,
-            ]);
+            ], ['id' => 'asc']);
 
             if ($currentAccess === null) {
                 $userCountry = new UserCountry();
@@ -223,7 +223,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             $userProject = $manager->getRepository(UserProject::class)->findOneBy([
                 'user' => $user,
                 'project' => $countryProject,
-            ]);
+            ], ['id' => 'asc']);
             if ($userProject instanceof UserProject) {
                 echo "User {$user->getUsername()} access to {$countryProject->getName()} project already exists. Ommit creation.\n";
                 continue;

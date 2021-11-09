@@ -113,10 +113,10 @@ class ReliefPackage
 
         $this->assistanceBeneficiary = $assistanceBeneficiary;
         $this->modalityType = $modalityType;
-        $this->amountToDistribute = $amountToDistribute;
+        $this->amountToDistribute = (string) $amountToDistribute;
         $this->unit = $unit;
         $this->state = $state;
-        $this->amountDistributed = $amountDistributed;
+        $this->amountDistributed = (string) $amountDistributed;
     }
 
     /**
@@ -209,10 +209,19 @@ class ReliefPackage
     /**
      * @return float
      */
-    public function getAmountDistributed(): float
+    public function getAmountDistributed(): string
     {
         return $this->amountDistributed;
     }
+
+    /**
+     * @param string $amountDistributed
+     */
+    public function setAmountDistributed(string $amountDistributed): void
+    {
+        $this->amountDistributed = $amountDistributed;
+    }
+
 
     /**
      * @return Collection|SmartcardDeposit[]

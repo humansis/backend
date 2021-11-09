@@ -189,11 +189,6 @@ class AssistanceService
                     $this->createReliefPackage($beneficiary, $commodity);
                 }
             }
-            if ($commodity->getModalityType()->getName() === \NewApiBundle\Enum\ModalityType::SMART_CARD) {
-                foreach ($beneficiaries as $beneficiary) {
-                    $this->createReliefPackage($beneficiary, $commodity);
-                }
-            }
         }
         $this->em->flush();
 

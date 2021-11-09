@@ -27,7 +27,7 @@ class CountrySpecificFixtures extends Fixture
                 "fieldString" => $datum[0],
                 "type" => $datum[1],
                 "countryIso3" => $datum[2]
-            ]);
+            ], ['id' => 'asc']);
             if (!$countrySpecific instanceof CountrySpecific) {
                 $countrySpecific = new CountrySpecific($datum[0], $datum[1], $datum[2]);
                 $manager->persist($countrySpecific);

@@ -109,10 +109,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testCreateDistribution()
     {
         /** @var Project $project */
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findOneBy([]);
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findOneBy([], ['id' => 'asc']);
 
         /** @var Location $location */
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findOneBy([]);
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findOneBy([], ['id' => 'asc']);
 
         if (null === $project || null === $location) {
             $this->markTestSkipped('There needs to be at least one project and location in system for completing this test');

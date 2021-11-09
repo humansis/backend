@@ -43,7 +43,7 @@ class VoucherRedemptionFixtures extends Fixture implements DependentFixtureInter
         srand(42);
 
         $vendors = $manager->getRepository(Vendor::class)->findAll();
-        $user = $manager->getRepository(User::class)->findOneBy([]);
+        $user = $manager->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
         // $user = $this->getReference('user_admin');
 
         foreach ($vendors as $vendor) {

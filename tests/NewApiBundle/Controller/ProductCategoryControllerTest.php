@@ -29,7 +29,7 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
     public function testCreate()
     {
         /** @var ProductCategory|null $productCategory */
-        $productCategory = self::$container->get('doctrine')->getRepository(ProductCategory::class)->findOneBy(['type' => ProductCategoryType::FOOD]);
+        $productCategory = self::$container->get('doctrine')->getRepository(ProductCategory::class)->findOneBy(['type' => ProductCategoryType::FOOD], ['id' => 'asc']);
 
         if (!$productCategory instanceof ProductCategory) {
             $this->markTestSkipped('There needs to be at least one product category in system to complete this test');

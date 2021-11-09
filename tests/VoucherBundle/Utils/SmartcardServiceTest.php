@@ -176,7 +176,7 @@ class SmartcardServiceTest extends KernelTestCase
     public function testSmartcardCashflows(array $actions, array $expectedResults): void
     {
         $admin = $this->em->getRepository(User::class)->find(1);
-        $product = $this->em->getRepository(Product::class)->findOneBy(['countryISO3'=>'SYR']);
+        $product = $this->em->getRepository(Product::class)->findOneBy(['countryISO3'=>'SYR'], ['id' => 'asc']);
 
         $date = \DateTime::createFromFormat('Y-m-d', '2000-01-01');
         foreach ($actions as $actionData) {
@@ -213,7 +213,7 @@ class SmartcardServiceTest extends KernelTestCase
                     $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy([
                         'assistance' => $assistance,
                         'beneficiary'=> $beneficiary
-                    ]);
+                    ], ['id' => 'asc']);
 
                     $reliefPackage = new ReliefPackage(
                         $assistanceBeneficiary,
@@ -489,7 +489,7 @@ class SmartcardServiceTest extends KernelTestCase
                         $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy([
                             'assistance' => $assistance,
                             'beneficiary'=> $beneficiary
-                        ]);
+                        ], ['id' => 'asc']);
 
                         $reliefPackage = new ReliefPackage(
                             $assistanceBeneficiary,
@@ -574,8 +574,8 @@ class SmartcardServiceTest extends KernelTestCase
     private function createTempVendor(\Doctrine\ORM\EntityManagerInterface $em): void
     {
         $id = substr(md5(uniqid()), 0, 5)."_";
-        $adm1 = $this->em->getRepository(Adm1::class)->findOneBy(['countryISO3' => 'SYR']);
-        $adm2 = $this->em->getRepository(Adm2::class)->findOneBy(['adm1' => $adm1]);
+        $adm1 = $this->em->getRepository(Adm1::class)->findOneBy(['countryISO3' => 'SYR'], ['id' => 'asc']);
+        $adm2 = $this->em->getRepository(Adm2::class)->findOneBy(['adm1' => $adm1], ['id' => 'asc']);
 
         $user = new User();
         $user->injectObjectManager($em);

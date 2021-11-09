@@ -53,7 +53,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
     public function testRegisterSmartcard()
     {
         $this->removeSmartcards('1111111');
-        $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([]);
+        $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
 
         $this->request('POST', '/api/wsse/offline-app/v1/smartcards', [
             'serialNumber' => '1111111',
@@ -79,7 +79,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
     public function testRegisterDuplicateSmartcard()
     {
-        $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([]);
+        $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
 
         $this->request('POST', '/api/wsse/offline-app/v1/smartcards', [
             'serialNumber' => '1234ABC',
@@ -119,7 +119,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
     {
         //TODO this test passes, but deposit to inactive smartcard is still possible. In request is mission distributionId
 
-        $depositor = $this->em->getRepository(User::class)->findOneBy([]);
+        $depositor = $this->em->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
         /** @var AssistanceBeneficiary $assistanceBeneficiary */
         $assistanceBeneficiary = $this->assistanceBeneficiaryWithoutRelief();
         $bnf = $assistanceBeneficiary->getBeneficiary();
@@ -150,7 +150,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
     public function testPurchase()
     {
-        $depositor = $this->em->getRepository(User::class)->findOneBy([]);
+        $depositor = $this->em->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
         $assistanceBeneficiary = $this->assistanceBeneficiaryWithoutRelief();
         $bnf = $assistanceBeneficiary->getBeneficiary();
 
@@ -193,7 +193,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
      */
     public function testPurchaseFromEmptySmartcard()
     {
-        $depositor = $this->em->getRepository(User::class)->findOneBy([]);
+        $depositor = $this->em->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
         $assistanceBeneficiary = $this->assistanceBeneficiaryWithoutRelief();
         $bnf = $assistanceBeneficiary->getBeneficiary();
 
@@ -286,7 +286,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
     public function testPurchaseShouldBeAllowedForNonexistentSmartcardV3()
     {
         $nonexistentSmarcard = '23456789012';
-        $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([]);
+        $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
 
         $headers = ['HTTP_COUNTRY' => 'KHM'];
         $content = json_encode([
@@ -316,7 +316,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
     public function testChangeStateToInactive()
     {
-        $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([]);
+        $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
         $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
 
         $this->request('PATCH', '/api/wsse/offline-app/v1/smartcards/'.$smartcard->getSerialNumber(), [
@@ -394,7 +394,9 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         $vendor = $this->em->getRepository(Vendor::class)->findOneBy(['name' => VendorFixtures::VENDOR_SYR_NAME], ['id' => 'asc']);
         $vendorId = $vendor->getId();
-        $smartcard = $this->em->getRepository(Smartcard::class)->findOneBy(['currency' => 'SYP']);
+        /** @var Smartcard $smartcard */
+        $smartcard = $this->em->getRepository(Smartcard::class)->findOneBy(['currency' => 'SYP', 'state'=>Smartcard::STATE_ACTIVE], ['id'=>'desc']);
+        $smartcard->getDeposites()[0]->setDistributedAt(\DateTime::createFromFormat('Y-m-d', '2000-01-01'));
         $purchase = new \VoucherBundle\InputType\SmartcardPurchase();
         $purchase->setProducts([[
             'id' => 1,
@@ -403,12 +405,13 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'currency' => 'SYP',
         ]]);
         $purchase->setVendorId($vendorId);
-        $purchase->setCreatedAt(new \DateTime());
+        $purchase->setCreatedAt(\DateTime::createFromFormat('Y-m-d', '2000-01-02'));
         $purchaseService = self::$container->get('voucher.purchase_service');
         $smartcardService = self::$container->get('smartcard_service');
         $purchaseService->purchaseSmartcard($smartcard, $purchase);
         /** @var SmartcardPurchase $p2 */
         $p2 = $purchaseService->purchaseSmartcard($smartcard, $purchase);
+        $purchase->setCreatedAt(\DateTime::createFromFormat('Y-m-d', '2000-01-03'));
         $p3 = $purchaseService->purchaseSmartcard($smartcard, $purchase);
 
         $redemptionBatch = new SmartcardRedemtionBatch();
@@ -560,7 +563,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->em->flush();
 
         /** @var \DistributionBundle\Entity\ModalityType $modalityType */
-        $modalityType = $this->em->getRepository(\DistributionBundle\Entity\ModalityType::class)->findOneBy(['name' => 'Smartcard']);
+        $modalityType = $this->em->getRepository(\DistributionBundle\Entity\ModalityType::class)->findOneBy(['name' => 'Smartcard'], ['id' => 'asc']);
         /** @var \DistributionBundle\Entity\Commodity $commodity */
         $commodity = $this->em->getRepository(\DistributionBundle\Entity\Commodity::class)->findBy(['modalityType' => $modalityType])[0];
         $assistance = $commodity->getAssistance();
@@ -625,7 +628,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy([
             'assistance' => $distribution,
             'beneficiary' => $beneficiary,
-        ]);
+        ], ['id' => 'asc']);
 
         $reliefPackage = $this->createReliefPackage($assistanceBeneficiary);
 
@@ -648,10 +651,10 @@ class SmartcardControllerTest extends BMSServiceTestCase
     public function testDuplicityPurchase(): void
     {
         /** @var User $depositor */
-        $depositor = $this->em->getRepository(User::class)->findOneBy([]);
+        $depositor = $this->em->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
         $assistanceBeneficiary = $this->someSmartcardAssistance()->getDistributionBeneficiaries()->get(0);
         /** @var Beneficiary $bnf */
-        $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([]);
+        $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
 
         $reliefPackage = $this->createReliefPackage($assistanceBeneficiary);
 
@@ -766,7 +769,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         $assistanceBeneficiary = new AssistanceBeneficiary();
         $assistanceBeneficiary->setAssistance($this->someSmartcardAssistance());
-        $assistanceBeneficiary->setBeneficiary($this->em->getRepository(Beneficiary::class)->findOneBy([]));
+        $assistanceBeneficiary->setBeneficiary($this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']));
 
         $this->em->persist($assistanceBeneficiary);
 
