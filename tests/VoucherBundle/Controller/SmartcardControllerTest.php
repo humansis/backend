@@ -409,6 +409,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $purchaseService->purchaseSmartcard($smartcard, $purchase);
         /** @var SmartcardPurchase $p2 */
         $p2 = $purchaseService->purchaseSmartcard($smartcard, $purchase);
+        $purchase->setCreatedAt(new \DateTime());
         $p3 = $purchaseService->purchaseSmartcard($smartcard, $purchase);
 
         $redemptionBatch = new SmartcardRedemtionBatch();
