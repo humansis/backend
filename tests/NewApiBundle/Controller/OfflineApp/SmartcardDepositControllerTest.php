@@ -36,7 +36,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
 
     private function removeSmartcards(string $serialNumber): void
     {
-        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['serialNumber' => $serialNumber]);
+        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['serialNumber' => $serialNumber], ['id' => 'asc']);
         foreach ($smartcards as $smartcard) {
             $this->em->remove($smartcard);
         }
@@ -112,7 +112,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
     private function getSmartcardForBeneficiary(string $serialNumber, Beneficiary $beneficiary): Smartcard
     {
         /** @var Smartcard[] $smartcards */
-        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['serialNumber' => $serialNumber]);
+        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['serialNumber' => $serialNumber], ['id' => 'asc']);
 
         foreach ($smartcards as $smartcard) {
             if ($smartcard->getState() === SmartcardStates::ACTIVE) {

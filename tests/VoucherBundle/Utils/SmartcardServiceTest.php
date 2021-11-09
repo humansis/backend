@@ -455,19 +455,19 @@ class SmartcardServiceTest extends KernelTestCase
         $packages = $this->em->getRepository(ReliefPackage::class)->findBy([
             'assistanceBeneficiary' => $targets,
         ]);
-        $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(['reliefPackage'=>$packages]);
+        $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(['reliefPackage'=>$packages], ['id' => 'asc']);
         foreach ($packages as $package) {
             $this->em->remove($package);
         }
         foreach ($deposits as $deposit) {
             $this->em->remove($deposit);
         }
-        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['beneficiary'=>$allTestingBeneficiaries]);
-        $purchases = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->findBy(['smartcard'=>$smartcards]);
+        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['beneficiary'=>$allTestingBeneficiaries], ['id' => 'asc']);
+        $purchases = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->findBy(['smartcard'=>$smartcards], ['id' => 'asc']);
         foreach ($purchases as $purchase) {
             $this->em->remove($purchase);
         }
-        $purchases = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->findBy(['vendor'=>$allTestingVendors]);
+        $purchases = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->findBy(['vendor'=>$allTestingVendors], ['id' => 'asc']);
         foreach ($purchases as $purchase) {
             $this->em->remove($purchase);
         }
@@ -536,16 +536,16 @@ class SmartcardServiceTest extends KernelTestCase
                 'beneficiary' => $beneficiaryId,
                 'assistance' => $assistanceId,
                 ]);
-            $package = $this->em->getRepository(ReliefPackage::class)->findBy(['assistanceBeneficiary'=>$target]);
-            $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(['reliefPackage'=>$package]);
+            $package = $this->em->getRepository(ReliefPackage::class)->findBy(['assistanceBeneficiary'=>$target], ['id' => 'asc']);
+            $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(['reliefPackage'=>$package], ['id' => 'asc']);
             $distributed = 0;
             foreach ($deposits as $deposit) {
                 $distributed += $deposit->getValue();
             }
             $this->assertEquals($values['distributed'], $distributed, "Wrong distributed amount");
 
-            $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['beneficiary'=>$beneficiaryId]);
-            $purchases = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->findBy(['smartcard'=>$smartcards]);
+            $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['beneficiary'=>$beneficiaryId], ['id' => 'asc']);
+            $purchases = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->findBy(['smartcard'=>$smartcards], ['id' => 'asc']);
             $purchased = 0;
             foreach ($purchases as $purchase) {
                 $purchased += $purchase->getRecordsValue();

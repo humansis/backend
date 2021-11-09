@@ -74,7 +74,7 @@ class UserControllerTest extends BMSServiceTestCase
     public function testCreate(int $userId)
     {
         /** @var Project|null $project */
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         if (null === $project) {
             $this->markTestSkipped('There needs to be at least one project in system to complete this test');
@@ -155,7 +155,7 @@ class UserControllerTest extends BMSServiceTestCase
     public function testUpdate(array $result)
     {
         /** @var Project|null $project */
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         if (null === $project) {
             $this->markTestSkipped('There needs to be at least one project in system to complete this test');

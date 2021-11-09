@@ -401,7 +401,7 @@ class LocationControllerTest extends BMSServiceTestCase
     {
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $location = $em->getRepository(Location::class)->findBy([])[0];
+        $location = $em->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/locations?filter[id][]='.$location->getId());
 

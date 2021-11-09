@@ -14,7 +14,7 @@ class CampFixtures extends Fixture implements DependentFixtureInterface
      */
     public function load(ObjectManager $manager)
     {
-        $location = $manager->getRepository(\CommonBundle\Entity\Location::class)->findBy([], null, 1)[0];
+        $location = $manager->getRepository(\CommonBundle\Entity\Location::class)->findBy([], ['id' => 'asc'], 1)[0];
 
         $camp = (new Camp())
             ->setName('Camp David')

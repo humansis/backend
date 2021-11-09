@@ -43,7 +43,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
     private function removeSmartcards(string $serialNumber): void
     {
-        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['serialNumber' => $serialNumber]);
+        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['serialNumber' => $serialNumber], ['id' => 'asc']);
         foreach ($smartcards as $smartcard) {
             $this->em->remove($smartcard);
         }
@@ -340,7 +340,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $vendor = $this->em->getRepository(Vendor::class)->findOneBy([], ['id' => 'asc']);
-        $purchases = $this->em->getRepository(SmartcardPurchase::class)->findBy(['vendor' => $vendor]);
+        $purchases = $this->em->getRepository(SmartcardPurchase::class)->findBy(['vendor' => $vendor], ['id' => 'asc']);
         $purchaseCount = count($purchases);
 
         $crawler = $this->request('GET', '/api/wsse/smartcards/purchases/'.$vendor->getId());
@@ -557,7 +557,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
     {
         $nonexistentSmarcard = '123ABCDE';
 
-        foreach ($this->em->getRepository(Smartcard::class)->findBy(['serialNumber'=>$nonexistentSmarcard]) as $smartcard) {
+        foreach ($this->em->getRepository(Smartcard::class)->findBy(['serialNumber'=>$nonexistentSmarcard], ['id' => 'asc']) as $smartcard) {
             $this->em->remove($smartcard);
         }
         $this->em->flush();
@@ -565,7 +565,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         /** @var \DistributionBundle\Entity\ModalityType $modalityType */
         $modalityType = $this->em->getRepository(\DistributionBundle\Entity\ModalityType::class)->findOneBy(['name' => 'Smartcard'], ['id' => 'asc']);
         /** @var \DistributionBundle\Entity\Commodity $commodity */
-        $commodity = $this->em->getRepository(\DistributionBundle\Entity\Commodity::class)->findBy(['modalityType' => $modalityType])[0];
+        $commodity = $this->em->getRepository(\DistributionBundle\Entity\Commodity::class)->findBy(['modalityType' => $modalityType], ['id' => 'asc'])[0];
         $assistance = $commodity->getAssistance();
         $beneficiary = $assistance->getDistributionBeneficiaries()[0]->getBeneficiary();
 
@@ -779,7 +779,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
     private function getSmartcardForBeneficiary(string $serialNumber, Beneficiary $beneficiary): Smartcard
     {
         /** @var Smartcard[] $smartcards */
-        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['serialNumber' => $serialNumber]);
+        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['serialNumber' => $serialNumber], ['id' => 'asc']);
 
         foreach ($smartcards as $smartcard) {
             if ($smartcard->getState() === SmartcardStates::ACTIVE) {

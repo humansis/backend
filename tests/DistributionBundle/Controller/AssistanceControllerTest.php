@@ -921,7 +921,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     {
         /** @var \BeneficiaryBundle\Repository\CommunityRepository $communityRepo */
         $communityRepo = self::$container->get('doctrine')->getRepository(\BeneficiaryBundle\Entity\Community::class);
-        $community = $communityRepo->findBy([])[0];
+        $community = $communityRepo->findBy([], ['id' => 'asc'])[0];
 
         $body = [
             'id' => null,
@@ -993,7 +993,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     {
         /** @var \BeneficiaryBundle\Repository\InstitutionRepository $institutionRepo */
         $institutionRepo = self::$container->get('doctrine')->getRepository(\BeneficiaryBundle\Entity\Institution::class);
-        $institution = $institutionRepo->findBy([])[0];
+        $institution = $institutionRepo->findBy([], ['id' => 'asc'])[0];
 
         $body = [
             'id' => null,
