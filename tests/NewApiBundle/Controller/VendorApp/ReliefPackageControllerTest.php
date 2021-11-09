@@ -26,11 +26,11 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
 
     public function testListReliefPackagesSimple()
     {
-        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([]);
+        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([], ['id' => 'asc']);
 
         $originalLocation = $vendor->getLocation();
 
-        $reliefPackage = $this->em->getRepository(ReliefPackage::class)->findOneBy([]);
+        $reliefPackage = $this->em->getRepository(ReliefPackage::class)->findOneBy([], ['id' => 'asc']);
 
         /** @var Assistance $assitance */
         $assistance = $reliefPackage->getAssistanceBeneficiary()->getAssistance();

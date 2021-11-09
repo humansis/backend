@@ -240,7 +240,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
 
     private function loadSmartcardAssistance(ObjectManager $manager, Project $project, string $currency)
     {
-        $modalityType = $manager->getRepository(ModalityType::class)->findOneBy(['name' => 'Smartcard']);
+        $modalityType = $manager->getRepository(ModalityType::class)->findOneBy(['name' => 'Smartcard'], ['id' => 'asc']);
 
         $data = $this->assistanceArray;
         $data['project']['id'] = $project->getId();

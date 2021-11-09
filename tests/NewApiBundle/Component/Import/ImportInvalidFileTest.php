@@ -42,14 +42,14 @@ class ImportInvalidFileTest extends KernelTestCase
     public function testCreateInvalidFileAndImportAgain()
     {
         /** @var Import $import */
-        $import = self::$entityManager->getRepository(Import::class)->findOneBy([]);
+        $import = self::$entityManager->getRepository(Import::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($import)) {
             $this->markTestSkipped('There needs to be at least one import in system');
         }
 
         /** @var User $user */
-        $user = self::$entityManager->getRepository(User::class)->findOneBy([]);
+        $user = self::$entityManager->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
 
         $invalidFilePath = self::$importInvalidFileService->generateFile($import);
 
@@ -66,7 +66,7 @@ class ImportInvalidFileTest extends KernelTestCase
         $importedFile = self::$entityManager->getRepository(ImportFile::class)
             ->findOneBy([
                 'filename' => $invalidFilePath->getFilename(),
-            ]);
+            ], ['id' => 'asc']);
 
         $this->assertNotNull($importedFile);
     }

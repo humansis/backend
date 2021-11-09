@@ -147,7 +147,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
 
     private function generatePurchases(ObjectManager $manager, AssistanceBeneficiary $ab, Vendor $vendor): void
     {
-        $smartcard = $manager->getRepository(Smartcard::class)->findOneBy(['serialNumber' => $ab->getBeneficiary()->getSmartcardSerialNumber()]);
+        $smartcard = $manager->getRepository(Smartcard::class)->findOneBy(['serialNumber' => $ab->getBeneficiary()->getSmartcardSerialNumber()], ['id' => 'desc']);
         for ($j = 0; $j < rand(0, 50); ++$j) {
             $this->generatePurchase($j, $smartcard, $vendor, $manager);
         }

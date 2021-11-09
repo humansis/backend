@@ -319,7 +319,7 @@ class ImportFinishServiceTest extends KernelTestCase
 
     private function getUser(): User
     {
-        return $this->entityManager->getRepository(User::class)->findOneBy([]);
+        return $this->entityManager->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
     }
 
 }

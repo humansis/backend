@@ -224,7 +224,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $project = $em->getRepository(Project::class)->findOneBy([
             'archived' => false,
-        ]);
+        ], ['id' => 'asc']);
 
         $this->request('GET', '/api/basic/web-app/v1/projects/'.$project->getId().'/targets/'.AssistanceTargetType::INDIVIDUAL.'/beneficiaries');
 

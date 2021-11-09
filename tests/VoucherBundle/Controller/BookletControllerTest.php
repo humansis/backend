@@ -156,7 +156,7 @@ class BookletControllerTest extends BMSServiceTestCase
      */
     public function testUpdatePassword()
     {
-        $booklet = $this->em->getRepository(Booklet::class)->findOneBy(['status' => 0]);
+        $booklet = $this->em->getRepository(Booklet::class)->findOneBy(['status' => 0], ['id' => 'asc']);
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -181,7 +181,7 @@ class BookletControllerTest extends BMSServiceTestCase
      */
     public function testGetProtectedBooklets()
     {
-        $booklet = $this->em->getRepository(Booklet::class)->findOneBy(['password' => 'secret-password']);
+        $booklet = $this->em->getRepository(Booklet::class)->findOneBy(['password' => 'secret-password'], ['id' => 'asc']);
 
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
@@ -281,8 +281,10 @@ class BookletControllerTest extends BMSServiceTestCase
      */
     public function testAssignBooklet()
     {
-        $booklet = $this->em->getRepository(Booklet::class)->findOneBy(['status' => Booklet::UNASSIGNED]);
-        $distribution = $this->em->getRepository(Assistance::class)->findOneBy([]);
+        $booklet = $this->em->getRepository(Booklet::class)->findOneBy(['status' => Booklet::UNASSIGNED], ['id' => 'desc']);
+        $distribution = $this->em->getRepository(Assistance::class)->findOneBy([
+            'project'=>$booklet->getProject(),
+        ], ['name' => 'desc']);
         $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findAssignable($distribution)[0];
         $beneficiary = $assistanceBeneficiary->getBeneficiary();
 

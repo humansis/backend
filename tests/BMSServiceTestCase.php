@@ -393,7 +393,7 @@ class BMSServiceTestCase extends KernelTestCase
 
         $vulnerabilityCriterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy([
             "fieldString" => "disabled"
-        ]);
+        ], ['id' => 'asc']);
         $beneficiaries = $this->bodyHousehold["beneficiaries"];
         $vulnerabilityId = $vulnerabilityCriterion->getId();
         foreach ($beneficiaries as $index => $b) {
@@ -404,7 +404,7 @@ class BMSServiceTestCase extends KernelTestCase
             "fieldString" => 'IDPoor',
             "type" => 'number',
             "countryIso3" => $this->iso3
-        ]);
+        ], ['id' => 'asc']);
         $country_specific_answers = $this->bodyHousehold["country_specific_answers"];
         $countrySpecificId = $countrySpecific->getId();
         foreach ($country_specific_answers as $index => $c) {
