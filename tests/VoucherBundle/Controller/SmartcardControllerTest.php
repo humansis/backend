@@ -395,7 +395,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $vendor = $this->em->getRepository(Vendor::class)->findOneBy(['name' => VendorFixtures::VENDOR_SYR_NAME], ['id' => 'asc']);
         $vendorId = $vendor->getId();
         /** @var Smartcard $smartcard */
-        $smartcard = $this->em->getRepository(Smartcard::class)->findOneBy(['currency' => 'SYP', 'state'=>Smartcard::STATE_ACTIVE]);
+        $smartcard = $this->em->getRepository(Smartcard::class)->findOneBy(['currency' => 'SYP', 'state'=>Smartcard::STATE_ACTIVE], ['id'=>'asc']);
         $smartcard->getDeposites()[0]->setDistributedAt(\DateTime::createFromFormat('Y-m-d', '2000-01-01'));
         $purchase = new \VoucherBundle\InputType\SmartcardPurchase();
         $purchase->setProducts([[
