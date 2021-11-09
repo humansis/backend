@@ -938,9 +938,9 @@ class Assistance implements ExportableInterface
     }
 
     /**
-     * @return float|int|string|null
+     * @return string|null
      */
-    public function getFoodLimit()
+    public function getFoodLimit(): ?string
     {
         return $this->foodLimit;
     }
@@ -950,13 +950,19 @@ class Assistance implements ExportableInterface
      */
     public function setFoodLimit($foodLimit): void
     {
-        $this->foodLimit = $foodLimit;
+        if (gettype($foodLimit) === 'integer' || gettype($foodLimit) === 'double') {
+            $this->foodLimit = number_format($foodLimit, 2, '.', '');
+        } else if ( (gettype($foodLimit) === 'string' && is_numeric($foodLimit)) || null === $foodLimit) {
+            $this->foodLimit = $foodLimit;
+        } else {
+            throw new InvalidArgumentException("'$foodLimit' is not valid numeric format.");
+        }
     }
 
     /**
-     * @return float|int|string|null
+     * @return string|null
      */
-    public function getNonFoodLimit()
+    public function getNonFoodLimit(): ?string
     {
         return $this->nonFoodLimit;
     }
@@ -966,13 +972,19 @@ class Assistance implements ExportableInterface
      */
     public function setNonFoodLimit($nonFoodLimit): void
     {
-        $this->nonFoodLimit = $nonFoodLimit;
+        if (gettype($nonFoodLimit) === 'integer' || gettype($nonFoodLimit) === 'double') {
+            $this->nonFoodLimit = number_format($nonFoodLimit, 2, '.', '');
+        } else if ( (gettype($nonFoodLimit) === 'string' && is_numeric($nonFoodLimit)) || null === $nonFoodLimit) {
+            $this->nonFoodLimit = $nonFoodLimit;
+        } else {
+            throw new InvalidArgumentException("'$nonFoodLimit' is not valid numeric format.");
+        }
     }
 
     /**
-     * @return float|int|string|null
+     * @return string|null
      */
-    public function getCashbackLimit()
+    public function getCashbackLimit(): ?string
     {
         return $this->cashbackLimit;
     }
@@ -982,7 +994,13 @@ class Assistance implements ExportableInterface
      */
     public function setCashbackLimit($cashbackLimit): void
     {
-        $this->cashbackLimit = $cashbackLimit;
+        if (gettype($cashbackLimit) === 'integer' || gettype($cashbackLimit) === 'double') {
+            $this->cashbackLimit = number_format($cashbackLimit, 2, '.', '');
+        } else if ( (gettype($cashbackLimit) === 'string' && is_numeric($cashbackLimit)) || null === $cashbackLimit) {
+            $this->cashbackLimit = $cashbackLimit;
+        } else {
+            throw new InvalidArgumentException("'$cashbackLimit' is not valid numeric format.");
+        }
     }
 
     /**
