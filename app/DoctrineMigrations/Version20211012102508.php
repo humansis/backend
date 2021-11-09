@@ -56,7 +56,7 @@ final class Version20211012102508 extends AbstractMigration
                             ;
         ");
 
-        $this->addSql('UPDATE smartcard_deposit sd SET relief_package_id=(SELECT id FROM relief_package WHERE assistance_beneficiary_id=sd.distribution_beneficiary_id);');
+        $this->addSql('UPDATE smartcard_deposit sd SET relief_package_id=(SELECT id FROM relief_package WHERE assistance_beneficiary_id=sd.distribution_beneficiary_id), distributed_at=used_at;');
 
         $this->addSql('ALTER TABLE smartcard_deposit DROP distribution_beneficiary_id');
     }
