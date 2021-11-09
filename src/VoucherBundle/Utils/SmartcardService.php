@@ -123,6 +123,7 @@ class SmartcardService
         $smartcard->addDeposit($deposit);
 
         $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::DISTRIBUTE);
+        $reliefPackage->setAmountDistributed($value);
 
         if (null === $smartcard->getCurrency()) {
             $smartcard->setCurrency(self::findCurrency($reliefPackage->getAssistanceBeneficiary()));

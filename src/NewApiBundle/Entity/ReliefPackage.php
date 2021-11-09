@@ -209,10 +209,19 @@ class ReliefPackage
     /**
      * @return float
      */
-    public function getAmountDistributed(): float
+    public function getAmountDistributed(): string
     {
         return $this->amountDistributed;
     }
+
+    /**
+     * @param string $amountDistributed
+     */
+    public function setAmountDistributed(string $amountDistributed): void
+    {
+        $this->amountDistributed = $amountDistributed;
+    }
+
 
     /**
      * @return Collection|SmartcardDeposit[]
