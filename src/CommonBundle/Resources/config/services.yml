@@ -266,6 +266,7 @@ services:
         public: true
         arguments:
             - "@=service('kernel').getEnvironment()"
+            - '@smartcard_service'
         tags:
             - { name: doctrine.fixture.orm }
 

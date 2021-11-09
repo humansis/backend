@@ -113,10 +113,10 @@ class ReliefPackage
 
         $this->assistanceBeneficiary = $assistanceBeneficiary;
         $this->modalityType = $modalityType;
-        $this->amountToDistribute = $amountToDistribute;
+        $this->amountToDistribute = (string) $amountToDistribute;
         $this->unit = $unit;
         $this->state = $state;
-        $this->amountDistributed = $amountDistributed;
+        $this->amountDistributed = (string) $amountDistributed;
     }
 
     /**
