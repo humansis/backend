@@ -137,7 +137,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
             $this->smartcardService->deposit(
                 $ab->getBeneficiary()->getSmartcardSerialNumber(),
                 $package->getId(),
-                rand($package->getAmountToDistribute()/2, $package->getAmountToDistribute()),
+                $package->getAmountToDistribute(),
                 null,
                 new DateTimeImmutable("now-${i} days"),
                 $this->randomEntity(User::class, $manager)
