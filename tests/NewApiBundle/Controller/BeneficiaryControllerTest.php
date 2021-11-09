@@ -33,7 +33,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
     {
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $beneficiary = $em->getRepository(Beneficiary::class)->findBy([])[0];
+        $beneficiary = $em->getRepository(Beneficiary::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/beneficiaries/'.$beneficiary->getId());
 
@@ -69,7 +69,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
     {
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $beneficiary = $em->getRepository(Beneficiary::class)->findBy([])[0];
+        $beneficiary = $em->getRepository(Beneficiary::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/beneficiaries?filter[id][]='.$beneficiary->getId());
 
@@ -133,7 +133,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
     {
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $nationalId = $em->getRepository(NationalId::class)->findBy([])[0];
+        $nationalId = $em->getRepository(NationalId::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/beneficiaries/national-ids/'.$nationalId->getId());
 
@@ -156,7 +156,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
     {
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $nationalId = $em->getRepository(NationalId::class)->findBy([])[0];
+        $nationalId = $em->getRepository(NationalId::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/beneficiaries/national-ids?filter[id][]='.$nationalId->getId());
 
@@ -174,7 +174,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
     {
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $phone = $em->getRepository(Phone::class)->findBy([])[0];
+        $phone = $em->getRepository(Phone::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/beneficiaries/phones/'.$phone->getId());
 
@@ -199,8 +199,8 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
     {
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $phone1 = $em->getRepository(Phone::class)->findBy([])[0];
-        $phone2 = $em->getRepository(Phone::class)->findBy([])[1];
+        $phone1 = $em->getRepository(Phone::class)->findBy([], ['id' => 'asc'])[0];
+        $phone2 = $em->getRepository(Phone::class)->findBy([], ['id' => 'asc'])[1];
 
         $this->request('GET', '/api/basic/web-app/v1/beneficiaries/phones?filter[id][]='.$phone1->getId().'&filter[id][]='.$phone2->getId());
 

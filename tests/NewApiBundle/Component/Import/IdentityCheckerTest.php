@@ -27,7 +27,7 @@ class IdentityCheckerTest extends KernelTestCase
     public function testSelfCheck()
     {
         $this->markTestSkipped('Self check is disabled for this time');
-        $import = self::$entityManager->getRepository(Import::class)->findBy(['title' => 'test_fixtures'])[0];
+        $import = self::$entityManager->getRepository(Import::class)->findBy(['title' => 'test_fixtures'], ['id' => 'asc'])[0];
         $import->setState(ImportState::IDENTITY_CHECKING);
 
         $checker = new IdentityChecker(self::$entityManager);

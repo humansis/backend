@@ -130,7 +130,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
 
     private function generateDeposits(ObjectManager $manager, AssistanceBeneficiary $ab, Vendor $vendor): void
     {
-        $packages = $manager->getRepository(ReliefPackage::class)->findBy(['assistanceBeneficiary' => $ab]);
+        $packages = $manager->getRepository(ReliefPackage::class)->findBy(['assistanceBeneficiary' => $ab], ['id' => 'asc']);
 
         foreach ($packages as $package) {
             $i = rand(0, 10);
@@ -182,7 +182,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
 
     private function randomEntity($classname, ObjectManager $manager)
     {
-        $entities = $manager->getRepository($classname)->findBy([], null, 5, 0);
+        $entities = $manager->getRepository($classname)->findBy([], ['id' => 'asc'], 5, 0);
         if (0 === count($entities)) {
             return null;
         }

@@ -218,7 +218,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     {
         $countryProjects = $manager->getRepository(Project::class)->findBy([
             'iso3' => $countries,
-        ]);
+        ], ['id' => 'asc']);
         foreach ($countryProjects as $countryProject) {
             $userProject = $manager->getRepository(UserProject::class)->findOneBy([
                 'user' => $user,

@@ -47,8 +47,8 @@ class UploadImportServiceTest extends KernelTestCase
 
     public function testUpload()
     {
-        $project = $this->entityManager->getRepository(\ProjectBundle\Entity\Project::class)->findBy(['archived' => false], null, 1)[0];
-        $user = $this->entityManager->getRepository(\UserBundle\Entity\User::class)->findBy([], null, 1)[0];
+        $project = $this->entityManager->getRepository(\ProjectBundle\Entity\Project::class)->findBy(['archived' => false], ['id' => 'asc'], 1)[0];
+        $user = $this->entityManager->getRepository(\UserBundle\Entity\User::class)->findBy([], ['id' => 'asc'], 1)[0];
 
         $import = new Import('test', null, $project, $user);
         $this->entityManager->persist($import);
@@ -64,7 +64,7 @@ class UploadImportServiceTest extends KernelTestCase
         $importFile = $this->uploadService->uploadFile($import, $file, $user);
         $this->uploadService->load($importFile);
 
-        $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import]);
+        $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
 
         $this->assertCount(2, $queue);
         $this->assertSame(ImportQueueState::NEW, $queue[0]->getState());

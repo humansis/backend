@@ -28,7 +28,7 @@ class SectorsCodelistControllerTest extends BMSServiceTestCase
     public function testGetSectors()
     {
         /** @var Project $project */
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v2/projects/'.$project->getId().'/sectors');
 

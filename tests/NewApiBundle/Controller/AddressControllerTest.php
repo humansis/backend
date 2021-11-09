@@ -30,7 +30,7 @@ class AddressControllerTest extends BMSServiceTestCase
     {
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $address = $em->getRepository(Address::class)->findBy([])[0];
+        $address = $em->getRepository(Address::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/addresses/'.$address->getId());
 
@@ -54,7 +54,7 @@ class AddressControllerTest extends BMSServiceTestCase
     {
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $address = $em->getRepository(Address::class)->findBy([])[0];
+        $address = $em->getRepository(Address::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/addresses?filter[id][]='.$address->getId());
 
@@ -74,7 +74,7 @@ class AddressControllerTest extends BMSServiceTestCase
 
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $camp = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_CAMP])[0];
+        $camp = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_CAMP], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/addresses/camps/'.$camp->getId());
 
@@ -106,7 +106,7 @@ class AddressControllerTest extends BMSServiceTestCase
 
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $campAddress = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_CAMP])[0];
+        $campAddress = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_CAMP], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/addresses/camps?filter[id][]='.$campAddress->getId());
 
@@ -129,7 +129,7 @@ class AddressControllerTest extends BMSServiceTestCase
     {
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $residence = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_RESIDENCE])[0];
+        $residence = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_RESIDENCE], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/addresses/residencies/'.$residence->getId());
 
@@ -160,7 +160,7 @@ class AddressControllerTest extends BMSServiceTestCase
     {
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $residency = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_RESIDENCE])[0];
+        $residency = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_RESIDENCE], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/addresses/residencies?filter[id][]='.$residency->getId());
 
@@ -180,7 +180,7 @@ class AddressControllerTest extends BMSServiceTestCase
 
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $settlement = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_SETTLEMENT]);
+        $settlement = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_SETTLEMENT], ['id' => 'asc']);
 
         $this->request('GET', '/api/basic/web-app/v1/addresses/temporary-settlements/'.$settlement->getId());
 
@@ -213,7 +213,7 @@ class AddressControllerTest extends BMSServiceTestCase
 
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $settlement = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_SETTLEMENT])[0];
+        $settlement = $em->getRepository(HouseholdLocation::class)->findBy(['type' => HouseholdLocation::LOCATION_TYPE_SETTLEMENT], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/addresses/temporary-settlements?filter[id][]='.$settlement->getId());
 

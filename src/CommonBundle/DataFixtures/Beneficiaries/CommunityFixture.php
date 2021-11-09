@@ -126,7 +126,7 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
             return;
         }
         foreach ($this->countries as $COUNTRY) {
-            $projects = $manager->getRepository(Project::class)->findBy(['iso3' => $COUNTRY['iso3']]);
+            $projects = $manager->getRepository(Project::class)->findBy(['iso3' => $COUNTRY['iso3']], ['id' => 'asc']);
             $projectIds = array_map(function (Project $project) {
                 return $project->getId();
             }, $projects);

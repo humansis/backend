@@ -60,11 +60,11 @@ class ImportFixtures extends Fixture implements DependentFixtureInterface
 
     private function getProject(ObjectManager $manager): Project
     {
-        return $manager->getRepository(Project::class)->findBy(['iso3' => 'KHM'])[0];
+        return $manager->getRepository(Project::class)->findBy(['iso3' => 'KHM'], ['id' => 'asc'])[0];
     }
 
     private function getUser(ObjectManager $manager): User
     {
-        return $manager->getRepository(User::class)->findBy([])[0];
+        return $manager->getRepository(User::class)->findBy([], ['id' => 'asc'])[0];
     }
 }

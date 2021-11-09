@@ -48,7 +48,7 @@ class VendorControllerTest extends BMSServiceTestCase
         }
 
         /** @var User[] $users */
-        $users = $this->em->getRepository(User::class)->findBy(['vendor' => null]);
+        $users = $this->em->getRepository(User::class)->findBy(['vendor' => null], ['id' => 'asc']);
 
         if (empty($users)) {
             $this->markTestSkipped('There needs to be at least one user in system which is not assigned to any vendor to complete this test');
@@ -231,7 +231,7 @@ class VendorControllerTest extends BMSServiceTestCase
 
     public function testSummaries()
     {
-        $vendor = $this->em->getRepository(Vendor::class)->findBy([])[0];
+        $vendor = $this->em->getRepository(Vendor::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/vendors/'.$vendor->getId().'/summaries');
 
