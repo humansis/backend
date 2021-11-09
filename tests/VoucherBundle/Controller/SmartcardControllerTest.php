@@ -394,7 +394,9 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         $vendor = $this->em->getRepository(Vendor::class)->findOneBy(['name' => VendorFixtures::VENDOR_SYR_NAME], ['id' => 'asc']);
         $vendorId = $vendor->getId();
+        /** @var Smartcard $smartcard */
         $smartcard = $this->em->getRepository(Smartcard::class)->findOneBy(['currency' => 'SYP']);
+        $smartcard->getDeposites()[0]->setCreatedAt(\DateTime::createFromFormat('Y-m-d', '2000-01-01'));
         $purchase = new \VoucherBundle\InputType\SmartcardPurchase();
         $purchase->setProducts([[
             'id' => 1,
@@ -403,13 +405,13 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'currency' => 'SYP',
         ]]);
         $purchase->setVendorId($vendorId);
-        $purchase->setCreatedAt(new \DateTime());
+        $purchase->setCreatedAt(\DateTime::createFromFormat('Y-m-d', '2000-01-02'));
         $purchaseService = self::$container->get('voucher.purchase_service');
         $smartcardService = self::$container->get('smartcard_service');
         $purchaseService->purchaseSmartcard($smartcard, $purchase);
         /** @var SmartcardPurchase $p2 */
         $p2 = $purchaseService->purchaseSmartcard($smartcard, $purchase);
-        $purchase->setCreatedAt(new \DateTime());
+        $purchase->setCreatedAt(\DateTime::createFromFormat('Y-m-d', '2000-01-03'));
         $p3 = $purchaseService->purchaseSmartcard($smartcard, $purchase);
 
         $redemptionBatch = new SmartcardRedemtionBatch();
