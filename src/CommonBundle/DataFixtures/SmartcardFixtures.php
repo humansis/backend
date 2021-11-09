@@ -51,19 +51,19 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         srand(42);
 
         foreach ($this->getReference(AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_KHR)->getDistributionBeneficiaries() as $ab) {
-            $this->generatePackages($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_KHM));
+            $this->generatePackages($manager, $ab, 'KHR');
         }
 
         foreach ($this->getReference(AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_USD)->getDistributionBeneficiaries() as $ab) {
-            $this->generatePackages($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_KHM));
+            $this->generatePackages($manager, $ab, 'USD');
         }
 
         foreach ($this->getReference(AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_SYP)->getDistributionBeneficiaries() as $ab) {
-            $this->generatePackages($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_SYR));
+            $this->generatePackages($manager, $ab, 'SYP');
         }
 
         foreach ($this->getReference(AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_USD)->getDistributionBeneficiaries() as $ab) {
-            $this->generatePackages($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_SYR));
+            $this->generatePackages($manager, $ab, 'USD');
         }
 
         $manager->flush();
@@ -105,12 +105,12 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
-    private function generatePackages(ObjectManager $manager, AssistanceBeneficiary $ab, Vendor $vendor): void
+    private function generatePackages(ObjectManager $manager, AssistanceBeneficiary $ab, string $currency): void
     {
         $serialNumber = self::generateSerialNumber();
         $smartcard = new Smartcard($serialNumber, new DateTimeImmutable('now'));
         $smartcard->setState(Smartcard::STATE_ACTIVE);
-        $smartcard->setCurrency('SYP');
+        $smartcard->setCurrency($currency);
         $smartcard->setBeneficiary($ab->getBeneficiary());
         $manager->persist($ab);
         $manager->persist($ab->getBeneficiary());
