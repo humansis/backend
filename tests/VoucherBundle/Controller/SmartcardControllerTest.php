@@ -188,6 +188,47 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->assertEquals(299.75, $smartcard['value'], 0.0001);
     }
 
+    public function testPurchaseV4()
+    {
+        $depositor = $this->em->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
+        $assistanceBeneficiary = $this->assistanceBeneficiaryWithoutRelief();
+        $bnf = $assistanceBeneficiary->getBeneficiary();
+
+        $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
+
+        $reliefPackage = $this->createReliefPackage($assistanceBeneficiary);
+
+        $deposit = SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 600, null, new \DateTime('now'));
+        $smartcard->addDeposit($deposit);
+
+        $this->em->persist($smartcard);
+        $this->em->flush();
+
+        $headers = ['HTTP_COUNTRY' => 'KHM'];
+        $content = json_encode([
+            'products' => [
+                [
+                    'id' => 1, // @todo replace for fixture
+                    'value' => 300.25,
+                    'currency' => 'USD',
+                ],
+            ],
+            'vendorId' => 1,
+            'beneficiaryId' => $bnf->getId(),
+            'createdAt' => '2020-02-02T12:11:11Z',
+            'balanceBefore' => 50,
+            'balanceAfter' => 20,
+        ]);
+
+        $this->client->request('POST', '/api/wsse/vendor-app/v4/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers, $content);
+
+        $smartcard = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $this->assertArrayHasKey('value', $smartcard);
+        $this->assertEquals(299.75, $smartcard['value'], 0.0001);
+    }
+
     /**
      * It must be allow to make payment from blocked or empty smartcard - due to latency between payment and write to system.
      */
@@ -222,6 +263,44 @@ class SmartcardControllerTest extends BMSServiceTestCase
         ]);
 
         $this->client->request('PATCH', '/api/wsse/vendor-app/v3/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers, $content);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+    }
+
+    /**
+     * It must be allow to make payment from blocked or empty smartcard - due to latency between payment and write to system.
+     */
+    public function testPurchaseFromEmptySmartcardV4()
+    {
+        $depositor = $this->em->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
+        $assistanceBeneficiary = $this->assistanceBeneficiaryWithoutRelief();
+        $bnf = $assistanceBeneficiary->getBeneficiary();
+
+        $reliefPackage = $this->createReliefPackage($assistanceBeneficiary);
+
+        $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
+        $smartcard->setState(SmartcardStates::INACTIVE);
+        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 100, null, new \DateTime('now')));
+
+        $this->em->persist($smartcard);
+        $this->em->flush();
+
+        $headers = ['HTTP_COUNTRY' => 'KHM'];
+        $content = json_encode([
+            'products' => [
+                [
+                    'id' => 1, // @todo replace for fixture
+                    'value' => 400,
+                    'quantity' => 1.2,
+                    'currency' => 'USD'
+                ],
+            ],
+            'vendorId' => 1,
+            'beneficiaryId' => $bnf->getId(),
+            'createdAt' => '2020-02-02T13:01:00Z',
+        ]);
+
+        $this->client->request('POST', '/api/wsse/vendor-app/v4/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers, $content);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
     }
@@ -304,6 +383,39 @@ class SmartcardControllerTest extends BMSServiceTestCase
         ]);
 
         $this->client->request('PATCH', '/api/wsse/vendor-app/v3/smartcards/'.$nonexistentSmarcard.'/purchase', [], [], $headers, $content);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+
+        /** @var Smartcard $smartcard */
+        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($nonexistentSmarcard, $bnf);
+
+        $this->assertNotNull($smartcard, 'Smartcard must be registered to system');
+        $this->assertTrue($smartcard->isSuspicious(), 'Smartcard registered by purchase must be suspected');
+    }
+
+    public function testPurchaseShouldBeAllowedForNonexistentSmartcardV4()
+    {
+        $nonexistentSmarcard = '23456789012';
+        $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
+
+        $headers = ['HTTP_COUNTRY' => 'KHM'];
+        $content = json_encode([
+            'products' => [
+                [
+                    'id' => 1, // @todo replace for fixture
+                    'value' => 400,
+                    'quantity' => 1.2,
+                    'currency' => 'CZK',
+                ],
+            ],
+            'vendorId' => 1,
+            'beneficiaryId' => $bnf->getId(),
+            'createdAt' => '2020-02-02T12:02:00Z',
+            'balanceBefore' => 20,
+            'balanceAfter' => 10,
+        ]);
+
+        $this->client->request('POST', '/api/wsse/vendor-app/v4/smartcards/'.$nonexistentSmarcard.'/purchase', [], [], $headers, $content);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
 

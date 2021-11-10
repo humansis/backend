@@ -51,7 +51,7 @@ security:
                 provider: basic-auth-provider
 
         jwt_login:
-            pattern: ^/api/jwt/web-app/v[0-9]+/login
+            pattern: ^/api/jwt/(web-app|vendor-app|offline-app)/v[0-9]+/login
             stateless: true
             anonymous: true
             provider: jwt_provider
@@ -60,12 +60,12 @@ security:
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
         jwt_salt:
-            pattern: ^/api/jwt/web-app/v[0-9]+/users/salt
+            pattern: ^/api/jwt/(web-app|vendor-app|offline-app)/v[0-9]+/users/salt
             stateless: true
             anonymous: true
 
         jwt:
-            pattern: ^/api/jwt/web-app/v[0-9]+/
+            pattern: ^/api/jwt/(web-app|vendor-app|offline-app)/v[0-9]+/
             stateless: true
             anonymous: false
             provider: jwt_provider
