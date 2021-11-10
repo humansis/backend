@@ -47,14 +47,14 @@ class SmartcardPurchaseInputType implements InputTypeInterface
     private $beneficiaryId;
 
     /**
-     * @var float|int|string
+     * @var float|int|string|null
      *
      * @Assert\Type(type="numeric")
      */
     private $balanceBefore;
 
     /**
-     * @var float|int|string
+     * @var float|int|string|null
      *
      * @Assert\Type(type="numeric")
      */
@@ -133,7 +133,7 @@ class SmartcardPurchaseInputType implements InputTypeInterface
     }
 
     /**
-     * @return float|int|string
+     * @return float|int|string|null
      */
     public function getBalanceBefore()
     {
@@ -149,7 +149,7 @@ class SmartcardPurchaseInputType implements InputTypeInterface
     }
 
     /**
-     * @return float|int|string
+     * @return float|int|string|null
      */
     public function getBalanceAfter()
     {
