@@ -35,7 +35,7 @@ class CreateDepositInputType implements InputTypeInterface
      * @var string
      *
      * @Assert\Type(type="string")
-     * @Assert\Length(min="5", max="10")
+     * @Assert\Length(max="14")
      * @Assert\Regex(pattern="/[A-Za-z0-9]+/")
      */
     private $smartcardSerialNumber;
@@ -111,7 +111,7 @@ class CreateDepositInputType implements InputTypeInterface
     }
 
     /**
-     * @param float|int|string $balanceBefore
+     * @param float|int|string|null $balanceBefore
      */
     public function setBalanceBefore($balanceBefore): void
     {
