@@ -15,6 +15,7 @@ use NewApiBundle\Entity\ReliefPackage;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
 use VoucherBundle\Entity\Vendor;
+use VoucherBundle\Enum\SmartcardStates;
 
 class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
 {
@@ -42,6 +43,9 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
         $qb = $this->createQueryBuilder('rp')
             ->join('rp.assistanceBeneficiary', 'ab')
             ->join('ab.assistance', 'a')
+            ->join('ab.beneficiary', 'abstB')
+            ->join(Beneficiary::class,  'b', Join::WITH, 'b.id=abstB.id')
+            ->join('b.smartcards', 's', Join::WITH, 's.beneficiary=b AND s.state=:smartcardStateActive') //filter only bnf with active card
             ->join('a.location', 'l')
             ->leftJoin('l.adm4', 'adm4')
             ->leftJoin('l.adm3', 'locAdm3')
@@ -49,7 +53,9 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
             ->leftJoin('l.adm1', 'locAdm1')
             ->leftJoin(Adm3::class, 'adm3', Join::WITH, 'adm3.id = COALESCE(IDENTITY(adm4.adm3, \'id\'), locAdm3.id)')
             ->leftJoin(Adm2::class, 'adm2', Join::WITH, 'adm2.id = COALESCE(IDENTITY(adm3.adm2, \'id\'), locAdm2.id)')
-            ->leftJoin(Adm1::class, 'adm1', Join::WITH, 'adm1.id = COALESCE(IDENTITY(adm2.adm1, \'id\'), locAdm1.id)');
+            ->leftJoin(Adm1::class, 'adm1', Join::WITH, 'adm1.id = COALESCE(IDENTITY(adm2.adm1, \'id\'), locAdm1.id)')
+            ->setParameter('smartcardStateActive', SmartcardStates::ACTIVE)
+            ;
 
         //if both vendor and assistance has at least adm2 filled, try to filter by adm2. If not, filter by adm1.
         if (null !== $vendor->getLocation()->getAdm2Id()) {
