@@ -537,8 +537,11 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         $vendor = $this->em->getRepository(Vendor::class)->findOneBy([], ['id' => 'asc']);
         $repository = $this->em->getRepository(SmartcardPurchase::class);
+        $candidates = $repository->countPurchasesToRedeem($vendor);
+        $this->assertIsArray($candidates);
+        $this->assertArrayHasKey(0, $candidates);
         /** @var PurchaseRedemptionBatch $redemptionCandidate */
-        $redemptionCandidate = $repository->countPurchasesToRedeem($vendor)[0];
+        $redemptionCandidate = $candidates[0];
         $batchToRedeem = [
             'purchases' => $redemptionCandidate->getPurchasesIds(),
         ];
