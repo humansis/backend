@@ -6,13 +6,13 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Exception\BadRequestDataException;
 use DateTime;
 use DateTimeInterface;
-use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManager;
 use NewApiBundle\Entity\ReliefPackage;
 use NewApiBundle\Enum\AssistanceBeneficiaryCommodityState;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
+use NewApiBundle\InputType\SmartcardPurchaseInputType;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Repository\ProjectRepository;
@@ -178,10 +178,18 @@ class SmartcardService
         return $this->purchaseService->purchaseSmartcard($smartcard, $data);
     }
 
+    /**
+     * @param string $serialNumber
+     * @param SmartcardPurchaseInput|SmartcardPurchaseInputType $data
+     *
+     * @return SmartcardPurchase
+     * @throws \Doctrine\ORM\EntityNotFoundException
+     * @throws \Doctrine\ORM\ORMException
+     */
     public function purchase(string $serialNumber, $data): SmartcardPurchase
     {
-        if (!$data instanceof SmartcardPurchaseInput) {
-            throw new \InvalidArgumentException('Argument 3 must be of type '.SmartcardPurchaseInput::class);
+        if (!$data instanceof SmartcardPurchaseInput && !$data instanceof SmartcardPurchaseInputType) {
+            throw new \InvalidArgumentException('Argument 2 must be of type '.SmartcardPurchaseInput::class . 'or ' . SmartcardPurchaseInputType::class);
         }
         $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy([
             'id' => $data->getBeneficiaryId(),
