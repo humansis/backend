@@ -82,7 +82,8 @@ class SmartcardPurchaseRepository extends EntityRepository
                 INNER JOIN smartcard_purchase AS sp on s.id = sp.smartcard_id
                 INNER JOIN smartcard_purchase_record AS spr ON sp.id = spr.smartcard_purchase_id
         WHERE sp.redemption_batch_id IS NULL
-        GROUP BY sp.id, spr.currency, projectId, vendorId";
+        GROUP BY sp.id, spr.currency, projectId, vendorId
+        ORDER BY sp.id, spr.currency, projectId, vendorId";
 
         $purchaseValuesAggregation = "SELECT
                 pre.currency,
@@ -91,7 +92,8 @@ class SmartcardPurchaseRepository extends EntityRepository
                 pre.projectId
             FROM ($purchasePreAggregation) as pre
             WHERE pre.vendorId = {$vendor->getId()} AND currency IS NOT NULL AND projectId IS NOT NULL
-            GROUP BY pre.vendorId, pre.projectId, pre.currency";
+            GROUP BY pre.vendorId, pre.projectId, pre.currency
+            ORDER BY pre.vendorId, pre.projectId, pre.currency";
 
         $stmt = $this->_em->getConnection()->prepare($purchaseValuesAggregation);
         $stmt->execute();
@@ -106,7 +108,8 @@ class SmartcardPurchaseRepository extends EntityRepository
                 WHERE
                     pre.vendorId = {$vendor->getId()} AND
                     pre.projectId = {$candidate['projectId']} AND
-                    pre.currency = '{$candidate['currency']}'";
+                    pre.currency = '{$candidate['currency']}'
+                ORDER BY pre.purchaseId";
 
             $stmt = $this->_em->getConnection()->prepare($purchaseIdsAggregation);
             $stmt->execute();
