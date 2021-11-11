@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType\SynchronizationBatch;
 
+use DateTimeInterface;
 use NewApiBundle\Request\InputTypeInterface;
 use NewApiBundle\Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -71,15 +72,25 @@ class CreateDepositInputType implements InputTypeInterface
     }
 
     /**
-     * @return \DateTimeInterface
+     * @return DateTimeInterface
      */
     public function getCreatedAt()
     {
-        return $this->createdAt;
+        //TODO make standalone util
+
+        foreach ([DateTimeInterface::ISO8601, DateTimeInterface::ATOM, 'Y-m-d\TH:i:s.u\Z', 'Y-m-d'] as $format) {
+            $date = \DateTime::createFromFormat($format, $this->createdAt);
+
+            if (false !== $date) {
+                break;
+            }
+        }
+
+        return $date;
     }
 
     /**
-     * @param \DateTimeInterface $createdAt
+     * @param string $createdAt
      */
     public function setCreatedAt($createdAt): void
     {

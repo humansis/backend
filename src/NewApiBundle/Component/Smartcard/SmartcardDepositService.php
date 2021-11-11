@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManager;
 use NewApiBundle\Entity\ReliefPackage;
 use NewApiBundle\Entity\SynchronizationBatch\Deposits;
 use NewApiBundle\InputType\SynchronizationBatch\CreateDepositInputType;
+use NewApiBundle\Workflow\ReliefPackageTransitions;
 use NewApiBundle\Workflow\SynchronizationBatchTransitions;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -60,13 +61,26 @@ class SmartcardDepositService
                 $reliefPackage = $this->em->getRepository(ReliefPackage::class)->find($depositInput->getReliefPackageId());
                 if (null == $reliefPackage) {
                     $violation->add(new ConstraintViolation(
-                        "ReliefPackage#{$depositInput->getReliefPackageId()} doesn't exits",
+                        "ReliefPackage #{$depositInput->getReliefPackageId()} doesn't exits",
                         null,
                         [],
                         [],
                         'reliefPackageId',
                         $depositInput->getReliefPackageId()
                     ));
+                } else {
+                    $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
+
+                    if (!$reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
+                        $violation->add(new ConstraintViolation(
+                            "Relief package #{$depositInput->getReliefPackageId()} cannot be distributed. State of RP: '{$reliefPackage->getState()}'",
+                            null,
+                            [],
+                            [],
+                            'reliefPackageId',
+                            $depositInput->getReliefPackageId()
+                        ));
+                    }
                 }
             }
 
@@ -97,7 +111,7 @@ class SmartcardDepositService
     {
         $reliefPackage = $this->em->getRepository(ReliefPackage::class)->find($input->getReliefPackageId());
         if (null == $reliefPackage) {
-            throw new \InvalidArgumentException("ReliefPackage#{$input->getReliefPackageId()} doesn't exits");
+            throw new \InvalidArgumentException("ReliefPackage #{$input->getReliefPackageId()} doesn't exits");
         }
         $this->smartcardService->deposit(
             $input->getSmartcardSerialNumber(),

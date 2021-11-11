@@ -112,7 +112,7 @@ abstract class SynchronizationBatch
         $this->validatedAt = $validatedAt ?? new \DateTimeImmutable();
         $this->violations = [];
         foreach ($violations as $rowKey => $violationList) {
-            $this->violations[$rowKey] = $this->serializeViolations($violationList);
+            $this->violations[$rowKey] = $violationList ? $this->serializeViolations($violationList) : null;
         }
     }
 
