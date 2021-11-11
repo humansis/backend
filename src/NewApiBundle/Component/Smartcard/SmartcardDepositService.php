@@ -13,6 +13,7 @@ use NewApiBundle\Workflow\SynchronizationBatchTransitions;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
+use Symfony\Component\Workflow\TransitionBlocker;
 use UserBundle\Entity\User;
 use VoucherBundle\Utils\SmartcardService;
 
@@ -72,8 +73,16 @@ class SmartcardDepositService
                     $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
 
                     if (!$reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
+                        $tb = $reliefPackageWorkflow->buildTransitionBlockerList($reliefPackage, ReliefPackageTransitions::DISTRIBUTE);;
+
+                        $tbMessages = [];
+                        /** @var TransitionBlocker $item */
+                        foreach ($tb as $item) {
+                            $tbMessages[] = $item->getMessage();
+                        }
+
                         $violation->add(new ConstraintViolation(
-                            "Relief package #{$depositInput->getReliefPackageId()} cannot be distributed. State of RP: '{$reliefPackage->getState()}'",
+                            "Relief package #{$depositInput->getReliefPackageId()} cannot be distributed. State of RP: '{$reliefPackage->getState()}'. Workflow blocker messages: [" . implode($tbMessages, ', ') . ']',
                             null,
                             [],
                             [],
