@@ -22,6 +22,7 @@ use Doctrine\ORM\Query\Expr\Join;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm1;
+use VoucherBundle\Enum\SmartcardStates;
 
 /**
  * BeneficiaryRepository.
@@ -713,6 +714,11 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         } elseif ('other' === $criterion['type']) {
             if ('disabledHeadOfHousehold' === $field) {
                 $this->hasVulnerabilityCriterion($qb, 'hhh'.$i, $condition, 'disabled', $userConditionsStatement, $i);
+            }
+            if ('hasValidSmartcard' === $field) {
+                $userConditionsStatement->add('hasValidSmartcard'.$i.' '.$condition.' :parameter'.$i);
+                $qb->addSelect('(select count(sc.id) > 0 from smartcards as sc where IDENTITY(sc.beneficiary)=hhh'.$i.'.id AND sc.state IN (:activeStates)) AS hasValidSmartcard'.$i)
+                    ->setParameter('activeStates', [SmartcardStates::ACTIVE]);
             }
         }
     }

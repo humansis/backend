@@ -65,6 +65,18 @@ class FieldDbTransformer
             ];
         }
 
+        if (SelectionCriteriaTarget::HOUSEHOLD_HEAD === $input->getTarget() && 'hasValidSmartcard' === $input->getField()) {
+            return [
+                'condition_string' => true,
+                'field_string' => $input->getField(),
+                'target' => $input->getTarget(),
+                'table_string' => 'Personnal',
+                'value_string' => null,
+                'weight' => $input->getWeight(),
+                'type' => 'other',
+            ];
+        }
+
         if ((SelectionCriteriaTarget::BENEFICIARY === $input->getTarget() && 'hasNotBeenInDistributionsSince' === $input->getField()) ||
             (SelectionCriteriaTarget::HOUSEHOLD === $input->getTarget() && 'householdSize' === $input->getField())
         ) {
@@ -165,6 +177,17 @@ class FieldDbTransformer
         }
 
         if (SelectionCriteriaTarget::HOUSEHOLD_HEAD === $criterion->getTarget() && 'disabledHeadOfHousehold' === $criterion->getFieldString()) {
+            return [
+                'group' => $criterion->getGroupNumber(),
+                'target' => $criterion->getTarget(),
+                'field' => $criterion->getFieldString(),
+                'condition' => '=',
+                'value' => true,
+                'weight' => $criterion->getWeight(),
+            ];
+        }
+
+        if (SelectionCriteriaTarget::HOUSEHOLD_HEAD === $criterion->getTarget() && 'hasValidSmartcard' === $criterion->getFieldString()) {
             return [
                 'group' => $criterion->getGroupNumber(),
                 'target' => $criterion->getTarget(),
