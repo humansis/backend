@@ -189,7 +189,6 @@ class SmartcardController extends Controller
      *
      * @Rest\Patch("/offline-app/v1/smartcards/{serialNumber}")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER') or is_granted('ROLE_ENUMERATOR')")
-     * @ParamConverter("smartcard")
      *
      * @SWG\Tag(name="Smartcards")
      * @SWG\Tag(name="Offline App")
@@ -232,13 +231,19 @@ class SmartcardController extends Controller
      * @SWG\Response(response=404, description="Smartcard does not exists.")
      * @SWG\Response(response=400, description="Smartcard state can't be changed this way. State flow restriction.")
      *
-     * @param Smartcard $smartcard
-     * @param Request   $request
+     * @param string  $serialNumber
+     * @param Request $request
      *
      * @return Response
      */
-    public function change(Smartcard $smartcard, Request $request): Response
+    public function change(string $serialNumber, Request $request): Response
     {
+        $smartcard = $this->getDoctrine()->getRepository(Smartcard::class)->findActiveBySerialNumber($serialNumber);
+
+        if (!$smartcard instanceof Smartcard) {
+            throw $this->createNotFoundException("Smartcard with code '$serialNumber' was not found.");
+        }
+
         $newState = $smartcard->getState();
         if ($request->request->has('state')) {
             $newState = $request->request->get('state');

@@ -72,7 +72,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->assertEquals(SmartcardStates::ACTIVE, $smartcard['state']);
         $this->assertNull($smartcard['currency']);
 
-        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber('1111111', $bnf);
+        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumberAndBeneficiary('1111111', $bnf);
         $this->em->remove($smartcard);
         $this->em->flush();
     }
@@ -387,7 +387,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
 
         /** @var Smartcard $smartcard */
-        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($nonexistentSmarcard, $bnf);
+        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumberAndBeneficiary($nonexistentSmarcard, $bnf);
 
         $this->assertNotNull($smartcard, 'Smartcard must be registered to system');
         $this->assertTrue($smartcard->isSuspicious(), 'Smartcard registered by purchase must be suspected');
@@ -420,7 +420,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
 
         /** @var Smartcard $smartcard */
-        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($nonexistentSmarcard, $bnf);
+        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumberAndBeneficiary($nonexistentSmarcard, $bnf);
 
         $this->assertNotNull($smartcard, 'Smartcard must be registered to system');
         $this->assertTrue($smartcard->isSuspicious(), 'Smartcard registered by purchase must be suspected');
@@ -701,7 +701,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
 
-        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($nonexistentSmarcard, $beneficiary);
+        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumberAndBeneficiary($nonexistentSmarcard, $beneficiary);
         $this->assertNotNull($smartcard, "Smartcard missing");
         $value = 0;
         foreach ($smartcard->getPurchases() as $purchase) {
@@ -755,7 +755,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         ]);
 
         /** @var Smartcard $smartcard */
-        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumber($nonexistentSmarcard, $beneficiary);
+        $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumberAndBeneficiary($nonexistentSmarcard, $beneficiary);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
         $this->assertNotNull($smartcard);
