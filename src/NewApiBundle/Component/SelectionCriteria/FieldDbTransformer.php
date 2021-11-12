@@ -72,6 +72,7 @@ class FieldDbTransformer
                 'target' => $input->getTarget(),
                 'table_string' => 'Personnal',
                 'value_string' => null,
+                'value' => $input->getValue(),
                 'weight' => $input->getWeight(),
                 'type' => 'other',
             ];
@@ -193,7 +194,7 @@ class FieldDbTransformer
                 'target' => $criterion->getTarget(),
                 'field' => $criterion->getFieldString(),
                 'condition' => '=',
-                'value' => true,
+                'value' => $criterion->getValueString(),
                 'weight' => $criterion->getWeight(),
             ];
         }

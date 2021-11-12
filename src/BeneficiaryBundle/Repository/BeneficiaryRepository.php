@@ -691,15 +691,11 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
 
     private function hasValidSmartcardCriterion(QueryBuilder &$qb, $on, $value, &$userConditionsStatement, int $i)
     {
-        // $qb->leftJoin("$on.smartcards", "sc$i", Join::WITH, "sc$i.state IN (:activeStates$i)")
-        //     ->setParameter(":activeState$i", [SmartcardStates::ACTIVE]);
-
         $subQueryForSC = $this->_em->createQueryBuilder()
             ->select("sc$i.id")
             ->from(Smartcard::class, "sc$i")
             ->andWhere("IDENTITY(sc$i.beneficiary) = $on.id")
-            ->andWhere("sc$i.state IN (:activeStates$i)")
-            ->setParameter(":activeState$i", [SmartcardStates::ACTIVE])
+            ->andWhere("sc$i.state IN ('".SmartcardStates::ACTIVE."')")
             ->getDQL()
         ;
 
@@ -738,7 +734,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                 $this->hasVulnerabilityCriterion($qb, 'hhh'.$i, $condition, 'disabled', $userConditionsStatement, $i);
             }
             if ('hasValidSmartcard' === $field) {
-                $this->hasValidSmartcardCriterion($qb, 'hhh'.$i, $criterion['value_string'], $userConditionsStatement, $i);
+                $this->hasValidSmartcardCriterion($qb, 'hhh'.$i, $criterion['value'], $userConditionsStatement, $i);
             }
         }
     }
