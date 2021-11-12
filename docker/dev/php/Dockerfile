@@ -10,7 +10,8 @@ RUN apt-get update && \
     libicu-dev \
     cron \
     supervisor \
-    sudo
+    sudo \
+    graphviz
 
 
 RUN docker-php-ext-configure gd --with-jpeg-dir=/usr/include/ && \
@@ -61,7 +62,7 @@ RUN chgrp devsymfony /usr/bin/cleanAndTest && \
     touch /etc/cron.allow && \
     echo "symfony"  > /etc/cron.allow && \
     chmod 0644 /etc/cron.d/reporting-cron && \
-    crontab -u symfony /etc/cron.d/reporting-cron && \
+#    crontab -u symfony /etc/cron.d/reporting-cron && \
     chgrp devsymfony /usr/bin/cron-launch && \
     chgrp devsymfony /usr/bin/cron-script && \
     chmod g+x /usr/bin/cron-script
