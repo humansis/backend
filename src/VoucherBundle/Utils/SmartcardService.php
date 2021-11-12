@@ -206,7 +206,7 @@ class SmartcardService
     public function getActualSmartcard(string $serialNumber, ?Beneficiary $beneficiary, DateTimeInterface $dateOfEvent): Smartcard
     {
         $repo = $this->em->getRepository(Smartcard::class);
-        $smartcard = $repo->findBySerialNumber($serialNumber, $beneficiary);
+        $smartcard = $repo->findBySerialNumberAndBeneficiary($serialNumber, $beneficiary);
 
         if ($smartcard
             && $smartcard->getBeneficiary()

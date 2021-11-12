@@ -4,7 +4,6 @@ namespace VoucherBundle\Repository;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Enum\SmartcardStates;
@@ -16,7 +15,7 @@ use VoucherBundle\Enum\SmartcardStates;
  */
 class SmartcardRepository extends EntityRepository
 {
-    public function findBySerialNumber(string $serialNumber, ?Beneficiary $beneficiary = null): ?Smartcard
+    public function findBySerialNumberAndBeneficiary(string $serialNumber, ?Beneficiary $beneficiary = null): ?Smartcard
     {
         $qb = $this->createQueryBuilder('s')
             ->andWhere('s.serialNumber = :serialNumber')
@@ -76,5 +75,26 @@ class SmartcardRepository extends EntityRepository
             ->setParameter('smartcardBlockedStates', [SmartcardStates::UNASSIGNED, SmartcardStates::INACTIVE, SmartcardStates::CANCELLED]);
 
         return $qb->getQuery()->getResult('plain_values_hydrator');
+    }
+
+    public function findActiveBySerialNumber(string $serialNumber): ?Smartcard
+    {
+        $smartcards = $this->createQueryBuilder('s')
+            ->andWhere('s.serialNumber = :serialNumber')
+            ->andWhere('s.state = :stateActive')
+            ->setParameter('serialNumber', strtoupper($serialNumber))
+            ->setParameter('stateActive', SmartcardStates::ACTIVE)
+            ->getQuery()->getResult();
+
+        if (empty($smartcards)) {
+            return null;
+        } else {
+            if (count($smartcards) > 1) {
+                //TODO log
+                //$this->logger->error("There is inconsistency in the database. Smartcard '$serialNumber' has " . count($smartcards) . ' active entries.');
+            }
+
+            return $smartcards[0];
+        }
     }
 }
