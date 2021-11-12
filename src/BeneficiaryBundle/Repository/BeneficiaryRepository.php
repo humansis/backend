@@ -22,6 +22,7 @@ use Doctrine\ORM\Query\Expr\Join;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm1;
+use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Enum\SmartcardStates;
 
 /**
@@ -688,16 +689,25 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $qb->setParameter(':vulnerability'.$i, $vulnerabilityName);
     }
 
-    private function hasValidSmartcardCriterion(&$qb, $on, $conditionString, &$userConditionsStatement, int $i)
+    private function hasValidSmartcardCriterion(QueryBuilder &$qb, $on, $value, &$userConditionsStatement, int $i)
     {
-        $qb->leftJoin($on.'.smartcards', 'sc'.$i, Join::WITH, 'sc'.$i.'.state IN (:activeStates)');
-        if ($conditionString === true) {
-            $userConditionsStatement->add($qb->expr()->gt('(CASE WHEN SIZE('.$on.'.smartcards) > 0 THEN 1 ELSE 0 END)', 0));
+        // $qb->leftJoin("$on.smartcards", "sc$i", Join::WITH, "sc$i.state IN (:activeStates$i)")
+        //     ->setParameter(":activeState$i", [SmartcardStates::ACTIVE]);
+
+        $subQueryForSC = $this->_em->createQueryBuilder()
+            ->select("sc$i.id")
+            ->from(Smartcard::class, "sc$i")
+            ->andWhere("IDENTITY(sc$i.beneficiary) = $on.id")
+            ->andWhere("sc$i.state IN (:activeStates$i)")
+            ->setParameter(":activeState$i", [SmartcardStates::ACTIVE])
+            ->getDQL()
+        ;
+
+        if ($value == true) {
+            $qb->andWhere("EXISTS($subQueryForSC)");
         } else {
-            $userConditionsStatement->add($qb->expr()->eq('(CASE WHEN SIZE('.$on.'.smartcards) > 0 THEN 1 ELSE 0 END)', 0));
+            $qb->andWhere("NOT EXISTS($subQueryForSC)");
         }
-        // $qb->addSelect('(CASE WHEN SIZE('.$on.'.smartcards) > 0 THEN 1 ELSE 0 END) AS '.$on.'hasValidSmartcard'.$i);
-        $qb->setParameter(':activeStates', [SmartcardStates::ACTIVE]);
     }
 
     private function getHeadWithCriterion(&$qb, $field, $condition, $criterion, int $i, &$userConditionsStatement)
@@ -728,16 +738,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                 $this->hasVulnerabilityCriterion($qb, 'hhh'.$i, $condition, 'disabled', $userConditionsStatement, $i);
             }
             if ('hasValidSmartcard' === $field) {
-                $this->hasValidSmartcardCriterion($qb, 'hhh'.$i, $condition, $userConditionsStatement, $i);
-                // $qb->leftJoin('hhh'.$i.'.smartcards', 'vc'.$i, Join::WITH, 'vc'.$i.'.fieldString <> :vulnerability'.$i);
-                // $userConditionsStatement->add($qb->expr()->eq('SIZE('.$on.'.vulnerabilityCriteria)', 0))
-                //     ->add($qb->expr()->neq('vc'.$i.'.fieldString', ':vulnerability'.$i));
-                // $userConditionsStatement->add('hasValidSmartcard'.$i.' = 1');
-                // // $userConditionsStatement->add('hasValidSmartcard'.$i.' = :parameter'.$i);
-                // // $userConditionsStatement->add('hasValidSmartcard'.$i.' '.$condition.' :parameter'.$i);
-                // $qb->addSelect('(select case when count(sc.id) > 0 then 1 else 0 end as hasValidSmartcard from \VoucherBundle\Entity\Smartcard as sc where IDENTITY(sc.beneficiary)=hhh'.$i.'.id AND sc.state IN (:activeStates)) AS hasValidSmartcard'.$i)
-                //     ->setParameter('activeStates', [SmartcardStates::ACTIVE])
-                // ;
+                $this->hasValidSmartcardCriterion($qb, 'hhh'.$i, $criterion['value_string'], $userConditionsStatement, $i);
             }
         }
     }
