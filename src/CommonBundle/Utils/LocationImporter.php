@@ -130,6 +130,8 @@ class LocationImporter
         $xml->close();
 
         $this->file = null;
+
+        $this->rebuildTraverse();
     }
 
     private function buildLocation(string $name, string $code, string $iso3, int $level, ?Location $upperLocation = null): Location
@@ -155,6 +157,18 @@ class LocationImporter
         }
 
         return $location;
+    }
+
+    private function rebuildTraverse(): void
+    {
+        $rootLocations = $this->em->getRepository(Location::class)->findBy(['upperLocation' => null]);
+        $lastRight = 0;
+        /** @var Location $rootLocation */
+        foreach ($rootLocations as $rootLocation) {
+            $lastRight = $rootLocation->recountLeftAndRight($lastRight);
+            $rootLocation->recountLevel(0);
+            $this->em->flush();
+        }
     }
 
     /**

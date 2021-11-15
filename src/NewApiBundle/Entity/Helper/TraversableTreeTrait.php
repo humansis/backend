@@ -5,6 +5,9 @@ namespace NewApiBundle\Entity\Helper;
 
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * @see TreeInterface need to be used in class with TreeInterface implementation
+ */
 trait TraversableTreeTrait
 {
     /**
@@ -76,13 +79,22 @@ trait TraversableTreeTrait
         $this->rgt = $rgt;
     }
 
-    public function recountTree(): void
+    public function recountLeftAndRight(int $lastRight): int
     {
-
+        $this->lft = $lastRight + 1;
+        $lastRight = $this->lft;
+        foreach ($this->getChildren() as $child) {
+            $lastRight = $child->recountLeftAndRight($this->lft);
+        }
+        $this->rgt = $lastRight + 1;
+        return $this->rgt;
     }
 
-    public function getSubtreeSize(): int
+    public function recountLevel(int $lastLevel): void
     {
-        return 0;
+        $this->lvl = $lastLevel + 1;
+        foreach ($this->getChildren() as $child) {
+            $child->recountLevel($this->lvl);
+        }
     }
 }

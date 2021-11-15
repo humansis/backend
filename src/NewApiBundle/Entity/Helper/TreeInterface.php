@@ -6,5 +6,5 @@ namespace NewApiBundle\Entity\Helper;
 interface TreeInterface
 {
     public function getParent(): ?self;
-    public function getChildren(): array;
+    public function getChildren(): iterable;
 }

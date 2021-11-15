@@ -133,7 +133,7 @@ class Location implements TreeInterface
     /**
      * @return Location[]
      */
-    public function getSubLocations(): array
+    public function getSubLocations(): iterable
     {
         return $this->subLocations;
     }
@@ -418,7 +418,7 @@ class Location implements TreeInterface
         return $this->getUpperLocation();
     }
 
-    public function getChildren(): array
+    public function getChildren(): iterable
     {
         return $this->getSubLocations();
     }
