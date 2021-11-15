@@ -11,9 +11,14 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * Location
  *
  * @ORM\Table(name="location")
+ * indexes={
+ *      @ ORM\Index(name="search_name", columns={"countryISO3", "name"}),
+ *      @ ORM\Index(name="search_subtree", columns={"countryISO3", "lvl", "lft", "rgt"}),
+ *      @ ORM\Index(name="search_level", columns={"countryISO3", "lvl"}),
+ *     }
  * @ORM\Entity(repositoryClass="CommonBundle\Repository\LocationRepository")
  */
-class Location
+class Location implements TreeInterface
 {
     use TraversableTreeTrait;
 
@@ -57,7 +62,7 @@ class Location
     private $countryISO3;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(name="code", type="string", length=255, nullable=true)
      */
@@ -173,20 +178,14 @@ class Location
         $this->countryISO3 = $countryISO3;
     }
 
-    /**
-     * @return TraversableTreeTrait|null
-     */
-    public function getTraverse(): ?TraversableTreeTrait
+    public function getCode(): ?string
     {
-        return $this->traverse;
+        return $this->code;
     }
 
-    /**
-     * @param TraversableTreeTrait|null $traverse
-     */
-    public function setTraverse(?TraversableTreeTrait $traverse): void
+    public function setCode(?string $code): void
     {
-        $this->traverse = $traverse;
+        $this->code = $code;
     }
 
     /**
@@ -379,20 +378,6 @@ class Location
         } else {
             return "";
         }
-    }
-
-    public function getCode()
-    {
-        if ($this->getAdm1()) {
-            return $this->getAdm1()->getCode();
-        } elseif ($this->getAdm2()) {
-            return $this->getAdm2()->getCode();
-        } elseif ($this->getAdm3()) {
-            return $this->getAdm3()->getCode();
-        } elseif ($this->getAdm4()) {
-            return $this->getAdm4()->getCode();
-        }
-
     }
 
     /**

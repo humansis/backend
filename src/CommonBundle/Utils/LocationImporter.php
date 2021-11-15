@@ -8,15 +8,12 @@ use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
+use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
-/**
- * @deprecated it is old ADM import version, use LocationImporter
- * @see LocationImporter
- */
-class AdmsImporter
+class LocationImporter
 {
     /** @var EntityManagerInterface $em */
     private $em;
@@ -98,13 +95,13 @@ class AdmsImporter
 
             $adm = null;
             if ('adm1' === $xml->name) {
-                $adm = $adm1 = $this->buildAdm1($name, $code, $iso3);
+                $adm = $adm1 = $this->buildLocation($name, $code, $iso3, 1);
             } elseif ('adm2' === $xml->name) {
-                $adm = $adm2 = $this->buildAdm2($name, $code, $adm1);
+                $adm = $adm2 = $this->buildLocation($name, $code, $iso3, 2, $adm1);
             } elseif ('adm3' === $xml->name) {
-                $adm = $adm3 = $this->buildAdm3($name, $code, $adm2);
+                $adm = $adm3 = $this->buildLocation($name, $code, $iso3, 3, $adm2);
             } elseif ('adm4' === $xml->name) {
-                $adm = $this->buildAdm4($name, $code, $adm3);
+                $adm = $this->buildLocation($name, $code, $iso3, 4, $adm3);
             }
             if ($adm && $adm->getName() != $name) {
                 yield [
@@ -135,76 +132,29 @@ class AdmsImporter
         $this->file = null;
     }
 
-    private function buildAdm1(string $name, string $code, string $iso3): Adm1
+    private function buildLocation(string $name, string $code, string $iso3, int $level, ?Location $upperLocation = null): Location
     {
-        $adm1 = $this->em->getRepository(Adm1::class)->findOneByCode($code);
-        if (!$adm1) {
-            $adm1 = (new Adm1())
-                ->setCountryISO3($iso3)
-                ->setName($name)
-                ->setCode($code);
+        $locations = $this->em->getRepository(Location::class)->findBy(['code' => $code]);
+        if (count($locations) > 1) {
+            throw new \Exception("There is too many locations with code $code: ".implode(', ', array_map(function ($location) {return $location->getId();}, $locations)));
+        } elseif (!isset($locations[0])) {
+            $location = new Location();
+            $location->setCountryISO3($iso3);
+            $location->setName($name);
+            $location->setCode($code);
+            $location->setUpperLocation($upperLocation);
+            $location->setLvl($level);
 
-            $this->em->persist($adm1);
+            $this->em->persist($location);
             $this->importedLocations++;
-        } else {
+        } elseif (isset($locations[0])) {
+            $location = $locations[0];
             $this->omittedLocations++;
+        } else {
+            throw new \Exception("Unknown problem with searching locations");
         }
 
-        return $adm1;
-    }
-
-    private function buildAdm2(string $name, string $code, Adm1 $adm1): Adm2
-    {
-        $adm2 = $this->em->getRepository(Adm2::class)->findOneByCode($code);
-        if (!$adm2) {
-            $adm2 = (new Adm2())
-                ->setAdm1($adm1)
-                ->setName($name)
-                ->setCode($code);
-
-            $this->em->persist($adm2);
-            $this->importedLocations++;
-        } else {
-            $this->omittedLocations++;
-        }
-
-        return $adm2;
-    }
-
-    private function buildAdm3(string $name, string $code, Adm2 $adm2): Adm3
-    {
-        $adm3 = $this->em->getRepository(Adm3::class)->findOneByCode($code);
-        if (!$adm3) {
-            $adm3 = (new Adm3())
-                ->setAdm2($adm2)
-                ->setName($name)
-                ->setCode($code);
-
-            $this->em->persist($adm3);
-            $this->importedLocations++;
-        } else {
-            $this->omittedLocations++;
-        }
-
-        return $adm3;
-    }
-
-    private function buildAdm4(string $name, string $code, Adm3 $adm3): Adm4
-    {
-        $adm4 = $this->em->getRepository(Adm4::class)->findOneByCode($code);
-        if (!$adm4) {
-            $adm4 = (new Adm4())
-                ->setAdm3($adm3)
-                ->setName($name)
-                ->setCode($code);
-
-            $this->em->persist($adm4);
-            $this->importedLocations++;
-        } else {
-            $this->omittedLocations++;
-        }
-
-        return $adm4;
+        return $location;
     }
 
     /**
