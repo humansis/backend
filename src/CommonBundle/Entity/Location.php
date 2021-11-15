@@ -24,6 +24,7 @@ class Location
     private $id;
 
     /**
+     * @deprecated use traversable
      * @var Adm1
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm1", mappedBy="location")
@@ -32,6 +33,7 @@ class Location
     private $adm1;
 
     /**
+     * @deprecated use traversable
      * @var Adm2
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm2", mappedBy="location")
@@ -40,6 +42,7 @@ class Location
     private $adm2;
 
     /**
+     * @deprecated use traversable
      * @var Adm3
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm3", mappedBy="location")
@@ -48,6 +51,7 @@ class Location
     private $adm3;
 
     /**
+     * @deprecated use traversable
      * @var Adm4
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm4", mappedBy="location")

@@ -7,6 +7,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Adm1
+ * @deprecated use traversable Location entity
  *
  * Adm are levels into the Boundaries standardisation
  * Adm0 => Country
