@@ -10,12 +10,13 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 /**
  * Location
  *
- * @ORM\Table(name="location")
- * indexes={
- *      @ ORM\Index(name="search_name", columns={"countryISO3", "name"}),
- *      @ ORM\Index(name="search_subtree", columns={"countryISO3", "lvl", "lft", "rgt"}),
- *      @ ORM\Index(name="search_level", columns={"countryISO3", "lvl"}),
- *     }
+ * @ORM\Table(name="location", indexes={
+ *      @ORM\Index(name="search_name", columns={"name"}),
+ *      @ORM\Index(name="search_country_name", columns={"countryISO3", "name"}),
+ *      @ORM\Index(name="search_subtree", columns={"countryISO3", "nested_tree_level", "nested_tree_left", "nested_tree_right"}),
+ *      @ORM\Index(name="search_superpath", columns={"nested_tree_level", "nested_tree_left", "nested_tree_right"}),
+ *      @ORM\Index(name="search_level", columns={"countryISO3", "nested_tree_left"}),
+ *     })
  * @ORM\Entity(repositoryClass="CommonBundle\Repository\LocationRepository")
  */
 class Location implements TreeInterface

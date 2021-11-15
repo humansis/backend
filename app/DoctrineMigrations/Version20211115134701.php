@@ -70,8 +70,13 @@ final class Version20211115134701 extends AbstractMigration
                 l.code=adm.code,
                 l.nested_tree_level=4
             ;
-    ");
+        ");
 
+        $this->addSql('CREATE INDEX search_name ON location (name)');
+        $this->addSql('CREATE INDEX search_country_name ON location (countryISO3, name)');
+        $this->addSql('CREATE INDEX search_subtree ON location (countryISO3, nested_tree_level, nested_tree_left, nested_tree_right)');
+        $this->addSql('CREATE INDEX search_superpath ON location (nested_tree_level, nested_tree_left, nested_tree_right)');
+        $this->addSql('CREATE INDEX search_level ON location (countryISO3, nested_tree_left)');
 
     }
 
@@ -80,6 +85,11 @@ final class Version20211115134701 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
+        $this->addSql('DROP INDEX search_name ON location');
+        $this->addSql('DROP INDEX search_country_name ON location');
+        $this->addSql('DROP INDEX search_subtree ON location');
+        $this->addSql('DROP INDEX search_superpath ON location');
+        $this->addSql('DROP INDEX search_level ON location');
         $this->addSql('ALTER TABLE location DROP FOREIGN KEY FK_5E9E89CB6D6133FE');
         $this->addSql('DROP INDEX IDX_5E9E89CB6D6133FE ON location');
         $this->addSql('ALTER TABLE location DROP parent_location_id, DROP name, DROP countryISO3, DROP code, DROP nested_tree_level, DROP nested_tree_left, DROP nested_tree_right');
