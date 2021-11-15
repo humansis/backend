@@ -3,6 +3,8 @@
 namespace VoucherBundle\Repository;
 
 use CommonBundle\Entity\Location;
+use CommonBundle\Repository\LocationRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\InputType\VendorFilterInputType;
 use NewApiBundle\InputType\VendorOrderInputType;
@@ -66,11 +68,12 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
     ): Paginator
     {
         $qb = $this->createQueryBuilder('v')
+            ->andWhere('v.archived = 0')
             ->leftJoin('v.location', 'l')
-            ->andWhere('v.archived = 0');
-
-        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
-        $locationRepository->whereCountry($qb, $iso3);
+            ->andWhere('l.countryISO3 = :iso3')
+            ->setParameter("iso3", $iso3)
+        ;
+        LocationRepository::joinPathToRoot($qb, 'l', 'superLocations');
 
         if ($filter) {
             if ($filter->hasIds()) {
@@ -88,7 +91,8 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
                                 v.name LIKE :fulltext OR
                                 v.addressNumber LIKE :fulltext OR
                                 v.addressPostcode LIKE :fulltext OR
-                                v.addressStreet LIKE :fulltext)')
+                                v.addressStreet LIKE :fulltext OR
+                                superLocations.name LIKE :fulltext)')
                     ->setParameter('fulltextId', $filter->getFulltext())
                     ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
             }
@@ -128,17 +132,7 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
                         $qb->orderBy('v.addressPostcode', $direction);
                         break;
                     case VendorOrderInputType::SORT_BY_LOCATION:
-                        $qb->addSelect('
-                            CASE WHEN adm4.id IS NOT NULL THEN adm4.name ELSE 
-                                CASE WHEN adm3.id IS NOT NULL THEN adm3.name ELSE
-                                    CASE WHEN adm2.id IS NOT NULL THEN adm2.name ELSE
-                                        CASE WHEN adm1.id IS NOT NULL THEN adm1.name ELSE 0 END
-                                    END
-                                END   
-                            END
-                         as HIDDEN admName');
-
-                        $qb->addOrderBy('admName', $direction);
+                        $qb->addOrderBy('l.name', $direction);
 
                         break;
                     default:
