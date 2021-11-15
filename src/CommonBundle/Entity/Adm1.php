@@ -66,7 +66,8 @@ class Adm1
 
     public function __construct()
     {
-        $this->setLocation(new Location());
+        $this->location = new Location();
+        $this->location->setLvl(1);
     }
 
 
@@ -90,6 +91,7 @@ class Adm1
     public function setName($name)
     {
         $this->name = $name;
+        $this->getLocation()->setName($name);
 
         return $this;
     }
@@ -114,6 +116,7 @@ class Adm1
     public function setCountryISO3($countryISO3)
     {
         $this->countryISO3 = $countryISO3;
+        $this->getLocation()->setCountryISO3($countryISO3);
 
         return $this;
     }
@@ -138,6 +141,7 @@ class Adm1
     public function setCode($code)
     {
         $this->code = $code;
+        $this->getLocation()->setCode($code);
 
         return $this;
     }
@@ -150,20 +154,6 @@ class Adm1
     public function getCode()
     {
         return $this->code;
-    }
-
-    /**
-     * Set location.
-     *
-     * @param \CommonBundle\Entity\Location|null $location
-     *
-     * @return Adm1
-     */
-    public function setLocation(\CommonBundle\Entity\Location $location = null)
-    {
-        $this->location = $location;
-
-        return $this;
     }
 
     /**

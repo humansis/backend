@@ -60,7 +60,8 @@ class Adm4
 
     public function __construct()
     {
-        $this->setLocation(new Location());
+        $this->location = new Location();
+        $this->location->setLvl(4);
     }
 
 
@@ -84,6 +85,7 @@ class Adm4
     public function setName($name)
     {
         $this->name = $name;
+        $this->getLocation()->setName($name);
 
         return $this;
     }
@@ -123,20 +125,6 @@ class Adm4
     }
 
     /**
-     * Set location.
-     *
-     * @param \CommonBundle\Entity\Location|null $location
-     *
-     * @return Adm4
-     */
-    public function setLocation(\CommonBundle\Entity\Location $location = null)
-    {
-        $this->location = $location;
-
-        return $this;
-    }
-
-    /**
      * Get location.
      *
      * @return \CommonBundle\Entity\Location|null
@@ -156,6 +144,7 @@ class Adm4
     public function setCode($code)
     {
         $this->code = $code;
+        $this->getLocation()->setCode($code);
 
         return $this;
     }

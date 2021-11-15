@@ -138,7 +138,18 @@ class LocationImporter
     {
         $locations = $this->em->getRepository(Location::class)->findBy(['code' => $code]);
         if (count($locations) > 1) {
-            throw new \Exception("There is too many locations with code $code: ".implode(', ', array_map(function ($location) {return $location->getId();}, $locations)));
+            $location = $locations[0];
+            $this->omittedLocations++;
+        } elseif (isset($locations[0])) {
+            $location = $locations[0];
+            $location->setCountryISO3($iso3);
+            $location->setName($name);
+            $location->setCode($code);
+            $location->setUpperLocation($upperLocation);
+            $location->setLvl($level);
+
+            $this->em->persist($location);
+            $this->importedLocations++;
         } elseif (!isset($locations[0])) {
             $location = new Location();
             $location->setCountryISO3($iso3);
@@ -149,9 +160,6 @@ class LocationImporter
 
             $this->em->persist($location);
             $this->importedLocations++;
-        } elseif (isset($locations[0])) {
-            $location = $locations[0];
-            $this->omittedLocations++;
         } else {
             throw new \Exception("Unknown problem with searching locations");
         }
