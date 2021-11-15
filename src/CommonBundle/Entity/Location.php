@@ -3,6 +3,8 @@
 namespace CommonBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\TraversableTreeTrait;
+use NewApiBundle\Entity\Helper\TreeInterface;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -13,6 +15,8 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class Location
 {
+    use TraversableTreeTrait;
+
     /**
      * @var int
      *
@@ -22,6 +26,42 @@ class Location
      * @SymfonyGroups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "FullVendor"})
      */
     private $id;
+
+    /**
+     * @var Location|null
+     *
+     * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location", inversedBy="subLocations")
+     * @ORM\JoinColumn(name="parent_location_id", nullable=true)
+     */
+    private $upperLocation;
+
+    /**
+     * @var Location[]
+     *
+     * @ORM\OneToMany(targetEntity="CommonBundle\Entity\Location", mappedBy="upperLocation")
+     */
+    private $subLocations;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=255, nullable=true)
+     */
+    private $name;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="countryISO3", type="string", length=3, nullable=true)
+     */
+    private $countryISO3;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="code", type="string", length=255, nullable=true)
+     */
+    private $code;
 
     /**
      * @deprecated use traversable
@@ -67,6 +107,86 @@ class Location
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return Location|null
+     */
+    public function getUpperLocation(): ?Location
+    {
+        return $this->upperLocation;
+    }
+
+    /**
+     * @param Location|null $upperLocation
+     */
+    public function setUpperLocation(?Location $upperLocation): void
+    {
+        $this->upperLocation = $upperLocation;
+    }
+
+    /**
+     * @return Location[]
+     */
+    public function getSubLocations(): array
+    {
+        return $this->subLocations;
+    }
+
+    /**
+     * @param Location[] $subLocations
+     */
+    public function setSubLocations(array $subLocations): void
+    {
+        $this->subLocations = $subLocations;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCountryISO3(): string
+    {
+        return $this->countryISO3;
+    }
+
+    /**
+     * @param string $countryISO3
+     */
+    public function setCountryISO3(string $countryISO3): void
+    {
+        $this->countryISO3 = $countryISO3;
+    }
+
+    /**
+     * @return TraversableTreeTrait|null
+     */
+    public function getTraverse(): ?TraversableTreeTrait
+    {
+        return $this->traverse;
+    }
+
+    /**
+     * @param TraversableTreeTrait|null $traverse
+     */
+    public function setTraverse(?TraversableTreeTrait $traverse): void
+    {
+        $this->traverse = $traverse;
     }
 
     /**
@@ -306,5 +426,15 @@ class Location
         } else {
             return '';
         }
+    }
+
+    public function getParent(): ?TreeInterface
+    {
+        return $this->getUpperLocation();
+    }
+
+    public function getChildren(): array
+    {
+        return $this->getSubLocations();
     }
 }
