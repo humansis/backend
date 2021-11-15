@@ -3,7 +3,7 @@
 namespace CommonBundle\Command;
 
 use CommonBundle\DataFixtures\LocationFixtures;
-use CommonBundle\Utils\LocationImporter;
+use CommonBundle\Utils\AdmsImporter;
 use CommonBundle\Utils\LocationService;
 use SimpleXMLElement;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -60,7 +60,7 @@ class AdmXML2DBCommand extends ContainerAwareCommand
             $countryFile = $this->getADMFiles()[$countryCode];
             $output->writeln("Importing file $countryFile");
 
-            $importer = new LocationImporter($this->getContainer()->get('doctrine.orm.default_entity_manager'), $countryFile);
+            $importer = new AdmsImporter($this->getContainer()->get('doctrine.orm.default_entity_manager'), $countryFile);
             if ($input->hasOption('limit')) {
                 $importer->setLimit($input->getOption('limit'));
             }

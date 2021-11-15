@@ -12,7 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
-class LocationImporter
+class AdmsImporter
 {
     /** @var EntityManagerInterface $em */
     private $em;
