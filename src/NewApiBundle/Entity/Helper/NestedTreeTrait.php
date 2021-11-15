@@ -8,26 +8,26 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @see TreeInterface need to be used in class with TreeInterface implementation
  */
-trait TraversableTreeTrait
+trait NestedTreeTrait
 {
     /**
      * @var int
      *
-     * @ORM\Column(name="traverse_level", type="integer", nullable=true)
+     * @ORM\Column(name="nested_tree_level", type="integer", nullable=true)
      */
     protected $lvl;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="traverse_left", type="integer", nullable=true)
+     * @ORM\Column(name="nested_tree_left", type="integer", nullable=true)
      */
     protected $lft;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="traverse_right", type="integer", nullable=true)
+     * @ORM\Column(name="nested_tree_right", type="integer", nullable=true)
      */
     protected $rgt;
 

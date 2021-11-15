@@ -7,7 +7,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Adm3
- * @deprecated use traversable Location entity
+ * @deprecated use nested tree Location entity
  *
  * @see Adm1 For a better understanding of Adm
  *

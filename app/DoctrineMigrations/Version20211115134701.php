@@ -20,9 +20,9 @@ final class Version20211115134701 extends AbstractMigration
             ADD name VARCHAR(255) DEFAULT NULL,
             ADD countryISO3 VARCHAR(3) DEFAULT NULL,
             ADD code VARCHAR(255) DEFAULT NULL,
-            ADD traverse_level INT DEFAULT NULL,
-            ADD traverse_left INT DEFAULT NULL,
-            ADD traverse_right INT DEFAULT NULL');
+            ADD nested_tree_level INT DEFAULT NULL,
+            ADD nested_tree_left INT DEFAULT NULL,
+            ADD nested_tree_right INT DEFAULT NULL');
         $this->addSql('ALTER TABLE location ADD CONSTRAINT FK_5E9E89CB6D6133FE FOREIGN KEY (parent_location_id) REFERENCES location (id)');
         $this->addSql('CREATE INDEX IDX_5E9E89CB6D6133FE ON location (parent_location_id)');
 
@@ -32,7 +32,7 @@ final class Version20211115134701 extends AbstractMigration
                 l.name=adm.name,
                 l.countryISO3=adm.countryISO3,
                 l.code=adm.code,
-                l.traverse_level=1
+                l.nested_tree_level=1
             ;
 
             UPDATE location l
@@ -43,7 +43,7 @@ final class Version20211115134701 extends AbstractMigration
                 l.name=adm.name,
                 l.countryISO3=adm1.countryISO3,
                 l.code=adm.code,
-                l.traverse_level=2
+                l.nested_tree_level=2
             ;
 
             UPDATE location l
@@ -55,7 +55,7 @@ final class Version20211115134701 extends AbstractMigration
                 l.name=adm.name,
                 l.countryISO3=adm1.countryISO3,
                 l.code=adm.code,
-                l.traverse_level=3
+                l.nested_tree_level=3
             ;
 
             UPDATE location l
@@ -68,7 +68,7 @@ final class Version20211115134701 extends AbstractMigration
                 l.name=adm.name,
                 l.countryISO3=adm1.countryISO3,
                 l.code=adm.code,
-                l.traverse_level=4
+                l.nested_tree_level=4
             ;
     ");
 
@@ -82,6 +82,6 @@ final class Version20211115134701 extends AbstractMigration
 
         $this->addSql('ALTER TABLE location DROP FOREIGN KEY FK_5E9E89CB6D6133FE');
         $this->addSql('DROP INDEX IDX_5E9E89CB6D6133FE ON location');
-        $this->addSql('ALTER TABLE location DROP parent_location_id, DROP name, DROP countryISO3, DROP code, DROP traverse_level, DROP traverse_left, DROP traverse_right');
+        $this->addSql('ALTER TABLE location DROP parent_location_id, DROP name, DROP countryISO3, DROP code, DROP nested_tree_level, DROP nested_tree_left, DROP nested_tree_right');
     }
 }

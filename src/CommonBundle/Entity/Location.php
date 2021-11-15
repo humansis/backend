@@ -3,7 +3,7 @@
 namespace CommonBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\TraversableTreeTrait;
+use NewApiBundle\Entity\Helper\NestedTreeTrait;
 use NewApiBundle\Entity\Helper\TreeInterface;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
@@ -20,7 +20,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class Location implements TreeInterface
 {
-    use TraversableTreeTrait;
+    use NestedTreeTrait;
 
     /**
      * @var int
@@ -69,7 +69,7 @@ class Location implements TreeInterface
     private $code;
 
     /**
-     * @deprecated use traversable
+     * @deprecated use nested tree
      * @var Adm1
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm1", mappedBy="location")
@@ -78,7 +78,7 @@ class Location implements TreeInterface
     private $adm1;
 
     /**
-     * @deprecated use traversable
+     * @deprecated use nested tree
      * @var Adm2
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm2", mappedBy="location")
@@ -87,7 +87,7 @@ class Location implements TreeInterface
     private $adm2;
 
     /**
-     * @deprecated use traversable
+     * @deprecated use nested tree
      * @var Adm3
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm3", mappedBy="location")
@@ -96,7 +96,7 @@ class Location implements TreeInterface
     private $adm3;
 
     /**
-     * @deprecated use traversable
+     * @deprecated use nested tree
      * @var Adm4
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm4", mappedBy="location")
