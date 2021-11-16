@@ -87,8 +87,8 @@ class AdmXML2DBCommand extends ContainerAwareCommand
             $progressBar->advance();
 
             if (isset($importStatus['inconsistent'])) {
-                $oldName = $importStatus['inconsistent']['old'];
-                $newName = $importStatus['inconsistent']['new'];
+                $oldName = $importStatus['old'];
+                $newName = $importStatus['new'];
                 $output->writeln("Duplicity code but name inconsistency, old=$oldName, new=$newName");
             }
         }

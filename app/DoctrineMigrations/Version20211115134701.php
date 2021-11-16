@@ -26,15 +26,17 @@ final class Version20211115134701 extends AbstractMigration
         $this->addSql('ALTER TABLE location ADD CONSTRAINT FK_5E9E89CB6D6133FE FOREIGN KEY (parent_location_id) REFERENCES location (id)');
         $this->addSql('CREATE INDEX IDX_5E9E89CB6D6133FE ON location (parent_location_id)');
 
-        $this->addSql("UPDATE location l INNER JOIN adm1 as adm ON l.id=adm.location_id
+        $this->addSql("
+            UPDATE location l INNER JOIN adm1 as adm ON l.id=adm.location_id
             SET
                 l.parent_location_id=NULL,
                 l.name=adm.name,
                 l.countryISO3=adm.countryISO3,
                 l.code=adm.code,
                 l.nested_tree_level=1
-            ;
+            ;");
 
+        $this->addSql("
             UPDATE location l
                 INNER JOIN adm2 as adm ON l.id=adm.location_id
                 INNER JOIN adm1 on adm.adm1_id = adm1.id
@@ -44,8 +46,9 @@ final class Version20211115134701 extends AbstractMigration
                 l.countryISO3=adm1.countryISO3,
                 l.code=adm.code,
                 l.nested_tree_level=2
-            ;
+            ;");
 
+        $this->addSql("
             UPDATE location l
                 INNER JOIN adm3 as adm ON l.id=adm.location_id
                 INNER JOIN adm2 on adm.adm2_id = adm2.id
@@ -56,8 +59,9 @@ final class Version20211115134701 extends AbstractMigration
                 l.countryISO3=adm1.countryISO3,
                 l.code=adm.code,
                 l.nested_tree_level=3
-            ;
+            ;");
 
+        $this->addSql("
             UPDATE location l
                 INNER JOIN adm4 as adm ON l.id=adm.location_id
                 INNER JOIN adm3 on adm.adm3_id = adm3.id

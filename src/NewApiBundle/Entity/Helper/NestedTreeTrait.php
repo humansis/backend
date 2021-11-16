@@ -84,7 +84,7 @@ trait NestedTreeTrait
         $this->lft = $lastRight + 1;
         $lastRight = $this->lft;
         foreach ($this->getChildren() as $child) {
-            $lastRight = $child->recountLeftAndRight($this->lft);
+            $lastRight = $child->recountLeftAndRight($lastRight);
         }
         $this->rgt = $lastRight + 1;
         return $this->rgt;
