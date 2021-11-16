@@ -547,13 +547,21 @@ class AssistanceService
 
     public function updateDateDistribution(Assistance $assistance, \DateTimeInterface $date)
     {
-        $distributionNameWithoutDate = explode('-', $assistance->getName())[0];
-        $newDistributionName = $distributionNameWithoutDate.'-'.$date->format('d-m-Y');
+        $newDistributionName = self::generateName($assistance->getLocation(), $date);
 
         $assistance
             ->setDateDistribution($date)
             ->setName($newDistributionName)
             ->setUpdatedOn(new \DateTime());
+
+        $this->em->persist($assistance);
+        $this->em->flush();
+    }
+
+    public function updateDateExpiration(Assistance $assistance, \DateTimeInterface $date): void
+    {
+        $assistance->setDateExpiration($date);
+        $assistance->setUpdatedOn(new \DateTime());
 
         $this->em->persist($assistance);
         $this->em->flush();

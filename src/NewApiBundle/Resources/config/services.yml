@@ -108,6 +108,7 @@ services:
     NewApiBundle\Controller\AssistanceController:
         arguments:
             - '@NewApiBundle\Export\VulnerabilityScoreExport'
+            - '@distribution.assistance_service'
 
     NewApiBundle\Controller\AssistanceSelectionController:
         arguments:

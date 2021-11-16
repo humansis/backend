@@ -6,10 +6,13 @@ namespace NewApiBundle\Controller;
 
 use CommonBundle\Controller\ExportController;
 use CommonBundle\Pagination\Paginator;
+use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Repository\AssistanceRepository;
+use DistributionBundle\Utils\AssistanceService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Entity\AssistanceStatistics;
+use NewApiBundle\Exception\ConstraintViolationException;
 use NewApiBundle\Export\VulnerabilityScoreExport;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\AssistanceFilterInputType;
@@ -17,6 +20,7 @@ use NewApiBundle\InputType\AssistanceOrderInputType;
 use NewApiBundle\InputType\AssistanceStatisticsFilterInputType;
 use NewApiBundle\InputType\ProjectsAssistanceFilterInputType;
 use NewApiBundle\Request\Pagination;
+use NewApiBundle\Utils\DateTime\Iso8601Converter;
 use ProjectBundle\Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -26,15 +30,20 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
+use Symfony\Component\Validator\ConstraintViolation;
 
 class AssistanceController extends AbstractController
 {
     /** @var VulnerabilityScoreExport */
     private $vulnerabilityScoreExport;
 
-    public function __construct(VulnerabilityScoreExport $vulnerabilityScoreExport)
+    /** @var AssistanceService */
+    private $assistanceService;
+
+    public function __construct(VulnerabilityScoreExport $vulnerabilityScoreExport, AssistanceService $assistanceService)
     {
         $this->vulnerabilityScoreExport = $vulnerabilityScoreExport;
+        $this->assistanceService = $assistanceService;
     }
 
     /**
@@ -150,9 +159,39 @@ class AssistanceController extends AbstractController
             $this->get('distribution.assistance_service')->complete($assistance);
         }
 
-        if ($request->request->get('dateDistribution')) {
-            $this->get('distribution.assistance_service')->updateDateDistribution($assistance,
-                new \DateTime($request->request->get('dateDistribution')));
+        //TODO think about better input validation for PATCH method
+        if ($request->request->has('dateDistribution')) {
+            $date = Iso8601Converter::toDateTime($request->request->get('dateDistribution'));
+
+            if (!$date instanceof DateTimeInterface) {
+                throw new ConstraintViolationException(new ConstraintViolation(
+                    "{$request->request->get('dateDistribution')} is not valid date format",
+                    null,
+                    [],
+                    [],
+                    'dateDistribution',
+                    $request->request->get('dateDistribution')
+                ));
+            }
+
+            $this->assistanceService->updateDateDistribution($assistance, $date);
+        }
+
+        if ($request->request->has('dateExpiration')) {
+            $date = Iso8601Converter::toDateTime($request->request->get('dateExpiration'));
+
+            if (!$date instanceof DateTimeInterface) {
+                throw new ConstraintViolationException(new ConstraintViolation(
+                    "{$request->request->get('dateExpiration')} is not valid date format",
+                    null,
+                    [],
+                    [],
+                    'dateExpiration',
+                    $request->request->get('dateExpiration')
+                ));
+            }
+
+            $this->assistanceService->updateDateExpiration($assistance, $date);
         }
 
         return $this->json($assistance);
