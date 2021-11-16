@@ -253,7 +253,7 @@ class SmartcardService
         $repository = $this->em->getRepository(SmartcardPurchase::class);
         $purchases = $repository->findBy([
             'id' => $inputBatch->getPurchases(),
-        ]);
+        ], ['id'=>'asc']);
 
         // purchases validation
         $currency = null;
