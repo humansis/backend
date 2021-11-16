@@ -41,7 +41,7 @@ final class Version20211115134701 extends AbstractMigration
                 INNER JOIN adm2 as adm ON l.id=adm.location_id
                 INNER JOIN adm1 on adm.adm1_id = adm1.id
             SET
-                l.parent_location_id=adm.id,
+                l.parent_location_id=adm1.location_id,
                 l.name=adm.name,
                 l.countryISO3=adm1.countryISO3,
                 l.code=adm.code,
@@ -54,7 +54,7 @@ final class Version20211115134701 extends AbstractMigration
                 INNER JOIN adm2 on adm.adm2_id = adm2.id
                 INNER JOIN adm1 on adm2.adm1_id = adm1.id
             SET
-                l.parent_location_id=adm.id,
+                l.parent_location_id=adm2.location_id,
                 l.name=adm.name,
                 l.countryISO3=adm1.countryISO3,
                 l.code=adm.code,
@@ -68,7 +68,7 @@ final class Version20211115134701 extends AbstractMigration
                 INNER JOIN adm2 on adm3.adm2_id = adm2.id
                 INNER JOIN adm1 on adm2.adm1_id = adm1.id
             SET
-                l.parent_location_id=adm.id,
+                l.parent_location_id=adm3.location_id,
                 l.name=adm.name,
                 l.countryISO3=adm1.countryISO3,
                 l.code=adm.code,
