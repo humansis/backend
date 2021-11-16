@@ -249,6 +249,10 @@ distribution:
                 type: other,
                 target: Head
             },
+            hasValidSmartcard: {
+                type: other,
+                target: Head
+            },
             headOfHouseholdDateOfBirth: {
                 type: table_field,
                 target: Head

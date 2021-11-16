@@ -22,6 +22,8 @@ use Doctrine\ORM\Query\Expr\Join;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm1;
+use VoucherBundle\Entity\Smartcard;
+use VoucherBundle\Enum\SmartcardStates;
 
 /**
  * BeneficiaryRepository.
@@ -670,21 +672,38 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     {
         // Find a way to act directly on the join table beneficiary_vulnerability
         if ('true' == $conditionString) {
-            $qb->leftJoin($on.'.vulnerabilityCriteria', 'vc'.$i, Join::WITH, 'vc'.$i.'.fieldString = :vulnerability'.$i);
-            $userConditionsStatement->add($qb->expr()->eq('vc'.$i.'.fieldString', ':vulnerability'.$i));
+            $qb->leftJoin("$on.vulnerabilityCriteria", "vc$i", Join::WITH, "vc$i.fieldString = :vulnerability$i");
+            $userConditionsStatement->add($qb->expr()->eq("vc$i.fieldString", ":vulnerability$i"));
             // If has criteria, add it to the select to calculate weight later
-            $qb->addSelect('vc'.$i.'.fieldString AS '.$on.$vulnerabilityName.$i);
+            $qb->addSelect("vc$i.fieldString AS $on$vulnerabilityName$i");
         } else {
-            $qb->leftJoin($on.'.vulnerabilityCriteria', 'vc'.$i, Join::WITH, 'vc'.$i.'.fieldString <> :vulnerability'.$i);
-            $userConditionsStatement->add($qb->expr()->eq('SIZE('.$on.'.vulnerabilityCriteria)', 0))
-                ->add($qb->expr()->neq('vc'.$i.'.fieldString', ':vulnerability'.$i));
-            // The beneficiary doesn't have a vulnerability A if all their vulnerabilities are != A or if they have no vulnerabilities
+            $qb->leftJoin("$on.vulnerabilityCriteria", "vc$i", Join::WITH, "vc$i.fieldString <> :vulnerability$i");
+            $userConditionsStatement->add($qb->expr()->eq("SIZE($on.vulnerabilityCriteria)", 0))
+                ->add($qb->expr()->neq("vc$i.fieldString", ":vulnerability$i"));
+            // The beneficiary doesn"t have a vulnerability A if all their vulnerabilities are != A or if they have no vulnerabilities
             // If has criteria, add it to the select to calculate weight later
-            $qb->addSelect('(CASE WHEN vc'.$i.'.fieldString <> :vulnerability'.$i.' THEN vc'.$i.'.fieldString WHEN SIZE('.$on.'.vulnerabilityCriteria) = 0 THEN :noCriteria ELSE :null END) AS '.$on.$vulnerabilityName.$i)
+            $qb->addSelect("(CASE WHEN vc$i.fieldString <> :vulnerability$i THEN vc$i.fieldString WHEN SIZE($on.vulnerabilityCriteria) = 0 THEN :noCriteria ELSE :null END) AS $on$vulnerabilityName$i")
                 ->setParameter('noCriteria', 'noCriteria')
                 ->setParameter('null', null);
         }
         $qb->setParameter(':vulnerability'.$i, $vulnerabilityName);
+    }
+
+    private function hasValidSmartcardCriterion(QueryBuilder &$qb, $on, $value, int $i)
+    {
+        $subQueryForSC = $this->_em->createQueryBuilder()
+            ->select("sc$i.id")
+            ->from(Smartcard::class, "sc$i")
+            ->andWhere("IDENTITY(sc$i.beneficiary) = $on.id")
+            ->andWhere("sc$i.state IN ('".SmartcardStates::ACTIVE."')")
+            ->getDQL()
+        ;
+
+        if ($value == true) {
+            $qb->andWhere("EXISTS($subQueryForSC)");
+        } else {
+            $qb->andWhere("NOT EXISTS($subQueryForSC)");
+        }
     }
 
     private function getHeadWithCriterion(&$qb, $field, $condition, $criterion, int $i, &$userConditionsStatement)
@@ -713,6 +732,9 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         } elseif ('other' === $criterion['type']) {
             if ('disabledHeadOfHousehold' === $field) {
                 $this->hasVulnerabilityCriterion($qb, 'hhh'.$i, $condition, 'disabled', $userConditionsStatement, $i);
+            }
+            if ('hasValidSmartcard' === $field) {
+                $this->hasValidSmartcardCriterion($qb, 'hhh'.$i, $criterion['value'], $i);
             }
         }
     }
