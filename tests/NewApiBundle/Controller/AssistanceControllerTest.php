@@ -4,6 +4,8 @@ namespace Tests\NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Community;
 use CommonBundle\Entity\Location;
+use DateTime;
+use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Enum\AssistanceType;
@@ -176,6 +178,50 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "allowedProductCategoryTypes": ["*"],
             "remoteDistributionAllowed": "*"
         }', $this->client->getResponse()->getContent());
+
+        $contentArray = json_decode($this->client->getResponse()->getContent(), true);
+
+        return $contentArray['id'];
+    }
+
+    /**
+     * @depends testCreateDistribution
+     */
+    public function testUpdateDistributionDate(int $id)
+    {
+        $date = new DateTime();
+
+        $this->request('PATCH', "/api/basic/web-app/v1/assistances/$id", [
+            'dateDistribution' => $date->format(DateTimeInterface::ISO8601),
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        $contentArray = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals($date->format(DateTimeInterface::ISO8601), $contentArray['dateDistribution']);
+    }
+
+    /**
+     * @depends testCreateDistribution
+     */
+    public function testUpdateExpirationDate(int $id)
+    {
+        $date = new DateTime('+1 year');
+
+        $this->request('PATCH', "/api/basic/web-app/v1/assistances/$id", [
+            'dateExpiration' => $date->format(DateTimeInterface::ISO8601),
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        $contentArray = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals($date->format(DateTimeInterface::ISO8601), $contentArray['dateExpiration']);
     }
 
     public function testCreateDistributionWithExpirationDate()
