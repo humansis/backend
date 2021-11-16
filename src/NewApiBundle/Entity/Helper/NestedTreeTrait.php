@@ -78,23 +78,4 @@ trait NestedTreeTrait
     {
         $this->rgt = $rgt;
     }
-
-    public function recountLeftAndRight(int $lastRight): int
-    {
-        $this->lft = $lastRight + 1;
-        $lastRight = $this->lft;
-        foreach ($this->getChildren() as $child) {
-            $lastRight = $child->recountLeftAndRight($lastRight);
-        }
-        $this->rgt = $lastRight + 1;
-        return $this->rgt;
-    }
-
-    public function recountLevel(int $lastLevel): void
-    {
-        $this->lvl = $lastLevel + 1;
-        foreach ($this->getChildren() as $child) {
-            $child->recountLevel($this->lvl);
-        }
-    }
 }

@@ -131,7 +131,7 @@ class LocationImporter
 
         $this->file = null;
 
-        $this->rebuildNestedTree();
+        $this->em->getConnection()->executeQuery("CALL recalculateLocationNestedSet;");
     }
 
     private function buildLocation(string $name, string $code, string $iso3, int $level, ?Location $upperLocation = null): Location
@@ -165,18 +165,6 @@ class LocationImporter
         }
 
         return $location;
-    }
-
-    private function rebuildNestedTree(): void
-    {
-        $rootLocations = $this->em->getRepository(Location::class)->findBy(['upperLocation' => null]);
-        $lastRight = 0;
-        /** @var Location $rootLocation */
-        foreach ($rootLocations as $rootLocation) {
-            $lastRight = $rootLocation->recountLeftAndRight($lastRight) + 1;
-            $rootLocation->recountLevel(0);
-            $this->em->flush();
-        }
     }
 
     /**

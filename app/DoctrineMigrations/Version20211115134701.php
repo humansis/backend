@@ -76,6 +76,66 @@ final class Version20211115134701 extends AbstractMigration
             ;
         ");
 
+        // recount nested set
+        $this->addSql('DROP PROCEDURE IF EXISTS recalculateLocationNestedSet;');
+        $this->addSql('DROP PROCEDURE IF EXISTS recalculateLocationNestedSet_recurse;');
+        $this->addSql('
+            CREATE PROCEDURE recalculateLocationNestedSet()
+            BEGIN
+                SET @left_value = 1;
+
+                -- now do recusion
+                CALL recalculateLocationNestedSet_recurse(NULL, NULL);
+            END;
+
+            CREATE PROCEDURE recalculateLocationNestedSet_recurse(root INTEGER, parent INTEGER)
+            BEGIN
+                DECLARE done             INTEGER DEFAULT 0;
+                DECLARE node             INTEGER;
+                DECLARE roots     CURSOR FOR SELECT id FROM location WHERE location.parent_location_id IS NULL  ORDER BY id;
+                DECLARE children  CURSOR FOR SELECT id FROM location WHERE location.parent_location_id = parent ORDER BY id;
+                DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+                -- MySQL setting - allow up to 10 stored procedure recursions. Default is 0.
+                SET max_sp_recursion_depth = 10;
+
+                -- this is bypassed on first run
+                IF parent IS NOT NULL THEN
+                    UPDATE location SET location.nested_tree_left = @left_value WHERE id = parent;
+                    SET @left_value = @left_value + 1;
+                END IF;
+
+                OPEN roots;
+                OPEN children;
+
+                -- for 1st run, and for root nodes
+                IF parent IS NULL THEN
+                    FETCH roots INTO node;
+                    REPEAT
+                        IF node IS NOT NULL THEN
+                            CALL recalculateLocationNestedSet_recurse(node, node);
+                            SET @left_value = @left_value + 1;
+                        END IF;
+                        FETCH roots INTO node;
+                    UNTIL done END REPEAT;
+                ELSE
+                    FETCH children INTO node;
+                    REPEAT
+                        IF node IS NOT NULL THEN
+                            CALL recalculateLocationNestedSet_recurse(root, node);
+                            SET @left_value = @left_value + 1;
+                        END IF;
+                        FETCH children INTO node;
+                    UNTIL done END REPEAT;
+                END IF;
+                UPDATE location set location.nested_tree_right = @left_value where id = parent;
+
+                CLOSE roots;
+                CLOSE children;
+            END;
+        ');
+        $this->addSql('CALL recalculateLocationNestedSet');
+
         $this->addSql('CREATE INDEX search_name ON location (name)');
         $this->addSql('CREATE INDEX search_country_name ON location (countryISO3, name)');
         $this->addSql('CREATE INDEX search_subtree ON location (countryISO3, nested_tree_level, nested_tree_left, nested_tree_right)');
