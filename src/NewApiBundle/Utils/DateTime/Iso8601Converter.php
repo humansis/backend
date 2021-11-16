@@ -22,6 +22,6 @@ final class Iso8601Converter
             }
         }
 
-        return $dateTime;
+        return $dateTime ?: null;
     }
 }
