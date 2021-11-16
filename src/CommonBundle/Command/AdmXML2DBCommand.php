@@ -73,6 +73,11 @@ class AdmXML2DBCommand extends ContainerAwareCommand
         return 0;
     }
 
+    /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     * @param AdmsImporter|LocationImporter $importer
+     */
     private function importLocations(InputInterface $input, OutputInterface $output, $importer): void
     {
         $output->writeln(" - Importing by ".get_class($importer));
