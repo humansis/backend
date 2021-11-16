@@ -136,5 +136,5 @@ cache_clear="cd /opt/humansis && bash ./clear_cache.sh $4"
 ssh $ec2_user@$ec2_host "$cache_clear" || exit 1
 echo "...done"
 
-rm_old_images="sudo docker system prune"
+rm_old_images="sudo docker system prune -f"
 ssh $ec2_user@$ec2_host $rm_old_images
