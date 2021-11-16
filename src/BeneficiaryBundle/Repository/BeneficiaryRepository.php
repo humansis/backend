@@ -689,7 +689,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $qb->setParameter(':vulnerability'.$i, $vulnerabilityName);
     }
 
-    private function hasValidSmartcardCriterion(QueryBuilder &$qb, $on, $value, &$userConditionsStatement, int $i)
+    private function hasValidSmartcardCriterion(QueryBuilder &$qb, $on, $value, int $i)
     {
         $subQueryForSC = $this->_em->createQueryBuilder()
             ->select("sc$i.id")
@@ -734,7 +734,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                 $this->hasVulnerabilityCriterion($qb, 'hhh'.$i, $condition, 'disabled', $userConditionsStatement, $i);
             }
             if ('hasValidSmartcard' === $field) {
-                $this->hasValidSmartcardCriterion($qb, 'hhh'.$i, $criterion['value'], $userConditionsStatement, $i);
+                $this->hasValidSmartcardCriterion($qb, 'hhh'.$i, $criterion['value'], $i);
             }
         }
     }
