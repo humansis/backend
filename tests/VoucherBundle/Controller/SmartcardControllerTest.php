@@ -190,6 +190,9 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
     public function testPurchaseV4()
     {
+        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([
+            'name' => VendorFixtures::VENDOR_SYR_NAME,
+        ], ['id' => 'asc']);
         $depositor = $this->em->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
         $assistanceBeneficiary = $this->assistanceBeneficiaryWithoutRelief();
         $bnf = $assistanceBeneficiary->getBeneficiary();
@@ -213,7 +216,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
                     'currency' => 'USD',
                 ],
             ],
-            'vendorId' => 1,
+            'vendorId' => $vendor->getId(),
             'beneficiaryId' => $bnf->getId(),
             'assistanceId' => $assistanceBeneficiary->getAssistance()->getId(),
             'createdAt' => '2020-02-02T12:11:11Z',
@@ -641,6 +644,9 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->assertEquals($summary->getValue(), $batchCandidate['value'], 'There is wrong value of batch to redeem');
     }
 
+    /**
+     * @depends testPurchaseV4
+     */
     public function testBatchRedemption(): void
     {
         // Log a user in order to go through the security firewall
@@ -648,7 +654,9 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([], ['id' => 'asc']);
+        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([
+            'name' => VendorFixtures::VENDOR_SYR_NAME,
+        ], ['id' => 'asc']);
         $repository = $this->em->getRepository(SmartcardPurchase::class);
         $candidates = $repository->countPurchasesToRedeem($vendor);
         $this->assertIsArray($candidates);
