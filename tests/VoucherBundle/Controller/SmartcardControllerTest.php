@@ -226,7 +226,6 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $smartcard = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
-        var_dump($smartcard);
         $this->assertArrayHasKey('value', $smartcard);
         $this->assertEquals(299.75, $smartcard['value'], 0.0001);
     }
