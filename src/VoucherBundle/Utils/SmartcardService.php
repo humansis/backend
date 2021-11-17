@@ -72,7 +72,7 @@ class SmartcardService
         $target = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy([
             'assistance' => $assistanceId,
             'beneficiary' => $beneficiaryId,
-        ]);
+        ], ['id' => 'asc']);
 
         if (null == $target) {
             throw new BadRequestDataException("No beneficiary #$beneficiaryId in assistance #$assistanceId");
@@ -83,7 +83,7 @@ class SmartcardService
             'state' => ReliefPackageState::TO_DISTRIBUTE,
             'modalityType' => ModalityType::SMART_CARD,
             'assistanceBeneficiary' => $target,
-        ]);
+        ], ['id' => 'asc']);
         if (null == $reliefPackage) {
             throw new BadRequestDataException("Nothing to distribute for beneficiary #$beneficiaryId in assistance #$assistanceId");
         }
