@@ -52,7 +52,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
         $reliefPackage = $this->createReliefPackage($ab);
 
         $this->request('POST', '/api/wsse/offline-app/v4/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
-            'distributionId' => $ab->getAssistance()->getId(),
+            'assistanceId' => $ab->getAssistance()->getId(),
             'value' => 255.25,
             'balanceBefore' => 260.00,
             'balanceAfter' => 300.00,
