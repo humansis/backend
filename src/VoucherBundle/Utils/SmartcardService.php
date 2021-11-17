@@ -317,7 +317,7 @@ class SmartcardService
             return null;
         }
         $deposits = $purchase->getSmartcard()->getDeposites()->toArray();
-        $smartcardDeposit = $this->getDeposit($deposits, $purchase->getCreatedAt());
+        $smartcardDeposit = $this->getDeposit($deposits, $purchase->get());
 
         if (
             null === $smartcardDeposit->getReliefPackage()
