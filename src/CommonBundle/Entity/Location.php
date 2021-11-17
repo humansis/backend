@@ -36,17 +36,17 @@ class Location implements TreeInterface
     /**
      * @var Location|null
      *
-     * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location", inversedBy="subLocations")
+     * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location", inversedBy="childLocations")
      * @ORM\JoinColumn(name="parent_location_id", nullable=true)
      */
-    private $upperLocation;
+    private $parentLocation;
 
     /**
      * @var Location[]
      *
-     * @ORM\OneToMany(targetEntity="CommonBundle\Entity\Location", mappedBy="upperLocation")
+     * @ORM\OneToMany(targetEntity="CommonBundle\Entity\Location", mappedBy="parentLocation")
      */
-    private $subLocations;
+    private $childLocations;
 
     /**
      * @var string
@@ -118,33 +118,33 @@ class Location implements TreeInterface
     /**
      * @return Location|null
      */
-    public function getUpperLocation(): ?Location
+    public function getParentLocation(): ?Location
     {
-        return $this->upperLocation;
+        return $this->parentLocation;
     }
 
     /**
-     * @param Location|null $upperLocation
+     * @param Location|null $parentLocation
      */
-    public function setUpperLocation(?Location $upperLocation): void
+    public function setParentLocation(?Location $parentLocation): void
     {
-        $this->upperLocation = $upperLocation;
+        $this->parentLocation = $parentLocation;
     }
 
     /**
      * @return Location[]
      */
-    public function getSubLocations(): iterable
+    public function getChildLocations(): iterable
     {
-        return $this->subLocations;
+        return $this->childLocations;
     }
 
     /**
-     * @param Location[] $subLocations
+     * @param Location[] $childLocations
      */
-    public function setSubLocations(array $subLocations): void
+    public function setChildLocations(array $childLocations): void
     {
-        $this->subLocations = $subLocations;
+        $this->childLocations = $childLocations;
     }
 
     /**
@@ -416,11 +416,11 @@ class Location implements TreeInterface
 
     public function getParent(): ?TreeInterface
     {
-        return $this->getUpperLocation();
+        return $this->getParentLocation();
     }
 
     public function getChildren(): iterable
     {
-        return $this->getSubLocations();
+        return $this->getChildLocations();
     }
 }
