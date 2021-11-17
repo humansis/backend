@@ -649,11 +649,6 @@ class SmartcardControllerTest extends BMSServiceTestCase
      */
     public function testBatchRedemption(): void
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $vendor = $this->em->getRepository(Vendor::class)->findOneBy([
             'name' => VendorFixtures::VENDOR_SYR_NAME,
         ], ['id' => 'asc']);
