@@ -673,6 +673,8 @@ class SmartcardControllerTest extends BMSServiceTestCase
                 'purchases' => $redemptionCandidate->getPurchasesIds(),
             ];
 
+            $this->setUp();
+
             $crawler = $this->request('POST', '/api/wsse/smartcards/purchases/redeem-batch/'.$vendor->getId(), $batchToRedeem);
             $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
             $result = json_decode($this->client->getResponse()->getContent(), true);
