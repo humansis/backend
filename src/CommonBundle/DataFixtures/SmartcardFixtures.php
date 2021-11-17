@@ -108,7 +108,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
     private function generatePackages(ObjectManager $manager, AssistanceBeneficiary $ab, string $currency): void
     {
         $serialNumber = self::generateSerialNumber();
-        $smartcard = new Smartcard($serialNumber, new DateTimeImmutable('now'));
+        $smartcard = new Smartcard($serialNumber, new DateTimeImmutable('2000-01-01'));
         $smartcard->setState(Smartcard::STATE_ACTIVE);
         $smartcard->setCurrency($currency);
         $smartcard->setBeneficiary($ab->getBeneficiary());
@@ -133,7 +133,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         $packages = $manager->getRepository(ReliefPackage::class)->findBy(['assistanceBeneficiary' => $ab], ['id' => 'asc']);
 
         foreach ($packages as $package) {
-            $i = rand(0, 10);
+            $i = rand(5, 10);
             $this->smartcardService->deposit(
                 $ab->getBeneficiary()->getSmartcardSerialNumber(),
                 $package->getId(),

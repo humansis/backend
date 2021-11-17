@@ -190,6 +190,9 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
     public function testPurchaseV4()
     {
+        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([
+            'name' => VendorFixtures::VENDOR_SYR_NAME,
+        ], ['id' => 'asc']);
         $depositor = $this->em->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
         $assistanceBeneficiary = $this->assistanceBeneficiaryWithoutRelief();
         $bnf = $assistanceBeneficiary->getBeneficiary();
@@ -213,8 +216,9 @@ class SmartcardControllerTest extends BMSServiceTestCase
                     'currency' => 'USD',
                 ],
             ],
-            'vendorId' => 1,
+            'vendorId' => $vendor->getId(),
             'beneficiaryId' => $bnf->getId(),
+            'assistanceId' => $assistanceBeneficiary->getAssistance()->getId(),
             'createdAt' => '2020-02-02T12:11:11Z',
             'balanceBefore' => 50,
             'balanceAfter' => 20,
@@ -254,7 +258,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
                     'id' => 1, // @todo replace for fixture
                     'value' => 400,
                     'quantity' => 1.2,
-                    'currency' => 'USD'
+                    'currency' => 'USD',
                 ],
             ],
             'vendorId' => 1,
@@ -292,7 +296,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
                     'id' => 1, // @todo replace for fixture
                     'value' => 400,
                     'quantity' => 1.2,
-                    'currency' => 'USD'
+                    'currency' => 'USD',
                 ],
             ],
             'vendorId' => 1,
@@ -640,28 +644,42 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->assertEquals($summary->getValue(), $batchCandidate['value'], 'There is wrong value of batch to redeem');
     }
 
+    /**
+     * @depends testPurchaseV4
+     */
     public function testBatchRedemption(): void
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([], ['id' => 'asc']);
+        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([
+            'name' => VendorFixtures::VENDOR_SYR_NAME,
+        ], ['id' => 'asc']);
         $repository = $this->em->getRepository(SmartcardPurchase::class);
+
+        // TEST of test data, can be removed after clean fixtures
+        /** @var SmartcardPurchase $purchase */
+        foreach ($repository->findAll() as $purchase) {
+            $currency = null;
+            foreach ($purchase->getRecords() as $record) {
+                if ($currency === null) $currency = $record->getCurrency();
+                $this->assertEquals($currency, $record->getCurrency(), "Test data are broken");
+            }
+        }
+
         $candidates = $repository->countPurchasesToRedeem($vendor);
         $this->assertIsArray($candidates);
-        $this->assertArrayHasKey(0, $candidates);
+        $this->assertGreaterThan(0, count($candidates), "Too little redemption candidates");
         /** @var PurchaseRedemptionBatch $redemptionCandidate */
-        $redemptionCandidate = $candidates[0];
-        $batchToRedeem = [
-            'purchases' => $redemptionCandidate->getPurchasesIds(),
-        ];
+        foreach ($candidates as $redemptionCandidate) {
+            $batchToRedeem = [
+                'purchases' => $redemptionCandidate->getPurchasesIds(),
+            ];
 
-        $crawler = $this->request('POST', '/api/wsse/smartcards/purchases/redeem-batch/'.$vendor->getId(), $batchToRedeem);
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
-        $result = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertArrayHasKey('id', $result);
+            $this->setUp();
+
+            $crawler = $this->request('POST', '/api/wsse/smartcards/purchases/redeem-batch/'.$vendor->getId(), $batchToRedeem);
+            $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+            $result = json_decode($this->client->getResponse()->getContent(), true);
+            $this->assertArrayHasKey('id', $result);
+        }
     }
 
     /**

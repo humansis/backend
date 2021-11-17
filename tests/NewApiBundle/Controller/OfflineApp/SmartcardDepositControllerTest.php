@@ -52,7 +52,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
         $reliefPackage = $this->createReliefPackage($ab);
 
         $this->request('POST', '/api/wsse/offline-app/v4/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
-            'distributionId' => $ab->getAssistance()->getId(),
+            'assistanceId' => $ab->getAssistance()->getId(),
             'value' => 255.25,
             'balanceBefore' => 260.00,
             'balanceAfter' => 300.00,
@@ -72,7 +72,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
 
     private function someSmartcardAssistance(): ?Assistance
     {
-        foreach ($this->em->getRepository(Assistance::class)->findAll() as $assistance) {
+        foreach ($this->em->getRepository(Assistance::class)->findBy([], ['id'=>'asc']) as $assistance) {
             foreach ($assistance->getCommodities() as $commodity) {
                 if ('Smartcard' === $commodity->getModalityType()->getName()) {
                     return $assistance;
@@ -86,7 +86,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
     private function assistanceBeneficiaryWithoutRelief(): AssistanceBeneficiary
     {
         /** @var Assistance $assistance */
-        foreach ($this->em->getRepository(Assistance::class)->findAll() as $assistance) {
+        foreach ($this->em->getRepository(Assistance::class)->findBy([], ['id'=>'asc']) as $assistance) {
             foreach ($assistance->getCommodities() as $commodity) {
                 if (ModalityType::SMART_CARD !== $commodity->getModalityType()->getName()) {
                     continue 2;

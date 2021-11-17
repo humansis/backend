@@ -22,6 +22,7 @@ class SmartcardRepository extends EntityRepository
             ->setParameter('serialNumber', strtoupper($serialNumber))
             ->orderBy('s.disabledAt', 'desc')
             ->orderBy('s.createdAt', 'desc')
+            ->orderBy('s.id', 'desc')
             ->setMaxResults(1)
         ;
         if (null !== $beneficiary) {
@@ -71,6 +72,7 @@ class SmartcardRepository extends EntityRepository
             ->join('h.projects', 'p')
             ->andWhere('p.iso3 = :countryCode')
             ->andWhere('s.state IN (:smartcardBlockedStates)')
+            ->orderBy('s.id', 'desc')
             ->setParameter('countryCode', $countryCode)
             ->setParameter('smartcardBlockedStates', [SmartcardStates::UNASSIGNED, SmartcardStates::INACTIVE, SmartcardStates::CANCELLED]);
 
@@ -84,6 +86,7 @@ class SmartcardRepository extends EntityRepository
             ->andWhere('s.state = :stateActive')
             ->setParameter('serialNumber', strtoupper($serialNumber))
             ->setParameter('stateActive', SmartcardStates::ACTIVE)
+            ->orderBy('s.id', 'desc')
             ->getQuery()->getResult();
 
         if (empty($smartcards)) {
