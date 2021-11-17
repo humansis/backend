@@ -70,7 +70,7 @@ class SmartcardDepositController extends AbstractOfflineAppController
             $deposit = $this->get('smartcard_service')->depositLegacy(
                 $request->get('serialNumber'),
                 $request->request->getInt('beneficiaryId'),
-                $request->request->getInt('distributionId'),
+                $request->request->getInt('assistanceId'),
                 $request->request->get('value'),
                 $request->request->get('balanceBefore'),
                 $request->request->get('balanceAfter'),
