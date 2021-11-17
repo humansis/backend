@@ -258,7 +258,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
                     'id' => 1, // @todo replace for fixture
                     'value' => 400,
                     'quantity' => 1.2,
-                    'currency' => 'USD'
+                    'currency' => 'USD',
                 ],
             ],
             'vendorId' => 1,
@@ -296,7 +296,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
                     'id' => 1, // @todo replace for fixture
                     'value' => 400,
                     'quantity' => 1.2,
-                    'currency' => 'USD'
+                    'currency' => 'USD',
                 ],
             ],
             'vendorId' => 1,
@@ -653,6 +653,17 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'name' => VendorFixtures::VENDOR_SYR_NAME,
         ], ['id' => 'asc']);
         $repository = $this->em->getRepository(SmartcardPurchase::class);
+
+        // TEST of test data, can be removed after clean fixtures
+        /** @var SmartcardPurchase $purchase */
+        foreach ($repository->findAll() as $purchase) {
+            $currency = null;
+            foreach ($purchase->getRecords() as $record) {
+                if ($currency === null) $currency = $record->getCurrency();
+                $this->assertEquals($currency, $record->getCurrency(), "Test data are broken");
+            }
+        }
+
         $candidates = $repository->countPurchasesToRedeem($vendor);
         $this->assertIsArray($candidates);
         $this->assertGreaterThan(0, count($candidates), "Too little redemption candidates");
