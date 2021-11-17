@@ -652,17 +652,18 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $repository = $this->em->getRepository(SmartcardPurchase::class);
         $candidates = $repository->countPurchasesToRedeem($vendor);
         $this->assertIsArray($candidates);
-        $this->assertArrayHasKey(0, $candidates);
+        $this->assertGreaterThan(0, count($candidates), "Too little redemption candidates");
         /** @var PurchaseRedemptionBatch $redemptionCandidate */
-        $redemptionCandidate = $candidates[0];
-        $batchToRedeem = [
-            'purchases' => $redemptionCandidate->getPurchasesIds(),
-        ];
+        foreach ($candidates as $redemptionCandidate) {
+            $batchToRedeem = [
+                'purchases' => $redemptionCandidate->getPurchasesIds(),
+            ];
 
-        $crawler = $this->request('POST', '/api/wsse/smartcards/purchases/redeem-batch/'.$vendor->getId(), $batchToRedeem);
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
-        $result = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertArrayHasKey('id', $result);
+            $crawler = $this->request('POST', '/api/wsse/smartcards/purchases/redeem-batch/'.$vendor->getId(), $batchToRedeem);
+            $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+            $result = json_decode($this->client->getResponse()->getContent(), true);
+            $this->assertArrayHasKey('id', $result);
+        }
     }
 
     /**
