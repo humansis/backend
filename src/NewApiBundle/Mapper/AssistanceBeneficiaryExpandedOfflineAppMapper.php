@@ -9,7 +9,7 @@ use DistributionBundle\Entity\GeneralReliefItem;
 use NewApiBundle\Serializer\MapperInterface;
 use VoucherBundle\Entity\Voucher;
 
-class AssistanceBeneficiaryExpandedOfflineAppMapper implements MapperInterface
+    class AssistanceBeneficiaryExpandedOfflineAppMapper implements MapperInterface
 {
     use MapperContextTrait;
 
@@ -60,9 +60,9 @@ class AssistanceBeneficiaryExpandedOfflineAppMapper implements MapperInterface
         return null;
     }
 
-    public function distributedAt(): ?string
+    public function getDistributedAt(): ?string
     {
-        return $this->object->getSmartcardDistributedAt();
+        return $this->object->getSmartcardDistributedAt() ? $this->object->getSmartcardDistributedAt()->format(\DateTimeInterface::ISO8601) : null;
     }
 
     public function getCurrentSmartcardSerialNumber(): ?string
