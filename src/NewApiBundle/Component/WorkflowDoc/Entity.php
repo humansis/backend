@@ -29,13 +29,19 @@ class Entity
      */
     private $supportedWorkflows;
 
-    public function __construct(string $entityName, string $entityFullName, string $bundleName)
+    /**
+     * @param string $entityName
+     * @param string $entityFullName
+     * @param string $bundleName
+     * @param string $entityDescription
+     */
+    public function __construct(string $entityName, string $entityFullName, string $bundleName, string $entityDescription)
     {
         $this->entityName = $entityName;
         $this->entityFullName = $entityFullName;
         $this->bundleName = $bundleName;
+        $this->entityDescription = $entityDescription;
         $this->supportedWorkflows = [];
-        $this->entityDescription = 'Lorem ipsum dolor sit amet.';
     }
 
     /**
@@ -87,14 +93,7 @@ class Entity
     }
 
     /**
-     * @param string $entityDescription
-     */
-    public function setEntityDescription(string $entityDescription): void
-    {
-        $this->entityDescription = $entityDescription;
-    }
-
-    /**
+     * @param string $workflowEntity
      * @return bool
      */
     public function isSupported($workflowEntity): bool

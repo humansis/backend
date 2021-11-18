@@ -37,8 +37,6 @@ class WorkflowDocCommand extends Command
     {
         parent::__construct($name);
 
-        $this->directoryFinder = new Finder();
-        $this->fileFinder = new Finder();
         $this->twig = $twig;
         $this->menuStructure = [];
     }
@@ -50,16 +48,20 @@ class WorkflowDocCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->renderHTMLFiles($this->getAllEntities());
+        $this->createHTMLFiles($this->getAllEntities($output), $output);
 
         return 0;
     }
 
-    private function getAllEntities(): array
+    /**
+     * @param OutputInterface $output
+     * @return array
+     */
+    private function getAllEntities(OutputInterface $output): array
     {
         $entities = [];
         $workflowInfo = Yaml::parseFile('src/NewApiBundle/Resources/config/workflow.yml',Yaml::PARSE_CONSTANT);
-
+        $this->directoryFinder = new Finder();
         $this->directoryFinder->directories()->in('src')->depth('== 0')->sortByName();
 
         if ($this->directoryFinder->hasResults()) {
@@ -67,14 +69,28 @@ class WorkflowDocCommand extends Command
 
                 $directoryName = $directory->getFilename();
                 $this->menuStructure[$directoryName] = [];
+                $this->fileFinder = new Finder();
                 $this->fileFinder->files()->in('src/'.$directoryName.'/Entity')->name('*.php')->sortByName();
 
                 if ($this->fileFinder->hasResults()) {
                     foreach ($this->fileFinder as $file) {
 
                         $entityName = $file->getFilenameWithoutExtension();
-                        $entityFullName = $directoryName.'\Entity\\'.$entityName;
-                        $entities[$entityFullName] = new Entity($entityName, $entityFullName, $directoryName);
+                        $entityNameWithPath = $file->getRelativePathname();
+                        $entityNameWithPath = substr($entityNameWithPath, 0, strpos($entityNameWithPath, '.'));
+                        $entityNameWithPath = str_replace('/','\\',$entityNameWithPath);
+                        $entityFullName = $directoryName.'\Entity\\'.$entityNameWithPath;
+                        try {
+                            $entityReflection = new \ReflectionClass($entityFullName);
+                            $entityDescription = $entityReflection->getDocComment();
+                            if ($entityDescription === false) {
+                                $entityDescription = 'Description comment missing';
+                            }
+                        } catch (\Exception $exception) {
+                            $output->writeln($exception->getMessage());
+                        }
+
+                        $entities[$entityFullName] = new Entity($entityName, $entityFullName, $directoryName, $entityDescription);
                         array_push($this->menuStructure[$directoryName], $entities[$entityFullName]);
 
                     }
@@ -95,13 +111,21 @@ class WorkflowDocCommand extends Command
         return $entities;
     }
 
-    private function renderHTMLFiles($entities)
+    /**
+     * @param array $entities
+     * @param OutputInterface $output
+     */
+    private function createHTMLFiles(array $entities, OutputInterface $output)
     {
         if (!empty($entities)) {
 
-            $renderedHTML = $this->twig->render('WorkflowDoc/entity.html.twig',[
-                'menu' => $this->menuStructure
-            ]);
+            try {
+                $renderedHTML = $this->twig->render('WorkflowDoc/entity.html.twig',[
+                    'menu' => $this->menuStructure
+                ]);
+            } catch (\Exception $exception) {
+                $output->writeln($exception->getMessage());
+            }
 
             if (!file_exists('web/workflows')) {
                 mkdir('web/workflows', 0777, true);
@@ -111,11 +135,16 @@ class WorkflowDocCommand extends Command
 
             foreach ($entities as $entity) {
 
-                $renderedHTML = $this->twig->render('WorkflowDoc/entity.html.twig',[
-                    'menu' => $this->menuStructure,
-                    'currentEntity' => $entity
+                try {
+                    $renderedHTML = $this->twig->render('WorkflowDoc/entity.html.twig',[
+                        'menu' => $this->menuStructure,
+                        'currentEntity' => $entity
 
-                ]);
+                    ]);
+                } catch (\Exception $exception) {
+                    $output->writeln($exception->getMessage());
+                }
+
 
                 if (!file_exists('web/workflows/'.$entity->getBundleName())) {
                     mkdir('web/workflows/'.$entity->getBundleName(), 0777, true);
