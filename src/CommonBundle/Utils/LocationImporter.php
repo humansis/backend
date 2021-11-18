@@ -136,6 +136,7 @@ class LocationImporter
 
     private function buildLocation(string $name, string $code, string $iso3, int $level, ?Location $parentLocation = null): Location
     {
+        /** @var Location[] $locations */
         $locations = $this->em->getRepository(Location::class)->findBy(['code' => $code]);
         if (count($locations) > 1) {
             $location = $locations[0];
@@ -145,7 +146,7 @@ class LocationImporter
             $location->setCountryISO3($iso3);
             $location->setName($name);
             $location->setCode($code);
-            $location->setUpperLocation($parentLocation);
+            $location->setParentLocation($parentLocation);
             $location->setLvl($level);
 
             $this->em->persist($location);
