@@ -60,9 +60,9 @@ class AssistanceBeneficiaryExpandedOfflineAppMapper implements MapperInterface
         return null;
     }
 
-    public function distributedAt(): ?string
+    public function getDistributedAt(): ?string
     {
-        return $this->object->getSmartcardDistributedAt();
+        return $this->object->getSmartcardDistributedAt() ? $this->object->getSmartcardDistributedAt()->format(\DateTimeInterface::ISO8601) : null;
     }
 
     public function getCurrentSmartcardSerialNumber(): ?string
