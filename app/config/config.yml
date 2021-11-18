@@ -61,6 +61,18 @@ parameters:
           currency: ZMW
           adms: [ Region, District, Ward, Constituency ]
 
+    app.swaggers:
+        - prefix: '/web-app'
+          path: 'vendor/humansis/web-api/swagger.yaml'
+        - prefix: '/vendor-app'
+          path: 'vendor/humansis/vendor-app-api/swagger.yaml'
+        - prefix: '/offline-app'
+          path: 'vendor/humansis/user-app-api/swagger.yaml'
+        - prefix: '/vendor-app'
+          path: 'vendor/humansis/vendor-app-legacy-api/swagger.yaml'
+        - prefix: '/offline-app'
+          path: 'vendor/humansis/user-app-legacy-api/swagger.yaml'
+
 framework:
     #esi: ~
     translator:
