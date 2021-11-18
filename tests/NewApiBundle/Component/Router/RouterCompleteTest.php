@@ -14,10 +14,10 @@ class RouterCompleteTest extends KernelTestCase
     /** @var EntityManagerInterface */
     private static $entityManager;
 
-    /** @var RouteCollection */
-    private static $routes;
     private static $applicationEndpoints = [];
     private static $swaggerEndpoints = [];
+
+    const SWG_IGNORE_METHODS = ['PARAMETERS'];
 
     public static function setUpBeforeClass()
     {
@@ -30,7 +30,9 @@ class RouterCompleteTest extends KernelTestCase
 
         foreach ($router->getRouteCollection() as $route) {
             foreach ($route->getMethods() as $method) {
-                self::$applicationEndpoints[$route->getPath()][] = $method;
+                $method = strtoupper($method);
+                $path = strtolower($route->getPath());
+                self::$applicationEndpoints[$path][] = strtoupper($method);
             }
         }
 
@@ -39,7 +41,11 @@ class RouterCompleteTest extends KernelTestCase
             $swagger = Yaml::parse(file_get_contents($swaggerConfig['path']));
             foreach ($swagger['paths'] as $path => $pathDescription) {
                 foreach ($pathDescription as $method => $pathMethodDescription) {
-                    self::$swaggerEndpoints[$swaggerConfig['prefix'].$path][] = $method;
+                    $method = strtoupper($method);
+                    $normalizedPath = strtolower($swaggerConfig['prefix'].$path);
+                    if (in_array($method, self::SWG_IGNORE_METHODS)) continue;
+                    if (isset(self::$swaggerEndpoints[$normalizedPath]) && in_array($method, self::$swaggerEndpoints[$normalizedPath])) continue;
+                    self::$swaggerEndpoints[$normalizedPath][] = $method;
                 }
             }
         }
@@ -47,33 +53,53 @@ class RouterCompleteTest extends KernelTestCase
 
     public function testApplicationEndpointsAreComplete()
     {
+        $correct = 0;
+        $failed = 0;
         // TODO: move to dataprovider
         foreach (self::$swaggerEndpoints as $path => $methods) {
             foreach ($methods as $method) {
-                $this->assertAppHasEndpoint($path, $method);
+                $found = $this->assertAppHasEndpoint($path, $method);
+                if ($found) $correct++; else $failed++;
             }
         }
+        $all = $correct + $failed;
+        $this->assertEquals(0, $failed, "There are $failed unimplemented endpoints ($all endpoint is documented)");
     }
 
     public function testSwaggersAreComplete()
     {
+        $correct = 0;
+        $failed = 0;
         // TODO: move to dataprovider
         foreach (self::$applicationEndpoints as $path => $methods) {
             foreach ($methods as $method) {
-                $this->assertSwgHasEndpoint($path, $method);
+                $found = $this->assertSwgHasEndpoint($path, $method);
+                if ($found) $correct++; else $failed++;
             }
         }
+        $all = $correct + $failed;
+        $this->assertEquals(0, $failed, "There are $failed undocumented endpoints ($all endpoint is implemented)");
     }
 
-    private function assertAppHasEndpoint(string $path, string $method)
+    private function assertAppHasEndpoint(string $path, string $method): bool
     {
-        $this->assertArrayHasKey($path, self::$applicationEndpoints, "Application missing endpoint with path $path");
-        $this->assertContains($method, self::$applicationEndpoints[$path], "Application missing method $method for endpoint with path $path");
+        if (!array_key_exists($path, self::$applicationEndpoints) || !in_array($method, self::$applicationEndpoints[$path])) {
+            echo "Application missing endpoint with path $path [$method]\n";
+            return false;
+        }
+        // $this->assertArrayHasKey($path, self::$applicationEndpoints, "Application missing endpoint with path $path");
+        // $this->assertContains($method, self::$applicationEndpoints[$path], "Application missing method $method for endpoint with path $path");
+        return true;
     }
 
-    private function assertSwgHasEndpoint(string $path, string $method)
+    private function assertSwgHasEndpoint(string $path, string $method): bool
     {
-        $this->assertArrayHasKey($path, self::$swaggerEndpoints, "Swagger definition missing endpoint with path $path");
-        $this->assertContains($method, self::$swaggerEndpoints[$path], "Swagger definition missing method $method for endpoint with path $path");
+        if (!array_key_exists($path, self::$swaggerEndpoints) || !in_array($method, self::$swaggerEndpoints[$path])) {
+            echo "Swagger definition missing endpoint with path $path [$method]\n";
+            return false;
+        }
+        // $this->assertArrayHasKey($path, self::$swaggerEndpoints, "Swagger definition missing endpoint with path $path");
+        // $this->assertContains($method, self::$swaggerEndpoints[$path], "Swagger definition missing method $method for endpoint with path $path");
+        return true;
     }
 }
