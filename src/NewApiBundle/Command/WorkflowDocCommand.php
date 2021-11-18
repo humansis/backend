@@ -2,13 +2,12 @@
 declare(strict_types=1);
 namespace NewApiBundle\Command;
 
+use NewApiBundle\Component\WorkflowDoc\Entity;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Yaml\Yaml;
-use Symfony\Component\Yaml\Parser;
 use Twig\Environment;
 
 class WorkflowDocCommand extends Command
@@ -29,6 +28,11 @@ class WorkflowDocCommand extends Command
      */
     private $twig;
 
+    /**
+     * @var Entity[]
+     */
+    private $menuStructure;
+
     public function __construct(Environment $twig, string $name = null)
     {
         parent::__construct($name);
@@ -36,6 +40,7 @@ class WorkflowDocCommand extends Command
         $this->directoryFinder = new Finder();
         $this->fileFinder = new Finder();
         $this->twig = $twig;
+        $this->menuStructure = [];
     }
 
     public function configure()
@@ -45,33 +50,34 @@ class WorkflowDocCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-
-        $this->renderHTMLFiles($this->getAllEntities($output));
+        $this->renderHTMLFiles($this->getAllEntities());
 
         return 0;
     }
 
-    private function getAllEntities($output): array
+    private function getAllEntities(): array
     {
-        $bundles = [];
+        $entities = [];
         $workflowInfo = Yaml::parseFile('src/NewApiBundle/Resources/config/workflow.yml',Yaml::PARSE_CONSTANT);
-        $this->directoryFinder->directories()->in('src')->depth('== 0');
+
+        $this->directoryFinder->directories()->in('src')->depth('== 0')->sortByName();
 
         if ($this->directoryFinder->hasResults()) {
             foreach ($this->directoryFinder as $directory) {
 
                 $directoryName = $directory->getFilename();
-                $entities = [];
-                $this->fileFinder->files()->in('src/'.$directoryName.'/Entity')->name('*.php');
+                $this->menuStructure[$directoryName] = [];
+                $this->fileFinder->files()->in('src/'.$directoryName.'/Entity')->name('*.php')->sortByName();
 
                 if ($this->fileFinder->hasResults()) {
                     foreach ($this->fileFinder as $file) {
 
-                        $variable = $file->getFilenameWithoutExtension();
-                        $entities[$variable] = [];
-                    }
-                    $bundles[$directoryName] = $entities;
+                        $entityName = $file->getFilenameWithoutExtension();
+                        $entityFullName = $directoryName.'\Entity\\'.$entityName;
+                        $entities[$entityFullName] = new Entity($entityName, $entityFullName, $directoryName);
+                        array_push($this->menuStructure[$directoryName], $entities[$entityFullName]);
 
+                    }
                 }
             }
         }
@@ -79,27 +85,22 @@ class WorkflowDocCommand extends Command
         foreach ($workflowInfo['framework']['workflows'] as $workflowKey => $workflowContent) {
             foreach ($workflowContent['supports'] as $supportedEntity) {
 
-                foreach ($bundles as $bundleKey => $bundledEntities) {
-                    foreach ($bundledEntities as $entityKey => $entityData) {
-
-                        if (strcmp($supportedEntity, $bundleKey.'\Entity\\'.$entityKey) == 0) {
-                            array_push($bundles[$bundleKey][$entityKey],$workflowKey);
-                        }
-                    }
+                if (array_key_exists($supportedEntity,$entities) AND $entities[$supportedEntity]->isSupported($supportedEntity)) {
+                    $entities[$supportedEntity]->addSupportedWorkflows($workflowKey);
                 }
 
             }
         }
 
-        return $bundles;
+        return $entities;
     }
 
-    private function renderHTMLFiles($data)
+    private function renderHTMLFiles($entities)
     {
-        if (!empty($data)) {
+        if (!empty($entities)) {
 
             $renderedHTML = $this->twig->render('WorkflowDoc/entity.html.twig',[
-                'bundles' => $data
+                'menu' => $this->menuStructure
             ]);
 
             if (!file_exists('web/workflows')) {
@@ -108,21 +109,20 @@ class WorkflowDocCommand extends Command
 
             file_put_contents('web/workflows/index.html', $renderedHTML);
 
-            foreach ($data as $budleKey => $bundledEntities) {
-                foreach ($bundledEntities as $entityKey => $entityData) {
+            foreach ($entities as $entity) {
 
-                    $renderedHTML = $this->twig->render('WorkflowDoc/entity.html.twig',[
-                        'bundles' => $data,
-                        'currentBundle' => $budleKey,
-                        'currentEntity'  => $entityKey
-                    ]);
+                $renderedHTML = $this->twig->render('WorkflowDoc/entity.html.twig',[
+                    'menu' => $this->menuStructure,
+                    'currentEntity' => $entity
 
-                    if (!file_exists('web/workflows/'.$budleKey)) {
-                        mkdir('web/workflows/'.$budleKey, 0777, true);
-                    }
+                ]);
 
-                    file_put_contents('web/workflows/'.$budleKey.'/'.$entityKey.'-workflow.html', $renderedHTML);
+                if (!file_exists('web/workflows/'.$entity->getBundleName())) {
+                    mkdir('web/workflows/'.$entity->getBundleName(), 0777, true);
                 }
+
+                file_put_contents('web/workflows/'.$entity->getBundleName().'/'.$entity->getEntityName().'-workflow.html', $renderedHTML);
+
             }
         }
     }

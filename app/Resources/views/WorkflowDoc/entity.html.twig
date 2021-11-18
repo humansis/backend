@@ -4,39 +4,40 @@
 {% block body %}
     <section class="section">
         <div class="columns is-multiline">
-            <aside class="menu column is-one-quarter">
-                {% for bundleKey,entities in bundles %}
+            <aside id="main_menu" class="menu column is-one-quarter">
+                {% for bundleName,entities in menu %}
                     <div class="menu-section">
                         <p class="menu-label menu-toggle" style="cursor: pointer;">
-                            {{ bundleKey }}
+                            {{ bundleName }}
                         </p>
-                        <ul class="menu-list is-hidden">
-                        {% for entityKey in entities|keys %}
-                            <li {% if currentBundle is defined and bundleKey == currentBundle and entityKey == currentEntity %} class="has-text-weight-bold" {% endif %}><a href="/backend/web/workflows/{{ bundleKey }}/{{ entityKey }}-workflow.html">{{ entityKey }}</a></li>
+                        <ul class="menu-list">
+                        {% for entity in entities %}
+                            <li {% if currentEntity is defined and currentEntity.getEntityName == entity.getEntityName and currentEntity.getBundleName == entity.getBundleName %} class="has-text-weight-bold" {% endif %}>
+                                <a href="/backend/web/workflows/{{ entity.getBundleName }}/{{ entity.getEntityName }}-workflow.html">{{ entity.getEntityName }}</a>
+                            </li>
                         {% endfor %}
                         </ul>
                     </div>
                 {% endfor %}
             </aside>
-            <div class="column is-three-quarters">
-                {% if currentBundle is defined %}<span class="is-size-7">{{ currentBundle|default('') }} / </span>{% endif %}
-                <span class="is-size-5 has-text-weight-bold">{{ currentEntity|default('Please choose workflow from the menu') }}</span>
-                <hr>
-                <p class="block">
-                    Lorem ipsum dolor sit amet. Dia tu laudum dominus maxima, et laudanum no matre.
-                </p>
-                <hr>
-                <div class="is-size-6 has-text-weight-bold">Associated workflows</div>
 
-                {% if currentBundle is defined %}
-                    {% for key, workflows in bundles[currentBundle] %}
-                        {% if workflows is defined and workflows is not null and workflows is not empty and key == currentEntity %}
-                            {% for workflow in workflows %}
-                                <img class="block" src="/backend/web/workflows/diagrams/{{ workflow }}.svg">
-                            {% endfor %}
-                        {% else %}
-                        {% endif %}
-                    {% endfor %}
+            <div id="main_content" class="column is-three-quarters">
+                {% if currentEntity is defined %}
+                    <div id="content_header">
+                        <span class="is-size-7">{{ currentEntity.getBundleName }} / </span>
+                        <span class="is-size-5 has-text-weight-bold">{{ currentEntity.getEntityName }}</span>
+                    </div>
+
+                    <hr>
+                    <p class="block">
+                        {{ currentEntity.getEntityDescription }}
+                    </p>
+                    <hr>
+                    <div class="is-size-5 has-text-weight-bold mb-4">Associated workflows</div>
+                        {% for workflow in currentEntity.getSupportedWorkflows %}
+                            <div class="is-size-6">{{ workflow }}</div>
+                            <img class="block" src="/backend/web/workflows/diagrams/{{ workflow }}.svg">
+                        {% endfor %}
                 {% endif %}
             </div>
         </div>
