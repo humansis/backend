@@ -9,7 +9,7 @@ use DistributionBundle\Entity\GeneralReliefItem;
 use NewApiBundle\Serializer\MapperInterface;
 use VoucherBundle\Entity\Voucher;
 
-    class AssistanceBeneficiaryExpandedOfflineAppMapper implements MapperInterface
+class AssistanceBeneficiaryExpandedOfflineAppMapper implements MapperInterface
 {
     use MapperContextTrait;
 
