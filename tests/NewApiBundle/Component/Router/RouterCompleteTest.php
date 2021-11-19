@@ -183,10 +183,6 @@ class RouterCompleteTest extends KernelTestCase
             echo "We don't document old endpoints: $path\n";
             return;
         }
-        // if (!array_key_exists($path, self::$swaggerEndpoints) || !in_array($method, self::$swaggerEndpoints[$path])) {
-        //     echo "Swagger definition missing endpoint with path $path [$method]\n";
-        //     return false;
-        // }
         $this->assertArrayHasKey($path, self::$swaggerEndpoints, "Swagger definition missing endpoint $path [$method]");
         $this->assertContains($method, self::$swaggerEndpoints[$path], "Swagger definition missing endpoint $path [$method]");
     }
