@@ -236,7 +236,7 @@ class DistributionCSVService
         
         // Create
         foreach ($data['created'] as $beneficiaryToCreate) {
-            if ($beneficiaryToCreate['head'] !== 'true') {
+            if ($beneficiaryToCreate['head'] !== 'true' && $beneficiaryToCreate['head'] !== true) {
                 throw new \Exception("You can only insert a head of the household in the file to import.");
             }
 

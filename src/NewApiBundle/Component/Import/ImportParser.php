@@ -38,7 +38,7 @@ class ImportParser
                 break;
             }
 
-            if ('true' === strtolower($row['Head'])) {
+            if (true === $row['Head'] || 'true' === strtolower($row['Head'])) {
                 if ([] !== $household) {
                     // everytime new household head is found, previous HH is added to list
                     $list[] = $household;
