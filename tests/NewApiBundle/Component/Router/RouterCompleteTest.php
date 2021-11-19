@@ -68,6 +68,10 @@ class RouterCompleteTest extends KernelTestCase
         '/api/{firewall}/web-app/v1/product-categories/{id}',
         '/api/{firewall}/web-app/v1/purchased-items/exports',
         '/api/{firewall}/web-app/v1/smartcard-redemption-batches/{id}/legacy-exports',
+        '/api/{firewall}/offline-app/v1/assistances/{id}/assistances-institutions',
+        '/api/{firewall}/offline-app/v1/assistances/{id}/assistances-communities',
+        '/api/{firewall}/offline-app/v1/last-smartcard-deposit/{id}',
+        '/api/{firewall}/web-app/v1/smartcard-purchased-items/exports',
     ];
 
     // TODO: there mustn't be any exception -> fix this
@@ -88,6 +92,9 @@ class RouterCompleteTest extends KernelTestCase
         '/api/{firewall}/web-app/v1/smartcard-purchased-items',
         '/api/{firewall}/web-app/v1/smartcard-purchased-items/export',
         '/api/{firewall}/offline-app/v2/beneficiary/{id}',
+        '/api/{firewall}/vendor-app/v1/vendors/{vendorid}/incomplete-smartcard-purchases',
+        '/api/{firewall}/vendor-app/v1/relief-packages/{id}',
+        '/api/{firewall}/offline-app/v1/smartcard-deposit/{id}',
     ];
 
     public static function setUpBeforeClass()
