@@ -64,6 +64,17 @@ class RouterCompleteTest extends KernelTestCase
         }
     }
 
+    // TODO: after old FE removal remove this check too
+    private static function isNewEndpoint(string $path): bool
+    {
+        foreach (self::SWG_FILES as $swgConfig) {
+            if (strpos($path, $swgConfig['prefix']) === 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function testSwaggersAreComplete()
     {
         $correct = 0;
@@ -72,6 +83,7 @@ class RouterCompleteTest extends KernelTestCase
         foreach (self::$applicationEndpoints as $path => $methods) {
             foreach ($methods as $method) {
                 $found = $this->assertSwgHasEndpoint($path, $method);
+                if ($found === null) continue;
                 if ($found) $correct++; else $failed++;
             }
         }
@@ -90,8 +102,13 @@ class RouterCompleteTest extends KernelTestCase
         $this->assertContains($method, self::$applicationEndpoints[$path], "Application missing method $method for endpoint with path $path");
     }
 
-    private function assertSwgHasEndpoint(string $path, string $method): bool
+    private function assertSwgHasEndpoint(string $path, string $method): ?bool
     {
+        // TODO: after old FE removal remove this check too
+        if (!self::isNewEndpoint($path)) {
+            echo "We don't document old endpoints: $path\n";
+            return null;
+        }
         if (!array_key_exists($path, self::$swaggerEndpoints) || !in_array($method, self::$swaggerEndpoints[$path])) {
             echo "Swagger definition missing endpoint with path $path [$method]\n";
             return false;
