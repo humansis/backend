@@ -89,7 +89,7 @@ class IntegrityCheckerTest extends KernelTestCase
         $checker = new IntegrityChecker(self::$validator, self::$entityManager);
         $checker->check($import);
 
-        $queue = self::$entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import]);
+        $queue = self::$entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
         $this->assertCount(1, $queue);
         foreach ($queue as $item) {
             $this->assertEquals(ImportQueueState::VALID, $item->getState(), "Queue is invalid because ".$item->getMessage());

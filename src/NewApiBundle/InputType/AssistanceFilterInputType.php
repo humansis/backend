@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\InputType;
 
 use NewApiBundle\InputType\FilterFragment\LocationFilterTrait;
+use NewApiBundle\InputType\FilterFragment\ModalityTypeFilterTrait;
 use NewApiBundle\InputType\FilterFragment\PrimaryIdFilterTrait;
 use NewApiBundle\InputType\FilterFragment\ProjectFilterTrait;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
@@ -14,6 +15,7 @@ class AssistanceFilterInputType extends AbstractFilterInputType
     use PrimaryIdFilterTrait;
     use ProjectFilterTrait;
     use LocationFilterTrait;
+    use ModalityTypeFilterTrait;
 
     /**
      * @Assert\Type("boolean")
@@ -24,17 +26,6 @@ class AssistanceFilterInputType extends AbstractFilterInputType
      * @Assert\Choice(callback={"DistributionBundle\Enum\AssistanceType", "values"})
      */
     protected $type;
-
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("string", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $modalityTypes;
 
     public function hasUpcomingOnly(): bool
     {
@@ -56,16 +47,4 @@ class AssistanceFilterInputType extends AbstractFilterInputType
         return $this->type;
     }
 
-    public function hasModalityTypes(): bool
-    {
-        return $this->has('modalityTypes');
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getModalityTypes(): array
-    {
-        return $this->modalityTypes;
-    }
 }

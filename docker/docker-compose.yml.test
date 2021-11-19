@@ -9,7 +9,7 @@ networks:
 services:
     php:
         build:
-            dockerfile: docker/dev/php/Dockerfile
+            dockerfile: docker/stage/php/Dockerfile
             context: .
         volumes:
             - .:/var/www/html
@@ -26,17 +26,16 @@ services:
         volumes:
             - ./docker/dev/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
         environment:
-                PMA_HOST: %env(RDS_HOSTNAME)%
-                PMA_ABSOLUTE_URI: https://apitest.humansis.org/pma_yzixy37h/
+            PMA_HOST: %env(RDS_HOSTNAME)%
+            PMA_ABSOLUTE_URI: https://apitest.humansis.org/pma_yzixy37h/
 
     nginx:
-        image: nginx
+        image: artifactory.quanti.cz/docker/humansis-nginx:test
         ports:
             - 8087:80
         depends_on:
             - php
         volumes:
-            - .:/var/www/html
             - ./docker/dev/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
         networks:
             - backend

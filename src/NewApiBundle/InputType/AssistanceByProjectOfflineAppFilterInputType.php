@@ -3,11 +3,14 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\InputType\FilterFragment\ModalityTypeFilterTrait;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class AssistanceByProjectOfflineAppFilterInputType extends AbstractFilterInputType
 {
+    use ModalityTypeFilterTrait;
+
     /**
      * @Assert\Choice(callback={"DistributionBundle\Enum\AssistanceType", "values"})
      */
@@ -17,17 +20,6 @@ class AssistanceByProjectOfflineAppFilterInputType extends AbstractFilterInputTy
      * @Assert\Choice({0, 1}, message="Invalid boolean value. Accepted are 0,1, given {{ value }}.")
      */
     protected $completed;
-
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("string", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $modalityTypes;
 
     /**
      * @Assert\Type("array")
@@ -58,16 +50,6 @@ class AssistanceByProjectOfflineAppFilterInputType extends AbstractFilterInputTy
     public function getCompleted(): bool
     {
         return (bool) $this->completed;
-    }
-
-    public function hasModalityTypes(): bool
-    {
-        return $this->has('modalityTypes');
-    }
-
-    public function getModalityTypes(): array
-    {
-        return $this->modalityTypes;
     }
 
     public function hasNotModalityTypes(): bool

@@ -4,14 +4,12 @@ namespace DistributionBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;
-use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Entity\Person;
-use BeneficiaryBundle\Model\Vulnerability\CategoryEnum;
 use CommonBundle\Utils\LocationService;
-use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Entity\GeneralReliefItem;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
@@ -21,18 +19,20 @@ use DistributionBundle\Utils\Retriever\AbstractRetriever;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
+use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Entity\AssistanceStatistics;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\GeneralReliefItemUpdateInputType;
 use NewApiBundle\InputType\GeneralReliefPatchInputType;
 use NewApiBundle\Request\Pagination;
+use NewApiBundle\Workflow\ReliefPackageTransitions;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use VoucherBundle\Entity\Booklet;
-use VoucherBundle\Entity\Product;
+use Symfony\Component\Workflow\Registry;
 use VoucherBundle\Entity\Voucher;
 
 /**
@@ -72,6 +72,9 @@ class AssistanceService
     /** @var FieldDbTransformer */
     private $fieldDbTransformer;
 
+    /** @var Registry $workflowRegistry */
+    private $workflowRegistry;
+
     /**
      * AssistanceService constructor.
      * @param EntityManagerInterface $entityManager
@@ -96,7 +99,8 @@ class AssistanceService
         CriteriaAssistanceService $criteriaAssistanceService,
         FieldDbTransformer $fieldDbTransformer,
         string $classRetrieverString,
-        ContainerInterface $container
+        ContainerInterface $container,
+        Registry $workflowRegistry
     ) {
         $this->em = $entityManager;
         $this->serializer = $serializer;
@@ -107,6 +111,8 @@ class AssistanceService
         $this->criteriaAssistanceService = $criteriaAssistanceService;
         $this->fieldDbTransformer = $fieldDbTransformer;
         $this->container = $container;
+        $this->workflowRegistry = $workflowRegistry;
+
         try {
             $class = new \ReflectionClass($classRetrieverString);
             $this->retriever = $class->newInstanceArgs([$this->em]);
@@ -135,11 +141,40 @@ class AssistanceService
 
     /**
      * @param Assistance $assistance
-     * @param $beneficiaries
+     */
+    public function unvalidateDistribution(Assistance $assistance): void
+    {
+        if ($this->hasDistributionStarted($assistance)) {
+            throw new \InvalidArgumentException('Unable to unvalidate the assistance. Assistance is already started.');
+        }
+
+        $assistance
+            ->setValidated(false)
+            ->setUpdatedOn(null);
+
+        foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+            /** @var AssistanceBeneficiary $assistanceBeneficiary */
+            foreach ($assistanceBeneficiary->getGeneralReliefs() as $gri) {
+                $this->em->remove($gri);
+            }
+
+            foreach ($assistanceBeneficiary->getReliefPackages() as $package) {
+                $this->em->remove($package);
+            }
+        }
+
+        $this->em->persist($assistance);
+        $this->em->flush();
+    }
+
+    /**
+     * @param Assistance $assistance
+     * @param AssistanceBeneficiary[] $beneficiaries
      * @return Assistance
      * @throws \Exception
      */
-    public function setCommoditiesToNewBeneficiaries(Assistance $assistance, $beneficiaries) {
+    public function setCommoditiesToNewBeneficiaries(Assistance $assistance, iterable $beneficiaries): Assistance
+    {
         $commodities = $assistance->getCommodities();
         foreach ($commodities as $commodity) {
             if ($commodity->getModalityType()->isGeneralRelief()) {
@@ -149,10 +184,27 @@ class AssistanceService
                     $this->em->persist($generalRelief);
                 }
             }
+            if ($commodity->getModalityType()->getName() === \NewApiBundle\Enum\ModalityType::SMART_CARD) {
+                foreach ($beneficiaries as $beneficiary) {
+                    $this->createReliefPackage($beneficiary, $commodity);
+                }
+            }
         }
         $this->em->flush();
 
         return $assistance;
+    }
+
+    private function createReliefPackage(AssistanceBeneficiary $assistanceBeneficiary, Commodity $commodity): void
+    {
+        $reliefPackage = new ReliefPackage(
+            $assistanceBeneficiary,
+            $commodity->getModalityType()->getName(),
+            $commodity->getValue(),
+            $commodity->getUnit()
+        );
+
+        $this->em->persist($reliefPackage);
     }
 
     public function findByCriteria(AssistanceCreateInputType $inputType, Pagination $pagination)
@@ -193,6 +245,8 @@ class AssistanceService
         if (!$project) {
             throw new \Doctrine\ORM\EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
         }
+        // FIXME: disabled for performance reasons, see PIN-2630 for further details
+        return new \CommonBundle\Pagination\Paginator([], -1);
 
         $filters = $this->mapping($inputType);
         $filters['criteria'] = $filters['selection_criteria'];
@@ -218,7 +272,15 @@ class AssistanceService
 
         $result = $this->createFromArray($inputType->getIso3(), $distributionArray);
 
-        return $result['distribution'];
+        /** @var Assistance $assistance */
+        $assistance = $result['distribution'];
+        $assistance->setFoodLimit($inputType->getFoodLimit());
+        $assistance->setNonFoodLimit($inputType->getNonFoodLimit());
+        $assistance->setCashbackLimit($inputType->getCashbackLimit());
+        $assistance->setRemoteDistributionAllowed($inputType->getRemoteDistributionAllowed());
+        $assistance->setAllowedProductCategoryTypes($inputType->getAllowedProductCategoryTypes());
+
+        return $assistance;
     }
 
     /**
@@ -329,6 +391,14 @@ class AssistanceService
             $this->saveReceivers($distribution, $listReceivers);
         }
 
+        if (isset($distributionArray['allowedProductCategoryTypes'])) {
+            $distribution->setAllowedProductCategoryTypes($distributionArray['allowedProductCategoryTypes']);
+        }
+
+        if (isset($distributionArray['foodLimit'])) {
+            $distribution->setFoodLimit($distributionArray['foodLimit']);
+        }
+
         $this->em->persist($distribution);
         $this->em->flush();
 
@@ -436,6 +506,19 @@ class AssistanceService
                                 ->setUpdatedOn(new \DateTime);         
         }
 
+        /** @var AssistanceBeneficiary $assistanceBeneficiary */
+        foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+            /** @var ReliefPackage $reliefPackage */
+            foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
+
+                $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
+
+                if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::EXPIRE)) {
+                    $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::EXPIRE);
+                }
+            }
+        }
+
         $this->em->persist($assistance);
         $this->em->flush();
 
@@ -464,13 +547,21 @@ class AssistanceService
 
     public function updateDateDistribution(Assistance $assistance, \DateTimeInterface $date)
     {
-        $distributionNameWithoutDate = explode('-', $assistance->getName())[0];
-        $newDistributionName = $distributionNameWithoutDate.'-'.$date->format('d-m-Y');
+        $newDistributionName = self::generateName($assistance->getLocation(), $date);
 
         $assistance
             ->setDateDistribution($date)
             ->setName($newDistributionName)
             ->setUpdatedOn(new \DateTime());
+
+        $this->em->persist($assistance);
+        $this->em->flush();
+    }
+
+    public function updateDateExpiration(Assistance $assistance, \DateTimeInterface $date): void
+    {
+        $assistance->setDateExpiration($date);
+        $assistance->setUpdatedOn(new \DateTime());
 
         $this->em->persist($assistance);
         $this->em->flush();
@@ -818,10 +909,30 @@ class AssistanceService
      */
     public function delete(Assistance $assistance)
     {
-        if ($assistance->getValidated()) {
+        if ($assistance->getValidated()) { //TODO also completed? to discuss
             $this->archived($assistance);
 
+            /** @var AssistanceBeneficiary $assistanceBeneficiary */
+            foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+                /** @var ReliefPackage $reliefPackage */
+                foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
+                    $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
+
+                    if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::CANCEL)) {
+                        $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::CANCEL);
+                    }
+                }
+            }
+
             return;
+        }
+
+        /** @var AssistanceBeneficiary $assistanceBeneficiary */
+        foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+            /** @var ReliefPackage $reliefPackage */
+            foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
+                $this->em->remove($reliefPackage);
+            }
         }
 
         foreach ($assistance->getCommodities() as $commodity) {
@@ -831,8 +942,27 @@ class AssistanceService
             $this->em->remove($criterion);
         }
         foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+            /** @var AssistanceBeneficiary $assistanceBeneficiary */
             foreach ($assistanceBeneficiary->getGeneralReliefs() as $relief) {
                 $this->em->remove($relief);
+            }
+            foreach ($assistanceBeneficiary->getTransactions() as $transaction) {
+                $this->em->remove($transaction);
+            }
+            foreach ($assistanceBeneficiary->getSmartcardDeposits() as $deposit) {
+                $this->em->remove($deposit);
+            }
+            foreach ($assistanceBeneficiary->getBooklets() as $booklet) {
+                foreach ($booklet->getVouchers() as $voucher) {
+                    foreach ($voucher->getVoucherPurchase() as $voucherPurchase) {
+                        foreach ($voucherPurchase->getRecords() as $record) {
+                            $this->em->remove($record);
+                        }
+                        $this->em->remove($voucherPurchase);
+                    }
+                    $this->em->remove($voucher);
+                }
+                $this->em->remove($booklet);
             }
             $this->em->remove($assistanceBeneficiary);
         }
@@ -901,13 +1031,12 @@ class AssistanceService
             ];
         }
 
-
-
         $distributionArray = [
             'countryIso3' => $inputType->getIso3(),
             'assistance_type' => $inputType->getType(),
             'target_type' => $inputType->getTarget(),
             'date_distribution' => $inputType->getDateDistribution(),
+            'date_expiration' => $inputType->getDateExpiration(),
             'project' => ['id' => $inputType->getProjectId()],
             'location' => $locationArray,
             'sector' => $inputType->getSector(),
@@ -918,6 +1047,11 @@ class AssistanceService
             'households_targeted' => $inputType->getHouseholdsTargeted(),
             'individuals_targeted' => $inputType->getIndividualsTargeted(),
             'description' => $inputType->getDescription(),
+            'foodLimit' => $inputType->getFoodLimit(),
+            'nonfoodLimit' => $inputType->getNonFoodLimit(),
+            'cashbackLimit' => $inputType->getCashbackLimit(),
+            'remoteDistributionAllowed' => $inputType->getRemoteDistributionAllowed(),
+            'allowedProductCategoryTypes' => $inputType->getAllowedProductCategoryTypes(),
         ];
 
         foreach ($inputType->getCommodities() as $commodity) {
@@ -1064,5 +1198,20 @@ class AssistanceService
     {
         $beneficiaries = $this->em->getRepository(Beneficiary::class)->getNotRemovedofDistribution($assistance);
         return $this->container->get('export_csv_service')->export($beneficiaries, 'beneficiaryInDistribution', $type);
+    }
+
+    /**
+     * Check if possible to revert validate state of assistance
+     *
+     * @param Assistance $assistance
+     *
+     * @return bool
+     */
+    public function hasDistributionStarted(Assistance $assistance): bool
+    {
+        /** @var AssistanceStatistics $statistics */
+        $statistics = $this->em->getRepository(AssistanceStatistics::class)->findByAssistance($assistance);
+
+        return $statistics->getAmountDistributed() > 0;
     }
 }

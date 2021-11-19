@@ -6,25 +6,46 @@ namespace NewApiBundle\Controller;
 
 use CommonBundle\Controller\ExportController;
 use CommonBundle\Pagination\Paginator;
+use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Repository\AssistanceRepository;
+use DistributionBundle\Utils\AssistanceService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Entity\AssistanceStatistics;
+use NewApiBundle\Exception\ConstraintViolationException;
+use NewApiBundle\Export\VulnerabilityScoreExport;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\AssistanceFilterInputType;
 use NewApiBundle\InputType\AssistanceOrderInputType;
 use NewApiBundle\InputType\AssistanceStatisticsFilterInputType;
 use NewApiBundle\InputType\ProjectsAssistanceFilterInputType;
 use NewApiBundle\Request\Pagination;
+use NewApiBundle\Utils\DateTime\Iso8601Converter;
 use ProjectBundle\Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
+use Symfony\Component\Validator\ConstraintViolation;
 
 class AssistanceController extends AbstractController
 {
+    /** @var VulnerabilityScoreExport */
+    private $vulnerabilityScoreExport;
+
+    /** @var AssistanceService */
+    private $assistanceService;
+
+    public function __construct(VulnerabilityScoreExport $vulnerabilityScoreExport, AssistanceService $assistanceService)
+    {
+        $this->vulnerabilityScoreExport = $vulnerabilityScoreExport;
+        $this->assistanceService = $assistanceService;
+    }
+
     /**
      * @Rest\Get("/web-app/v1/assistances/statistics")
      *
@@ -126,17 +147,51 @@ class AssistanceController extends AbstractController
      */
     public function update(Request $request, Assistance $assistance): JsonResponse
     {
-        if ($request->request->get('validated', false)) {
-            $this->get('distribution.assistance_service')->validateDistribution($assistance);
+        if ($request->request->has('validated')) {
+            if ($request->request->get('validated', true)) {
+                $this->get('distribution.assistance_service')->validateDistribution($assistance);
+            } else {
+                $this->get('distribution.assistance_service')->unvalidateDistribution($assistance);
+            }
         }
 
         if ($request->request->get('completed', false)) {
             $this->get('distribution.assistance_service')->complete($assistance);
         }
 
-        if ($request->request->get('dateDistribution')) {
-            $this->get('distribution.assistance_service')->updateDateDistribution($assistance,
-                new \DateTime($request->request->get('dateDistribution')));
+        //TODO think about better input validation for PATCH method
+        if ($request->request->has('dateDistribution')) {
+            $date = Iso8601Converter::toDateTime($request->request->get('dateDistribution'));
+
+            if (!$date instanceof DateTimeInterface) {
+                throw new ConstraintViolationException(new ConstraintViolation(
+                    "{$request->request->get('dateDistribution')} is not valid date format",
+                    null,
+                    [],
+                    [],
+                    'dateDistribution',
+                    $request->request->get('dateDistribution')
+                ));
+            }
+
+            $this->assistanceService->updateDateDistribution($assistance, $date);
+        }
+
+        if ($request->request->has('dateExpiration')) {
+            $date = Iso8601Converter::toDateTime($request->request->get('dateExpiration'));
+
+            if (!$date instanceof DateTimeInterface) {
+                throw new ConstraintViolationException(new ConstraintViolation(
+                    "{$request->request->get('dateExpiration')} is not valid date format",
+                    null,
+                    [],
+                    [],
+                    'dateExpiration',
+                    $request->request->get('dateExpiration')
+                ));
+            }
+
+            $this->assistanceService->updateDateExpiration($assistance, $date);
         }
 
         return $this->json($assistance);
@@ -169,6 +224,37 @@ class AssistanceController extends AbstractController
         $request->query->add(['officialDistributions' => $project->getId()]);
 
         return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
+    }
+
+    /**
+     * @Rest\Get("/web-app/v1/assistances/{id}/vulnerability-scores/exports")
+     *
+     * @param Assistance $assistance
+     * @param Request    $request
+     *
+     * @return Response
+     */
+    public function vulnerabilityScoresExports(Assistance $assistance, Request $request): Response
+    {
+        if (!$request->query->has('type')) {
+            throw $this->createNotFoundException('Missing query attribute type');
+        }
+
+        $filename = $this->vulnerabilityScoreExport->export($assistance, $request->query->get('type'));
+        if (!$filename) {
+            throw $this->createNotFoundException();
+        }
+
+        $response = new BinaryFileResponse(getcwd().'/'.$filename);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
+        $response->deleteFileAfterSend(true);
+
+        $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
+        if ($mimeTypeGuesser->isGuesserSupported()) {
+            $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType(getcwd().'/'.$filename));
+        }
+
+        return $response;
     }
 
     /**

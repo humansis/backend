@@ -122,6 +122,10 @@ class ImportService
             }
         }
 
+        if (!is_null($inputType->getTitle())) {
+            $import->setTitle($inputType->getTitle());
+        }
+
         $this->em->flush();
     }
 

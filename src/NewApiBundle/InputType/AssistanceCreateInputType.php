@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\InputType\Assistance\CommodityInputType;
 use NewApiBundle\Request\InputTypeInterface;
 use NewApiBundle\Validator\Constraints\Country;
 use NewApiBundle\Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @Assert\GroupSequence({"AssistanceCreateInputType", "Strict"})
+ * @Assert\GroupSequence({"AssistanceCreateInputType", "Strict", "AdditionalChecks"})
  */
 class AssistanceCreateInputType implements InputTypeInterface
 {
@@ -27,6 +28,11 @@ class AssistanceCreateInputType implements InputTypeInterface
      * @Assert\NotNull
      */
     private $dateDistribution;
+
+    /**
+     * @Iso8601
+     */
+    private $dateExpiration;
 
     /**
      * @Assert\Type("string")
@@ -140,6 +146,52 @@ class AssistanceCreateInputType implements InputTypeInterface
     private $validated = false;
 
     /**
+     * @Assert\Type("numeric")
+     */
+    private $foodLimit;
+
+    /**
+     * @Assert\Type("numeric")
+     */
+    private $nonFoodLimit;
+
+    /**
+     * @Assert\Type("numeric")
+     */
+    private $cashbackLimit;
+
+    /**
+     * @Assert\Type("boolean")
+     */
+    private $remoteDistributionAllowed;
+
+    /**
+     * @Assert\Type("array")
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Choice(callback={"NewApiBundle\Enum\ProductCategoryType", "values"}, strict=true, groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
+     */
+    private $allowedProductCategoryTypes;
+
+    /**
+     * @Assert\IsTrue(groups="AdditionalChecks", message="remoteDistributionAllowed must not be null if distribution is for smartcards. Null otherwise.")
+     */
+    public function isNotNullRemoteDistributionWhenSmartcard(): bool
+    {
+        /** @var CommodityInputType $commodity */
+        foreach ($this->commodities as $commodity) {
+            if ($commodity->getModalityType() === 'Smartcard') { //TODO modality type enum
+                return $this->remoteDistributionAllowed !== null;
+            }
+        }
+
+        return $this->remoteDistributionAllowed === null;
+    }
+
+    /**
      * @return string
      */
     public function getIso3()
@@ -169,6 +221,22 @@ class AssistanceCreateInputType implements InputTypeInterface
     public function setDateDistribution($dateDistribution)
     {
         $this->dateDistribution = $dateDistribution;
+    }
+
+    /**
+     * @return \DateTimeInterface|null
+     */
+    public function getDateExpiration()
+    {
+        return $this->dateExpiration;
+    }
+
+    /**
+     * @param \DateTimeInterface|null $dateExpiration
+     */
+    public function setDateExpiration($dateExpiration): void
+    {
+        $this->dateExpiration = $dateExpiration;
     }
 
     /**
@@ -436,4 +504,85 @@ class AssistanceCreateInputType implements InputTypeInterface
     {
         $this->validated = $validated;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getFoodLimit()
+    {
+        return $this->foodLimit;
+    }
+
+    /**
+     * @param mixed $foodLimit
+     */
+    public function setFoodLimit($foodLimit): void
+    {
+        $this->foodLimit = $foodLimit;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNonFoodLimit()
+    {
+        return $this->nonFoodLimit;
+    }
+
+    /**
+     * @param mixed $nonFoodLimit
+     */
+    public function setNonFoodLimit($nonFoodLimit): void
+    {
+        $this->nonFoodLimit = $nonFoodLimit;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCashbackLimit()
+    {
+        return $this->cashbackLimit;
+    }
+
+    /**
+     * @param mixed $cashbackLimit
+     */
+    public function setCashbackLimit($cashbackLimit): void
+    {
+        $this->cashbackLimit = $cashbackLimit;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function getRemoteDistributionAllowed()
+    {
+        return $this->remoteDistributionAllowed;
+    }
+
+    /**
+     * @param bool|null $remoteDistributionAllowed
+     */
+    public function setRemoteDistributionAllowed($remoteDistributionAllowed)
+    {
+        $this->remoteDistributionAllowed = $remoteDistributionAllowed;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllowedProductCategoryTypes()
+    {
+        return $this->allowedProductCategoryTypes;
+    }
+
+    /**
+     * @param array $allowedProductCategoryTypes
+     */
+    public function setAllowedProductCategoryTypes($allowedProductCategoryTypes): void
+    {
+        $this->allowedProductCategoryTypes = $allowedProductCategoryTypes;
+    }
+
 }

@@ -3,8 +3,11 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\InputType\FilterFragment\AssistanceFilterTrait;
+use NewApiBundle\InputType\FilterFragment\DateIntervalFilterTrait;
 use NewApiBundle\InputType\FilterFragment\FulltextFilterTrait;
 use NewApiBundle\InputType\FilterFragment\LocationFilterTrait;
+use NewApiBundle\InputType\FilterFragment\ModalityTypeFilterTrait;
 use NewApiBundle\InputType\FilterFragment\ProjectFilterTrait;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use NewApiBundle\Validator\Constraints\Iso8601;
@@ -18,28 +21,9 @@ class DistributedItemFilterInputType extends AbstractFilterInputType
     use FulltextFilterTrait;
     use ProjectFilterTrait;
     use LocationFilterTrait;
-
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("int", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $assistances;
-
-    /**
-     * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("string", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
-    protected $modalityTypes;
+    use DateIntervalFilterTrait;
+    use AssistanceFilterTrait;
+    use ModalityTypeFilterTrait;
 
     /**
      * @Assert\Type("array")
@@ -53,29 +37,6 @@ class DistributedItemFilterInputType extends AbstractFilterInputType
     protected $beneficiaryTypes;
 
     /**
-     * @Iso8601
-     */
-    protected $dateFrom;
-
-    /**
-     * @Iso8601
-     */
-    protected $dateTo;
-
-    public function hasModalityTypes(): bool
-    {
-        return $this->has('modalityTypes');
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getModalityTypes(): array
-    {
-        return $this->modalityTypes;
-    }
-
-    /**
      * @return string[]
      */
     public function getBeneficiaryTypes(): array
@@ -86,44 +47,5 @@ class DistributedItemFilterInputType extends AbstractFilterInputType
     public function hasBeneficiaryTypes(): bool
     {
         return $this->has('beneficiaryTypes');
-    }
-
-    /**
-     * @return string
-     */
-    public function getDateFrom(): string
-    {
-        return $this->dateFrom;
-    }
-
-    public function hasDateFrom(): bool
-    {
-        return $this->has('dateFrom');
-    }
-
-    /**
-     * @return string
-     */
-    public function getDateTo(): string
-    {
-        return $this->dateTo;
-    }
-
-    public function hasDateTo(): bool
-    {
-        return $this->has('dateTo');
-    }
-
-    public function hasAssistances(): bool
-    {
-        return $this->has('assistances');
-    }
-
-    /**
-     * @return int[]
-     */
-    public function getAssistances(): array
-    {
-        return $this->assistances;
     }
 }

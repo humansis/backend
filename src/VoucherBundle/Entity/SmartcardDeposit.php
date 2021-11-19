@@ -6,6 +6,10 @@ use DateTime;
 use DateTimeInterface;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\CreatedAt;
+use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Enum\ModalityType;
+use NewApiBundle\Enum\ReliefPackageState;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 use UserBundle\Entity\User;
@@ -15,9 +19,12 @@ use UserBundle\Entity\User;
  *
  * @ORM\Table(name="smartcard_deposit")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\SmartcardDepositRepository")
+ * @ORM\HasLifecycleCallbacks
  */
 class SmartcardDeposit
 {
+    use CreatedAt;
+
     /**
      * @var int
      *
@@ -47,17 +54,22 @@ class SmartcardDeposit
      *
      * @SymfonyGroups({"FullSmartcard"})
      */
-    private $depositor;
+    private $distributedBy;
 
     /**
-     * @var AssistanceBeneficiary
+     * @var DateTime
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", inversedBy="smartcardDeposits")
-     * @ORM\JoinColumn(name="distribution_beneficiary_id", nullable=false)
-     *
-     * @SymfonyGroups({"FullSmartcard"})
+     * @ORM\Column(name="distributed_at", type="datetime", nullable=true)
      */
-    private $assistanceBeneficiary;
+    private $distributedAt;
+
+    /**
+     * @var ReliefPackage|null
+     *
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ReliefPackage", inversedBy="smartcardDeposits")
+     * @ORM\JoinColumn(name="relief_package_id")
+     */
+    private $reliefPackage;
 
     /**
      * @var float
@@ -75,33 +87,24 @@ class SmartcardDeposit
      */
     private $balance;
 
-    /**
-     * @var DateTime
-     *
-     * @ORM\Column(name="used_at", type="datetime", nullable=true)
-     *
-     * @SymfonyGroups({"FullSmartcard"})
-     */
-    private $createdAt;
-
     protected function __construct()
     {
     }
 
     public static function create(
-        Smartcard $smartcard,
-        User $depositor,
-        AssistanceBeneficiary $assistanceBeneficiary,
-        $value,
-        $balance,
-        DateTimeInterface $createdAt
+        Smartcard             $smartcard,
+        User                  $distributedBy,
+        ReliefPackage         $reliefPackage,
+                              $value,
+                              $balance,
+        DateTimeInterface     $distributedAt
     ) {
         $entity = new self();
-        $entity->depositor = $depositor;
-        $entity->assistanceBeneficiary = $assistanceBeneficiary;
+        $entity->distributedBy = $distributedBy;
+        $entity->distributedAt = $distributedAt;
+        $entity->reliefPackage = $reliefPackage;
         $entity->value = $value;
         $entity->balance = $balance;
-        $entity->createdAt = $createdAt;
         $entity->smartcard = $smartcard;
 
         $smartcard->addDeposit($entity);
@@ -130,17 +133,9 @@ class SmartcardDeposit
     /**
      * @return User
      */
-    public function getDepositor(): User
+    public function getDistributedBy(): User
     {
-        return $this->depositor;
-    }
-
-    /**
-     * @return AssistanceBeneficiary
-     */
-    public function getAssistanceBeneficiary(): AssistanceBeneficiary
-    {
-        return $this->assistanceBeneficiary;
+        return $this->distributedBy;
     }
 
     public function getValue(): float
@@ -154,10 +149,34 @@ class SmartcardDeposit
     }
 
     /**
-     * @return DateTimeInterface
+     * @return ReliefPackage|null
      */
-    public function getCreatedAt(): DateTimeInterface
+    public function getReliefPackage(): ?ReliefPackage
     {
-        return $this->createdAt;
+        return $this->reliefPackage;
+    }
+
+    /**
+     * @param ReliefPackage|null $reliefPackage
+     */
+    public function setReliefPackage(?ReliefPackage $reliefPackage): void
+    {
+        $this->reliefPackage = $reliefPackage;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getDistributedAt(): DateTime
+    {
+        return $this->distributedAt;
+    }
+
+    /**
+     * @param DateTime $distributedAt
+     */
+    public function setDistributedAt(DateTime $distributedAt): void
+    {
+        $this->distributedAt = $distributedAt;
     }
 }

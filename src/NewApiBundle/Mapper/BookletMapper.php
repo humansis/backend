@@ -16,7 +16,9 @@ class BookletMapper implements MapperInterface
      */
     public function supports(object $object, $format = null, array $context = null): bool
     {
-        return $object instanceof Booklet && isset($context[self::NEW_API]) && true === $context[self::NEW_API];
+        return $object instanceof Booklet &&
+            isset($context[self::NEW_API]) && true === $context[self::NEW_API] &&
+            !isset($context['offline-app']);
     }
 
     /**

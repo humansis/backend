@@ -1,4 +1,4 @@
-FROM php:7.3-fpm
+FROM php:7.3-fpm AS base
 
 
 RUN apt-get update && \
@@ -9,6 +9,7 @@ RUN apt-get update && \
     libjpeg-dev \
     libicu-dev \
     cron \
+    supervisor \
     sudo
 
 

@@ -12,6 +12,8 @@ use ProjectBundle\Entity\ProjectSector;
 
 class ProjectOfflineMapper implements MapperInterface
 {
+    use MapperContextTrait;
+
     /** @var Project */
     private $object;
 
@@ -20,7 +22,7 @@ class ProjectOfflineMapper implements MapperInterface
      */
     public function supports(object $object, $format = null, array $context = null): bool
     {
-        return $object instanceof Project && isset($context['offline-app']) && true === $context['offline-app'];
+        return $object instanceof Project && $this->isOfflineApp($context);
     }
 
     /**

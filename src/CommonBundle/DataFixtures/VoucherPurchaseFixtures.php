@@ -48,7 +48,7 @@ class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterfa
 
         $booklets = $manager->getRepository(Booklet::class)->findBy([
             'status' => Booklet::DISTRIBUTED,
-        ]);
+        ], ['id' => 'asc']);
         echo "Booklets to purchase: ".count($booklets).", make purchases for 1/".self::FRACTION_TO_SPENT."\n";
         $bookletIndex = 0;
         foreach ($booklets as $booklet) {
@@ -126,7 +126,7 @@ class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterfa
 
     private function randomEntity($classname, ObjectManager $manager)
     {
-        $entities = $manager->getRepository($classname)->findBy([], null, 10, 0);
+        $entities = $manager->getRepository($classname)->findBy([], ['id' => 'asc'], 10, 0);
         if (0 === count($entities)) {
             return null;
         }

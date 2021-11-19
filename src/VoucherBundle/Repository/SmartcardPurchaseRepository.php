@@ -68,9 +68,10 @@ class SmartcardPurchaseRepository extends EntityRepository
                 FROM
                     assistance AS a
                         INNER JOIN distribution_beneficiary AS db ON a.id = db.assistance_id
-                        INNER JOIN smartcard_deposit AS sd ON db.id = sd.distribution_beneficiary_id AND sd.used_at <= sp.used_at
+                        LEFT JOIN relief_package abc ON abc.assistance_beneficiary_id=db.id
+                        INNER JOIN smartcard_deposit AS sd ON abc.id = sd.relief_package_id AND sd.distributed_at <= sp.used_at
                 WHERE s.id = sd.smartcard_id
-                ORDER BY sd.used_at DESC, sd.id DESC 
+                ORDER BY sd.distributed_at DESC, sd.id DESC 
                 LIMIT 1
             ) AS projectId,
             SUM(spr.value) as purchaseValue,
@@ -81,7 +82,8 @@ class SmartcardPurchaseRepository extends EntityRepository
                 INNER JOIN smartcard_purchase AS sp on s.id = sp.smartcard_id
                 INNER JOIN smartcard_purchase_record AS spr ON sp.id = spr.smartcard_purchase_id
         WHERE sp.redemption_batch_id IS NULL
-        GROUP BY sp.id, spr.currency, projectId, vendorId";
+        GROUP BY sp.id, spr.currency, projectId, vendorId
+        ORDER BY sp.id, spr.currency, projectId, vendorId";
 
         $purchaseValuesAggregation = "SELECT
                 pre.currency,
@@ -90,7 +92,8 @@ class SmartcardPurchaseRepository extends EntityRepository
                 pre.projectId
             FROM ($purchasePreAggregation) as pre
             WHERE pre.vendorId = {$vendor->getId()} AND currency IS NOT NULL AND projectId IS NOT NULL
-            GROUP BY pre.vendorId, pre.projectId, pre.currency";
+            GROUP BY pre.vendorId, pre.projectId, pre.currency
+            ORDER BY pre.vendorId, pre.projectId, pre.currency";
 
         $stmt = $this->_em->getConnection()->prepare($purchaseValuesAggregation);
         $stmt->execute();
@@ -105,7 +108,8 @@ class SmartcardPurchaseRepository extends EntityRepository
                 WHERE
                     pre.vendorId = {$vendor->getId()} AND
                     pre.projectId = {$candidate['projectId']} AND
-                    pre.currency = '{$candidate['currency']}'";
+                    pre.currency = '{$candidate['currency']}'
+                ORDER BY pre.purchaseId";
 
             $stmt = $this->_em->getConnection()->prepare($purchaseIdsAggregation);
             $stmt->execute();

@@ -189,7 +189,6 @@ class SmartcardController extends Controller
      *
      * @Rest\Patch("/offline-app/v1/smartcards/{serialNumber}")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER') or is_granted('ROLE_ENUMERATOR')")
-     * @ParamConverter("smartcard")
      *
      * @SWG\Tag(name="Smartcards")
      * @SWG\Tag(name="Offline App")
@@ -232,13 +231,19 @@ class SmartcardController extends Controller
      * @SWG\Response(response=404, description="Smartcard does not exists.")
      * @SWG\Response(response=400, description="Smartcard state can't be changed this way. State flow restriction.")
      *
-     * @param Smartcard $smartcard
-     * @param Request   $request
+     * @param string  $serialNumber
+     * @param Request $request
      *
      * @return Response
      */
-    public function change(Smartcard $smartcard, Request $request): Response
+    public function change(string $serialNumber, Request $request): Response
     {
+        $smartcard = $this->getDoctrine()->getRepository(Smartcard::class)->findActiveBySerialNumber($serialNumber);
+
+        if (!$smartcard instanceof Smartcard) {
+            throw $this->createNotFoundException("Smartcard with code '$serialNumber' was not found.");
+        }
+
         $newState = $smartcard->getState();
         if ($request->request->has('state')) {
             $newState = $request->request->get('state');
@@ -258,83 +263,6 @@ class SmartcardController extends Controller
         $json = $this->get('serializer')->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
 
         return new Response($json);
-    }
-
-    /**
-     * Put money to smartcard. If smartcard does not exists, it will be created.
-     *
-     * @Rest\Patch("/offline-app/v1/smartcards/{serialNumber}/deposit")
-     * @ParamConverter("smartcard")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER') or is_granted('ROLE_ENUMERATOR')")
-     *
-     * @SWG\Tag(name="Smartcards")
-     *
-     * @SWG\Parameter(
-     *     name="serialNumber",
-     *     in="path",
-     *     type="string",
-     *     required=true,
-     *     description="Serial number (GUID) of smartcard"
-     * )
-     *
-     * @SWG\Parameter(
-     *     name="body",
-     *     in="body",
-     *     required=true,
-     *     @SWG\Schema(
-     *         type="object",
-     *         @SWG\Property(
-     *             property="value",
-     *             type="number",
-     *             description="Value of money deposit to smartcard"
-     *         ),
-     *         @SWG\Property(
-     *             property="distributionId",
-     *             type="int",
-     *             description="ID of distribution from which are money deposited"
-     *         ),
-     *         @SWG\Property(
-     *             property="createdAt",
-     *             type="string",
-     *             description="ISO 8601 time of deposit in UTC",
-     *             example="2020-02-02T12:00:00+0200"
-     *         )
-     *     )
-     * )
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="Money succesfully succesfully deposited to smartcard",
-     *     @Model(type=Smartcard::class, groups={"SmartcardOverview"})
-     * )
-     *
-     * @param Request $request
-     *
-     * @return Response
-     */
-    public function depositDeprecated(Request $request): Response
-    {
-        try {
-            $deposit = $this->get('smartcard_service')->deposit(
-                $request->get('serialNumber'),
-                $request->request->getInt('distributionId'),
-                null,
-                $request->request->get('value'),
-                null,
-                \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
-                $this->getUser()
-            );
-            $json = $this->get('serializer')->serialize($deposit->getSmartcard(), 'json', ['groups' => ['SmartcardOverview']]);
-            return new Response($json);
-        } catch (\Exception $exception) {
-            $this->writeData(
-                'depositV1',
-                $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
-                $request->get('serialNumber', 'missing'),
-                json_encode($request->request->all())
-            );
-            throw $exception;
-        }
     }
 
     /**
@@ -395,14 +323,15 @@ class SmartcardController extends Controller
      *
      * @return Response
      */
-    public function deposit(Request $request): Response
+    public function legacyDeposit(Request $request): Response
     {
         try {
-            $deposit = $this->get('smartcard_service')->deposit(
+            $deposit = $this->get('smartcard_service')->depositLegacy(
                 $request->get('serialNumber'),
-                $request->request->getInt('distributionId'),
                 $request->request->get('beneficiaryId'),
+                $request->request->getInt('distributionId'),
                 $request->request->get('value'),
+                null,
                 null,
                 \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
                 $this->getUser()

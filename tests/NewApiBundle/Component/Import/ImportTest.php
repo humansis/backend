@@ -137,7 +137,7 @@ class ImportTest extends KernelTestCase
         $this->uploadService->load($importFile);
 
         $this->assertNotNull($importFile->getId(), "ImportFile wasn't saved to DB");
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
         $this->assertCount($expectedHouseholdCount, $queue);
 
         // start integrity check
@@ -150,7 +150,7 @@ class ImportTest extends KernelTestCase
             // expected
         }
 
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
         $this->assertCount($expectedHouseholdCount, $queue);
         $this->assertEquals(ImportState::INTEGRITY_CHECKING, $import->getState());
 
@@ -177,7 +177,7 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:identity failed");
 
         $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
         $this->assertCount($expectedHouseholdCount, $queue);
 
         // start similarity check
@@ -193,10 +193,10 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:similarity failed");
 
         $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
         $this->assertCount($expectedHouseholdCount, $queue);
 
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_CREATE]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_CREATE], ['id' => 'asc']);
         $this->assertCount($expectedHouseholdCount, $queue);
 
         // save to DB
@@ -213,7 +213,7 @@ class ImportTest extends KernelTestCase
 
         $this->assertEquals(ImportState::FINISHED, $import->getState());
 
-        $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import]);
+        $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
         $this->assertCount($expectedHouseholdCount, $queue);
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->getImported($import);
@@ -305,7 +305,7 @@ class ImportTest extends KernelTestCase
         $this->assertEquals($expectedDuplicities, $stats->getAmountDuplicities());
 
         // resolve all as duplicity to update and continue
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::SUSPICIOUS]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::SUSPICIOUS], ['id' => 'asc']);
         foreach ($queue as $item) {
             $duplicityResolve = new DuplicityResolveInputType();
             $duplicityResolve->setStatus(ImportQueueState::TO_UPDATE);
@@ -328,14 +328,14 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:similarity failed");
 
         $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
         $this->assertCount($expectedHouseholdCount, $queue);
 
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_CREATE]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_CREATE], ['id' => 'asc']);
         $this->assertCount($expectedHouseholdCount-$expectedDuplicities, $queue);
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_UPDATE]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_UPDATE], ['id' => 'asc']);
         $this->assertCount($expectedDuplicities, $queue);
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_LINK]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_LINK], ['id' => 'asc']);
         $this->assertCount(0, $queue);
 
         // save to DB
@@ -435,7 +435,7 @@ class ImportTest extends KernelTestCase
         $this->entityManager->refresh($secondImport);
 
         // resolve all as duplicity on second import to update and continue
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $secondImport, 'state' => ImportQueueState::SUSPICIOUS]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $secondImport, 'state' => ImportQueueState::SUSPICIOUS], ['id' => 'asc']);
         foreach ($queue as $item) {
             $duplicityResolve = new DuplicityResolveInputType();
             $duplicityResolve->setStatus(ImportQueueState::TO_UPDATE);
@@ -664,6 +664,6 @@ class ImportTest extends KernelTestCase
 
     private function getUser(): User
     {
-        return $this->entityManager->getRepository(User::class)->findOneBy([]);
+        return $this->entityManager->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
     }
 }

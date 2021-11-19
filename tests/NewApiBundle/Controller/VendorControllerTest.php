@@ -48,7 +48,7 @@ class VendorControllerTest extends BMSServiceTestCase
         }
 
         /** @var User[] $users */
-        $users = $this->em->getRepository(User::class)->findBy(['vendor' => null]);
+        $users = $this->em->getRepository(User::class)->findBy(['vendor' => null], ['id' => 'asc']);
 
         if (empty($users)) {
             $this->markTestSkipped('There needs to be at least one user in system which is not assigned to any vendor to complete this test');
@@ -67,6 +67,7 @@ class VendorControllerTest extends BMSServiceTestCase
             'canSellFood' => false,
             'canSellNonFood' => false,
             'canSellCashback' => false,
+            'canDoRemoteDistributions' => true,
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -93,6 +94,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('canSellFood', $result);
         $this->assertArrayHasKey('canSellNonFood', $result);
         $this->assertArrayHasKey('canSellCashback', $result);
+        $this->assertArrayHasKey('canDoRemoteDistributions', $result);
 
         $this->assertEquals($data['shop'], $result['shop']);
         $this->assertEquals($data['addressPostcode'], $result['addressPostcode']);
@@ -127,6 +129,7 @@ class VendorControllerTest extends BMSServiceTestCase
             'canSellFood' => true,
             'canSellNonFood' => true,
             'canSellCashback' => true,
+            'canDoRemoteDistributions' => false,
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -153,6 +156,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('canSellFood', $result);
         $this->assertArrayHasKey('canSellNonFood', $result);
         $this->assertArrayHasKey('canSellCashback', $result);
+        $this->assertArrayHasKey('canDoRemoteDistributions', $result);
 
         $this->assertEquals($data['shop'], $result['shop']);
         $this->assertEquals($data['addressPostcode'], $result['addressPostcode']);
@@ -161,6 +165,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertEquals($data['canSellFood'], $result['canSellFood']);
         $this->assertEquals($data['canSellNonFood'], $result['canSellNonFood']);
         $this->assertEquals($data['canSellCashback'], $result['canSellCashback']);
+        $this->assertEquals($data['canDoRemoteDistributions'], $result['canDoRemoteDistributions']);
 
         return $result['id'];
     }
@@ -198,6 +203,7 @@ class VendorControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('adm4Id', $result);
         $this->assertArrayHasKey('vendorNo', $result);
         $this->assertArrayHasKey('contractNo', $result);
+        $this->assertArrayHasKey('canDoRemoteDistributions', $result);
 
         return $id;
     }
@@ -225,7 +231,7 @@ class VendorControllerTest extends BMSServiceTestCase
 
     public function testSummaries()
     {
-        $vendor = $this->em->getRepository(Vendor::class)->findBy([])[0];
+        $vendor = $this->em->getRepository(Vendor::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/vendors/'.$vendor->getId().'/summaries');
 

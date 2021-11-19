@@ -88,6 +88,18 @@ class ProjectUpdateInputType implements InputTypeInterface
     private $donorIds = [];
 
     /**
+     * @Assert\Type("array")
+     * @Assert\Count(min=1, groups={"Strict"})
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Choice(callback={"NewApiBundle\Enum\ProductCategoryType", "values"}, strict=true, groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
+     */
+    private $allowedProductCategoryTypes = [];
+
+    /**
      * @var string|null
      * @Assert\Type("string")
      * @Assert\NotNull
@@ -272,5 +284,21 @@ class ProjectUpdateInputType implements InputTypeInterface
     public function setProjectInvoiceAddressEnglish(?string $projectInvoiceAddressEnglish): void
     {
         $this->projectInvoiceAddressEnglish = $projectInvoiceAddressEnglish ?: '';
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getAllowedProductCategoryTypes(): array
+    {
+        return $this->allowedProductCategoryTypes;
+    }
+
+    /**
+     * @param string[] $allowedProductCategoryTypes
+     */
+    public function setAllowedProductCategoryTypes(array $allowedProductCategoryTypes): void
+    {
+        $this->allowedProductCategoryTypes = $allowedProductCategoryTypes;
     }
 }
