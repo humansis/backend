@@ -444,7 +444,7 @@ class DistributionCSVService
             $toUpdate->setLocalGivenName($beneficiaryToUpdate['localGivenName']);
             $toUpdate->setLocalFamilyName($beneficiaryToUpdate['localFamilyName']);
             $toUpdate->setGender($beneficiaryToUpdate['gender']);
-            $toUpdate->setStatus(($beneficiaryToUpdate['head']) === 'true' ? 1 : 0);
+            $toUpdate->setStatus(($beneficiaryToUpdate['head']) == 'true' ? 1 : 0);
             $toUpdate->setResidencyStatus($beneficiaryToUpdate['residencyStatus']);
             $toUpdate->setDateOfBirth(\DateTime::createFromFormat('d-m-Y', $beneficiaryToUpdate['dateOfBirth']));
             
