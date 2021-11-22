@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use NewApiBundle\Entity\ImportBeneficiary;
+use NewApiBundle\Enum\HouseholdShelterStatus;
 use ProjectBundle\Enum\Livelihood;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -691,7 +692,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
         $shelterStatus = '';
         if ($this->getHousehold()->getShelterStatus()) {
-            $shelterStatus = Household::SHELTER_STATUSES[$this->getHousehold()->getShelterStatus()];
+            $shelterStatus = $this->getHousehold()->getShelterStatus() ? HouseholdShelterStatus::valueToAPI($this->getHousehold()->getShelterStatus()) : '';
         }
 
         $tempBenef = [
@@ -789,7 +790,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
         $shelterStatus = null;
         if (null !== $this->getHousehold()->getShelterStatus()) {
-            $shelterStatus = Household::SHELTER_STATUSES[$this->getHousehold()->getShelterStatus()];
+            $shelterStatus = HouseholdShelterStatus::valueToAPI($this->getHousehold()->getShelterStatus());
         }
 
         $supportReceivedTypes = array_map(function ($value) {

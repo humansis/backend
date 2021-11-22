@@ -6,9 +6,11 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-// use Symfony\Component\Serializer\Annotation\ as JMS_Type;
 use InvalidArgumentException;
+use NewApiBundle\DBAL\HouseholdShelterStatusEnum;
+use NewApiBundle\Entity\Helper\EnumTrait;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Enum\HouseholdShelterStatus;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -19,6 +21,8 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class Household extends AbstractBeneficiary
 {
+    use EnumTrait;
+
     const ASSETS = [
         0 => 'A/C',
         1 => 'Agricultural Land',
@@ -27,19 +31,6 @@ class Household extends AbstractBeneficiary
         4 => 'Livestock',
         5 => 'Motorbike',
         6 => 'Washing Machine',
-    ];
-
-    const SHELTER_STATUSES = [
-        1 => 'Tent',
-        2 => 'Makeshift Shelter',
-        3 => 'Transitional Shelter',
-        4 => 'House/Apartment - Severely Damaged',
-        5 => 'House/Apartment - Moderately Damaged',
-        6 => 'House/Apartment - Not Damaged',
-        7 => 'Room or Space in Public Building',
-        8 => 'Room or Space in Unfinished Building',
-        9 => 'Other',
-        10 => 'House/Apartment - Lightly Damaged',
     ];
 
     const SUPPORT_RECIEVED_TYPES = [
@@ -74,6 +65,7 @@ class Household extends AbstractBeneficiary
     private $assets;
 
     /**
+     * TODO: migrate to enum sometimes
      * @var int
      *
      * @ORM\Column(name="shelter_status", type="integer", nullable=true)
@@ -288,25 +280,25 @@ class Household extends AbstractBeneficiary
     }
 
     /**
-     * @return int|null
+     * @see HouseholdShelterStatus::values()
+     * @return string|null
      */
-    public function getShelterStatus(): ?int
+    public function getShelterStatus(): ?string
     {
-        return $this->shelterStatus;
+        return HouseholdShelterStatusEnum::valueFromDB($this->shelterStatus);
     }
 
     /**
-     * @param int|null $shelterStatus
+     * @see HouseholdShelterStatus::values()
+     * @param string|null $shelterStatus
      *
      * @return self
      */
-    public function setShelterStatus(?int $shelterStatus): self
+    public function setShelterStatus(?string $shelterStatus): self
     {
-        if (null !== $shelterStatus && !isset(self::SHELTER_STATUSES[$shelterStatus])) {
-            throw new InvalidArgumentException(sprintf('Argument 1 is not valid shelter status key.'));
-        }
+        self::validateValue('shelterStatus', HouseholdShelterStatus::class, $shelterStatus, true);
 
-        $this->shelterStatus = $shelterStatus;
+        $this->shelterStatus = HouseholdShelterStatusEnum::valueToDB($shelterStatus);
 
         return $this;
     }

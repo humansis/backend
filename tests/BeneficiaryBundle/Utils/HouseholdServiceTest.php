@@ -9,6 +9,7 @@ use BeneficiaryBundle\Enum\ResidencyStatus;
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\Common\Persistence\ObjectManager;
 use NewApiBundle\Component\Import\ImportService;
+use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\AddressInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
@@ -141,7 +142,7 @@ class HouseholdServiceTest extends KernelTestCase
         $this->assertEquals(3, $household->getIncomeLevel());
         $this->assertEquals(3, $household->getCopingStrategiesIndex());
         $this->assertEquals(3, $household->getFoodConsumptionScore());
-        $this->assertEquals(3, $household->getShelterStatus());
+        $this->assertEquals(HouseholdShelterStatus::TRANSITIONAL_SHELTER, $household->getShelterStatus());
         $this->assertEquals(3, $household->getDebtLevel());
         $this->assertEquals('1900-01-01', $household->getSupportDateReceived()->format('Y-m-d'));
         $this->assertEquals('OSN', $household->getSupportOrganizationName());

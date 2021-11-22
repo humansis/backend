@@ -56,7 +56,7 @@ trait HouseholdInputBuilderTrait
         $household->setLongitude($this->longitude);
         $household->setLivelihood($this->livelihood);
         $household->setEnumeratorName($this->enumeratorName);
-        $household->setShelterStatus($this->shelterStatus);
+        $household->setShelterStatus($this->getShelterStatus());
         $household->setSupportDateReceived($this->supportDateReceived ? ImportDateConverter::toDatetime($this->supportDateReceived)->format(\DateTimeInterface::ISO8601) : null);
 
         if (null !== $this->livelihood) {

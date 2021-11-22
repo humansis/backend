@@ -8,6 +8,7 @@ use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\CellParameters;
+use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Validator\Constraints\ImportDate;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -214,7 +215,7 @@ class HouseholdHead
     protected $idNumber;
 
     /**
-     * @Assert\Choice(choices=\BeneficiaryBundle\Entity\Household::SHELTER_STATUSES)
+     * @Assert\Type("string")
      */
     protected $shelterStatus;
 
@@ -350,6 +351,16 @@ class HouseholdHead
     public function isAddressExists(): bool
     {
         return $this->isAddressValid() || $this->isCampValid();
+    }
+
+    /**
+     * @Assert\Choice(callback={"NewApiBundle\Enum\HouseholdShelterStatus", "values"}, strict=true)
+     * @return string
+     */
+    public function getShelterStatus(): ?string
+    {
+        if (empty($this->shelterStatus)) return null;
+        return HouseholdShelterStatus::valueFromAPI($this->shelterStatus);
     }
 
     /**

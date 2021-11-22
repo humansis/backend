@@ -6,7 +6,7 @@ namespace NewApiBundle\Enum;
 trait EnumTrait
 {
     public static abstract function values(): array;
-    public static function apiAlternatives(): array {
+    protected static function apiAlternatives(): array {
         return [];
     }
 
@@ -17,14 +17,15 @@ trait EnumTrait
      */
     public static function valueFromAPI($APIValue): string
     {
+        $normalizedApiValue = self::normalizeValue($APIValue);
         foreach (self::values() as $originalValue) {
-            if (self::normalizeValue($originalValue) == self::normalizeValue($APIValue)) {
+            if (self::normalizeValue($originalValue) == $normalizedApiValue) {
                 return $originalValue;
             }
         }
         foreach (self::apiAlternatives() ?? [] as $originalValue => $alternativeValues) {
             foreach ($alternativeValues as $alternativeValue) {
-                if (self::normalizeValue($alternativeValue) == self::normalizeValue($APIValue)) {
+                if (self::normalizeValue($alternativeValue) == $normalizedApiValue) {
                     return $originalValue;
                 }
             }
@@ -48,18 +49,9 @@ trait EnumTrait
         return $value;
     }
 
-    /**
-     * @param string $value
-     *
-     * @return string|int
-     */
-    public static function valueToDB(string $value): string
+    private static function normalizeValue($value): string
     {
-        return $value;
-    }
-
-    private static function normalizeValue(string $value): string
-    {
-        return preg_replace('|[^a-z]|', '', strtolower(trim($value)));
+        if (is_string($value)) return preg_replace('|\W+|', '', strtolower(trim($value)));
+        return (string) $value;
     }
 }

@@ -7,6 +7,7 @@ use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\CellParameters;
+use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Validator\Constraints\ImportDate;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -212,7 +213,7 @@ class HouseholdMember
     protected $idNumber;
 
     /**
-     * @Assert\Choice(choices=BeneficiaryBundle\Entity\Household::SHELTER_STATUSES)
+     * @Assert\Choice(callback={"NewApiBundle\Enum\HouseholdShelterStatus", "values"}, strict=true)
      */
     protected $shelterStatus;
 
@@ -362,6 +363,16 @@ class HouseholdMember
             null
         );
         return null !== $location;
+    }
+
+    /**
+     * @Assert\Choice(callback={"NewApiBundle\Enum\HouseholdShelterStatus", "values"}, strict=true)
+     * @return string
+     */
+    public function getShelterStatus(): ?string
+    {
+        if (empty($this->shelterStatus)) return null;
+        return HouseholdShelterStatus::valueFromAPI($this->shelterStatus);
     }
 
     /**

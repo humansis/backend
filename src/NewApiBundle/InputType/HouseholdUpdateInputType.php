@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\InputType;
 
 use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\InputType\Beneficiary\Address\CampAddressInputType;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\Address\TemporarySettlementAddressInputType;
@@ -75,7 +76,8 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     private $assets;
 
     /**
-     * @Assert\Choice(callback="shelterStatuses", strict=true)
+     * @Assert\NotNull
+     * @Assert\NotBlank
      */
     private $shelterStatus;
 
@@ -252,16 +254,6 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
         return $keys;
     }
 
-    final public static function shelterStatuses()
-    {
-        $keys = [];
-        foreach (Household::SHELTER_STATUSES as $key => $value) {
-            $keys[] = (int) $key;
-        }
-
-        return $keys;
-    }
-
     final public static function supportReceivedTypes()
     {
         $keys = [];
@@ -323,11 +315,11 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     }
 
     /**
-     * @return int|null
+     * @return string|null
      */
     public function getShelterStatus()
     {
-        return $this->shelterStatus;
+        return $this->shelterStatus ? HouseholdShelterStatus::valueFromAPI($this->shelterStatus) : null;
     }
 
     /**
@@ -335,9 +327,6 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      */
     public function setShelterStatus($shelterStatus)
     {
-        if (null !== $shelterStatus && is_string($shelterStatus)) {
-            $shelterStatus = (int) $shelterStatus;
-        }
         $this->shelterStatus = $shelterStatus;
     }
 

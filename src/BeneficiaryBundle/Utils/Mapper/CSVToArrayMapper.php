@@ -13,6 +13,7 @@ use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Enum\HouseholdShelterStatus;
 use ProjectBundle\Enum\Livelihood;
 
 class CSVToArrayMapper
@@ -709,7 +710,7 @@ class CSVToArrayMapper
     private function mapShelterStatus(&$formattedHouseholdArray)
     {
         if (isset($formattedHouseholdArray['shelter_status'])) {
-            foreach (Household::SHELTER_STATUSES as $id => $status) {
+            foreach (HouseholdShelterStatus::values() as $id => $status) {
                 if (0 === strcasecmp(trim($formattedHouseholdArray['shelter_status']), $status)) {
                     $formattedHouseholdArray['shelter_status'] = $id;
                     return;
