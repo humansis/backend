@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+composer upgrade humansis/user-app-api humansis/user-app-legacy-api humansis/vendor-app-api humansis/vendor-app-legacy-api humansis/web-api
+composer install
+
 echo "** Dropping database **"
 php bin/console d:d:d --force
 rm -rf var/cache/*
