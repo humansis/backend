@@ -47,9 +47,8 @@ class SmartcardPurchaseInputType implements InputTypeInterface
     private $beneficiaryId;
 
     /**
-     * @var int
+     * @var int|null
      *
-     * @Assert\NotNull
      * @Assert\Type("integer")
      * @Assert\GreaterThan(0)
      */
@@ -142,17 +141,17 @@ class SmartcardPurchaseInputType implements InputTypeInterface
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getAssistanceId(): int
+    public function getAssistanceId(): ?int
     {
         return $this->assistanceId;
     }
 
     /**
-     * @param int $assistanceId
+     * @param int|null $assistanceId
      */
-    public function setAssistanceId(int $assistanceId): void
+    public function setAssistanceId(?int $assistanceId): void
     {
         $this->assistanceId = $assistanceId;
     }
