@@ -5,6 +5,8 @@ namespace NewApiBundle\Enum;
 
 final class ImportQueueState
 {
+    use EnumTrait;
+
     const NEW = 'New';
     const VALID = 'Valid';
     const INVALID = 'Invalid';

@@ -6,6 +6,7 @@ namespace NewApiBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\EnumTrait;
 use NewApiBundle\Enum\ImportState;
 use ProjectBundle\Entity\Project;
 use UserBundle\Entity\User;
@@ -16,6 +17,8 @@ use UserBundle\Entity\User;
  */
 class Import
 {
+    use EnumTrait;
+
     /**
      * @var int
      *
@@ -158,14 +161,12 @@ class Import
     }
 
     /**
+     * @see ImportState::values()
      * @param string $state one of ImportState::* values
      */
     public function setState(string $state)
     {
-        if (!in_array($state, ImportState::values())) {
-            throw new \InvalidArgumentException('Invalid argument. '.$state.' is not valid Import state');
-        }
-
+        self::validateValue('state', ImportState::class, $state, false);
         $this->state = $state;
     }
 

@@ -5,6 +5,8 @@ namespace NewApiBundle\Enum;
 
 final class PhoneTypes
 {
+    use EnumTrait;
+
     const LANDLINE = 'Landline';
     const MOBILE = 'Mobile';
 

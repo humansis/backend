@@ -4,6 +4,8 @@ namespace NewApiBundle\Enum;
 
 class RoleType
 {
+    use EnumTrait;
+
     public const
         REPORTING = 'ROLE_REPORTING',
         PROJECT_MANAGEMENT = 'ROLE_PROJECT_MANAGEMENT',
