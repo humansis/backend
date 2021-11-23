@@ -18,6 +18,7 @@ use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
+use NewApiBundle\Enum\PersonGender;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -120,9 +121,9 @@ class DistributionCSVService
             foreach ($headers as $index => $key) {
                 if ($key == "gender") {
                     if (strcasecmp(trim($beneficiaryArray[$index]), 'Male') === 0 || strcasecmp(trim($beneficiaryArray[$index]), 'M') === 0) {
-                        $beneficiaryArray[$index] = Person::GENDER_MALE;
+                        $beneficiaryArray[$index] = PersonGender::MALE;
                     } else {
-                        $beneficiaryArray[$index] = Person::GENDER_FEMALE;
+                        $beneficiaryArray[$index] = PersonGender::FEMALE;
                     }
                 }
 
@@ -163,7 +164,7 @@ class DistributionCSVService
                     'localGivenName' => $beneficiary->getLocalGivenName(),
                     'localFamilyName' => $beneficiary->getLocalFamilyName(),
                     'dateOfBirth' => $beneficiary->getDateOfBirthObject()->format('d-m-Y'),
-                    'gender' => $beneficiary->getGender()
+                    'gender' => $beneficiary->getGender() ? PersonGender::valueToAPI($beneficiary->getGender()) : null,
                 );
                 array_push($deleteArray, $beneficiaryToDelete);
             }

@@ -21,6 +21,7 @@ use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
 use NewApiBundle\Entity\ReliefPackage;
 use NewApiBundle\Entity\AssistanceStatistics;
+use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\GeneralReliefItemUpdateInputType;
 use NewApiBundle\InputType\GeneralReliefPatchInputType;
@@ -604,8 +605,8 @@ class AssistanceService
         {
             $idps = $bnfRepo->countByResidencyStatus($assistance, "IDP");
             $residents = $bnfRepo->countByResidencyStatus($assistance, "resident");
-            $maleHHH = $bnfRepo->countHouseholdHeadsByGender($assistance, Person::GENDER_MALE);
-            $femaleHHH = $bnfRepo->countHouseholdHeadsByGender($assistance, Person::GENDER_FEMALE);
+            $maleHHH = $bnfRepo->countHouseholdHeadsByGender($assistance, PersonGender::MALE);
+            $femaleHHH = $bnfRepo->countHouseholdHeadsByGender($assistance, PersonGender::FEMALE);
             $maleChildrenUnder23month = $bnfRepo->countByAgeAndByGender($assistance, 1, 0, 2, $assistance->getDateDistribution());
             $femaleChildrenUnder23month = $bnfRepo->countByAgeAndByGender($assistance, 0, 0, 2, $assistance->getDateDistribution());
             $maleChildrenUnder5years = $bnfRepo->countByAgeAndByGender($assistance, 1, 2, 6, $assistance->getDateDistribution());

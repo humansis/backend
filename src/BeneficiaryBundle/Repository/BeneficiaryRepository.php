@@ -13,7 +13,9 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\DBAL\PersonGenderEnum;
 use NewApiBundle\Entity\Import;
+use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\Request\Pagination;
@@ -86,7 +88,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $q->getQuery()->getResult();
     }
 
-    public function findByName(string $givenName, ?string $parentsName, string $familyName, ?int $gender = null, Household $household = null)
+    public function findByName(string $givenName, ?string $parentsName, string $familyName, ?string $gender = null, Household $household = null)
     {
         $qbr =  $this->createQueryBuilder('b')
             ->leftJoin('b.household', 'hh')
@@ -102,7 +104,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         if (null !== $gender) {
             $qbr
                 ->andWhere('p.gender = :gender')
-                ->setParameter('gender', $gender);
+                ->setParameter('gender', PersonGenderEnum::valueToDB($gender));
         }
 
         if (!is_null($household)) {
@@ -289,7 +291,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function countHouseholdHeadsByGender(Assistance $assistance, int $gender): int
+    public function countHouseholdHeadsByGender(Assistance $assistance, string $gender): int
     {
         $qb = $this->createQueryBuilder('b');
         $qb->select('COUNT(DISTINCT b)');
@@ -397,13 +399,13 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $qb->setParameter('status', 1); // status = HHH
     }
 
-    protected function whereGender(QueryBuilder $qb, int $gender)
+    protected function whereGender(QueryBuilder $qb, string $gender)
     {
         if (!in_array('p', $qb->getAllAliases())) {
             $qb->join('b.person', 'p');
         }
         $qb->andWhere('p.gender = :g');
-        $qb->setParameter('g', $gender);
+        $qb->setParameter('g', PersonGenderEnum::valueToDB($gender));
     }
 
     protected function whereBornBetween(QueryBuilder &$qb, \DateTimeInterface $minDateOfBirth, \DateTimeInterface $maxDateOfBirth)

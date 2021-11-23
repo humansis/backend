@@ -537,9 +537,9 @@ class CSVToArrayMapper
         $gender_string = trim($formattedHouseholdArray['beneficiaries']['gender']);
 
         if (strcasecmp(trim($gender_string), 'Male') === 0 || strcasecmp(trim($gender_string), 'M') === 0) {
-            $formattedHouseholdArray['beneficiaries']['gender'] = \BeneficiaryBundle\Entity\Person::GENDER_MALE;
+            $formattedHouseholdArray['beneficiaries']['gender'] = \NewApiBundle\Enum\PersonGender::MALE;
         } else if (strcasecmp(trim($gender_string), 'Female') === 0 || strcasecmp(trim($gender_string), 'F') === 0) {
-            $formattedHouseholdArray['beneficiaries']['gender'] = \BeneficiaryBundle\Entity\Person::GENDER_FEMALE;
+            $formattedHouseholdArray['beneficiaries']['gender'] = \NewApiBundle\Enum\PersonGender::FEMALE;
         }
     }
 

@@ -11,6 +11,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
+use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\AddressInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
@@ -167,7 +168,7 @@ class HouseholdServiceTest extends KernelTestCase
         $this->assertNotNull($head, "Missing head");
         $person = $head->getPerson();
         $this->assertEquals('2000-12-31', $person->getDateOfBirth()->format('Y-m-d'));
-        $this->assertEquals(0, $person->getGender());
+        $this->assertEquals(PersonGender::FEMALE, $person->getGender());
         $this->assertEquals('testFamily', $person->getLocalFamilyName());
         $this->assertEquals('testGiven', $person->getLocalGivenName());
         $this->assertNull($person->getEnGivenName());
@@ -176,7 +177,7 @@ class HouseholdServiceTest extends KernelTestCase
 
         $person = $household->getBeneficiaries()->first()->getPerson();
         $this->assertEquals('1999-01-01', $person->getDateOfBirth()->format('Y-m-d'));
-        $this->assertEquals(1, $person->getGender());
+        $this->assertEquals(PersonGender::MALE, $person->getGender());
         $this->assertEquals('testFamilyMember', $person->getLocalFamilyName());
         $this->assertEquals('testGivenMember', $person->getLocalGivenName());
         $this->assertNull($person->getEnGivenName());
@@ -304,7 +305,7 @@ class HouseholdServiceTest extends KernelTestCase
         $this->assertNotNull($head);
         $person = $head->getPerson();
         $this->assertEquals('2000-01-01', $person->getDateOfBirth()->format('Y-m-d'));
-        $this->assertEquals(0, $person->getGender());
+        $this->assertEquals(PersonGender::FEMALE, $person->getGender());
         $this->assertEquals('testFamily', $person->getLocalFamilyName());
         $this->assertEquals('testGiven', $person->getLocalGivenName());
         $this->assertNull($person->getEnGivenName());
@@ -313,7 +314,7 @@ class HouseholdServiceTest extends KernelTestCase
 
         $person = $household->getBeneficiaries()->last()->getPerson();
         $this->assertEquals('2000-01-01', $person->getDateOfBirth()->format('Y-m-d'));
-        $this->assertEquals(1, $person->getGender());
+        $this->assertEquals(PersonGender::MALE, $person->getGender());
         $this->assertEquals('000Head', $person->getLocalFamilyName());
         $this->assertEquals('000Head', $person->getLocalGivenName());
         $this->assertEquals('000Head', $person->getEnGivenName());

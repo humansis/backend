@@ -70,6 +70,14 @@ trait EnumTrait
      */
     public static function valueToAPI($value)
     {
+        if (!isset(self::apiMap()[$value]))
+            throw new \InvalidArgumentException(
+                sprintf("Enum type %s got value %s. Expected anything from '%s'.",
+                    __CLASS__,
+                    $value,
+                    implode("', '", array_keys(self::apiMap()))
+                )
+            );
         return self::apiMap()[$value];
     }
 

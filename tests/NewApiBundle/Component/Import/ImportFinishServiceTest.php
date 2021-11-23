@@ -16,6 +16,7 @@ use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
+use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\ImportPatchInputType;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Utils\ProjectService;

@@ -12,6 +12,7 @@ use NewApiBundle\Entity\ImportBeneficiary;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
+use NewApiBundle\Enum\PersonGender;
 use ProjectBundle\Enum\Livelihood;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -236,9 +237,9 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedAssistance", "FullBeneficiary"})
      *
-     * @return int|null one of Person::GENDER_*
+     * @return string|null one of Person::GENDER_*
      */
-    public function getGender(): ?int
+    public function getGender(): ?string
     {
         return $this->person->getGender();
     }
@@ -627,7 +628,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
             $valueCountrySpecific[$value->getCountrySpecific()->getFieldString()] = $value->getAnswer();
         }
 
-        if ($this->getGender() == 0) {
+        if ($this->getGender() == PersonGender::FEMALE) {
             $valueGender = "Female";
         } else {
             $valueGender = "Male";
@@ -739,7 +740,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     public function getCommonBeneficiaryExportFields()
     {
         $gender = '';
-        if ($this->getGender() == 0) {
+        if ($this->getGender() == PersonGender::FEMALE) {
             $gender = 'Female';
         } else {
             $gender = 'Male';

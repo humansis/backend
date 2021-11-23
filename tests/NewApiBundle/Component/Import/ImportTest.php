@@ -6,6 +6,7 @@ namespace Tests\NewApiBundle\Component\Import;
 use NewApiBundle\Component\Import\ImportFileValidator;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
+use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\DuplicityResolveInputType;
 use ProjectBundle\Utils\ProjectService;
 use Symfony\Bundle\FrameworkBundle\Console\Application;

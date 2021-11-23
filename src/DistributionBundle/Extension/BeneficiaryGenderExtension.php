@@ -6,6 +6,7 @@ namespace DistributionBundle\Extension;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Person;
+use NewApiBundle\Enum\PersonGender;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 
@@ -21,8 +22,8 @@ class BeneficiaryGenderExtension extends AbstractExtension
     public function formatGender(Beneficiary $beneficiary): string
     {
         switch ($beneficiary->getPerson()->getGender()) {
-            case Person::GENDER_FEMALE: return 'Female';
-            case Person::GENDER_MALE: return 'Male';
+            case PersonGender::FEMALE: return 'Female';
+            case PersonGender::MALE: return 'Male';
             default: return '~';
         }
     }

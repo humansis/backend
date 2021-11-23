@@ -25,6 +25,7 @@ use Doctrine\ORM\EntityNotFoundException;
 use Exception;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
+use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\Beneficiary\Address\CampAddressInputType;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\Address\TemporarySettlementAddressInputType;
@@ -456,9 +457,9 @@ class HouseholdService
             foreach ($householdArray["beneficiaries"] as $beneficiaryToSave) {
                 try {
                     if ($beneficiaryToSave['gender'] === 'Male') {
-                        $beneficiaryToSave['gender'] = Person::GENDER_MALE;
+                        $beneficiaryToSave['gender'] = 1;
                     } elseif ($beneficiaryToSave['gender'] === 'Female') {
-                        $beneficiaryToSave['gender'] = Person::GENDER_FEMALE;
+                        $beneficiaryToSave['gender'] = 0;
                     }
 
                     $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);
@@ -883,7 +884,7 @@ class HouseholdService
             }
 
             $data['beneficiaries'][] = [
-                'gender' => $bnf->getGender(),
+                'gender' => $bnf->getGender() ? PersonGender::valueToAPI($bnf->getGender()) : null,
                 'date_of_birth' => $bnf->getDateOfBirth()->format('d-m-Y'),
                 'en_family_name' => $bnf->getEnFamilyName(),
                 'en_given_name' => $bnf->getEnGivenName(),
