@@ -3,14 +3,12 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import;
 
-use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Utils\HouseholdService;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use NewApiBundle\Component\Import\ValueObject\ImportStatisticsValueObject;
 use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportBeneficiary;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueue;
@@ -22,12 +20,11 @@ use NewApiBundle\InputType\ImportCreateInputType;
 use NewApiBundle\InputType\ImportPatchInputType;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\Exception\WorkflowException;
-use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
+use NewApiBundle\Workflow\WorkflowTool;
 use ProjectBundle\Entity\Project;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Workflow\Exception\LogicException;
 use Symfony\Component\Workflow\WorkflowInterface;
 use UserBundle\Entity\User;
 
@@ -115,26 +112,6 @@ class ImportService
 
         if (!is_null($inputType->getStatus())) {
             $this->updateStatus($import, $inputType->getStatus());
-
-            if (count($import->getImportQueue()) < self::ASAP_LIMIT) {
-                $this->em->flush();
-                $this->logImportInfo($import, "Because of small import, it will be processed immediately");
-
-                switch ($import->getState()) {
-                    case ImportState::INTEGRITY_CHECKING:
-                        $this->checkIntegrity($import);
-                        break;
-                    case ImportState::IDENTITY_CHECKING:
-                        $this->checkIdentity($import);
-                        break;
-                    case ImportState::SIMILARITY_CHECKING:
-                        $this->checkSimilarity($import);
-                        break;
-                    case ImportState::IMPORTING:
-                        $this->finish($import);
-                        break;
-                }
-            }
         }
 
         if (!is_null($inputType->getTitle())) {
@@ -147,12 +124,11 @@ class ImportService
     public function updateStatus(Import $import, string $status): void
     {
         $before = $import->getState();
-        try {
+        if($this->importStateMachine->can($import, $status)){
             $this->importStateMachine->apply($import, $status);
-            $import->setState($status);
             $this->logImportInfo($import, "Changed state from '$before' to '{$import->getState()}'");
             $this->em->flush();
-        } catch (LogicException $exception) {
+        }else{
             throw new BadRequestHttpException("You can't change state from '$before' to '$status'.");
         }
     }
@@ -258,8 +234,8 @@ class ImportService
         }
 
         if (isset($importTransition)) {
-            if ($this->importStateMachine->can($import, ImportTransitions::COMPLETE_IDENTITY)) {
-                $this->importStateMachine->apply($import, ImportTransitions::COMPLETE_IDENTITY);
+            if ($this->importStateMachine->can($import, $importTransition)) {
+                $this->importStateMachine->apply($import, $importTransition);
             } else {
                 throw new WorkflowException('Import is in invalid state');
             }
@@ -274,29 +250,8 @@ class ImportService
      */
     public function checkIntegrity(Import $import, ?int $batchSize = null): void
     {
-        // fail if there is no valid file
-        if (0 === $this->em->getRepository(ImportFile::class)->count([
-                'import' => $import,
-                'structureViolations' => null,
-            ])) {
-
-            if ($this->importStateMachine->can($import, ImportTransitions::FAIL_INTEGRITY)) {
-                $this->importStateMachine->apply($import, ImportTransitions::FAIL_INTEGRITY);
-                $import->setState(ImportState::INTEGRITY_CHECK_FAILED);
-                $this->em->persist($import);
-                $this->em->flush();
-
-                return;
-            } else {
-                throw new WorkflowException();
-            }
-        }
-        $this->integrityChecker->check($import, $batchSize);
-
-        // moved to ImportWorkflowSubscriber
-        // if (ImportState::INTEGRITY_CHECK_FAILED === $import->getState()) {
-        //     $this->importInvalidFileService->generateFile($import);
-        // }
+        WorkflowTool::checkAndApply($this->importStateMachine, $import,
+            [ImportTransitions::REDO_INTEGRITY, ImportTransitions::FAIL_INTEGRITY, ImportTransitions::COMPLETE_INTEGRITY]);
     }
 
     /**
@@ -305,24 +260,8 @@ class ImportService
      */
     public function checkIdentity(Import $import, ?int $batchSize = null): void
     {
-        // fail if there is no valid queue items
-        if (0 === $this->em->getRepository(ImportQueue::class)->count([
-                'import' => $import,
-                'state' => ImportQueueState::VALID,
-            ])) {
-
-            if ($this->importStateMachine->can($import, ImportTransitions::FAIL_IDENTITY)) {
-                $this->importStateMachine->apply($import, ImportTransitions::FAIL_IDENTITY);
-                $import->setState(ImportState::IDENTITY_CHECK_FAILED);
-                $this->em->persist($import);
-                $this->em->flush();
-
-                return;
-            } else {
-                throw new WorkflowException();
-            }
-        }
-        $this->identityChecker->check($import, $batchSize);
+        WorkflowTool::checkAndApply($this->importStateMachine, $import,
+            [ImportTransitions::REDO_IDENTITY, ImportTransitions::FAIL_IDENTITY, ImportTransitions::COMPLETE_IDENTITY]);
     }
 
     /**
@@ -331,103 +270,13 @@ class ImportService
      */
     public function checkSimilarity(Import $import, ?int $batchSize = null): void
     {
-        $this->similarityChecker->check($import, $batchSize);
+        WorkflowTool::checkAndApply($this->importStateMachine, $import,
+            [ImportTransitions::REDO_SIMILARITY, ImportTransitions::FAIL_SIMILARITY, ImportTransitions::COMPLETE_SIMILARITY]);
     }
 
     public function finish(Import $import): void
     {
-        if ($import->getState() !== ImportState::IMPORTING) {
-            throw new WorkflowException('Wrong import status');
-        }
-
-        $queueRepo = $this->em->getRepository(ImportQueue::class);
-
-        $queueToInsert = $queueRepo->findBy([
-            'import' => $import,
-            'state' => ImportQueueState::TO_CREATE,
-        ]);
-        $this->logImportDebug($import, "Items to save: ".count($queueToInsert));
-        foreach ($queueToInsert as $item) {
-            $this->finishCreationQueue($item, $import);
-        }
-
-        $queueToUpdate = $queueRepo->findBy([
-            'import' => $import,
-            'state' => ImportQueueState::TO_UPDATE,
-        ]);
-        $this->logImportDebug($import, "Items to update: ".count($queueToUpdate));
-        foreach ($queueToUpdate as $item) {
-            $this->finishUpdateQueue($item, $import);
-        }
-
-        // will be removed in clean command
-        /*foreach ($queueRepo->findBy([
-            'import' => $import,
-            'state' => ImportQueueState::TO_IGNORE,
-        ]) as $item) {
-            $this->removeFinishedQueue($item);
-        }*/
-
-        $queueToLink = $queueRepo->findBy([
-            'import' => $import,
-            'state' => ImportQueueState::TO_LINK,
-        ]);
-        $this->logImportDebug($import, "Items to link: ".count($queueToLink));
-        foreach ($queueToLink as $item) {
-            /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
-            $acceptedDuplicity = $item->getAcceptedDuplicity();
-            if (null == $acceptedDuplicity) continue;
-
-            $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
-            //$this->removeFinishedQueue($item);
-            $this->logImportInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
-        }
-
-        // will be removed in clean command
-        /*foreach ($queueRepo->findBy([
-            'import' => $import,
-            'state' => ImportQueueState::INVALID_EXPORTED,
-        ]) as $item) {
-            $this->removeFinishedQueue($item);
-        }*/
-
-        if($this->importStateMachine->can($import, ImportTransitions::FINISH)){
-            $this->importStateMachine->apply($import, ImportState::FINISHED);
-            $import->setState(ImportState::FINISHED);
-            $this->em->persist($import);
-        }
-        $this->em->flush();
-
-        $importConflicts = $this->em->getRepository(Import::class)->getConflictingImports($import);
-        $this->logImportInfo($import, count($importConflicts)." conflicting imports to reset duplicity checks");
-        foreach ($importConflicts as $conflictImport) {
-            if ($this->importStateMachine->can($conflictImport, ImportTransitions::CHECK_IDENTITY)) {
-                $conflictImport->setState(ImportState::IDENTITY_CHECKING);
-                $conflictQueue = $queueRepo->findBy([
-                    'import' => $conflictImport,
-                ]);
-                foreach ($conflictQueue as $item) {
-                    if ($this->importQueueStateMachine->can($item, ImportQueueTransitions::VALIDATE)) {
-                        $item->setState(ImportQueueState::VALID);
-                        $item->setIdentityCheckedAt(null);
-                        $item->setSimilarityCheckedAt(null);
-                        $this->em->persist($item);
-                    }
-                }
-                $this->em->persist($conflictImport);
-                $this->em->flush();
-                $this->logImportInfo($conflictImport,
-                    "Duplicity checks of ".count($conflictQueue)." queue items reset because finish Import #{$import->getId()} ({$import->getTitle()})");
-            }
-        }
-    }
-
-    private function linkHouseholdToQueue(Import $import, Household $household, User $decide): void
-    {
-        foreach ($household->getBeneficiaries() as $beneficiary) {
-            $beneficiaryInImport = new ImportBeneficiary($import, $beneficiary, $decide);
-            $this->em->persist($beneficiaryInImport);
-        }
+        WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::FINISH]);
     }
 
     private function removeFinishedQueue(ImportQueue $queue): void
@@ -438,72 +287,6 @@ class ImportService
         $this->em->remove($queue);
     }
 
-    /**
-     * @param ImportQueue $item
-     * @param Import      $import
-     */
-    private function finishCreationQueue(ImportQueue $item, Import $import): void
-    {
-        if (ImportQueueState::TO_CREATE !== $item->getState()) {
-            throw new InvalidArgumentException("Wrong ImportQueue creation state: ".$item->getState());
-        }
-
-        $headContent = $item->getContent()[0];
-        $memberContents = array_slice($item->getContent(), 1);
-        $hhh = new Integrity\HouseholdHead((array) $headContent, $import->getProject()->getIso3(), $this->em);
-        $householdCreateInputType = $hhh->buildHouseholdInputType();
-        $householdCreateInputType->setProjectIds([$import->getProject()->getId()]);
-
-        foreach ($memberContents as $memberContent) {
-            $hhm = new Integrity\HouseholdMember($memberContent, $import->getProject()->getIso3(), $this->em);
-            $householdCreateInputType->addBeneficiary($hhm->buildBeneficiaryInputType());
-        }
-
-        $createdHousehold = $this->householdService->create($householdCreateInputType);
-
-        /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
-        $acceptedDuplicity = $item->getAcceptedDuplicity();
-        if (null !== $acceptedDuplicity) {
-            $this->linkHouseholdToQueue($import, $createdHousehold, $acceptedDuplicity->getDecideBy());
-        } else {
-            $this->linkHouseholdToQueue($import, $createdHousehold, $import->getCreatedBy());
-        }
-        //$this->removeFinishedQueue($item);
-        $this->logImportInfo($import, "Created Household #{$createdHousehold->getId()}");
-    }
-
-    /**
-     * @param ImportQueue $item
-     * @param Import      $import
-     */
-    private function finishUpdateQueue(ImportQueue $item, Import $import): void
-    {
-        if (ImportQueueState::TO_UPDATE !== $item->getState()) {
-            throw new InvalidArgumentException("Wrong ImportQueue state");
-        }
-
-        /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
-        $acceptedDuplicity = $item->getAcceptedDuplicity();
-        if (null == $acceptedDuplicity) return;
-
-        $headContent = $item->getContent()[0];
-        $memberContents = array_slice($item->getContent(), 1);
-        $hhh = new Integrity\HouseholdHead((array)$headContent, $import->getProject()->getIso3(), $this->em);
-        $householdUpdateInputType = $hhh->buildHouseholdUpdateType();
-        $householdUpdateInputType->setProjectIds([$import->getProject()->getId()]);
-
-        foreach ($memberContents as $memberContent) {
-            $hhm = new Integrity\HouseholdMember($memberContent, $import->getProject()->getIso3(), $this->em);
-            $householdUpdateInputType->addBeneficiary($hhm->buildBeneficiaryInputType());
-        }
-
-        $updatedHousehold = $acceptedDuplicity->getTheirs();
-        $this->householdService->update($updatedHousehold, $householdUpdateInputType);
-
-        $this->linkHouseholdToQueue($import, $updatedHousehold, $acceptedDuplicity->getDecideBy());
-        //$this->removeFinishedQueue($item);
-        $this->logImportInfo($import, "Updated Household #{$updatedHousehold->getId()}");
-    }
 
 }
 

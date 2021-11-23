@@ -14,6 +14,7 @@ use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\Exception\WorkflowException;
 use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
+use NewApiBundle\Workflow\WorkflowTool;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 
@@ -52,7 +53,7 @@ class IdentityChecker
     public function check(Import $import, ?int $batchSize = null)
     {
         if (ImportState::IDENTITY_CHECKING !== $import->getState()) {
-            throw new WorkflowException('Unable to execute checker. Import is not ready to check.');
+            throw new \BadMethodCallException('Unable to execute checker. Import is not ready to check.');
         }
 
         foreach ($this->queueRepository->getItemsToIdentityCheck($import, $batchSize) as $i => $item) {
@@ -76,7 +77,14 @@ class IdentityChecker
 
     protected function checkOne(ImportQueue $item)
     {
-        $found = false;
+        if($this->importQueueStateMachine->can($item, ImportQueueTransitions::SUSPICIOUS)){
+            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::SUSPICIOUS);
+        }
+    }
+
+    public function isValidItem(ImportQueue $item): bool
+    {
+        $isValid = true;
 
         /* probably works but we have bad testing data
         $ids = $this->findInQueue($item);
@@ -107,8 +115,7 @@ class IdentityChecker
 
             if (count($bnfDuplicities) > 0) {
                 $this->logImportInfo($item->getImport(), "Found ".count($bnfDuplicities)." duplicities for {$c['ID Type']} {$c['ID Number']}");
-                $item->setState(ImportQueueState::SUSPICIOUS);
-                $transition = ImportQueueTransitions::SUSPICIOUS;
+                $isValid = false;
             } else {
                 $this->logImportDebug($item->getImport(), "Found no duplicities");
             }
@@ -131,30 +138,15 @@ class IdentityChecker
             $index++;
         }
 
-        if (isset($transition)) {
-            if ($this->importQueueStateMachine->can($item, $transition)) {
-                $this->importQueueStateMachine->apply($item, $transition);
-            } else {
-                throw new WorkflowException('Import Queue is not in valid state');
-            }
-        }
-
         $item->setIdentityCheckedAt(new \DateTime());
         $this->entityManager->persist($item);
+
+        return $isValid;
     }
 
     private function postCheck(Import $import)
     {
-        $isSuspicious = $this->isImportQueueSuspicious($import);
-        $transition = $isSuspicious ? ImportTransitions::FAIL_IDENTITY : ImportTransitions::COMPLETE_IDENTITY;
-
-        if ($this->importStateMachine->can($import, $transition)) {
-            $this->importStateMachine->apply($import, $transition);
-            $import->setState($isSuspicious ? ImportState::IDENTITY_CHECK_FAILED : ImportState::IDENTITY_CHECK_CORRECT);
-            $this->entityManager->persist($import);
-            $this->entityManager->flush();
-        }
-
+        WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::COMPLETE_IDENTITY, ImportTransitions::FAIL_IDENTITY]);
         $this->logImportDebug($import, "Ended with status ".$import->getState());
     }
 

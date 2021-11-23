@@ -241,6 +241,11 @@ services:
             - "@doctrine.orm.entity_manager"
             - "@monolog.logger.import"
 
+    NewApiBundle\Component\Import\ImportFinisher:
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@beneficiary.household_service"
+
     NewApiBundle\Component\Import\ImportInvalidFileService:
         public: true
         arguments:
@@ -287,10 +292,71 @@ services:
         arguments:
             - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:SmartcardPurchasedItem")'
 
-    workflow.import.guard_subscriber:
-        class: NewApiBundle\EventSubscriber\ImportWorkflowSubscriber
+    workflow.import.default_subscriber:
+        class: NewApiBundle\Event\Subscriber\Import\ImportWorkflowSubscriber
         arguments:
-            - "@doctrine.orm.entity_manager"
+            - '@doctrine.orm.entity_manager'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    workflow.import.integrity_subscriber:
+        class: NewApiBundle\Event\Subscriber\Import\IntegritySubscriber
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@NewApiBundle\Component\Import\IntegrityChecker'
             - '@NewApiBundle\Component\Import\ImportInvalidFileService'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    workflow.import.identity_subscriber:
+        class: NewApiBundle\Event\Subscriber\Import\IdentitySubscriber
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@NewApiBundle\Component\Import\IdentityChecker'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    workflow.import.similarity_subscriber:
+        class: NewApiBundle\Event\Subscriber\Import\SimilaritySubscriber
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@NewApiBundle\Component\Import\SimilarityChecker'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    workflow.import.finisher_subscriber:
+        class: NewApiBundle\Event\Subscriber\Import\FinishSubscriber
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@NewApiBundle\Component\Import\ImportFinisher'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    workflow.importQueue.default_subscriber:
+        class: NewApiBundle\Event\Subscriber\ImportQueue\ImportQueueDefaultSubscriber
+        arguments:
+            - '@doctrine.orm.entity_manager'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    workflow.importQueue.validator_subscriber:
+        class: NewApiBundle\Event\Subscriber\ImportQueue\IntegritySubscriber
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@NewApiBundle\Component\Import\IntegrityChecker'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    workflow.importQueue.identity_subscriber:
+        class: NewApiBundle\Event\Subscriber\ImportQueue\IdentitySubscriber
+        arguments:
+            - '@NewApiBundle\Component\Import\IdentityChecker'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    workflow.importQueue.finish_subscriber:
+        class: NewApiBundle\Event\Subscriber\ImportQueue\FinishSubscriber
+        arguments:
+            - '@doctrine.orm.entity_manager'
         tags:
             - { name: kernel.event_subscriber }

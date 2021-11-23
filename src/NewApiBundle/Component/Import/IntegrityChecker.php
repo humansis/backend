@@ -11,9 +11,9 @@ use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
-use NewApiBundle\Workflow\Exception\WorkflowException;
 use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
+use NewApiBundle\Workflow\WorkflowTool;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -54,7 +54,7 @@ class IntegrityChecker
     public function check(Import $import, ?int $batchSize = null): void
     {
         if (ImportState::INTEGRITY_CHECKING !== $import->getState()) {
-            throw new WorkflowException('Unable to execute checker. Import is not ready to integrity check.');
+            throw new \BadMethodCallException('Unable to execute checker. Import is not ready to integrity check.');
         }
 
         foreach ($this->queueRepository->getItemsToIntegrityCheck($import, $batchSize) as $i => $item) {
@@ -66,22 +66,20 @@ class IntegrityChecker
         }
 
         $this->entityManager->flush();
-
-        if (0 === $this->queueRepository->countItemsToIntegrityCheck($import)) {
-            $isInvalid = $this->isImportQueueInvalid($import);
-            $transition = $isInvalid ? ImportTransitions::FAIL_INTEGRITY : ImportTransitions::COMPLETE_INTEGRITY;
-
-            if ($this->importStateMachine->can($import, $transition)) {
-                $this->importStateMachine->apply($import, $transition);
-                $import->setState($isInvalid ? ImportState::INTEGRITY_CHECK_FAILED : ImportState::INTEGRITY_CHECK_CORRECT);
-
-                $this->entityManager->persist($import);
-                $this->entityManager->flush();
-            }
-        }
+        WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::FAIL_INTEGRITY, ImportTransitions::COMPLETE_INTEGRITY]);
     }
 
     protected function checkOne(ImportQueue $item)
+    {
+       WorkflowTool::checkAndApply($this->importQueueStateMachine, $item, [ImportQueueTransitions::VALIDATE, ImportQueueTransitions::INVALIDATE]);
+    }
+
+    /**
+     * @param ImportQueue $item
+     *
+     * @return array
+     */
+    public function getQueueViolations(ImportQueue $item): array
     {
         $iso3 = $item->getImport()->getProject()->getIso3();
 
@@ -112,24 +110,7 @@ class IntegrityChecker
             $index++;
         }
 
-        if ($anyViolation) {
-            $message['raw'] = $item->getContent();
-
-            $item->setMessage(json_encode($message));
-            $item->setState(ImportQueueState::INVALID);
-            $transition = ImportQueueTransitions::INVALIDATE;
-        } else {
-            $item->setState(ImportQueueState::VALID);
-            $transition = ImportQueueTransitions::VALIDATE;
-        }
-
-        if ($this->importQueueStateMachine->can($item, $transition)) {
-            $this->importQueueStateMachine->apply($item, $transition);
-            // $item->setIntegrityCheckedAt(new \DateTime());
-            $this->entityManager->persist($item);
-        } else {
-            throw new WorkflowException();
-        }
+        return ['hasViolations' => $anyViolation, 'message' => $message];
     }
 
     /**
@@ -137,7 +118,7 @@ class IntegrityChecker
      *
      * @return bool
      */
-    private function isImportQueueInvalid(Import $import): bool
+    public function isImportQueueInvalid(Import $import): bool
     {
         $invalidQueue = $this->entityManager->getRepository(ImportQueue::class)
             ->findBy(['import' => $import, 'state' => ImportQueueState::INVALID]);
@@ -148,7 +129,7 @@ class IntegrityChecker
         return count($invalidQueue) > 0 || count($validQueue) === 0;
     }
 
-    private function buildErrorMessage(ConstraintViolationInterface $violation)
+    public function buildErrorMessage(ConstraintViolationInterface $violation)
     {
         $property = $violation->getConstraint()->payload['propertyPath'] ?? $violation->getPropertyPath();
 

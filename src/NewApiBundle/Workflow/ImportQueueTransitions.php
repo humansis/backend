@@ -14,5 +14,6 @@ final class ImportQueueTransitions
         TO_CREATE = ImportQueueState::TO_CREATE,
         TO_UPDATE = ImportQueueState::TO_UPDATE,
         TO_LINK = ImportQueueState::TO_LINK,
-        TO_IGNORE = ImportQueueState::TO_IGNORE;
+        TO_IGNORE = ImportQueueState::TO_IGNORE,
+        RESET = 'reset';
 }

@@ -12,6 +12,7 @@ use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\Exception\WorkflowException;
 use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
+use NewApiBundle\Workflow\WorkflowTool;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 
@@ -83,13 +84,7 @@ class SimilarityChecker
 
     private function postCheck(Import $import)
     {
-        $isSuspicious = count($this->queueRepository->getSuspiciousItemsToUserCheck($import)) > 0;
-        $transition = $isSuspicious ? ImportTransitions::FAIL_SIMILARITY : ImportTransitions::COMPLETE_SIMILARITY;
-
-        if ($this->importStateMachine->can($import, $transition) === false) {
-            $this->importStateMachine->apply($import, $transition);
-            $import->setState($isSuspicious ? ImportState::SIMILARITY_CHECK_FAILED : ImportState::SIMILARITY_CHECK_CORRECT);
-        }
+        WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::COMPLETE_SIMILARITY, ImportTransitions::FAIL_SIMILARITY]);
 
         $newCheckedImportQueues = $this->entityManager->getRepository(ImportQueue::class)
             ->findBy([
@@ -109,7 +104,6 @@ class SimilarityChecker
             }
         }
 
-        $this->entityManager->persist($import);
         $this->entityManager->flush();
         $this->logImportDebug($import, "Ended with status ".$import->getState());
     }

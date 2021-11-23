@@ -55,6 +55,8 @@ framework:
         - !php/const NewApiBundle\Enum\ImportState::FINISHED
         - !php/const NewApiBundle\Enum\ImportState::CANCELED
       transitions:
+
+        # INTEGRITY
         !php/const NewApiBundle\Workflow\ImportTransitions::CHECK_INTEGRITY:
           from: !php/const NewApiBundle\Enum\ImportState::NEW
           to: !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECKING
@@ -64,6 +66,11 @@ framework:
         !php/const NewApiBundle\Workflow\ImportTransitions::FAIL_INTEGRITY:
           from: !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECKING
           to: !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_FAILED
+        !php/const NewApiBundle\Workflow\ImportTransitions::REDO_INTEGRITY:
+          from: !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECKING
+          to: !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECKING
+
+        # IDENTITY
         !php/const NewApiBundle\Workflow\ImportTransitions::CHECK_IDENTITY:
           from:
             - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_CORRECT
@@ -76,6 +83,11 @@ framework:
         !php/const NewApiBundle\Workflow\ImportTransitions::FAIL_IDENTITY:
           from: !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECKING
           to: !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECK_FAILED
+        !php/const NewApiBundle\Workflow\ImportTransitions::REDO_IDENTITY:
+          from: !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECKING
+          to: !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECKING
+
+        # SIMILARITY
         !php/const NewApiBundle\Workflow\ImportTransitions::CHECK_SIMILARITY:
           from: !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECK_CORRECT
           to: !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECKING
@@ -85,6 +97,13 @@ framework:
         !php/const NewApiBundle\Workflow\ImportTransitions::FAIL_SIMILARITY:
           from: !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECKING
           to: !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_FAILED
+        !php/const NewApiBundle\Workflow\ImportTransitions::REDO_SIMILARITY:
+          from: !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECKING
+          to: !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECKING
+
+        !php/const NewApiBundle\Workflow\ImportTransitions::RESET:
+          from: !php/const NewApiBundle\Enum\ImportState::FINISHED
+          to: !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECKING
         !php/const NewApiBundle\Workflow\ImportTransitions::IMPORT:
           from: !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_CORRECT
           to: !php/const NewApiBundle\Enum\ImportState::IMPORTING
@@ -145,3 +164,13 @@ framework:
         !php/const NewApiBundle\Workflow\ImportQueueTransitions::TO_LINK:
           from: !php/const NewApiBundle\Enum\ImportQueueState::SUSPICIOUS
           to: !php/const NewApiBundle\Enum\ImportQueueState::TO_LINK
+        !php/const NewApiBundle\Workflow\ImportQueueTransitions::RESET:
+          from:
+            - !php/const NewApiBundle\Enum\ImportQueueState::SUSPICIOUS
+            - !php/const NewApiBundle\Enum\ImportQueueState::TO_CREATE
+            - !php/const NewApiBundle\Enum\ImportQueueState::TO_UPDATE
+            - !php/const NewApiBundle\Enum\ImportQueueState::TO_IGNORE
+            - !php/const NewApiBundle\Enum\ImportQueueState::TO_LINK
+          to: !php/const NewApiBundle\Enum\ImportQueueState::VALID
+
+
