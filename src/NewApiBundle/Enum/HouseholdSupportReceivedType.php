@@ -39,22 +39,4 @@ class HouseholdSupportReceivedType
     {
         return array_values(self::$values);
     }
-
-    protected static function apiAlternatives(): array
-    {
-        return [
-            self::MPCA => [0],
-            self::CASH_FOR_WORK => [1],
-            self::FOOD_KIT => [2],
-            self::FOOD_VOUCHER => [3],
-            self::HYGIENE_KIT => [4],
-            self::SHELTER_KIT => [5],
-            self::SHELTER_RECONSTRUCTION_SUPPORT => [6],
-            self::NON_FOOD_ITEMS => [7],
-            self::LIVELIHOODS_SUPPORT => [8],
-            self::VOCATIONAL_TRAINING => [9],
-            self::NONE => [10],
-            self::OTHER => [11],
-        ];
-    }
 }
