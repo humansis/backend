@@ -6,8 +6,22 @@ namespace NewApiBundle\Enum;
 trait EnumTrait
 {
     public static abstract function values(): array;
+
+    /**
+     * @return string[][] key = value, value = array of possible values from API
+     */
     protected static function apiAlternatives(): array {
         return [];
+    }
+
+    /**
+     * @return string[] key = value, value to return to API
+     */
+    protected static function apiMap(): array {
+        if (!isset(self::$values)) {
+            return [];
+        }
+        return array_flip(self::$values);
     }
 
     /**
@@ -20,6 +34,11 @@ trait EnumTrait
         $normalizedApiValue = self::normalizeValue($APIValue);
         foreach (self::values() as $originalValue) {
             if (self::normalizeValue($originalValue) === $normalizedApiValue) {
+                return $originalValue;
+            }
+        }
+        foreach (self::apiMap() as $originalValue => $apiValue) {
+            if (self::normalizeValue($apiValue) === $normalizedApiValue) {
                 return $originalValue;
             }
         }
@@ -51,7 +70,7 @@ trait EnumTrait
      */
     public static function valueToAPI($value)
     {
-        return $value;
+        return self::apiMap()[$value];
     }
 
     private static function normalizeValue($value): string
