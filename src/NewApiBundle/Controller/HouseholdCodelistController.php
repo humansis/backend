@@ -10,6 +10,7 @@ use BeneficiaryBundle\Entity\Referral;
 use CommonBundle\Pagination\Paginator;
 use NewApiBundle\Component\Codelist\CodeItem;
 use NewApiBundle\Component\Codelist\CodeLists;
+use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use ProjectBundle\Enum\Livelihood;
@@ -44,7 +45,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function getAssets(): JsonResponse
     {
-        $data = CodeLists::mapArray(Household::ASSETS);
+        $data = CodeLists::mapArray(HouseholdAssets::values());
 
         return $this->json(new Paginator($data));
     }

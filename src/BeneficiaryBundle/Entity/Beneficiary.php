@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use NewApiBundle\Entity\ImportBeneficiary;
+use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use ProjectBundle\Enum\Livelihood;
@@ -683,7 +684,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
         $assets = [];
         foreach ((array) $this->getHousehold()->getAssets() as $type) {
-            $assets[] = Household::ASSETS[$type];
+            $assets[] = HouseholdAssets::valueToAPI($type);
         }
 
         $supportReceivedTypes = [];
@@ -786,7 +787,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         }
 
         $assets = array_map(function ($value) {
-            return Household::ASSETS[$value];
+            return HouseholdAssets::valueToAPI($value);
         }, (array) $this->getHousehold()->getAssets());
 
         $shelterStatus = null;

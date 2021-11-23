@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\InputType;
 
 use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use NewApiBundle\InputType\Beneficiary\Address\CampAddressInputType;
@@ -67,12 +68,6 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
 
     /**
      * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Choice(callback="assets", strict=true, groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
      */
     private $assets;
 
@@ -239,16 +234,6 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      */
     private $proxyPhone;
 
-    final public static function assets()
-    {
-        $keys = [];
-        foreach (Household::ASSETS as $key => $value) {
-            $keys[] = (int) $key;
-        }
-
-        return $keys;
-    }
-
     /**
      * @return string
      */
@@ -282,11 +267,21 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     }
 
     /**
-     * @return int[]
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Choice(callback={"\NewApiBundle\Enum\HouseholdAssets", "values"}, strict=true, groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
+     *
+     * @return string[]
      */
-    public function getAssets()
+    public function getAssets(): array
     {
-        return $this->assets;
+        if (null === $this->assets) return [];
+        return array_map(function ($asset) {
+            return HouseholdAssets::valueFromAPI($asset);
+        }, $this->assets);
     }
 
     /**

@@ -6,11 +6,12 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use InvalidArgumentException;
+use NewApiBundle\DBAL\HouseholdAssetsEnum;
 use NewApiBundle\DBAL\HouseholdShelterStatusEnum;
 use NewApiBundle\DBAL\HouseholdSupportReceivedTypeEnum;
 use NewApiBundle\Entity\Helper\EnumTrait;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
@@ -24,16 +25,6 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 class Household extends AbstractBeneficiary
 {
     use EnumTrait;
-
-    const ASSETS = [
-        0 => 'A/C',
-        1 => 'Agricultural Land',
-        2 => 'Car',
-        3 => 'Flatscreen TV',
-        4 => 'Livestock',
-        5 => 'Motorbike',
-        6 => 'Washing Machine',
-    ];
 
     /**
      * @var string|null
@@ -245,23 +236,22 @@ class Household extends AbstractBeneficiary
      */
     public function getAssets(): array
     {
-        return (array) $this->assets;
+        return array_map(function ($asset) {
+            return HouseholdAssetsEnum::valueFromDB($asset);
+        }, $this->assets);
     }
 
     /**
-     * @param int[] $assets
+     * @param string[] $assets
      *
      * @return self
      */
-    public function setAssets($assets): self
+    public function setAssets(array $assets): self
     {
-        foreach ((array) $assets as $asset) {
-            if (!isset(self::ASSETS[$asset])) {
-                throw new InvalidArgumentException(sprintf('Argument 1 contain invalid asset key %d.', $asset));
-            }
-        }
-
-        $this->assets = (array) $assets;
+        self::validateValues('assets', HouseholdAssets::class, $assets);
+        $this->assets = array_map(function ($asset) {
+            return HouseholdAssetsEnum::valueToDB($asset);
+        }, $assets);
 
         return $this;
     }

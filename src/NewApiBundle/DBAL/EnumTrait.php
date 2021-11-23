@@ -16,7 +16,7 @@ trait EnumTrait
         return self::databaseMap()[$dbValue];
     }
 
-    public static function valueToDB(?string $appValue)
+    public static function valueToDB($appValue)
     {
         if (null === $appValue) return null;
         foreach (self::databaseMap() as $dbValue => $applicationValue) {

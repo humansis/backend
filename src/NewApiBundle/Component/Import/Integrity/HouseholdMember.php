@@ -7,6 +7,7 @@ use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\CellParameters;
+use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use NewApiBundle\Validator\Constraints\ImportDate;
@@ -395,7 +396,7 @@ class HouseholdMember
     }
 
     /**
-     * @Assert\Choice(choices=\BeneficiaryBundle\Entity\Household::ASSETS, multiple=true)
+     * @Assert\Choice(choices={"\NewApiBundle\Enum\HouseholdAssets", "values"}, multiple=true)
      * @return array
      */
     public function getAssets(): array
@@ -403,8 +404,10 @@ class HouseholdMember
         if (empty($this->assets)) {
             return [];
         }
-
-        return explode(',', $this->assets);
+        $assets = explode(',', $this->assets);
+        return array_map(function ($asset) {
+            return HouseholdAssets::valueFromAPI($asset);
+        }, $assets);
     }
 
     /**

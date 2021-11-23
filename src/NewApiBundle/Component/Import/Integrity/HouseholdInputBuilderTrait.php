@@ -6,6 +6,7 @@ namespace NewApiBundle\Component\Import\Integrity;
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Entity\Location;
 use NewApiBundle\Component\Import\Utils\ImportDateConverter;
+use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
@@ -76,7 +77,7 @@ trait HouseholdInputBuilderTrait
         if (null !== $this->assets) {
             $assets = [];
             foreach (explode(',', $this->assets) as $assetName) {
-                $assets[] = array_search($assetName, Household::ASSETS);
+                $assets[] = HouseholdAssets::valueFromAPI($assetName);
             }
             $household->setAssets($assets);
         }

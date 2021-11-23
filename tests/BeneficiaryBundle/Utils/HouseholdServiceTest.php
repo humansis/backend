@@ -9,6 +9,7 @@ use BeneficiaryBundle\Enum\ResidencyStatus;
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\Common\Persistence\ObjectManager;
 use NewApiBundle\Component\Import\ImportService;
+use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\AddressInputType;
@@ -137,8 +138,8 @@ class HouseholdServiceTest extends KernelTestCase
         $this->assertCount(1, $household->getProjects());
         $this->assertEquals(1, $household->getProjects()[0]->getId());
         $this->assertEquals('KHM', $household->getProjects()[0]->getIso3());
-        $this->assertContains(2, $household->getAssets());
-        $this->assertContains(3, $household->getAssets());
+        $this->assertContains(HouseholdAssets::CAR, $household->getAssets());
+        $this->assertContains(HouseholdAssets::FLATSCREEN_TV, $household->getAssets());
         $this->assertEquals(3, $household->getIncomeLevel());
         $this->assertEquals(3, $household->getCopingStrategiesIndex());
         $this->assertEquals(3, $household->getFoodConsumptionScore());
@@ -294,9 +295,9 @@ class HouseholdServiceTest extends KernelTestCase
         $this->assertCount(2, $household->getProjects());
         $this->assertEquals(1, $household->getProjects()[0]->getId());
         $this->assertEquals('KHM', $household->getProjects()[0]->getIso3());
-        $this->assertContains(1, $household->getAssets());
-        $this->assertContains(3, $household->getAssets());
-        $this->assertContains(5, $household->getAssets());
+        $this->assertContains(HouseholdAssets::AGRICULTURAL_LAND, $household->getAssets());
+        $this->assertContains(HouseholdAssets::FLATSCREEN_TV, $household->getAssets());
+        $this->assertContains(HouseholdAssets::MOTORBIKE, $household->getAssets());
 
         $this->assertCount(2, $household->getBeneficiaries(), "Wrong beneficiary count");
         $head = $household->getHouseholdHead();
@@ -351,7 +352,7 @@ class HouseholdServiceTest extends KernelTestCase
         $householdCreateInputType = new HouseholdCreateInputType();
         $householdCreateInputType->setProjectIds([$project->getId()]);
         $householdCreateInputType->setIso3('KHM');
-        $householdCreateInputType->setAssets([current(array_keys(Household::ASSETS))]);
+        $householdCreateInputType->setAssets([HouseholdAssets::valueToAPI(HouseholdAssets::MOTORBIKE)]);
         $householdCreateInputType->setShelterStatus(3);
 
         $addressData = new ResidenceAddressInputType();
@@ -380,7 +381,7 @@ class HouseholdServiceTest extends KernelTestCase
         $householdUpdateInputType = new HouseholdUpdateInputType();
         $householdUpdateInputType->setProjectIds([$project->getId()]);
         $householdUpdateInputType->setIso3('KHM');
-        $householdUpdateInputType->setAssets([current(array_keys(Household::ASSETS))]);
+        $householdUpdateInputType->setAssets([HouseholdAssets::valueToAPI(HouseholdAssets::LIVESTOCK)]);
         $householdCreateInputType->setShelterStatus(2);
 
         $beneficiaryInputType->setResidencyStatus(ResidencyStatus::IDP);

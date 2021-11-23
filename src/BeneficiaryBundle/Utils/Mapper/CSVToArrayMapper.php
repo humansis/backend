@@ -13,6 +13,7 @@ use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use ProjectBundle\Enum\Livelihood;
@@ -727,7 +728,7 @@ class CSVToArrayMapper
         if (isset($formattedHouseholdArray['assets'])) {
             $assets = [];
             foreach (explode(',', $formattedHouseholdArray['assets']) as $value) {
-                foreach (Household::ASSETS as $id => $asset) {
+                foreach (HouseholdAssets::values() as $id => $asset) {
                     if (0 === strcasecmp(trim($value), $asset)) {
                         $assets[] = $id;
                         continue 2;

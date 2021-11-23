@@ -23,6 +23,7 @@ use CommonBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Exception;
+use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\InputType\Beneficiary\Address\CampAddressInputType;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
@@ -384,6 +385,7 @@ class HouseholdService
         }
 
         $shelter = isset($householdArray["shelter_status"]) ? HouseholdShelterStatus::valueFromAPI($householdArray["shelter_status"]) : null;
+        $assets = array_map(function ($asset) { return HouseholdAssets::valueFromAPI($asset); }, $householdArray["assets"] ?? []);
 
         $household->setNotes($householdArray["notes"])
             ->setLivelihood($householdArray["livelihood"])
@@ -392,7 +394,7 @@ class HouseholdService
             ->setIncomeLevel($householdArray["income_level"] ?? null)
             ->setCopingStrategiesIndex($householdArray["coping_strategies_index"])
             ->setFoodConsumptionScore($householdArray["food_consumption_score"])
-            ->setAssets($householdArray["assets"] ?? [])
+            ->setAssets($assets)
             ->setShelterStatus($shelter)
             ->setDebtLevel($householdArray["debt_level"] ?? null)
             ->setSupportReceivedTypes($householdArray["support_received_types"] ?? [])
