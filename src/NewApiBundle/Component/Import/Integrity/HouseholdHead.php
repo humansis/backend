@@ -450,7 +450,12 @@ class HouseholdHead
     }
 
     /**
-     * @Assert\Choice(choices={"\NewApiBundle\Enum\HouseholdSupportReceivedType", "values"}, multiple=true)
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Choice(callback={"\NewApiBundle\Enum\HouseholdSupportReceivedType", "values"}, strict=true, groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
      * @return array
      */
     public function getSupportReceivedTypes(): array
