@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use NewApiBundle\Entity\ImportBeneficiary;
 use NewApiBundle\Enum\HouseholdShelterStatus;
+use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use ProjectBundle\Enum\Livelihood;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -686,8 +687,8 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         }
 
         $supportReceivedTypes = [];
-        foreach ((array) $this->getHousehold()->getShelterStatus() as $type) {
-            $supportReceivedTypes[] = Household::SUPPORT_RECIEVED_TYPES[$type];
+        foreach ((array) $this->getHousehold()->getSupportReceivedTypes() as $type) {
+            $supportReceivedTypes[] = HouseholdSupportReceivedType::valueFromAPI($type);
         }
 
         $shelterStatus = '';
@@ -794,7 +795,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         }
 
         $supportReceivedTypes = array_map(function ($value) {
-            return Household::SUPPORT_RECIEVED_TYPES[$value];
+            return HouseholdSupportReceivedType::valueFromAPI($value);
         }, (array) $this->getHousehold()->getSupportReceivedTypes());
 
         $supportDateReceived = null;

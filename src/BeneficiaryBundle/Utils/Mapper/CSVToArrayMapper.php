@@ -14,6 +14,7 @@ use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Enum\HouseholdShelterStatus;
+use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use ProjectBundle\Enum\Livelihood;
 
 class CSVToArrayMapper
@@ -756,7 +757,7 @@ class CSVToArrayMapper
         if (isset($formattedHouseholdArray['support_received_types'])) {
             $types = [];
             foreach (explode(',', $formattedHouseholdArray['support_received_types']) as $value) {
-                foreach (Household::SUPPORT_RECIEVED_TYPES as $id => $type) {
+                foreach (HouseholdSupportReceivedType::values() as $id => $type) {
                     if (0 === strcasecmp(trim($value), $type)) {
                         $types[] = $id;
                         continue 2;

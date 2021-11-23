@@ -6,6 +6,7 @@ namespace NewApiBundle\InputType;
 
 use BeneficiaryBundle\Entity\Household;
 use NewApiBundle\Enum\HouseholdShelterStatus;
+use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use NewApiBundle\InputType\Beneficiary\Address\CampAddressInputType;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\Address\TemporarySettlementAddressInputType;
@@ -148,12 +149,6 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
 
     /**
      * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Choice(callback="supportReceivedTypes", strict=true, groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
      */
     private $supportReceivedTypes = [];
 
@@ -249,16 +244,6 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
         $keys = [];
         foreach (Household::ASSETS as $key => $value) {
             $keys[] = (int) $key;
-        }
-
-        return $keys;
-    }
-
-    final public static function supportReceivedTypes()
-    {
-        $keys = [];
-        foreach (Household::SUPPORT_RECIEVED_TYPES as $key => $value) {
-            $keys[] = (string) $key;
         }
 
         return $keys;
@@ -501,15 +486,25 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     }
 
     /**
-     * @return int|null
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Choice(callback={"\NewApiBundle\Enum\HouseholdSupportReceivedType", "values"}, strict=true, groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
+     *
+     * @return string[]
      */
-    public function getSupportReceivedTypes()
+    public function getSupportReceivedTypes(): array
     {
-        return $this->supportReceivedTypes;
+        if (null === $this->supportReceivedTypes) return [];
+        return array_map(function ($type) {
+            return HouseholdSupportReceivedType::valueFromAPI($type);
+        }, $this->supportReceivedTypes);
     }
 
     /**
-     * @param int|null $supportReceivedTypes
+     * @param array|null $supportReceivedTypes
      */
     public function setSupportReceivedTypes($supportReceivedTypes)
     {

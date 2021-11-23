@@ -6,6 +6,7 @@ namespace NewApiBundle\Component\Import\Integrity;
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Entity\Location;
 use NewApiBundle\Component\Import\Utils\ImportDateConverter;
+use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 use NewApiBundle\InputType\Beneficiary\CountrySpecificsAnswerInputType;
@@ -67,7 +68,7 @@ trait HouseholdInputBuilderTrait
         if (null !== $this->supportReceivedTypes) {
             $receivedTypes = [];
             foreach (explode(',', $this->supportReceivedTypes) as $typeName) {
-                $receivedTypes[] = array_search($typeName, Household::SUPPORT_RECIEVED_TYPES);
+                $receivedTypes[] = HouseholdSupportReceivedType::valueFromAPI($typeName);
             }
             $household->setSupportReceivedTypes($receivedTypes);
         }

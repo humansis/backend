@@ -128,6 +128,7 @@ doctrine:
             enum_modality_type: NewApiBundle\DBAL\ModalityTypeEnum
             enum_synchronization_batch_state: NewApiBundle\DBAL\SynchronizationBatchEnum
             enum_household_shelter_status: NewApiBundle\DBAL\HouseholdShelterStatusEnum
+            enum_household_support_received_type: NewApiBundle\DBAL\HouseholdSupportReceivedTypeEnum
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware

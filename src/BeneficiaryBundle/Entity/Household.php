@@ -8,9 +8,11 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
 use NewApiBundle\DBAL\HouseholdShelterStatusEnum;
+use NewApiBundle\DBAL\HouseholdSupportReceivedTypeEnum;
 use NewApiBundle\Entity\Helper\EnumTrait;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Enum\HouseholdShelterStatus;
+use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -31,21 +33,6 @@ class Household extends AbstractBeneficiary
         4 => 'Livestock',
         5 => 'Motorbike',
         6 => 'Washing Machine',
-    ];
-
-    const SUPPORT_RECIEVED_TYPES = [
-        0 => 'MPCA',
-        1 => 'Cash for Work',
-        2 => 'Food Kit',
-        3 => 'Food Voucher',
-        4 => 'Hygiene Kit',
-        5 => 'Shelter Kit',
-        6 => 'Shelter Reconstruction Support',
-        7 => 'Non Food Items',
-        8 => 'Livelihoods Support',
-        9 => 'Vocational Training',
-        10 => 'None',
-        11 => 'Other',
     ];
 
     /**
@@ -622,27 +609,26 @@ class Household extends AbstractBeneficiary
     }
 
     /**
-     * @return int[]
+     * @return string[]
      */
     public function getSupportReceivedTypes(): array
     {
-        return (array) $this->supportReceivedTypes;
+        return array_map(function ($type) {
+            return HouseholdSupportReceivedTypeEnum::valueFromDB($type);
+        }, $this->supportReceivedTypes);
     }
 
     /**
-     * @param int[] $supportReceivedTypes
+     * @param string[] $supportReceivedTypes
      *
      * @return self
      */
-    public function setSupportReceivedTypes($supportReceivedTypes): self
+    public function setSupportReceivedTypes(array $supportReceivedTypes): self
     {
-        foreach ((array) $supportReceivedTypes as $type) {
-            if (!isset(self::SUPPORT_RECIEVED_TYPES[$type])) {
-                throw new InvalidArgumentException(sprintf('Argument 1 contain invalid received type key %d.', $type));
-            }
-        }
-
-        $this->supportReceivedTypes = (array) $supportReceivedTypes;
+        self::validateValues('supportReceivedType', HouseholdSupportReceivedType::class, $supportReceivedTypes);
+        $this->supportReceivedTypes = array_map(function ($type) {
+            return HouseholdSupportReceivedTypeEnum::valueToDB($type);
+        }, $supportReceivedTypes);
 
         return $this;
     }

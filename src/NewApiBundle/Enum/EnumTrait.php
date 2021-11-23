@@ -13,22 +13,27 @@ trait EnumTrait
     /**
      * @param int|string $APIValue
      *
-     * @return string
+     * @return string|int|bool
      */
-    public static function valueFromAPI($APIValue): string
+    public static function valueFromAPI($APIValue)
     {
         $normalizedApiValue = self::normalizeValue($APIValue);
         foreach (self::values() as $originalValue) {
-            if (self::normalizeValue($originalValue) == $normalizedApiValue) {
+            if (self::normalizeValue($originalValue) === $normalizedApiValue) {
                 return $originalValue;
             }
         }
-        foreach (self::apiAlternatives() ?? [] as $originalValue => $alternativeValues) {
+        foreach (self::apiAlternatives() as $originalValue => $alternativeValues) {
             foreach ($alternativeValues as $alternativeValue) {
-                if (self::normalizeValue($alternativeValue) == $normalizedApiValue) {
+                if (self::normalizeValue($alternativeValue) === $normalizedApiValue) {
                     return $originalValue;
                 }
             }
+        }
+        echo "INPUT: $APIValue = $normalizedApiValue\n";
+        foreach (self::values() as $value) {
+            $normalizedValue = self::normalizeValue($value);
+            echo "$value = $normalizedValue\n";
         }
         throw new \InvalidArgumentException(
             sprintf("Enum type %s got value %s. Expected anything from '%s'.",
@@ -40,18 +45,19 @@ trait EnumTrait
     }
 
     /**
-     * @param string $value
+     * @param string|int|bool $value
      *
-     * @return string|int
+     * @return string|int|bool
      */
-    public static function valueToAPI(string $value): string
+    public static function valueToAPI($value)
     {
         return $value;
     }
 
     private static function normalizeValue($value): string
     {
-        if (is_string($value)) return preg_replace('|\W+|', '', strtolower(trim($value)));
+        if (is_string($value)) return preg_replace('|[\W_]+|', '', strtolower(trim($value)));
+        if (is_bool($value)) return $value ? 'true' : 'false';
         return (string) $value;
     }
 }

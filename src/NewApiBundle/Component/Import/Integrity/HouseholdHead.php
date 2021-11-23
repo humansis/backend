@@ -9,6 +9,7 @@ use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\CellParameters;
 use NewApiBundle\Enum\HouseholdShelterStatus;
+use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use NewApiBundle\Validator\Constraints\ImportDate;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -449,7 +450,7 @@ class HouseholdHead
     }
 
     /**
-     * @Assert\Choice(choices=\BeneficiaryBundle\Entity\Household::SUPPORT_RECIEVED_TYPES, multiple=true)
+     * @Assert\Choice(choices={"\NewApiBundle\Enum\HouseholdSupportReceivedType", "values"}, multiple=true)
      * @return array
      */
     public function getSupportReceivedTypes(): array
@@ -457,6 +458,9 @@ class HouseholdHead
         if (empty($this->supportReceivedTypes)) {
             return [];
         }
-        return explode(',', $this->supportReceivedTypes);
+        $types = explode(',', $this->supportReceivedTypes);
+        return array_map(function ($type) {
+            return HouseholdSupportReceivedType::valueFromAPI($type);
+        }, $types);
     }
 }

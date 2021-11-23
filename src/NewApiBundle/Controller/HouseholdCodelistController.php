@@ -11,6 +11,7 @@ use CommonBundle\Pagination\Paginator;
 use NewApiBundle\Component\Codelist\CodeItem;
 use NewApiBundle\Component\Codelist\CodeLists;
 use NewApiBundle\Enum\HouseholdShelterStatus;
+use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use ProjectBundle\Enum\Livelihood;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -55,7 +56,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function supportReceivedTypes(): JsonResponse
     {
-        $data = CodeLists::mapArray(Household::SUPPORT_RECIEVED_TYPES);
+        $data = CodeLists::mapArray(HouseholdSupportReceivedType::values());
 
         return $this->json(new Paginator($data));
     }

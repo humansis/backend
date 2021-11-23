@@ -32,10 +32,10 @@ trait EnumTrait
     /**
      * @param string[] $values
      */
-    public static function validateValues(string $attributeName, array $possibleValues, iterable $values): void
+    public static function validateValues(string $attributeName, string $enumClass, iterable $values): void
     {
         foreach ($values as $value) {
-            self::validateValue($attributeName, $possibleValues, $value, false);
+            self::validateValue($attributeName, $enumClass, $value, false);
         }
     }
 }
