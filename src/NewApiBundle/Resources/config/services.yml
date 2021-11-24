@@ -344,14 +344,14 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
-    workflow.importQueue.default_subscriber:
+    workflow.import_queue.default_subscriber:
         class: NewApiBundle\Event\Subscriber\ImportQueue\ImportQueueDefaultSubscriber
         arguments:
             - '@doctrine.orm.entity_manager'
         tags:
             - { name: kernel.event_subscriber }
 
-    workflow.importQueue.validator_subscriber:
+    workflow.import_queue.validator_subscriber:
         class: NewApiBundle\Event\Subscriber\ImportQueue\IntegritySubscriber
         arguments:
             - '@doctrine.orm.entity_manager'
@@ -359,21 +359,21 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
-    workflow.importQueue.identity_subscriber:
+    workflow.import_queue.identity_subscriber:
         class: NewApiBundle\Event\Subscriber\ImportQueue\IdentitySubscriber
         arguments:
             - '@NewApiBundle\Component\Import\IdentityChecker'
         tags:
             - { name: kernel.event_subscriber }
 
-    workflow.importQueue.finish_subscriber:
+    workflow.import_queue.finish_subscriber:
         class: NewApiBundle\Event\Subscriber\ImportQueue\FinishSubscriber
         arguments:
             - '@doctrine.orm.entity_manager'
         tags:
             - { name: kernel.event_subscriber }
 
-    workflow.importQueue.duplicity_resolve_subscriber:
+    workflow.import_queue.duplicity_resolve_subscriber:
         class: NewApiBundle\Event\Subscriber\ImportQueue\DuplicityResolveSubscriber
         arguments:
             - '@NewApiBundle\Component\Import\DuplicityResolver'

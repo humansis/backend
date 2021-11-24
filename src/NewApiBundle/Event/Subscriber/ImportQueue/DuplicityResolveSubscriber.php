@@ -33,14 +33,14 @@ class DuplicityResolveSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.importQueue.transition.'.ImportQueueTransitions::TO_IGNORE => ['resolveDuplicity'],
-            'workflow.importQueue.transition.'.ImportQueueTransitions::TO_LINK => ['resolveDuplicity'],
-            'workflow.importQueue.transition.'.ImportQueueTransitions::TO_UPDATE => ['resolveDuplicity'],
-            'workflow.importQueue.transition.'.ImportQueueTransitions::TO_CREATE => ['resolveDuplicity'],
-            'workflow.importQueue.entered.'.ImportQueueTransitions::TO_IGNORE => ['resolveImport'],
-            'workflow.importQueue.entered.'.ImportQueueTransitions::TO_LINK => ['resolveImport'],
-            'workflow.importQueue.entered.'.ImportQueueTransitions::TO_UPDATE => ['resolveImport'],
-            'workflow.importQueue.entered.'.ImportQueueTransitions::TO_CREATE => ['resolveImport'],
+            'workflow.import_queue.transition.'.ImportQueueTransitions::TO_IGNORE => ['resolveDuplicity'],
+            'workflow.import_queue.transition.'.ImportQueueTransitions::TO_LINK => ['resolveDuplicity'],
+            'workflow.import_queue.transition.'.ImportQueueTransitions::TO_UPDATE => ['resolveDuplicity'],
+            'workflow.import_queue.transition.'.ImportQueueTransitions::TO_CREATE => ['resolveDuplicity'],
+            'workflow.import_queue.entered.'.ImportQueueTransitions::TO_IGNORE => ['resolveImport'],
+            'workflow.import_queue.entered.'.ImportQueueTransitions::TO_LINK => ['resolveImport'],
+            'workflow.import_queue.entered.'.ImportQueueTransitions::TO_UPDATE => ['resolveImport'],
+            'workflow.import_queue.entered.'.ImportQueueTransitions::TO_CREATE => ['resolveImport'],
         ];
     }
 

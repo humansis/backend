@@ -31,8 +31,8 @@ class IntegritySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.importQueue.guard.'.ImportQueueTransitions::VALIDATE => ['guardIfImportQueueIsValid'],
-            'workflow.importQueue.guard.'.ImportQueueTransitions::INVALIDATE => ['guardIfImportQueueIsInvalid'],
+            'workflow.import_queue.guard.'.ImportQueueTransitions::VALIDATE => ['guardIfImportQueueIsValid'],
+            'workflow.import_queue.guard.'.ImportQueueTransitions::INVALIDATE => ['guardIfImportQueueIsInvalid'],
         ];
     }
 

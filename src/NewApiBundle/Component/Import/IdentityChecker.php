@@ -11,7 +11,6 @@ use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
-use NewApiBundle\Workflow\Exception\WorkflowException;
 use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
 use NewApiBundle\Workflow\WorkflowTool;
@@ -24,6 +23,7 @@ class IdentityChecker
 
     /** @var EntityManagerInterface */
     private $entityManager;
+
     /** @var ImportQueueRepository */
     private $queueRepository;
 
@@ -57,7 +57,10 @@ class IdentityChecker
         }
 
         foreach ($this->queueRepository->getItemsToIdentityCheck($import, $batchSize) as $i => $item) {
-            $this->checkOne($item);
+
+            if ($this->importQueueStateMachine->can($item, ImportQueueTransitions::SUSPICIOUS)) {
+                $this->importQueueStateMachine->apply($item, ImportQueueTransitions::SUSPICIOUS);
+            }
 
             if ($i % 500 === 0) {
                 $this->entityManager->flush();
@@ -69,23 +72,49 @@ class IdentityChecker
         $queueSize = $this->queueRepository->countItemsToIdentityCheck($import);
         if (0 === $queueSize) {
             $this->logImportInfo($import, 'Batch ended - nothing left, identity checking ends');
-            $this->postCheck($import);
+            $this->logImportDebug($import, "Ended with status ".$import->getState());
+            WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::COMPLETE_IDENTITY, ImportTransitions::FAIL_IDENTITY]);
         } else {
             $this->logImportInfo($import, "Batch ended - $queueSize items left, identity checking continues");
         }
     }
 
-    protected function checkOne(ImportQueue $item)
+    /**
+     * @param ImportQueue $item
+     *
+     * @return Beneficiary[]
+     */
+    public function getItemDuplicities(ImportQueue $item): array
     {
-        if($this->importQueueStateMachine->can($item, ImportQueueTransitions::SUSPICIOUS)){
-            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::SUSPICIOUS);
+        $index = 0;
+        $bnfDuplicities = [];
+        foreach ($item->getContent() as $c) {
+            if (empty($c['ID Type']) || empty($c['ID Number'])) {
+                $this->logImportDebug($item->getImport(),
+                    "[Queue#{$item->getId()}|line#$index] Duplicity checking omitted because of missing ID information");
+                continue;
+            }
+
+            $bnfDuplicities = $this->entityManager->getRepository(Beneficiary::class)->findIdentity(
+                (string) $c['ID Type'],
+                (string) $c['ID Number'],
+                $item->getImport()->getProject()->getIso3()
+            );
+
+            if (count($bnfDuplicities) > 0) {
+                $this->logImportInfo($item->getImport(), "Found ".count($bnfDuplicities)." duplicities for {$c['ID Type']} {$c['ID Number']}");
+            } else {
+                $this->logImportDebug($item->getImport(), "Found no duplicities");
+            }
+
+            $index++;
         }
+
+        return $bnfDuplicities;
     }
 
-    public function isValidItem(ImportQueue $item): bool
+    public function validateItem(ImportQueue $item): void
     {
-        $isValid = true;
-
         /* probably works but we have bad testing data
         $ids = $this->findInQueue($item);
         foreach ($ids as $id) {
@@ -98,56 +127,27 @@ class IdentityChecker
             $found = true;
         }
         */
-
         $duplicities = [];
-        $index = 0;
-        foreach ($item->getContent() as $c) {
-            if (empty($c['ID Type']) || empty($c['ID Number'])) {
-                $this->logImportDebug($item->getImport(), "[Queue#{$item->getId()}|line#$index] Duplicity checking omitted because of missing ID information");
-                continue;
+        $bnfDuplicities = $this->getItemDuplicities($item);
+
+        foreach ($bnfDuplicities as $bnf) {
+            if (!array_key_exists($bnf->getHousehold()->getId(), $duplicities)) {
+                $duplicity = new ImportBeneficiaryDuplicity($item, $bnf->getHousehold());
+                $duplicity->setDecideAt(new \DateTime('now'));
+                $item->getImportBeneficiaryDuplicities()->add($duplicity);
+                $this->entityManager->persist($duplicity);
+
+                $duplicities[$bnf->getHousehold()->getId()] = $duplicity;
             }
+            $importDuplicity = $duplicities[$bnf->getHousehold()->getId()];
+            $importDuplicity->addReason("Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
 
-            $bnfDuplicities = $this->entityManager->getRepository(Beneficiary::class)->findIdentity(
-                (string) $c['ID Type'],
-                (string) $c['ID Number'],
-                $item->getImport()->getProject()->getIso3()
-            );
-
-            if (count($bnfDuplicities) > 0) {
-                $this->logImportInfo($item->getImport(), "Found ".count($bnfDuplicities)." duplicities for {$c['ID Type']} {$c['ID Number']}");
-                $isValid = false;
-            } else {
-                $this->logImportDebug($item->getImport(), "Found no duplicities");
-            }
-
-            foreach ($bnfDuplicities as $bnf) {
-                if (!array_key_exists($bnf->getHousehold()->getId(), $duplicities)) {
-                    $duplicity = new ImportBeneficiaryDuplicity($item, $bnf->getHousehold());
-                    $duplicity->setDecideAt(new \DateTime('now'));
-                    $item->getImportBeneficiaryDuplicities()->add($duplicity);
-                    $this->entityManager->persist($duplicity);
-
-                    $duplicities[$bnf->getHousehold()->getId()] = $duplicity;
-                }
-                $importDuplicity = $duplicities[$bnf->getHousehold()->getId()];
-                $importDuplicity->addReason("Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
-
-                $this->logImportInfo($item->getImport(),
-                    "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
-            }
-            $index++;
+            $this->logImportInfo($item->getImport(),
+                "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
         }
 
         $item->setIdentityCheckedAt(new \DateTime());
         $this->entityManager->persist($item);
-
-        return $isValid;
-    }
-
-    private function postCheck(Import $import)
-    {
-        WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::COMPLETE_IDENTITY, ImportTransitions::FAIL_IDENTITY]);
-        $this->logImportDebug($import, "Ended with status ".$import->getState());
     }
 
     /**

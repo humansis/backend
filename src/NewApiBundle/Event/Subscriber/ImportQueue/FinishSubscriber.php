@@ -7,6 +7,7 @@ use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Workflow\ImportQueueTransitions;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\EnteredEvent;
+use Symfony\Component\Workflow\Event\GuardEvent;
 
 class FinishSubscriber implements EventSubscriberInterface
 {
@@ -24,7 +25,7 @@ class FinishSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.importQueue.entered.'.ImportQueueTransitions::RESET => ['resetImportQueue'],
+            'workflow.import_queue.entered.'.ImportQueueTransitions::RESET => ['resetImportQueue'],
         ];
     }
 

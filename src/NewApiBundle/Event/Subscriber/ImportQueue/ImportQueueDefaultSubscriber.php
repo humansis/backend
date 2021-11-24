@@ -22,7 +22,7 @@ class ImportQueueDefaultSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.importQueue.entered' => ['saveImportQueueState'],
+            'workflow.import_queue.entered' => ['saveImportQueueState'],
         ];
     }
 

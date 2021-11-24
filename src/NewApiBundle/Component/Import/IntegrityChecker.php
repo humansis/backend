@@ -25,12 +25,16 @@ class IntegrityChecker
 
     /** @var ValidatorInterface */
     private $validator;
+
     /** @var EntityManagerInterface */
     private $entityManager;
+
     /** @var ImportQueueRepository */
     private $queueRepository;
+
     /** @var WorkflowInterface */
     private $importStateMachine;
+
     /** @var WorkflowInterface */
     private $importQueueStateMachine;
 
@@ -58,7 +62,9 @@ class IntegrityChecker
         }
 
         foreach ($this->queueRepository->getItemsToIntegrityCheck($import, $batchSize) as $i => $item) {
-            $this->checkOne($item);
+
+            WorkflowTool::checkAndApply($this->importQueueStateMachine, $item,
+                [ImportQueueTransitions::VALIDATE, ImportQueueTransitions::INVALIDATE]);
 
             if ($i % 500 === 0) {
                 $this->entityManager->flush();
@@ -67,11 +73,6 @@ class IntegrityChecker
 
         $this->entityManager->flush();
         WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::FAIL_INTEGRITY, ImportTransitions::COMPLETE_INTEGRITY]);
-    }
-
-    protected function checkOne(ImportQueue $item)
-    {
-       WorkflowTool::checkAndApply($this->importQueueStateMachine, $item, [ImportQueueTransitions::VALIDATE, ImportQueueTransitions::INVALIDATE]);
     }
 
     /**

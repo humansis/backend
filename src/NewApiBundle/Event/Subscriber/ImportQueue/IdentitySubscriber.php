@@ -6,7 +6,9 @@ use NewApiBundle\Component\Import\IdentityChecker;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Workflow\ImportQueueTransitions;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Workflow\Event\EnteredEvent;
 use Symfony\Component\Workflow\Event\GuardEvent;
+use Symfony\Component\Workflow\Event\TransitionEvent;
 use Symfony\Component\Workflow\TransitionBlocker;
 
 class IdentitySubscriber implements EventSubscriberInterface
@@ -24,8 +26,19 @@ class IdentitySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.importQueue.guard.'.ImportQueueTransitions::SUSPICIOUS => ['guardIfQueueItemIsSuspicious'],
+            'workflow.import_queue.guard.'.ImportQueueTransitions::SUSPICIOUS => ['guardIfQueueItemIsSuspicious'],
+            'workflow.import_queue.transition.'.ImportQueueTransitions::SUSPICIOUS => ['validateDuplicities'],
         ];
+    }
+
+    /**
+     * @param TransitionEvent $transitionEvent
+     */
+    public function validateDuplicities(TransitionEvent $transitionEvent): void
+    {
+        /** @var ImportQueue $item */
+        $item = $transitionEvent->getSubject();
+        $this->identityChecker->validateItem($item);
     }
 
     /**
@@ -35,9 +48,9 @@ class IdentitySubscriber implements EventSubscriberInterface
     {
         /** @var ImportQueue $item */
         $item = $guardEvent->getSubject();
-        $valid = $this->identityChecker->isValidItem($item);
-        if ($valid === true) {
-            $guardEvent->addTransitionBlocker(new TransitionBlocker('Queue Item is valid', '0'));
+        $duplicities = $this->identityChecker->getItemDuplicities($item);
+        if (count($duplicities) === 0) {
+            $guardEvent->addTransitionBlocker(new TransitionBlocker('Queue Item has no duplicity', '0'));
         }
     }
 }

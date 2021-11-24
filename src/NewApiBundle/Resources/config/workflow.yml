@@ -132,7 +132,7 @@ framework:
             - !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_CORRECT
           to: !php/const NewApiBundle\Enum\ImportState::CANCELED
 
-    importQueue:
+    import_queue:
       type: 'state_machine'
       marking_store:
         type: 'method'
