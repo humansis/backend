@@ -16,11 +16,13 @@ final class ImportTransitions
         COMPLETE_IDENTITY = ImportState::IDENTITY_CHECK_CORRECT,
         FAIL_IDENTITY = ImportState::IDENTITY_CHECK_FAILED,
         REDO_IDENTITY = 'redo_identity',
+        RESOLVE_IDENTITY_DUPLICITIES = 'resolve_identity_duplicities',
 
         CHECK_SIMILARITY = ImportState::SIMILARITY_CHECKING,
         COMPLETE_SIMILARITY = ImportState::SIMILARITY_CHECK_CORRECT,
         FAIL_SIMILARITY = ImportState::SIMILARITY_CHECK_FAILED,
         REDO_SIMILARITY = 'redo_similarity',
+        RESOLVE_SIMILARITY_DUPLICITIES = 'resolve_similarity_duplicities',
 
         IMPORT = ImportState::IMPORTING,
         FINISH = ImportState::FINISHED,

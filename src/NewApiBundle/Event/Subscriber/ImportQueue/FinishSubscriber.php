@@ -21,22 +21,22 @@ class FinishSubscriber implements EventSubscriberInterface
         $this->entityManager = $entityManager;
     }
 
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            'workflow.importQueue.entered.'.ImportQueueTransitions::RESET => ['resetImportQueue'],
+        ];
+    }
+
     /**
      * @param EnteredEvent $enteredEvent
      */
-    public function enteredReset(EnteredEvent $enteredEvent): void
+    public function resetImportQueue(EnteredEvent $enteredEvent): void
     {
         /** @var ImportQueue $item */
         $item = $enteredEvent->getSubject();
         $item->setIdentityCheckedAt(null);
         $item->setSimilarityCheckedAt(null);
         $this->entityManager->persist($item);
-    }
-
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            'workflow.importQueue.entered.'.ImportQueueTransitions::RESET => ['enteredReset'],
-        ];
     }
 }

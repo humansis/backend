@@ -28,11 +28,20 @@ class IntegritySubscriber implements EventSubscriberInterface
         $this->integrityChecker = $integrityChecker;
     }
 
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            'workflow.importQueue.guard.'.ImportQueueTransitions::VALIDATE => ['guardIfImportQueueIsValid'],
+            'workflow.importQueue.guard.'.ImportQueueTransitions::INVALIDATE => ['guardIfImportQueueIsInvalid'],
+        ];
+    }
+
     /**
      * @param GuardEvent $guardEvent
      */
-    public function guardValidate(GuardEvent $guardEvent): void
+    public function guardIfImportQueueIsValid(GuardEvent $guardEvent): void
     {
+
         /** @var ImportQueue $item */
         $item = $guardEvent->getSubject();
         $violations = $this->integrityChecker->getQueueViolations($item);
@@ -49,20 +58,12 @@ class IntegritySubscriber implements EventSubscriberInterface
     /**
      * @param GuardEvent $guardEvent
      */
-    public function guardInvalidate(GuardEvent $guardEvent): void
+    public function guardIfImportQueueIsInvalid(GuardEvent $guardEvent): void
     {
         /** @var ImportQueue $item */
         $item = $guardEvent->getSubject();
         if (is_null($item->getMessage())) {
             $guardEvent->addTransitionBlocker(new TransitionBlocker('Import Queue is valid', '0'));
         }
-    }
-
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            'workflow.importQueue.guard.'.ImportQueueTransitions::VALIDATE => ['guardValidate'],
-            'workflow.importQueue.guard.'.ImportQueueTransitions::INVALIDATE => ['guardInvalidate'],
-        ];
     }
 }

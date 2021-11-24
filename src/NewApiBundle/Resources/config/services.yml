@@ -246,6 +246,17 @@ services:
             - "@doctrine.orm.entity_manager"
             - "@beneficiary.household_service"
 
+    NewApiBundle\Component\Import\ImportReset:
+        arguments:
+            - "@doctrine.orm.entity_manager"
+
+    NewApiBundle\Component\Import\DuplicityResolver:
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@monolog.logger.import"
+            - '@NewApiBundle\Component\Import\IdentityChecker'
+            - '@NewApiBundle\Component\Import\SimilarityChecker'
+
     NewApiBundle\Component\Import\ImportInvalidFileService:
         public: true
         arguments:
@@ -329,6 +340,7 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@NewApiBundle\Component\Import\ImportFinisher'
+            - '@NewApiBundle\Component\Import\ImportReset'
         tags:
             - { name: kernel.event_subscriber }
 
@@ -358,5 +370,12 @@ services:
         class: NewApiBundle\Event\Subscriber\ImportQueue\FinishSubscriber
         arguments:
             - '@doctrine.orm.entity_manager'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    workflow.importQueue.duplicity_resolve_subscriber:
+        class: NewApiBundle\Event\Subscriber\ImportQueue\DuplicityResolveSubscriber
+        arguments:
+            - '@NewApiBundle\Component\Import\DuplicityResolver'
         tags:
             - { name: kernel.event_subscriber }

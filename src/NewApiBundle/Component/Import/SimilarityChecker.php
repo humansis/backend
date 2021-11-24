@@ -67,7 +67,7 @@ class SimilarityChecker
         $queueSize = $this->queueRepository->countItemsToSimilarityCheck($import);
         if (0 === $queueSize) {
             $this->logImportInfo($import, 'Batch ended - nothing left, similarity checking ends');
-            $this->postCheck($import);
+            WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::COMPLETE_SIMILARITY, ImportTransitions::FAIL_SIMILARITY]);
         } else {
             $this->logImportInfo($import, "Batch ended - $queueSize items left, similarity checking continues");
         }
@@ -82,10 +82,8 @@ class SimilarityChecker
         $this->entityManager->persist($item);
     }
 
-    private function postCheck(Import $import)
+    public function postCheck(Import $import)
     {
-        WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::COMPLETE_SIMILARITY, ImportTransitions::FAIL_SIMILARITY]);
-
         $newCheckedImportQueues = $this->entityManager->getRepository(ImportQueue::class)
             ->findBy([
                 'import' => $import,
@@ -94,14 +92,7 @@ class SimilarityChecker
 
         /** @var ImportQueue $importQueue */
         foreach ($newCheckedImportQueues as $importQueue) {
-            $queueTransition = ImportQueueTransitions::TO_CREATE;
-            if ($this->importQueueStateMachine->can($importQueue, $queueTransition)) {
-                $this->importQueueStateMachine->apply($importQueue, $queueTransition);
-                $importQueue->setState(ImportQueueState::TO_CREATE);
-                $this->entityManager->persist($importQueue);
-            } else {
-                throw new WorkflowException('Import Queue is not in valid state.');
-            }
+            WorkflowTool::checkAndApply($this->importQueueStateMachine, $importQueue, [ImportQueueTransitions::TO_CREATE]);
         }
 
         $this->entityManager->flush();

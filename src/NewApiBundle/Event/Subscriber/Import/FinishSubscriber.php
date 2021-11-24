@@ -5,6 +5,7 @@ namespace NewApiBundle\Event\Subscriber\Import;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\Component\Import\ImportFinisher;
+use NewApiBundle\Component\Import\ImportReset;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Workflow\ImportTransitions;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -24,16 +25,32 @@ class FinishSubscriber implements EventSubscriberInterface
      */
     private $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager, ImportFinisher $importFinisher)
+    /**
+     * @var ImportReset
+     */
+    private $importReset;
+
+    public function __construct(EntityManagerInterface $entityManager, ImportFinisher $importFinisher, ImportReset $importReset)
     {
         $this->importFinisher = $importFinisher;
         $this->entityManager = $entityManager;
+        $this->importReset = $importReset;
+    }
+
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            'workflow.import.guard.'.ImportTransitions::IMPORT => ['guardIfThereIsOnlyOneFinishingImport'],
+            'workflow.import.entered.'.ImportTransitions::IMPORT => ['doImport'],
+            'workflow.import.entered.'.ImportTransitions::FINISH => ['finishImport'],
+            'workflow.import.entered.'.ImportTransitions::RESET => ['resetImport'],
+        ];
     }
 
     /**
      * @param GuardEvent $event
      */
-    public function guardImport(GuardEvent $event): void
+    public function guardIfThereIsOnlyOneFinishingImport(GuardEvent $event): void
     {
         /** @var Import $import */
         $import = $event->getSubject();
@@ -49,7 +66,7 @@ class FinishSubscriber implements EventSubscriberInterface
      *
      * @throws EntityNotFoundException
      */
-    public function enteredImporting(EnteredEvent $enteredEvent): void
+    public function doImport(EnteredEvent $enteredEvent): void
     {
         /** @var Import $import */
         $import = $enteredEvent->getSubject();
@@ -59,7 +76,7 @@ class FinishSubscriber implements EventSubscriberInterface
     /**
      * @param EnteredEvent $enteredEvent
      */
-    public function enteredFinish(EnteredEvent $enteredEvent): void
+    public function finishImport(EnteredEvent $enteredEvent): void
     {
         /** @var Import $import */
         $import = $enteredEvent->getSubject();
@@ -69,20 +86,10 @@ class FinishSubscriber implements EventSubscriberInterface
     /**
      * @param EnteredEvent $enteredEvent
      */
-    public function enteredReset(EnteredEvent $enteredEvent): void
+    public function resetImport(EnteredEvent $enteredEvent): void
     {
         /** @var Import $import */
         $import = $enteredEvent->getSubject();
-        $this->importFinisher->resetImport($import);
-    }
-
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            'workflow.import.guard.'.ImportTransitions::IMPORT => ['guardImport'],
-            'workflow.import.entered.'.ImportTransitions::IMPORT => ['enteredImporting'],
-            'workflow.import.entered.'.ImportTransitions::FINISH => ['enteredFinish'],
-            'workflow.import.entered.'.ImportTransitions::RESET => ['enteredReset'],
-        ];
+        $this->importReset->reset($import);
     }
 }

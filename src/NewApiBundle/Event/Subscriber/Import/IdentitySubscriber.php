@@ -32,10 +32,22 @@ class IdentitySubscriber implements EventSubscriberInterface
         $this->identityChecker = $identityChecker;
     }
 
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            'workflow.import.guard.'.ImportTransitions::CHECK_IDENTITY => ['guardIfImportHasValidQueueItems'],
+            'workflow.import.guard.'.ImportTransitions::REDO_IDENTITY => ['guardIfImportHasValidQueueItems'],
+            'workflow.import.guard.'.ImportTransitions::COMPLETE_IDENTITY => ['guardIfImportIsNotSuspicious'],
+            'workflow.import.guard.'.ImportTransitions::FAIL_IDENTITY => ['guardIfImportIsInvalid'],
+            'workflow.import.guard.'.ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES => ['guardIfImportIsNotSuspicious'],
+            'workflow.import.entered.'.ImportTransitions::CHECK_IDENTITY => ['checkIdentity'],
+        ];
+    }
+
     /**
      * @param GuardEvent $guardEvent
      */
-    public function guardCheckIdentity(GuardEvent $guardEvent): void
+    public function guardIfImportHasValidQueueItems(GuardEvent $guardEvent): void
     {
         /** @var Import $import */
         $import = $guardEvent->getSubject();
@@ -51,7 +63,7 @@ class IdentitySubscriber implements EventSubscriberInterface
     /**
      * @param GuardEvent $guardEvent
      */
-    public function guardFailIdentity(GuardEvent $guardEvent): void
+    public function guardIfImportIsInvalid(GuardEvent $guardEvent): void
     {
         /** @var Import $import */
         $import = $guardEvent->getSubject();
@@ -64,8 +76,9 @@ class IdentitySubscriber implements EventSubscriberInterface
     /**
      * @param GuardEvent $guardEvent
      */
-    public function guardCompleteIdentity(GuardEvent $guardEvent): void
+    public function guardIfImportIsNotSuspicious(GuardEvent $guardEvent): void
     {
+
         /** @var Import $import */
         $import = $guardEvent->getSubject();
         $isSuspicious = $this->identityChecker->isImportQueueSuspicious($import);
@@ -77,21 +90,10 @@ class IdentitySubscriber implements EventSubscriberInterface
     /**
      * @param EnteredEvent $enteredEvent
      */
-    public function enteredIdentity(EnteredEvent $enteredEvent): void
+    public function checkIdentity(EnteredEvent $enteredEvent): void
     {
         /** @var Import $import */
         $import = $enteredEvent->getSubject();
         $this->identityChecker->check($import);
-    }
-
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            'workflow.import.guard.'.ImportTransitions::CHECK_IDENTITY => ['guardCheckIdentity'],
-            'workflow.import.guard.'.ImportTransitions::REDO_IDENTITY => ['guardCheckIdentity'],
-            'workflow.import.guard.'.ImportTransitions::COMPLETE_IDENTITY => ['guardCompleteIdentity'],
-            'workflow.import.guard.'.ImportTransitions::FAIL_IDENTITY => ['guardFailIdentity'],
-            'workflow.import.entered.'.ImportTransitions::CHECK_IDENTITY => ['enteredIdentity'],
-        ];
     }
 }

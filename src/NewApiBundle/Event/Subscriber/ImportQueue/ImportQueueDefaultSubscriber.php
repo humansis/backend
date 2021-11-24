@@ -19,22 +19,20 @@ class ImportQueueDefaultSubscriber implements EventSubscriberInterface
         $this->entityManager = $entityManager;
     }
 
-    /**
-     * @param EnteredEvent $enteredEvent
-     */
-    public function onEntered(EnteredEvent $enteredEvent): void
-    {
-        /** @var ImportQueue $import */
-        $import = $enteredEvent->getSubject();
-
-        // Save entity state
-        $this->entityManager->flush($import);
-    }
-
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.importQueue.entered' => ['onEntered'],
+            'workflow.importQueue.entered' => ['saveImportQueueState'],
         ];
+    }
+
+    /**
+     * @param EnteredEvent $enteredEvent
+     */
+    public function saveImportQueueState(EnteredEvent $enteredEvent): void
+    {
+        /** @var ImportQueue $import */
+        $importQueue = $enteredEvent->getSubject();
+        $this->entityManager->flush($importQueue);
     }
 }

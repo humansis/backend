@@ -51,10 +51,22 @@ class IntegritySubscriber implements EventSubscriberInterface
         $this->importInvalidFileService = $importInvalidFileService;
     }
 
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            'workflow.import.guard.'.ImportTransitions::CHECK_INTEGRITY => ['guardIfImportHasValidFile'],
+            'workflow.import.guard.'.ImportTransitions::REDO_INTEGRITY => ['guardIfImportHasValidFile'],
+            'workflow.import.guard.'.ImportTransitions::COMPLETE_INTEGRITY => ['guardIfImportHasAnyValidQueueItem'],
+            'workflow.import.guard.'.ImportTransitions::FAIL_INTEGRITY => ['guardIfImportHasAnyInvalidQueueItem'],
+            'workflow.import.entered.'.ImportTransitions::CHECK_INTEGRITY => ['checkIntegrity'],
+            'workflow.import.entered.'.ImportTransitions::FAIL_INTEGRITY => ['generateFile'],
+        ];
+    }
+
     /**
      * @param GuardEvent $guardEvent
      */
-    public function guardCheckIntegrity(GuardEvent $guardEvent): void
+    public function guardIfImportHasValidFile(GuardEvent $guardEvent): void
     {
         /** @var Import $import */
         $import = $guardEvent->getSubject();
@@ -71,7 +83,7 @@ class IntegritySubscriber implements EventSubscriberInterface
     /**
      * @param EnteredEvent $enteredEvent
      */
-    public function enteredIntegrity(EnteredEvent $enteredEvent): void
+    public function checkIntegrity(EnteredEvent $enteredEvent): void
     {
         /** @var Import $import */
         $import = $enteredEvent->getSubject();
@@ -81,7 +93,7 @@ class IntegritySubscriber implements EventSubscriberInterface
     /**
      * @param GuardEvent $guardEvent
      */
-    public function guardFailIntegrity(GuardEvent $guardEvent): void
+    public function guardIfImportHasAnyInvalidQueueItem(GuardEvent $guardEvent): void
     {
         $this->checkImportValidity($guardEvent, false);
     }
@@ -89,7 +101,7 @@ class IntegritySubscriber implements EventSubscriberInterface
     /**
      * @param GuardEvent $guardEvent
      */
-    public function guardCompleteIntegrity(GuardEvent $guardEvent): void
+    public function guardIfImportHasAnyValidQueueItem(GuardEvent $guardEvent): void
     {
         $this->checkImportValidity($guardEvent, true);
     }
@@ -97,23 +109,11 @@ class IntegritySubscriber implements EventSubscriberInterface
     /**
      * @param Event $event
      */
-    public function onFailIntegrity(Event $event): void
+    public function generateFile(Event $event): void
     {
         /** @var Import $import */
         $import = $event->getSubject();
         $this->importInvalidFileService->generateFile($import);
-    }
-
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            'workflow.import.guard.'.ImportTransitions::CHECK_INTEGRITY => ['guardCheckIntegrity'],
-            'workflow.import.guard.'.ImportTransitions::REDO_INTEGRITY => ['guardCheckIntegrity'],
-            'workflow.import.guard.'.ImportTransitions::COMPLETE_INTEGRITY => ['guardCompleteIntegrity'],
-            'workflow.import.guard.'.ImportTransitions::FAIL_INTEGRITY => ['guardFailIntegrity'],
-            'workflow.import.entered.'.ImportTransitions::CHECK_INTEGRITY => ['enteredIntegrity'],
-            'workflow.import.entered.'.ImportTransitions::FAIL_INTEGRITY => ['onFailIntegrity'],
-        ];
     }
 
     /**

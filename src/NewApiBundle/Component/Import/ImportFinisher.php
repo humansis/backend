@@ -16,12 +16,12 @@ use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
-use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
 use NewApiBundle\Workflow\WorkflowTool;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 use UserBundle\Entity\User;
+use function _PHPStan_8f2e45ccf\RingCentral\Psr7\str;
 
 class ImportFinisher
 {
@@ -147,23 +147,6 @@ class ImportFinisher
         foreach ($importConflicts as $conflictImport) {
             WorkflowTool::checkAndApply($this->importStateMachine, $conflictImport, [ImportTransitions::RESET]);
         }
-    }
-
-    /**
-     * @param Import $conflictImport
-     */
-    public function resetImport(Import $conflictImport): void
-    {
-        WorkflowTool::checkAndApply($this->importStateMachine, $conflictImport, [ImportTransitions::RESET]);
-        $conflictQueue = $this->queueRepository->findBy([
-            'import' => $conflictImport,
-        ]);
-        foreach ($conflictQueue as $item) {
-            WorkflowTool::checkAndApply($this->importQueueStateMachine, $item, [ImportQueueTransitions::RESET]);
-        }
-        $this->em->flush();
-        $this->logImportInfo($conflictImport,
-            "Duplicity checks of ".count($conflictQueue)." queue items reset because finish Import #{$conflictImport->getId()} ({$conflictImport->getTitle()})");
     }
 
     /**

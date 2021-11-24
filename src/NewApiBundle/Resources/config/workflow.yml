@@ -86,6 +86,9 @@ framework:
         !php/const NewApiBundle\Workflow\ImportTransitions::REDO_IDENTITY:
           from: !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECKING
           to: !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECKING
+        !php/const NewApiBundle\Workflow\ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES:
+          from: !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECK_FAILED
+          to: !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECK_CORRECT
 
         # SIMILARITY
         !php/const NewApiBundle\Workflow\ImportTransitions::CHECK_SIMILARITY:
@@ -100,9 +103,17 @@ framework:
         !php/const NewApiBundle\Workflow\ImportTransitions::REDO_SIMILARITY:
           from: !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECKING
           to: !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECKING
+        !php/const NewApiBundle\Workflow\ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES:
+          from: !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_FAILED
+          to: !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_CORRECT
 
         !php/const NewApiBundle\Workflow\ImportTransitions::RESET:
-          from: !php/const NewApiBundle\Enum\ImportState::FINISHED
+          from:
+            - !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECKING
+            - !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECK_CORRECT
+            - !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECKING
+            - !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_CORRECT
+            - !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_FAILED
           to: !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECKING
         !php/const NewApiBundle\Workflow\ImportTransitions::IMPORT:
           from: !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_CORRECT

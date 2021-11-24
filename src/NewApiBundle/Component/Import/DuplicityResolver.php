@@ -9,10 +9,10 @@ use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
-use NewApiBundle\InputType\DuplicityResolveInputType;
-use NewApiBundle\Workflow\Exception\WorkflowException;
 use NewApiBundle\Workflow\ImportTransitions;
+use NewApiBundle\Workflow\WorkflowTool;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
 use UserBundle\Entity\User;
 
 class DuplicityResolver
@@ -34,26 +34,37 @@ class DuplicityResolver
      */
     private $similarityChecker;
 
+    /**
+     * @var WorkflowInterface
+     */
+    private $importStateMachine;
+
     public function __construct(
         EntityManagerInterface $entityManager,
         LoggerInterface        $logger,
         IdentityChecker        $identityChecker,
-        SimilarityChecker      $similarityChecker
+        SimilarityChecker      $similarityChecker,
+        WorkflowInterface      $importStateMachine
     ) {
         $this->em = $entityManager;
         $this->logger = $logger;
         $this->identityChecker = $identityChecker;
         $this->similarityChecker = $similarityChecker;
+        $this->importStateMachine = $importStateMachine;
     }
 
     /**
      * @param ImportQueue $importQueue
-     * @param DuplicityResolveInputType $inputType
-     * @param User $user
+     * @param int         $duplicityId
+     * @param string      $status
+     * @param User        $user
      */
-    public function resolve(ImportQueue $importQueue, DuplicityResolveInputType $inputType, User $user)
+    public function resolve(ImportQueue $importQueue, int $duplicityId, string $status, User $user)
     {
-        //TODO find transition by $inputType->getStatus() (now end status = transition name)
+        $import = $importQueue->getImport();
+        if (!in_array($import->getState(), [ImportState::IDENTITY_CHECK_FAILED, ImportState::SIMILARITY_CHECK_FAILED])) {
+            throw new \BadMethodCallException('Unable to execute duplicity resolver. Import is not ready to duplicity resolve.');
+        }
 
         /** @var ImportBeneficiaryDuplicity[] $duplicities */
         $duplicities = $this->em->getRepository(ImportBeneficiaryDuplicity::class)->findBy([
@@ -64,9 +75,9 @@ class DuplicityResolver
         $links = [];
         $uniques = [];
         foreach ($duplicities as $duplicity) {
-            if ($duplicity->getId() === $inputType->getAcceptedDuplicityId()) {
+            if ($duplicity->getId() === $duplicityId) {
 
-                switch ($inputType->getStatus()) {
+                switch ($status) {
                     case ImportQueueState::TO_UPDATE:
                         $duplicity->setState(ImportDuplicityState::DUPLICITY_KEEP_OURS);
                         $updates[] = '#'.$duplicity->getId();
@@ -102,32 +113,6 @@ class DuplicityResolver
                 "[Queue #{$importQueue->getId()}] Duplicity suspect(s) [".implode(', ', $updates)."] was resolved as mistake and will be inserted");
         } else {
             $this->logImportDebug($importQueue->getImport(), "[Queue #{$importQueue->getId()}] Nothing was resolved as mistake");
-        }
-
-        $import = $importQueue->getImport();
-
-        $this->em->flush();
-
-        switch ($import->getState()) {
-            case ImportState::IDENTITY_CHECK_FAILED:
-                if (!$this->identityChecker->isImportQueueSuspicious($import)) {
-                    $importTransition = ImportTransitions::COMPLETE_IDENTITY;
-                    $import->setState(ImportState::IDENTITY_CHECK_CORRECT);
-                }
-                break;
-            case ImportState::SIMILARITY_CHECK_FAILED:
-                if (!$this->similarityChecker->isImportQueueSuspicious($import)) {
-                    $importTransition = ImportTransitions::COMPLETE_SIMILARITY;
-                    $import->setState(ImportState::SIMILARITY_CHECK_CORRECT);
-                }
-        }
-
-        if (isset($importTransition)) {
-            if ($this->importStateMachine->can($import, $importTransition)) {
-                $this->importStateMachine->apply($import, $importTransition);
-            } else {
-                throw new WorkflowException('Import is in invalid state');
-            }
         }
 
         $this->em->flush();

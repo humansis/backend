@@ -17,22 +17,20 @@ class ImportWorkflowSubscriber implements EventSubscriberInterface
         $this->entityManager = $em;
     }
 
-    /**
-     * @param EnteredEvent $enteredEvent
-     */
-    public function onEntered(EnteredEvent $enteredEvent): void
-    {
-        /** @var Import $import */
-        $import = $enteredEvent->getSubject();
-
-        // Save entity state
-        $this->entityManager->flush($import);
-    }
-
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.import.entered' => ['onEntered'],
+            'workflow.import.entered' => ['saveImportState'],
         ];
+    }
+
+    /**
+     * @param EnteredEvent $enteredEvent
+     */
+    public function saveImportState(EnteredEvent $enteredEvent): void
+    {
+        /** @var Import $import */
+        $import = $enteredEvent->getSubject();
+        $this->entityManager->flush($import);
     }
 }

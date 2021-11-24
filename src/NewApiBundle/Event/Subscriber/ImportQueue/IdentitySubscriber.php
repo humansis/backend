@@ -21,10 +21,17 @@ class IdentitySubscriber implements EventSubscriberInterface
         $this->identityChecker = $identityChecker;
     }
 
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            'workflow.importQueue.guard.'.ImportQueueTransitions::SUSPICIOUS => ['guardIfQueueItemIsSuspicious'],
+        ];
+    }
+
     /**
      * @param GuardEvent $guardEvent
      */
-    public function guardSuspicious(GuardEvent $guardEvent): void
+    public function guardIfQueueItemIsSuspicious(GuardEvent $guardEvent): void
     {
         /** @var ImportQueue $item */
         $item = $guardEvent->getSubject();
@@ -32,12 +39,5 @@ class IdentitySubscriber implements EventSubscriberInterface
         if ($valid === true) {
             $guardEvent->addTransitionBlocker(new TransitionBlocker('Queue Item is valid', '0'));
         }
-    }
-
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            'workflow.importQueue.guard.'.ImportQueueTransitions::SUSPICIOUS => ['guardSuspicious'],
-        ];
     }
 }
