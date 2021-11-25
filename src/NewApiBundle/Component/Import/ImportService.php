@@ -164,36 +164,6 @@ class ImportService
         }
     }
 
-    /**
-     * @param Import   $import
-     * @param int|null $batchSize if null => all
-     */
-    public function checkIntegrity(Import $import, ?int $batchSize = null): void
-    {
-        WorkflowTool::checkAndApply($this->importStateMachine, $import,
-            [ImportTransitions::REDO_INTEGRITY, ImportTransitions::FAIL_INTEGRITY, ImportTransitions::COMPLETE_INTEGRITY]);
-    }
-
-    /**
-     * @param Import   $import
-     * @param int|null $batchSize if null => all
-     */
-    public function checkIdentity(Import $import, ?int $batchSize = null): void
-    {
-        WorkflowTool::checkAndApply($this->importStateMachine, $import,
-            [ImportTransitions::REDO_IDENTITY, ImportTransitions::FAIL_IDENTITY, ImportTransitions::COMPLETE_IDENTITY]);
-    }
-
-    /**
-     * @param Import   $import
-     * @param int|null $batchSize if null => all
-     */
-    public function checkSimilarity(Import $import, ?int $batchSize = null): void
-    {
-        WorkflowTool::checkAndApply($this->importStateMachine, $import,
-            [ImportTransitions::REDO_SIMILARITY, ImportTransitions::FAIL_SIMILARITY, ImportTransitions::COMPLETE_SIMILARITY]);
-    }
-
     public function finish(Import $import): void
     {
         WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::FINISH]);

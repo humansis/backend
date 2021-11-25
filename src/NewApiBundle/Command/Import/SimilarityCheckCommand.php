@@ -5,19 +5,31 @@ namespace NewApiBundle\Command\Import;
 
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Component\Import\ImportService;
-use NewApiBundle\Component\Import\SimilarityChecker;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Enum\ImportState;
+use NewApiBundle\Workflow\ImportTransitions;
+use NewApiBundle\Workflow\WorkflowTool;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
 use Throwable;
 
 class SimilarityCheckCommand extends AbstractImportQueueCommand
 {
-    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger)
-    {
+    /**
+     * @var WorkflowInterface
+     */
+    private $importStateMachine;
+
+    public function __construct(
+        ObjectManager     $manager,
+        ImportService     $importService,
+        LoggerInterface   $importLogger,
+        WorkflowInterface $importStateMachine
+    ) {
         parent::__construct($manager, $importService, $importLogger);
+        $this->importStateMachine = $importStateMachine;
     }
 
     protected function configure()
@@ -25,8 +37,7 @@ class SimilarityCheckCommand extends AbstractImportQueueCommand
         parent::configure();
         $this
             ->setName('app:import:similarity')
-            ->setDescription('Run similarity duplicity check on import')
-        ;
+            ->setDescription('Run similarity duplicity check on import');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -53,7 +64,8 @@ class SimilarityCheckCommand extends AbstractImportQueueCommand
         /** @var Import $import */
         foreach ($imports as $import) {
             try {
-                $this->importService->checkSimilarity($import, $this->batchSize);
+                WorkflowTool::checkAndApply($this->importStateMachine, $import,
+                    [ImportTransitions::REDO_SIMILARITY, ImportTransitions::FAIL_SIMILARITY, ImportTransitions::COMPLETE_SIMILARITY]);
 
                 if (ImportState::SIMILARITY_CHECK_CORRECT === $import->getState()) {
                     $this->logImportDebug($import, "Similarity check found no duplicities");
@@ -70,6 +82,7 @@ class SimilarityCheckCommand extends AbstractImportQueueCommand
         $this->manager->flush();
 
         $output->writeln('Done');
+
         return 0;
     }
 }

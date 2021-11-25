@@ -4,22 +4,33 @@ declare(strict_types=1);
 namespace NewApiBundle\Command\Import;
 
 use Doctrine\Persistence\ObjectManager;
-use NewApiBundle\Component\Import\ImportInvalidFileService;
 use NewApiBundle\Component\Import\ImportService;
-use NewApiBundle\Component\Import\IntegrityChecker;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Enum\ImportState;
+use NewApiBundle\Workflow\ImportTransitions;
+use NewApiBundle\Workflow\WorkflowTool;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
 use Throwable;
 
 class IntegrityCheckCommand extends AbstractImportQueueCommand
 {
 
-    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger)
-    {
+    /**
+     * @var WorkflowInterface
+     */
+    private $importStateMachine;
+
+    public function __construct(
+        ObjectManager     $manager,
+        ImportService     $importService,
+        LoggerInterface   $importLogger,
+        WorkflowInterface $importStateMachine
+    ) {
         parent::__construct($manager, $importService, $importLogger);
+        $this->importStateMachine = $importStateMachine;
     }
 
     protected function configure()
@@ -27,8 +38,7 @@ class IntegrityCheckCommand extends AbstractImportQueueCommand
         parent::configure();
         $this
             ->setName('app:import:integrity')
-            ->setDescription('Run integrity check on loaded queue')
-        ;
+            ->setDescription('Run integrity check on loaded queue');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -55,7 +65,8 @@ class IntegrityCheckCommand extends AbstractImportQueueCommand
             $output->writeln($import->getTitle());
 
             try {
-                $this->importService->checkIntegrity($import, $this->batchSize);
+                WorkflowTool::checkAndApply($this->importStateMachine, $import,
+                    [ImportTransitions::REDO_INTEGRITY, ImportTransitions::FAIL_INTEGRITY, ImportTransitions::COMPLETE_INTEGRITY]);
 
                 $statistics = $this->importService->getStatistics($import);
                 if (ImportState::INTEGRITY_CHECK_CORRECT === $import->getState()) {
@@ -69,6 +80,7 @@ class IntegrityCheckCommand extends AbstractImportQueueCommand
         }
 
         $output->writeln('Done');
+
         return 0;
     }
 

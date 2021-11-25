@@ -24,13 +24,13 @@ abstract class AbstractImportQueueCommand extends Command
     protected $manager;
     /** @var ImportService */
     protected $importService;
-    /** @var int */
-    protected $batchSize = 200;
 
     /**
      * AbstractImportQueueCommand constructor.
      *
-     * @param ObjectManager $manager
+     * @param ObjectManager   $manager
+     * @param ImportService   $importService
+     * @param LoggerInterface $importLogger
      */
     public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger)
     {
