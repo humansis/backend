@@ -456,10 +456,8 @@ class HouseholdService
             }
             foreach ($householdArray["beneficiaries"] as $beneficiaryToSave) {
                 try {
-                    if ($beneficiaryToSave['gender'] === 'Male') {
-                        $beneficiaryToSave['gender'] = 1;
-                    } elseif ($beneficiaryToSave['gender'] === 'Female') {
-                        $beneficiaryToSave['gender'] = 0;
+                    if (!is_numeric($beneficiaryToSave['gender'])) {
+                        $beneficiaryToSave['gender'] = PersonGender::valueToAPI(PersonGender::valueFromAPI($beneficiaryToSave['gender']));
                     }
 
                     $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);

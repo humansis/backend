@@ -18,6 +18,7 @@ use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
+use NewApiBundle\DBAL\PersonGenderEnum;
 use NewApiBundle\Enum\PersonGender;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Doctrine\ORM\EntityManagerInterface;
@@ -367,7 +368,7 @@ class DistributionCSVService
                 ->findOneBy([
                     "localGivenName" => $beneficiaryToCreate['localGivenName'],
                     'localFamilyName' => $beneficiaryToCreate['localFamilyName'],
-                    'gender' => $beneficiaryToCreate['gender']
+                    'gender' => PersonGenderEnum::valueToDB($beneficiaryToCreate['gender'])
                 ]);
             $toCreate = $this->em->getRepository(Beneficiary::class)->findOneByPerson($person);
             $this->em->persist($toCreate);
