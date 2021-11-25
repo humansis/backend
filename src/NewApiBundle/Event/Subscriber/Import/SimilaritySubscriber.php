@@ -32,11 +32,17 @@ class SimilaritySubscriber implements EventSubscriberInterface
      */
     private $queueRepository;
 
-    public function __construct(EntityManagerInterface $entityManager, SimilarityChecker $similarityChecker)
+    /**
+     * @var int
+     */
+    private $batchSize;
+
+    public function __construct(EntityManagerInterface $entityManager, SimilarityChecker $similarityChecker, int $batchSize)
     {
         $this->entityManager = $entityManager;
         $this->similarityChecker = $similarityChecker;
         $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
+        $this->batchSize = $batchSize;
     }
 
     public static function getSubscribedEvents(): array
@@ -91,7 +97,7 @@ class SimilaritySubscriber implements EventSubscriberInterface
     {
         /** @var Import $import */
         $import = $enteredEvent->getSubject();
-        $this->similarityChecker->check($import);
+        $this->similarityChecker->check($import, $this->batchSize);
     }
 
     /**

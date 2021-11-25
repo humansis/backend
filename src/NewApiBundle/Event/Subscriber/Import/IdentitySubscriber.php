@@ -26,10 +26,16 @@ class IdentitySubscriber implements EventSubscriberInterface
      */
     private $identityChecker;
 
-    public function __construct(EntityManagerInterface $entityManager, IdentityChecker $identityChecker)
+    /**
+     * @var int
+     */
+    private $batchSize;
+
+    public function __construct(EntityManagerInterface $entityManager, IdentityChecker $identityChecker, int $batchSize)
     {
         $this->entityManager = $entityManager;
         $this->identityChecker = $identityChecker;
+        $this->batchSize = $batchSize;
     }
 
     public static function getSubscribedEvents(): array
@@ -94,6 +100,6 @@ class IdentitySubscriber implements EventSubscriberInterface
     {
         /** @var Import $import */
         $import = $enteredEvent->getSubject();
-        $this->identityChecker->check($import);
+        $this->identityChecker->check($import, $this->batchSize);
     }
 }

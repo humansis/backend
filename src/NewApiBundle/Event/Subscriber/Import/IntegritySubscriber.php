@@ -40,15 +40,22 @@ class IntegritySubscriber implements EventSubscriberInterface
      */
     private $importInvalidFileService;
 
+    /**
+     * @var int
+     */
+    private $batchSize;
+
     public function __construct(
         EntityManagerInterface   $entityManager,
         IntegrityChecker         $integrityChecker,
-        ImportInvalidFileService $importInvalidFileService
+        ImportInvalidFileService $importInvalidFileService,
+        int                      $batchSize
     ) {
         $this->entityManager = $entityManager;
         $this->integrityChecker = $integrityChecker;
         $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
         $this->importInvalidFileService = $importInvalidFileService;
+        $this->batchSize = $batchSize;
     }
 
     public static function getSubscribedEvents(): array
@@ -87,7 +94,7 @@ class IntegritySubscriber implements EventSubscriberInterface
     {
         /** @var Import $import */
         $import = $enteredEvent->getSubject();
-        $this->integrityChecker->check($import);
+        $this->integrityChecker->check($import, $this->batchSize);
     }
 
     /**
