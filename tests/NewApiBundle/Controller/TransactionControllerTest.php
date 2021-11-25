@@ -1,34 +1,16 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
-use Exception;
-use Tests\BMSServiceTestCase;
-use TransactionBundle\Entity\Transaction;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
-class TransactionControllerTest extends BMSServiceTestCase
+class TransactionControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     public function testListOfStatuses()
     {
-        $this->request('GET', '/api/basic/web-app/v1/transactions/statuses');
+        $this->client->request('GET', '/api/basic/web-app/v1/transactions/statuses', [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "totalCount": 4,
             "data": [

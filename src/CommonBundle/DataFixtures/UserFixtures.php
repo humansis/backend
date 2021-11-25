@@ -9,7 +9,9 @@ use FOS\UserBundle\Doctrine\UserManager;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\HttpKernel\Kernel;
-use Tests\BMSServiceTestCase;
+
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
+use Tests\NewApiBundle\Helper\TesterUserTrait;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
 use Doctrine\Persistence\ObjectManager;
@@ -103,7 +105,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             'roles' => 'ROLE_ENUMERATOR'
         ],
         [
-            'email' => BMSServiceTestCase::USER_TESTER,
+            'email' => AbstractFunctionalApiTest::USER_TESTER,
             'passwd' => 'LU4oaFBtfra56OnVPLLL5JuqRVKBcIlfk3dh1I/x3++yiYg/PylXdhcXNkbv8AUQeq0s3WETYA9d9/ItapaOBg==',
             'salt' => 'LZEDazS3/5yJWLfFLnzy9udyHS0rlbZvWg8Ropns',
             'roles' => 'ROLE_ADMIN'

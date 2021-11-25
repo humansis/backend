@@ -1,38 +1,21 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
-use Exception;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
-class DonorControllerTest extends BMSServiceTestCase
+class DonorControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     public function testCreate()
     {
-        $this->request('POST', '/api/basic/web-app/v1/donors', [
+        $this->client->request('POST', '/api/basic/web-app/v1/donors', [
             'fullname' => 'Test Donor',
             'shortname' => 'TD',
-        ]);
+        ], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('fullname', $result);
@@ -48,18 +31,15 @@ class DonorControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        $this->request('PUT', '/api/basic/web-app/v1/donors/'.$id, [
+        $this->client->request('PUT', '/api/basic/web-app/v1/donors/'.$id, [
             'fullname' => 'Test Donor',
             'shortname' => 'TD',
             'notes' => 'some note',
-        ]);
+        ], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('fullname', $result);
@@ -75,14 +55,11 @@ class DonorControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/donors/'.$id);
+        $this->client->request('GET', '/api/basic/web-app/v1/donors/'.$id, [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('fullname', $result);
@@ -98,14 +75,11 @@ class DonorControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        $this->request('GET', '/api/basic/web-app/v1/donors?sort[]=fullname.asc&filter[fulltext]=test&filter[id][]=1');
+        $this->client->request('GET', '/api/basic/web-app/v1/donors?sort[]=fullname.asc&filter[fulltext]=test&filter[id][]=1', [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
@@ -116,7 +90,7 @@ class DonorControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        $this->request('DELETE', '/api/basic/web-app/v1/donors/'.$id);
+        $this->client->request('DELETE', '/api/basic/web-app/v1/donors/'.$id, [], [], $this->addAuth());
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
 
@@ -128,7 +102,7 @@ class DonorControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/donors/'.$id);
+        $this->client->request('GET', '/api/basic/web-app/v1/donors/'.$id, [], [], $this->addAuth());
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }

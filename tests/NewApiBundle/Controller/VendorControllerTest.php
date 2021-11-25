@@ -1,16 +1,16 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
 use CommonBundle\Entity\Adm1;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
-use Exception;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Vendor;
 
-class VendorControllerTest extends BMSServiceTestCase
+class VendorControllerTest extends AbstractFunctionalApiTest
 {
     private $vendorUsername;
 
@@ -22,39 +22,29 @@ class VendorControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
-    /**
      * @return mixed
      * @throws ORMException
      * @throws OptimisticLockException
      */
     public function testCreate()
     {
-        $adm1Results = $this->em->getRepository(Adm1::class)->findAll();
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+
+        $adm1Results = $em->getRepository(Adm1::class)->findAll();
 
         if (empty($adm1Results)) {
             $this->markTestSkipped('To perform VendorController CRUD tests, you need to have at least one Adm1 record in database.');
         }
 
         /** @var User[] $users */
-        $users = $this->em->getRepository(User::class)->findBy(['vendor' => null], ['id' => 'asc']);
+        $users = $em->getRepository(User::class)->findBy(['vendor' => null], ['id' => 'asc']);
 
         if (empty($users)) {
             $this->markTestSkipped('There needs to be at least one user in system which is not assigned to any vendor to complete this test');
         }
 
-        $this->request('POST', '/api/basic/web-app/v1/vendors', $data = [
+        $this->client->request('POST', '/api/basic/web-app/v1/vendors', $data = [
             'shop' => 'test shop',
             'name' => $this->vendorUsername,
             'addressStreet' => 'test street',
@@ -68,7 +58,7 @@ class VendorControllerTest extends BMSServiceTestCase
             'canSellNonFood' => false,
             'canSellCashback' => false,
             'canDoRemoteDistributions' => true,
-        ]);
+        ], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -117,7 +107,7 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(array $vendor)
     {
-        $this->request('PUT', '/api/basic/web-app/v1/vendors/'.$vendor['id'], $data = [
+        $this->client->request('PUT', '/api/basic/web-app/v1/vendors/'.$vendor['id'], $data = [
             'shop' => 'edited',
             'name' => $this->vendorUsername,
             'addressStreet' => $vendor['addressStreet'],
@@ -134,10 +124,7 @@ class VendorControllerTest extends BMSServiceTestCase
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -180,14 +167,11 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/vendors/'.$id);
+        $this->client->request('GET', '/api/basic/web-app/v1/vendors/'.$id, [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -216,14 +200,11 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        $this->request('GET', '/api/basic/web-app/v1/vendors?filter[id][]=1&sort[]=name.asc');
+        $this->client->request('GET', '/api/basic/web-app/v1/vendors?filter[id][]=1&sort[]=name.asc', [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
@@ -231,14 +212,14 @@ class VendorControllerTest extends BMSServiceTestCase
 
     public function testSummaries()
     {
-        $vendor = $this->em->getRepository(Vendor::class)->findBy([], ['id' => 'asc'])[0];
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
 
-        $this->request('GET', '/api/basic/web-app/v1/vendors/'.$vendor->getId().'/summaries');
+        $vendor = $em->getRepository(Vendor::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->client->request('GET', '/api/basic/web-app/v1/vendors/'.$vendor->getId().'/summaries', [], [], $this->addAuth());
+
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "redeemedSmartcardPurchasesTotalCount": "*",
             "redeemedSmartcardPurchasesTotalValue": "*"
@@ -255,7 +236,7 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        $this->request('DELETE', '/api/basic/web-app/v1/vendors/'.$id);
+        $this->client->request('DELETE', '/api/basic/web-app/v1/vendors/'.$id, [], [], $this->addAuth());
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
 
@@ -271,7 +252,7 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testGetNotExists(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/vendors/'.$id);
+        $this->client->request('GET', '/api/basic/web-app/v1/vendors/'.$id, [], [], $this->addAuth());
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }

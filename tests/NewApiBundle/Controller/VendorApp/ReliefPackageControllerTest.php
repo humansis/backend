@@ -1,36 +1,25 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller\VendorApp;
 
 use DistributionBundle\Entity\Assistance;
-use Exception;
+use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Entity\ReliefPackage;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 use VoucherBundle\Entity\Vendor;
 
-class ReliefPackageControllerTest extends BMSServiceTestCase
+class ReliefPackageControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     public function testListReliefPackagesSimple()
     {
-        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([], ['id' => 'asc']);
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+
+        $vendor = $em->getRepository(Vendor::class)->findOneBy([], ['id' => 'asc']);
 
         $originalLocation = $vendor->getLocation();
 
-        $reliefPackage = $this->em->getRepository(ReliefPackage::class)->findOneBy([], ['id' => 'asc']);
+        $reliefPackage = $em->getRepository(ReliefPackage::class)->findOneBy([], ['id' => 'asc']);
 
         /** @var Assistance $assitance */
         $assistance = $reliefPackage->getAssistanceBeneficiary()->getAssistance();
@@ -38,14 +27,11 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
 
         $vendor->setLocation($reliefPackage->getAssistanceBeneficiary()->getAssistance()->getLocation());
 
-        $this->em->flush();
+        $em->flush();
 
-        $this->request('GET', "/api/basic/vendor-app/v1/vendors/{$vendor->getId()}/relief-packages");
+        $this->client->request('GET', "/api/basic/vendor-app/v1/vendors/{$vendor->getId()}/relief-packages", [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         $this->assertJsonFragment('{
             "totalCount": "*",
@@ -66,6 +52,6 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         }', $this->client->getResponse()->getContent());
 
         $vendor->setLocation($originalLocation);
-        $this->em->flush();
+        $em->flush();
     }
 }

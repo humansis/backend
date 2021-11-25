@@ -1,37 +1,21 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
 use Exception;
 use NewApiBundle\Enum\SelectionCriteriaTarget;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
-class SelectionCriterionControllerTest extends BMSServiceTestCase
+class SelectionCriterionControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     /**
      * @throws Exception
      */
     public function testGetTargets()
     {
-        $this->request('GET', '/api/basic/web-app/v1/selection-criteria/targets');
+        $this->client->request('GET', '/api/basic/web-app/v1/selection-criteria/targets', [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJson('{
             "totalCount": 3,
             "data": [
@@ -47,12 +31,9 @@ class SelectionCriterionControllerTest extends BMSServiceTestCase
      */
     public function testGetFields()
     {
-        $this->request('GET', '/api/basic/web-app/v1/selection-criteria/targets/'.SelectionCriteriaTarget::BENEFICIARY.'/fields', ['country' => 'KHM']);
+        $this->client->request('GET', '/api/basic/web-app/v1/selection-criteria/targets/'.SelectionCriteriaTarget::BENEFICIARY.'/fields', ['country' => 'KHM'], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "totalCount": "*",
             "data": [
@@ -68,12 +49,9 @@ class SelectionCriterionControllerTest extends BMSServiceTestCase
      */
     public function testGetConditions()
     {
-        $this->request('GET', '/api/basic/web-app/v1/selection-criteria/targets/'.SelectionCriteriaTarget::BENEFICIARY.'/fields/gender/conditions', ['country' => 'KHM']);
+        $this->client->request('GET', '/api/basic/web-app/v1/selection-criteria/targets/'.SelectionCriteriaTarget::BENEFICIARY.'/fields/gender/conditions', ['country' => 'KHM'], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "totalCount": 1,
             "data": [

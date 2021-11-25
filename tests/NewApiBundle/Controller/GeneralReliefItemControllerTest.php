@@ -1,37 +1,20 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
 use DistributionBundle\Entity\GeneralReliefItem;
-use Exception;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
-class GeneralReliefItemControllerTest extends BMSServiceTestCase
+class GeneralReliefItemControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     public function testGet()
     {
         /** @var GeneralReliefItem $item */
         $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/general-relief-items/'.$item->getId());
+        $this->client->request('GET', '/api/basic/web-app/v1/general-relief-items/'.$item->getId(), [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonStringEqualsJsonString('{
             "id": '.$item->getId().',
             "distributed": '.(null === $item->getDistributedAt() ? 'false' : 'true').',
@@ -42,14 +25,11 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
 
     public function testList()
     {
-        $this->request('GET', '/api/basic/web-app/v1/general-relief-items?&filter[id][]=1');
+        $this->client->request('GET', '/api/basic/web-app/v1/general-relief-items?&filter[id][]=1', [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
@@ -60,16 +40,13 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
         /** @var GeneralReliefItem $item */
         $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy(['distributedAt' => null], ['id' => 'asc'])[0];
 
-        $this->request('PATCH', '/api/basic/web-app/v2/general-relief-items/'.$item->getId(), [
+        $this->client->request('PATCH', '/api/basic/web-app/v2/general-relief-items/'.$item->getId(), [
             'distributed' => true,
             'dateOfDistribution' => "2020-01-01T10:10:00+00",
             'note' => "some note",
-        ]);
+        ], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "id": '.$item->getId().',
             "distributed": true,
@@ -86,14 +63,11 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
         /** @var GeneralReliefItem $item */
         $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy(['distributedAt' => new \DateTime('2020-01-01T10:10:00+00')], ['id' => 'asc'])[0];
 
-        $this->request('PATCH', '/api/basic/web-app/v2/general-relief-items/'.$item->getId(), [
+        $this->client->request('PATCH', '/api/basic/web-app/v2/general-relief-items/'.$item->getId(), [
             'distributed' => false,
-        ]);
+        ], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "id": '.$item->getId().',
             "distributed": false,

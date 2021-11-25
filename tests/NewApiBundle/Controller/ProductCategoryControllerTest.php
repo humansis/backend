@@ -1,31 +1,16 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
 use CommonBundle\DataFixtures\VendorFixtures;
-use Exception;
+use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Entity\ProductCategory;
 use NewApiBundle\Enum\ProductCategoryType;
-use Tests\BMSServiceTestCase;
-use VoucherBundle\Entity\Product;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 use VoucherBundle\Entity\Vendor;
 
-class ProductCategoryControllerTest extends BMSServiceTestCase
+class ProductCategoryControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     public function testCreate()
     {
         /** @var ProductCategory|null $productCategory */
@@ -35,18 +20,15 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There needs to be at least one product category in system to complete this test');
         }
 
-        $this->request('POST', '/api/basic/web-app/v1/product-categories', $data = [
+        $this->client->request('POST', '/api/basic/web-app/v1/product-categories', $data = [
             'name' => 'Test category',
             'type' => ProductCategoryType::FOOD,
             'image' => 'http://example.org/image.jpg',
-        ]);
+        ], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('name', $result);
@@ -65,18 +47,15 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        $this->request('POST', '/api/basic/web-app/v1/product-categories/'.$id, $data = [
+        $this->client->request('POST', '/api/basic/web-app/v1/product-categories/'.$id, $data = [
             'name' => 'Another Test category',
             'type' => ProductCategoryType::NONFOOD,
             'image' => 'http://example.org/other-image.jpg',
-        ]);
+        ], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('name', $result);
@@ -95,14 +74,11 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/product-categories/'.$id);
+        $this->client->request('GET', '/api/basic/web-app/v1/product-categories/'.$id, [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('name', $result);
@@ -115,12 +91,9 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        $this->request('GET', '/api/basic/web-app/v1/product-categories?sort[]=name.asc&filter[id][]=1');
+        $this->client->request('GET', '/api/basic/web-app/v1/product-categories?sort[]=name.asc&filter[id][]=1', [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -146,37 +119,37 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
      */
     public function testListFilteredByVendor(bool $canSellFood, bool $canSellNonFood, bool $canSellCashback)
     {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+
         /** @var Vendor $vendor */
-        $vendor = $this->em->getRepository(Vendor::class)->findOneBy(['name' => VendorFixtures::VENDOR_KHM_NAME], ['id' => 'asc']);
+        $vendor = $em->getRepository(Vendor::class)->findOneBy(['name' => VendorFixtures::VENDOR_KHM_NAME], ['id' => 'asc']);
         if (!$vendor) {
             $this->fail('Vendor from SYR missing');
         }
-        $foods = $this->em->getRepository(ProductCategory::class)->findBy(['type' => ProductCategoryType::FOOD], ['id' => 'asc']);
-        $nonfoods = $this->em->getRepository(ProductCategory::class)->findBy(['type' => ProductCategoryType::NONFOOD], ['id' => 'asc']);
-        $cashbacks = $this->em->getRepository(ProductCategory::class)->findBy(['type' => ProductCategoryType::CASHBACK], ['id' => 'asc']);
+        $foods = $em->getRepository(ProductCategory::class)->findBy(['type' => ProductCategoryType::FOOD], ['id' => 'asc']);
+        $nonfoods = $em->getRepository(ProductCategory::class)->findBy(['type' => ProductCategoryType::NONFOOD], ['id' => 'asc']);
+        $cashbacks = $em->getRepository(ProductCategory::class)->findBy(['type' => ProductCategoryType::CASHBACK], ['id' => 'asc']);
         if (empty($foods) || empty($nonfoods) || empty($cashbacks)) {
             $this->fail('There are missing categories');
         }
         $vendor->setCanSellFood($canSellFood);
         $vendor->setCanSellNonFood($canSellNonFood);
         $vendor->setCanSellCashback($canSellCashback);
-        $this->em->persist($vendor);
-        $this->em->flush();
-        $this->em->clear();
+        $em->persist($vendor);
+        $em->flush();
+        $em->clear();
 
         $expectedFilteredCategories = 0;
         if ($canSellFood) $expectedFilteredCategories += count($foods);
         if ($canSellNonFood) $expectedFilteredCategories += count($nonfoods);
         if ($canSellCashback) $expectedFilteredCategories += count($cashbacks);
 
-        $this->request('GET', '/api/basic/vendor-app/v1/product-categories?sort[]=name.asc&filter[vendors][]='.$vendor->getId());
+        $this->client->request('GET', '/api/basic/vendor-app/v1/product-categories?sort[]=name.asc&filter[vendors][]='.$vendor->getId(), [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertEquals($expectedFilteredCategories, $result['totalCount']);

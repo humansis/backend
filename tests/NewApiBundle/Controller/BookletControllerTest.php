@@ -1,36 +1,23 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Institution;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NoResultException;
-use Exception;
 use ProjectBundle\Entity\Project;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 use VoucherBundle\Entity\Booklet;
 
-class BookletControllerTest extends BMSServiceTestCase
+class BookletControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     public function testCreate()
     {
         $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('POST', '/api/basic/web-app/v1/booklets/batches', [
+        $this->client->request('POST', '/api/basic/web-app/v1/booklets/batches', [
             'iso3' => 'KHM',
             'quantityOfBooklets' => 5,
             'quantityOfVouchers' => 2,
@@ -38,29 +25,23 @@ class BookletControllerTest extends BMSServiceTestCase
             'projectId' => $project->getId(),
             'password' => null,
             'currency' => 'CZK',
-        ]);
+        ], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
     }
 
     public function testUpdate()
     {
         $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('PUT', '/api/basic/web-app/v1/booklets/'.$booklet->getId(), [
+        $this->client->request('PUT', '/api/basic/web-app/v1/booklets/'.$booklet->getId(), [
             'quantityOfVouchers' => 2,
             'values' => [333],
             'password' => null,
             'currency' => 'CZK',
-        ]);
+        ], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
     }
 
     /**
@@ -70,14 +51,11 @@ class BookletControllerTest extends BMSServiceTestCase
     {
         $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/booklets/'.$booklet->getId());
+        $this->client->request('GET', '/api/basic/web-app/v1/booklets/'.$booklet->getId(), [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('currency', $result);
@@ -98,14 +76,11 @@ class BookletControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        $this->request('GET', '/api/basic/web-app/v1/booklets?sort[]=value.asc&filter[fulltext]=KHM');
+        $this->client->request('GET', '/api/basic/web-app/v1/booklets?sort[]=value.asc&filter[fulltext]=KHM', [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
@@ -118,7 +93,7 @@ class BookletControllerTest extends BMSServiceTestCase
     {
         $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([], ['id' => 'desc'], 1)[0];
 
-        $this->request('DELETE', '/api/basic/web-app/v1/booklets/'.$booklet->getId());
+        $this->client->request('DELETE', '/api/basic/web-app/v1/booklets/'.$booklet->getId(), [], [], $this->addAuth());
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
     }
@@ -127,8 +102,10 @@ class BookletControllerTest extends BMSServiceTestCase
     {
         $doctrine = self::$container->get('doctrine');
 
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         try {
-            $result = $this->em->createQueryBuilder()
+            $result = $em->createQueryBuilder()
                 ->select('b.id AS beneficiaryId')
                 ->addSelect('a.id AS assistanceId')
                 ->from(Beneficiary::class, 'b')
@@ -144,7 +121,7 @@ class BookletControllerTest extends BMSServiceTestCase
 
         $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'])[0];
 
-        $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$result['assistanceId'].'/beneficiaries/'.$result['beneficiaryId'].'/booklets/'.$booklet->getCode());
+        $this->client->request('PUT', '/api/basic/web-app/v1/assistances/'.$result['assistanceId'].'/beneficiaries/'.$result['beneficiaryId'].'/booklets/'.$booklet->getCode(), [], [], $this->addAuth());
 
         $this->assertTrue(
             $this->client->getResponse()->isEmpty(),
@@ -155,15 +132,12 @@ class BookletControllerTest extends BMSServiceTestCase
 
     public function testAssignToCommunity()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $doctrine = self::$container->get('doctrine');
 
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         try {
-            $result = $this->em->createQueryBuilder()
+            $result = $em->createQueryBuilder()
                 ->select('c.id AS communityId')
                 ->addSelect('a.id AS assistanceId')
                 ->from(Community::class, 'c')
@@ -179,7 +153,7 @@ class BookletControllerTest extends BMSServiceTestCase
 
         $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'])[0];
 
-        $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$result['assistanceId'].'/communities/'.$result['communityId'].'/booklets/'.$booklet->getCode());
+        $this->client->request('PUT', '/api/basic/web-app/v1/assistances/'.$result['assistanceId'].'/communities/'.$result['communityId'].'/booklets/'.$booklet->getCode(), [], [], $this->addAuth());
 
         $this->assertTrue(
             $this->client->getResponse()->isEmpty(),
@@ -190,15 +164,12 @@ class BookletControllerTest extends BMSServiceTestCase
 
     public function testAssignToInstitution()
     {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
         $doctrine = self::$container->get('doctrine');
 
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         try {
-            $result = $this->em->createQueryBuilder()
+            $result = $em->createQueryBuilder()
                 ->select('i.id AS institutionId')
                 ->addSelect('a.id AS assistanceId')
                 ->from(Institution::class, 'i')
@@ -214,7 +185,7 @@ class BookletControllerTest extends BMSServiceTestCase
 
         $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'])[0];
 
-        $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$result['assistanceId'].'/institutions/'.$result['institutionId'].'/booklets/'.$booklet->getCode());
+        $this->client->request('PUT', '/api/basic/web-app/v1/assistances/'.$result['assistanceId'].'/institutions/'.$result['institutionId'].'/booklets/'.$booklet->getCode(), [], [], $this->addAuth());
 
         $this->assertTrue(
             $this->client->getResponse()->isEmpty(),

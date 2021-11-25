@@ -1,27 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
 use DistributionBundle\Entity\Commodity;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
-class CommodityControllerTest extends BMSServiceTestCase
+class CommodityControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     /**
      * @throws Exception
      */
@@ -32,12 +19,9 @@ class CommodityControllerTest extends BMSServiceTestCase
         $commodity1 = $em->getRepository(Commodity::class)->findBy([], ['id' => 'asc'])[0];
         $commodity2 = $em->getRepository(Commodity::class)->findBy([], ['id' => 'asc'])[1];
 
-        $this->request('GET', '/api/basic/web-app/v1/assistances/commodities?filter[id][]='.$commodity1->getId().'&filter[id][]='.$commodity2->getId());
+        $this->client->request('GET', '/api/basic/web-app/v1/assistances/commodities?filter[id][]='.$commodity1->getId().'&filter[id][]='.$commodity2->getId(), [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "totalCount": 2, 
             "data": [
@@ -67,12 +51,9 @@ class CommodityControllerTest extends BMSServiceTestCase
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $assistance = $em->getRepository(\DistributionBundle\Entity\Assistance::class)->findBy(['archived' => 0], ['id' => 'asc'])[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/commodities');
+        $this->client->request('GET', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/commodities', [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "totalCount": '.count($assistance->getCommodities()).', 
             "data": [

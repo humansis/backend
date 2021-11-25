@@ -4,7 +4,9 @@ namespace VoucherBundle\Tests\Utils;
 
 use Doctrine\Persistence\ObjectManager;
 use ProjectBundle\Entity\Project;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Tests\NewApiBundle\Helper\AssertIterablesTrait;
 use VoucherBundle\Entity\Booklet;
 
 class BookletGeneratorTest extends KernelTestCase

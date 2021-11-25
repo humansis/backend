@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
@@ -9,23 +9,10 @@ use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use ProjectBundle\Entity\Project;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
-class BeneficiaryControllerTest extends BMSServiceTestCase
+class BeneficiaryControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     /**
      * @throws Exception
      */
@@ -35,14 +22,11 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $beneficiary = $em->getRepository(Beneficiary::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/beneficiaries/'.$beneficiary->getId());
+        $this->client->request('GET', '/api/basic/web-app/v1/beneficiaries/'.$beneficiary->getId(), [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('dateOfBirth', $result);
@@ -71,14 +55,11 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $beneficiary = $em->getRepository(Beneficiary::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/beneficiaries?filter[id][]='.$beneficiary->getId());
+        $this->client->request('GET', '/api/basic/web-app/v1/beneficiaries?filter[id][]='.$beneficiary->getId(), [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
@@ -87,7 +68,9 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
 
     public function testAddReferral()
     {
-        $bnfId = $this->em->createQueryBuilder()
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $bnfId = $em->createQueryBuilder()
             ->select('b.id')
             ->from(Beneficiary::class, 'b')
             ->join('b.person', 'p')
@@ -97,15 +80,12 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
             ->setMaxResults(1)
             ->getSingleScalarResult();
 
-        $this->request('PATCH', '/api/basic/web-app/v1/beneficiaries/'.$bnfId, [
+        $this->client->request('PATCH', '/api/basic/web-app/v1/beneficiaries/'.$bnfId, [
             'referralType' => \BeneficiaryBundle\Entity\Referral::types()[0],
             'referralComment' => 'test status',
-        ]);
+        ], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "id": "*",
             "dateOfBirth": "*",
@@ -135,14 +115,11 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $nationalId = $em->getRepository(NationalId::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/beneficiaries/national-ids/'.$nationalId->getId());
+        $this->client->request('GET', '/api/basic/web-app/v1/beneficiaries/national-ids/'.$nationalId->getId(), [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('number', $result);
@@ -158,12 +135,9 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $nationalId = $em->getRepository(NationalId::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/beneficiaries/national-ids?filter[id][]='.$nationalId->getId());
+        $this->client->request('GET', '/api/basic/web-app/v1/beneficiaries/national-ids?filter[id][]='.$nationalId->getId(), [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{"totalCount": 1, "data": [{"id": "*"}]}', $this->client->getResponse()->getContent());
     }
 
@@ -176,14 +150,11 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $phone = $em->getRepository(Phone::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/beneficiaries/phones/'.$phone->getId());
+        $this->client->request('GET', '/api/basic/web-app/v1/beneficiaries/phones/'.$phone->getId(), [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('number', $result);
@@ -202,12 +173,9 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
         $phone1 = $em->getRepository(Phone::class)->findBy([], ['id' => 'asc'])[0];
         $phone2 = $em->getRepository(Phone::class)->findBy([], ['id' => 'asc'])[1];
 
-        $this->request('GET', '/api/basic/web-app/v1/beneficiaries/phones?filter[id][]='.$phone1->getId().'&filter[id][]='.$phone2->getId());
+        $this->client->request('GET', '/api/basic/web-app/v1/beneficiaries/phones?filter[id][]='.$phone1->getId().'&filter[id][]='.$phone2->getId(), [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "totalCount": 2, 
             "data": [{"id": '.$phone1->getId().'}, {"id": '.$phone2->getId().'}
@@ -226,12 +194,9 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
             'archived' => false,
         ], ['id' => 'asc']);
 
-        $this->request('GET', '/api/basic/web-app/v1/projects/'.$project->getId().'/targets/'.AssistanceTargetType::INDIVIDUAL.'/beneficiaries');
+        $this->client->request('GET', '/api/basic/web-app/v1/projects/'.$project->getId().'/targets/'.AssistanceTargetType::INDIVIDUAL.'/beneficiaries', [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "totalCount": "*", 
             "data": [

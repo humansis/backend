@@ -1,30 +1,20 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use NewApiBundle\Entity\DistributedItem;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
-class DistributedItemControllerTest extends BMSServiceTestCase
+class DistributedItemControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     public function testFindByHousehold()
     {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         try {
-            $householdId = $this->em->createQueryBuilder()
+            $householdId = $em->createQueryBuilder()
                 ->select('b.id')
                 ->from(DistributedItem::class, 'di')
                 ->join('di.beneficiary', 'b')
@@ -37,12 +27,9 @@ class DistributedItemControllerTest extends BMSServiceTestCase
             $this->markTestSkipped("There is no household in distibuted items.");
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/households/'.$householdId.'/distributed-items');
+        $this->client->request('GET', '/api/basic/web-app/v1/households/'.$householdId.'/distributed-items', [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "totalCount": "*",
             "data": [
@@ -70,8 +57,10 @@ class DistributedItemControllerTest extends BMSServiceTestCase
 
     public function testFindByBeneficiary()
     {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         try {
-            $beneficiaryId = $this->em->createQueryBuilder()
+            $beneficiaryId = $em->createQueryBuilder()
                 ->select('b.id')
                 ->from(DistributedItem::class, 'di')
                 ->join('di.beneficiary', 'b')
@@ -84,12 +73,9 @@ class DistributedItemControllerTest extends BMSServiceTestCase
             $this->markTestSkipped("There is no beneficiary in distibuted items.");
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/beneficiaries/'.$beneficiaryId.'/distributed-items');
+        $this->client->request('GET', '/api/basic/web-app/v1/beneficiaries/'.$beneficiaryId.'/distributed-items', [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "totalCount": "*",
             "data": [
@@ -116,13 +102,10 @@ class DistributedItemControllerTest extends BMSServiceTestCase
 
     public function testFindByParams()
     {
-        $this->request('GET', '/api/basic/web-app/v1/distributed-items?filter[fulltext]=a&filter[projects][]=1&filter[dateFrom]=2020-01-01&filter[beneficiaryTypes][]=Beneficiary'.
-        '&sort[]=dateDistribution.asc&sort[]=beneficiaryId.asc&sort[]=amount.asc');
+        $this->client->request('GET', '/api/basic/web-app/v1/distributed-items?filter[fulltext]=a&filter[projects][]=1&filter[dateFrom]=2020-01-01&filter[beneficiaryTypes][]=Beneficiary'.
+        '&sort[]=dateDistribution.asc&sort[]=beneficiaryId.asc&sort[]=amount.asc', [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "totalCount": "*",
             "data": "*"

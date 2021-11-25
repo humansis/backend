@@ -1,13 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
-use Exception;
 use NewApiBundle\Enum\ProductCategoryType;
 use ProjectBundle\DBAL\SectorEnum;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
-class ProjectControllerTest extends BMSServiceTestCase
+class ProjectControllerTest extends AbstractFunctionalApiTest
 {
     /** @var string  */
     private $projectName;
@@ -19,22 +18,9 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->projectName = 'Test project No. '.time();
     }
 
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     public function testCreate()
     {
-        $this->request('POST', '/api/basic/web-app/v1/projects', $data = [
+        $this->client->request('POST', '/api/basic/web-app/v1/projects', $data = [
             'name' => $this->projectName,
             'internalId' => 'PT23',
             'iso3' => 'KHM',
@@ -48,14 +34,11 @@ class ProjectControllerTest extends BMSServiceTestCase
                 ProductCategoryType::FOOD,
                 ProductCategoryType::NONFOOD,
             ],
-        ]);
+        ], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('name', $result);
@@ -85,14 +68,11 @@ class ProjectControllerTest extends BMSServiceTestCase
      */
     public function testSummaries($id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/projects/'.$id.'/summaries?code[]=reached_beneficiaries');
+        $this->client->request('GET', '/api/basic/web-app/v1/projects/'.$id.'/summaries?code[]=reached_beneficiaries', [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -110,7 +90,7 @@ class ProjectControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        $this->request('PUT', '/api/basic/web-app/v1/projects/'.$id, $data = [
+        $this->client->request('PUT', '/api/basic/web-app/v1/projects/'.$id, $data = [
             'name' => $this->projectName,
             'internalId' => 'TPX',
             'iso3' => 'KHM',
@@ -124,14 +104,11 @@ class ProjectControllerTest extends BMSServiceTestCase
                 ProductCategoryType::CASHBACK,
                 ProductCategoryType::NONFOOD,
             ],
-        ]);
+        ], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('name', $result);
@@ -162,14 +139,11 @@ class ProjectControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/projects/'.$id);
+        $this->client->request('GET', '/api/basic/web-app/v1/projects/'.$id, [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('name', $result);
@@ -195,14 +169,11 @@ class ProjectControllerTest extends BMSServiceTestCase
      */
     public function testGetList($id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/projects?filter[id][]='.$id.'&filter[fulltext]='.$this->projectName);
+        $this->client->request('GET', '/api/basic/web-app/v1/projects?filter[id][]='.$id.'&filter[fulltext]='.$this->projectName, [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
@@ -215,7 +186,7 @@ class ProjectControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        $this->request('DELETE', '/api/basic/web-app/v1/projects/'.$id);
+        $this->client->request('DELETE', '/api/basic/web-app/v1/projects/'.$id, [], [], $this->addAuth());
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
 
@@ -227,7 +198,7 @@ class ProjectControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/projects/'.$id);
+        $this->client->request('GET', '/api/basic/web-app/v1/projects/'.$id, [], [], $this->addAuth());
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }

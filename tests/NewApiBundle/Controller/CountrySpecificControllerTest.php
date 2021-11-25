@@ -1,40 +1,23 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
-use Exception;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
-class CountrySpecificControllerTest extends BMSServiceTestCase
+class CountrySpecificControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     public function testCreate()
     {
-        $this->request('POST', '/api/basic/web-app/v1/country-specifics', [
+        $this->client->request('POST', '/api/basic/web-app/v1/country-specifics', [
             'field' => 'Country specific field',
             'type' => 'number',
             'iso3' => 'KHM',
-        ]);
+        ], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('field', $result);
@@ -49,18 +32,15 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        $this->request('PUT', '/api/basic/web-app/v1/country-specifics/'.$id, [
+        $this->client->request('PUT', '/api/basic/web-app/v1/country-specifics/'.$id, [
             'field' => 'Country specific field',
             'type' => 'text',
 
-        ]);
+        ], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('field', $result);
@@ -75,14 +55,11 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/country-specifics/'.$id);
+        $this->client->request('GET', '/api/basic/web-app/v1/country-specifics/'.$id, [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('field', $result);
@@ -97,7 +74,7 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        $this->request('DELETE', '/api/basic/web-app/v1/country-specifics/'.$id);
+        $this->client->request('DELETE', '/api/basic/web-app/v1/country-specifics/'.$id, [], [], $this->addAuth());
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
 
@@ -109,7 +86,7 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/country-specifics/'.$id);
+        $this->client->request('GET', '/api/basic/web-app/v1/country-specifics/'.$id, [], [], $this->addAuth());
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }
@@ -119,12 +96,9 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
         /** @var CountrySpecificAnswer $answer */
         $answer = self::$container->get('doctrine')->getRepository(CountrySpecificAnswer::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/country-specifics/answers/'.$answer->getId());
+        $this->client->request('GET', '/api/basic/web-app/v1/country-specifics/answers/'.$answer->getId(), [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonStringEqualsJsonString('{
             "id": '.$answer->getId().',
             "countrySpecificOptionId": '.$answer->getCountrySpecific()->getId().',

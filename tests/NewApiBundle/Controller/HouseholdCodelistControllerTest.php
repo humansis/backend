@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
@@ -6,29 +6,16 @@ use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use Exception;
 use ProjectBundle\Enum\Livelihood;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
-class HouseholdCodelistControllerTest extends BMSServiceTestCase
+class HouseholdCodelistControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     /**
      * @throws Exception
      */
     public function testGetLivelihoods()
     {
-        $this->request('GET', '/api/basic/web-app/v1/households/livelihoods');
+        $this->client->request('GET', '/api/basic/web-app/v1/households/livelihoods', [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -45,7 +32,7 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetAssets()
     {
-        $this->request('GET', '/api/basic/web-app/v1/households/assets');
+        $this->client->request('GET', '/api/basic/web-app/v1/households/assets', [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -62,7 +49,7 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetSupportReceivedTypes()
     {
-        $this->request('GET', '/api/basic/web-app/v1/households/support-received-types');
+        $this->client->request('GET', '/api/basic/web-app/v1/households/support-received-types', [], [], $this->addAuth());
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
@@ -76,7 +63,7 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetShelterStatuses()
     {
-        $this->request('GET', '/api/basic/web-app/v1/households/shelter-statuses');
+        $this->client->request('GET', '/api/basic/web-app/v1/households/shelter-statuses', [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -93,7 +80,7 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetLocationTypes()
     {
-        $this->request('GET', '/api/basic/web-app/v1/households/locations/types');
+        $this->client->request('GET', '/api/basic/web-app/v1/households/locations/types', [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

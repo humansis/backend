@@ -1,37 +1,20 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
 use DistributionBundle\Entity\Assistance;
-use Exception;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
-class AssistanceStatisticsControllerTest extends BMSServiceTestCase
+class AssistanceStatisticsControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     public function testStatistics()
     {
         /** @var Assistance $assistance */
         $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/statistics');
+        $this->client->request('GET', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/statistics', [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "id": '.$assistance->getId().',
             "numberOfBeneficiaries": "*",
@@ -48,12 +31,9 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
         /** @var Assistance $assistance */
         $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy(['archived' => false], ['id' => 'asc'])[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/assistances/statistics?filter[id][]='.$assistance->getId(), ['country' => 'KHM']);
+        $this->client->request('GET', '/api/basic/web-app/v1/assistances/statistics?filter[id][]='.$assistance->getId(), ['country' => 'KHM'], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

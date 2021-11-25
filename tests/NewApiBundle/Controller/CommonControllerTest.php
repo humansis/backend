@@ -1,41 +1,20 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\HouseholdLocation;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Phone;
-use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
-class CommonControllerTest extends BMSServiceTestCase
+class CommonControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     /**
      * @throws Exception
      */
     public function testGetSummaries()
     {
-        $this->request('GET', '/api/basic/web-app/v1/summaries?code[]=total_registrations&code[]=active_projects', ['country' => 'KHM']);
+        $this->client->request('GET', '/api/basic/web-app/v1/summaries?code[]=total_registrations&code[]=active_projects', ['country' => 'KHM'], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "totalCount": 2, 
             "data": [
@@ -49,12 +28,9 @@ class CommonControllerTest extends BMSServiceTestCase
      */
     public function testGetIcons()
     {
-        $this->request('GET', '/api/basic/web-app/v1/icons');
+        $this->client->request('GET', '/api/basic/web-app/v1/icons', [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment(
             '[{"key": "*", "svg": "*"}]',
             $this->client->getResponse()->getContent()
@@ -66,12 +42,9 @@ class CommonControllerTest extends BMSServiceTestCase
      */
     public function testGetCurrencies()
     {
-        $this->request('GET', '/api/basic/web-app/v1/currencies');
+        $this->client->request('GET', '/api/basic/web-app/v1/currencies', [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('[
             {"code": "*", "value": "*"}
         ]', $this->client->getResponse()->getContent());
@@ -82,12 +55,9 @@ class CommonControllerTest extends BMSServiceTestCase
      */
     public function testGetLanguages()
     {
-        $this->request('GET', '/api/basic/web-app/v1/languages');
+        $this->client->request('GET', '/api/basic/web-app/v1/languages', [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('[
             {"code": "en", "value": "English"}
         ]', $this->client->getResponse()->getContent());
@@ -98,12 +68,9 @@ class CommonControllerTest extends BMSServiceTestCase
      */
     public function testGetTranslations()
     {
-        $this->request('GET', '/api/basic/web-app/v1/translations/en');
+        $this->client->request('GET', '/api/basic/web-app/v1/translations/en', [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{"Assistance": "*"}', $this->client->getResponse()->getContent());
     }
 
@@ -112,12 +79,9 @@ class CommonControllerTest extends BMSServiceTestCase
      */
     public function testGetAdmsNames()
     {
-        $this->request('GET', '/api/basic/web-app/v1/adms');
+        $this->client->request('GET', '/api/basic/web-app/v1/adms', [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "adm1": "*",
             "adm2": "*",

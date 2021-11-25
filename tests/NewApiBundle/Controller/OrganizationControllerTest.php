@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
@@ -8,25 +6,10 @@ use CommonBundle\Entity\Organization;
 use CommonBundle\Entity\OrganizationServices;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
-use Exception;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
-class OrganizationControllerTest extends BMSServiceTestCase
+class OrganizationControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
-
     /**
      * @throws ORMException
      * @throws OptimisticLockException
@@ -40,14 +23,11 @@ class OrganizationControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There needs to be at least one organization in system to complete this test');
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/organizations/'.$organization->getId());
+        $this->client->request('GET', '/api/basic/web-app/v1/organizations/'.$organization->getId(), [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -64,21 +44,18 @@ class OrganizationControllerTest extends BMSServiceTestCase
         /** @var Organization|null $organization */
         $organization = self::$container->get('doctrine')->getRepository(Organization::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('PUT', '/api/basic/web-app/v1/organizations/'.$organization->getId(), [
+        $this->client->request('PUT', '/api/basic/web-app/v1/organizations/'.$organization->getId(), [
             'logo' => 'http://www.example.org/image.jpg',
             'name' => 'Test organisation',
             'primaryColor' => '#000000',
             'secondaryColor' => '#000000',
             'font' => 'Arial',
             'footerContent' => 'Some text.',
-        ]);
+        ], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('logo', $result);
@@ -96,14 +73,11 @@ class OrganizationControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        $this->request('GET', '/api/basic/web-app/v1/organizations');
+        $this->client->request('GET', '/api/basic/web-app/v1/organizations', [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
@@ -122,14 +96,11 @@ class OrganizationControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There needs to be at least one service in system to complete this test');
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/organizations/'.$services[0]->getOrganization()->getId().'/services');
+        $this->client->request('GET', '/api/basic/web-app/v1/organizations/'.$services[0]->getOrganization()->getId().'/services', [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
@@ -153,14 +124,11 @@ class OrganizationControllerTest extends BMSServiceTestCase
             'enabled' => true,
         ];
 
-        $this->request('PATCH', '/api/basic/web-app/v1/organizations/services/'.$services[0]->getOrganization()->getId(), $data);
+        $this->client->request('PATCH', '/api/basic/web-app/v1/organizations/services/'.$services[0]->getOrganization()->getId(), $data, [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('name', $result);

@@ -1,32 +1,19 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Institution;
 use Exception;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
-class InstitutionCodelistControllerTest extends BMSServiceTestCase
+class InstitutionCodelistControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     /**
      * @throws Exception
      */
     public function testGetLocationTypes()
     {
-        $this->request('GET', '/api/basic/web-app/v1/institutions/types');
+        $this->client->request('GET', '/api/basic/web-app/v1/institutions/types', [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

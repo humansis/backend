@@ -1,33 +1,16 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
-use Exception;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
-class AclControllerTest extends BMSServiceTestCase
+class AclControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     public function testDetail()
     {
-        $this->request('GET', '/api/basic/web-app/v1/acl/roles/ROLE_ADMIN');
+        $this->client->request('GET', '/api/basic/web-app/v1/acl/roles/ROLE_ADMIN', [], [], $this->addAuth());
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
         $this->assertJsonFragment('{
             "name": "Admin",
             "code": "ROLE_ADMIN",
@@ -37,12 +20,9 @@ class AclControllerTest extends BMSServiceTestCase
 
     public function testList()
     {
-        $this->request('GET', '/api/basic/web-app/v1/acl/roles');
+        $this->client->request('GET', '/api/basic/web-app/v1/acl/roles', [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "totalCount": "*",
             "data": [

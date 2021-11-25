@@ -1,31 +1,21 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
-use Exception;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\SmartcardRedemptionBatch;
 
-class SmartcardRedemptionBatchControllerTest extends BMSServiceTestCase
+class SmartcardRedemptionBatchControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     public function testRedemptionBatchesByVendor()
     {
-        $vendorId = $this->em->createQueryBuilder()
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+
+        $vendorId = $em->createQueryBuilder()
             ->select('v.id')
             ->from(SmartcardRedemptionBatch::class, 'srb')
             ->join('srb.vendor', 'v')
@@ -33,12 +23,9 @@ class SmartcardRedemptionBatchControllerTest extends BMSServiceTestCase
             ->setMaxResults(1)
             ->getSingleScalarResult();
 
-        $this->request('GET', '/api/basic/web-app/v1/vendors/'.$vendorId.'/smartcard-redemption-batches');
+        $this->client->request('GET', '/api/basic/web-app/v1/vendors/'.$vendorId.'/smartcard-redemption-batches', [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "totalCount": "*",
             "data": [
@@ -49,7 +36,10 @@ class SmartcardRedemptionBatchControllerTest extends BMSServiceTestCase
 
     public function testCreateRedemptionBatchByVendor()
     {
-        $vendorId = $this->em->createQueryBuilder()
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+
+        $vendorId = $em->createQueryBuilder()
             ->select('v.id')
             ->from(SmartcardPurchase::class, 'sp')
             ->join('sp.vendor', 'v')
@@ -57,7 +47,7 @@ class SmartcardRedemptionBatchControllerTest extends BMSServiceTestCase
             ->getQuery()
             ->setMaxResults(1)
             ->getSingleScalarResult();
-        $purchaseIds = $this->em->createQueryBuilder()
+        $purchaseIds = $em->createQueryBuilder()
             ->select('sp.id')
             ->from(SmartcardPurchase::class, 'sp')
             ->join('sp.vendor', 'v')
@@ -66,14 +56,11 @@ class SmartcardRedemptionBatchControllerTest extends BMSServiceTestCase
             ->setMaxResults(1)
             ->getResult(Query::HYDRATE_ARRAY);
 
-        $this->request('POST', '/api/basic/web-app/v1/vendors/'.$vendorId.'/smartcard-redemption-batches', [
+        $this->client->request('POST', '/api/basic/web-app/v1/vendors/'.$vendorId.'/smartcard-redemption-batches', [
             'purchaseIds' => (array) $purchaseIds[0]['id'],
-        ]);
+        ], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "projectId": "*",
             "value": "*",
@@ -84,7 +71,10 @@ class SmartcardRedemptionBatchControllerTest extends BMSServiceTestCase
 
     public function testRedemptionCandidatesByVendor()
     {
-        $vendorId = $this->em->createQueryBuilder()
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+
+        $vendorId = $em->createQueryBuilder()
             ->select('v.id')
             ->from(SmartcardPurchase::class, 'sp')
             ->join('sp.vendor', 'v')
@@ -93,12 +83,9 @@ class SmartcardRedemptionBatchControllerTest extends BMSServiceTestCase
             ->setMaxResults(1)
             ->getSingleScalarResult();
 
-        $this->request('GET', '/api/basic/web-app/v1/vendors/'.$vendorId.'/smartcard-redemption-candidates');
+        $this->client->request('GET', '/api/basic/web-app/v1/vendors/'.$vendorId.'/smartcard-redemption-candidates', [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "totalCount": "*",
             "data": [

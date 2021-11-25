@@ -1,35 +1,19 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Camp;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NoResultException;
-use Exception;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
-class CampControllerTest extends BMSServiceTestCase
+class CampControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     public function testCamps()
     {
-        $this->request('GET', '/api/basic/web-app/v1/camps');
+        $this->client->request('GET', '/api/basic/web-app/v1/camps', [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "totalCount": "*",
             "data": "*"}', $this->client->getResponse()->getContent()
@@ -38,8 +22,10 @@ class CampControllerTest extends BMSServiceTestCase
 
     public function testCamp()
     {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         try {
-            $campId = $this->em->createQueryBuilder()
+            $campId = $em->createQueryBuilder()
                 ->select('c.id')
                 ->from(Camp::class, 'c')
                 ->setMaxResults(1)
@@ -50,12 +36,9 @@ class CampControllerTest extends BMSServiceTestCase
             return;
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/camps/'.$campId);
+        $this->client->request('GET', '/api/basic/web-app/v1/camps/'.$campId, [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "id": '.$campId.',
             "name": "*",
@@ -70,8 +53,10 @@ class CampControllerTest extends BMSServiceTestCase
 
     public function testCampsByLocation()
     {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         try {
-            $locationId = $this->em->createQueryBuilder()
+            $locationId = $em->createQueryBuilder()
                 ->select('l.id')
                 ->from(Camp::class, 'c')
                 ->leftJoin('c.location', 'l')
@@ -84,12 +69,9 @@ class CampControllerTest extends BMSServiceTestCase
             return;
         }
 
-        $this->request('GET', "/api/basic/web-app/v1/locations/$locationId/camps");
+        $this->client->request('GET', "/api/basic/web-app/v1/locations/$locationId/camps", [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "totalCount": "*",
             "data": [

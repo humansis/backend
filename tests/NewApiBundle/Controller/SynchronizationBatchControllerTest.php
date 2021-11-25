@@ -1,31 +1,19 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Entity\SynchronizationBatch;
 use NewApiBundle\Entity\SynchronizationBatch\Deposits;
 use NewApiBundle\Enum\SourceType;
-use NewApiBundle\Enum\SynchronizationBatchValidationType;
 use NewApiBundle\Workflow\SynchronizationBatchTransitions;
-use Symfony\Component\Workflow\StateMachine;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
-class SynchronizationBatchControllerTest extends BMSServiceTestCase
+class SynchronizationBatchControllerTest extends AbstractFunctionalApiTest
 {
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     public function testCreate()
     {
-        $this->request('POST', '/api/basic/vendor-app/v1/syncs/deposit', [
+        $this->client->request('POST', '/api/basic/vendor-app/v1/syncs/deposit', [
             [],
             ["sdfdsfsdf"],
             [
@@ -35,12 +23,9 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
                 'balanceBefore' => 0,
                 'balanceAfter' => 1000,
             ],
-        ]);
+        ], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertEmpty($this->client->getResponse()->getContent());
     }
 
@@ -49,20 +34,20 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
      */
     public function testGet(): int
     {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+
         $sync = new Deposits([]);
         $sync->setSource(SourceType::CLI);
         $sync->setCreatedBy($this->getTestUser(self::USER_TESTER));
-        $this->em->persist($sync);
-        $this->em->flush();
+        $em->persist($sync);
+        $em->flush();
 
-        $this->request('GET', '/api/basic/web-app/v1/syncs/'.$sync->getId());
+        $this->client->request('GET', '/api/basic/web-app/v1/syncs/'.$sync->getId(), [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -84,14 +69,11 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        $this->request('GET', '/api/basic/web-app/v1/syncs?filter[states][]=Uploaded&filter[type]=Deposit&filter[sources][]=CLI');
+        $this->client->request('GET', '/api/basic/web-app/v1/syncs?filter[states][]=Uploaded&filter[type]=Deposit&filter[sources][]=CLI', [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
@@ -115,15 +97,18 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
      */
     public function testGetNotExists(int $id)
     {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+
         $stateMachines = self::$container->get('workflow.registry');
-        $repository = $this->em->getRepository(SynchronizationBatch::class);
+        $repository = $em->getRepository(SynchronizationBatch::class);
         $sync = $repository->find($id);
         $stateMachines->get($sync)->apply($sync, SynchronizationBatchTransitions::COMPLETE_VALIDATION);
         $stateMachines->get($sync)->apply($sync, SynchronizationBatchTransitions::ARCHIVE);
-        $this->em->persist($sync);
-        $this->em->flush();
+        $em->persist($sync);
+        $em->flush();
 
-        $this->request('GET', '/api/basic/web-app/v1/syncs/'.$id);
+        $this->client->request('GET', '/api/basic/web-app/v1/syncs/'.$id, [], [], $this->addAuth());
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }
 

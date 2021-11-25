@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
@@ -9,26 +9,12 @@ use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Enum\AssistanceType;
-use Exception;
 use NewApiBundle\Enum\ProductCategoryType;
 use ProjectBundle\Entity\Project;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
-class AssistanceControllerTest extends BMSServiceTestCase
+class AssistanceControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     public function testGetItem()
     {
         /** @var Assistance $assistance */
@@ -37,12 +23,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
             return $commodity->getId();
         }, $assistance->getCommodities()->toArray());
 
-        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistance->getId());
+        $this->client->request('GET', '/api/basic/web-app/v1/assistances/'.$assistance->getId(), [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "id": '.$assistance->getId().',
             "name": "'.$assistance->getName().'",
@@ -75,17 +58,14 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var Location $location */
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/assistances?filter[type]='.AssistanceType::DISTRIBUTION.
+        $this->client->request('GET', '/api/basic/web-app/v1/assistances?filter[type]='.AssistanceType::DISTRIBUTION.
                                                     '&filter[modalityTypes][]=Smartcard'.
                                                     '&filter[projects][]='.$project->getId().
-                                                    '&filter[locations][]='.$location->getId());
+                                                    '&filter[locations][]='.$location->getId(), [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
@@ -95,14 +75,11 @@ class AssistanceControllerTest extends BMSServiceTestCase
     {
         $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/projects/'.$project->getId().'/assistances');
+        $this->client->request('GET', '/api/basic/web-app/v1/projects/'.$project->getId().'/assistances', [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
@@ -123,7 +100,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var ModalityType $modalityType */
         $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Smartcard'], ['id' => 'asc'])[0];
 
-        $this->request('POST', '/api/basic/web-app/v1/assistances', [
+        $this->client->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
@@ -151,12 +128,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'cashbackLimit' => 1024,
             'remoteDistributionAllowed' => false,
             'allowedProductCategoryTypes' => [ProductCategoryType::CASHBACK, ProductCategoryType::NONFOOD],
-        ]);
+        ], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "id": "*",
             "name": "*",
@@ -191,14 +165,11 @@ class AssistanceControllerTest extends BMSServiceTestCase
     {
         $date = new DateTime();
 
-        $this->request('PATCH', "/api/basic/web-app/v1/assistances/$id", [
+        $this->client->request('PATCH', "/api/basic/web-app/v1/assistances/$id", [
             'dateDistribution' => $date->format(DateTimeInterface::ISO8601),
-        ]);
+        ], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         $contentArray = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals($date->format(DateTimeInterface::ISO8601), $contentArray['dateDistribution']);
@@ -211,14 +182,11 @@ class AssistanceControllerTest extends BMSServiceTestCase
     {
         $date = new DateTime('+1 year');
 
-        $this->request('PATCH', "/api/basic/web-app/v1/assistances/$id", [
+        $this->client->request('PATCH', "/api/basic/web-app/v1/assistances/$id", [
             'dateExpiration' => $date->format(DateTimeInterface::ISO8601),
-        ]);
+        ], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         $contentArray = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals($date->format(DateTimeInterface::ISO8601), $contentArray['dateExpiration']);
@@ -235,7 +203,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var ModalityType $modalityType */
         $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Cash'], ['id' => 'asc'])[0];
 
-        $this->request('POST', '/api/basic/web-app/v1/assistances', [
+        $this->client->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
@@ -263,12 +231,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'nonFoodLimit' => null,
             'cashbackLimit' => null,
             'allowedProductCategoryTypes' => [],
-        ]);
+        ], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "id": "*",
             "name": "*",
@@ -300,7 +265,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var Location $location */
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('POST', '/api/basic/web-app/v1/assistances', [
+        $this->client->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
@@ -322,12 +287,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
             ],
             'description' => 'test activity',
             'allowedProductCategoryTypes' => [ProductCategoryType::CASHBACK, ProductCategoryType::NONFOOD],
-        ]);
+        ], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "id": "*",
             "name": "*",
@@ -358,7 +320,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var Community $community */
         $community = self::$container->get('doctrine')->getRepository(Community::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('POST', '/api/basic/web-app/v1/assistances', [
+        $this->client->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
@@ -372,12 +334,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'householdsTargeted' => 10,
             'individualsTargeted' => null,
             'allowedProductCategoryTypes' => [ProductCategoryType::CASHBACK, ProductCategoryType::NONFOOD],
-        ]);
+        ], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "id": "*",
             "name": "*",

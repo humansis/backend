@@ -1,8 +1,8 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NoResultException;
 use Exception;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
@@ -13,23 +13,10 @@ use NewApiBundle\Enum\ImportState;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
-class ImportControllerTest extends BMSServiceTestCase
+class ImportControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     /**
      * @return integer
      * @throws Exception
@@ -43,18 +30,15 @@ class ImportControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There needs to be at least one project in system to complete this test');
         }
 
-        $this->request('POST', '/api/basic/web-app/v1/imports', [
+        $this->client->request('POST', '/api/basic/web-app/v1/imports', [
             'title' => 'test',
             'description' => 'test',
             'projectId' => $projects->getId(),
-        ]);
+        ], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -92,7 +76,7 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $file = new UploadedFile($uploadedFilePath, $filename, null, null, true);
 
-        $this->request('POST', "/api/basic/web-app/v1/imports/$id/files", [], [$file]);
+        $this->client->request('POST', "/api/basic/web-app/v1/imports/$id/files", [], [$file], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -114,14 +98,11 @@ class ImportControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/imports/'.$id);
+        $this->client->request('GET', '/api/basic/web-app/v1/imports/'.$id, [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -140,14 +121,11 @@ class ImportControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        $this->request('GET', '/api/basic/web-app/v1/imports?page=1&size=10&sort[]=project.desc');
+        $this->client->request('GET', '/api/basic/web-app/v1/imports?page=1&size=10&sort[]=project.desc', [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
@@ -181,16 +159,13 @@ class ImportControllerTest extends BMSServiceTestCase
      */
     public function testPatch(string $parameter, $value, int $id)
     {
-        $this->request('PATCH', '/api/basic/web-app/v1/imports/'.$id, [
+        $this->client->request('PATCH', '/api/basic/web-app/v1/imports/'.$id, [
             $parameter => $value,
-        ]);
+        ], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
-        $this->request('GET', '/api/basic/web-app/v1/imports/'.$id);
+        $this->client->request('GET', '/api/basic/web-app/v1/imports/'.$id, [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -199,8 +174,10 @@ class ImportControllerTest extends BMSServiceTestCase
 
     public function testGetDuplicities()
     {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         /** @var ImportBeneficiaryDuplicity|null $duplicity */
-        $duplicity = $this->em->getRepository(ImportBeneficiaryDuplicity::class)->findOneBy([], ['id' => 'asc']);
+        $duplicity = $em->getRepository(ImportBeneficiaryDuplicity::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($duplicity)) {
             $this->markTestSkipped('There needs to be at least one import duplicity in system.');
@@ -208,12 +185,9 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $importId = $duplicity->getOurs()->getImport()->getId();
 
-        $this->request('GET', "/api/basic/web-app/v1/imports/$importId/duplicities");
+        $this->client->request('GET', "/api/basic/web-app/v1/imports/$importId/duplicities");
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         $this->assertJsonFragment('{
             "totalCount": "*",
@@ -230,8 +204,10 @@ class ImportControllerTest extends BMSServiceTestCase
 
     public function testGetImportStatistics()
     {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         /** @var ImportQueue|null $importQueue */
-        $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy([], ['id' => 'asc']);
+        $importQueue = $em->getRepository(ImportQueue::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($importQueue)) {
             $this->markTestSkipped('There needs to be at least one import with entries in queue in system.');
@@ -239,14 +215,11 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $importId = $importQueue->getImport()->getId();
 
-        $this->request('GET', "/api/basic/web-app/v1/imports/$importId/statistics");
+        $this->client->request('GET', "/api/basic/web-app/v1/imports/$importId/statistics", [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalEntries', $result);
@@ -259,8 +232,10 @@ class ImportControllerTest extends BMSServiceTestCase
 
     public function testGetQueueItem()
     {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         /** @var ImportQueue|null $importQueue */
-        $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy([], ['id' => 'asc']);
+        $importQueue = $em->getRepository(ImportQueue::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($importQueue)) {
             $this->markTestSkipped('There needs to be at least one import import with entries in queue in system.');
@@ -268,14 +243,11 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $importQueueId = $importQueue->getId();
 
-        $this->request('GET', "/api/basic/web-app/v1/imports/queue/$importQueueId");
+        $this->client->request('GET', "/api/basic/web-app/v1/imports/queue/$importQueueId", [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -285,22 +257,21 @@ class ImportControllerTest extends BMSServiceTestCase
 
     public function testResolveDuplicity()
     {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         /** @var ImportBeneficiaryDuplicity|null $importQueue */
-        $duplicity = $this->em->getRepository(ImportBeneficiaryDuplicity::class)->findOneBy([], ['id' => 'asc']);
+        $duplicity = $em->getRepository(ImportBeneficiaryDuplicity::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($duplicity)) {
             $this->markTestSkipped('There needs to be at least one duplicity with entries in queue in system.');
         }
 
-        $this->request('PATCH', '/api/basic/web-app/v1/imports/queue/'.$duplicity->getOurs()->getId(), [
+        $this->client->request('PATCH', '/api/basic/web-app/v1/imports/queue/'.$duplicity->getOurs()->getId(), [
             'status' => 'To Update',
             'acceptedDuplicityId' => $duplicity->getId(),
-        ]);
+        ], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
     }
 
     /**
@@ -310,8 +281,11 @@ class ImportControllerTest extends BMSServiceTestCase
      */
     public function testListValidImportedFiles(): int
     {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+
         /** @var ImportFile|null $importFile */
-        $importFile = $this->em->getRepository(ImportFile::class)->findOneBy([
+        $importFile = $em->getRepository(ImportFile::class)->findOneBy([
             'structureViolations' => null,
             'isLoaded' => true,
         ], ['id' => 'asc']);
@@ -322,12 +296,9 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $importId = $importFile->getImport()->getId();
 
-        $this->request('GET', "/api/basic/web-app/v1/imports/$importId/files");
+        $this->client->request('GET', "/api/basic/web-app/v1/imports/$importId/files", [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         $this->assertJsonFragment('{
             "totalCount": "*",
@@ -357,9 +328,12 @@ class ImportControllerTest extends BMSServiceTestCase
      */
     public function testListInvalidImportedFiles(): int
     {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+
         try {
             /** @var ImportFile $importFile */
-            $importFile = $this->em->createQueryBuilder()->select('if')
+            $importFile = $em->createQueryBuilder()->select('if')
                 ->from(ImportFile::class, 'if')
                 ->where('if.structureViolations IS NOT NULL and if.isLoaded = true')
                 ->setMaxResults(1)
@@ -370,12 +344,9 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $importId = $importFile->getImport()->getId();
 
-        $this->request('GET', "/api/basic/web-app/v1/imports/$importId/files");
+        $this->client->request('GET', "/api/basic/web-app/v1/imports/$importId/files", [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         $this->assertJsonFragment('{
             "totalCount": "*",
@@ -399,8 +370,10 @@ class ImportControllerTest extends BMSServiceTestCase
 
     public function testListInvalidFiles(): int
     {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         /** @var ImportInvalidFile|null $importInvalidFile */
-        $importInvalidFile = $this->em->getRepository(ImportInvalidFile::class)->findOneBy([], ['id' => 'asc']);
+        $importInvalidFile = $em->getRepository(ImportInvalidFile::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($importInvalidFile)) {
             $this->markTestSkipped('There needs to be at least one import invalid file in system.');
@@ -408,12 +381,9 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $importId = $importInvalidFile->getImport()->getId();
 
-        $this->request('GET', "/api/basic/web-app/v1/imports/$importId/invalid-files");
+        $this->client->request('GET', "/api/basic/web-app/v1/imports/$importId/invalid-files");
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         $this->assertJsonFragment('{
             "totalCount": "*",
@@ -437,18 +407,17 @@ class ImportControllerTest extends BMSServiceTestCase
      */
     public function testGetInvalidFile(int $id)
     {
-        $this->request('GET', "/api/basic/web-app/v1/imports/invalid-files/$id");
+        $this->client->request('GET', "/api/basic/web-app/v1/imports/invalid-files/$id", [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
     }
 
     public function testListQueue()
     {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         /** @var ImportQueue|null $importQueue */
-        $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy([], ['id' => 'asc']);
+        $importQueue = $em->getRepository(ImportQueue::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($importQueue)) {
             $this->markTestSkipped('There needs to be at least one import with items in queue in system.');
@@ -456,12 +425,9 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $importId = $importQueue->getImport()->getId();
 
-        $this->request('GET', "/api/basic/web-app/v1/imports/$importId/queue");
+        $this->client->request('GET', "/api/basic/web-app/v1/imports/$importId/queue", [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         $this->assertJsonFragment('{
             "totalCount": "*",

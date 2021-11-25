@@ -1,27 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
 use Exception;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\Entity\Project;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
-class SectorsCodelistControllerTest extends BMSServiceTestCase
+class SectorsCodelistControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     /**
      * @throws Exception
      */
@@ -30,14 +17,11 @@ class SectorsCodelistControllerTest extends BMSServiceTestCase
         /** @var Project $project */
         $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('GET', '/api/basic/web-app/v2/projects/'.$project->getId().'/sectors');
+        $this->client->request('GET', '/api/basic/web-app/v2/projects/'.$project->getId().'/sectors', [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
@@ -52,14 +36,11 @@ class SectorsCodelistControllerTest extends BMSServiceTestCase
     {
         $testSector = SectorEnum::all()[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/sectors/'.$testSector.'/subsectors');
+        $this->client->request('GET', '/api/basic/web-app/v1/sectors/'.$testSector.'/subsectors', [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);

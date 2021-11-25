@@ -1,32 +1,19 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller\OfflineApp;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
+use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Entity\ReliefPackage;
 use NewApiBundle\Enum\ModalityType;
-use Tests\BMSServiceTestCase;
-use UserBundle\Entity\User;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 use VoucherBundle\Entity\Smartcard;
-use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Enum\SmartcardStates;
 
-class SmartcardDepositControllerTest extends BMSServiceTestCase
+class SmartcardDepositControllerTest extends AbstractFunctionalApiTest
 {
-    public function setUp()
-    {
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-    }
-
     protected function tearDown()
     {
         $this->removeSmartcards('1234ABC');
@@ -36,11 +23,11 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
 
     private function removeSmartcards(string $serialNumber): void
     {
-        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['serialNumber' => $serialNumber], ['id' => 'asc']);
+        $smartcards = $em->getRepository(Smartcard::class)->findBy(['serialNumber' => $serialNumber], ['id' => 'asc']);
         foreach ($smartcards as $smartcard) {
-            $this->em->remove($smartcard);
+            $em->remove($smartcard);
         }
-        $this->em->flush();
+        $em->flush();
     }
 
     public function testDepositToSmartcard()
@@ -51,14 +38,14 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
 
         $reliefPackage = $this->createReliefPackage($ab);
 
-        $this->request('POST', '/api/wsse/offline-app/v4/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
+        $this->client->request('POST', '/api/wsse/offline-app/v4/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
             'assistanceId' => $ab->getAssistance()->getId(),
             'value' => 255.25,
             'balanceBefore' => 260.00,
             'balanceAfter' => 300.00,
             'createdAt' => '2020-02-02T12:00:00Z',
             'beneficiaryId' => $bnf->getId(),
-        ]);
+        ], [], $this->addAuth());
 
         $smartcard = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -72,7 +59,10 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
 
     private function someSmartcardAssistance(): ?Assistance
     {
-        foreach ($this->em->getRepository(Assistance::class)->findBy([], ['id'=>'asc']) as $assistance) {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+
+        foreach ($em->getRepository(Assistance::class)->findBy([], ['id'=>'asc']) as $assistance) {
             foreach ($assistance->getCommodities() as $commodity) {
                 if ('Smartcard' === $commodity->getModalityType()->getName()) {
                     return $assistance;
@@ -85,8 +75,11 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
 
     private function assistanceBeneficiaryWithoutRelief(): AssistanceBeneficiary
     {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+
         /** @var Assistance $assistance */
-        foreach ($this->em->getRepository(Assistance::class)->findBy([], ['id'=>'asc']) as $assistance) {
+        foreach ($em->getRepository(Assistance::class)->findBy([], ['id'=>'asc']) as $assistance) {
             foreach ($assistance->getCommodities() as $commodity) {
                 if (ModalityType::SMART_CARD !== $commodity->getModalityType()->getName()) {
                     continue 2;
@@ -102,17 +95,20 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
 
         $assistanceBeneficiary = new AssistanceBeneficiary();
         $assistanceBeneficiary->setAssistance($this->someSmartcardAssistance());
-        $assistanceBeneficiary->setBeneficiary($this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']));
+        $assistanceBeneficiary->setBeneficiary($em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']));
 
-        $this->em->persist($assistanceBeneficiary);
+        $em->persist($assistanceBeneficiary);
 
         return $assistanceBeneficiary;
     }
 
     private function getSmartcardForBeneficiary(string $serialNumber, Beneficiary $beneficiary): Smartcard
     {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+
         /** @var Smartcard[] $smartcards */
-        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['serialNumber' => $serialNumber], ['id' => 'asc']);
+        $smartcards = $em->getRepository(Smartcard::class)->findBy(['serialNumber' => $serialNumber], ['id' => 'asc']);
 
         foreach ($smartcards as $smartcard) {
             if ($smartcard->getState() === SmartcardStates::ACTIVE) {
@@ -126,14 +122,17 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
         $smartcard->setBeneficiary($beneficiary);
         $smartcard->setState(SmartcardStates::ACTIVE);
 
-        $this->em->persist($smartcard);
-        $this->em->flush();
+        $em->persist($smartcard);
+        $em->flush();
 
         return $smartcard;
     }
 
     private function createReliefPackage(AssistanceBeneficiary $ab): ReliefPackage
     {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+
         $reliefPackage = new ReliefPackage(
             $ab,
             ModalityType::SMART_CARD,
@@ -141,8 +140,8 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
             $ab->getAssistance()->getCommodities()[0]->getUnit(),
         );
 
-        $this->em->persist($reliefPackage);
-        $this->em->flush();
+        $em->persist($reliefPackage);
+        $em->flush();
 
         return $reliefPackage;
     }

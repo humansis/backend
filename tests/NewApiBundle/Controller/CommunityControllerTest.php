@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
@@ -10,24 +10,10 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Exception;
 use ProjectBundle\Entity\Project;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
-class CommunityControllerTest extends BMSServiceTestCase
+class CommunityControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
-
     /**
      * @return mixed
      * @throws ORMException
@@ -43,7 +29,7 @@ class CommunityControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There needs to be at least one location in system to complete this test');
         }
 
-        $this->request('POST', '/api/basic/web-app/v1/communities', [
+        $this->client->request('POST', '/api/basic/web-app/v1/communities', [
             'longitude' => 'test longitude',
             'latitude' => 'test latitude',
             'contactGivenName' => 'test contactGivenName',
@@ -67,14 +53,11 @@ class CommunityControllerTest extends BMSServiceTestCase
                 'type' => 'Landline',
                 'proxy' => true,
             ],
-        ]);
+        ], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('name', $result);
@@ -101,7 +84,7 @@ class CommunityControllerTest extends BMSServiceTestCase
         /** @var Location|null $location */
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('POST', '/api/basic/web-app/v1/communities', [
+        $this->client->request('POST', '/api/basic/web-app/v1/communities', [
             'address' => [
                 'type' => 'test type',
                 'locationGroup' => 'test locationGroup',
@@ -110,14 +93,11 @@ class CommunityControllerTest extends BMSServiceTestCase
                 'postcode' => 'test postcode',
                 'locationId' => $location->getId(),
             ],
-        ]);
+        ], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('name', $result);
@@ -173,14 +153,11 @@ class CommunityControllerTest extends BMSServiceTestCase
             ],
         ];
 
-        $this->request('PUT', '/api/basic/web-app/v1/communities/'.$id, $data);
+        $this->client->request('PUT', '/api/basic/web-app/v1/communities/'.$id, $data, [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -209,14 +186,11 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/communities/'.$id);
+        $this->client->request('GET', '/api/basic/web-app/v1/communities/'.$id, [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -241,14 +215,11 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        $this->request('GET', '/api/basic/web-app/v1/communities?sort[]=id.asc&filter[fulltext]=test');
+        $this->client->request('GET', '/api/basic/web-app/v1/communities?sort[]=id.asc&filter[fulltext]=test', [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
@@ -264,7 +235,7 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        $this->request('DELETE', '/api/basic/web-app/v1/communities/'.$id);
+        $this->client->request('DELETE', '/api/basic/web-app/v1/communities/'.$id, [], [], $this->addAuth());
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
 
@@ -280,16 +251,18 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/communities/'.$id);
+        $this->client->request('GET', '/api/basic/web-app/v1/communities/'.$id, [], [], $this->addAuth());
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }
 
     public function testGetCommunitiesByProject()
     {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         try {
             /** @var Community $institution */
-            $institution = $this->em->getRepository(Community::class)->createQueryBuilder('i')
+            $institution = $em->getRepository(Community::class)->createQueryBuilder('i')
                 ->setMaxResults(1)
                 ->getQuery()
                 ->getSingleResult();
@@ -297,12 +270,9 @@ class CommunityControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There is no Community to be tested');
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/projects/'.$institution->getProjects()[0]->getId().'/communities');
+        $this->client->request('GET', '/api/basic/web-app/v1/projects/'.$institution->getProjects()[0]->getId().'/communities', [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "totalCount": "*", 
             "data": "*"
