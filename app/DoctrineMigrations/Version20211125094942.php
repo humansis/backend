@@ -16,7 +16,7 @@ final class Version20211125094942 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql("UPDATE import_queue SET state = 'Valid' WHERE state LIKE 'Suspicious'");
-        $this->addSql('ALTER TABLE import_queue CHANGE state state ENUM(\'New\', \'Valid\', \'Invalid\', \'Invalid Exported\', \'Identity Candidate\', \'Unique Candidate\', \'Similarity Candidate\', \'To Create\', \'To Update\', \'To Link\', \'To Ignore\', \'Created\', \'Updated\', \'LINKED\') NOT NULL COMMENT \'(DC2Type:enum_import_queue_state)\'');
+        $this->addSql('ALTER TABLE import_queue CHANGE state state ENUM(\'New\', \'Valid\', \'Invalid\', \'Invalid Exported\', \'Identity Candidate\', \'Unique Candidate\', \'Similarity Candidate\', \'To Create\', \'To Update\', \'To Link\', \'To Ignore\', \'Created\', \'Updated\', \'Linked\') NOT NULL COMMENT \'(DC2Type:enum_import_queue_state)\'');
     }
 
     public function down(Schema $schema): void

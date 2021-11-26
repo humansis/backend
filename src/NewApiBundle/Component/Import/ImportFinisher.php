@@ -16,12 +16,12 @@ use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
+use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
 use NewApiBundle\Workflow\WorkflowTool;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 use UserBundle\Entity\User;
-use function _PHPStan_8f2e45ccf\RingCentral\Psr7\str;
 
 class ImportFinisher
 {
@@ -104,9 +104,10 @@ class ImportFinisher
             $this->removeFinishedQueue($item);
         }*/
 
+        // TODO TO_IGNORE = TO_LINK => unify states in the future
         $queueToLink = $this->queueRepository->findBy([
             'import' => $import,
-            'state' => ImportQueueState::TO_LINK,
+            'state' => ImportQueueState::TO_IGNORE,
         ]);
         $this->logImportDebug($import, "Items to link: ".count($queueToLink));
         foreach ($queueToLink as $item) {
@@ -119,6 +120,8 @@ class ImportFinisher
             $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
             //$this->removeFinishedQueue($item);
             $this->logImportInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
+
+            WorkflowTool::checkAndApply($this->importQueueStateMachine, $item, [ImportQueueTransitions::LINK]);
         }
 
         // will be removed in clean command
@@ -181,6 +184,8 @@ class ImportFinisher
         }
         //$this->removeFinishedQueue($item);
         $this->logImportInfo($import, "Created Household #{$createdHousehold->getId()}");
+
+        WorkflowTool::checkAndApply($this->importQueueStateMachine, $item, [ImportQueueTransitions::CREATE]);
     }
 
     /**
@@ -218,6 +223,8 @@ class ImportFinisher
         $this->linkHouseholdToQueue($import, $updatedHousehold, $acceptedDuplicity->getDecideBy());
         //$this->removeFinishedQueue($item);
         $this->logImportInfo($import, "Updated Household #{$updatedHousehold->getId()}");
+
+        WorkflowTool::checkAndApply($this->importQueueStateMachine, $item, [ImportQueueTransitions::UPDATE]);
     }
 
     private function linkHouseholdToQueue(Import $import, Household $household, User $decide): void

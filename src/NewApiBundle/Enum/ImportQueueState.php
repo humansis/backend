@@ -12,7 +12,6 @@ final class ImportQueueState
     const IDENTITY_CANDIDATE = 'Identity Candidate';
     const UNIQUE_CANDIDATE = 'Unique Candidate';
     const SIMILARITY_CANDIDATE = 'Similarity Candidate';
-    const SUSPICIOUS = 'Suspicious';
     const TO_CREATE = 'To Create';
     const TO_UPDATE = 'To Update';
     const TO_LINK = 'To Link';

@@ -57,10 +57,7 @@ class IdentityChecker
         }
 
         foreach ($this->queueRepository->getItemsToIdentityCheck($import, $batchSize) as $i => $item) {
-
-            if ($this->importQueueStateMachine->can($item, ImportQueueTransitions::SUSPICIOUS)) {
-                $this->importQueueStateMachine->apply($item, ImportQueueTransitions::SUSPICIOUS);
-            }
+            $this->checkOne($item);
 
             if ($i % 500 === 0) {
                 $this->entityManager->flush();
@@ -81,13 +78,37 @@ class IdentityChecker
 
     /**
      * @param ImportQueue $item
+     */
+    protected function checkOne(ImportQueue $item): void
+    {
+        $duplicities = $this->validateItemDuplicities($item);
+        WorkflowTool::checkAndApply($this->importQueueStateMachine, $item,
+            [count($duplicities) > 0 ? ImportQueueTransitions::IDENTITY_CANDIDATE : ImportQueueTransitions::UNIQUE_CANDIDATE]);
+    }
+
+    /**
+     * @param ImportQueue $item
      *
      * @return Beneficiary[]
      */
-    public function getItemDuplicities(ImportQueue $item): array
+    protected function validateItemDuplicities(ImportQueue $item): array
     {
+        /* probably works but we have bad testing data
+        $ids = $this->findInQueue($item);
+        foreach ($ids as $id) {
+            $importDuplicity = new ImportQueueDuplicity($item, $id);
+            $importDuplicity->setDecideAt(new \DateTime('now'));
+            $this->entityManager->persist($importDuplicity);
+
+            $item->setState(ImportQueueState::SUSPICIOUS);
+            $this->entityManager->persist($item);
+            $found = true;
+        }
+        */
+
         $index = 0;
         $bnfDuplicities = [];
+        $duplicities = [];
         foreach ($item->getContent() as $c) {
             if (empty($c['ID Type']) || empty($c['ID Number'])) {
                 $this->logImportDebug($item->getImport(),
@@ -107,47 +128,28 @@ class IdentityChecker
                 $this->logImportDebug($item->getImport(), "Found no duplicities");
             }
 
-            $index++;
-        }
+            foreach ($bnfDuplicities as $bnf) {
+                if (!array_key_exists($bnf->getHousehold()->getId(), $duplicities)) {
+                    $duplicity = new ImportBeneficiaryDuplicity($item, $bnf->getHousehold());
+                    $duplicity->setDecideAt(new \DateTime('now'));
+                    $item->getImportBeneficiaryDuplicities()->add($duplicity);
+                    $this->entityManager->persist($duplicity);
 
-        return $bnfDuplicities;
-    }
+                    $duplicities[$bnf->getHousehold()->getId()] = $duplicity;
+                }
+                $importDuplicity = $duplicities[$bnf->getHousehold()->getId()];
+                $importDuplicity->addReason("Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
 
-    public function validateItem(ImportQueue $item): void
-    {
-        /* probably works but we have bad testing data
-        $ids = $this->findInQueue($item);
-        foreach ($ids as $id) {
-            $importDuplicity = new ImportQueueDuplicity($item, $id);
-            $importDuplicity->setDecideAt(new \DateTime('now'));
-            $this->entityManager->persist($importDuplicity);
-
-            $item->setState(ImportQueueState::SUSPICIOUS);
-            $this->entityManager->persist($item);
-            $found = true;
-        }
-        */
-        $duplicities = [];
-        $bnfDuplicities = $this->getItemDuplicities($item);
-
-        foreach ($bnfDuplicities as $bnf) {
-            if (!array_key_exists($bnf->getHousehold()->getId(), $duplicities)) {
-                $duplicity = new ImportBeneficiaryDuplicity($item, $bnf->getHousehold());
-                $duplicity->setDecideAt(new \DateTime('now'));
-                $item->getImportBeneficiaryDuplicities()->add($duplicity);
-                $this->entityManager->persist($duplicity);
-
-                $duplicities[$bnf->getHousehold()->getId()] = $duplicity;
+                $this->logImportInfo($item->getImport(),
+                    "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
             }
-            $importDuplicity = $duplicities[$bnf->getHousehold()->getId()];
-            $importDuplicity->addReason("Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
-
-            $this->logImportInfo($item->getImport(),
-                "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
+            $index++;
         }
 
         $item->setIdentityCheckedAt(new \DateTime());
         $this->entityManager->persist($item);
+
+        return $bnfDuplicities;
     }
 
     /**
@@ -158,7 +160,7 @@ class IdentityChecker
     public function isImportQueueSuspicious(Import $import): bool
     {
         $queue = $this->entityManager->getRepository(ImportQueue::class)
-            ->findBy(['import' => $import, 'state' => ImportQueueState::SUSPICIOUS]);
+            ->findBy(['import' => $import, 'state' => ImportQueueState::IDENTITY_CANDIDATE]);
 
         return count($queue) > 0;
     }

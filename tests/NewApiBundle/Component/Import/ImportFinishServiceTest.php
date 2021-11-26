@@ -245,7 +245,7 @@ class ImportFinishServiceTest extends KernelTestCase
     public function testUndecided()
     {
         $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
-        $queueItem->setState(ImportQueueState::SUSPICIOUS);
+        $queueItem->setState(ImportQueueState::IDENTITY_CANDIDATE);
         $duplicity = new ImportBeneficiaryDuplicity($queueItem, $this->originHousehold);
         $duplicity->setState(ImportDuplicityState::DUPLICITY_CANDIDATE);
         $duplicity->setDecideAt(new \DateTime());

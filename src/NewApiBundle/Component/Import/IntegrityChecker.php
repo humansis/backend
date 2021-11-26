@@ -62,9 +62,7 @@ class IntegrityChecker
         }
 
         foreach ($this->queueRepository->getItemsToIntegrityCheck($import, $batchSize) as $i => $item) {
-
-            WorkflowTool::checkAndApply($this->importQueueStateMachine, $item,
-                [ImportQueueTransitions::VALIDATE, ImportQueueTransitions::INVALIDATE]);
+            $this->checkOne($item);
 
             if ($i % 500 === 0) {
                 $this->entityManager->flush();
@@ -77,10 +75,27 @@ class IntegrityChecker
 
     /**
      * @param ImportQueue $item
+     */
+    protected function checkOne(ImportQueue $item): void
+    {
+        $violations = $this->getQueueItemViolations($item);
+        $message = $violations['message'];
+        if ($violations['hasViolations']) {
+            $message['raw'] = $item->getContent();
+            $item->setMessage(json_encode($message));
+            $this->entityManager->persist($item);
+        }
+
+        WorkflowTool::checkAndApply($this->importQueueStateMachine, $item,
+            [ImportQueueTransitions::VALIDATE, ImportQueueTransitions::INVALIDATE]);
+    }
+
+    /**
+     * @param ImportQueue $item
      *
      * @return array
      */
-    public function getQueueViolations(ImportQueue $item): array
+    private function getQueueItemViolations(ImportQueue $item): array
     {
         $iso3 = $item->getImport()->getProject()->getIso3();
 

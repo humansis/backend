@@ -245,10 +245,13 @@ services:
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@beneficiary.household_service"
+            - '@monolog.logger.import'
 
     NewApiBundle\Component\Import\ImportReset:
         arguments:
             - "@doctrine.orm.entity_manager"
+            - '@monolog.logger.import'
+
 
     NewApiBundle\Component\Import\DuplicityResolver:
         arguments:
@@ -349,28 +352,6 @@ services:
 
     workflow.import_queue.default_subscriber:
         class: NewApiBundle\Event\Subscriber\ImportQueue\ImportQueueDefaultSubscriber
-        arguments:
-            - '@doctrine.orm.entity_manager'
-        tags:
-            - { name: kernel.event_subscriber }
-
-    workflow.import_queue.validator_subscriber:
-        class: NewApiBundle\Event\Subscriber\ImportQueue\IntegritySubscriber
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - '@NewApiBundle\Component\Import\IntegrityChecker'
-        tags:
-            - { name: kernel.event_subscriber }
-
-    workflow.import_queue.identity_subscriber:
-        class: NewApiBundle\Event\Subscriber\ImportQueue\IdentitySubscriber
-        arguments:
-            - '@NewApiBundle\Component\Import\IdentityChecker'
-        tags:
-            - { name: kernel.event_subscriber }
-
-    workflow.import_queue.finish_subscriber:
-        class: NewApiBundle\Event\Subscriber\ImportQueue\FinishSubscriber
         arguments:
             - '@doctrine.orm.entity_manager'
         tags:
