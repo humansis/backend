@@ -10,6 +10,7 @@ use NewApiBundle\Component\Import\CellParameters;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
+use NewApiBundle\InputType\Helper\EnumsBuilder;
 use NewApiBundle\Validator\Constraints\ImportDate;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -401,13 +402,9 @@ class HouseholdMember
      */
     public function getAssets(): array
     {
-        if (empty($this->assets)) {
-            return [];
-        }
-        $assets = explode(',', $this->assets);
-        return array_map(function ($asset) {
-            return HouseholdAssets::valueFromAPI($asset);
-        }, $assets);
+        $enumBuilder = new EnumsBuilder(HouseholdAssets::class);
+        $enumBuilder->setNullToEmptyArrayTransformation();
+        return $enumBuilder->buildInputValue(explode(',', $this->assets));
     }
 
     /**
@@ -416,12 +413,8 @@ class HouseholdMember
      */
     public function getSupportReceivedTypes(): array
     {
-        if (empty($this->supportReceivedTypes)) {
-            return [];
-        }
-        $types = explode(',', $this->supportReceivedTypes);
-        return array_map(function ($type) {
-            return HouseholdSupportReceivedType::valueFromAPI($type);
-        }, $types);
+        $enumBuilder = new EnumsBuilder(HouseholdSupportReceivedType::class);
+        $enumBuilder->setNullToEmptyArrayTransformation();
+        return $enumBuilder->buildInputValue(explode(',', $this->supportReceivedTypes));
     }
 }

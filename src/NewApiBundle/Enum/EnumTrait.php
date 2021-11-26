@@ -28,6 +28,7 @@ trait EnumTrait
      * @param int|string $APIValue
      *
      * @return string|int|bool
+     * @throws EnumValueNoFoundException
      */
     public static function valueFromAPI($APIValue)
     {
@@ -49,35 +50,20 @@ trait EnumTrait
                 }
             }
         }
-        echo "INPUT: $APIValue = $normalizedApiValue\n";
-        foreach (self::values() as $value) {
-            $normalizedValue = self::normalizeValue($value);
-            echo "$value = $normalizedValue\n";
-        }
-        throw new \InvalidArgumentException(
-            sprintf("Enum type %s got value %s. Expected anything from '%s'.",
-                __CLASS__,
-                $APIValue,
-                implode("', '", self::values())
-            )
-        );
+        throw new EnumValueNoFoundException(__CLASS__, $APIValue);
     }
 
     /**
      * @param string|int|bool $value
      *
      * @return string|int|bool
+     *
+     * @throws EnumApiValueNoFoundException
      */
     public static function valueToAPI($value)
     {
         if (!isset(self::apiMap()[$value]))
-            throw new \InvalidArgumentException(
-                sprintf("Enum type %s got value %s. Expected anything from '%s'.",
-                    __CLASS__,
-                    $value,
-                    implode("', '", array_keys(self::apiMap()))
-                )
-            );
+            throw new EnumApiValueNoFoundException(__CLASS__, $value);
         return self::apiMap()[$value];
     }
 

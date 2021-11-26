@@ -25,6 +25,7 @@ use Doctrine\ORM\EntityNotFoundException;
 use Exception;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
+use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\Beneficiary\Address\CampAddressInputType;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
@@ -33,6 +34,7 @@ use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 use NewApiBundle\InputType\Beneficiary\CountrySpecificsAnswerInputType;
 use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 use NewApiBundle\InputType\Beneficiary\PhoneInputType;
+use NewApiBundle\InputType\Helper\EnumsBuilder;
 use NewApiBundle\InputType\HouseholdCreateInputType;
 use NewApiBundle\InputType\HouseholdProxyInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
@@ -386,7 +388,9 @@ class HouseholdService
         }
 
         $shelter = isset($householdArray["shelter_status"]) ? HouseholdShelterStatus::valueFromAPI($householdArray["shelter_status"]) : null;
-        $assets = array_map(function ($asset) { return HouseholdAssets::valueFromAPI($asset); }, $householdArray["assets"] ?? []);
+
+        $enumBuilder = new EnumsBuilder(HouseholdAssets::class);
+        $assets = $enumBuilder->buildInputValue($householdArray["assets"] ?? []);
 
         $household->setNotes($householdArray["notes"])
             ->setLivelihood($householdArray["livelihood"])

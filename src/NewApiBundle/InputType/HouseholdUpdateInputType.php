@@ -15,6 +15,7 @@ use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 use NewApiBundle\InputType\Beneficiary\CountrySpecificsAnswerInputType;
 use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 use NewApiBundle\InputType\Beneficiary\PhoneInputType;
+use NewApiBundle\InputType\Helper\EnumsBuilder;
 use NewApiBundle\Request\InputTypeInterface;
 use NewApiBundle\Validator\Constraints\Country;
 use NewApiBundle\Validator\Constraints\Iso8601;
@@ -278,10 +279,9 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      */
     public function getAssets(): array
     {
-        if (null === $this->assets) return [];
-        return array_map(function ($asset) {
-            return HouseholdAssets::valueFromAPI($asset);
-        }, $this->assets);
+        $enumBuilder = new EnumsBuilder(HouseholdAssets::class);
+        $enumBuilder->setNullToEmptyArrayTransformation();
+        return $enumBuilder->buildInputValue($this->assets);
     }
 
     /**
@@ -492,10 +492,9 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      */
     public function getSupportReceivedTypes(): array
     {
-        if (null === $this->supportReceivedTypes) return [];
-        return array_map(function ($type) {
-            return HouseholdSupportReceivedType::valueFromAPI($type);
-        }, $this->supportReceivedTypes);
+        $enumBuilder = new EnumsBuilder(HouseholdSupportReceivedType::class);
+        $enumBuilder->setNullToEmptyArrayTransformation();
+        return $enumBuilder->buildInputValue($this->supportReceivedTypes);
     }
 
     /**

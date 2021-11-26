@@ -13,6 +13,7 @@ use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 use NewApiBundle\InputType\Beneficiary\CountrySpecificsAnswerInputType;
 use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 use NewApiBundle\InputType\Beneficiary\PhoneInputType;
+use NewApiBundle\InputType\Helper\EnumsBuilder;
 use NewApiBundle\InputType\HouseholdCreateInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
 use ProjectBundle\Enum\Livelihood;
@@ -74,11 +75,10 @@ trait HouseholdInputBuilderTrait
             $household->setSupportReceivedTypes($receivedTypes);
         }
 
+
         if (null !== $this->assets) {
-            $assets = [];
-            foreach (explode(',', $this->assets) as $assetName) {
-                $assets[] = HouseholdAssets::valueFromAPI($assetName);
-            }
+            $enumBuilder = new EnumsBuilder(HouseholdAssets::class);
+            $assets = $enumBuilder->buildInputValue(explode(',', $this->assets));
             $household->setAssets($assets);
         }
 

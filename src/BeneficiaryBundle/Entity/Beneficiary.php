@@ -690,7 +690,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
         $supportReceivedTypes = [];
         foreach ((array) $this->getHousehold()->getSupportReceivedTypes() as $type) {
-            $supportReceivedTypes[] = HouseholdSupportReceivedType::valueFromAPI($type);
+            $supportReceivedTypes[] = HouseholdSupportReceivedType::valueToAPI($type);
         }
 
         $shelterStatus = '';
