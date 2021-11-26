@@ -47,6 +47,7 @@ class IdentitySubscriber implements EventSubscriberInterface
             'workflow.import.guard.'.ImportTransitions::FAIL_IDENTITY => ['guardIfImportIsInvalid'],
             'workflow.import.guard.'.ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES => ['guardIfImportIsNotSuspicious'],
             'workflow.import.entered.'.ImportTransitions::CHECK_IDENTITY => ['checkIdentity'],
+            'workflow.import.entered.'.ImportTransitions::REDO_IDENTITY => ['checkIdentity'],
         ];
     }
 

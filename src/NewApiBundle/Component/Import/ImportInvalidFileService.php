@@ -7,9 +7,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportInvalidFile;
 use NewApiBundle\Entity\ImportQueue;
-use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportQueueTransitions;
+use NewApiBundle\Workflow\WorkflowTool;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -140,10 +140,7 @@ class ImportInvalidFileService
                 ++$currentRow;
             }
 
-            if($this->importQueueStateMachine->can($entry, ImportQueueTransitions::INVALIDATE_EXPORT)){
-                $this->importQueueStateMachine->apply($entry, ImportQueueTransitions::INVALIDATE_EXPORT);
-                $entry->setState(ImportQueueState::INVALID_EXPORTED);
-            }
+            WorkflowTool::checkAndApply($this->importQueueStateMachine, $entry, [ImportQueueTransitions::INVALIDATE_EXPORT]);
         }
     }
 

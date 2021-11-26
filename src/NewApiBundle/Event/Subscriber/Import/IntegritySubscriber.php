@@ -61,30 +61,12 @@ class IntegritySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.import.guard.'.ImportTransitions::CHECK_INTEGRITY => ['guardIfImportHasValidFile'],
-            'workflow.import.guard.'.ImportTransitions::REDO_INTEGRITY => ['guardIfImportHasValidFile'],
             'workflow.import.guard.'.ImportTransitions::COMPLETE_INTEGRITY => ['guardIfImportHasAnyValidQueueItem'],
             'workflow.import.guard.'.ImportTransitions::FAIL_INTEGRITY => ['guardIfImportHasAnyInvalidQueueItem'],
             'workflow.import.entered.'.ImportTransitions::CHECK_INTEGRITY => ['checkIntegrity'],
+            'workflow.import.entered.'.ImportTransitions::REDO_INTEGRITY => ['checkIntegrity'],
             'workflow.import.entered.'.ImportTransitions::FAIL_INTEGRITY => ['generateFile'],
         ];
-    }
-
-    /**
-     * @param GuardEvent $guardEvent
-     */
-    public function guardIfImportHasValidFile(GuardEvent $guardEvent): void
-    {
-        /** @var Import $import */
-        $import = $guardEvent->getSubject();
-
-        // fail if there is no valid file
-        if (0 === $this->entityManager->getRepository(ImportFile::class)->count([
-                'import' => $import,
-                'structureViolations' => null,
-            ])) {
-            $guardEvent->addTransitionBlocker(new TransitionBlocker('Import has no valid file', '0'));
-        }
     }
 
     /**

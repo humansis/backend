@@ -7,6 +7,7 @@ use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\Integrity;
 use NewApiBundle\Entity\Import;
+use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
@@ -21,8 +22,6 @@ use Symfony\Component\Workflow\WorkflowInterface;
 
 class IntegrityChecker
 {
-    const BATCH_SIZE = 1;
-
     /** @var ValidatorInterface */
     private $validator;
 
@@ -59,6 +58,12 @@ class IntegrityChecker
     {
         if (ImportState::INTEGRITY_CHECKING !== $import->getState()) {
             throw new \BadMethodCallException('Unable to execute checker. Import is not ready to integrity check.');
+        }
+
+        if ($this->hasImportValidFile($import) === false) {
+            WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::FAIL_INTEGRITY]);
+
+            return;
         }
 
         foreach ($this->queueRepository->getItemsToIntegrityCheck($import, $batchSize) as $i => $item) {
@@ -155,5 +160,18 @@ class IntegrityChecker
         }
 
         return ['column' => $mapping[$property], 'violation' => $violation->getMessage(), 'value' => $violation->getInvalidValue()];
+    }
+
+    /**
+     * @param Import $import
+     *
+     * @return bool
+     */
+    private function hasImportValidFile(Import $import): bool
+    {
+        return (0 != $this->entityManager->getRepository(ImportFile::class)->count([
+                'import' => $import,
+                'structureViolations' => null,
+            ]));
     }
 }

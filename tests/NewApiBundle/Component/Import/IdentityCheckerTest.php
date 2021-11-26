@@ -17,12 +17,6 @@ class IdentityCheckerTest extends KernelTestCase
     /** @var EntityManagerInterface */
     private static $entityManager;
 
-    /** @var LoggerInterface */
-    private static $loggerInterface;
-
-    /** @var WorkflowInterface */
-    private static $importStateMachine;
-
     public static function setUpBeforeClass()
     {
         parent::setUpBeforeClass();
@@ -30,8 +24,6 @@ class IdentityCheckerTest extends KernelTestCase
         $kernel = self::bootKernel();
 
         self::$entityManager = $kernel->getContainer()->get('doctrine')->getManager();
-        self::$loggerInterface = self::$container->get('logger');
-        self::$importStateMachine = self::$container->get('state_machine.import');
     }
 
     public function testSelfCheck()
@@ -40,7 +32,7 @@ class IdentityCheckerTest extends KernelTestCase
         $import = self::$entityManager->getRepository(Import::class)->findBy(['title' => 'test_fixtures'])[0];
         $import->setState(ImportState::IDENTITY_CHECKING);
 
-        $checker = new IdentityChecker(self::$entityManager, self::$loggerInterface, self::$importStateMachine);
+        $checker = self::$container->get(IdentityChecker::class);
         $checker->check($import);
 
         $count = self::$entityManager->createQueryBuilder()
