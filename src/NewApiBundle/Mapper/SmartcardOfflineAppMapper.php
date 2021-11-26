@@ -6,7 +6,7 @@ namespace NewApiBundle\Mapper;
 use NewApiBundle\Serializer\MapperInterface;
 use VoucherBundle\Entity\Smartcard;
 
-class SmartcardMapper implements MapperInterface
+class SmartcardOfflineAppMapper implements MapperInterface
 {
     use MapperContextTrait;
 

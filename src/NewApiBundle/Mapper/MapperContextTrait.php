@@ -28,4 +28,15 @@ trait MapperContextTrait
             $context[MapperInterface::OFFLINE_APP] === true;
     }
 
+    /**
+     * @param array $context
+     *
+     * @return bool
+     */
+    private function isVendorApp(array $context): bool
+    {
+        return isset($context[MapperInterface::VENDOR_APP]) &&
+            $context[MapperInterface::VENDOR_APP] === true;
+    }
+
 }

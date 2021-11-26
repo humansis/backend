@@ -53,9 +53,7 @@ class SmartcardController extends AbstractVendorAppController
             throw $exception;
         }
 
-        $json = $this->get('serializer')->serialize($purchase->getSmartcard(), 'json', ['groups' => ['SmartcardOverview']]);
-
-        return new Response($json);
+        return $this->json($purchase->getSmartcard());
     }
 
     private function writeData(string $type, string $user, string $smartcard, $data): void
