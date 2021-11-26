@@ -451,7 +451,7 @@ class HouseholdHead
     {
         $enumBuilder = new EnumsBuilder(HouseholdAssets::class);
         $enumBuilder->setNullToEmptyArrayTransformation();
-        return $enumBuilder->buildInputValue(explode(',', $this->assets));
+        return $enumBuilder->buildInputValuesFromExplode($this->assets);
     }
 
     /**
@@ -467,6 +467,6 @@ class HouseholdHead
     {
         $enumBuilder = new EnumsBuilder(HouseholdSupportReceivedType::class);
         $enumBuilder->setNullToEmptyArrayTransformation();
-        return $enumBuilder->buildInputValue(explode(',', $this->supportReceivedTypes));
+        return $enumBuilder->buildInputValuesFromExplode($this->supportReceivedTypes);
     }
 }

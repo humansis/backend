@@ -13,6 +13,7 @@ class EnumsBuilder
     private $enumClassName;
     /** @var bool */
     private $nullToEmptyArrayTransformation = false;
+    private $explodeDelimiters = [',', ' ', ';'];
 
     /**
      * @param string $enumClassName
@@ -30,7 +31,15 @@ class EnumsBuilder
         $this->nullToEmptyArrayTransformation = $nullToEmptyArrayTransformation;
     }
 
-    public function buildInputValue(?array $apiValues, ?string $propertyPath = null): ?array
+    /**
+     * @param string[] $explodeDelimiters
+     */
+    public function setExplodeDelimiters(array $explodeDelimiters): void
+    {
+        $this->explodeDelimiters = $explodeDelimiters;
+    }
+
+    public function buildInputValues(?array $apiValues): ?array
     {
         if (null === $apiValues) {
             return $this->nullToEmptyArrayTransformation ? [] : null;
@@ -44,5 +53,26 @@ class EnumsBuilder
             }
         }
         return $enumValues;
+    }
+
+    public function buildInputValuesFromExplode(?string $apiValues): ?array
+    {
+        if (null === $apiValues) {
+            return $this->nullToEmptyArrayTransformation ? [] : null;
+        }
+        $apiValueCandidates = [$apiValues];
+        foreach ($this->explodeDelimiters as $delimiter) {
+            $apiValueCandidates = $this->explode($apiValueCandidates, $delimiter);
+        }
+        return $this->buildInputValues($apiValueCandidates);
+    }
+
+    private function explode(iterable $values, $delimiter): iterable
+    {
+        foreach ($values as $value) {
+            foreach (explode($delimiter, $value) as $shard) {
+                if (!empty(trim($shard))) yield trim($shard);
+            }
+        }
     }
 }

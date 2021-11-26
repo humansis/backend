@@ -281,7 +281,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     {
         $enumBuilder = new EnumsBuilder(HouseholdAssets::class);
         $enumBuilder->setNullToEmptyArrayTransformation();
-        return $enumBuilder->buildInputValue($this->assets);
+        return $enumBuilder->buildInputValues($this->assets);
     }
 
     /**
@@ -494,7 +494,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     {
         $enumBuilder = new EnumsBuilder(HouseholdSupportReceivedType::class);
         $enumBuilder->setNullToEmptyArrayTransformation();
-        return $enumBuilder->buildInputValue($this->supportReceivedTypes);
+        return $enumBuilder->buildInputValues($this->supportReceivedTypes);
     }
 
     /**

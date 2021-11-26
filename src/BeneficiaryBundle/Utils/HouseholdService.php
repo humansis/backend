@@ -390,7 +390,7 @@ class HouseholdService
         $shelter = isset($householdArray["shelter_status"]) ? HouseholdShelterStatus::valueFromAPI($householdArray["shelter_status"]) : null;
 
         $enumBuilder = new EnumsBuilder(HouseholdAssets::class);
-        $assets = $enumBuilder->buildInputValue($householdArray["assets"] ?? []);
+        $assets = $enumBuilder->buildInputValues($householdArray["assets"] ?? []);
 
         $household->setNotes($householdArray["notes"])
             ->setLivelihood($householdArray["livelihood"])

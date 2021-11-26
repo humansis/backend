@@ -78,7 +78,7 @@ trait HouseholdInputBuilderTrait
 
         if (null !== $this->assets) {
             $enumBuilder = new EnumsBuilder(HouseholdAssets::class);
-            $assets = $enumBuilder->buildInputValue(explode(',', $this->assets));
+            $assets = $enumBuilder->buildInputValuesFromExplode($this->assets);
             $household->setAssets($assets);
         }
 
