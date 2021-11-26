@@ -3,21 +3,21 @@
 
 namespace DistributionBundle\Model;
 
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 
 class Criteria
 {
 
     /**
      * @var string $tableString
-     * @SymfonyGroups({"Criteria"})
+     *
      *
      */
     protected $tableString;
 
     /**
     * @var string $target
-    * @SymfonyGroups({"Criteria"})
+    *
     *
     */
     protected $target;

@@ -3,7 +3,7 @@
 namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 
 /**
  * CountrySpecificAnswer
@@ -19,7 +19,7 @@ class CountrySpecificAnswer
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullHousehold"})
+     *
      */
     private $id;
 
@@ -27,7 +27,7 @@ class CountrySpecificAnswer
      * @var string
      *
      * @ORM\Column(name="answer", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullHousehold"})
+     *
      */
     private $answer;
 
@@ -35,7 +35,7 @@ class CountrySpecificAnswer
      * @var CountrySpecific
      *
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\CountrySpecific", inversedBy="countrySpecificAnswers")
-     * @SymfonyGroups({"FullHousehold"})
+     *
      */
     private $countrySpecific;
 

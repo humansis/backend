@@ -7,7 +7,7 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 
 
 /**
@@ -25,7 +25,7 @@ class VoucherPurchase
      * @ORM\Column(name="id", type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @SymfonyGroups({"FullVoucher"})
+     *
      */
     private $id;
 
@@ -35,7 +35,7 @@ class VoucherPurchase
      * @ORM\ManyToOne(targetEntity="\VoucherBundle\Entity\Vendor")
      * @ORM\JoinColumn(nullable=false)
      *
-     * @SymfonyGroups({"FullVoucher"})
+     *
      */
     private $vendor;
 
@@ -51,7 +51,7 @@ class VoucherPurchase
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\VoucherPurchaseRecord", mappedBy="voucherPurchase", cascade={"persist"}, orphanRemoval=true)
      *
-     * @SymfonyGroups({"FullVoucher", "ValidatedAssistance"})
+     *
      */
     private $records;
 
@@ -60,7 +60,7 @@ class VoucherPurchase
      *
      * @ORM\Column(name="used_at", type="datetime", nullable=true)
      *
-     * @SymfonyGroups({"FullVoucher", "ValidatedAssistance"})
+     *
      */
     private $createdAt;
 

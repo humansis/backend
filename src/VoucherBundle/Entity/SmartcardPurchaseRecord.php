@@ -3,7 +3,7 @@
 namespace VoucherBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 
 
 /**
@@ -39,7 +39,7 @@ class SmartcardPurchaseRecord
      * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\Product")
      * @ORM\JoinColumn(nullable=false)
      *
-     * @SymfonyGroups({"FullSmartcard"})
+     *
      */
     private $product;
 
@@ -47,7 +47,7 @@ class SmartcardPurchaseRecord
      * @var float
      *
      * @ORM\Column(name="value", type="decimal", precision=10, scale=2)
-     * @SymfonyGroups({"FullSmartcard"})
+     *
      */
     private $value;
 
@@ -55,7 +55,7 @@ class SmartcardPurchaseRecord
      * @var string
      *
      * @ORM\Column(name="currency", type="string", nullable=true)
-     * @SymfonyGroups({"FullSmartcard"})
+     *
      */
     private $currency;
 
@@ -63,7 +63,7 @@ class SmartcardPurchaseRecord
      * @var mixed
      *
      * @ORM\Column(name="quantity", type="decimal", precision=10, scale=2, nullable=true)
-     * @SymfonyGroups({"FullSmartcard"})
+     *
      */
     private $quantity;
 

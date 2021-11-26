@@ -6,7 +6,7 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use UserBundle\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 // use Symfony\Component\Serializer\Annotation as JMS_Type;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 
 /**
  * Transaction
@@ -42,7 +42,7 @@ class Transaction
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @SymfonyGroups({"ValidatedAssistance"})
+     *
      *
      */
     private $id;
@@ -52,7 +52,7 @@ class Transaction
      *
      * @ORM\Column(name="transaction_id", type="string", length=45)
      *
-     * @SymfonyGroups({"ValidatedAssistance"})
+     *
      */
     private $transactionId;
 
@@ -61,7 +61,7 @@ class Transaction
      *
      * @ORM\Column(name="amount_sent", type="string")
      *
-     * @SymfonyGroups({"ValidatedAssistance"})
+     *
      */
     private $amountSent;
 
@@ -70,7 +70,7 @@ class Transaction
      *
      * @ORM\Column(name="date_sent", type="datetime")
      *
-     * @SymfonyGroups({"ValidatedAssistance"})
+     *
      */
     private $dateSent;
 
@@ -79,7 +79,7 @@ class Transaction
      *
      * @ORM\Column(name="transaction_status", type="smallint")
      *
-     * @SymfonyGroups({"ValidatedAssistance", "FullReceivers", "FullAssistance", "SmallAssistance"})
+     *
      */
     private $transactionStatus;
 
@@ -88,7 +88,7 @@ class Transaction
      *
      * @ORM\Column(name="message", type="string", length=255, nullable=true)
      *
-     * @SymfonyGroups({"ValidatedAssistance"})
+     *
      */
     private $message;
 
@@ -97,7 +97,7 @@ class Transaction
      *
      * @ORM\Column(name="money_received", type="boolean", nullable=true)
      *
-     * @SymfonyGroups({"ValidatedAssistance"})
+     *
      */
     private $moneyReceived;
 
@@ -106,7 +106,7 @@ class Transaction
      *
      * @ORM\Column(name="pickup_date", type="datetime", nullable=true)
      *
-     * @SymfonyGroups({"ValidatedAssistance"})
+     *
      */
     private $pickupDate;
 
@@ -123,7 +123,7 @@ class Transaction
      *
      * @ORM\Column(name="updated_on", type="datetime", nullable=true)
      *
-     * @SymfonyGroups({"ValidatedAssistance"})
+     *
      */
     private $updatedOn;
     

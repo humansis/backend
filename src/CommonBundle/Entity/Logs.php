@@ -3,7 +3,7 @@
 namespace CommonBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 
 
 /**
@@ -21,7 +21,7 @@ class Logs
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      * 
-     * @SymfonyGroups({"FullLogs"})
+     *
      */
     private $id;
 
@@ -30,7 +30,7 @@ class Logs
      *
      * @ORM\Column(name="url", type="string", length=255)
      * 
-     * @SymfonyGroups({"FullLogs"})
+     *
      */
     private $url;
 
@@ -46,7 +46,7 @@ class Logs
      *
      * @ORM\Column(name="mailUser", type="string", length=255)
      * 
-     * @SymfonyGroups({"FullLogs"})
+     *
      */
     private $mailUser;
 
@@ -55,7 +55,7 @@ class Logs
      *
      * @ORM\Column(name="method", type="string", length=255)
      * 
-     * @SymfonyGroups({"FullLogs"})
+     *
      */
     private $method;
 
@@ -63,7 +63,7 @@ class Logs
      * @var \DateTime
      *
      * @ORM\Column(name="date", type="datetime")
-     * @SymfonyGroups({"FullLogs"})
+     *
      */
     private $date;
 
@@ -72,7 +72,7 @@ class Logs
      *
      * @ORM\Column(name="httpStatus", type="integer")
      * 
-     * @SymfonyGroups({"FullLogs"})
+     *
      */
     private $httpStatus;
 
@@ -80,7 +80,7 @@ class Logs
      * @var string
      *
      * @ORM\Column(name="controller", type="string", length=255)
-     * @SymfonyGroups({"FullLogs"})
+     *
      */
     private $controller;
 
@@ -89,7 +89,7 @@ class Logs
      *
      * @ORM\Column(name="request", type="text")
      * 
-     * @SymfonyGroups({"FullLogs"})
+     *
      */
     protected $request;
 

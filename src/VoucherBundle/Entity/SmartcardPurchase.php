@@ -9,7 +9,7 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 
 /**
  * Smartcard purchase.
@@ -26,7 +26,7 @@ class SmartcardPurchase
      * @ORM\Column(name="id", type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @SymfonyGroups({"FullSmartcard"})
+     *
      */
     private $id;
 
@@ -36,7 +36,7 @@ class SmartcardPurchase
      * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\Smartcard", inversedBy="purchases")
      * @ORM\JoinColumn(nullable=false)
      *
-     * @SymfonyGroups({"FullSmartcard"})
+     *
      */
     private $smartcard;
 
@@ -46,7 +46,7 @@ class SmartcardPurchase
      * @ORM\ManyToOne(targetEntity="\VoucherBundle\Entity\Vendor")
      * @ORM\JoinColumn(nullable=false)
      *
-     * @SymfonyGroups({"FullSmartcard"})
+     *
      */
     private $vendor;
 
@@ -55,7 +55,7 @@ class SmartcardPurchase
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardPurchaseRecord", mappedBy="smartcardPurchase", cascade={"persist"}, orphanRemoval=true)
      *
-     * @SymfonyGroups({"FullSmartcard"})
+     *
      */
     private $records;
 
@@ -64,7 +64,7 @@ class SmartcardPurchase
      *
      * @ORM\Column(name="used_at", type="datetime", nullable=true)
      *
-     * @SymfonyGroups({"FullSmartcard"})
+     *
      */
     private $createdAt;
 
@@ -162,7 +162,7 @@ class SmartcardPurchase
     }
 
     /**
-     * @SymfonyGroups({"FullSmartcard"})
+     *
      * @return DateTimeInterface|null
      */
     public function getRedeemedAt(): ?DateTimeInterface

@@ -3,7 +3,7 @@
 namespace CommonBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 
 /**
  * Adm3
@@ -22,7 +22,7 @@ class Adm3
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullAssistance", "FullInstitution", "SmallAssistance", "FullVendor"})
+     *
      */
     private $id;
 
@@ -30,7 +30,7 @@ class Adm3
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @SymfonyGroups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullAssistance", "FullInstitution", "SmallAssistance", "FullVendor"})
+     *
      */
     private $name;
 
@@ -38,7 +38,7 @@ class Adm3
      * @var Adm2
      *
      * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Adm2")
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "FullVendor"})
+     *
      */
     private $adm2;
 
@@ -46,7 +46,7 @@ class Adm3
      * @var string
      *
      * @ORM\Column(name="code", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "FullVendor"})
+     *
      */
     private $code;
 

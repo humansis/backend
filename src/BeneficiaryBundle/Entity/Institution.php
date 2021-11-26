@@ -4,7 +4,7 @@ namespace BeneficiaryBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -35,7 +35,7 @@ class Institution extends AbstractBeneficiary
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullBeneficiary", "FullInstitution"})
+     *
      */
     private $name;
 
@@ -43,7 +43,7 @@ class Institution extends AbstractBeneficiary
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=255)
-     * @SymfonyGroups({"FullBeneficiary", "FullInstitution"})
+     *
      * @Assert\Choice(choices=BeneficiaryBundle\Entity\Institution::TYPE_ALL)
      */
     private $type;
@@ -57,7 +57,7 @@ class Institution extends AbstractBeneficiary
 
     /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Address", cascade={"persist", "remove"})
-     * @SymfonyGroups({"FullBeneficiary", "FullInstitution"})
+     *
      */
     private $address;
 
@@ -65,7 +65,7 @@ class Institution extends AbstractBeneficiary
      * @var string
      *
      * @ORM\Column(name="latitude", type="string", length=45, nullable=true)
-     * @SymfonyGroups({"FullBeneficiary", "FullInstitution"})
+     *
      */
     private $latitude;
 
@@ -73,7 +73,7 @@ class Institution extends AbstractBeneficiary
      * @var string
      *
      * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
-     * @SymfonyGroups({"FullBeneficiary", "FullInstitution"})
+     *
      */
     private $longitude;
 

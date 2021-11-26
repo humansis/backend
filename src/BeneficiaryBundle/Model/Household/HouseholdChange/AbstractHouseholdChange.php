@@ -3,7 +3,7 @@
 namespace BeneficiaryBundle\Model\Household\HouseholdChange;
 
 use BeneficiaryBundle\Entity\HouseholdActivity;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 use UserBundle\Entity\User;
 
 abstract class AbstractHouseholdChange
@@ -19,7 +19,7 @@ abstract class AbstractHouseholdChange
     }
 
     /**
-     * @SymfonyGroups({"HouseholdChanges"})
+     *
      */
     public function getAuthor(): ?User
     {
@@ -27,7 +27,7 @@ abstract class AbstractHouseholdChange
     }
 
     /**
-     * @SymfonyGroups({"HouseholdChanges"})
+     *
      */
     public function getCreatedAt(): \DateTimeInterface
     {
@@ -35,7 +35,7 @@ abstract class AbstractHouseholdChange
     }
 
     /**
-     * @SymfonyGroups({"HouseholdChanges"})
+     *
      */
     public function getChanges(): array
     {

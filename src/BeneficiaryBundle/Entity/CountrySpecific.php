@@ -5,7 +5,7 @@ namespace BeneficiaryBundle\Entity;
 use CommonBundle\Utils\ExportableInterface;
 use DistributionBundle\Model\Criteria;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 
 /**
  * CountrySpecific
@@ -21,7 +21,7 @@ class CountrySpecific extends Criteria implements ExportableInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullCountrySpecific", "FullHousehold", "Criteria"})
+     *
      */
     private $id;
 
@@ -29,7 +29,7 @@ class CountrySpecific extends Criteria implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="field_string", type="string", length=45)
-     * @SymfonyGroups({"FullCountrySpecific", "FullHousehold", "Criteria"})
+     *
      */
     private $fieldString;
 
@@ -37,7 +37,7 @@ class CountrySpecific extends Criteria implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=45)
-     * @SymfonyGroups({"FullCountrySpecific", "FullHousehold", "Criteria"})
+     *
      */
     private $type;
 
@@ -45,7 +45,7 @@ class CountrySpecific extends Criteria implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="country_iso3", type="string", length=45)
-     * @SymfonyGroups({"FullCountrySpecific", "FullHousehold"})
+     *
      */
     private $countryIso3;
 

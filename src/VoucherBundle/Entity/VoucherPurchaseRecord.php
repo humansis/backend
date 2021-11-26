@@ -3,7 +3,7 @@
 namespace VoucherBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 
 
 /**
@@ -20,7 +20,7 @@ class VoucherPurchaseRecord
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullVoucher"})
+     *
      */
     private $id;
 
@@ -38,7 +38,7 @@ class VoucherPurchaseRecord
      * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\Product")
      * @ORM\JoinColumn(nullable=false)
      *
-     * @SymfonyGroups({"FullVoucher", "ValidatedAssistance"})
+     *
      */
     private $product;
 
@@ -46,7 +46,7 @@ class VoucherPurchaseRecord
      * @var mixed
      *
      * @ORM\Column(name="value", type="decimal", precision=10, scale=2, nullable=true)
-     * @SymfonyGroups({"FullVoucher", "FullBooklet", "ValidatedAssistance"})
+     *
      */
     private $value;
 
@@ -54,7 +54,7 @@ class VoucherPurchaseRecord
      * @var mixed
      *
      * @ORM\Column(name="quantity", type="decimal", precision=10, scale=2, nullable=true)
-     * @SymfonyGroups({"FullVoucher", "FullBooklet", "ValidatedAssistance"})
+     *
      */
     private $quantity;
 

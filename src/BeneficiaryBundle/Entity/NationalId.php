@@ -3,7 +3,7 @@
 namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -29,7 +29,7 @@ class NationalId
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers"})
+     *
      */
     private $id;
 
@@ -37,7 +37,7 @@ class NationalId
      * @var string
      *
      * @ORM\Column(name="id_number", type="string", length=255)
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedAssistance", "FullInstitution"})
+     *
      */
     private $idNumber;
 
@@ -45,7 +45,7 @@ class NationalId
      * @var string
      *
      * @ORM\Column(name="id_type", type="string", length=45)
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "FullInstitution"})
+     *
      * @Assert\Choice(callback={"BeneficiaryBundle\Entity\NationalId", "types"})
      */
     private $idType;

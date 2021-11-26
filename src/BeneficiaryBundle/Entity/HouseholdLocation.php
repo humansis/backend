@@ -3,7 +3,7 @@
 namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 
 
 /**
@@ -40,7 +40,7 @@ class HouseholdLocation
      * @var string
      *
      * @ORM\Column(name="location_group", type="string", length=45)
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
+     *
      */
     private $locationGroup;
 
@@ -48,19 +48,19 @@ class HouseholdLocation
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=45)
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
+     *
      */
     private $type;
 
     /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Address", cascade={"persist", "remove"})
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
+     *
      */
     private $address;
 
      /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\CampAddress", cascade={"persist", "remove"})
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
+     *
      */
     private $campAddress;
 

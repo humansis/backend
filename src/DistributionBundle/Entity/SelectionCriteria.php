@@ -3,7 +3,7 @@
 namespace DistributionBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 
 /**
  * SelectionCriteria
@@ -19,7 +19,7 @@ class SelectionCriteria
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
+     *
      */
     private $id;
 
@@ -35,7 +35,7 @@ class SelectionCriteria
      * @var string
      *
      * @ORM\Column(name="table_string", type="string", length=255)
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
+     *
      */
     private $tableString;
 
@@ -43,7 +43,7 @@ class SelectionCriteria
      * @var string
      *
      * @ORM\Column(name="target", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
+     *
      */
     private $target;
 
@@ -51,7 +51,7 @@ class SelectionCriteria
      * @var string
      *
      * @ORM\Column(name="field_string", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
+     *
      */
     private $fieldString;
 
@@ -59,7 +59,7 @@ class SelectionCriteria
      * @var int
      *
      * @ORM\Column(name="field_id", type="integer", nullable=true)
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
+     *
      */
     private $idField;
 
@@ -67,7 +67,7 @@ class SelectionCriteria
      * @var string
      *
      * @ORM\Column(name="condition_string", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
+     *
      */
     private $conditionString;
 
@@ -75,7 +75,7 @@ class SelectionCriteria
      * @var string
      *
      * @ORM\Column(name="value_string", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
+     *
      */
     private $valueString;
 
@@ -83,7 +83,7 @@ class SelectionCriteria
      * @var int
      *
      * @ORM\Column(name="weight", type="integer")
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
+     *
      */
     private $weight;
 
@@ -91,7 +91,7 @@ class SelectionCriteria
      * @var int
      *
      * @ORM\Column(name="group_number", type="integer", nullable=false)
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
+     *
      */
     private $groupNumber;
 

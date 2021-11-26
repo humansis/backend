@@ -3,7 +3,7 @@
 namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 
 /**
  * Profile
@@ -19,7 +19,7 @@ class Profile
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullHousehold"})
+     *
      */
     private $id;
 
@@ -27,7 +27,7 @@ class Profile
      * @var string
      *
      * @ORM\Column(name="photo", type="string", length=255)
-     * @SymfonyGroups({"FullHousehold"})
+     *
      */
     private $photo;
 

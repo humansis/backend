@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 use VoucherBundle\Enum\SmartcardStates;
 
 /**
@@ -29,7 +29,7 @@ class Smartcard
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"SmartcardOverview", "ValidatedAssistance"})
+     *
      */
     private $id = 0;
 
@@ -37,7 +37,7 @@ class Smartcard
      * @var string serial number / UID
      *
      * @ORM\Column(name="code", type="string", length=14, unique=true, nullable=false)
-     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard", "ValidatedAssistance"})
+     *
      */
     private $serialNumber;
 
@@ -45,7 +45,7 @@ class Smartcard
      * @var Beneficiary
      *
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary", inversedBy="smartcards")
-     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
+     *
      */
     private $beneficiary;
 
@@ -53,7 +53,7 @@ class Smartcard
      * @var Collection|SmartcardDeposit[]
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardDeposit", mappedBy="smartcard", cascade={"persist"}, orphanRemoval=true)
-     * @SymfonyGroups({"FullSmartcard"})
+     *
      */
     private $deposites;
 
@@ -61,7 +61,7 @@ class Smartcard
      * @var Collection|SmartcardPurchase[]
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardPurchase", mappedBy="smartcard", cascade={"persist"}, orphanRemoval=true)
-     * @SymfonyGroups({"FullSmartcard"})
+     *
      */
     private $purchases;
 
@@ -70,7 +70,7 @@ class Smartcard
      * @see SmartcardStates::all()
      *
      * @ORM\Column(name="state", type="string", length=10, nullable=false)
-     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
+     *
      */
     private $state;
 
@@ -78,7 +78,7 @@ class Smartcard
      * @var string|null
      *
      * @ORM\Column(name="currency", type="string", length=3, nullable=true)
-     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
+     *
      */
     private $currency;
 
@@ -86,7 +86,7 @@ class Smartcard
      * @var \DateTimeInterface
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
-     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
+     *
      */
     private $createdAt;
 
@@ -94,7 +94,7 @@ class Smartcard
      * @var \DateTimeInterface
      *
      * @ORM\Column(name="disabled_at", type="datetime", nullable=true)
-     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
+     *
      */
     private $disabledAt;
 
@@ -263,7 +263,7 @@ class Smartcard
     /**
      * @return float
      *
-     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
+     *
      */
     public function getValue(): float
     {

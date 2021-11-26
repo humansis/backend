@@ -3,7 +3,7 @@
 namespace DistributionBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 
 /**
  * Commodity
@@ -24,21 +24,21 @@ class Commodity
 
     /**
      * @var ModalityType
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
+     *
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\ModalityType")
      */
     private $modalityType;
 
     /**
      * @var string
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
+     *
      * @ORM\Column(name="unit", type="string", length=45)
      */
     private $unit;
 
     /**
      * @var float
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
+     *
      * @ORM\Column(name="value", type="float")
      */
     private $value;
@@ -52,7 +52,7 @@ class Commodity
 
     /**
      * @var string
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
+     *
      * @ORM\Column(name="description", type="string",length=511, nullable=true)
      */
     private $description;

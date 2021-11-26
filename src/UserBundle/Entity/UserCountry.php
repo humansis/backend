@@ -3,7 +3,7 @@
 namespace UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 
 /**
  * UserCountry
@@ -33,7 +33,7 @@ class UserCountry
      * @var string
      *
      * @ORM\Column(name="iso3", type="string", length=3)
-     * @SymfonyGroups({"FullUser"})
+     *
      */
     private $iso3;
 

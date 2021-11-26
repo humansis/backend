@@ -10,7 +10,7 @@ use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\ReliefPackage;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 
 use UserBundle\Entity\User;
 
@@ -32,7 +32,7 @@ class SmartcardDeposit
      * @ORM\Column(name="id", type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @SymfonyGroups({"FullSmartcard"})
+     *
      */
     private $id;
 
@@ -42,7 +42,7 @@ class SmartcardDeposit
      * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\Smartcard", inversedBy="deposites")
      * @ORM\JoinColumn(nullable=false)
      *
-     * @SymfonyGroups({"FullSmartcard"})
+     *
      */
     private $smartcard;
 
@@ -52,7 +52,7 @@ class SmartcardDeposit
      * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User")
      * @ORM\JoinColumn(nullable=false)
      *
-     * @SymfonyGroups({"FullSmartcard"})
+     *
      */
     private $distributedBy;
 
@@ -75,7 +75,7 @@ class SmartcardDeposit
      * @var float
      *
      * @ORM\Column(name="value", type="decimal", precision=10, scale=2, nullable=false)
-     * @SymfonyGroups({"FullSmartcard"})
+     *
      */
     private $value;
 
@@ -83,7 +83,7 @@ class SmartcardDeposit
      * @var float
      *
      * @ORM\Column(name="balance", type="decimal", precision=10, scale=2, nullable=true)
-     * @SymfonyGroups({"FullSmartcard"})
+     *
      */
     private $balance;
 

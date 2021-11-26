@@ -5,7 +5,7 @@ namespace VoucherBundle\Entity;
 use CommonBundle\Utils\ExportableInterface;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 
 /**
  * Voucher.
@@ -21,7 +21,7 @@ class Voucher implements ExportableInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullVoucher"})
+     *
      */
     private $id;
 
@@ -29,7 +29,7 @@ class Voucher implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="code", type="string", length=255, unique=true)
-     * @SymfonyGroups({"FullVoucher"})
+     *
      */
     private $code;
 
@@ -37,21 +37,21 @@ class Voucher implements ExportableInterface
      * @var int
      *
      * @ORM\Column(name="value", type="integer")
-     * @SymfonyGroups({"FullVoucher", "FullBooklet", "ValidatedAssistance"})
+     *
      */
     private $value;
 
     /**
      * @ORM\ManyToOne(targetEntity="\VoucherBundle\Entity\Booklet", inversedBy="vouchers")
      * @ORM\JoinColumn(nullable=false)
-     * @SymfonyGroups({"FullVoucher"})
+     *
      */
     private $booklet;
 
     /**
      * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\VoucherPurchase", inversedBy="vouchers")
      * @ORM\JoinColumn(nullable=true)
-     * @SymfonyGroups({"FullVoucher"})
+     *
      */
     private $voucherPurchase;
 
@@ -106,7 +106,7 @@ class Voucher implements ExportableInterface
 
     /**
      * @return DateTimeInterface|null
-     * @SymfonyGroups({"FullVoucher", "ValidatedAssistance"})
+     *
      */
     public function getRedeemedAt(): ?DateTimeInterface
     {
@@ -118,7 +118,7 @@ class Voucher implements ExportableInterface
     }
 
     /**
-     * @SymfonyGroups({"FullVoucher", "FullBooklet", "ValidatedAssistance"})
+     *
      *
      * @return string|null
      */

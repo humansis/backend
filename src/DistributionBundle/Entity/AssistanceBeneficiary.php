@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\ReliefPackage;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 use Symfony\Component\Serializer\Annotation\MaxDepth as SymfonyMaxDepth;
 
 use TransactionBundle\Entity\Transaction;
@@ -29,7 +29,7 @@ class AssistanceBeneficiary
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullAssistanceBeneficiary", "FullAssistance", "SmallAssistance", "ValidatedAssistance", "FullBooklet"})
+     *
      */
     private $id;
 
@@ -38,7 +38,7 @@ class AssistanceBeneficiary
      *
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Assistance", inversedBy="distributionBeneficiaries")
      * @ORM\JoinColumn(name="assistance_id")
-     * @SymfonyGroups({"FullAssistanceBeneficiary", "FullBooklet"})
+     *
      */
     private $assistance;
 
@@ -47,7 +47,7 @@ class AssistanceBeneficiary
      *
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\AbstractBeneficiary", inversedBy="assistanceBeneficiary")
      * @ORM\JoinColumn(name="beneficiary_id")
-     * @SymfonyGroups({"FullAssistanceBeneficiary", "FullAssistance", "SmallAssistance", "ValidatedAssistance", "FullBooklet", "FullProject"})
+     *
      * @SymfonyMaxDepth(3)
      */
     private $beneficiary;
@@ -56,7 +56,7 @@ class AssistanceBeneficiary
      * @var Collection|Transaction[]
      *
      * @ORM\OneToMany(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
+     *
      * @SymfonyMaxDepth(1)
      */
     private $transactions;
@@ -65,7 +65,7 @@ class AssistanceBeneficiary
      * @var Collection|Booklet[]
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Booklet", mappedBy="distribution_beneficiary", cascade={"persist", "remove"})
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
+     *
      */
     private $booklets;
 
@@ -73,7 +73,7 @@ class AssistanceBeneficiary
      * @var GeneralReliefItem
      *
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\GeneralReliefItem", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
+     *
      */
     private $generalReliefs;
 
@@ -105,7 +105,7 @@ class AssistanceBeneficiary
      *
      * @ORM\Column(name="justification", type="string", length=511, nullable=true)
      *
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
+     *
      */
     private $justification;
 
@@ -114,7 +114,7 @@ class AssistanceBeneficiary
      *
      * @ORM\Column(name="removed", type="boolean", options={"default" : 0})
      *
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
+     *
      */
     private $removed = 0;
 
@@ -129,7 +129,7 @@ class AssistanceBeneficiary
     }
 
     /**
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
+     *
      * @return bool|null true, if smartcard money was already distributed/deposited to beneficiary. Null, if distribution is not about smartcard.
      */
     public function getSmartcardDistributed(): ?bool
@@ -145,7 +145,7 @@ class AssistanceBeneficiary
     }
 
     /**
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
+     *
      *
      * @return \DateTimeInterface|null
      */

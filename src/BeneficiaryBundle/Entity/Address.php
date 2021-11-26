@@ -4,7 +4,7 @@ namespace BeneficiaryBundle\Entity;
 
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 
 /**
  * Address
@@ -27,7 +27,7 @@ class Address
      * @var string|null
      *
      * @ORM\Column(name="number", type="string", length=45, nullable=true)
-     * @SymfonyGroups({"FullInstitution", "FullBeneficiary", "FullHousehold"})
+     *
      */
     private $number;
 
@@ -35,7 +35,7 @@ class Address
      * @var string
      *
      * @ORM\Column(name="street", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullInstitution", "FullBeneficiary", "FullHousehold"})
+     *
      */
     private $street;
 
@@ -43,13 +43,13 @@ class Address
      * @var string
      *
      * @ORM\Column(name="postcode", type="string", length=45, nullable=true)
-     * @SymfonyGroups({"FullInstitution", "FullBeneficiary", "FullHousehold"})
+     *
      */
     private $postcode;
 
     /**
      * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
-     * @SymfonyGroups({"FullInstitution", "FullBeneficiary", "FullHousehold", "SmallHousehold"})
+     *
      */
     private $location;
 

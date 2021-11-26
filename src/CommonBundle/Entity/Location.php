@@ -5,7 +5,7 @@ namespace CommonBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\NestedTreeTrait;
 use NewApiBundle\Entity\Helper\TreeInterface;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 
 /**
  * Location
@@ -29,7 +29,7 @@ class Location implements TreeInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "FullVendor"})
+     *
      */
     private $id;
 
@@ -74,7 +74,7 @@ class Location implements TreeInterface
      * @var Adm1
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm1", mappedBy="location")
-     * @SymfonyGroups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullAssistance", "FullInstitution", "SmallAssistance", "FullVendor"})
+     *
      */
     private $adm1;
 
@@ -83,7 +83,7 @@ class Location implements TreeInterface
      * @var Adm2
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm2", mappedBy="location")
-     * @SymfonyGroups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullAssistance", "FullInstitution", "SmallAssistance", "FullVendor"})
+     *
      */
     private $adm2;
 
@@ -92,7 +92,7 @@ class Location implements TreeInterface
      * @var Adm3
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm3", mappedBy="location")
-     * @SymfonyGroups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullAssistance", "FullInstitution", "SmallAssistance", "FullVendor"})
+     *
      */
     private $adm3;
 
@@ -101,7 +101,7 @@ class Location implements TreeInterface
      * @var Adm4
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm4", mappedBy="location")
-     * @SymfonyGroups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullAssistance", "FullInstitution", "SmallAssistance", "FullVendor"})
+     *
      */
     private $adm4;
 

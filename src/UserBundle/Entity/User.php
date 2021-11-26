@@ -18,7 +18,7 @@ use NewApiBundle\Entity\ImportQueueDuplicity;
 use NewApiBundle\Entity\Role;
 use NewApiBundle\Enum\RoleType;
 use RuntimeException;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 use Symfony\Component\Validator\Constraints as Assert;
 use TransactionBundle\Entity\Transaction;
 use Doctrine\Common\Persistence\ObjectManagerAware;
@@ -40,14 +40,14 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullUser"})
+     *
      */
     protected $id;
 
     /**
      * @var string
-     * @SymfonyGroups({"FullUser", "FullVendor"})
-     * @SymfonyGroups({"HouseholdChanges"})
+     *
+     *
      * @Assert\NotBlank(message="Username can't be empty")
      * @Assert\Length(
      *      min = 2,
@@ -60,26 +60,26 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     
     /**
      * @var string
-     * @SymfonyGroups({"FullUser", "FullVendor"})
+     *
      */
     protected $password;
 
     /**
      * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserCountry", mappedBy="user", cascade={"persist","remove"})
-     * @SymfonyGroups({"FullUser"})
+     *
      */
     private $countries;
 
     /**
      * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserProject", mappedBy="user", cascade={"remove"})
-     * @SymfonyGroups({"FullUser"})
+     *
      */
     private $projects;
 
     /**
      * @var string
-     * @SymfonyGroups({"FullUser"})
-     * @SymfonyGroups({"HouseholdChanges"})
+     *
+     *
      * @Assert\NotBlank(message="Email can't be empty")
      */
     protected $email;
@@ -94,21 +94,21 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
      * @var Transaction
      *
      * @ORM\OneToMany(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="sentBy")
-     * @SymfonyGroups({"FullUser"})
+     *
      */
     private $transactions;
 
     /**
      * @ORM\OneToOne(targetEntity="\VoucherBundle\Entity\Vendor", mappedBy="user", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     * @SymfonyGroups({"FullUser"})
+     *
      */
     private $vendor;
 
     /**
      * @var string
      * @ORM\Column(name="language", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullUser"})
+     *
      */
     protected $language;
 
@@ -116,7 +116,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
      * @var string
      *
      * @ORM\Column(name="phonePrefix", type="string", nullable=true)
-     * @SymfonyGroups({"FullUser"})
+     *
      */
     protected $phonePrefix;
 
@@ -124,21 +124,21 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
      * @var int|null
      *
      * @ORM\Column(name="phoneNumber", type="integer", nullable=true)
-     * @SymfonyGroups({"FullUser"})
+     *
      */
     protected $phoneNumber;
 
      /**
      * @var boolean
      * @ORM\Column(name="changePassword", type="boolean", options={"default" : 0})
-     * @SymfonyGroups({"FullUser"})
+     *
      */
     protected $changePassword = false;
 
     /**
      * @var boolean
      * @ORM\Column(name="twoFactorAuthentication", type="boolean", options={"default" : 0})
-     * @SymfonyGroups({"FullUser"})
+     *
      */
     protected $twoFactorAuthentication = false;
 
@@ -553,7 +553,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     /**
      * {@inheritdoc}
      *
-     * @SymfonyGroups({"FullUser"})
+     *
      */
     public function getRoles()
     {
