@@ -4,9 +4,10 @@ declare(strict_types=1);
 namespace NewApiBundle\InputType\Helper;
 
 use NewApiBundle\Enum\EnumValueNoFoundException;
-use Symfony\Component\Validator\ConstraintViolation;
-use Symfony\Component\Validator\ConstraintViolationList;
 
+/**
+ * TODO: make unit tests
+ */
 class EnumsBuilder
 {
     /** @var string */
