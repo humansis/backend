@@ -25,18 +25,167 @@ class ImportFinishServiceTest extends KernelTestCase
 {
     const TEST_COUNTRY = 'KHM';
     // json copied from KHM-Import-2HH-3HHM.ods
-    const TEST_QUEUE_ITEM = '[{"Adm1": "Banteay Meanchey", "Adm2": null, "Adm3": null, "Adm4": null, "Head": "true",
-    "ID Number": 123456789, "ID Type": "National ID",
-    "F 0 - 2": 1, "F 2 - 5": 2, "F 6 - 17": 3, "F 18 - 59": 4, "F 60+": 5,
-    "M 0 - 2": null, "M 2 - 5": null, "M 6 - 17": null, "M 18 - 59": null, "M 60+": null,
-    "Notes": "import from unittest", "Assets": null, "Gender": "Male",  
-    "Latitude": null, "Camp name": null, "Longitude": null, 
-    "Debt Level": 3, "Livelihood": "Government", "Tent number": null, "Income level": null, "Type phone 1": "Mobile", 
-    "Type phone 2": null, "Date of birth": "31-12-2000", "Proxy phone 1": null, "Proxy phone 2": null, "Address number": 123, 
-    "Address street": "Fake St", "Number phone 1": "10834243", "Number phone 2": null, "Prefix phone 1": "+855", 
-    "Prefix phone 2": null, "Shelter status": null, "Address postcode": 90210, "Local given name": "John", 
-    "Residency status": "Resident", "Local family name": "Smith", "English given name": null, "English family name": null, 
-    "Food Consumption Score": 3, "Support Received Types": "MPCA", "Vulnerability criteria": "disabled", "Coping Strategies Index": 2}]';
+    const TEST_QUEUE_ITEM = '[
+  {
+    "Adm1": {
+      "value": "Banteay Meanchey",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Adm2": null,
+    "Adm3": null,
+    "Adm4": null,
+    "Head": {
+      "value": "true",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "ID Number": {
+      "value": 123456789,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "ID Type": {
+      "value": "National ID",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "F 0 - 2": {
+      "value": 1,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "F 2 - 5": {
+      "value": 2,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "F 6 - 17": {
+      "value": 3,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "F 18 - 59": {
+      "value": 4,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "F 60+": {
+      "value": 5,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "M 0 - 2": null,
+    "M 2 - 5": null,
+    "M 6 - 17": null,
+    "M 18 - 59": null,
+    "M 60+": null,
+    "Notes": {
+      "value": "import from unittest",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Assets": null,
+    "Gender": {
+      "value": "Male",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Latitude": null,
+    "Camp name": null,
+    "Longitude": null,
+    "Debt Level": {
+      "value": 3,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "Livelihood": {
+      "value": "Government",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Tent number": null,
+    "Income level": null,
+    "Type phone 1": {
+      "value": "Mobile",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Type phone 2": null,
+    "Date of birth": {
+      "value": "31-12-2020",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Proxy phone 1": null,
+    "Proxy phone 2": null,
+    "Address number": {
+      "value": 123,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "Address street": {
+      "value": "Fake St",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Number phone 1": {
+      "value": "15236975",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Number phone 2": null,
+    "Prefix phone 1": {
+      "value": "+855",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Prefix phone 2": null,
+    "Shelter status": null,
+    "Address postcode": {
+      "value": 90210,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "Local given name": {
+      "value": "John",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Residency status": {
+      "value": "Resident",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Local family name": {
+      "value": "Smith",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "English given name": null,
+    "English family name": null,
+    "Food Consumption Score": {
+      "value": 3,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "Support Received Types": {
+      "value": "MPCA",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Vulnerability criteria": {
+      "value": "disabled",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Coping Strategies Index": {
+      "value": 2,
+      "dataType": "n",
+      "numberFormat": "General"
+    }
+  }
+]';
 
     /** @var EntityManagerInterface */
     private $entityManager;

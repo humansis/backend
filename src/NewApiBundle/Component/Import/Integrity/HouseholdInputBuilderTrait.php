@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import\Integrity;
 
-use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Entity\Location;
+use NewApiBundle\Component\Import\Utils\ImportDateConverter;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 use NewApiBundle\InputType\Beneficiary\CountrySpecificsAnswerInputType;
@@ -57,7 +57,7 @@ trait HouseholdInputBuilderTrait
         $household->setLivelihood($this->livelihood);
         $household->setEnumeratorName($this->enumeratorName);
         $household->setShelterStatus($this->shelterStatus);
-        $household->setSupportDateReceived($this->supportDateReceived);
+        $household->setSupportDateReceived($this->supportDateReceived ? ImportDateConverter::toDatetime($this->supportDateReceived)->format(\DateTimeInterface::ISO8601) : null);
 
         if (null !== $this->livelihood) {
             $hoodKey = array_search($this->livelihood, Livelihood::TRANSLATIONS);
@@ -118,7 +118,7 @@ trait HouseholdInputBuilderTrait
     public function buildBeneficiaryInputType(): BeneficiaryInputType
     {
         $beneficiary = new BeneficiaryInputType();
-        $beneficiary->setDateOfBirth($this->dateOfBirth);
+        $beneficiary->setDateOfBirth(ImportDateConverter::toDatetime($this->dateOfBirth)->format(\DateTimeInterface::ISO8601));
         $beneficiary->setLocalFamilyName($this->localFamilyName);
         $beneficiary->setLocalGivenName($this->localGivenName);
         $beneficiary->setLocalParentsName($this->localParentsName);
