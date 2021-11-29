@@ -8,7 +8,6 @@ use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Symfony\Component\HttpFoundation\File\File;
-use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class ImportParser
 {
@@ -38,7 +37,8 @@ class ImportParser
                 break;
             }
 
-            if ('true' === strtolower($row['Head'])) {
+            //TODO what if Head is null?
+            if ('true' === strtolower($row['Head'][CellParameters::VALUE])) {
                 if ([] !== $household) {
                     // everytime new household head is found, previous HH is added to list
                     $list[] = $household;
@@ -112,7 +112,11 @@ class ImportParser
             $value = self::value($cell);
 
             $header = $headers[$c];
-            $row[$header] = $value;
+            $row[$header] = $cell ? [
+                CellParameters::VALUE => $value,
+                CellParameters::DATA_TYPE => $cell->getDataType(),
+                CellParameters::NUMBER_FORMAT => $cell->getStyle()->getNumberFormat()->getFormatCode(),
+            ] : null;
 
             $stop &= empty($value);
         }
@@ -132,10 +136,6 @@ class ImportParser
     private static function value(?Cell $cell)
     {
         if ($cell) {
-            if (Date::isDateTime($cell)) {
-                return Date::excelToDateTimeObject($cell->getValue())->format('d-m-Y');
-            }
-
             return is_string($cell->getValue()) ? trim($cell->getValue()) : $cell->getValue();
         }
 

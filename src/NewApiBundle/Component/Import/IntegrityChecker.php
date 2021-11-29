@@ -45,7 +45,6 @@ class IntegrityChecker
 
         foreach ($this->queueRepository->getItemsToIntegrityCheck($import, $batchSize) as $i => $item) {
             $this->checkOne($item);
-
             if ($i % 500 === 0) {
                 $this->entityManager->flush();
             }

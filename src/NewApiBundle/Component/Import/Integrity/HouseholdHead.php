@@ -5,12 +5,9 @@ namespace NewApiBundle\Component\Import\Integrity;
 
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
-use CommonBundle\Entity\Adm1;
-use CommonBundle\Entity\Adm2;
-use CommonBundle\Entity\Adm3;
-use CommonBundle\Entity\Adm4;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Component\Import\CellParameters;
 use NewApiBundle\Validator\Constraints\ImportDate;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -157,7 +154,6 @@ class HouseholdHead
 
     /**
      * @ImportDate()
-     * @Assert\Type("string")
      * @Assert\NotBlank()
      */
     protected $dateOfBirth;
@@ -320,7 +316,7 @@ class HouseholdHead
 
         foreach (HouseholdExportCSVService::MAPPING_PROPERTIES as $header => $property) {
             if (isset($content[$header])) {
-                $this->$property = $content[$header];
+                $this->$property = $content[$header][CellParameters::VALUE];
             }
         }
 
