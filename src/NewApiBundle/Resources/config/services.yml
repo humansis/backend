@@ -350,13 +350,6 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
-    workflow.import_queue.default_subscriber:
-        class: NewApiBundle\Event\Subscriber\ImportQueue\ImportQueueDefaultSubscriber
-        arguments:
-            - '@doctrine.orm.entity_manager'
-        tags:
-            - { name: kernel.event_subscriber }
-
     workflow.import_queue.duplicity_resolve_subscriber:
         class: NewApiBundle\Event\Subscriber\ImportQueue\DuplicityResolveSubscriber
         arguments:

@@ -42,7 +42,6 @@ class IntegrityCheckerTest extends KernelTestCase
 
         $import = new Import('test', null, $project, $user);
         $file = new ImportFile('fake_file.xlsx', $import, $user);
-
         $item = new ImportQueue($import, $file, [[/** empty row */]]);
 
         $method = new \ReflectionMethod(self::$integrityChecker, 'checkOne');
