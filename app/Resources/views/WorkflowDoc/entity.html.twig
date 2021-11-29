@@ -29,16 +29,14 @@
                     </div>
 
                     <hr>
+                    <span class="is-size-5 has-text-weight-bold">Description</span>
                     <p class="block">
-                        {% set break = '<br>' %}.
+                        {% set break = '<br>' %}
                         {% set empty = '' %}
                         {{ currentEntity.getEntityDescription|replace({
                             '\r\n': break,
                             '\r': break,
-                            '\n': break,
-                            '/**': empty,
-                            '*/': empty,
-                            '*' : empty
+                            '\n': break
                         }) | raw }}
                     </p>
                     <hr>
