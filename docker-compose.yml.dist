@@ -19,6 +19,7 @@ services:
             - '--collation-server=utf8mb4_unicode_ci'
             - '--log_bin_trust_function_creators=1'
             - '--cte_max_recursion_depth=100000'
+            - '--default-authentication-plugin=mysql_native_password'
         volumes:
             - mysqldata:/var/lib/mysql
         networks:
