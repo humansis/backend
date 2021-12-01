@@ -88,11 +88,11 @@ class IntegrityChecker
         if ($violations['hasViolations']) {
             $message['raw'] = $item->getContent();
             $item->setMessage(json_encode($message));
-            $this->entityManager->persist($item);
         }
 
         WorkflowTool::checkAndApply($this->importQueueStateMachine, $item,
             [ImportQueueTransitions::VALIDATE, ImportQueueTransitions::INVALIDATE]);
+        $this->entityManager->persist($item);
         $this->entityManager->flush();
     }
 

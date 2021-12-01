@@ -43,6 +43,10 @@ class IntegrityCheckerTest extends KernelTestCase
         $import = new Import('test', null, $project, $user);
         $file = new ImportFile('fake_file.xlsx', $import, $user);
         $item = new ImportQueue($import, $file, [[/** empty row */]]);
+        self::$entityManager->persist($import);
+        self::$entityManager->persist($file);
+        self::$entityManager->persist($item);
+        self::$entityManager->flush();
 
         $method = new \ReflectionMethod(self::$integrityChecker, 'checkOne');
         $method->setAccessible(true);
@@ -58,8 +62,11 @@ class IntegrityCheckerTest extends KernelTestCase
 
         $import = new Import('test', null, $project, $user);
         $file = new ImportFile('fake_file.xlsx', $import, $user);
-
         $item = new ImportQueue($import, $file, json_decode(ImportFinishServiceTest::TEST_QUEUE_ITEM, true));
+        self::$entityManager->persist($import);
+        self::$entityManager->persist($file);
+        self::$entityManager->persist($item);
+        self::$entityManager->flush();
 
         $checker = self::$integrityChecker;
 
