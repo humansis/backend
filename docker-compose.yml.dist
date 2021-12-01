@@ -30,6 +30,8 @@ services:
             MYSQL_DATABASE: bmstest
             MYSQL_USER: bms_user
             MYSQL_PASSWORD: aA123
+        ports:
+            - "3306:3306"
 
     php:
         build:
