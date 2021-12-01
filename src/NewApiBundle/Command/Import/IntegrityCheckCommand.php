@@ -67,6 +67,7 @@ class IntegrityCheckCommand extends AbstractImportQueueCommand
             try {
                 WorkflowTool::checkAndApply($this->importStateMachine, $import,
                     [ImportTransitions::REDO_INTEGRITY, ImportTransitions::FAIL_INTEGRITY, ImportTransitions::COMPLETE_INTEGRITY]);
+                $this->manager->flush();
 
                 $statistics = $this->importService->getStatistics($import);
                 if (ImportState::INTEGRITY_CHECK_CORRECT === $import->getState()) {

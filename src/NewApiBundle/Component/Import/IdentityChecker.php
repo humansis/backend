@@ -71,6 +71,7 @@ class IdentityChecker
             $this->logImportInfo($import, 'Batch ended - nothing left, identity checking ends');
             $this->logImportDebug($import, "Ended with status ".$import->getState());
             WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::COMPLETE_IDENTITY, ImportTransitions::FAIL_IDENTITY]);
+            $this->entityManager->flush();
         } else {
             $this->logImportInfo($import, "Batch ended - $queueSize items left, identity checking continues");
         }
@@ -84,6 +85,7 @@ class IdentityChecker
         $duplicities = $this->validateItemDuplicities($item);
         WorkflowTool::checkAndApply($this->importQueueStateMachine, $item,
             [count($duplicities) > 0 ? ImportQueueTransitions::IDENTITY_CANDIDATE : ImportQueueTransitions::UNIQUE_CANDIDATE]);
+        $this->entityManager->flush();
     }
 
     /**

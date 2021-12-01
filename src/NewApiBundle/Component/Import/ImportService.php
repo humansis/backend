@@ -159,6 +159,7 @@ class ImportService
         if ($this->importQueueStateMachine->can($importQueue, $inputType->getStatus())) {
             $this->importQueueStateMachine->apply($importQueue, $inputType->getStatus(),
                 ['duplicityId' => $inputType->getAcceptedDuplicityId(), 'user' => $user, 'resolve' => true]);
+            $this->em->flush();
         } else {
             throw new BadRequestHttpException("You can't resolve duplicity. Import Queue is not in valid state.");
         }
@@ -167,6 +168,7 @@ class ImportService
     public function finish(Import $import): void
     {
         WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::FINISH]);
+        $this->em->flush();
     }
 
     private function removeFinishedQueue(ImportQueue $queue): void

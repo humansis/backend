@@ -142,6 +142,7 @@ class ImportInvalidFileService
 
             WorkflowTool::checkAndApply($this->importQueueStateMachine, $entry, [ImportQueueTransitions::INVALIDATE_EXPORT]);
         }
+        $this->em->flush();
     }
 
     private function parseInvalidColumns(?string $messageJson, $rowNumber): array

@@ -79,5 +79,6 @@ class ImportReset
         $this->em->persist($item);
 
         WorkflowTool::checkAndApply($this->importQueueStateMachine, $item, [ImportQueueTransitions::RESET]);
+        $this->em->flush();
     }
 }

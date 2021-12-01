@@ -69,6 +69,7 @@ class SimilarityChecker
             $this->logImportInfo($import, 'Batch ended - nothing left, similarity checking ends');
             WorkflowTool::checkAndApply($this->importStateMachine, $import,
                 [ImportTransitions::COMPLETE_SIMILARITY, ImportTransitions::FAIL_SIMILARITY]);
+            $this->entityManager->flush();
         } else {
             $this->logImportInfo($import, "Batch ended - $queueSize items left, similarity checking continues");
         }
@@ -84,6 +85,7 @@ class SimilarityChecker
         $this->entityManager->persist($item);
 
         WorkflowTool::checkAndApply($this->importQueueStateMachine, $item, [ImportQueueTransitions::TO_CREATE]);
+        $this->entityManager->flush();
     }
 
     /**

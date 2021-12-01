@@ -66,6 +66,7 @@ class IdentityCheckCommand extends AbstractImportQueueCommand
             try {
                 WorkflowTool::checkAndApply($this->importStateMachine, $import,
                     [ImportTransitions::REDO_IDENTITY, ImportTransitions::FAIL_IDENTITY, ImportTransitions::COMPLETE_IDENTITY]);
+                $this->manager->flush();
 
                 if (ImportState::IDENTITY_CHECK_CORRECT === $import->getState()) {
                     $this->logImportDebug($import, "Identity check found no duplicities");

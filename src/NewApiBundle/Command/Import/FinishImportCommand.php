@@ -63,6 +63,7 @@ class FinishImportCommand extends AbstractImportQueueCommand
         foreach ($this->imports as $import) {
             try {
                 WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::FINISH]);
+                $this->manager->flush();
                 $this->logImportDebug($import, "Finished");
             } catch (Throwable $e) {
                 $this->logImportError($import, 'Unknown Exception in finishing occurred. Exception message: '.$e->getMessage());

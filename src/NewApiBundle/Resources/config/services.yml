@@ -306,13 +306,6 @@ services:
         arguments:
             - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:SmartcardPurchasedItem")'
 
-    workflow.import.default_subscriber:
-        class: NewApiBundle\Event\Subscriber\Import\ImportWorkflowSubscriber
-        arguments:
-            - '@doctrine.orm.entity_manager'
-        tags:
-            - { name: kernel.event_subscriber }
-
     workflow.import.integrity_subscriber:
         class: NewApiBundle\Event\Subscriber\Import\IntegritySubscriber
         arguments:

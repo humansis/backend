@@ -131,9 +131,8 @@ class ImportFinisher
         ]) as $item) {
             $this->removeFinishedQueue($item);
         }*/
-        $this->em->flush();
-
         WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::FINISH]);
+        $this->em->flush();
     }
 
     /**
@@ -150,6 +149,7 @@ class ImportFinisher
         foreach ($importConflicts as $conflictImport) {
             WorkflowTool::checkAndApply($this->importStateMachine, $conflictImport, [ImportTransitions::RESET]);
         }
+        $this->em->flush();
     }
 
     /**
@@ -186,6 +186,7 @@ class ImportFinisher
         $this->logImportInfo($import, "Created Household #{$createdHousehold->getId()}");
 
         WorkflowTool::checkAndApply($this->importQueueStateMachine, $item, [ImportQueueTransitions::CREATE]);
+        $this->em->flush();
     }
 
     /**
@@ -225,6 +226,7 @@ class ImportFinisher
         $this->logImportInfo($import, "Updated Household #{$updatedHousehold->getId()}");
 
         WorkflowTool::checkAndApply($this->importQueueStateMachine, $item, [ImportQueueTransitions::UPDATE]);
+        $this->em->flush();
     }
 
     private function linkHouseholdToQueue(Import $import, Household $household, User $decide): void

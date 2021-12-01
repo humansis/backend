@@ -74,8 +74,8 @@ class IntegrityChecker
             }
         }
 
-        $this->entityManager->flush();
         WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::FAIL_INTEGRITY, ImportTransitions::COMPLETE_INTEGRITY]);
+        $this->entityManager->flush();
     }
 
     /**
@@ -93,6 +93,7 @@ class IntegrityChecker
 
         WorkflowTool::checkAndApply($this->importQueueStateMachine, $item,
             [ImportQueueTransitions::VALIDATE, ImportQueueTransitions::INVALIDATE]);
+        $this->entityManager->flush();
     }
 
     /**

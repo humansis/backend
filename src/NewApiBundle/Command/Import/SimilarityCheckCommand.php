@@ -66,6 +66,7 @@ class SimilarityCheckCommand extends AbstractImportQueueCommand
             try {
                 WorkflowTool::checkAndApply($this->importStateMachine, $import,
                     [ImportTransitions::REDO_SIMILARITY, ImportTransitions::FAIL_SIMILARITY, ImportTransitions::COMPLETE_SIMILARITY]);
+                $this->manager->flush();
 
                 if (ImportState::SIMILARITY_CHECK_CORRECT === $import->getState()) {
                     $this->logImportDebug($import, "Similarity check found no duplicities");
