@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\Enum\SelectionCriteriaField;
 use NewApiBundle\InputType\Assistance\CommodityInputType;
+use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
 use NewApiBundle\Request\InputTypeInterface;
 use NewApiBundle\Validator\Constraints\Country;
 use NewApiBundle\Validator\Constraints\Iso8601;
@@ -175,6 +177,38 @@ class AssistanceCreateInputType implements InputTypeInterface
      * )
      */
     private $allowedProductCategoryTypes;
+
+    /**
+     * @Assert\IsTrue(groups="AdditionalChecks", message="Please add BNF has valid card criterion for each group")
+     * @return bool
+     */
+    public function isValidSmartcardForRemoteDistribution(): bool
+    {
+        if ($this->remoteDistributionAllowed) {
+            $validSmartcardFieldsCount = 0;
+            $hasValidSmartcardField = false;
+
+            /** @var SelectionCriterionInputType $criteriaField */
+            foreach ($this->selectionCriteria as $key => $criteriaField) {
+                if ($criteriaField->getField() === SelectionCriteriaField::HAS_VALID_SMARTCARD) {
+                    if ($criteriaField->getValue() === true) {
+                        if ($validSmartcardFieldsCount > 0 && $hasValidSmartcardField === false) {
+                            $hasValidSmartcardField = false;
+                        } else {
+                            $hasValidSmartcardField = true;
+                        }
+                    } else {
+                        $hasValidSmartcardField = false;
+                    }
+                }
+                $validSmartcardFieldsCount++;
+            }
+
+            return $hasValidSmartcardField;
+        }
+
+        return true;
+    }
 
     /**
      * @Assert\IsTrue(groups="AdditionalChecks", message="remoteDistributionAllowed must not be null if distribution is for smartcards. Null otherwise.")
