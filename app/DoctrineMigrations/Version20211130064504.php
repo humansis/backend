@@ -39,7 +39,7 @@ final class Version20211130064504 extends AbstractMigration
 
             $serializedContent = json_encode($content);
 
-            $this->addSql("UPDATE import_queue SET content='$serializedContent' WHERE id=$id");
+            $this->addSql("UPDATE import_queue SET content=? WHERE id=$id", [$serializedContent]);
         }
     }
 
