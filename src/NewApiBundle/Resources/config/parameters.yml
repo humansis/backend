@@ -3,3 +3,10 @@ parameters:
         import.uploadedFilesDirectory: '%kernel.project_dir%/var/imports/uploaded'
         import.maxFileSizeToLoad: 1 #in MB
         import.batch_size: 200
+
+        aws.logs.key: 'AKIAYYVDSYNUDIO7EFGL'
+        aws.logs.secret: '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'
+        aws.logs.region: 'eu-central-1'
+        aws.logs.version: 'latest'
+        aws.logs.bucket: 'logs.humansis.org'
+        aws.logs.folder: 'logs'
