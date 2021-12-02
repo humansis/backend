@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Command\Import;
 
 use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Component\Import\ImportFinisher;
 use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Enum\ImportState;
@@ -21,15 +22,19 @@ class FinishImportCommand extends AbstractImportQueueCommand
      * @var WorkflowInterface
      */
     private $importStateMachine;
+    /** @var ImportFinisher */
+    private $importFinisher;
 
     public function __construct(
         ObjectManager     $manager,
         ImportService     $importService,
         LoggerInterface   $importLogger,
-        WorkflowInterface $importStateMachine
+        WorkflowInterface $importStateMachine,
+        ImportFinisher    $importFinisher
     ) {
         parent::__construct($manager, $importService, $importLogger);
         $this->importStateMachine = $importStateMachine;
+        $this->importFinisher = $importFinisher;
     }
 
     protected function configure()
@@ -62,7 +67,7 @@ class FinishImportCommand extends AbstractImportQueueCommand
         /** @var Import $import */
         foreach ($this->imports as $import) {
             try {
-                WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::FINISH]);
+                $this->importFinisher->import($import);
                 $this->manager->flush();
                 $this->logImportDebug($import, "Finished");
             } catch (Throwable $e) {

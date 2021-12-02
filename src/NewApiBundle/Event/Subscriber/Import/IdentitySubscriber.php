@@ -9,6 +9,7 @@ use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Workflow\ImportTransitions;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Workflow\Event\CompletedEvent;
 use Symfony\Component\Workflow\Event\EnteredEvent;
 use Symfony\Component\Workflow\Event\GuardEvent;
 use Symfony\Component\Workflow\TransitionBlocker;
@@ -46,8 +47,8 @@ class IdentitySubscriber implements EventSubscriberInterface
             'workflow.import.guard.'.ImportTransitions::COMPLETE_IDENTITY => ['guardIfImportIsNotSuspicious'],
             'workflow.import.guard.'.ImportTransitions::FAIL_IDENTITY => ['guardIfImportIsInvalid'],
             'workflow.import.guard.'.ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES => ['guardIfImportIsNotSuspicious'],
-            'workflow.import.entered.'.ImportTransitions::CHECK_IDENTITY => ['checkIdentity'],
-            'workflow.import.entered.'.ImportTransitions::REDO_IDENTITY => ['checkIdentity'],
+            // 'workflow.import.entered.'.ImportTransitions::CHECK_IDENTITY => ['checkIdentity'],
+            'workflow.import.completed.'.ImportTransitions::REDO_IDENTITY => ['checkIdentity'],
         ];
     }
 
@@ -95,9 +96,9 @@ class IdentitySubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param EnteredEvent $enteredEvent
+     * @param CompletedEvent $enteredEvent
      */
-    public function checkIdentity(EnteredEvent $enteredEvent): void
+    public function checkIdentity(CompletedEvent $enteredEvent): void
     {
         /** @var Import $import */
         $import = $enteredEvent->getSubject();

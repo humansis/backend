@@ -11,6 +11,7 @@ use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportTransitions;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Workflow\Event\CompletedEvent;
 use Symfony\Component\Workflow\Event\EnteredEvent;
 use Symfony\Component\Workflow\Event\GuardEvent;
 use Symfony\Component\Workflow\TransitionBlocker;
@@ -52,7 +53,7 @@ class SimilaritySubscriber implements EventSubscriberInterface
             'workflow.import.guard.'.ImportTransitions::FAIL_SIMILARITY => ['guardIfImportHasSuspiciousItems'],
             'workflow.import.guard.'.ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES => ['guardIfImportHasNotSuspiciousItems'],
             'workflow.import.entered.'.ImportTransitions::COMPLETE_SIMILARITY => ['completeSimilarity'],
-            'workflow.import.entered.'.ImportTransitions::CHECK_SIMILARITY => ['checkSimilarity'],
+            'workflow.import.completed.'.ImportTransitions::REDO_SIMILARITY => ['checkSimilarity'],
         ];
     }
 
@@ -91,9 +92,9 @@ class SimilaritySubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param EnteredEvent $enteredEvent
+     * @param CompletedEvent $enteredEvent
      */
-    public function checkSimilarity(EnteredEvent $enteredEvent): void
+    public function checkSimilarity(CompletedEvent $enteredEvent): void
     {
         /** @var Import $import */
         $import = $enteredEvent->getSubject();

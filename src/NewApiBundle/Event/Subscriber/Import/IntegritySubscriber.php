@@ -13,6 +13,7 @@ use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportTransitions;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Workflow\Event\CompletedEvent;
 use Symfony\Component\Workflow\Event\EnteredEvent;
 use Symfony\Component\Workflow\Event\Event;
 use Symfony\Component\Workflow\Event\GuardEvent;
@@ -63,16 +64,16 @@ class IntegritySubscriber implements EventSubscriberInterface
         return [
             'workflow.import.guard.'.ImportTransitions::COMPLETE_INTEGRITY => ['guardIfImportHasAnyValidQueueItem'],
             'workflow.import.guard.'.ImportTransitions::FAIL_INTEGRITY => ['guardIfImportHasAnyInvalidQueueItem'],
-            'workflow.import.entered.'.ImportTransitions::CHECK_INTEGRITY => ['checkIntegrity'],
-            'workflow.import.entered.'.ImportTransitions::REDO_INTEGRITY => ['checkIntegrity'],
+            // 'workflow.import.entered.'.ImportTransitions::CHECK_INTEGRITY => ['checkIntegrity'],
+            'workflow.import.completed.'.ImportTransitions::REDO_INTEGRITY => ['checkIntegrity'],
             'workflow.import.entered.'.ImportTransitions::FAIL_INTEGRITY => ['generateFile'],
         ];
     }
 
     /**
-     * @param EnteredEvent $enteredEvent
+     * @param CompletedEvent $enteredEvent
      */
-    public function checkIntegrity(EnteredEvent $enteredEvent): void
+    public function checkIntegrity(CompletedEvent $enteredEvent): void
     {
         /** @var Import $import */
         $import = $enteredEvent->getSubject();
