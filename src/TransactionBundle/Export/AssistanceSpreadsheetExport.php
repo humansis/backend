@@ -20,6 +20,7 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use ProjectBundle\Entity\Donor;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class AssistanceSpreadsheetExport
@@ -150,7 +151,12 @@ class AssistanceSpreadsheetExport
             $drawing->setWorksheet($worksheet);
         }
 
+        /** @var Donor $donor */
         foreach ($assistance->getProject()->getDonors() as $donor) {
+            if (null === $donor->getLogo()) {
+                continue;
+            }
+
             $resource = $this->getImageResource($donor->getLogo());
 
             $drawing = new MemoryDrawing();

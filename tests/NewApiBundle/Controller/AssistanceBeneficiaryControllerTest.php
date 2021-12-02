@@ -167,7 +167,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             'completed' => false,
             'archived' => false,
             'targetType' => AssistanceTargetType::INDIVIDUAL,
-        ]);
+        ], ['id' => 'asc']);
         $beneficiary = $em->getRepository(Beneficiary::class)->findOneBy([], ['id'=>'desc']);
 
         $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/assistances-beneficiaries', [
@@ -215,7 +215,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             'completed' => false,
             'archived' => false,
             'targetType' => AssistanceTargetType::INSTITUTION,
-        ]);
+        ], ['id' => 'asc']);
         $institution = $em->getRepository(Institution::class)->findOneBy([], ['id'=>'desc']);
 
         $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/assistances-institutions', [
@@ -263,7 +263,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             'completed' => false,
             'archived' => false,
             'targetType' => AssistanceTargetType::COMMUNITY,
-        ]);
+        ], ['id' => 'asc']);
         $community = $em->getRepository(Community::class)->findOneBy([], ['id'=>'desc']);
 
         $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/assistances-communities', [

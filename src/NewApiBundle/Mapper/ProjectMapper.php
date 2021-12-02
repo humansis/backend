@@ -129,4 +129,9 @@ class ProjectMapper implements MapperInterface
     {
         return $this->object->getProjectInvoiceAddressEnglish();
     }
+
+    public function getAllowedProductCategoryTypes(): array
+    {
+        return $this->object->getAllowedProductCategoryTypes();
+    }
 }

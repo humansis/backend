@@ -6,6 +6,8 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
+use NewApiBundle\InputType\PurchaseProductInputType;
+use NewApiBundle\InputType\SmartcardPurchaseInputType;
 use Psr\Log\LoggerInterface;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
@@ -65,29 +67,41 @@ class PurchaseService
 
     /**
      * @param Smartcard              $smartcard
-     * @param SmartcardPurchaseInput $input
+     * @param SmartcardPurchaseInputType|SmartcardPurchaseInput $input
      *
      * @return SmartcardPurchase
      *
      * @throws EntityNotFoundException
      * @throws \Exception
      */
-    public function purchaseSmartcard(Smartcard $smartcard, SmartcardPurchaseInput $input): SmartcardPurchase
+    public function purchaseSmartcard(Smartcard $smartcard, $input): SmartcardPurchase
     {
         $hash = $this->hashPurchase($smartcard->getBeneficiary(), $this->getVendor($input->getVendorId()), $input->getCreatedAt());
         $purchaseRepository = $this->em->getRepository(SmartcardPurchase::class);
+
+        /** @var SmartcardPurchase $purchase */
         $purchase = $purchaseRepository->findOneBy(['hash' => $hash]);
 
         if ($purchase) {
-            $this->logger->info("Purchase was already set. [hash: {$purchase->getHash()}]");
-        } else {
-            $purchase = SmartcardPurchase::create($smartcard, $this->getVendor($input->getVendorId()), $input->getCreatedAt());
-            $purchase->setHash($hash);
+            $this->logger->info("Purchase was already set. [purchaseId: {$purchase->getId()}]");
+
+            return $purchase;
         }
 
-        foreach ($input->getProducts() as $item) {
-            $product = $this->getProduct($item['id']);
-            $purchase->addRecord($product, $item['quantity'], $item['value'], $item['currency']);
+        $purchase = SmartcardPurchase::create($smartcard, $this->getVendor($input->getVendorId()), $input->getCreatedAt());
+        $purchase->setHash($hash);
+
+        if ($input instanceof SmartcardPurchaseInput) {
+            foreach ($input->getProducts() as $item) {
+                $product = $this->getProduct($item['id']);
+                $purchase->addRecord($product, $item['quantity'], $item['value'], $item['currency']);
+            }
+        } else {
+            /** @var PurchaseProductInputType $item */
+            foreach ($input->getProducts() as $item) {
+                $product = $this->getProduct($item->getId());
+                $purchase->addRecord($product, $item->getQuantity(), $item->getValue(), $item->getCurrency());
+            }
         }
 
         $smartcard->addPurchase($purchase);

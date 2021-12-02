@@ -119,13 +119,13 @@ class IdentityChecker
             }
 
             $bnfDuplicities = $this->entityManager->getRepository(Beneficiary::class)->findIdentity(
-                (string) $c['ID Type'],
-                (string) $c['ID Number'],
+                (string) $c['ID Type'][CellParameters::VALUE],
+                (string) $c['ID Number'][CellParameters::VALUE],
                 $item->getImport()->getProject()->getIso3()
             );
 
             if (count($bnfDuplicities) > 0) {
-                $this->logImportInfo($item->getImport(), "Found ".count($bnfDuplicities)." duplicities for {$c['ID Type']} {$c['ID Number']}");
+                $this->logImportInfo($item->getImport(), "Found ".count($bnfDuplicities)." duplicities for {$c['ID Type'][CellParameters::VALUE]} {$c['ID Number'][CellParameters::VALUE]}");
             } else {
                 $this->logImportDebug($item->getImport(), "Found no duplicities");
             }

@@ -3,13 +3,16 @@
 namespace VoucherBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use CommonBundle\Exception\BadRequestDataException;
 use DateTime;
 use DateTimeInterface;
-use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManager;
 use NewApiBundle\Entity\ReliefPackage;
 use NewApiBundle\Enum\AssistanceBeneficiaryCommodityState;
+use NewApiBundle\Enum\ModalityType;
+use NewApiBundle\Enum\ReliefPackageState;
+use NewApiBundle\InputType\SmartcardPurchaseInputType;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Repository\ProjectRepository;
@@ -64,6 +67,29 @@ class SmartcardService
         return $smartcard;
     }
 
+    public function depositLegacy(string $serialNumber, int $beneficiaryId, int $assistanceId, $value, $balanceBefore, $balanceAfter, DateTimeInterface $distributedAt, User $user): SmartcardDeposit
+    {
+        $target = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy([
+            'assistance' => $assistanceId,
+            'beneficiary' => $beneficiaryId,
+        ], ['id' => 'asc']);
+
+        if (null == $target) {
+            throw new BadRequestDataException("No beneficiary #$beneficiaryId in assistance #$assistanceId");
+        }
+
+        /** @var ReliefPackage|null $reliefPackage */
+        $reliefPackage = $this->em->getRepository(ReliefPackage::class)->findOneBy([
+            'state' => ReliefPackageState::TO_DISTRIBUTE,
+            'modalityType' => ModalityType::SMART_CARD,
+            'assistanceBeneficiary' => $target,
+        ], ['id' => 'asc']);
+        if (null == $reliefPackage) {
+            throw new BadRequestDataException("Nothing to distribute for beneficiary #$beneficiaryId in assistance #$assistanceId");
+        }
+        return $this->deposit($serialNumber, $reliefPackage->getId(), $value, $balanceBefore, $distributedAt, $user);
+    }
+
     public function deposit(string $serialNumber, int $reliefPackageId, $value, $balance, DateTimeInterface $distributedAt, User $user): SmartcardDeposit
     {
         /** @var ReliefPackage|null $reliefPackage */
@@ -97,6 +123,7 @@ class SmartcardService
         $smartcard->addDeposit($deposit);
 
         $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::DISTRIBUTE);
+        $reliefPackage->setAmountDistributed($value);
 
         if (null === $smartcard->getCurrency()) {
             $smartcard->setCurrency(self::findCurrency($reliefPackage->getAssistanceBeneficiary()));
@@ -151,10 +178,18 @@ class SmartcardService
         return $this->purchaseService->purchaseSmartcard($smartcard, $data);
     }
 
+    /**
+     * @param string $serialNumber
+     * @param SmartcardPurchaseInput|SmartcardPurchaseInputType $data
+     *
+     * @return SmartcardPurchase
+     * @throws \Doctrine\ORM\EntityNotFoundException
+     * @throws \Doctrine\ORM\ORMException
+     */
     public function purchase(string $serialNumber, $data): SmartcardPurchase
     {
-        if (!$data instanceof SmartcardPurchaseInput) {
-            throw new \InvalidArgumentException('Argument 3 must be of type '.SmartcardPurchaseInput::class);
+        if (!$data instanceof SmartcardPurchaseInput && !$data instanceof SmartcardPurchaseInputType) {
+            throw new \InvalidArgumentException('Argument 2 must be of type '.SmartcardPurchaseInput::class . 'or ' . SmartcardPurchaseInputType::class);
         }
         $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy([
             'id' => $data->getBeneficiaryId(),
@@ -171,7 +206,7 @@ class SmartcardService
     public function getActualSmartcard(string $serialNumber, ?Beneficiary $beneficiary, DateTimeInterface $dateOfEvent): Smartcard
     {
         $repo = $this->em->getRepository(Smartcard::class);
-        $smartcard = $repo->findBySerialNumber($serialNumber, $beneficiary);
+        $smartcard = $repo->findBySerialNumberAndBeneficiary($serialNumber, $beneficiary);
 
         if ($smartcard
             && $smartcard->getBeneficiary()
@@ -218,7 +253,7 @@ class SmartcardService
         $repository = $this->em->getRepository(SmartcardPurchase::class);
         $purchases = $repository->findBy([
             'id' => $inputBatch->getPurchases(),
-        ]);
+        ], ['id'=>'asc']);
 
         // purchases validation
         $currency = null;

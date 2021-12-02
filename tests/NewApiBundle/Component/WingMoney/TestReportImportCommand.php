@@ -43,13 +43,13 @@ class TestReportImportCommand extends KernelTestCase
 
     private function prepareTestAssistance(): Assistance
     {
-        $oldPhones = $this->entityManager->getRepository(Phone::class)->findBy(['number' => '999999999']);
+        $oldPhones = $this->entityManager->getRepository(Phone::class)->findBy(['number' => '999999999'], ['id' => 'asc']);
 
         foreach ($oldPhones as $oldPhone) {
             $this->entityManager->remove($oldPhone);
         }
 
-        $oldTransactions = $this->entityManager->getRepository(Transaction::class)->findBy(['transactionId' => 'AMC6666666']);
+        $oldTransactions = $this->entityManager->getRepository(Transaction::class)->findBy(['transactionId' => 'AMC6666666'], ['id' => 'asc']);
 
         foreach ($oldTransactions as $oldTransaction) {
             $this->entityManager->remove($oldTransaction);
@@ -111,7 +111,7 @@ class TestReportImportCommand extends KernelTestCase
         $assistance = $this->prepareTestAssistance();
 
         /** @var User $user */
-        $user = $this->entityManager->getRepository(User::class)->findOneBy([]);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
 
         $wingMoneyImportCommand = $this->application->find('app:wing-money:import');
         $commandTester = new CommandTester($wingMoneyImportCommand);

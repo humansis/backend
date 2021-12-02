@@ -6,6 +6,7 @@ namespace NewApiBundle\Entity;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use InvalidArgumentException;
 use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
@@ -50,14 +51,14 @@ class ReliefPackage
     private $modalityType;
 
     /**
-     * @var float
+     * @var string
      *
      * @ORM\Column(name="amount_to_distribute", type="decimal", precision=10, scale=2)
      */
     private $amountToDistribute;
 
     /**
-     * @var float
+     * @var string
      *
      * Not in use right now. Prepared for partial assists.
      *
@@ -77,38 +78,45 @@ class ReliefPackage
      *
      * There should be only one deposit at this moment. One-to-many prepared for partial distribution
      *
-     * @ORM\OneToMany(targetEntity="ReliefPackage", mappedBy="reliefPackage")
-     * @ORM\JoinColumn(name="relief_package_id")
+     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardDeposit", mappedBy="reliefPackage")
      */
     private $smartcardDeposits;
 
     /**
      * @param AssistanceBeneficiary $assistanceBeneficiary
      * @param string                $modalityType
-     * @param float                 $amountToDistribute
+     * @param float|string|int      $amountToDistribute
      * @param string                $unit
      * @param string                $state
-     * @param float                 $amountDistributed
+     * @param float|string|int      $amountDistributed
      */
     public function __construct(
         AssistanceBeneficiary $assistanceBeneficiary,
         string $modalityType,
-        float $amountToDistribute,
+        $amountToDistribute,
         string $unit,
         string $state = ReliefPackageState::TO_DISTRIBUTE,
-        float $amountDistributed = 0.0
+        $amountDistributed = 0.0
     )
     {
         if (!in_array($modalityType, ModalityType::values())) {
-            throw new \InvalidArgumentException("Argument '$modalityType' isn't valid ModalityType");
+            throw new InvalidArgumentException("Argument '$modalityType' isn't valid ModalityType");
+        }
+
+        if (!is_numeric($amountToDistribute)) {
+            throw new InvalidArgumentException("amountToDistribute has to bee numeric. Provided value: '$amountToDistribute'");
+        }
+
+        if (!is_numeric($amountDistributed)) {
+            throw new InvalidArgumentException("amountDistributed has to bee numeric. Provided value: '$amountDistributed'");
         }
 
         $this->assistanceBeneficiary = $assistanceBeneficiary;
         $this->modalityType = $modalityType;
-        $this->amountToDistribute = $amountToDistribute;
+        $this->amountToDistribute = (string) $amountToDistribute;
         $this->unit = $unit;
         $this->state = $state;
-        $this->amountDistributed = $amountDistributed;
+        $this->amountDistributed = (string) $amountDistributed;
     }
 
     /**
@@ -157,24 +165,28 @@ class ReliefPackage
     public function setModalityType(string $modalityType): void
     {
         if (!in_array($modalityType, ModalityType::values())) {
-            throw new \InvalidArgumentException("Argument '$modalityType' isn't valid ModalityType");
+            throw new InvalidArgumentException("Argument '$modalityType' isn't valid ModalityType");
         }
         $this->modalityType = $modalityType;
     }
 
     /**
-     * @return float
+     * @return string
      */
-    public function getAmountToDistribute(): float
+    public function getAmountToDistribute(): string
     {
         return $this->amountToDistribute;
     }
 
     /**
-     * @param float $amountToDistribute
+     * @param float|string|int $amountToDistribute
      */
-    public function setAmountToDistribute(float $amountToDistribute): void
+    public function setAmountToDistribute($amountToDistribute): void
     {
+        if (!is_numeric($amountToDistribute)) {
+            throw new InvalidArgumentException("amountToDistribute has to bee numeric. Provided value: '$amountToDistribute'");
+        }
+
         $this->amountToDistribute = $amountToDistribute;
     }
 
@@ -197,10 +209,19 @@ class ReliefPackage
     /**
      * @return float
      */
-    public function getAmountDistributed(): float
+    public function getAmountDistributed(): string
     {
         return $this->amountDistributed;
     }
+
+    /**
+     * @param string $amountDistributed
+     */
+    public function setAmountDistributed(string $amountDistributed): void
+    {
+        $this->amountDistributed = $amountDistributed;
+    }
+
 
     /**
      * @return Collection|SmartcardDeposit[]

@@ -75,7 +75,7 @@ class ModalityFixtures extends Fixture
                 $instance2 = $manager->getRepository(ModalityType::class)->findOneBy([
                     'modality' => $instance,
                     'name' => $item,
-                ]);
+                ], ['id' => 'asc']);
                 if (null === $instance2) {
                     $instance2 = (new ModalityType())
                         ->setName($item)

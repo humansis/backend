@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Validator\Constraints;
 
+use NewApiBundle\Utils\DateTime\Iso8601Converter;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
@@ -27,15 +28,8 @@ class Iso8601Validator extends \Symfony\Component\Validator\Constraints\DateTime
 
         $value = (string) $value;
 
-        foreach ([\DateTime::ISO8601, \DateTime::ATOM, 'Y-m-d\TH:i:s.u\Z', 'Y-m-d'] as $format) {
-            $date = \DateTime::createFromFormat($format, $value);
-
-            $errors = \DateTime::getLastErrors();
-
-            if (false !== $date) {
-                break;
-            }
-        }
+        Iso8601Converter::toDateTime($value);
+        $errors = \DateTime::getLastErrors();
 
         if (0 < $errors['error_count']) {
             $this->context->buildViolation($constraint->message)

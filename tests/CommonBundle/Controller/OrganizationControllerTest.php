@@ -76,7 +76,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
-        $initialOrganization = $this->em->getRepository(Organization::class)->findOneBy([]);
+        $initialOrganization = $this->em->getRepository(Organization::class)->findOneBy([], ['id' => 'asc']);
         $this->assertEquals($initialOrganization->getName(), 'AKEZI');
         $this->assertEquals($initialOrganization->getFont(), 'Courier');
         $this->assertEquals($initialOrganization->getPrimaryColor(), '#4AA896');

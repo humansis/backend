@@ -341,7 +341,7 @@ class HouseholdServiceTest extends KernelTestCase
     public function testUpdateBeneficiaryInHousehold()
     {
         /** @var Project|null $project */
-        $project = $this->entityManager->getRepository(Project::class)->findOneBy([]);
+        $project = $this->entityManager->getRepository(Project::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($project)) {
             $this->markTestSkipped('There needs to be at least one project in system to complete this test');

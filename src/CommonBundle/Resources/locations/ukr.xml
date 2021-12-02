@@ -3,7 +3,7 @@
     <adm1 name="Avtonomna Respublika Krym" code="UA01">
         <adm2 name="Alushtynska" code="UA01103">
             <adm3 name="Alushtynska" code="UA0110300000">
-                <adm4 name="Alushta" code="UA0110300000"/>
+                <adm4 name="Alushta" code="UA0110300001"/>
             </adm3>
             <adm3 name="Izobilnenska" code="UA0110390900">
                 <adm4 name="Izobilne" code="UA0110390901"/>

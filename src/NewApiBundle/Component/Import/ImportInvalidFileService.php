@@ -114,19 +114,21 @@ class ImportInvalidFileService
         foreach ($entries as $entry) {
 
             foreach ($entry->getContent() as $i => $row) {
+                //TODO parse json only once
                 $invalidColumns = $this->parseInvalidColumns($entry->getMessage(), $i);
 
                 foreach ($header as $column) {
+                    $cell = $sheet->getCellByColumnAndRow($currentColumn, $currentRow);
+
                     if (isset($row[$column])) {
-                        $cellValue = $row[$column];
-                    } else {
-                        $cellValue = '';
+                        $cellValue = $row[$column][CellParameters::VALUE];
+
+                        $cell->setValueExplicit($cellValue, $row[$column][CellParameters::DATA_TYPE]);
+                        $cell->getStyle()->getNumberFormat()->setFormatCode($row[$column][CellParameters::NUMBER_FORMAT]);
                     }
 
-                    $sheet->setCellValueByColumnAndRow($currentColumn, $currentRow, $cellValue);
-
                     if (in_array($column, $invalidColumns)) {
-                        $sheet->getStyleByColumnAndRow($currentColumn, $currentRow)
+                        $cell->getStyle()
                             ->getFill()
                             ->setFillType(Fill::FILL_SOLID)
                             ->getStartColor()

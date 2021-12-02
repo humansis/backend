@@ -6,6 +6,7 @@ use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
+use CommonBundle\Utils\AdmsImporter;
 use CommonBundle\Utils\LocationImporter;
 use CommonBundle\Utils\LocationService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -47,12 +48,22 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
 
             $filepath = realpath($directory.'/'.$file);
 
-            $admImported = new LocationImporter($manager, $filepath);
+            $admImported = new AdmsImporter($manager, $filepath);
 
             $limit = self::LIMIT;
-            echo "FILE PART($limit) IMPORT : $filepath \n";
+            echo "FILE PART($limit) IMPORT ADMX: $filepath \n";
             $admImported->setLimit($limit);
             foreach ($admImported->importLocations() as $importStatus) {
+                echo '.';
+            }
+            echo "\n";
+
+            $locationImported = new LocationImporter($manager, $filepath);
+
+            $limit = self::LIMIT;
+            echo "FILE PART($limit) IMPORT LOCATION: $filepath \n";
+            $locationImported->setLimit($limit);
+            foreach ($locationImported->importLocations() as $importStatus) {
                 echo '.';
             }
             echo "\n";

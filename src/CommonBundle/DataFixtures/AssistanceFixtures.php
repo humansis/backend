@@ -16,6 +16,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Enum\ProductCategoryType;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
@@ -78,6 +79,8 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         'sector' => SectorEnum::FOOD_SECURITY,
         'subsector' => null,
         'threshold' => 1,
+        'allowedProductCategoryTypes' => [ProductCategoryType::FOOD],
+        'foodLimit' => '15',
     ];
 
     private $distributionService;
@@ -240,7 +243,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
 
     private function loadSmartcardAssistance(ObjectManager $manager, Project $project, string $currency)
     {
-        $modalityType = $manager->getRepository(ModalityType::class)->findOneBy(['name' => 'Smartcard']);
+        $modalityType = $manager->getRepository(ModalityType::class)->findOneBy(['name' => 'Smartcard'], ['id' => 'asc']);
 
         $data = $this->assistanceArray;
         $data['project']['id'] = $project->getId();

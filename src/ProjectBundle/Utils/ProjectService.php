@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use InvalidArgumentException;
 use NewApiBundle\Entity\Import;
+use NewApiBundle\Exception\ConstraintViolationException;
 use NewApiBundle\InputType\AddHouseholdsToProjectInputType;
 use NewApiBundle\InputType\ProjectCreateInputType;
 use NewApiBundle\InputType\ProjectUpdateInputType;
@@ -20,6 +21,7 @@ use ProjectBundle\DTO\Sector;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserProject;
@@ -197,7 +199,10 @@ class ProjectService
         ]);
 
         if (!empty($existingProjects)) {
-            throw new \RuntimeException('Project with the name '.$inputType->getName().' already exists');
+            //TODO think about more systematic solution
+            throw new ConstraintViolationException(
+                new ConstraintViolation("Project with name \"{$inputType->getName()}\" already exists. Please choose different one.", null, [], 'name', 'name', true)
+            );
         }
 
         $project = (new Project())
@@ -210,7 +215,8 @@ class ProjectService
             ->setNotes($inputType->getNotes())
             ->setSectors($inputType->getSectors())
             ->setProjectInvoiceAddressLocal($inputType->getProjectInvoiceAddressLocal())
-            ->setProjectInvoiceAddressEnglish($inputType->getProjectInvoiceAddressEnglish());
+            ->setProjectInvoiceAddressEnglish($inputType->getProjectInvoiceAddressEnglish())
+            ->setAllowedProductCategoryTypes($inputType->getAllowedProductCategoryTypes());
 
         foreach ($inputType->getDonorIds() as $id) {
             $donor = $this->em->getRepository(Donor::class)->find($id);
@@ -309,7 +315,9 @@ class ProjectService
         ]);
 
         if (!empty($existingProjects) && $existingProjects[0]->getId() !== $project->getId()) {
-            throw new \RuntimeException('Project with the name '.$project->getName().' already exists');
+            throw new ConstraintViolationException(
+                new ConstraintViolation("Project with name \"{$inputType->getName()}\" already exists. Please choose different one.", null, [], 'name', 'name', true)
+            );
         }
 
         $project
@@ -322,7 +330,8 @@ class ProjectService
             ->setNotes($inputType->getNotes())
             ->setSectors($inputType->getSectors())
             ->setProjectInvoiceAddressLocal($inputType->getProjectInvoiceAddressLocal())
-            ->setProjectInvoiceAddressEnglish($inputType->getProjectInvoiceAddressEnglish());
+            ->setProjectInvoiceAddressEnglish($inputType->getProjectInvoiceAddressEnglish())
+            ->setAllowedProductCategoryTypes($inputType->getAllowedProductCategoryTypes());
 
         $project->removeDonors();
         foreach ($inputType->getDonorIds() as $id) {

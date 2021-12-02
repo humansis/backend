@@ -9,6 +9,7 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
+use NewApiBundle\Enum\ProductCategoryType;
 
 class AssistanceMapper
 {
@@ -101,6 +102,7 @@ class AssistanceMapper
             'name' => $assistance->getName(),
             'updated_on' => $assistance->getUpdatedOnDateTime()->format('d-m-Y H:i'),
             'date_distribution' => $assistance->getDateDistribution(),
+            'date_expiration' => $assistance->getDateExpiration(),
             'location' => $assistance->getLocation(),
             'project' => $assistance->getProject(),
             'selection_criteria' => $this->transformSelectionCriteria($assistance->getSelectionCriteria()),
@@ -153,11 +155,16 @@ class AssistanceMapper
             }
         }
 
+        $isFoodEnabled = in_array(ProductCategoryType::FOOD, $assistance->getAllowedProductCategoryTypes());
+        $isNonFoodEnabled = in_array(ProductCategoryType::NONFOOD, $assistance->getAllowedProductCategoryTypes());
+        $isCashbackEnabled = in_array(ProductCategoryType::CASHBACK, $assistance->getAllowedProductCategoryTypes());
+
         $assistanceArray = [
             'id' => $assistance->getId(),
             'name' => $assistance->getName(),
             'updated_on' => $assistance->getUpdatedOnDateTime()->format('d-m-Y H:i'),
             'date_distribution' => $assistance->getDateDistribution(),
+            'date_expiration' => $assistance->getDateExpiration(),
             'location' => $assistance->getLocation(),
             'project' => $assistance->getProject(),
             'selection_criteria' => $assistance->getSelectionCriteria(),
@@ -174,6 +181,10 @@ class AssistanceMapper
             'description' => $assistance->getDescription(),
             'households_targeted' => $assistance->getHouseholdsTargeted(),
             'individuals_targeted' => $assistance->getIndividualsTargeted(),
+            'foodLimit' => $isFoodEnabled ? $assistance->getFoodLimit() : '0.00',
+            'nonfoodLimit' => $isNonFoodEnabled ? $assistance->getNonFoodLimit() : '0.00',
+            'cashbackLimit' => $isCashbackEnabled ? $assistance->getCashbackLimit() : '0.00',
+            'remoteDistributionAllowed' => $assistance->isRemoteDistributionAllowed(),
         ];
 
         return $assistanceArray;

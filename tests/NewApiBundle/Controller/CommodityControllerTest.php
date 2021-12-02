@@ -29,8 +29,8 @@ class CommodityControllerTest extends BMSServiceTestCase
     {
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $commodity1 = $em->getRepository(Commodity::class)->findBy([])[0];
-        $commodity2 = $em->getRepository(Commodity::class)->findBy([])[1];
+        $commodity1 = $em->getRepository(Commodity::class)->findBy([], ['id' => 'asc'])[0];
+        $commodity2 = $em->getRepository(Commodity::class)->findBy([], ['id' => 'asc'])[1];
 
         $this->request('GET', '/api/basic/web-app/v1/assistances/commodities?filter[id][]='.$commodity1->getId().'&filter[id][]='.$commodity2->getId());
 
@@ -65,7 +65,7 @@ class CommodityControllerTest extends BMSServiceTestCase
     {
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $assistance = $em->getRepository(\DistributionBundle\Entity\Assistance::class)->findBy(['archived' => 0])[0];
+        $assistance = $em->getRepository(\DistributionBundle\Entity\Assistance::class)->findBy(['archived' => 0], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/commodities');
 

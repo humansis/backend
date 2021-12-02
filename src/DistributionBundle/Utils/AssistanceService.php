@@ -189,11 +189,6 @@ class AssistanceService
                     $this->createReliefPackage($beneficiary, $commodity);
                 }
             }
-            if ($commodity->getModalityType()->getName() === \NewApiBundle\Enum\ModalityType::SMART_CARD) {
-                foreach ($beneficiaries as $beneficiary) {
-                    $this->createReliefPackage($beneficiary, $commodity);
-                }
-            }
         }
         $this->em->flush();
 
@@ -250,6 +245,8 @@ class AssistanceService
         if (!$project) {
             throw new \Doctrine\ORM\EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
         }
+        // FIXME: disabled for performance reasons, see PIN-2630 for further details
+        return new \CommonBundle\Pagination\Paginator([], -1);
 
         $filters = $this->mapping($inputType);
         $filters['criteria'] = $filters['selection_criteria'];
@@ -275,7 +272,15 @@ class AssistanceService
 
         $result = $this->createFromArray($inputType->getIso3(), $distributionArray);
 
-        return $result['distribution'];
+        /** @var Assistance $assistance */
+        $assistance = $result['distribution'];
+        $assistance->setFoodLimit($inputType->getFoodLimit());
+        $assistance->setNonFoodLimit($inputType->getNonFoodLimit());
+        $assistance->setCashbackLimit($inputType->getCashbackLimit());
+        $assistance->setRemoteDistributionAllowed($inputType->getRemoteDistributionAllowed());
+        $assistance->setAllowedProductCategoryTypes($inputType->getAllowedProductCategoryTypes());
+
+        return $assistance;
     }
 
     /**
@@ -384,6 +389,14 @@ class AssistanceService
             $distributionArray['selection_criteria'] = $criteria;
             $listReceivers = $this->guessBeneficiaries($distributionArray, $countryISO3, $projectTmp, $distribution->getTargetType(), $sector, $subsector, $distributionArray['threshold']);
             $this->saveReceivers($distribution, $listReceivers);
+        }
+
+        if (isset($distributionArray['allowedProductCategoryTypes'])) {
+            $distribution->setAllowedProductCategoryTypes($distributionArray['allowedProductCategoryTypes']);
+        }
+
+        if (isset($distributionArray['foodLimit'])) {
+            $distribution->setFoodLimit($distributionArray['foodLimit']);
         }
 
         $this->em->persist($distribution);
@@ -534,13 +547,21 @@ class AssistanceService
 
     public function updateDateDistribution(Assistance $assistance, \DateTimeInterface $date)
     {
-        $distributionNameWithoutDate = explode('-', $assistance->getName())[0];
-        $newDistributionName = $distributionNameWithoutDate.'-'.$date->format('d-m-Y');
+        $newDistributionName = self::generateName($assistance->getLocation(), $date);
 
         $assistance
             ->setDateDistribution($date)
             ->setName($newDistributionName)
             ->setUpdatedOn(new \DateTime());
+
+        $this->em->persist($assistance);
+        $this->em->flush();
+    }
+
+    public function updateDateExpiration(Assistance $assistance, \DateTimeInterface $date): void
+    {
+        $assistance->setDateExpiration($date);
+        $assistance->setUpdatedOn(new \DateTime());
 
         $this->em->persist($assistance);
         $this->em->flush();
@@ -1026,7 +1047,11 @@ class AssistanceService
             'households_targeted' => $inputType->getHouseholdsTargeted(),
             'individuals_targeted' => $inputType->getIndividualsTargeted(),
             'description' => $inputType->getDescription(),
+            'foodLimit' => $inputType->getFoodLimit(),
+            'nonfoodLimit' => $inputType->getNonFoodLimit(),
+            'cashbackLimit' => $inputType->getCashbackLimit(),
             'remoteDistributionAllowed' => $inputType->getRemoteDistributionAllowed(),
+            'allowedProductCategoryTypes' => $inputType->getAllowedProductCategoryTypes(),
         ];
 
         foreach ($inputType->getCommodities() as $commodity) {
@@ -1187,6 +1212,6 @@ class AssistanceService
         /** @var AssistanceStatistics $statistics */
         $statistics = $this->em->getRepository(AssistanceStatistics::class)->findByAssistance($assistance);
 
-        return empty($statistics->getAmountDistributed());
+        return $statistics->getAmountDistributed() > 0;
     }
 }

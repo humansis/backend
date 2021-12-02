@@ -4,10 +4,13 @@ namespace Tests\NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Community;
 use CommonBundle\Entity\Location;
+use DateTime;
+use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Enum\AssistanceType;
 use Exception;
+use NewApiBundle\Enum\ProductCategoryType;
 use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
 
@@ -29,7 +32,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testGetItem()
     {
         /** @var Assistance $assistance */
-        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy([])[0];
+        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy([], ['id' => 'asc'])[0];
         $commodityIds = array_map(function (\DistributionBundle\Entity\Commodity $commodity) {
             return $commodity->getId();
         }, $assistance->getCommodities()->toArray());
@@ -57,6 +60,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "commodityIds": ['.implode(',', $commodityIds).'],
             "validated": '.($assistance->getValidated() ? 'true' : 'false').',
             "completed": '.($assistance->getCompleted() ? 'true' : 'false').',
+            "foodLimit": "*",
+            "nonFoodLimit": "*",
+            "cashbackLimit": "*",
+            "allowedProductCategoryTypes": "*",
             "deletable": '.($assistance->getValidated() ? 'false' : 'true').'
         }', $this->client->getResponse()->getContent());
     }
@@ -64,9 +71,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testList()
     {
         /** @var Project $project */
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
         /** @var Location $location */
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/assistances?filter[type]='.AssistanceType::DISTRIBUTION.
                                                     '&filter[modalityTypes][]=Smartcard'.
@@ -86,7 +93,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     public function testAsisstancesByProject()
     {
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/projects/'.$project->getId().'/assistances');
 
@@ -104,17 +111,17 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testCreateDistribution()
     {
         /** @var Project $project */
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findOneBy([]);
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findOneBy([], ['id' => 'asc']);
 
         /** @var Location $location */
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findOneBy([]);
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findOneBy([], ['id' => 'asc']);
 
         if (null === $project || null === $location) {
             $this->markTestSkipped('There needs to be at least one project and location in system for completing this test');
         }
 
         /** @var ModalityType $modalityType */
-        $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Smartcard'])[0];
+        $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Smartcard'], ['id' => 'asc'])[0];
 
         $this->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
@@ -139,7 +146,11 @@ class AssistanceControllerTest extends BMSServiceTestCase
                     'value' => '2020-01-01',
                 ],
             ],
+            'foodLimit' => 10.99,
+            'nonFoodLimit' => null,
+            'cashbackLimit' => 1024,
             'remoteDistributionAllowed' => false,
+            'allowedProductCategoryTypes' => [ProductCategoryType::CASHBACK, ProductCategoryType::NONFOOD],
         ]);
 
         $this->assertTrue(
@@ -161,20 +172,68 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "individualsTargeted": "*",
             "description": "*",
             "commodityIds": ["*"],
+            "foodLimit": 10.99,
+            "nonFoodLimit": null,
+            "cashbackLimit": 1024,
+            "allowedProductCategoryTypes": ["*"],
             "remoteDistributionAllowed": "*"
         }', $this->client->getResponse()->getContent());
+
+        $contentArray = json_decode($this->client->getResponse()->getContent(), true);
+
+        return $contentArray['id'];
+    }
+
+    /**
+     * @depends testCreateDistribution
+     */
+    public function testUpdateDistributionDate(int $id)
+    {
+        $date = new DateTime();
+
+        $this->request('PATCH', "/api/basic/web-app/v1/assistances/$id", [
+            'dateDistribution' => $date->format(DateTimeInterface::ISO8601),
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        $contentArray = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals($date->format(DateTimeInterface::ISO8601), $contentArray['dateDistribution']);
+    }
+
+    /**
+     * @depends testCreateDistribution
+     */
+    public function testUpdateExpirationDate(int $id)
+    {
+        $date = new DateTime('+1 year');
+
+        $this->request('PATCH', "/api/basic/web-app/v1/assistances/$id", [
+            'dateExpiration' => $date->format(DateTimeInterface::ISO8601),
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        $contentArray = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals($date->format(DateTimeInterface::ISO8601), $contentArray['dateExpiration']);
     }
 
     public function testCreateDistributionWithExpirationDate()
     {
         /** @var Project $project */
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         /** @var Location $location */
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
         /** @var ModalityType $modalityType */
-        $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Cash'])[0];
+        $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Cash'], ['id' => 'asc'])[0];
 
         $this->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
@@ -200,6 +259,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
                     'value' => '2020-01-01',
                 ],
             ],
+            'foodLimit' => null,
+            'nonFoodLimit' => null,
+            'cashbackLimit' => null,
+            'allowedProductCategoryTypes' => [],
         ]);
 
         $this->assertTrue(
@@ -221,6 +284,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "individualsTargeted": "*",
             "deletable": true,
             "description": "*",
+            "allowedProductCategoryTypes": [],
+            "foodLimit": null,
+            "nonFoodLimit": null,
+            "cashbackLimit": null,
             "commodityIds": ["*"]
         }', $this->client->getResponse()->getContent());
     }
@@ -228,10 +295,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testCreateActivity()
     {
         /** @var Project $project */
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         /** @var Location $location */
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
@@ -254,6 +321,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 ],
             ],
             'description' => 'test activity',
+            'allowedProductCategoryTypes' => [ProductCategoryType::CASHBACK, ProductCategoryType::NONFOOD],
         ]);
 
         $this->assertTrue(
@@ -282,13 +350,13 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testCreateCommunityActivity()
     {
         /** @var Project $project */
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         /** @var Location $location */
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
         /** @var Community $community */
-        $community = self::$container->get('doctrine')->getRepository(Community::class)->findBy([])[0];
+        $community = self::$container->get('doctrine')->getRepository(Community::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
@@ -303,6 +371,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'description' => 'test construction activity',
             'householdsTargeted' => 10,
             'individualsTargeted' => null,
+            'allowedProductCategoryTypes' => [ProductCategoryType::CASHBACK, ProductCategoryType::NONFOOD],
         ]);
 
         $this->assertTrue(

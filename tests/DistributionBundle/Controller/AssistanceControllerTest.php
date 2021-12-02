@@ -59,7 +59,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 //        $this->removeHousehold($this->namefullnameHousehold);
         $this->createHousehold();
 
-        $adm2 = self::$container->get('doctrine')->getRepository(\CommonBundle\Entity\Adm2::class)->findOneBy([]);
+        $adm2 = self::$container->get('doctrine')->getRepository(\CommonBundle\Entity\Adm2::class)->findOneBy([], ['id' => 'asc']);
 
         $criteria = array(
             "id" => null,
@@ -319,7 +319,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $hh = $this->em->getRepository(Household::class)->findOneBy([]);
+        $hh = $this->em->getRepository(Household::class)->findOneBy([], ['id' => 'asc']);
         $hhId = $hh->getId();
 
         // Second step
@@ -386,7 +386,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $distributionRepo = $this->em->getRepository(AssistanceBeneficiary::class);
-        $firstAssistanceBeneficiary = $distributionRepo->findOneBy(['assistance'=>$distribution['id']]);
+        $firstAssistanceBeneficiary = $distributionRepo->findOneBy(['assistance'=>$distribution['id']], ['id' => 'asc']);
         $bnfId = $firstAssistanceBeneficiary->getBeneficiary()->getId();
 
         $booklet = $bookletService->create('KHM', [
@@ -409,7 +409,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $bookletBig = $this->em->getRepository(Booklet::class)->find($bookletBig->getId());
         $bookletService->assign($bookletBig, $firstAssistanceBeneficiary->getAssistance(), $firstAssistanceBeneficiary->getBeneficiary());
 
-        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([]);
+        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([], ['id' => 'asc']);
 
         $purchase = new VoucherPurchase();
         $purchase->setCreatedAt(new \DateTime());
@@ -921,7 +921,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     {
         /** @var \BeneficiaryBundle\Repository\CommunityRepository $communityRepo */
         $communityRepo = self::$container->get('doctrine')->getRepository(\BeneficiaryBundle\Entity\Community::class);
-        $community = $communityRepo->findBy([])[0];
+        $community = $communityRepo->findBy([], ['id' => 'asc'])[0];
 
         $body = [
             'id' => null,
@@ -993,7 +993,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     {
         /** @var \BeneficiaryBundle\Repository\InstitutionRepository $institutionRepo */
         $institutionRepo = self::$container->get('doctrine')->getRepository(\BeneficiaryBundle\Entity\Institution::class);
-        $institution = $institutionRepo->findBy([])[0];
+        $institution = $institutionRepo->findBy([], ['id' => 'asc'])[0];
 
         $body = [
             'id' => null,

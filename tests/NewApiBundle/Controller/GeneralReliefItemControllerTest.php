@@ -24,7 +24,7 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
     public function testGet()
     {
         /** @var GeneralReliefItem $item */
-        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy([])[0];
+        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/general-relief-items/'.$item->getId());
 
@@ -58,7 +58,7 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
     public function testPatch()
     {
         /** @var GeneralReliefItem $item */
-        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy(['distributedAt' => null])[0];
+        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy(['distributedAt' => null], ['id' => 'asc'])[0];
 
         $this->request('PATCH', '/api/basic/web-app/v2/general-relief-items/'.$item->getId(), [
             'distributed' => true,
@@ -84,7 +84,7 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
     public function testPatch2()
     {
         /** @var GeneralReliefItem $item */
-        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy(['distributedAt' => new \DateTime('2020-01-01T10:10:00+00')])[0];
+        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy(['distributedAt' => new \DateTime('2020-01-01T10:10:00+00')], ['id' => 'asc'])[0];
 
         $this->request('PATCH', '/api/basic/web-app/v2/general-relief-items/'.$item->getId(), [
             'distributed' => false,

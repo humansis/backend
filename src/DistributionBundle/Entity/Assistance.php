@@ -211,6 +211,34 @@ class Assistance implements ExportableInterface
     private $remoteDistributionAllowed;
 
     /**
+     * @var numeric|null
+     *
+     * @ORM\Column(name="food_limit", type="decimal", nullable=true)
+     */
+    private $foodLimit;
+
+    /**
+     * @var numeric|null
+     *
+     * @ORM\Column(name="non_food_limit", type="decimal", nullable=true)
+     */
+    private $nonFoodLimit;
+
+    /**
+     * @var numeric|null
+     *
+     * @ORM\Column(name="cashback_limit", type="decimal", nullable=true)
+     */
+    private $cashbackLimit;
+
+    /**
+     * @var string[]
+     *
+     * @ORM\Column(name="allowed_product_category_types", type="array", nullable=false)
+     */
+    private $allowedProductCategoryTypes;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -220,6 +248,7 @@ class Assistance implements ExportableInterface
         $this->commodities = new \Doctrine\Common\Collections\ArrayCollection();
         $this->assistanceSelection = new AssistanceSelection();
         $this->setUpdatedOn(new \DateTime());
+        $this->allowedProductCategoryTypes = [];
     }
 
     /**
@@ -906,6 +935,88 @@ class Assistance implements ExportableInterface
     public function setRemoteDistributionAllowed(?bool $remoteDistributionAllowed): void
     {
         $this->remoteDistributionAllowed = $remoteDistributionAllowed;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getFoodLimit(): ?string
+    {
+        return $this->foodLimit;
+    }
+
+    /**
+     * @param float|int|string|null $foodLimit
+     */
+    public function setFoodLimit($foodLimit): void
+    {
+        if (gettype($foodLimit) === 'integer' || gettype($foodLimit) === 'double') {
+            $this->foodLimit = number_format($foodLimit, 2, '.', '');
+        } else if ( (gettype($foodLimit) === 'string' && is_numeric($foodLimit)) || null === $foodLimit) {
+            $this->foodLimit = $foodLimit;
+        } else {
+            throw new InvalidArgumentException("'$foodLimit' is not valid numeric format.");
+        }
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getNonFoodLimit(): ?string
+    {
+        return $this->nonFoodLimit;
+    }
+
+    /**
+     * @param float|int|string|null $nonFoodLimit
+     */
+    public function setNonFoodLimit($nonFoodLimit): void
+    {
+        if (gettype($nonFoodLimit) === 'integer' || gettype($nonFoodLimit) === 'double') {
+            $this->nonFoodLimit = number_format($nonFoodLimit, 2, '.', '');
+        } else if ( (gettype($nonFoodLimit) === 'string' && is_numeric($nonFoodLimit)) || null === $nonFoodLimit) {
+            $this->nonFoodLimit = $nonFoodLimit;
+        } else {
+            throw new InvalidArgumentException("'$nonFoodLimit' is not valid numeric format.");
+        }
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCashbackLimit(): ?string
+    {
+        return $this->cashbackLimit;
+    }
+
+    /**
+     * @param float|int|string|null $cashbackLimit
+     */
+    public function setCashbackLimit($cashbackLimit): void
+    {
+        if (gettype($cashbackLimit) === 'integer' || gettype($cashbackLimit) === 'double') {
+            $this->cashbackLimit = number_format($cashbackLimit, 2, '.', '');
+        } else if ( (gettype($cashbackLimit) === 'string' && is_numeric($cashbackLimit)) || null === $cashbackLimit) {
+            $this->cashbackLimit = $cashbackLimit;
+        } else {
+            throw new InvalidArgumentException("'$cashbackLimit' is not valid numeric format.");
+        }
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getAllowedProductCategoryTypes(): array
+    {
+        return $this->allowedProductCategoryTypes;
+    }
+
+    /**
+     * @param string[] $allowedProductCategoryTypes
+     */
+    public function setAllowedProductCategoryTypes(array $allowedProductCategoryTypes): void
+    {
+        $this->allowedProductCategoryTypes = $allowedProductCategoryTypes;
     }
 
 }

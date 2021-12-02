@@ -45,7 +45,6 @@ class AssistanceBeneficiaryExpandedOfflineAppMapper implements MapperInterface
         $beneficiaryMapped['referralComment'] = $beneficiary->getPerson()->getReferral() ? $beneficiary->getPerson()->getReferral()->getComment() : null;
 
         $beneficiaryMapped['nationalCardId'] = $this->getNationalId();
-        $beneficiaryMapped['currentSmartcardSerialNumber'] = $beneficiary->getSmartcard();
 
         return $beneficiaryMapped;
     }
@@ -61,11 +60,15 @@ class AssistanceBeneficiaryExpandedOfflineAppMapper implements MapperInterface
         return null;
     }
 
-    public function distributedAt(): ?string
+    public function getDistributedAt(): ?string
     {
-        return $this->object->getSmartcardDistributedAt();
+        return $this->object->getSmartcardDistributedAt() ? $this->object->getSmartcardDistributedAt()->format(\DateTimeInterface::ISO8601) : null;
     }
 
+    public function getCurrentSmartcardSerialNumber(): ?string
+    {
+        return $this->object->getBeneficiary()->getSmartcardSerialNumber();
+    }
 
     public function getGeneralReliefItems(): array
     {

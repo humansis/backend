@@ -138,7 +138,7 @@ echo "...done"
 # normal: php bin/console cache:clear --env=prod + php bin/console cache:clear
 # aggressive: normal + rm ./var/cache/* + docker restart php_container
 echo "Clearing cache"
-cache_clear="bash /var/www/html/bms_api/clear_cache.sh $4"
+cache_clear="cd /var/www/html/bms_api && bash ./clear_cache.sh $4"
 ssh $ec2_user@$ec2_host "$cache_clear" || exit 1
 echo "...done"
 

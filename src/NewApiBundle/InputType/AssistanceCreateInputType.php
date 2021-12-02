@@ -146,9 +146,35 @@ class AssistanceCreateInputType implements InputTypeInterface
     private $validated = false;
 
     /**
+     * @Assert\Type("numeric")
+     */
+    private $foodLimit;
+
+    /**
+     * @Assert\Type("numeric")
+     */
+    private $nonFoodLimit;
+
+    /**
+     * @Assert\Type("numeric")
+     */
+    private $cashbackLimit;
+
+    /**
      * @Assert\Type("boolean")
      */
     private $remoteDistributionAllowed;
+
+    /**
+     * @Assert\Type("array")
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Choice(callback={"NewApiBundle\Enum\ProductCategoryType", "values"}, strict=true, groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
+     */
+    private $allowedProductCategoryTypes;
 
     /**
      * @Assert\IsTrue(groups="AdditionalChecks", message="remoteDistributionAllowed must not be null if distribution is for smartcards. Null otherwise.")
@@ -480,6 +506,54 @@ class AssistanceCreateInputType implements InputTypeInterface
     }
 
     /**
+     * @return mixed
+     */
+    public function getFoodLimit()
+    {
+        return $this->foodLimit;
+    }
+
+    /**
+     * @param mixed $foodLimit
+     */
+    public function setFoodLimit($foodLimit): void
+    {
+        $this->foodLimit = $foodLimit;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNonFoodLimit()
+    {
+        return $this->nonFoodLimit;
+    }
+
+    /**
+     * @param mixed $nonFoodLimit
+     */
+    public function setNonFoodLimit($nonFoodLimit): void
+    {
+        $this->nonFoodLimit = $nonFoodLimit;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCashbackLimit()
+    {
+        return $this->cashbackLimit;
+    }
+
+    /**
+     * @param mixed $cashbackLimit
+     */
+    public function setCashbackLimit($cashbackLimit): void
+    {
+        $this->cashbackLimit = $cashbackLimit;
+    }
+
+    /**
      * @return bool|null
      */
     public function getRemoteDistributionAllowed()
@@ -494,4 +568,21 @@ class AssistanceCreateInputType implements InputTypeInterface
     {
         $this->remoteDistributionAllowed = $remoteDistributionAllowed;
     }
+
+    /**
+     * @return array
+     */
+    public function getAllowedProductCategoryTypes()
+    {
+        return $this->allowedProductCategoryTypes;
+    }
+
+    /**
+     * @param array $allowedProductCategoryTypes
+     */
+    public function setAllowedProductCategoryTypes($allowedProductCategoryTypes): void
+    {
+        $this->allowedProductCategoryTypes = $allowedProductCategoryTypes;
+    }
+
 }

@@ -98,6 +98,7 @@ class ImportTest extends KernelTestCase
             'minimal ods' => ['KHM', 'KHM-Import-2HH-3HHM-24HHM.ods', 2, 29, 2],
             'minimal xlsx' => ['KHM', 'KHM-Import-4HH-0HHM-0HHM.xlsx', 4, 4, 4],
             'camp only' => ['SYR', 'SYR-only-camp-1HH.xlsx', 1, 7, 1],
+            'excel date format' => ['KHM', 'KHM-Import-1HH-0HHM-0HHM-excel-date-format.xlsx', 1, 1, 1],
         ];
     }
 
@@ -113,8 +114,6 @@ class ImportTest extends KernelTestCase
      */
     public function testMinimalWorkflow(string $country, string $filename, int $expectedHouseholdCount, int $expectedBeneficiaryCount)
     {
-        $this->markTestSkipped('Failed with asserting import state (caused by Workflow)');
-
         $this->project = $this->createBlankProject($country, [__METHOD__, $filename]);
         $this->originHousehold = $this->createBlankHousehold($this->project);
 
@@ -139,7 +138,7 @@ class ImportTest extends KernelTestCase
         $this->uploadService->load($importFile);
 
         $this->assertNotNull($importFile->getId(), "ImportFile wasn't saved to DB");
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
         $this->assertCount($expectedHouseholdCount, $queue);
 
         // start integrity check
@@ -152,7 +151,7 @@ class ImportTest extends KernelTestCase
             // expected
         }
 
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
         $this->assertCount($expectedHouseholdCount, $queue);
         $this->assertEquals(ImportState::INTEGRITY_CHECKING, $import->getState());
 
@@ -179,7 +178,7 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:identity failed");
 
         $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
         $this->assertCount($expectedHouseholdCount, $queue);
 
         // start similarity check
@@ -195,10 +194,10 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:similarity failed");
 
         $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
         $this->assertCount($expectedHouseholdCount, $queue);
 
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_CREATE]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_CREATE], ['id' => 'asc']);
         $this->assertCount($expectedHouseholdCount, $queue);
 
         // save to DB
@@ -215,7 +214,7 @@ class ImportTest extends KernelTestCase
 
         $this->assertEquals(ImportState::FINISHED, $import->getState());
 
-        $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import]);
+        $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
         $this->assertCount($expectedHouseholdCount, $queue);
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->getImported($import);
@@ -227,8 +226,6 @@ class ImportTest extends KernelTestCase
      */
     public function testRepeatedUploadSameFile(string $country, string $filename, int $expectedHouseholdCount, int $expectedBeneficiaryCount, int $expectedDuplicities)
     {
-        $this->markTestSkipped('Failed asserting import status caused by Workflow. Commands should not be called, change status call checkers automatically');
-
         $this->project = $this->createBlankProject($country, [__METHOD__, $filename]);
         $this->originHousehold = $this->createBlankHousehold($this->project);
 
@@ -310,7 +307,7 @@ class ImportTest extends KernelTestCase
         $this->assertEquals($expectedDuplicities, $stats->getAmountDuplicities());
 
         // resolve all as duplicity to update and continue
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::IDENTITY_CANDIDATE]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::IDENTITY_CANDIDATE], ['id' => 'asc']);
         foreach ($queue as $item) {
             $duplicityResolve = new DuplicityResolveInputType();
             $duplicityResolve->setStatus(ImportQueueState::TO_UPDATE);
@@ -333,14 +330,14 @@ class ImportTest extends KernelTestCase
         // $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:similarity failed");
 
         $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
         $this->assertCount($expectedHouseholdCount, $queue);
 
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_CREATE]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_CREATE], ['id' => 'asc']);
         $this->assertCount($expectedHouseholdCount-$expectedDuplicities, $queue);
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_UPDATE]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_UPDATE], ['id' => 'asc']);
         $this->assertCount($expectedDuplicities, $queue);
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_LINK]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_LINK], ['id' => 'asc']);
         $this->assertCount(0, $queue);
 
         // save to DB
@@ -372,8 +369,6 @@ class ImportTest extends KernelTestCase
 
     public function testUpdateSimpleDuplicity()
     {
-        $this->markTestSkipped('First import should be first finished and after that the second should check identity');
-
         $this->project = $this->createBlankProject(self::TEST_COUNTRY, [__METHOD__]);
         $this->originHousehold = $this->createBlankHousehold($this->project);
 
@@ -442,7 +437,7 @@ class ImportTest extends KernelTestCase
         // $this->entityManager->refresh($secondImport);
 
         // resolve all as duplicity on second import to update and continue
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $secondImport, 'state' => ImportQueueState::IDENTITY_CANDIDATE]);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $secondImport, 'state' => ImportQueueState::IDENTITY_CANDIDATE], ['id' => 'asc']);
         foreach ($queue as $item) {
             $duplicityResolve = new DuplicityResolveInputType();
             $duplicityResolve->setStatus(ImportQueueState::TO_UPDATE);
@@ -475,8 +470,6 @@ class ImportTest extends KernelTestCase
 
     public function testErrorInIntegrityCheck()
     {
-        $this->markTestSkipped('Failed asserting import status caused by Workflow. Commands should not be called, changing status is enough.');
-
         $this->project = $this->createBlankProject(self::TEST_COUNTRY, [__METHOD__]);
         $this->originHousehold = $this->createBlankHousehold($this->project);
 
@@ -521,8 +514,6 @@ class ImportTest extends KernelTestCase
      */
     public function testWrongCountryIntegrityCheck(string $country, string $filename)
     {
-        $this->markTestSkipped('Failed asserting import status caused by workflow. Commands should not be called, changing status is enough');
-
         $this->project = $this->createBlankProject($country, [__METHOD__, $filename]);
         $this->originHousehold = $this->createBlankHousehold($this->project);
 
@@ -675,6 +666,6 @@ class ImportTest extends KernelTestCase
 
     private function getUser(): User
     {
-        return $this->entityManager->getRepository(User::class)->findOneBy([]);
+        return $this->entityManager->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
     }
 }
