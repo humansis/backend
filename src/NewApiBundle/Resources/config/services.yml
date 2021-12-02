@@ -293,3 +293,16 @@ services:
     NewApiBundle\Export\SmartcardPurchasedItemSpreadsheet:
         arguments:
             - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:SmartcardPurchasedItem")'
+
+    NewApiBundle\Component\Storage\Aws\AwsStorageFactory:
+        public: true
+
+    NewApiBundle\Component\LogsStorage\LogsStorageService:
+        arguments:
+            - '%aws.logs.key%'
+            - '%aws.logs.secret%'
+            - '%aws.logs.region%'
+            - '%aws.logs.version%'
+            - '%aws.logs.bucket%'
+            - '%aws.logs.folder%'
+
