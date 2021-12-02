@@ -85,6 +85,7 @@ class ImportFinisher
         $this->logImportDebug($import, "Items to save: ".count($queueToInsert));
         foreach ($queueToInsert as $item) {
             $this->finishCreationQueue($item, $import);
+            $this->em->persist($item);
         }
 
         $queueToUpdate = $this->queueRepository->findBy([
@@ -94,6 +95,7 @@ class ImportFinisher
         $this->logImportDebug($import, "Items to update: ".count($queueToUpdate));
         foreach ($queueToUpdate as $item) {
             $this->finishUpdateQueue($item, $import);
+            $this->em->persist($item);
         }
 
         // will be removed in clean command
@@ -107,7 +109,7 @@ class ImportFinisher
         // TODO TO_IGNORE = TO_LINK => unify states in the future
         $queueToLink = $this->queueRepository->findBy([
             'import' => $import,
-            'state' => ImportQueueState::TO_IGNORE,
+            'state' => [ImportQueueState::TO_LINK, ImportQueueState::TO_IGNORE],
         ]);
         $this->logImportDebug($import, "Items to link: ".count($queueToLink));
         foreach ($queueToLink as $item) {
@@ -118,19 +120,14 @@ class ImportFinisher
             }
 
             $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
-            //$this->removeFinishedQueue($item);
             $this->logImportInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
 
             WorkflowTool::checkAndApply($this->importQueueStateMachine, $item, [ImportQueueTransitions::LINK]);
+            $this->em->persist($item);
         }
 
-        // will be removed in clean command
-        /*foreach ($this->queueRepository->findBy([
-            'import' => $import,
-            'state' => ImportQueueState::INVALID_EXPORTED,
-        ]) as $item) {
-            $this->removeFinishedQueue($item);
-        }*/
+        $this->em->flush();
+
         WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::FINISH]);
         $this->em->flush();
     }
@@ -182,11 +179,9 @@ class ImportFinisher
         } else {
             $this->linkHouseholdToQueue($import, $createdHousehold, $import->getCreatedBy());
         }
-        //$this->removeFinishedQueue($item);
         $this->logImportInfo($import, "Created Household #{$createdHousehold->getId()}");
 
         WorkflowTool::checkAndApply($this->importQueueStateMachine, $item, [ImportQueueTransitions::CREATE]);
-        $this->em->flush();
     }
 
     /**
@@ -222,11 +217,9 @@ class ImportFinisher
         $this->householdService->update($updatedHousehold, $householdUpdateInputType);
 
         $this->linkHouseholdToQueue($import, $updatedHousehold, $acceptedDuplicity->getDecideBy());
-        //$this->removeFinishedQueue($item);
         $this->logImportInfo($import, "Updated Household #{$updatedHousehold->getId()}");
 
         WorkflowTool::checkAndApply($this->importQueueStateMachine, $item, [ImportQueueTransitions::UPDATE]);
-        $this->em->flush();
     }
 
     private function linkHouseholdToQueue(Import $import, Household $household, User $decide): void

@@ -8,6 +8,7 @@ use NewApiBundle\Component\Import\ImportFinisher;
 use NewApiBundle\Component\Import\ImportReset;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Workflow\ImportTransitions;
+use NewApiBundle\Workflow\WorkflowTool;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\EnteredEvent;
 use Symfony\Component\Workflow\Event\GuardEvent;

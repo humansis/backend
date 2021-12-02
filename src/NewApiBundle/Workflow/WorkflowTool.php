@@ -24,7 +24,7 @@ class WorkflowTool
         }
 
         if ($throw) {
-            throw new WorkflowException('There is no enabled transition');
+            throw new WorkflowException($subject->getState(), 'There is no enabled transition.');
         }
     }
 }

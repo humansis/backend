@@ -6,8 +6,8 @@ use Throwable;
 
 class WorkflowException extends \RuntimeException
 {
-    public function __construct($message = "Workflow is in invalid state", $code = 0, Throwable $previous = null)
+    public function __construct(string $currentState, $message = "Workflow is in invalid state")
     {
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message." state='$currentState'", 0, null);
     }
 }

@@ -165,12 +165,6 @@ class ImportService
         }
     }
 
-    public function finish(Import $import): void
-    {
-        WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::FINISH]);
-        $this->em->flush();
-    }
-
     private function removeFinishedQueue(ImportQueue $queue): void
     {
         foreach ($queue->getDuplicities() as $duplicity) {
