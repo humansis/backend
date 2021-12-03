@@ -87,10 +87,11 @@ class IntegrityChecker
         if ($violations['hasViolations']) {
             $message['raw'] = $item->getContent();
             $item->setMessage(json_encode($message));
+            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::INVALIDATE);
+        } else {
+            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::VALIDATE);
         }
 
-        WorkflowTool::checkAndApply($this->importQueueStateMachine, $item,
-            [ImportQueueTransitions::VALIDATE, ImportQueueTransitions::INVALIDATE]);
         $this->entityManager->persist($item);
         $this->entityManager->flush();
     }
@@ -134,20 +135,23 @@ class IntegrityChecker
         return ['hasViolations' => $anyViolation, 'message' => $message];
     }
 
-    /**
-     * @param Import $import
-     *
-     * @return bool
-     */
-    public function isImportQueueInvalid(Import $import): bool
+    public function hasImportQueueInvalidItems(Import $import): bool
     {
         $invalidQueue = $this->entityManager->getRepository(ImportQueue::class)
             ->findBy(['import' => $import, 'state' => ImportQueueState::INVALID]);
 
-        $validQueue = $this->entityManager->getRepository(ImportQueue::class)
-            ->findBy(['import' => $import, 'state' => ImportQueueState::VALID]);
+        return count($invalidQueue) > 0;
+    }
 
-        return count($invalidQueue) > 0 || count($validQueue) === 0;
+    public function isImportWithoutContent(Import $import): bool
+    {
+        $queueSize = $this->entityManager->getRepository(ImportQueue::class)
+            ->count([
+                'import' => $import,
+                'state' => [ImportQueueState::NEW, ImportQueueState::INVALID, ImportQueueState::VALID]
+            ]);
+
+        return $queueSize == 0;
     }
 
     public function buildErrorMessage(ConstraintViolationInterface $violation)

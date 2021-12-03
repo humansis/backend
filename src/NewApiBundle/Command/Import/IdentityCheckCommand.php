@@ -62,8 +62,22 @@ class IdentityCheckCommand extends AbstractImportQueueCommand
         /** @var Import $import */
         foreach ($this->imports as $import) {
             $output->writeln($import->getTitle());
+            if (in_array($import->getState(), [ImportState::IDENTITY_CHECK_CORRECT, ImportState::IDENTITY_CHECK_FAILED])) {
+                $this->logImportDebug($import, "Import already processed");
+                continue;
+            }
 
             try {
+                if ($this->importStateMachine->can($import, ImportTransitions::COMPLETE_IDENTITY)) {
+                    $this->logImportDebug($import, "Can be completed");
+                } else {
+                    $this->logImportDebug($import, "Can't be completed");
+                }
+                if ($this->importStateMachine->can($import, ImportTransitions::FAIL_IDENTITY)) {
+                    $this->logImportDebug($import, "Can be failed");
+                } else {
+                    $this->logImportDebug($import, "Can't be failed");
+                }
                 WorkflowTool::checkAndApply($this->importStateMachine, $import,
                     [ImportTransitions::REDO_IDENTITY, ImportTransitions::FAIL_IDENTITY, ImportTransitions::COMPLETE_IDENTITY]);
                 $this->manager->flush();

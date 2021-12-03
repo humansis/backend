@@ -62,8 +62,9 @@ class IntegritySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.import.guard.'.ImportTransitions::COMPLETE_INTEGRITY => ['guardIfImportHasAnyValidQueueItem'],
-            'workflow.import.guard.'.ImportTransitions::FAIL_INTEGRITY => ['guardIfImportHasAnyInvalidQueueItem'],
+            'workflow.import.guard.'.ImportTransitions::COMPLETE_INTEGRITY => ['guardNothingLeft', 'guardNotEmptyImport', 'guardNoItemsFailed'],
+            'workflow.import.guard.'.ImportTransitions::FAIL_INTEGRITY => ['guardNothingLeft', 'guardSomeItemsFailedOrEmptyQueue'],
+            'workflow.import.guard.'.ImportTransitions::REDO_INTEGRITY => ['guardSomeItemsLeft'],
             // 'workflow.import.entered.'.ImportTransitions::CHECK_INTEGRITY => ['checkIntegrity'],
             'workflow.import.completed.'.ImportTransitions::REDO_INTEGRITY => ['checkIntegrity'],
             'workflow.import.entered.'.ImportTransitions::FAIL_INTEGRITY => ['generateFile'],
@@ -83,17 +84,82 @@ class IntegritySubscriber implements EventSubscriberInterface
     /**
      * @param GuardEvent $guardEvent
      */
-    public function guardIfImportHasAnyInvalidQueueItem(GuardEvent $guardEvent): void
+    public function guardNotEmptyImport(GuardEvent $guardEvent): void
     {
-        $this->checkImportValidity($guardEvent, false);
+        /** @var Import $import */
+        $import = $guardEvent->getSubject();
+
+        if ($this->integrityChecker->isImportWithoutContent($import)) {
+            $guardEvent->addTransitionBlocker(new TransitionBlocker('Integrity has empty queue.', '0'));
+        }
     }
 
     /**
      * @param GuardEvent $guardEvent
      */
-    public function guardIfImportHasAnyValidQueueItem(GuardEvent $guardEvent): void
+    public function guardNoItemsFailed(GuardEvent $guardEvent): void
     {
-        $this->checkImportValidity($guardEvent, true);
+        /** @var Import $import */
+        $import = $guardEvent->getSubject();
+
+        if ($this->integrityChecker->hasImportQueueInvalidItems($import)) {
+            $guardEvent->addTransitionBlocker(new TransitionBlocker('Integrity has invalid items.', '0'));
+        }
+    }
+
+    /**
+     * @param GuardEvent $guardEvent
+     */
+    public function guardSomeItemsFailedOrEmptyQueue(GuardEvent $guardEvent): void
+    {
+        /** @var Import $import */
+        $import = $guardEvent->getSubject();
+
+        $allValids = !$this->integrityChecker->hasImportQueueInvalidItems($import);
+        $emptyImport = $this->integrityChecker->isImportWithoutContent($import);
+
+        if ($allValids && !$emptyImport) {
+            $guardEvent->addTransitionBlocker(new TransitionBlocker('Integrity check was no items to proceed left.', '0'));
+        }
+    }
+
+    public function guardNothingLeft(GuardEvent $guardEvent): void
+    {
+        /** @var Import $import */
+        $import = $guardEvent->getSubject();
+
+        $isComplete = $this->queueRepository->countItemsToIntegrityCheck($import);
+
+        if (!$isComplete) {
+            $guardEvent->addTransitionBlocker(new TransitionBlocker('Integrity check was not completed', '0'));
+        }
+    }
+
+    public function guardSomeItemsLeft(GuardEvent $guardEvent): void
+    {
+        /** @var Import $import */
+        $import = $guardEvent->getSubject();
+
+        $isComplete = $this->queueRepository->countItemsToIntegrityCheck($import);
+
+        if ($isComplete) {
+            $guardEvent->addTransitionBlocker(new TransitionBlocker('Integrity check was completed', '0'));
+        }
+    }
+
+    /**
+     * @param GuardEvent $guardEvent
+     */
+    public function guardSomeItemsFailed(GuardEvent $guardEvent): void
+    {
+        /** @var Import $import */
+        $import = $guardEvent->getSubject();
+
+        $allItemsAreValid = !$this->integrityChecker->hasImportQueueInvalidItems($import);
+
+        if ($allItemsAreValid) {
+            $guardEvent->addTransitionBlocker(new TransitionBlocker('Integrity check has some items valid', '0'));
+        }
     }
 
     /**
@@ -104,24 +170,5 @@ class IntegritySubscriber implements EventSubscriberInterface
         /** @var Import $import */
         $import = $event->getSubject();
         $this->importInvalidFileService->generateFile($import);
-    }
-
-    /**
-     * @param GuardEvent $guardEvent
-     * @param bool       $shouldBeValid
-     */
-    private function checkImportValidity(GuardEvent $guardEvent, bool $shouldBeValid): void
-    {
-        /** @var Import $import */
-        $import = $guardEvent->getSubject();
-
-        if (0 === $this->queueRepository->countItemsToIntegrityCheck($import)) {
-            $isInvalid = $this->integrityChecker->isImportQueueInvalid($import);
-            if ($isInvalid === $shouldBeValid) {
-                $guardEvent->addTransitionBlocker(new TransitionBlocker(sprintf('Integrity check was %svalid', $shouldBeValid ? 'in' : ''), '0'));
-            }
-        } else {
-            $guardEvent->addTransitionBlocker(new TransitionBlocker('Integrity check was not completed', '0'));
-        }
     }
 }

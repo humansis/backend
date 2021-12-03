@@ -42,11 +42,11 @@ class IdentitySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.import.guard.'.ImportTransitions::CHECK_IDENTITY => ['guardIfImportHasValidQueueItems'],
-            'workflow.import.guard.'.ImportTransitions::REDO_IDENTITY => ['guardIfImportHasValidQueueItems'],
-            'workflow.import.guard.'.ImportTransitions::COMPLETE_IDENTITY => ['guardIfImportIsNotSuspicious'],
-            'workflow.import.guard.'.ImportTransitions::FAIL_IDENTITY => ['guardIfImportIsInvalid'],
-            'workflow.import.guard.'.ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES => ['guardIfImportIsNotSuspicious'],
+            // 'workflow.import.guard.'.ImportTransitions::CHECK_IDENTITY => ['guardAnyValidItems'],
+            'workflow.import.guard.'.ImportTransitions::REDO_IDENTITY => ['guardAnyValidItems'],
+            'workflow.import.guard.'.ImportTransitions::COMPLETE_IDENTITY => ['guardNoSuspiciousItem'],
+            'workflow.import.guard.'.ImportTransitions::FAIL_IDENTITY => ['guardAnySuspiciousItem'],
+            'workflow.import.guard.'.ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES => ['guardNoSuspiciousItem'],
             // 'workflow.import.entered.'.ImportTransitions::CHECK_IDENTITY => ['checkIdentity'],
             'workflow.import.completed.'.ImportTransitions::REDO_IDENTITY => ['checkIdentity'],
         ];
@@ -55,7 +55,7 @@ class IdentitySubscriber implements EventSubscriberInterface
     /**
      * @param GuardEvent $guardEvent
      */
-    public function guardIfImportHasValidQueueItems(GuardEvent $guardEvent): void
+    public function guardAnyValidItems(GuardEvent $guardEvent): void
     {
         /** @var Import $import */
         $import = $guardEvent->getSubject();
@@ -71,12 +71,12 @@ class IdentitySubscriber implements EventSubscriberInterface
     /**
      * @param GuardEvent $guardEvent
      */
-    public function guardIfImportIsInvalid(GuardEvent $guardEvent): void
+    public function guardAnySuspiciousItem(GuardEvent $guardEvent): void
     {
         /** @var Import $import */
         $import = $guardEvent->getSubject();
         $isSuspicious = $this->identityChecker->isImportQueueSuspicious($import);
-        if ($isSuspicious === false) {
+        if ($isSuspicious === true) {
             $guardEvent->addTransitionBlocker(new TransitionBlocker('Import is valid', '0'));
         }
     }
@@ -84,13 +84,12 @@ class IdentitySubscriber implements EventSubscriberInterface
     /**
      * @param GuardEvent $guardEvent
      */
-    public function guardIfImportIsNotSuspicious(GuardEvent $guardEvent): void
+    public function guardNoSuspiciousItem(GuardEvent $guardEvent): void
     {
-
         /** @var Import $import */
         $import = $guardEvent->getSubject();
         $isSuspicious = $this->identityChecker->isImportQueueSuspicious($import);
-        if ($isSuspicious === true) {
+        if ($isSuspicious === false) {
             $guardEvent->addTransitionBlocker(new TransitionBlocker('Import is suspicious', '0'));
         }
     }

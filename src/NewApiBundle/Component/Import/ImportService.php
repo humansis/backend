@@ -124,6 +124,7 @@ class ImportService
             $this->logImportInfo($import, "Changed state from '$before' to '{$import->getState()}'");
             $this->em->flush();
         }else{
+            var_dump($this->importStateMachine->buildTransitionBlockerList($import, $status));
             throw new BadRequestHttpException("You can't do transition '$status' state from '$before'.");
         }
     }

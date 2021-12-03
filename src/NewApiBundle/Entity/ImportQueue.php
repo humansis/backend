@@ -279,4 +279,12 @@ class ImportQueue
         $this->similarityCheckedAt = $similarityCheckedAt;
     }
 
+    public function hasResolvedDuplicities(): bool
+    {
+        foreach ($this->getDuplicities() as $duplicity) {
+            if ($duplicity->getState() == ImportDuplicityState::DUPLICITY_CANDIDATE) return false;
+        }
+        return true;
+    }
+
 }

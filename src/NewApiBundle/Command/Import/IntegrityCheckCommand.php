@@ -64,9 +64,25 @@ class IntegrityCheckCommand extends AbstractImportQueueCommand
         foreach ($this->imports as $import) {
             $output->writeln($import->getTitle());
 
+            if (in_array($import->getState(), [ImportState::INTEGRITY_CHECK_CORRECT, ImportState::INTEGRITY_CHECK_FAILED])) {
+                $this->logImportDebug($import, "Import already processed");
+                continue;
+            }
+
             try {
-                WorkflowTool::checkAndApply($this->importStateMachine, $import,
-                    [ImportTransitions::REDO_INTEGRITY, ImportTransitions::FAIL_INTEGRITY, ImportTransitions::COMPLETE_INTEGRITY]);
+                if ($this->importStateMachine->can($import, ImportTransitions::REDO_INTEGRITY)) {
+                    $this->importStateMachine->apply($import, ImportTransitions::REDO_INTEGRITY);
+                } else {
+                    if ($this->importStateMachine->can($import, ImportTransitions::COMPLETE_INTEGRITY)) {
+                        $this->importStateMachine->apply($import, ImportTransitions::COMPLETE_INTEGRITY);
+                    } elseif ($this->importStateMachine->can($import, ImportTransitions::FAIL_INTEGRITY)) {
+                        $this->importStateMachine->apply($import, ImportTransitions::FAIL_INTEGRITY);
+                    } else {
+                        $statistics = $this->importService->getStatistics($import);
+                        $this->logImportInfo($import, "Integrity check is stocked in weird state:");
+                        var_dump($statistics);
+                    }
+                }
                 $this->manager->flush();
 
                 $statistics = $this->importService->getStatistics($import);

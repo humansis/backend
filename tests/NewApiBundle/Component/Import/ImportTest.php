@@ -157,9 +157,8 @@ class ImportTest extends KernelTestCase
 
         $checkIntegrityCommand = $this->application->find('app:import:integrity');
         $commandTester = new CommandTester($checkIntegrityCommand);
-        $commandTester->execute([
-            'import' => $import->getId(),
-        ]);
+        $commandTester->execute(['import' => $import->getId(),]);
+        $commandTester->execute(['import' => $import->getId(),]);
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:integrity failed");
 
         $this->assertCount($expectedHouseholdCount, $queue);
@@ -172,9 +171,8 @@ class ImportTest extends KernelTestCase
 
         $checkIdentityCommand = $this->application->find('app:import:identity');
         $commandTester = new CommandTester($checkIdentityCommand);
-        $commandTester->execute([
-            'import' => $import->getId(),
-        ]);
+        $commandTester->execute(['import' => $import->getId(),]);
+        $commandTester->execute(['import' => $import->getId(),]);
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:identity failed");
 
         $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
@@ -188,9 +186,8 @@ class ImportTest extends KernelTestCase
 
         $checkSimilarityCommand = $this->application->find('app:import:similarity');
         $commandTester = new CommandTester($checkSimilarityCommand);
-        $commandTester->execute([
-            'import' => $import->getId(),
-        ]);
+        $commandTester->execute(['import' => $import->getId(),]);
+        $commandTester->execute(['import' => $import->getId(),]);
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:similarity failed");
 
         $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
@@ -207,9 +204,7 @@ class ImportTest extends KernelTestCase
 
         $finishCommand = $this->application->find('app:import:finish');
         $commandTester = new CommandTester($finishCommand);
-        $commandTester->execute([
-            'import' => $import->getId(),
-        ]);
+        $commandTester->execute(['import' => $import->getId(),]);
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command app:import:finish failed");
 
         $this->assertEquals(ImportState::FINISHED, $import->getState());
@@ -264,6 +259,7 @@ class ImportTest extends KernelTestCase
 
             $checkIdentityCommand = $this->application->find('app:import:identity');
             (new CommandTester($checkIdentityCommand))->execute(['import' => $import->getId()]);
+            (new CommandTester($checkIdentityCommand))->execute(['import' => $import->getId()]);
 
             $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
 
@@ -297,6 +293,7 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(ImportState::IDENTITY_CHECKING, $import->getState());
 
         $checkIdentityCommand = $this->application->find('app:import:identity');
+        (new CommandTester($checkIdentityCommand))->execute(['import' => $import->getId()]);
         (new CommandTester($checkIdentityCommand))->execute(['import' => $import->getId()]);
         $this->entityManager->refresh($import);
 

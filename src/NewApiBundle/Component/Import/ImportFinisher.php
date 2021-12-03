@@ -129,6 +129,7 @@ class ImportFinisher
         $this->em->flush();
 
         WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::FINISH]);
+        $this->em->persist($import);
         $this->em->flush();
     }
 

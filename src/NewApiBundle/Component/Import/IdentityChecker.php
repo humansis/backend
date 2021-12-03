@@ -66,15 +66,15 @@ class IdentityChecker
 
         $this->entityManager->flush();
 
-        $queueSize = $this->queueRepository->countItemsToIdentityCheck($import);
-        if (0 === $queueSize) {
-            $this->logImportInfo($import, 'Batch ended - nothing left, identity checking ends');
-            $this->logImportDebug($import, "Ended with status ".$import->getState());
-            WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::COMPLETE_IDENTITY, ImportTransitions::FAIL_IDENTITY]);
-            $this->entityManager->flush();
-        } else {
-            $this->logImportInfo($import, "Batch ended - $queueSize items left, identity checking continues");
-        }
+        // $queueSize = $this->queueRepository->countItemsToIdentityCheck($import);
+        // if (0 === $queueSize) {
+        //     $this->logImportInfo($import, 'Batch ended - nothing left, identity checking ends');
+        //     $this->logImportDebug($import, "Ended with status ".$import->getState());
+        //     WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::COMPLETE_IDENTITY, ImportTransitions::FAIL_IDENTITY]);
+        //     $this->entityManager->flush();
+        // } else {
+        //     $this->logImportInfo($import, "Batch ended - $queueSize items left, identity checking continues");
+        // }
     }
 
     /**
@@ -164,7 +164,11 @@ class IdentityChecker
         $queue = $this->entityManager->getRepository(ImportQueue::class)
             ->findBy(['import' => $import, 'state' => ImportQueueState::IDENTITY_CANDIDATE]);
 
-        return count($queue) > 0;
+        /** @var ImportQueue $item */
+        foreach ($queue as $item) {
+            if (!$item->hasResolvedDuplicities()) return true;
+        }
+        return false;
     }
 
     /**
