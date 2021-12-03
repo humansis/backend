@@ -127,17 +127,8 @@ class ImportTest extends KernelTestCase
         $this->assertNotNull($import->getId(), "Import wasn't saved to DB");
         $this->assertEquals(ImportState::NEW, $import->getState());
 
-        // add file into import
-        $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
+        $this->uploadFile($import, $filename);
 
-        $fs = new Filesystem();
-        $fs->copy(__DIR__.'/../../Resources/'.$filename, $uploadedFilePath, true);
-
-        $file = new UploadedFile($uploadedFilePath, $filename, null, null, true);
-        $importFile = $this->uploadService->uploadFile($import, $file, $this->getUser());
-        $this->uploadService->load($importFile);
-
-        $this->assertNotNull($importFile->getId(), "ImportFile wasn't saved to DB");
         $this->assertQueueCount($expectedHouseholdCount, $import);
 
         $this->userStartedIntegrityCheck($import, true);
@@ -181,15 +172,7 @@ class ImportTest extends KernelTestCase
             $this->assertNotNull($import->getId(), "Import wasn't saved to DB");
             $this->assertEquals(ImportState::NEW, $import->getState());
 
-            // add file into import
-            $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
-
-            $fs = new Filesystem();
-            $fs->copy(__DIR__.'/../../Resources/'.$filename, $uploadedFilePath, true);
-
-            $file = new UploadedFile($uploadedFilePath, $filename, null, null, true);
-            $importFile = $this->uploadService->uploadFile($import, $file, $this->getUser());
-            $this->uploadService->load($importFile);
+            $this->uploadFile($import, $filename);
 
             $this->userStartedIntegrityCheck($import, true);
             $this->userStartedIdentityCheck($import, true);
@@ -270,15 +253,7 @@ class ImportTest extends KernelTestCase
             $createImportInput->setProjectId($this->project->getId());
             $import = $this->importService->create($createImportInput, $this->getUser());
 
-            // add file into import
-            $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
-
-            $fs = new Filesystem();
-            $fs->copy(__DIR__.'/../../Resources/'.$testFiles[$runName], $uploadedFilePath, true);
-
-            $file = new UploadedFile($uploadedFilePath, $testFiles[$runName], null, null, true);
-            $importFile = $this->uploadService->uploadFile($import, $file, $this->getUser());
-            $this->uploadService->load($importFile);
+            $this->uploadFile($import, $testFiles[$runName]);
 
             $this->userStartedIntegrityCheck($import, true);
             $this->userStartedIdentityCheck($import, true);
@@ -342,17 +317,7 @@ class ImportTest extends KernelTestCase
         $this->assertNotNull($import->getId(), "Import wasn't saved to DB");
         $this->assertEquals(ImportState::NEW, $import->getState());
 
-        // add file into import
-        $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
-
-        $fs = new Filesystem();
-        $fs->copy(__DIR__.'/../../Resources/KHM-WrongDateImport-2HH-3HHM.csv', $uploadedFilePath, true);
-
-        $file = new UploadedFile($uploadedFilePath, 'KHM-WrongDateImport-2HH-3HHM.csv', null, null, true);
-        $importFile = $this->uploadService->uploadFile($import, $file, $this->getUser());
-        $this->uploadService->load($importFile);
-
-        $this->assertNotNull($importFile->getId(), "ImportFile wasn't saved to DB");
+        $this->uploadFile($import, 'KHM-WrongDateImport-2HH-3HHM.csv');
 
         // start integrity check
         $this->userStartedIntegrityCheck($import, false);
@@ -386,19 +351,8 @@ class ImportTest extends KernelTestCase
         $this->assertNotNull($import->getId(), "Import wasn't saved to DB");
         $this->assertEquals(ImportState::NEW, $import->getState());
 
-        // add file into import
-        $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
+        $this->uploadFile($import, $filename);
 
-        $fs = new Filesystem();
-        $fs->copy(__DIR__.'/../../Resources/'.$filename, $uploadedFilePath, true);
-
-        $file = new UploadedFile($uploadedFilePath, $filename, null, null, true);
-        $importFile = $this->uploadService->uploadFile($import, $file, $this->getUser());
-        $this->uploadService->load($importFile);
-
-        $this->assertNotNull($importFile->getId(), "ImportFile wasn't saved to DB");
-
-        // start integrity check
         $this->userStartedIntegrityCheck($import, false);
 
         $this->cli('app:import:clean', $import);
@@ -420,26 +374,14 @@ class ImportTest extends KernelTestCase
         $createImportInput->setProjectId($this->project->getId());
         $import = $this->importService->create($createImportInput, $this->getUser());
 
-        // add file into import
-        $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
-
-        $fs = new Filesystem();
-        $fs->copy(__DIR__.'/../../Resources/'.$fileName, $uploadedFilePath, true);
-
-        $file = new UploadedFile($uploadedFilePath, $fileName, null, null, true);
-        $importFile = $this->uploadService->uploadFile($import, $file, $this->getUser());
-
         try {
-            $this->uploadService->load($importFile);
+            $this->uploadFile($import, $fileName);
             $this->fail('Upload of incorrect file should throw exception');
         } catch (\InvalidArgumentException $exception) {
             // it is expected
         }
 
-        // start integrity check
-        $this->importService->patch($import, new ImportPatchInputType(ImportState::INTEGRITY_CHECKING));
-        $this->assertEquals(ImportState::INTEGRITY_CHECK_FAILED, $import->getState());
-
+        $this->userStartedIntegrityCheck($import, false);
         $this->assertQueueCount(0, $import);
     }
 
@@ -567,5 +509,26 @@ class ImportTest extends KernelTestCase
     private function getUser(): User
     {
         return $this->entityManager->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
+    }
+
+    /**
+     * @param string $filename
+     * @param Import $import
+     *
+     * @throws \Doctrine\DBAL\ConnectionException
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     */
+    private function uploadFile(Import $import, string $filename): void
+    {
+        $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
+
+        $fs = new Filesystem();
+        $fs->copy(__DIR__.'/../../Resources/'.$filename, $uploadedFilePath, true);
+
+        $file = new UploadedFile($uploadedFilePath, $filename, null, null, true);
+        $importFile = $this->uploadService->uploadFile($import, $file, $this->getUser());
+        $this->uploadService->load($importFile);
+
+        $this->assertNotNull($importFile->getId(), "ImportFile wasn't saved to DB");
     }
 }
