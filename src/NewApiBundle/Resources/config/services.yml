@@ -297,12 +297,16 @@ services:
     NewApiBundle\Component\Storage\Aws\AwsStorageFactory:
         public: true
 
-    NewApiBundle\Component\LogsStorage\LogsStorageService:
+    NewApiBundle\Component\LogsStorage\LogsStorageConfigFactory:
+        public: true
         arguments:
             - '%aws.logs.key%'
             - '%aws.logs.secret%'
             - '%aws.logs.region%'
             - '%aws.logs.version%'
             - '%aws.logs.bucket%'
+
+    NewApiBundle\Component\LogsStorage\LogsStorageService:
+        arguments:
             - '%aws.logs.folder%'
 
