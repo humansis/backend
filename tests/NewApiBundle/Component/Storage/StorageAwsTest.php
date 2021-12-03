@@ -3,6 +3,7 @@
 namespace Tests\NewApiBundle\Component\Storage;
 
 use League\Flysystem\FilesystemException;
+use NewApiBundle\Component\LogsStorage\LogsStorageConfigFactory;
 use NewApiBundle\Component\Storage\Aws\AwsStorage;
 use NewApiBundle\Component\Storage\Aws\AwsStorageFactory;
 use NewApiBundle\Component\Storage\StorageConfig;
@@ -11,12 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class StorageAwsTest extends KernelTestCase
 {
     private const
-        KEY = 'AKIAYYVDSYNUDIO7EFGL',
-        SECRET = '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',
-        REGION = 'eu-central-1',
-        VERSION = 'latest',
-        BUCKET = 'logs.humansis.org',
-        FOLDER = 'logs',
+        FOLDER = 'testing',
         FILE_NAME = 'test_file.png';
 
     /**
@@ -46,7 +42,7 @@ class StorageAwsTest extends KernelTestCase
         $kernel = self::bootKernel();
 
         self::$awsStorageFactory = $kernel->getContainer()->get(AwsStorageFactory::class);
-        self::$awsConfig = new StorageConfig(self::KEY, self::SECRET, self::REGION, self::VERSION, self::BUCKET);
+        self::$awsConfig = ($kernel->getContainer()->get(LogsStorageConfigFactory::class))->create();
         self::$aws = self::$awsStorageFactory->create(self::$awsConfig);
         self::$filePath = self::FOLDER.'/'.self::FILE_NAME;
     }
