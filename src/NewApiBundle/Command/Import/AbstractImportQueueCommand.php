@@ -7,12 +7,12 @@ use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Component\Import\ImportLoggerTrait;
 use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportQueue;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 abstract class AbstractImportQueueCommand extends Command
 {
@@ -24,20 +24,24 @@ abstract class AbstractImportQueueCommand extends Command
     protected $manager;
     /** @var ImportService */
     protected $importService;
+    /** @var WorkflowInterface */
+    protected $importStateMachine;
 
     /**
      * AbstractImportQueueCommand constructor.
      *
-     * @param ObjectManager   $manager
-     * @param ImportService   $importService
-     * @param LoggerInterface $importLogger
+     * @param ObjectManager                                 $manager
+     * @param ImportService                                 $importService
+     * @param LoggerInterface                               $importLogger
+     * @param WorkflowInterface $importStateMachine
      */
-    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger)
+    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger, WorkflowInterface $importStateMachine)
     {
         parent::__construct();
         $this->manager = $manager;
         $this->logger = $importLogger;
         $this->importService = $importService;
+        $this->importStateMachine = $importStateMachine;
     }
 
     protected function configure()
@@ -86,17 +90,32 @@ abstract class AbstractImportQueueCommand extends Command
 
     protected function logImportInfo(Import $import, string $message): void
     {
-        $this->logger->info("[Import #{$import->getId()}] ({$import->getTitle()}) $message");
+        $this->logger->info("[Import #{$import->getId()}] ({$import->getTitle()}|{$import->getState()}) $message");
     }
 
     protected function logImportDebug(Import $import, string $message): void
     {
-        $this->logger->debug("[Import #{$import->getId()}] ({$import->getTitle()}) $message");
+        $this->logger->debug("[Import #{$import->getId()}] ({$import->getTitle()}|{$import->getState()}) $message");
     }
 
     protected function logImportError(Import $import, string $message): void
     {
-        $this->logger->error("[Import #{$import->getId()}] ({$import->getTitle()}) $message");
+        $this->logger->error("[Import #{$import->getId()}] ({$import->getTitle()}|{$import->getState()}) $message");
     }
 
+    protected function tryTransitions(Import $import, array $transitions): void
+    {
+        foreach ($transitions as $transition) {
+            if ($this->importStateMachine->can($import, $transition)) {
+                $this->logImportInfo($import, "is going to '$transition'");
+                $this->importStateMachine->apply($import, $transition);
+                return;
+            } else {
+                /** @var \Symfony\Component\Workflow\TransitionBlocker $block */
+                foreach ($this->importStateMachine->buildTransitionBlockerList($import, $transition) as $block) {
+                    $this->logImportDebug($import, "can't go to '$transition' because: ".$block->getMessage());
+                }
+            }
+        }
+    }
 }

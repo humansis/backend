@@ -124,7 +124,6 @@ class ImportService
             $this->logImportInfo($import, "Changed state from '$before' to '{$import->getState()}'");
             $this->em->flush();
         }else{
-            var_dump($this->importStateMachine->buildTransitionBlockerList($import, $status));
             throw new BadRequestHttpException("You can't do transition '$status' state from '$before'.");
         }
     }
@@ -144,7 +143,7 @@ class ImportService
         /** @var ImportQueueRepository $repository */
         $repository = $this->em->getRepository(ImportQueue::class);
 
-        $statistics->setTotalEntries($import->getImportQueue()->count());
+        $statistics->setTotalEntries($repository->count(['import'=>$import]));
         $statistics->setAmountIntegrityCorrect($repository->getTotalByImportAndStatus($import, ImportQueueState::VALID));
         $statistics->setAmountIntegrityFailed($repository->getTotalByImportAndStatus($import, ImportQueueState::INVALID));
         $statistics->setAmountDuplicities($repository->getTotalByImportAndStatus($import, ImportQueueState::IDENTITY_CANDIDATE));

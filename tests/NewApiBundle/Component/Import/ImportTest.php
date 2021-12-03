@@ -369,8 +369,9 @@ class ImportTest extends KernelTestCase
 
     private function userStartedFinishing(Import $import): void
     {
+        $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
         $this->importService->updateStatus($import, ImportState::IMPORTING);
-        $this->assertEquals(ImportState::SIMILARITY_CHECKING, $import->getState());
+        $this->assertEquals(ImportState::IMPORTING, $import->getState());
         $this->cli('app:import:finish', $import);
         $this->assertEquals(ImportState::FINISHED, $import->getState());
     }
@@ -390,11 +391,11 @@ class ImportTest extends KernelTestCase
             $queueCount = $this->entityManager->getRepository(ImportQueue::class)->count(['import' => $import]);
             $this->assertEquals($expectedCount, $queueCount, 'There should be other amount of queue items');
         } else {
-            $queue = $this->entityManager->getRepository(ImportQueue::class)->count([
+            $queueCount = $this->entityManager->getRepository(ImportQueue::class)->count([
                 'import' => $import,
                 'state' => $filterQueueStates
             ]);
-            $this->assertCount($expectedCount, $queue);
+            $this->assertEquals($expectedCount, $queueCount);
         }
     }
 

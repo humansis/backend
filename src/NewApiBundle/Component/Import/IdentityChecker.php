@@ -65,16 +65,6 @@ class IdentityChecker
         }
 
         $this->entityManager->flush();
-
-        // $queueSize = $this->queueRepository->countItemsToIdentityCheck($import);
-        // if (0 === $queueSize) {
-        //     $this->logImportInfo($import, 'Batch ended - nothing left, identity checking ends');
-        //     $this->logImportDebug($import, "Ended with status ".$import->getState());
-        //     WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::COMPLETE_IDENTITY, ImportTransitions::FAIL_IDENTITY]);
-        //     $this->entityManager->flush();
-        // } else {
-        //     $this->logImportInfo($import, "Batch ended - $queueSize items left, identity checking continues");
-        // }
     }
 
     /**
@@ -83,9 +73,13 @@ class IdentityChecker
     protected function checkOne(ImportQueue $item): void
     {
         $duplicities = $this->validateItemDuplicities($item);
-        WorkflowTool::checkAndApply($this->importQueueStateMachine, $item,
-            [count($duplicities) > 0 ? ImportQueueTransitions::IDENTITY_CANDIDATE : ImportQueueTransitions::UNIQUE_CANDIDATE]);
-        $this->entityManager->flush();
+        if (count($duplicities) > 0) {
+            $this->logImportWarning($item->getImport(), "Found duplicity!");
+            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::IDENTITY_CANDIDATE);
+        } else {
+            $this->logImportDebug($item->getImport(), "Duplicity check OK");
+            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::UNIQUE_CANDIDATE);
+        }
     }
 
     /**
@@ -112,7 +106,7 @@ class IdentityChecker
         $bnfDuplicities = [];
         $duplicities = [];
         foreach ($item->getContent() as $c) {
-            if (empty($c['ID Type']) || empty($c['ID Number'])) {
+            if (empty($c['ID Type'][CellParameters::VALUE]) || empty($c['ID Number'][CellParameters::VALUE])) {
                 $this->logImportDebug($item->getImport(),
                     "[Queue#{$item->getId()}|line#$index] Duplicity checking omitted because of missing ID information");
                 continue;
@@ -159,7 +153,7 @@ class IdentityChecker
      *
      * @return bool
      */
-    public function isImportQueueSuspicious(Import $import): bool
+    public function isImportQueueUnresolvedSuspicious(Import $import): bool
     {
         $queue = $this->entityManager->getRepository(ImportQueue::class)
             ->findBy(['import' => $import, 'state' => ImportQueueState::IDENTITY_CANDIDATE]);
@@ -169,6 +163,14 @@ class IdentityChecker
             if (!$item->hasResolvedDuplicities()) return true;
         }
         return false;
+    }
+
+    public function isImportQueueSuspicious(Import $import): bool
+    {
+        $queue = $this->entityManager->getRepository(ImportQueue::class)
+            ->count(['import' => $import, 'state' => ImportQueueState::IDENTITY_CANDIDATE]);
+
+        return $queue > 0;
     }
 
     /**

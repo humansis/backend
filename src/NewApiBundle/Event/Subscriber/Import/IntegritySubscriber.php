@@ -62,8 +62,15 @@ class IntegritySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.import.guard.'.ImportTransitions::COMPLETE_INTEGRITY => ['guardNothingLeft', 'guardNotEmptyImport', 'guardNoItemsFailed'],
-            'workflow.import.guard.'.ImportTransitions::FAIL_INTEGRITY => ['guardNothingLeft', 'guardSomeItemsFailedOrEmptyQueue'],
+            'workflow.import.guard.'.ImportTransitions::COMPLETE_INTEGRITY => [
+                ['guardNothingLeft', -10],
+                ['guardNoItemsFailed', 10],
+                ['guardNotEmptyImport', 20]
+            ],
+            'workflow.import.guard.'.ImportTransitions::FAIL_INTEGRITY => [
+                ['guardNothingLeft', 0],
+                ['guardSomeItemsFailedOrEmptyQueue', 20]
+            ],
             'workflow.import.guard.'.ImportTransitions::REDO_INTEGRITY => ['guardSomeItemsLeft'],
             // 'workflow.import.entered.'.ImportTransitions::CHECK_INTEGRITY => ['checkIntegrity'],
             'workflow.import.completed.'.ImportTransitions::REDO_INTEGRITY => ['checkIntegrity'],
@@ -119,7 +126,7 @@ class IntegritySubscriber implements EventSubscriberInterface
         $emptyImport = $this->integrityChecker->isImportWithoutContent($import);
 
         if ($allValids && !$emptyImport) {
-            $guardEvent->addTransitionBlocker(new TransitionBlocker('Integrity check was no items to proceed left.', '0'));
+            $guardEvent->addTransitionBlocker(new TransitionBlocker('Integrity has all items valid.', '0'));
         }
     }
 
@@ -128,7 +135,7 @@ class IntegritySubscriber implements EventSubscriberInterface
         /** @var Import $import */
         $import = $guardEvent->getSubject();
 
-        $isComplete = $this->queueRepository->countItemsToIntegrityCheck($import);
+        $isComplete = (0 === $this->queueRepository->countItemsToIntegrityCheck($import));
 
         if (!$isComplete) {
             $guardEvent->addTransitionBlocker(new TransitionBlocker('Integrity check was not completed', '0'));
@@ -140,7 +147,7 @@ class IntegritySubscriber implements EventSubscriberInterface
         /** @var Import $import */
         $import = $guardEvent->getSubject();
 
-        $isComplete = $this->queueRepository->countItemsToIntegrityCheck($import);
+        $isComplete = (0 === $this->queueRepository->countItemsToIntegrityCheck($import));
 
         if ($isComplete) {
             $guardEvent->addTransitionBlocker(new TransitionBlocker('Integrity check was completed', '0'));

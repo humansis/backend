@@ -17,22 +17,6 @@ use Throwable;
 
 class IntegrityCheckCommand extends AbstractImportQueueCommand
 {
-
-    /**
-     * @var WorkflowInterface
-     */
-    private $importStateMachine;
-
-    public function __construct(
-        ObjectManager     $manager,
-        ImportService     $importService,
-        LoggerInterface   $importLogger,
-        WorkflowInterface $importStateMachine
-    ) {
-        parent::__construct($manager, $importService, $importLogger);
-        $this->importStateMachine = $importStateMachine;
-    }
-
     protected function configure()
     {
         parent::configure();
@@ -70,24 +54,17 @@ class IntegrityCheckCommand extends AbstractImportQueueCommand
             }
 
             try {
-                if ($this->importStateMachine->can($import, ImportTransitions::REDO_INTEGRITY)) {
-                    $this->importStateMachine->apply($import, ImportTransitions::REDO_INTEGRITY);
-                } else {
-                    if ($this->importStateMachine->can($import, ImportTransitions::COMPLETE_INTEGRITY)) {
-                        $this->importStateMachine->apply($import, ImportTransitions::COMPLETE_INTEGRITY);
-                    } elseif ($this->importStateMachine->can($import, ImportTransitions::FAIL_INTEGRITY)) {
-                        $this->importStateMachine->apply($import, ImportTransitions::FAIL_INTEGRITY);
-                    } else {
-                        $statistics = $this->importService->getStatistics($import);
-                        $this->logImportInfo($import, "Integrity check is stocked in weird state:");
-                        var_dump($statistics);
-                    }
-                }
+                $this->tryTransitions($import, [
+                    ImportTransitions::REDO_INTEGRITY,
+                    ImportTransitions::FAIL_INTEGRITY,
+                    ImportTransitions::COMPLETE_INTEGRITY,
+                ]);
                 $this->manager->flush();
 
                 $statistics = $this->importService->getStatistics($import);
                 if (ImportState::INTEGRITY_CHECK_CORRECT === $import->getState()) {
-                    $this->logImportInfo($import, "Integrity check was successful: {$statistics->getAmountIntegrityCorrect()} correct records");
+                    $this->logImportInfo($import, "Integrity check found {$statistics->getAmountIntegrityFailed()} integrity errors");
+                    $this->logImportInfo($import, "Integrity check was successful: {$statistics->getAmountIntegrityCorrect()} correct records from all ".$statistics->getTotalEntries());
                 } else {
                     $this->logImportInfo($import, "Integrity check found {$statistics->getAmountIntegrityFailed()} integrity errors");
                 }

@@ -76,8 +76,8 @@ class IdentitySubscriber implements EventSubscriberInterface
         /** @var Import $import */
         $import = $guardEvent->getSubject();
         $isSuspicious = $this->identityChecker->isImportQueueSuspicious($import);
-        if ($isSuspicious === true) {
-            $guardEvent->addTransitionBlocker(new TransitionBlocker('Import is valid', '0'));
+        if ($isSuspicious === false) {
+            $guardEvent->addTransitionBlocker(new TransitionBlocker('Import has no duplicity suspicious items', '0'));
         }
     }
 
@@ -89,7 +89,7 @@ class IdentitySubscriber implements EventSubscriberInterface
         /** @var Import $import */
         $import = $guardEvent->getSubject();
         $isSuspicious = $this->identityChecker->isImportQueueSuspicious($import);
-        if ($isSuspicious === false) {
+        if ($isSuspicious === true) {
             $guardEvent->addTransitionBlocker(new TransitionBlocker('Import is suspicious', '0'));
         }
     }

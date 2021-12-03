@@ -18,10 +18,6 @@ use Throwable;
 
 class FinishImportCommand extends AbstractImportQueueCommand
 {
-    /**
-     * @var WorkflowInterface
-     */
-    private $importStateMachine;
     /** @var ImportFinisher */
     private $importFinisher;
 
@@ -32,8 +28,7 @@ class FinishImportCommand extends AbstractImportQueueCommand
         WorkflowInterface $importStateMachine,
         ImportFinisher    $importFinisher
     ) {
-        parent::__construct($manager, $importService, $importLogger);
-        $this->importStateMachine = $importStateMachine;
+        parent::__construct($manager, $importService, $importLogger, $importStateMachine);
         $this->importFinisher = $importFinisher;
     }
 

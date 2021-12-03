@@ -17,21 +17,6 @@ use Throwable;
 
 class IdentityCheckCommand extends AbstractImportQueueCommand
 {
-    /**
-     * @var WorkflowInterface
-     */
-    private $importStateMachine;
-
-    public function __construct(
-        ObjectManager     $manager,
-        ImportService     $importService,
-        LoggerInterface   $importLogger,
-        WorkflowInterface $importStateMachine
-    ) {
-        parent::__construct($manager, $importService, $importLogger);
-        $this->importStateMachine = $importStateMachine;
-    }
-
     protected function configure()
     {
         parent::configure();
@@ -68,18 +53,11 @@ class IdentityCheckCommand extends AbstractImportQueueCommand
             }
 
             try {
-                if ($this->importStateMachine->can($import, ImportTransitions::COMPLETE_IDENTITY)) {
-                    $this->logImportDebug($import, "Can be completed");
-                } else {
-                    $this->logImportDebug($import, "Can't be completed");
-                }
-                if ($this->importStateMachine->can($import, ImportTransitions::FAIL_IDENTITY)) {
-                    $this->logImportDebug($import, "Can be failed");
-                } else {
-                    $this->logImportDebug($import, "Can't be failed");
-                }
-                WorkflowTool::checkAndApply($this->importStateMachine, $import,
-                    [ImportTransitions::REDO_IDENTITY, ImportTransitions::FAIL_IDENTITY, ImportTransitions::COMPLETE_IDENTITY]);
+                $this->tryTransitions($import, [
+                    ImportTransitions::REDO_IDENTITY,
+                    ImportTransitions::FAIL_IDENTITY,
+                    ImportTransitions::COMPLETE_IDENTITY
+                ]);
                 $this->manager->flush();
 
                 if (ImportState::IDENTITY_CHECK_CORRECT === $import->getState()) {

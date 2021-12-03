@@ -21,7 +21,7 @@ class CleanCommand extends AbstractImportQueueCommand
 
     public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger, ImportInvalidFileService $importInvalidFileService)
     {
-        parent::__construct($manager, $importService, $importLogger);
+        parent::__construct($manager, $importService, $importLogger, null);
 
         $this->importInvalidFileService = $importInvalidFileService;
     }

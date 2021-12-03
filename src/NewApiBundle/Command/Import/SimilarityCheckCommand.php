@@ -17,21 +17,6 @@ use Throwable;
 
 class SimilarityCheckCommand extends AbstractImportQueueCommand
 {
-    /**
-     * @var WorkflowInterface
-     */
-    private $importStateMachine;
-
-    public function __construct(
-        ObjectManager     $manager,
-        ImportService     $importService,
-        LoggerInterface   $importLogger,
-        WorkflowInterface $importStateMachine
-    ) {
-        parent::__construct($manager, $importService, $importLogger);
-        $this->importStateMachine = $importStateMachine;
-    }
-
     protected function configure()
     {
         parent::configure();
@@ -64,8 +49,11 @@ class SimilarityCheckCommand extends AbstractImportQueueCommand
         /** @var Import $import */
         foreach ($imports as $import) {
             try {
-                WorkflowTool::checkAndApply($this->importStateMachine, $import,
-                    [ImportTransitions::REDO_SIMILARITY, ImportTransitions::FAIL_SIMILARITY, ImportTransitions::COMPLETE_SIMILARITY]);
+                $this->tryTransitions($import, [
+                    ImportTransitions::REDO_SIMILARITY,
+                    ImportTransitions::FAIL_SIMILARITY,
+                    ImportTransitions::COMPLETE_SIMILARITY
+                ]);
                 $this->manager->flush();
 
                 if (ImportState::SIMILARITY_CHECK_CORRECT === $import->getState()) {
