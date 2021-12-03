@@ -116,18 +116,7 @@ class ImportTest extends KernelTestCase
     {
         $this->project = $this->createBlankProject($country, [__METHOD__, $filename]);
         $this->originHousehold = $this->createBlankHousehold($this->project);
-
-        // create import
-        $createImportInput = new ImportCreateInputType();
-        $createImportInput->setTitle('testMinimalWorkflow test');
-        $createImportInput->setDescription(__METHOD__);
-        $createImportInput->setProjectId($this->project->getId());
-        $import = $this->importService->create($createImportInput, $this->getUser());
-
-        $this->assertNotNull($import->getId(), "Import wasn't saved to DB");
-        $this->assertEquals(ImportState::NEW, $import->getState());
-
-        $this->uploadFile($import, $filename);
+        $import = $this->createImport("testMinimalWorkflow", $this->project, $filename);
 
         $this->assertQueueCount($expectedHouseholdCount, $import);
 
@@ -162,17 +151,7 @@ class ImportTest extends KernelTestCase
 
         $imports = [];
         foreach (['first', 'second'] as $runName) {
-            // create import
-            $createImportInput = new ImportCreateInputType();
-            $createImportInput->setTitle($runName.' call of unit test');
-            $createImportInput->setDescription(__METHOD__);
-            $createImportInput->setProjectId($this->project->getId());
-            $import = $this->importService->create($createImportInput, $this->getUser());
-
-            $this->assertNotNull($import->getId(), "Import wasn't saved to DB");
-            $this->assertEquals(ImportState::NEW, $import->getState());
-
-            $this->uploadFile($import, $filename);
+            $import = $this->createImport("testRepeatedUploadSameFile[$runName]", $this->project, $filename);
 
             $this->userStartedIntegrityCheck($import, true);
             $this->userStartedIdentityCheck($import, true);
@@ -247,13 +226,7 @@ class ImportTest extends KernelTestCase
 
         $imports = [];
         foreach (['first', 'second'] as $runName) {
-            // create import
-            $createImportInput = new ImportCreateInputType();
-            $createImportInput->setTitle($runName.' call of unit test');
-            $createImportInput->setProjectId($this->project->getId());
-            $import = $this->importService->create($createImportInput, $this->getUser());
-
-            $this->uploadFile($import, $testFiles[$runName]);
+            $import = $this->createImport("testUpdateSimpleDuplicity[$runName]", $this->project, $testFiles[$runName]);
 
             $this->userStartedIntegrityCheck($import, true);
             $this->userStartedIdentityCheck($import, true);
@@ -306,18 +279,7 @@ class ImportTest extends KernelTestCase
     {
         $this->project = $this->createBlankProject(self::TEST_COUNTRY, [__METHOD__]);
         $this->originHousehold = $this->createBlankHousehold($this->project);
-
-        // create import
-        $createImportInput = new ImportCreateInputType();
-        $createImportInput->setTitle('unit test '.__CLASS__);
-        $createImportInput->setDescription('unit test description '.__METHOD__);
-        $createImportInput->setProjectId($this->project->getId());
-        $import = $this->importService->create($createImportInput, $this->getUser());
-
-        $this->assertNotNull($import->getId(), "Import wasn't saved to DB");
-        $this->assertEquals(ImportState::NEW, $import->getState());
-
-        $this->uploadFile($import, 'KHM-WrongDateImport-2HH-3HHM.csv');
+        $import = $this->createImport('testErrorInIntegrityCheck', $this->project, 'KHM-WrongDateImport-2HH-3HHM.csv');
 
         // start integrity check
         $this->userStartedIntegrityCheck($import, false);
@@ -341,17 +303,7 @@ class ImportTest extends KernelTestCase
         $this->entityManager->persist($project);
         $this->entityManager->flush();
 
-        // create import
-        $createImportInput = new ImportCreateInputType();
-        $createImportInput->setTitle('integrity failed unit test');
-        $createImportInput->setDescription('KHM into SYR '.__METHOD__);
-        $createImportInput->setProjectId($project->getId());
-        $import = $this->importService->create($createImportInput, $this->getUser());
-
-        $this->assertNotNull($import->getId(), "Import wasn't saved to DB");
-        $this->assertEquals(ImportState::NEW, $import->getState());
-
-        $this->uploadFile($import, $filename);
+        $import = $this->createImport('testWrongCountryIntegrityCheck', $project, $filename);
 
         $this->userStartedIntegrityCheck($import, false);
 
@@ -366,13 +318,7 @@ class ImportTest extends KernelTestCase
     {
         $this->project = $this->createBlankProject(self::TEST_COUNTRY, [__METHOD__, $fileName]);
         $this->originHousehold = $this->createBlankHousehold($this->project);
-
-        // create import
-        $createImportInput = new ImportCreateInputType();
-        $createImportInput->setTitle('incorrect file test');
-        $createImportInput->setDescription($fileName);
-        $createImportInput->setProjectId($this->project->getId());
-        $import = $this->importService->create($createImportInput, $this->getUser());
+        $import = $this->createImport('testIncorrectImportFileInIntegrityCheck', $this->project);
 
         try {
             $this->uploadFile($import, $fileName);
@@ -511,13 +457,24 @@ class ImportTest extends KernelTestCase
         return $this->entityManager->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
     }
 
-    /**
-     * @param string $filename
-     * @param Import $import
-     *
-     * @throws \Doctrine\DBAL\ConnectionException
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
-     */
+    private function createImport(string $name, Project $project, ?string $fileName = null): Import
+    {
+        $createImportInput = new ImportCreateInputType();
+        $createImportInput->setTitle($name);
+        $createImportInput->setDescription(__METHOD__);
+        $createImportInput->setProjectId($project->getId());
+        $import = $this->importService->create($createImportInput, $this->getUser());
+
+        $this->assertNotNull($import->getId(), "Import wasn't saved to DB");
+        $this->assertEquals(ImportState::NEW, $import->getState());
+
+        if ($fileName) {
+            $this->uploadFile($import, $fileName);
+        }
+
+        return $import;
+    }
+
     private function uploadFile(Import $import, string $filename): void
     {
         $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
