@@ -138,31 +138,24 @@ class ImportTest extends KernelTestCase
         $this->uploadService->load($importFile);
 
         $this->assertNotNull($importFile->getId(), "ImportFile wasn't saved to DB");
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
-        $this->assertCount($expectedHouseholdCount, $queue);
+        $this->assertQueueCount($expectedHouseholdCount, $import);
 
         $this->userStartedIntegrityCheck($import, true);
 
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
-        $this->assertCount($expectedHouseholdCount, $queue);
+        $this->assertQueueCount($expectedHouseholdCount, $import);
 
         $this->userStartedIdentityCheck($import, true);
 
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
-        $this->assertCount($expectedHouseholdCount, $queue);
+        $this->assertQueueCount($expectedHouseholdCount, $import);
 
         $this->userStartedSimilarityCheck($import, true);
 
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
-        $this->assertCount($expectedHouseholdCount, $queue);
-
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_CREATE], ['id' => 'asc']);
-        $this->assertCount($expectedHouseholdCount, $queue);
+        $this->assertQueueCount($expectedHouseholdCount, $import);
+        $this->assertQueueCount($expectedHouseholdCount, $import, [ImportQueueState::TO_CREATE]);
 
         $this->userStartedFinishing($import);
 
-        $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
-        $this->assertCount($expectedHouseholdCount, $queue);
+        $this->assertQueueCount($expectedHouseholdCount, $import);
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->getImported($import);
         $this->assertCount($expectedBeneficiaryCount, $bnfCount, "Wrong beneficiary count");
@@ -236,15 +229,10 @@ class ImportTest extends KernelTestCase
 
         $this->userStartedSimilarityCheck($import, true);
 
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
-        $this->assertCount($expectedHouseholdCount, $queue);
-
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_CREATE], ['id' => 'asc']);
-        $this->assertCount($expectedHouseholdCount-$expectedDuplicities, $queue);
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_UPDATE], ['id' => 'asc']);
-        $this->assertCount($expectedDuplicities, $queue);
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::TO_LINK], ['id' => 'asc']);
-        $this->assertCount(0, $queue);
+        $this->assertQueueCount($expectedHouseholdCount, $import);
+        $this->assertQueueCount($expectedHouseholdCount-$expectedDuplicities, $import, [ImportQueueState::TO_CREATE]);
+        $this->assertQueueCount($expectedDuplicities, $import, [ImportQueueState::TO_UPDATE]);
+        $this->assertQueueCount(0, $import, [ImportQueueState::TO_LINK]);
 
         // save to DB
         $this->userStartedFinishing($import);
@@ -452,8 +440,7 @@ class ImportTest extends KernelTestCase
         $this->importService->patch($import, new ImportPatchInputType(ImportState::INTEGRITY_CHECKING));
         $this->assertEquals(ImportState::INTEGRITY_CHECK_FAILED, $import->getState());
 
-        $queueCount = $this->entityManager->getRepository(ImportQueue::class)->count(['import' => $import]);
-        $this->assertEquals(0, $queueCount, 'There should be no queue item saved');
+        $this->assertQueueCount(0, $import);
     }
 
     private function userStartedIntegrityCheck(Import $import, bool $shouldEndCorrect): void
@@ -507,6 +494,20 @@ class ImportTest extends KernelTestCase
         $commandTester->execute(['import' => $import->getId()]);
         $commandTester->execute(['import' => $import->getId()]);
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command $commandName failed");
+    }
+
+    private function assertQueueCount(int $expectedCount, Import $import, ?array $filterQueueStates = null): void
+    {
+        if ($filterQueueStates === null) {
+            $queueCount = $this->entityManager->getRepository(ImportQueue::class)->count(['import' => $import]);
+            $this->assertEquals($expectedCount, $queueCount, 'There should be other amount of queue items');
+        } else {
+            $queue = $this->entityManager->getRepository(ImportQueue::class)->count([
+                'import' => $import,
+                'state' => $filterQueueStates
+            ]);
+            $this->assertCount($expectedCount, $queue);
+        }
     }
 
     private function createBlankProject(string $country, array $notes): Project
