@@ -3,10 +3,10 @@
 namespace Tests\NewApiBundle\Component\Storage;
 
 use League\Flysystem\FilesystemException;
-use NewApiBundle\Component\LogsStorage\LogsStorageConfigFactory;
 use NewApiBundle\Component\Storage\Aws\AwsStorage;
-use NewApiBundle\Component\Storage\Aws\AwsStorageFactory;
 use NewApiBundle\Component\Storage\StorageConfig;
+use NewApiBundle\Factory\AwsStorageFactory;
+use NewApiBundle\Factory\LogsStorageConfigFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class StorageAwsTest extends KernelTestCase

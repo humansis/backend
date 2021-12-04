@@ -314,6 +314,8 @@ services:
         arguments:
             - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:SmartcardPurchasedItem")'
 
+    NewApiBundle\Factory\AwsStorageFactory:
+
     workflow.import.integrity_subscriber:
         class: NewApiBundle\Event\Subscriber\Import\IntegritySubscriber
         arguments:
@@ -361,7 +363,7 @@ services:
     NewApiBundle\Component\Storage\Aws\AwsStorageFactory:
         public: true
 
-    NewApiBundle\Component\LogsStorage\LogsStorageConfigFactory:
+    NewApiBundle\Factory\LogsStorageConfigFactory:
         public: true
         arguments:
             - '%aws.logs.key%'
