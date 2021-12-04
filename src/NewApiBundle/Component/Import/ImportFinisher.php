@@ -145,7 +145,8 @@ class ImportFinisher
         $importConflicts = $this->em->getRepository(Import::class)->getConflictingImports($import);
         $this->logImportInfo($import, count($importConflicts)." conflicting imports to reset duplicity checks");
         foreach ($importConflicts as $conflictImport) {
-            WorkflowTool::checkAndApply($this->importStateMachine, $conflictImport, [ImportTransitions::RESET]);
+            $this->logImportInfo($conflictImport, " reset to ".ImportState::IDENTITY_CHECKING);
+            $this->importStateMachine->apply($conflictImport, ImportTransitions::RESET);
         }
         $this->em->flush();
     }

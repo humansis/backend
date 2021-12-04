@@ -10,6 +10,7 @@ use NewApiBundle\Entity\Import;
 use NewApiBundle\Workflow\ImportTransitions;
 use NewApiBundle\Workflow\WorkflowTool;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Workflow\Event\CompletedEvent;
 use Symfony\Component\Workflow\Event\EnteredEvent;
 use Symfony\Component\Workflow\Event\GuardEvent;
 use Symfony\Component\Workflow\TransitionBlocker;
@@ -44,7 +45,7 @@ class FinishSubscriber implements EventSubscriberInterface
             'workflow.import.guard.'.ImportTransitions::IMPORT => ['guardIfThereIsOnlyOneFinishingImport'],
             // 'workflow.import.entered.'.ImportTransitions::IMPORT => ['doImport'],
             'workflow.import.entered.'.ImportTransitions::FINISH => ['finishImport'],
-            'workflow.import.entered.'.ImportTransitions::RESET => ['resetImport'],
+            'workflow.import.completed.'.ImportTransitions::RESET => ['resetImport'],
         ];
     }
 
@@ -85,9 +86,9 @@ class FinishSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param EnteredEvent $enteredEvent
+     * @param CompletedEvent $enteredEvent
      */
-    public function resetImport(EnteredEvent $enteredEvent): void
+    public function resetImport(CompletedEvent $enteredEvent): void
     {
         /** @var Import $import */
         $import = $enteredEvent->getSubject();

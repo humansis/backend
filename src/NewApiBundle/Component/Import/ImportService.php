@@ -11,6 +11,7 @@ use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
+use NewApiBundle\Enum\ImportState;
 use NewApiBundle\InputType\DuplicityResolveInputType;
 use NewApiBundle\InputType\ImportCreateInputType;
 use NewApiBundle\InputType\ImportPatchInputType;
@@ -159,6 +160,14 @@ class ImportService
         if ($this->importQueueStateMachine->can($importQueue, $inputType->getStatus())) {
             $this->importQueueStateMachine->apply($importQueue, $inputType->getStatus(),
                 ['duplicityId' => $inputType->getAcceptedDuplicityId(), 'user' => $user, 'resolve' => true]);
+
+            // check if it is all to decide
+            if ($this->importStateMachine->can($importQueue->getImport(), ImportState::IDENTITY_CHECK_CORRECT)) {
+                $this->importStateMachine->apply($importQueue->getImport(), ImportState::IDENTITY_CHECK_CORRECT);
+            } elseif ($this->importStateMachine->can($importQueue->getImport(), ImportState::SIMILARITY_CHECK_CORRECT)) {
+                $this->importStateMachine->apply($importQueue->getImport(), ImportState::SIMILARITY_CHECK_CORRECT);
+            }
+
             $this->em->flush();
         } else {
             throw new BadRequestHttpException("You can't resolve duplicity. Import Queue is not in valid state.");

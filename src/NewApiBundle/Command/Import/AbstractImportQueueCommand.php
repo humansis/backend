@@ -88,21 +88,6 @@ abstract class AbstractImportQueueCommand extends Command
         $this->logger->info("$commandType will affect $count imports: ".implode(' ', $countryList));
     }
 
-    protected function logImportInfo(Import $import, string $message): void
-    {
-        $this->logger->info("[Import #{$import->getId()}] ({$import->getTitle()}|{$import->getState()}) $message");
-    }
-
-    protected function logImportDebug(Import $import, string $message): void
-    {
-        $this->logger->debug("[Import #{$import->getId()}] ({$import->getTitle()}|{$import->getState()}) $message");
-    }
-
-    protected function logImportError(Import $import, string $message): void
-    {
-        $this->logger->error("[Import #{$import->getId()}] ({$import->getTitle()}|{$import->getState()}) $message");
-    }
-
     protected function tryTransitions(Import $import, array $transitions): void
     {
         foreach ($transitions as $transition) {

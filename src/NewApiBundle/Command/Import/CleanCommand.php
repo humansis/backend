@@ -11,6 +11,7 @@ use NewApiBundle\Repository\ImportRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 class CleanCommand extends AbstractImportQueueCommand
 {
@@ -19,9 +20,9 @@ class CleanCommand extends AbstractImportQueueCommand
      */
     private $importInvalidFileService;
 
-    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger, ImportInvalidFileService $importInvalidFileService)
+    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger, WorkflowInterface $importStateMachine, ImportInvalidFileService $importInvalidFileService)
     {
-        parent::__construct($manager, $importService, $importLogger, null);
+        parent::__construct($manager, $importService, $importLogger, $importStateMachine);
 
         $this->importInvalidFileService = $importInvalidFileService;
     }

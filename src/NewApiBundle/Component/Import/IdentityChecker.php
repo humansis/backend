@@ -89,23 +89,11 @@ class IdentityChecker
      */
     protected function validateItemDuplicities(ImportQueue $item): array
     {
-        /* probably works but we have bad testing data
-        $ids = $this->findInQueue($item);
-        foreach ($ids as $id) {
-            $importDuplicity = new ImportQueueDuplicity($item, $id);
-            $importDuplicity->setDecideAt(new \DateTime('now'));
-            $this->entityManager->persist($importDuplicity);
-
-            $item->setState(ImportQueueState::SUSPICIOUS);
-            $this->entityManager->persist($item);
-            $found = true;
-        }
-        */
-
-        $index = 0;
+        $index = -1;
         $bnfDuplicities = [];
         $duplicities = [];
         foreach ($item->getContent() as $c) {
+            $index++;
             if (empty($c['ID Type'][CellParameters::VALUE]) || empty($c['ID Number'][CellParameters::VALUE])) {
                 $this->logImportDebug($item->getImport(),
                     "[Queue#{$item->getId()}|line#$index] Duplicity checking omitted because of missing ID information");
@@ -129,6 +117,7 @@ class IdentityChecker
                     $duplicity = new ImportBeneficiaryDuplicity($item, $bnf->getHousehold());
                     $duplicity->setDecideAt(new \DateTime('now'));
                     $item->getImportBeneficiaryDuplicities()->add($duplicity);
+                    $item->getDuplicities()->add($duplicity);
                     $this->entityManager->persist($duplicity);
 
                     $duplicities[$bnf->getHousehold()->getId()] = $duplicity;
@@ -139,7 +128,6 @@ class IdentityChecker
                 $this->logImportInfo($item->getImport(),
                     "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
             }
-            $index++;
         }
 
         $item->setIdentityCheckedAt(new \DateTime());

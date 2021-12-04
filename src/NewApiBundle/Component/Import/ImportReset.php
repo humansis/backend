@@ -52,15 +52,13 @@ class ImportReset
     /**
      * @param Import $conflictImport
      */
-    public
-    function reset(
-        Import $conflictImport
-    ): void {
+    public function reset(Import $conflictImport): void
+    {
         $conflictQueue = $this->queueRepository->findBy([
             'import' => $conflictImport,
         ]);
         foreach ($conflictQueue as $item) {
-            $this->reset($item);
+            $this->resetItem($item);
         }
         $this->em->flush();
         $this->logImportInfo($conflictImport,
@@ -70,15 +68,16 @@ class ImportReset
     /**
      * @param ImportQueue $item
      */
-    protected
-    function resetItem(
-        ImportQueue $item
-    ): void {
+    private function resetItem(ImportQueue $item): void
+    {
         $item->setIdentityCheckedAt(null);
         $item->setSimilarityCheckedAt(null);
-        $this->em->persist($item);
 
-        WorkflowTool::checkAndApply($this->importQueueStateMachine, $item, [ImportQueueTransitions::RESET]);
-        $this->em->flush();
+        foreach ($item->getDuplicities() as $duplicity) {
+            $this->em->remove($duplicity);
+        }
+
+        $this->importQueueStateMachine->apply($item, ImportQueueTransitions::RESET);
+        $this->em->persist($item);
     }
 }
