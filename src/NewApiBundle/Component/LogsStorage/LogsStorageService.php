@@ -3,8 +3,10 @@
 namespace NewApiBundle\Component\LogsStorage;
 
 use League\Flysystem\FilesystemException;
-use NewApiBundle\Component\Storage\Aws\AwsStorageFactory;
+use NewApiBundle\Component\Storage\IStorage;
 use NewApiBundle\Component\Storage\IStorageConfig;
+use NewApiBundle\Factory\AwsStorageFactory;
+use NewApiBundle\Factory\LogsStorageConfigFactory;
 
 class LogsStorageService
 {
@@ -13,7 +15,6 @@ class LogsStorageService
      * @var string
      */
     private $folder;
-
 
     /**
      * @var AwsStorageFactory
@@ -25,6 +26,11 @@ class LogsStorageService
      */
     private $logsStorageConfig;
 
+    /**
+     * @var IStorage
+     */
+    private $aws;
+
     public function __construct(
         string                   $folder,
         LogsStorageConfigFactory $logsStorageFactory,
@@ -33,6 +39,7 @@ class LogsStorageService
         $this->folder = $folder;
         $this->awsStorageFactory = $awsStorageFactory;
         $this->logsStorageConfig = $logsStorageFactory->create();
+        $this->aws = $this->awsStorageFactory->create($this->logsStorageConfig);
     }
 
     /**
@@ -45,8 +52,7 @@ class LogsStorageService
     private function upload(string $fileName, $file): string
     {
         $path = $this->folder.'/'.$fileName;
-        $aws = $this->awsStorageFactory->create($this->logsStorageConfig);
 
-        return $aws->upload($path, $file);
+        return $this->aws->upload($path, $file);
     }
 }

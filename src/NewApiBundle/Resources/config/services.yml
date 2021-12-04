@@ -294,10 +294,10 @@ services:
         arguments:
             - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:SmartcardPurchasedItem")'
 
-    NewApiBundle\Component\Storage\Aws\AwsStorageFactory:
+    NewApiBundle\Factory\AwsStorageFactory:
         public: true
 
-    NewApiBundle\Component\LogsStorage\LogsStorageConfigFactory:
+    NewApiBundle\Factory\LogsStorageConfigFactory:
         public: true
         arguments:
             - '%aws.logs.key%'

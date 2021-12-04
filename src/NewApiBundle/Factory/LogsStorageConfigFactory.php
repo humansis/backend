@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Component\LogsStorage;
+namespace NewApiBundle\Factory;
 
 use NewApiBundle\Component\Storage\StorageConfig;
 
-final class LogsStorageConfigFactory
+final class LogsStorageConfigFactory implements Factory
 {
     /**
      * @var string
@@ -49,7 +49,7 @@ final class LogsStorageConfigFactory
     /**
      * @return StorageConfig
      */
-    public function create(): StorageConfig
+    public function create(): object
     {
         return new StorageConfig($this->key, $this->secret, $this->region, $this->version, $this->bucketName);
     }
