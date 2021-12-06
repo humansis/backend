@@ -88,9 +88,10 @@ class IdentitySubscriber implements EventSubscriberInterface
     {
         /** @var Import $import */
         $import = $guardEvent->getSubject();
-        $isSuspicious = $this->identityChecker->isImportQueueSuspicious($import);
-        if ($isSuspicious === true) {
-            $guardEvent->addTransitionBlocker(new TransitionBlocker('Import is suspicious', '0'));
+        // dont commit this
+        $suspicious = $this->identityChecker->getSuspiciousItems($import);
+        foreach ($suspicious as $susp) {
+            $guardEvent->addTransitionBlocker(new TransitionBlocker('Import has duplicity suspicious item #'.$susp->getId(), '0'));
         }
     }
 

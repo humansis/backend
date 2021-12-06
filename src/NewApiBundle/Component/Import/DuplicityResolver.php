@@ -9,6 +9,7 @@ use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
+use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
 use NewApiBundle\Workflow\WorkflowTool;
 use Psr\Log\LoggerInterface;
@@ -37,20 +38,20 @@ class DuplicityResolver
     /**
      * @var WorkflowInterface
      */
-    private $importStateMachine;
+    private $importQueueStateMachine;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         LoggerInterface        $logger,
         IdentityChecker        $identityChecker,
         SimilarityChecker      $similarityChecker,
-        WorkflowInterface      $importStateMachine
+        WorkflowInterface      $importQueueStateMachine
     ) {
         $this->em = $entityManager;
         $this->logger = $logger;
         $this->identityChecker = $identityChecker;
         $this->similarityChecker = $similarityChecker;
-        $this->importStateMachine = $importStateMachine;
+        $this->importQueueStateMachine = $importQueueStateMachine;
     }
 
     /**
@@ -62,7 +63,10 @@ class DuplicityResolver
     public function resolve(ImportQueue $importQueue, int $duplicityId, string $status, User $user)
     {
         $import = $importQueue->getImport();
-        if (!in_array($import->getState(), [ImportState::IDENTITY_CHECK_FAILED, ImportState::SIMILARITY_CHECK_FAILED])) {
+        if (!in_array($import->getState(), [
+            ImportState::IDENTITY_CHECK_FAILED,
+            ImportState::SIMILARITY_CHECK_FAILED,
+        ])) {
             throw new \BadMethodCallException('Unable to execute duplicity resolver. Import is not ready to duplicity resolve.');
         }
 

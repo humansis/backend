@@ -153,6 +153,12 @@ class IdentityChecker
         return false;
     }
 
+    public function getSuspiciousItems(Import $import): iterable
+    {
+        return $this->entityManager->getRepository(ImportQueue::class)
+            ->findBy(['import' => $import, 'state' => ImportQueueState::IDENTITY_CANDIDATE], ['id'=>'asc']);
+    }
+
     public function isImportQueueSuspicious(Import $import): bool
     {
         $queue = $this->entityManager->getRepository(ImportQueue::class)

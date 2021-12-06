@@ -54,6 +54,9 @@ class ImportService
     /** @var WorkflowInterface */
     private $importQueueStateMachine;
 
+    /** @var DuplicityResolver */
+    private $duplicityResolver;
+
     public function __construct(
         EntityManagerInterface $em,
         HouseholdService $householdService,
@@ -63,7 +66,8 @@ class ImportService
         IdentityChecker $identityChecker,
         SimilarityChecker $similarityChecker,
         WorkflowInterface $importStateMachine,
-        WorkflowInterface $importQueueStateMachine
+        WorkflowInterface $importQueueStateMachine,
+        DuplicityResolver $duplicityResolver
     )
     {
         $this->em = $em;
@@ -75,6 +79,7 @@ class ImportService
         $this->similarityChecker = $similarityChecker;
         $this->importStateMachine = $importStateMachine;
         $this->importQueueStateMachine = $importQueueStateMachine;
+        $this->duplicityResolver = $duplicityResolver;
     }
 
     public function create(ImportCreateInputType $inputType, User $user): Import
@@ -157,15 +162,20 @@ class ImportService
 
     public function resolveDuplicity(ImportQueue $importQueue, DuplicityResolveInputType $inputType, User $user)
     {
+        $this->logImportInfo($importQueue->getImport(), "[Queue#{$importQueue->getId()}] decided as ".$inputType->getStatus());
         if ($this->importQueueStateMachine->can($importQueue, $inputType->getStatus())) {
-            $this->importQueueStateMachine->apply($importQueue, $inputType->getStatus(),
-                ['duplicityId' => $inputType->getAcceptedDuplicityId(), 'user' => $user, 'resolve' => true]);
+            $this->duplicityResolver->resolve($importQueue, $inputType->getAcceptedDuplicityId(),$inputType->getStatus(), $user);
+            foreach ($this->importQueueStateMachine->buildTransitionBlockerList($importQueue, $inputType->getStatus()) as $block) {
+                $this->logImportInfo($importQueue->getImport(), "[Queue#{$importQueue->getId()}] can't go '{$inputType->getStatus()}' because ".$block->getMessage());
+            }
+            $this->importQueueStateMachine->apply($importQueue, $inputType->getStatus());
+            $this->em->flush();
 
             // check if it is all to decide
-            if ($this->importStateMachine->can($importQueue->getImport(), ImportState::IDENTITY_CHECK_CORRECT)) {
-                $this->importStateMachine->apply($importQueue->getImport(), ImportState::IDENTITY_CHECK_CORRECT);
-            } elseif ($this->importStateMachine->can($importQueue->getImport(), ImportState::SIMILARITY_CHECK_CORRECT)) {
-                $this->importStateMachine->apply($importQueue->getImport(), ImportState::SIMILARITY_CHECK_CORRECT);
+            if ($this->importStateMachine->can($importQueue->getImport(), ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES)) {
+                $this->importStateMachine->apply($importQueue->getImport(), ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES);
+            } elseif ($this->importStateMachine->can($importQueue->getImport(), ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES)) {
+                $this->importStateMachine->apply($importQueue->getImport(), ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES);
             }
 
             $this->em->flush();
