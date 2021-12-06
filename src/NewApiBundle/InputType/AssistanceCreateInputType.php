@@ -185,26 +185,27 @@ class AssistanceCreateInputType implements InputTypeInterface
     public function isValidSmartcardForRemoteDistribution(): bool
     {
         if ($this->remoteDistributionAllowed) {
-            $validSmartcardFieldsCount = 0;
-            $hasValidSmartcardField = false;
-
-            /** @var SelectionCriterionInputType $criteriaField */
-            foreach ($this->selectionCriteria as $key => $criteriaField) {
-                if ($criteriaField->getField() === SelectionCriteriaField::HAS_VALID_SMARTCARD) {
-                    if ($criteriaField->getValue() === true) {
-                        if ($validSmartcardFieldsCount > 0 && $hasValidSmartcardField === false) {
-                            $hasValidSmartcardField = false;
-                        } else {
-                            $hasValidSmartcardField = true;
-                        }
-                    } else {
-                        $hasValidSmartcardField = false;
-                    }
-                }
-                $validSmartcardFieldsCount++;
+            $criteriaSorted = [];
+            foreach ($this->getSelectionCriteria() as $key => $criteriaField) {
+                $criteriaSorted[$criteriaField->getGroup()][] = $criteriaField;
             }
 
-            return $hasValidSmartcardField;
+            /** @var SelectionCriterionInputType[] $groupFields */
+            foreach ($criteriaSorted as $groupFields) {
+                $hasValidSmartcardField = false;
+                foreach ($groupFields as $groupField) {
+                    if ($groupField->getField() === SelectionCriteriaField::HAS_VALID_SMARTCARD) {
+                        if ($groupField->getValue() === true) {
+                            $hasValidSmartcardField = true;
+                        } else {
+                            return false;
+                        }
+                    }
+                }
+                if ($hasValidSmartcardField === false) {
+                    return false;
+                }
+            }
         }
 
         return true;
