@@ -147,7 +147,6 @@ class ImportTest extends KernelTestCase
      */
     public function testRepeatedUploadSameFile(string $country, string $filename, int $expectedHouseholdCount, int $expectedBeneficiaryCount, int $expectedDuplicities)
     {
-        $this->markTestSkipped("nonono");
         $this->project = $this->createBlankProject($country, [__METHOD__, $filename]);
         $this->originHousehold = $this->createBlankHousehold($this->project);
 

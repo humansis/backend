@@ -100,7 +100,6 @@ class IntegrityCheckerTest extends KernelTestCase
         foreach ($queue as $item) {
             $this->assertEquals(ImportQueueState::VALID, $item->getState(), "Queue is invalid because ".$item->getMessage());
         }
-        $this->assertEquals(ImportState::INTEGRITY_CHECK_CORRECT, $import->getState());
     }
 
     protected function tearDown()
