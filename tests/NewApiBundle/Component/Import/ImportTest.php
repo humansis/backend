@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Component\Import;
 
-use BeneficiaryBundle\Entity\NationalId;
 use NewApiBundle\Component\Import\ImportFileValidator;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
@@ -18,19 +17,19 @@ use NewApiBundle\Component\Import\UploadImportService;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Enum\ImportState;
-use NewApiBundle\InputType\ImportCreateInputType;
 use ProjectBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Tests\NewApiBundle\Component\Import\Helper\ChecksTrait;
 use Tests\NewApiBundle\Component\Import\Helper\CliTrait;
-use UserBundle\Entity\User;
+use Tests\NewApiBundle\Component\Import\Helper\DefaultDataTrait;
 
 class ImportTest extends KernelTestCase
 {
     use CliTrait;
     use ChecksTrait;
+    use DefaultDataTrait;
 
     const TEST_COUNTRY = 'KHM';
 
@@ -349,70 +348,6 @@ class ImportTest extends KernelTestCase
         $this->entityManager->persist($project);
         $this->entityManager->flush();
         return $project;
-    }
-
-    private function createBlankHousehold(Project $project): Household
-    {
-        $hh = new Household();
-
-        $hh->setLongitude('empty');
-        $hh->setLatitude('empty');
-        $hh->setCopingStrategiesIndex(0);
-        $hh->setDebtLevel(0);
-        $hh->setFoodConsumptionScore(0);
-        $hh->setIncomeLevel(0);
-        $hh->setNotes('default HH in '.__CLASS__);
-
-        $hhh = new Beneficiary();
-        $hhh->setHousehold($hh);
-        $birthDate = new \DateTime();
-        $birthDate->modify("-30 year");
-        $hhh->getPerson()->setDateOfBirth($birthDate);
-        $hhh->getPerson()->setEnFamilyName('empty');
-        $hhh->getPerson()->setEnGivenName('empty');
-        $hhh->getPerson()->setLocalFamilyName('empty');
-        $hhh->getPerson()->setLocalGivenName('empty');
-        $hhh->getPerson()->setGender(0);
-        $hhh->setHead(true);
-        $hhh->setResidencyStatus('empty');
-
-        $nationalId = new NationalId();
-        $nationalId->setIdType('National ID');
-        $nationalId->setIdNumber('123456789');
-        $hhh->getPerson()->addNationalId($nationalId);
-        $nationalId->setPerson($hhh->getPerson());
-
-        $hh->addBeneficiary($hhh);
-        $hh->addProject($project);
-        $hhh->addProject($project);
-        $this->entityManager->persist($nationalId);
-        $this->entityManager->persist($hh);
-        $this->entityManager->persist($hhh);
-        $this->entityManager->flush();
-        return $hh;
-    }
-
-    private function getUser(): User
-    {
-        return $this->entityManager->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
-    }
-
-    private function createImport(string $name, Project $project, ?string $fileName = null): Import
-    {
-        $createImportInput = new ImportCreateInputType();
-        $createImportInput->setTitle($name);
-        $createImportInput->setDescription(__METHOD__);
-        $createImportInput->setProjectId($project->getId());
-        $import = $this->importService->create($createImportInput, $this->getUser());
-
-        $this->assertNotNull($import->getId(), "Import wasn't saved to DB");
-        $this->assertEquals(ImportState::NEW, $import->getState());
-
-        if ($fileName) {
-            $this->uploadFile($import, $fileName);
-        }
-
-        return $import;
     }
 
     private function uploadFile(Import $import, string $filename): void

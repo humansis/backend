@@ -23,12 +23,14 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Tests\NewApiBundle\Component\Import\Helper\ChecksTrait;
 use Tests\NewApiBundle\Component\Import\Helper\CliTrait;
+use Tests\NewApiBundle\Component\Import\Helper\DefaultDataTrait;
 use UserBundle\Entity\User;
 
 class ImportFinishServiceTest extends KernelTestCase
 {
     use CliTrait;
     use ChecksTrait;
+    use DefaultDataTrait;
 
     const TEST_COUNTRY = 'KHM';
     // json copied from KHM-Import-2HH-3HHM.ods
@@ -437,51 +439,4 @@ class ImportFinishServiceTest extends KernelTestCase
     {
         $this->assertEquals(ImportState::FINISHED, $this->import->getState(), "Wrong import state");
     }
-
-    private function createBlankHousehold(Project $project): Household
-    {
-        $hh = new Household();
-
-        $hh->setLongitude('empty');
-        $hh->setLatitude('empty');
-        $hh->setCopingStrategiesIndex(0);
-        $hh->setDebtLevel(0);
-        $hh->setFoodConsumptionScore(0);
-        $hh->setIncomeLevel(0);
-        $hh->setNotes('default HH in '.__CLASS__);
-
-        $hhh = new Beneficiary();
-        $hhh->setHousehold($hh);
-        $birthDate = new \DateTime();
-        $birthDate->modify("-30 year");
-        $hhh->getPerson()->setDateOfBirth($birthDate);
-        $hhh->getPerson()->setEnFamilyName('empty');
-        $hhh->getPerson()->setEnGivenName('empty');
-        $hhh->getPerson()->setLocalFamilyName('empty');
-        $hhh->getPerson()->setLocalGivenName('empty');
-        $hhh->getPerson()->setGender(0);
-        $hhh->setHead(true);
-        $hhh->setResidencyStatus('empty');
-
-        $nationalId = new NationalId();
-        $nationalId->setIdType('National ID');
-        $nationalId->setIdNumber('123456789');
-        $hhh->getPerson()->addNationalId($nationalId);
-        $nationalId->setPerson($hhh->getPerson());
-
-        $hh->addBeneficiary($hhh);
-        $hh->addProject($project);
-        $hhh->addProject($project);
-        $this->entityManager->persist($nationalId);
-        $this->entityManager->persist($hh);
-        $this->entityManager->persist($hhh);
-        $this->entityManager->flush();
-        return $hh;
-    }
-
-    private function getUser(): User
-    {
-        return $this->entityManager->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
-    }
-
 }
