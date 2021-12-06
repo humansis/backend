@@ -14,6 +14,7 @@ use ProjectBundle\Entity\Project;
 
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use TransactionBundle\Entity\Transaction;
+use VoucherBundle\Entity\SmartcardPurchase;
 
 /**
  * Assistance
@@ -237,6 +238,13 @@ class Assistance implements ExportableInterface
      * @ORM\Column(name="allowed_product_category_types", type="array", nullable=false)
      */
     private $allowedProductCategoryTypes;
+
+    /**
+     * @var SmartcardPurchase[]
+     *
+     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardPurchase", mappedBy="assistanceId")
+     */
+    private $smartcardPurchases;
 
     /**
      * Constructor
@@ -1017,6 +1025,22 @@ class Assistance implements ExportableInterface
     public function setAllowedProductCategoryTypes(array $allowedProductCategoryTypes): void
     {
         $this->allowedProductCategoryTypes = $allowedProductCategoryTypes;
+    }
+
+    /**
+     * @return SmartcardPurchase[]
+     */
+    public function getSmartcardPurchases(): array
+    {
+        return $this->smartcardPurchases;
+    }
+
+    /**
+     * @param SmartcardPurchase[] $smartcardPurchases
+     */
+    public function setSmartcardPurchases(array $smartcardPurchases): void
+    {
+        $this->smartcardPurchases = $smartcardPurchases;
     }
 
 }

@@ -6,6 +6,7 @@ namespace VoucherBundle\Entity;
 use BeneficiaryBundle\Entity\Beneficiary;
 use DateTime;
 use DateTimeInterface;
+use DistributionBundle\Entity\Assistance;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -82,6 +83,14 @@ class SmartcardPurchase
      * @ORM\Column(name="hash", type="text")
      */
     private $hash;
+
+    /**
+     * @var Assistance|null
+     *
+     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Assistance", inversedBy="smartcardPurchases", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $assistance;
 
     protected function __construct()
     {
@@ -208,5 +217,21 @@ class SmartcardPurchase
     public function setHash(?string $hash): void
     {
         $this->hash = $hash;
+    }
+
+    /**
+     * @return Assistance|null
+     */
+    public function getAssistance(): ?Assistance
+    {
+        return $this->assistance;
+    }
+
+    /**
+     * @param Assistance|null $assistance
+     */
+    public function setAssistance(?Assistance $assistance): void
+    {
+        $this->assistance = $assistance;
     }
 }
