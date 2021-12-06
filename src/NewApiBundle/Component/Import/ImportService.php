@@ -26,7 +26,7 @@ use UserBundle\Entity\User;
 
 class ImportService
 {
-    const ASAP_LIMIT = 1000;
+    const ASAP_LIMIT = 100;
 
     use ImportLoggerTrait;
 
