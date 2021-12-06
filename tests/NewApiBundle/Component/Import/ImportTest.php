@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace Tests\NewApiBundle\Component\Import;
 
 use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Person;
-use NewApiBundle\Command\Import\LoadFileCommand;
 use NewApiBundle\Component\Import\ImportFileValidator;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
@@ -21,17 +19,19 @@ use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\InputType\ImportCreateInputType;
-use NewApiBundle\InputType\ImportPatchInputType;
 use ProjectBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Tests\NewApiBundle\Component\Import\Helper\ChecksTrait;
+use Tests\NewApiBundle\Component\Import\Helper\CliTrait;
 use UserBundle\Entity\User;
 
 class ImportTest extends KernelTestCase
 {
+    use CliTrait;
+    use ChecksTrait;
+
     const TEST_COUNTRY = 'KHM';
 
     /** @var EntityManagerInterface */
@@ -337,76 +337,6 @@ class ImportTest extends KernelTestCase
 
         $this->userStartedIntegrityCheck($import, false);
         $this->assertQueueCount(0, $import);
-    }
-
-    private function userStartedIntegrityCheck(Import $import, bool $shouldEndCorrect): void
-    {
-        $this->importService->updateStatus($import, ImportState::INTEGRITY_CHECKING);
-        $this->assertEquals(ImportState::INTEGRITY_CHECKING, $import->getState());
-        $this->cli('app:import:integrity', $import);
-        $this->cli('app:import:integrity', $import);
-        if ($shouldEndCorrect) {
-            $this->assertEquals(ImportState::INTEGRITY_CHECK_CORRECT, $import->getState());
-        } else {
-            $this->assertEquals(ImportState::INTEGRITY_CHECK_FAILED, $import->getState());
-        }
-    }
-
-    private function userStartedIdentityCheck(Import $import, bool $shouldEndCorrect): void
-    {
-        $this->importService->updateStatus($import, ImportState::IDENTITY_CHECKING);
-        $this->assertEquals(ImportState::IDENTITY_CHECKING, $import->getState());
-        $this->cli('app:import:identity', $import);
-        $this->cli('app:import:identity', $import);
-        if ($shouldEndCorrect) {
-            $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
-        } else {
-            $this->assertEquals(ImportState::IDENTITY_CHECK_FAILED, $import->getState());
-        }
-    }
-
-    private function userStartedSimilarityCheck(Import $import, bool $shouldEndCorrect): void
-    {
-        $this->importService->updateStatus($import, ImportState::SIMILARITY_CHECKING);
-        $this->assertEquals(ImportState::SIMILARITY_CHECKING, $import->getState());
-        $this->cli('app:import:similarity', $import);
-        $this->cli('app:import:similarity', $import);
-        if ($shouldEndCorrect) {
-            $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
-        } else {
-            $this->assertEquals(ImportState::SIMILARITY_CHECK_FAILED, $import->getState());
-        }
-    }
-
-    private function userStartedFinishing(Import $import): void
-    {
-        $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
-        $this->importService->updateStatus($import, ImportState::IMPORTING);
-        $this->assertEquals(ImportState::IMPORTING, $import->getState());
-        $this->cli('app:import:finish', $import);
-        $this->assertEquals(ImportState::FINISHED, $import->getState());
-    }
-
-    private function cli(string $commandName, Import $import): void
-    {
-        $command = $this->application->find($commandName);
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(['import' => $import->getId()]);
-        $this->assertEquals(0, $commandTester->getStatusCode(), "Command $commandName failed");
-    }
-
-    private function assertQueueCount(int $expectedCount, Import $import, ?array $filterQueueStates = null): void
-    {
-        if ($filterQueueStates === null) {
-            $queueCount = $this->entityManager->getRepository(ImportQueue::class)->count(['import' => $import]);
-            $this->assertEquals($expectedCount, $queueCount, 'There should be other amount of queue items');
-        } else {
-            $queueCount = $this->entityManager->getRepository(ImportQueue::class)->count([
-                'import' => $import,
-                'state' => $filterQueueStates
-            ]);
-            $this->assertEquals($expectedCount, $queueCount);
-        }
     }
 
     private function createBlankProject(string $country, array $notes): Project

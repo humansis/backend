@@ -19,11 +19,17 @@ use NewApiBundle\Enum\ImportState;
 use NewApiBundle\InputType\ImportPatchInputType;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Utils\ProjectService;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Tests\NewApiBundle\Component\Import\Helper\ChecksTrait;
+use Tests\NewApiBundle\Component\Import\Helper\CliTrait;
 use UserBundle\Entity\User;
 
 class ImportFinishServiceTest extends KernelTestCase
 {
+    use CliTrait;
+    use ChecksTrait;
+
     const TEST_COUNTRY = 'KHM';
     // json copied from KHM-Import-2HH-3HHM.ods
     const TEST_QUEUE_ITEM = '[
@@ -194,6 +200,9 @@ class ImportFinishServiceTest extends KernelTestCase
     /** @var ImportService */
     private $importService;
 
+    /** @var Application */
+    private $application;
+
     /** @var Project */
     private $project;
 
@@ -218,6 +227,8 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager = $kernel->getContainer()
             ->get('doctrine')
             ->getManager();
+
+        $this->application = new Application($kernel);
 
         $this->importService = $kernel->getContainer()->get(ImportService::class);
         $this->projectService = $kernel->getContainer()->get('project.project_service');
@@ -257,7 +268,7 @@ class ImportFinishServiceTest extends KernelTestCase
 
     public function testEmpty()
     {
-        $this->importService->patch($this->import, new ImportPatchInputType(ImportState::IMPORTING));
+        $this->userStartedFinishing($this->import);
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
@@ -280,7 +291,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager->persist($queueItem);
         $this->entityManager->flush();
 
-        $this->importService->patch($this->import, new ImportPatchInputType(ImportState::IMPORTING));
+        $this->userStartedFinishing($this->import);
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(17, $bnfCount, "Wrong number of created beneficiaries");
@@ -309,7 +320,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager->persist($duplicity);
         $this->entityManager->flush();
 
-        $this->importService->patch($this->import, new ImportPatchInputType(ImportState::IMPORTING));
+        $this->userStartedFinishing($this->import);
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(17, $bnfCount, "Wrong number of created beneficiaries");
@@ -338,7 +349,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager->persist($duplicity);
         $this->entityManager->flush();
 
-        $this->importService->patch($this->import, new ImportPatchInputType(ImportState::IMPORTING));
+        $this->userStartedFinishing($this->import);
 
         $links = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
             'import' => $this->import->getId()
@@ -364,7 +375,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager->persist($duplicity);
         $this->entityManager->flush();
 
-        $this->importService->patch($this->import, new ImportPatchInputType(ImportState::IMPORTING));
+        $this->userStartedFinishing($this->import);
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
@@ -382,7 +393,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager->persist($queueItem);
         $this->entityManager->flush();
 
-        $this->importService->patch($this->import, new ImportPatchInputType(ImportState::IMPORTING));
+        $this->userStartedFinishing($this->import);
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
@@ -406,7 +417,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager->persist($duplicity);
         $this->entityManager->flush();
 
-        $this->importService->patch($this->import, new ImportPatchInputType(ImportState::IMPORTING));
+        $this->userStartedFinishing($this->import);
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
