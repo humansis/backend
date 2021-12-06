@@ -16,13 +16,22 @@ use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
+use NewApiBundle\InputType\ImportPatchInputType;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Utils\ProjectService;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Tests\NewApiBundle\Component\Import\Helper\ChecksTrait;
+use Tests\NewApiBundle\Component\Import\Helper\CliTrait;
+use Tests\NewApiBundle\Component\Import\Helper\DefaultDataTrait;
 use UserBundle\Entity\User;
 
 class ImportFinishServiceTest extends KernelTestCase
 {
+    use CliTrait;
+    use ChecksTrait;
+    use DefaultDataTrait;
+
     const TEST_COUNTRY = 'KHM';
     // json copied from KHM-Import-2HH-3HHM.ods
     const TEST_QUEUE_ITEM = '[
@@ -193,6 +202,9 @@ class ImportFinishServiceTest extends KernelTestCase
     /** @var ImportService */
     private $importService;
 
+    /** @var Application */
+    private $application;
+
     /** @var Project */
     private $project;
 
@@ -217,6 +229,8 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager = $kernel->getContainer()
             ->get('doctrine')
             ->getManager();
+
+        $this->application = new Application($kernel);
 
         $this->importService = $kernel->getContainer()->get(ImportService::class);
         $this->projectService = $kernel->getContainer()->get('project.project_service');
@@ -244,18 +258,19 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->originHousehold = $this->createBlankHousehold($this->project);
 
         $this->import = new Import('unit test', 'note', $this->project, $this->getUser());
-        $this->import->setState(ImportState::IMPORTING);
+        $this->import->setState(ImportState::SIMILARITY_CHECK_CORRECT);
         $this->entityManager->persist($this->import);
 
         $this->importFile = new ImportFile('unit-test.xlsx', $this->import, $this->getUser());
         $this->importFile->setIsLoaded(true);
 
         $this->entityManager->persist($this->importFile);
+        $this->entityManager->flush();
     }
 
     public function testEmpty()
     {
-        $this->importService->finish($this->import);
+        $this->userStartedFinishing($this->import);
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
@@ -278,7 +293,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager->persist($queueItem);
         $this->entityManager->flush();
 
-        $this->importService->finish($this->import);
+        $this->userStartedFinishing($this->import);
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(17, $bnfCount, "Wrong number of created beneficiaries");
@@ -307,7 +322,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager->persist($duplicity);
         $this->entityManager->flush();
 
-        $this->importService->finish($this->import);
+        $this->userStartedFinishing($this->import);
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(17, $bnfCount, "Wrong number of created beneficiaries");
@@ -336,7 +351,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager->persist($duplicity);
         $this->entityManager->flush();
 
-        $this->importService->finish($this->import);
+        $this->userStartedFinishing($this->import);
 
         $links = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
             'import' => $this->import->getId()
@@ -362,7 +377,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager->persist($duplicity);
         $this->entityManager->flush();
 
-        $this->importService->finish($this->import);
+        $this->userStartedFinishing($this->import);
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
@@ -380,7 +395,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager->persist($queueItem);
         $this->entityManager->flush();
 
-        $this->importService->finish($this->import);
+        $this->userStartedFinishing($this->import);
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
@@ -394,7 +409,7 @@ class ImportFinishServiceTest extends KernelTestCase
     public function testUndecided()
     {
         $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
-        $queueItem->setState(ImportQueueState::SUSPICIOUS);
+        $queueItem->setState(ImportQueueState::IDENTITY_CANDIDATE);
         $duplicity = new ImportBeneficiaryDuplicity($queueItem, $this->originHousehold);
         $duplicity->setState(ImportDuplicityState::DUPLICITY_CANDIDATE);
         $duplicity->setDecideAt(new \DateTime());
@@ -404,7 +419,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager->persist($duplicity);
         $this->entityManager->flush();
 
-        $this->importService->finish($this->import);
+        $this->userStartedFinishing($this->import);
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
@@ -424,51 +439,4 @@ class ImportFinishServiceTest extends KernelTestCase
     {
         $this->assertEquals(ImportState::FINISHED, $this->import->getState(), "Wrong import state");
     }
-
-    private function createBlankHousehold(Project $project): Household
-    {
-        $hh = new Household();
-
-        $hh->setLongitude('empty');
-        $hh->setLatitude('empty');
-        $hh->setCopingStrategiesIndex(0);
-        $hh->setDebtLevel(0);
-        $hh->setFoodConsumptionScore(0);
-        $hh->setIncomeLevel(0);
-        $hh->setNotes('default HH in '.__CLASS__);
-
-        $hhh = new Beneficiary();
-        $hhh->setHousehold($hh);
-        $birthDate = new \DateTime();
-        $birthDate->modify("-30 year");
-        $hhh->getPerson()->setDateOfBirth($birthDate);
-        $hhh->getPerson()->setEnFamilyName('empty');
-        $hhh->getPerson()->setEnGivenName('empty');
-        $hhh->getPerson()->setLocalFamilyName('empty');
-        $hhh->getPerson()->setLocalGivenName('empty');
-        $hhh->getPerson()->setGender(0);
-        $hhh->setHead(true);
-        $hhh->setResidencyStatus('empty');
-
-        $nationalId = new NationalId();
-        $nationalId->setIdType('National ID');
-        $nationalId->setIdNumber('123456789');
-        $hhh->getPerson()->addNationalId($nationalId);
-        $nationalId->setPerson($hhh->getPerson());
-
-        $hh->addBeneficiary($hhh);
-        $hh->addProject($project);
-        $hhh->addProject($project);
-        $this->entityManager->persist($nationalId);
-        $this->entityManager->persist($hh);
-        $this->entityManager->persist($hhh);
-        $this->entityManager->flush();
-        return $hh;
-    }
-
-    private function getUser(): User
-    {
-        return $this->entityManager->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
-    }
-
 }
