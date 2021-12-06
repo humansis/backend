@@ -208,67 +208,67 @@ services:
     NewApiBundle\Component\File\UploadService:
         arguments: [ '@knp_gaufrette.filesystem_map', '%aws_s3_bucket_name%', '%aws_s3_region%' ]
 
-    NewApiBundle\Component\Import\ImportService:
+    NewApiBundle\Component\Import\Service\ImportService:
         public: true
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@beneficiary.household_service"
             - '@monolog.logger.import'
-            - '@NewApiBundle\Component\Import\IntegrityChecker'
-            - '@NewApiBundle\Component\Import\ImportInvalidFileService'
-            - '@NewApiBundle\Component\Import\IdentityChecker'
-            - '@NewApiBundle\Component\Import\SimilarityChecker'
+            - '@NewApiBundle\Component\Import\Integrity\IntegrityChecker'
+            - '@NewApiBundle\Component\Import\Service\InvalidFileService'
+            - '@NewApiBundle\Component\Import\Duplicity\IdentityChecker'
+            - '@NewApiBundle\Component\Import\Duplicity\SimilarityChecker'
 
-    NewApiBundle\Component\Import\UploadImportService:
+    NewApiBundle\Component\Import\Service\UploadImportService:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '%import.uploadedFilesDirectory%'
-            - '@NewApiBundle\Component\Import\ImportFileValidator'
+            - '@NewApiBundle\Component\Import\Integrity\FileValidator'
         public: true
 
-    NewApiBundle\Component\Import\IntegrityChecker:
+    NewApiBundle\Component\Import\Integrity\IntegrityChecker:
         arguments:
             - "@validator"
             - "@doctrine.orm.entity_manager"
         public: true
 
-    NewApiBundle\Component\Import\IdentityChecker:
+    NewApiBundle\Component\Import\Duplicity\IdentityChecker:
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@monolog.logger.import"
 
-    NewApiBundle\Component\Import\SimilarityChecker:
+    NewApiBundle\Component\Import\Duplicity\SimilarityChecker:
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@monolog.logger.import"
 
-    NewApiBundle\Component\Import\ImportFinisher:
+    NewApiBundle\Component\Import\Finishing\ImportFinisher:
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@beneficiary.household_service"
             - '@monolog.logger.import'
 
-    NewApiBundle\Component\Import\ImportReset:
+    NewApiBundle\Component\Import\Finishing\ImportReset:
         arguments:
             - "@doctrine.orm.entity_manager"
             - '@monolog.logger.import'
 
 
-    NewApiBundle\Component\Import\DuplicityResolver:
+    NewApiBundle\Component\Import\Duplicity\DuplicityResolver:
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@monolog.logger.import"
-            - '@NewApiBundle\Component\Import\IdentityChecker'
-            - '@NewApiBundle\Component\Import\SimilarityChecker'
+            - '@NewApiBundle\Component\Import\Duplicity\IdentityChecker'
+            - '@NewApiBundle\Component\Import\Duplicity\SimilarityChecker'
 
-    NewApiBundle\Component\Import\ImportInvalidFileService:
+    NewApiBundle\Component\Import\Service\InvalidFileService:
         public: true
         arguments:
-            - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:ImportQueue")'
-            - '@NewApiBundle\Component\Import\ImportTemplate'
+            - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:Queue")'
+            - '@NewApiBundle\Component\Import\Integrity\ImportTemplate'
             - '%import.invalidFilesDirectory%'
 
-    NewApiBundle\Component\Import\ImportTemplate:
+    NewApiBundle\Component\Import\Integrity\ImportTemplate:
         arguments: ['@beneficiary.household_export_csv_service']
 
     NewApiBundle\Export\VulnerabilityScoreExport:
@@ -279,14 +279,14 @@ services:
 
     NewApiBundle\Controller\ImportController:
         arguments:
-            - '@NewApiBundle\Component\Import\ImportService'
-            - '@NewApiBundle\Component\Import\UploadImportService'
+            - '@NewApiBundle\Component\Import\Service\ImportService'
+            - '@NewApiBundle\Component\Import\Service\UploadImportService'
             - '%import.invalidFilesDirectory%'
             - '%import.maxFileSizeToLoad%'
 
     NewApiBundle\Component\Product\ProductCategoryService:
 
-    NewApiBundle\Component\Import\ImportFileValidator:
+    NewApiBundle\Component\Import\Integrity\FileValidator:
         arguments:
             - '%import.uploadedFilesDirectory%'
         public: true
@@ -315,45 +315,45 @@ services:
             - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:SmartcardPurchasedItem")'
 
     workflow.import.integrity_subscriber:
-        class: NewApiBundle\Event\Subscriber\Import\IntegritySubscriber
+        class: NewApiBundle\Component\Import\Integrity\IntegritySubscriber
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@NewApiBundle\Component\Import\IntegrityChecker'
-            - '@NewApiBundle\Component\Import\ImportInvalidFileService'
+            - '@NewApiBundle\Component\Import\Integrity\IntegrityChecker'
+            - '@NewApiBundle\Component\Import\Service\InvalidFileService'
             - '%import.batch_size%'
         tags:
             - { name: kernel.event_subscriber }
 
     workflow.import.identity_subscriber:
-        class: NewApiBundle\Event\Subscriber\Import\IdentitySubscriber
+        class: NewApiBundle\Component\Import\Duplicity\IdentitySubscriber
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@NewApiBundle\Component\Import\IdentityChecker'
+            - '@NewApiBundle\Component\Import\Duplicity\IdentityChecker'
             - '%import.batch_size%'
         tags:
             - { name: kernel.event_subscriber }
 
     workflow.import.similarity_subscriber:
-        class: NewApiBundle\Event\Subscriber\Import\SimilaritySubscriber
+        class: NewApiBundle\Component\Import\Duplicity\SimilaritySubscriber
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@NewApiBundle\Component\Import\SimilarityChecker'
+            - '@NewApiBundle\Component\Import\Duplicity\SimilarityChecker'
             - '%import.batch_size%'
         tags:
             - { name: kernel.event_subscriber }
 
     workflow.import.finisher_subscriber:
-        class: NewApiBundle\Event\Subscriber\Import\FinishSubscriber
+        class: NewApiBundle\Component\Import\Finishing\FinishSubscriber
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@NewApiBundle\Component\Import\ImportFinisher'
-            - '@NewApiBundle\Component\Import\ImportReset'
+            - '@NewApiBundle\Component\Import\Finishing\ImportFinisher'
+            - '@NewApiBundle\Component\Import\Finishing\ImportReset'
         tags:
             - { name: kernel.event_subscriber }
 
     workflow.import_queue.duplicity_resolve_subscriber:
-        class: NewApiBundle\Event\Subscriber\ImportQueue\DuplicityResolveSubscriber
+        class: NewApiBundle\Component\Import\Duplicity\DuplicityResolveSubscriber
         arguments:
-            - '@NewApiBundle\Component\Import\DuplicityResolver'
+            - '@NewApiBundle\Component\Import\Duplicity\DuplicityResolver'
         tags:
             - { name: kernel.event_subscriber }

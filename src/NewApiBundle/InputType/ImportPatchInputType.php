@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
-use NewApiBundle\Enum\ImportState;
+use NewApiBundle\Component\Import\Enum\State;
 use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -45,11 +45,11 @@ class ImportPatchInputType implements InputTypeInterface
     public static function allowedStates(): array
     {
         return [
-            ImportState::INTEGRITY_CHECKING,
-            ImportState::IDENTITY_CHECKING,
-            ImportState::SIMILARITY_CHECKING,
-            ImportState::IMPORTING,
-            ImportState::CANCELED,
+            State::INTEGRITY_CHECKING,
+            State::IDENTITY_CHECKING,
+            State::SIMILARITY_CHECKING,
+            State::IMPORTING,
+            State::CANCELED,
         ];
     }
 

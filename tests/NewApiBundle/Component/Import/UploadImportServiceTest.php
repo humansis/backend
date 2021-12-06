@@ -4,10 +4,10 @@ declare(strict_types=1);
 namespace Tests\NewApiBundle\Component\Import;
 
 use Doctrine\ORM\EntityManagerInterface;
-use NewApiBundle\Component\Import\ImportFileValidator;
-use NewApiBundle\Component\Import\UploadImportService;
-use NewApiBundle\Entity\Import;
-use NewApiBundle\Enum\ImportQueueState;
+use NewApiBundle\Component\Import\Integrity\FileValidator;
+use NewApiBundle\Component\Import\Service\UploadImportService;
+use NewApiBundle\Component\Import\Entity\Import;
+use NewApiBundle\Component\Import\Enum\QueueState;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -33,7 +33,7 @@ class UploadImportServiceTest extends KernelTestCase
         $this->uploadService = new UploadImportService(
             $this->entityManager,
             $kernel->getContainer()->getParameter('import.uploadedFilesDirectory'),
-            $kernel->getContainer()->get(ImportFileValidator::class)
+            $kernel->getContainer()->get(FileValidator::class)
         );
     }
 
@@ -64,10 +64,10 @@ class UploadImportServiceTest extends KernelTestCase
         $importFile = $this->uploadService->uploadFile($import, $file, $user);
         $this->uploadService->load($importFile);
 
-        $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
+        $queue = $this->entityManager->getRepository(\NewApiBundle\Component\Import\Entity\Queue::class)->findBy(['import' => $import], ['id' => 'asc']);
 
         $this->assertCount(2, $queue);
-        $this->assertSame(ImportQueueState::NEW, $queue[0]->getState());
+        $this->assertSame(QueueState::NEW, $queue[0]->getState());
         $this->assertSame('KHM-Import-2HH-3HHM-24HHM.ods', $queue[0]->getFile()->getFilename());
         $this->assertSame($import->getId(), $queue[0]->getImport()->getId());
         $this->assertIsArray($queue[0]->getContent());

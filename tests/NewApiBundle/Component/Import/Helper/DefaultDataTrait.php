@@ -6,8 +6,8 @@ namespace Tests\NewApiBundle\Component\Import\Helper;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\NationalId;
-use NewApiBundle\Entity\Import;
-use NewApiBundle\Enum\ImportState;
+use NewApiBundle\Component\Import\Entity\Import;
+use NewApiBundle\Component\Import\Enum\State;
 use NewApiBundle\InputType\ImportCreateInputType;
 use ProjectBundle\Entity\Project;
 use UserBundle\Entity\User;
@@ -69,7 +69,7 @@ trait DefaultDataTrait
         $import = $this->importService->create($createImportInput, $this->getUser());
 
         $this->assertNotNull($import->getId(), "Import wasn't saved to DB");
-        $this->assertEquals(ImportState::NEW, $import->getState());
+        $this->assertEquals(State::NEW, $import->getState());
 
         if ($fileName) {
             $this->uploadFile($import, $fileName);

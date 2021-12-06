@@ -8,7 +8,7 @@ use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Enum\ResidencyStatus;
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\Common\Persistence\ObjectManager;
-use NewApiBundle\Component\Import\ImportService;
+use NewApiBundle\Component\Import\Service\ImportService;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\AddressInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;

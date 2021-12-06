@@ -20,7 +20,7 @@ class ImportFilterInputType extends AbstractFilterInputType
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *         @Assert\Choice(callback={"NewApiBundle\Enum\ImportState", "values"})
+     *         @Assert\Choice(callback={"NewApiBundle\Component\Import\Enum\State", "values"})
      *     },
      *     groups={"Strict"}
      * )

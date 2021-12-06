@@ -7,7 +7,7 @@ use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
-use NewApiBundle\Component\Import\CellParameters;
+use NewApiBundle\Component\Import\Integrity\CellParameters;
 use NewApiBundle\Validator\Constraints\ImportDate;
 use Symfony\Component\Validator\Constraints as Assert;
 

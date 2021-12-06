@@ -1,0 +1,76 @@
+<?php
+declare(strict_types=1);
+
+namespace NewApiBundle\Component\Import\Command;
+
+use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Component\Import\Entity\Import;
+use NewApiBundle\Component\Import\Enum\State;
+use NewApiBundle\Component\Import\Enum\Transitions;
+use NewApiBundle\Workflow\WorkflowTool;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
+use Throwable;
+
+class SimilarityCheckCommand extends AbstractQueueCommand
+{
+    protected function configure()
+    {
+        parent::configure();
+        $this
+            ->setName('app:import:similarity')
+            ->setDescription('Run similarity duplicity check on import');
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        parent::execute($input, $output);
+
+        if (is_null($this->imports)) {
+            $imports = [$this->imports];
+        } else {
+            $imports = $this->manager->getRepository(Import::class)
+                ->findBy([
+                    'state' => State::SIMILARITY_CHECKING,
+                ]);
+        }
+
+        if (!empty($this->imports)) {
+            $this->logAffectedImports($this->imports, 'app:import:similarity');
+        } else {
+            $this->logger->debug('app:import:similarity affects no imports');
+        }
+
+        $output->write($this->getName()." finding duplicities in ".count($this->imports)." imports ");
+
+        /** @var Import $import */
+        foreach ($imports as $import) {
+            try {
+                $this->tryTransitions($import, [
+                    Transitions::REDO_SIMILARITY,
+                    Transitions::FAIL_SIMILARITY,
+                    Transitions::COMPLETE_SIMILARITY
+                ]);
+                $this->manager->flush();
+
+                if (State::SIMILARITY_CHECK_CORRECT === $import->getState()) {
+                    $this->logImportDebug($import, "Similarity check found no duplicities");
+                } else {
+                    $statistics = $this->importService->getStatistics($import);
+                    $this->logImportInfo($import, "Similarity check found {$statistics->getAmountDuplicities()} duplicities");
+                }
+            } catch (Throwable $e) {
+                $this->logImportError($import, 'Unknown Exception in similarity check occurred. Exception message: '.$e->getMessage());
+            }
+
+        }
+
+        $this->manager->flush();
+
+        $output->writeln('Done');
+
+        return 0;
+    }
+}

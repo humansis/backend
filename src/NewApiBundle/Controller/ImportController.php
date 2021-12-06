@@ -6,15 +6,15 @@ namespace NewApiBundle\Controller;
 use CommonBundle\Controller\ExportController;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Component\Import\ImportFileValidator;
-use NewApiBundle\Component\Import\ImportService;
-use NewApiBundle\Component\Import\UploadImportService;
-use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
-use NewApiBundle\Entity\ImportFile;
-use NewApiBundle\Entity\ImportInvalidFile;
-use NewApiBundle\Entity\ImportQueue;
-use NewApiBundle\Enum\ImportState;
+use NewApiBundle\Component\Import\Integrity\FileValidator;
+use NewApiBundle\Component\Import\Service\ImportService;
+use NewApiBundle\Component\Import\Service\UploadImportService;
+use NewApiBundle\Component\Import\Entity\Import;
+use NewApiBundle\Component\Import\Entity\BeneficiaryDuplicity;
+use NewApiBundle\Component\Import\Entity\File;
+use NewApiBundle\Component\Import\Entity\InvalidFile;
+use NewApiBundle\Component\Import\Entity\Queue;
+use NewApiBundle\Component\Import\Enum\State;
 use NewApiBundle\InputType\DuplicityResolveInputType;
 use NewApiBundle\InputType\ImportCreateInputType;
 use NewApiBundle\InputType\ImportFilterInputType;
@@ -145,7 +145,7 @@ class ImportController extends AbstractController
      */
     public function listFiles(Import $import): JsonResponse
     {
-        $data = $this->getDoctrine()->getRepository(ImportFile::class)
+        $data = $this->getDoctrine()->getRepository(File::class)
             ->findBy([
                 'import' => $import,
             ]);
@@ -167,10 +167,10 @@ class ImportController extends AbstractController
     public function uploadFile(Import $import, Request $request): JsonResponse
     {
         if (!in_array($import->getState(), [
-            ImportState::NEW,
-            ImportState::INTEGRITY_CHECKING,
-            ImportState::INTEGRITY_CHECK_CORRECT,
-            ImportState::INTEGRITY_CHECK_FAILED,
+            State::NEW,
+            State::INTEGRITY_CHECKING,
+            State::INTEGRITY_CHECK_CORRECT,
+            State::INTEGRITY_CHECK_FAILED,
         ])) {
             throw new \InvalidArgumentException('You cannot upload file to this import.');
         }
@@ -202,16 +202,16 @@ class ImportController extends AbstractController
     /**
      * @Rest\Delete("/web-app/v1/imports/files/{id}")
      *
-     * @param ImportFile $importFile
+     * @param File $importFile
      *
      * @return JsonResponse
      */
-    public function deleteFile(ImportFile $importFile): JsonResponse
+    public function deleteFile(File $importFile): JsonResponse
     {
         if (!in_array($importFile->getImport()->getState(), [
-            ImportState::INTEGRITY_CHECKING,
-            ImportState::INTEGRITY_CHECK_CORRECT,
-            ImportState::INTEGRITY_CHECK_FAILED,
+            State::INTEGRITY_CHECKING,
+            State::INTEGRITY_CHECK_CORRECT,
+            State::INTEGRITY_CHECK_FAILED,
         ])) {
             throw new \InvalidArgumentException('You cannot delete file from this import.');
         }
@@ -230,8 +230,8 @@ class ImportController extends AbstractController
      */
     public function duplicities(Import $import): JsonResponse
     {
-        /** @var ImportBeneficiaryDuplicity[] $duplicities */
-        $duplicities = $this->getDoctrine()->getRepository(ImportBeneficiaryDuplicity::class)
+        /** @var BeneficiaryDuplicity[] $duplicities */
+        $duplicities = $this->getDoctrine()->getRepository(BeneficiaryDuplicity::class)
             ->findByImport($import);
 
         return $this->json($duplicities);
@@ -254,11 +254,11 @@ class ImportController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/imports/invalid-files/{id}")
      *
-     * @param ImportInvalidFile $importInvalidFile
+     * @param InvalidFile $importInvalidFile
      *
      * @return BinaryFileResponse
      */
-    public function getInvalidFile(ImportInvalidFile $importInvalidFile): BinaryFileResponse
+    public function getInvalidFile(InvalidFile $importInvalidFile): BinaryFileResponse
     {
         $filename = $importInvalidFile->getFilename();
         $path = $this->importInvalidFilesDirectory.'/'.$filename;
@@ -290,7 +290,7 @@ class ImportController extends AbstractController
      */
     public function listInvalidFiles(Import $import): JsonResponse
     {
-        $invalidFiles = $this->getDoctrine()->getRepository(ImportInvalidFile::class)
+        $invalidFiles = $this->getDoctrine()->getRepository(InvalidFile::class)
             ->findBy([
                 'import' => $import,
             ]);
@@ -301,11 +301,11 @@ class ImportController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/imports/queue/{id}")
      *
-     * @param ImportQueue $importQueue
+     * @param Queue $importQueue
      *
      * @return JsonResponse
      */
-    public function queueItem(ImportQueue $importQueue): JsonResponse
+    public function queueItem(Queue $importQueue): JsonResponse
     {
         return $this->json($importQueue);
     }
@@ -313,13 +313,13 @@ class ImportController extends AbstractController
     /**
      * @Rest\Patch("/web-app/v1/imports/queue/{id}")
      *
-     * @param ImportQueue               $importQueue
+     * @param Queue               $importQueue
      *
      * @param DuplicityResolveInputType $inputType
      *
      * @return JsonResponse
      */
-    public function duplicityResolve(ImportQueue $importQueue, DuplicityResolveInputType $inputType): JsonResponse
+    public function duplicityResolve(Queue $importQueue, DuplicityResolveInputType $inputType): JsonResponse
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -338,7 +338,7 @@ class ImportController extends AbstractController
      */
     public function listQueue(Import $import): JsonResponse
     {
-        $importQueue = $this->getDoctrine()->getRepository(ImportQueue::class)
+        $importQueue = $this->getDoctrine()->getRepository(Queue::class)
             ->findBy([
                 'import' => $import,
             ]);

@@ -4,10 +4,10 @@ declare(strict_types=1);
 namespace Tests\NewApiBundle\Component\Import;
 
 use Doctrine\ORM\EntityManagerInterface;
-use NewApiBundle\Component\Import\IdentityChecker;
-use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportQueueDuplicity;
-use NewApiBundle\Enum\ImportState;
+use NewApiBundle\Component\Import\Duplicity\IdentityChecker;
+use NewApiBundle\Component\Import\Entity\Import;
+use NewApiBundle\Component\Import\Entity\QueueDuplicity;
+use NewApiBundle\Component\Import\Enum\State;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Workflow\WorkflowInterface;
@@ -30,14 +30,14 @@ class IdentityCheckerTest extends KernelTestCase
     {
         $this->markTestSkipped('Self check is disabled for this time');
         $import = self::$entityManager->getRepository(Import::class)->findBy(['title' => 'test_fixtures'], ['id' => 'asc'])[0];
-        $import->setState(ImportState::IDENTITY_CHECKING);
+        $import->setState(State::IDENTITY_CHECKING);
 
         $checker = self::$container->get(IdentityChecker::class);
         $checker->check($import);
 
         $count = self::$entityManager->createQueryBuilder()
             ->select('count(iqd)')
-            ->from(ImportQueueDuplicity::class, 'iqd')
+            ->from(QueueDuplicity::class, 'iqd')
             ->leftJoin('iqd.ours', 'ours')
             ->leftJoin('iqd.theirs', 'theirs')
             ->leftJoin('ours.import', 'i')

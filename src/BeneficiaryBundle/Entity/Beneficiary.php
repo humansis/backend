@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
-use NewApiBundle\Entity\ImportBeneficiary;
+use NewApiBundle\Component\Import\Entity\Beneficiary as ImportBeneficiary;
 use ProjectBundle\Enum\Livelihood;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -78,7 +78,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * @var ImportBeneficiary[]|Collection
      *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiary", mappedBy="beneficiary", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Component\Import\Entity\Beneficiary", mappedBy="beneficiary", cascade={"persist", "remove"})
      */
     private $importBeneficiaries;
 

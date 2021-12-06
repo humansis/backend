@@ -2,21 +2,17 @@
 
 namespace Tests\NewApiBundle\Component\Import;
 
-use BeneficiaryBundle\Entity\AbstractBeneficiary;
-use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\NationalId;
 use Doctrine\ORM\EntityManagerInterface;
-use NewApiBundle\Component\Import\ImportService;
-use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportBeneficiary;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
-use NewApiBundle\Entity\ImportFile;
-use NewApiBundle\Entity\ImportQueue;
-use NewApiBundle\Enum\ImportDuplicityState;
-use NewApiBundle\Enum\ImportQueueState;
-use NewApiBundle\Enum\ImportState;
-use NewApiBundle\InputType\ImportPatchInputType;
+use NewApiBundle\Component\Import\Service\ImportService;
+use NewApiBundle\Component\Import\Entity\Import;
+use NewApiBundle\Component\Import\Entity\Beneficiary;
+use NewApiBundle\Component\Import\Entity\BeneficiaryDuplicity;
+use NewApiBundle\Component\Import\Entity\File;
+use NewApiBundle\Component\Import\Entity\Queue;
+use NewApiBundle\Component\Import\Enum\DuplicityState;
+use NewApiBundle\Component\Import\Enum\QueueState;
+use NewApiBundle\Component\Import\Enum\State;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Utils\ProjectService;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -214,7 +210,7 @@ class ImportFinishServiceTest extends KernelTestCase
     /** @var Household */
     private $originHousehold;
 
-    /** @var ImportFile */
+    /** @var File */
     private $importFile;
 
     /** @var ProjectService */
@@ -258,10 +254,10 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->originHousehold = $this->createBlankHousehold($this->project);
 
         $this->import = new Import('unit test', 'note', $this->project, $this->getUser());
-        $this->import->setState(ImportState::SIMILARITY_CHECK_CORRECT);
+        $this->import->setState(State::SIMILARITY_CHECK_CORRECT);
         $this->entityManager->persist($this->import);
 
-        $this->importFile = new ImportFile('unit-test.xlsx', $this->import, $this->getUser());
+        $this->importFile = new File('unit-test.xlsx', $this->import, $this->getUser());
         $this->importFile->setIsLoaded(true);
 
         $this->entityManager->persist($this->importFile);
@@ -288,8 +284,8 @@ class ImportFinishServiceTest extends KernelTestCase
 
     public function testPlainCreate()
     {
-        $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
-        $queueItem->setState(ImportQueueState::TO_CREATE);
+        $queueItem = new Queue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
+        $queueItem->setState(QueueState::TO_CREATE);
         $this->entityManager->persist($queueItem);
         $this->entityManager->flush();
 
@@ -311,10 +307,10 @@ class ImportFinishServiceTest extends KernelTestCase
 
     public function testDecidedCreate()
     {
-        $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
-        $queueItem->setState(ImportQueueState::TO_CREATE);
-        $duplicity = new ImportBeneficiaryDuplicity($queueItem, $this->originHousehold);
-        $duplicity->setState(ImportDuplicityState::NO_DUPLICITY);
+        $queueItem = new Queue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
+        $queueItem->setState(QueueState::TO_CREATE);
+        $duplicity = new BeneficiaryDuplicity($queueItem, $this->originHousehold);
+        $duplicity->setState(DuplicityState::NO_DUPLICITY);
         $duplicity->setDecideAt(new \DateTime());
         $duplicity->setDecideBy($this->getUser());
         $queueItem->getDuplicities()->add($duplicity);
@@ -340,10 +336,10 @@ class ImportFinishServiceTest extends KernelTestCase
 
     public function testUpdate()
     {
-        $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
-        $queueItem->setState(ImportQueueState::TO_UPDATE);
-        $duplicity = new ImportBeneficiaryDuplicity($queueItem, $this->originHousehold);
-        $duplicity->setState(ImportDuplicityState::DUPLICITY_KEEP_OURS);
+        $queueItem = new Queue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
+        $queueItem->setState(QueueState::TO_UPDATE);
+        $duplicity = new BeneficiaryDuplicity($queueItem, $this->originHousehold);
+        $duplicity->setState(DuplicityState::DUPLICITY_KEEP_OURS);
         $duplicity->setDecideAt(new \DateTime());
         $duplicity->setDecideBy($this->getUser());
         $queueItem->getDuplicities()->add($duplicity);
@@ -366,10 +362,10 @@ class ImportFinishServiceTest extends KernelTestCase
 
     public function testLink()
     {
-        $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
-        $queueItem->setState(ImportQueueState::TO_LINK);
-        $duplicity = new ImportBeneficiaryDuplicity($queueItem, $this->originHousehold);
-        $duplicity->setState(ImportDuplicityState::DUPLICITY_KEEP_THEIRS);
+        $queueItem = new Queue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
+        $queueItem->setState(QueueState::TO_LINK);
+        $duplicity = new BeneficiaryDuplicity($queueItem, $this->originHousehold);
+        $duplicity->setState(DuplicityState::DUPLICITY_KEEP_THEIRS);
         $duplicity->setDecideAt(new \DateTime());
         $duplicity->setDecideBy($this->getUser());
         $queueItem->getDuplicities()->add($duplicity);
@@ -390,8 +386,8 @@ class ImportFinishServiceTest extends KernelTestCase
 
     public function testIgnore()
     {
-        $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
-        $queueItem->setState(ImportQueueState::TO_IGNORE);
+        $queueItem = new Queue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
+        $queueItem->setState(QueueState::TO_IGNORE);
         $this->entityManager->persist($queueItem);
         $this->entityManager->flush();
 
@@ -408,10 +404,10 @@ class ImportFinishServiceTest extends KernelTestCase
 
     public function testUndecided()
     {
-        $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
-        $queueItem->setState(ImportQueueState::IDENTITY_CANDIDATE);
-        $duplicity = new ImportBeneficiaryDuplicity($queueItem, $this->originHousehold);
-        $duplicity->setState(ImportDuplicityState::DUPLICITY_CANDIDATE);
+        $queueItem = new Queue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
+        $queueItem->setState(QueueState::IDENTITY_CANDIDATE);
+        $duplicity = new BeneficiaryDuplicity($queueItem, $this->originHousehold);
+        $duplicity->setState(DuplicityState::DUPLICITY_CANDIDATE);
         $duplicity->setDecideAt(new \DateTime());
         $duplicity->setDecideBy($this->getUser());
         $queueItem->getDuplicities()->add($duplicity);
@@ -437,6 +433,6 @@ class ImportFinishServiceTest extends KernelTestCase
 
     protected function tearDown()
     {
-        $this->assertEquals(ImportState::FINISHED, $this->import->getState(), "Wrong import state");
+        $this->assertEquals(State::FINISHED, $this->import->getState(), "Wrong import state");
     }
 }

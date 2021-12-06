@@ -69,99 +69,99 @@ framework:
         type: 'method'
         property: 'state'
       supports:
-        - NewApiBundle\Entity\Import
-      initial_marking: !php/const NewApiBundle\Enum\ImportState::NEW
+        - NewApiBundle\Component\Import\Entity\Import
+      initial_marking: !php/const NewApiBundle\Component\Import\Enum\State::NEW
       places:
-        - !php/const NewApiBundle\Enum\ImportState::NEW
-        - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECKING
-        - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_CORRECT
-        - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_FAILED
-        - !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECKING
-        - !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECK_CORRECT
-        - !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECK_FAILED
-        - !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECKING
-        - !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_CORRECT
-        - !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_FAILED
-        - !php/const NewApiBundle\Enum\ImportState::IMPORTING
-        - !php/const NewApiBundle\Enum\ImportState::FINISHED
-        - !php/const NewApiBundle\Enum\ImportState::CANCELED
+        - !php/const NewApiBundle\Component\Import\Enum\State::NEW
+        - !php/const NewApiBundle\Component\Import\Enum\State::INTEGRITY_CHECKING
+        - !php/const NewApiBundle\Component\Import\Enum\State::INTEGRITY_CHECK_CORRECT
+        - !php/const NewApiBundle\Component\Import\Enum\State::INTEGRITY_CHECK_FAILED
+        - !php/const NewApiBundle\Component\Import\Enum\State::IDENTITY_CHECKING
+        - !php/const NewApiBundle\Component\Import\Enum\State::IDENTITY_CHECK_CORRECT
+        - !php/const NewApiBundle\Component\Import\Enum\State::IDENTITY_CHECK_FAILED
+        - !php/const NewApiBundle\Component\Import\Enum\State::SIMILARITY_CHECKING
+        - !php/const NewApiBundle\Component\Import\Enum\State::SIMILARITY_CHECK_CORRECT
+        - !php/const NewApiBundle\Component\Import\Enum\State::SIMILARITY_CHECK_FAILED
+        - !php/const NewApiBundle\Component\Import\Enum\State::IMPORTING
+        - !php/const NewApiBundle\Component\Import\Enum\State::FINISHED
+        - !php/const NewApiBundle\Component\Import\Enum\State::CANCELED
       transitions:
 
         # INTEGRITY
-        !php/const NewApiBundle\Workflow\ImportTransitions::CHECK_INTEGRITY:
-          from: !php/const NewApiBundle\Enum\ImportState::NEW
-          to: !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECKING
-        !php/const NewApiBundle\Workflow\ImportTransitions::COMPLETE_INTEGRITY:
-          from: !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECKING
-          to: !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_CORRECT
-        !php/const NewApiBundle\Workflow\ImportTransitions::FAIL_INTEGRITY:
-          from: !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECKING
-          to: !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_FAILED
-        !php/const NewApiBundle\Workflow\ImportTransitions::REDO_INTEGRITY:
-          from: !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECKING
-          to: !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECKING
+        !php/const NewApiBundle\Component\Import\Enum\Transitions::CHECK_INTEGRITY:
+          from: !php/const NewApiBundle\Component\Import\Enum\State::NEW
+          to: !php/const NewApiBundle\Component\Import\Enum\State::INTEGRITY_CHECKING
+        !php/const NewApiBundle\Component\Import\Enum\Transitions::COMPLETE_INTEGRITY:
+          from: !php/const NewApiBundle\Component\Import\Enum\State::INTEGRITY_CHECKING
+          to: !php/const NewApiBundle\Component\Import\Enum\State::INTEGRITY_CHECK_CORRECT
+        !php/const NewApiBundle\Component\Import\Enum\Transitions::FAIL_INTEGRITY:
+          from: !php/const NewApiBundle\Component\Import\Enum\State::INTEGRITY_CHECKING
+          to: !php/const NewApiBundle\Component\Import\Enum\State::INTEGRITY_CHECK_FAILED
+        !php/const NewApiBundle\Component\Import\Enum\Transitions::REDO_INTEGRITY:
+          from: !php/const NewApiBundle\Component\Import\Enum\State::INTEGRITY_CHECKING
+          to: !php/const NewApiBundle\Component\Import\Enum\State::INTEGRITY_CHECKING
 
         # IDENTITY
-        !php/const NewApiBundle\Workflow\ImportTransitions::CHECK_IDENTITY:
+        !php/const NewApiBundle\Component\Import\Enum\Transitions::CHECK_IDENTITY:
           from:
-            - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_CORRECT
-            - !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECKING
-            - !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECK_CORRECT
-          to: !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECKING
-        !php/const NewApiBundle\Workflow\ImportTransitions::COMPLETE_IDENTITY:
-          from: !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECKING
-          to: !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECK_CORRECT
-        !php/const NewApiBundle\Workflow\ImportTransitions::FAIL_IDENTITY:
-          from: !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECKING
-          to: !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECK_FAILED
-        !php/const NewApiBundle\Workflow\ImportTransitions::REDO_IDENTITY:
-          from: !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECKING
-          to: !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECKING
-        !php/const NewApiBundle\Workflow\ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES:
-          from: !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECK_FAILED
-          to: !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECK_CORRECT
+            - !php/const NewApiBundle\Component\Import\Enum\State::INTEGRITY_CHECK_CORRECT
+            - !php/const NewApiBundle\Component\Import\Enum\State::IDENTITY_CHECKING
+            - !php/const NewApiBundle\Component\Import\Enum\State::IDENTITY_CHECK_CORRECT
+          to: !php/const NewApiBundle\Component\Import\Enum\State::IDENTITY_CHECKING
+        !php/const NewApiBundle\Component\Import\Enum\Transitions::COMPLETE_IDENTITY:
+          from: !php/const NewApiBundle\Component\Import\Enum\State::IDENTITY_CHECKING
+          to: !php/const NewApiBundle\Component\Import\Enum\State::IDENTITY_CHECK_CORRECT
+        !php/const NewApiBundle\Component\Import\Enum\Transitions::FAIL_IDENTITY:
+          from: !php/const NewApiBundle\Component\Import\Enum\State::IDENTITY_CHECKING
+          to: !php/const NewApiBundle\Component\Import\Enum\State::IDENTITY_CHECK_FAILED
+        !php/const NewApiBundle\Component\Import\Enum\Transitions::REDO_IDENTITY:
+          from: !php/const NewApiBundle\Component\Import\Enum\State::IDENTITY_CHECKING
+          to: !php/const NewApiBundle\Component\Import\Enum\State::IDENTITY_CHECKING
+        !php/const NewApiBundle\Component\Import\Enum\Transitions::RESOLVE_IDENTITY_DUPLICITIES:
+          from: !php/const NewApiBundle\Component\Import\Enum\State::IDENTITY_CHECK_FAILED
+          to: !php/const NewApiBundle\Component\Import\Enum\State::IDENTITY_CHECK_CORRECT
 
         # SIMILARITY
-        !php/const NewApiBundle\Workflow\ImportTransitions::CHECK_SIMILARITY:
-          from: !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECK_CORRECT
-          to: !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECKING
-        !php/const NewApiBundle\Workflow\ImportTransitions::COMPLETE_SIMILARITY:
-          from: !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECKING
-          to: !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_CORRECT
-        !php/const NewApiBundle\Workflow\ImportTransitions::FAIL_SIMILARITY:
-          from: !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECKING
-          to: !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_FAILED
-        !php/const NewApiBundle\Workflow\ImportTransitions::REDO_SIMILARITY:
-          from: !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECKING
-          to: !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECKING
-        !php/const NewApiBundle\Workflow\ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES:
-          from: !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_FAILED
-          to: !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_CORRECT
+        !php/const NewApiBundle\Component\Import\Enum\Transitions::CHECK_SIMILARITY:
+          from: !php/const NewApiBundle\Component\Import\Enum\State::IDENTITY_CHECK_CORRECT
+          to: !php/const NewApiBundle\Component\Import\Enum\State::SIMILARITY_CHECKING
+        !php/const NewApiBundle\Component\Import\Enum\Transitions::COMPLETE_SIMILARITY:
+          from: !php/const NewApiBundle\Component\Import\Enum\State::SIMILARITY_CHECKING
+          to: !php/const NewApiBundle\Component\Import\Enum\State::SIMILARITY_CHECK_CORRECT
+        !php/const NewApiBundle\Component\Import\Enum\Transitions::FAIL_SIMILARITY:
+          from: !php/const NewApiBundle\Component\Import\Enum\State::SIMILARITY_CHECKING
+          to: !php/const NewApiBundle\Component\Import\Enum\State::SIMILARITY_CHECK_FAILED
+        !php/const NewApiBundle\Component\Import\Enum\Transitions::REDO_SIMILARITY:
+          from: !php/const NewApiBundle\Component\Import\Enum\State::SIMILARITY_CHECKING
+          to: !php/const NewApiBundle\Component\Import\Enum\State::SIMILARITY_CHECKING
+        !php/const NewApiBundle\Component\Import\Enum\Transitions::RESOLVE_SIMILARITY_DUPLICITIES:
+          from: !php/const NewApiBundle\Component\Import\Enum\State::SIMILARITY_CHECK_FAILED
+          to: !php/const NewApiBundle\Component\Import\Enum\State::SIMILARITY_CHECK_CORRECT
 
-        !php/const NewApiBundle\Workflow\ImportTransitions::RESET:
+        !php/const NewApiBundle\Component\Import\Enum\Transitions::RESET:
           from:
-            - !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECKING
-            - !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECK_CORRECT
-            - !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECKING
-            - !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_CORRECT
-            - !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_FAILED
-          to: !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECKING
-        !php/const NewApiBundle\Workflow\ImportTransitions::IMPORT:
-          from: !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_CORRECT
-          to: !php/const NewApiBundle\Enum\ImportState::IMPORTING
-        !php/const NewApiBundle\Workflow\ImportTransitions::FINISH:
-          from: !php/const NewApiBundle\Enum\ImportState::IMPORTING
-          to: !php/const NewApiBundle\Enum\ImportState::FINISHED
-        !php/const NewApiBundle\Workflow\ImportTransitions::CANCEL:
+            - !php/const NewApiBundle\Component\Import\Enum\State::IDENTITY_CHECKING
+            - !php/const NewApiBundle\Component\Import\Enum\State::IDENTITY_CHECK_CORRECT
+            - !php/const NewApiBundle\Component\Import\Enum\State::SIMILARITY_CHECKING
+            - !php/const NewApiBundle\Component\Import\Enum\State::SIMILARITY_CHECK_CORRECT
+            - !php/const NewApiBundle\Component\Import\Enum\State::SIMILARITY_CHECK_FAILED
+          to: !php/const NewApiBundle\Component\Import\Enum\State::IDENTITY_CHECKING
+        !php/const NewApiBundle\Component\Import\Enum\Transitions::IMPORT:
+          from: !php/const NewApiBundle\Component\Import\Enum\State::SIMILARITY_CHECK_CORRECT
+          to: !php/const NewApiBundle\Component\Import\Enum\State::IMPORTING
+        !php/const NewApiBundle\Component\Import\Enum\Transitions::FINISH:
+          from: !php/const NewApiBundle\Component\Import\Enum\State::IMPORTING
+          to: !php/const NewApiBundle\Component\Import\Enum\State::FINISHED
+        !php/const NewApiBundle\Component\Import\Enum\Transitions::CANCEL:
           from:
-            - !php/const NewApiBundle\Enum\ImportState::NEW
-            - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECKING
-            - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_CORRECT
-            - !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECKING
-            - !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECK_CORRECT
-            - !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECKING
-            - !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_CORRECT
-          to: !php/const NewApiBundle\Enum\ImportState::CANCELED
+            - !php/const NewApiBundle\Component\Import\Enum\State::NEW
+            - !php/const NewApiBundle\Component\Import\Enum\State::INTEGRITY_CHECKING
+            - !php/const NewApiBundle\Component\Import\Enum\State::INTEGRITY_CHECK_CORRECT
+            - !php/const NewApiBundle\Component\Import\Enum\State::IDENTITY_CHECKING
+            - !php/const NewApiBundle\Component\Import\Enum\State::IDENTITY_CHECK_CORRECT
+            - !php/const NewApiBundle\Component\Import\Enum\State::SIMILARITY_CHECKING
+            - !php/const NewApiBundle\Component\Import\Enum\State::SIMILARITY_CHECK_CORRECT
+          to: !php/const NewApiBundle\Component\Import\Enum\State::CANCELED
 
     import_queue:
       type: 'state_machine'
@@ -169,86 +169,86 @@ framework:
         type: 'method'
         property: 'state'
       supports:
-        - NewApiBundle\Entity\ImportQueue
-      initial_marking: !php/const NewApiBundle\Enum\ImportQueueState::NEW
+        - NewApiBundle\Component\Import\Entity\Queue
+      initial_marking: !php/const NewApiBundle\Component\Import\Enum\QueueState::NEW
       places:
-        - !php/const NewApiBundle\Enum\ImportQueueState::NEW
-        - !php/const NewApiBundle\Enum\ImportQueueState::VALID
-        - !php/const NewApiBundle\Enum\ImportQueueState::INVALID
-        - !php/const NewApiBundle\Enum\ImportQueueState::INVALID_EXPORTED
-        - !php/const NewApiBundle\Enum\ImportQueueState::IDENTITY_CANDIDATE
-        - !php/const NewApiBundle\Enum\ImportQueueState::UNIQUE_CANDIDATE
-        - !php/const NewApiBundle\Enum\ImportQueueState::SIMILARITY_CANDIDATE
-        - !php/const NewApiBundle\Enum\ImportQueueState::TO_CREATE
-        - !php/const NewApiBundle\Enum\ImportQueueState::TO_UPDATE
-        - !php/const NewApiBundle\Enum\ImportQueueState::TO_LINK
-        - !php/const NewApiBundle\Enum\ImportQueueState::TO_IGNORE
-        - !php/const NewApiBundle\Enum\ImportQueueState::CREATED
-        - !php/const NewApiBundle\Enum\ImportQueueState::UPDATED
-        - !php/const NewApiBundle\Enum\ImportQueueState::LINKED
+        - !php/const NewApiBundle\Component\Import\Enum\QueueState::NEW
+        - !php/const NewApiBundle\Component\Import\Enum\QueueState::VALID
+        - !php/const NewApiBundle\Component\Import\Enum\QueueState::INVALID
+        - !php/const NewApiBundle\Component\Import\Enum\QueueState::INVALID_EXPORTED
+        - !php/const NewApiBundle\Component\Import\Enum\QueueState::IDENTITY_CANDIDATE
+        - !php/const NewApiBundle\Component\Import\Enum\QueueState::UNIQUE_CANDIDATE
+        - !php/const NewApiBundle\Component\Import\Enum\QueueState::SIMILARITY_CANDIDATE
+        - !php/const NewApiBundle\Component\Import\Enum\QueueState::TO_CREATE
+        - !php/const NewApiBundle\Component\Import\Enum\QueueState::TO_UPDATE
+        - !php/const NewApiBundle\Component\Import\Enum\QueueState::TO_LINK
+        - !php/const NewApiBundle\Component\Import\Enum\QueueState::TO_IGNORE
+        - !php/const NewApiBundle\Component\Import\Enum\QueueState::CREATED
+        - !php/const NewApiBundle\Component\Import\Enum\QueueState::UPDATED
+        - !php/const NewApiBundle\Component\Import\Enum\QueueState::LINKED
       transitions:
 
         # integrity
-        !php/const NewApiBundle\Workflow\ImportQueueTransitions::VALIDATE:
-          from: !php/const NewApiBundle\Enum\ImportQueueState::NEW
-          to: !php/const NewApiBundle\Enum\ImportQueueState::VALID
-        !php/const NewApiBundle\Workflow\ImportQueueTransitions::INVALIDATE:
-          from: !php/const NewApiBundle\Enum\ImportQueueState::NEW
-          to: !php/const NewApiBundle\Enum\ImportQueueState::INVALID
+        !php/const NewApiBundle\Component\Import\Enum\QueueTransitions::VALIDATE:
+          from: !php/const NewApiBundle\Component\Import\Enum\QueueState::NEW
+          to: !php/const NewApiBundle\Component\Import\Enum\QueueState::VALID
+        !php/const NewApiBundle\Component\Import\Enum\QueueTransitions::INVALIDATE:
+          from: !php/const NewApiBundle\Component\Import\Enum\QueueState::NEW
+          to: !php/const NewApiBundle\Component\Import\Enum\QueueState::INVALID
 
         # identity
-        !php/const NewApiBundle\Workflow\ImportQueueTransitions::IDENTITY_CANDIDATE:
-          from: !php/const NewApiBundle\Enum\ImportQueueState::VALID
-          to: !php/const NewApiBundle\Enum\ImportQueueState::IDENTITY_CANDIDATE
-        !php/const NewApiBundle\Workflow\ImportQueueTransitions::UNIQUE_CANDIDATE:
-          from: !php/const NewApiBundle\Enum\ImportQueueState::VALID
-          to: !php/const NewApiBundle\Enum\ImportQueueState::UNIQUE_CANDIDATE
+        !php/const NewApiBundle\Component\Import\Enum\QueueTransitions::IDENTITY_CANDIDATE:
+          from: !php/const NewApiBundle\Component\Import\Enum\QueueState::VALID
+          to: !php/const NewApiBundle\Component\Import\Enum\QueueState::IDENTITY_CANDIDATE
+        !php/const NewApiBundle\Component\Import\Enum\QueueTransitions::UNIQUE_CANDIDATE:
+          from: !php/const NewApiBundle\Component\Import\Enum\QueueState::VALID
+          to: !php/const NewApiBundle\Component\Import\Enum\QueueState::UNIQUE_CANDIDATE
 
         # similarity
-        !php/const NewApiBundle\Workflow\ImportQueueTransitions::SIMILARITY_CANDIDATE:
-          from: !php/const NewApiBundle\Enum\ImportQueueState::UNIQUE_CANDIDATE
-          to: !php/const NewApiBundle\Enum\ImportQueueState::SIMILARITY_CANDIDATE
+        !php/const NewApiBundle\Component\Import\Enum\QueueTransitions::SIMILARITY_CANDIDATE:
+          from: !php/const NewApiBundle\Component\Import\Enum\QueueState::UNIQUE_CANDIDATE
+          to: !php/const NewApiBundle\Component\Import\Enum\QueueState::SIMILARITY_CANDIDATE
 
         # duplicity resolving
-        !php/const NewApiBundle\Workflow\ImportQueueTransitions::TO_CREATE:
-          from: !php/const NewApiBundle\Enum\ImportQueueState::UNIQUE_CANDIDATE
-          to: !php/const NewApiBundle\Enum\ImportQueueState::TO_CREATE
-        !php/const NewApiBundle\Workflow\ImportQueueTransitions::TO_UPDATE:
+        !php/const NewApiBundle\Component\Import\Enum\QueueTransitions::TO_CREATE:
+          from: !php/const NewApiBundle\Component\Import\Enum\QueueState::UNIQUE_CANDIDATE
+          to: !php/const NewApiBundle\Component\Import\Enum\QueueState::TO_CREATE
+        !php/const NewApiBundle\Component\Import\Enum\QueueTransitions::TO_UPDATE:
           from:
-            - !php/const NewApiBundle\Enum\ImportQueueState::IDENTITY_CANDIDATE
-            - !php/const NewApiBundle\Enum\ImportQueueState::SIMILARITY_CANDIDATE
-          to: !php/const NewApiBundle\Enum\ImportQueueState::TO_UPDATE
+            - !php/const NewApiBundle\Component\Import\Enum\QueueState::IDENTITY_CANDIDATE
+            - !php/const NewApiBundle\Component\Import\Enum\QueueState::SIMILARITY_CANDIDATE
+          to: !php/const NewApiBundle\Component\Import\Enum\QueueState::TO_UPDATE
         # to_ignore = to_link ... unify the states in the future
-        !php/const NewApiBundle\Workflow\ImportQueueTransitions::TO_IGNORE:
+        !php/const NewApiBundle\Component\Import\Enum\QueueTransitions::TO_IGNORE:
           from:
-            - !php/const NewApiBundle\Enum\ImportQueueState::IDENTITY_CANDIDATE
-            - !php/const NewApiBundle\Enum\ImportQueueState::SIMILARITY_CANDIDATE
-          to: !php/const NewApiBundle\Enum\ImportQueueState::TO_IGNORE
-        !php/const NewApiBundle\Workflow\ImportQueueTransitions::TO_LINK:
+            - !php/const NewApiBundle\Component\Import\Enum\QueueState::IDENTITY_CANDIDATE
+            - !php/const NewApiBundle\Component\Import\Enum\QueueState::SIMILARITY_CANDIDATE
+          to: !php/const NewApiBundle\Component\Import\Enum\QueueState::TO_IGNORE
+        !php/const NewApiBundle\Component\Import\Enum\QueueTransitions::TO_LINK:
           from:
-            - !php/const NewApiBundle\Enum\ImportQueueState::IDENTITY_CANDIDATE
-            - !php/const NewApiBundle\Enum\ImportQueueState::SIMILARITY_CANDIDATE
-          to: !php/const NewApiBundle\Enum\ImportQueueState::TO_IGNORE
+            - !php/const NewApiBundle\Component\Import\Enum\QueueState::IDENTITY_CANDIDATE
+            - !php/const NewApiBundle\Component\Import\Enum\QueueState::SIMILARITY_CANDIDATE
+          to: !php/const NewApiBundle\Component\Import\Enum\QueueState::TO_IGNORE
 
         # reset
-        !php/const NewApiBundle\Workflow\ImportQueueTransitions::RESET:
+        !php/const NewApiBundle\Component\Import\Enum\QueueTransitions::RESET:
           from:
-            - !php/const NewApiBundle\Enum\ImportQueueState::TO_CREATE
-            - !php/const NewApiBundle\Enum\ImportQueueState::TO_UPDATE
-            - !php/const NewApiBundle\Enum\ImportQueueState::TO_IGNORE
-            - !php/const NewApiBundle\Enum\ImportQueueState::TO_LINK
-          to: !php/const NewApiBundle\Enum\ImportQueueState::VALID
+            - !php/const NewApiBundle\Component\Import\Enum\QueueState::TO_CREATE
+            - !php/const NewApiBundle\Component\Import\Enum\QueueState::TO_UPDATE
+            - !php/const NewApiBundle\Component\Import\Enum\QueueState::TO_IGNORE
+            - !php/const NewApiBundle\Component\Import\Enum\QueueState::TO_LINK
+          to: !php/const NewApiBundle\Component\Import\Enum\QueueState::VALID
 
         # finish
-        !php/const NewApiBundle\Workflow\ImportQueueTransitions::CREATE:
-          from: !php/const NewApiBundle\Enum\ImportQueueState::TO_CREATE
-          to: !php/const NewApiBundle\Enum\ImportQueueState::CREATED
-        !php/const NewApiBundle\Workflow\ImportQueueTransitions::UPDATE:
-          from: !php/const NewApiBundle\Enum\ImportQueueState::TO_UPDATE
-          to: !php/const NewApiBundle\Enum\ImportQueueState::UPDATED
-        !php/const NewApiBundle\Workflow\ImportQueueTransitions::LINK:
+        !php/const NewApiBundle\Component\Import\Enum\QueueTransitions::CREATE:
+          from: !php/const NewApiBundle\Component\Import\Enum\QueueState::TO_CREATE
+          to: !php/const NewApiBundle\Component\Import\Enum\QueueState::CREATED
+        !php/const NewApiBundle\Component\Import\Enum\QueueTransitions::UPDATE:
+          from: !php/const NewApiBundle\Component\Import\Enum\QueueState::TO_UPDATE
+          to: !php/const NewApiBundle\Component\Import\Enum\QueueState::UPDATED
+        !php/const NewApiBundle\Component\Import\Enum\QueueTransitions::LINK:
           from:
-            - !php/const NewApiBundle\Enum\ImportQueueState::TO_IGNORE
-            - !php/const NewApiBundle\Enum\ImportQueueState::TO_LINK
-          to: !php/const NewApiBundle\Enum\ImportQueueState::LINKED
+            - !php/const NewApiBundle\Component\Import\Enum\QueueState::TO_IGNORE
+            - !php/const NewApiBundle\Component\Import\Enum\QueueState::TO_LINK
+          to: !php/const NewApiBundle\Component\Import\Enum\QueueState::LINKED
 

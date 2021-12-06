@@ -10,11 +10,11 @@ use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
 use FOS\UserBundle\Model\User as BaseUser;
 use InvalidArgumentException;
-use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportBeneficiary;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
-use NewApiBundle\Entity\ImportFile;
-use NewApiBundle\Entity\ImportQueueDuplicity;
+use NewApiBundle\Component\Import\Entity\Import;
+use NewApiBundle\Component\Import\Entity\Beneficiary;
+use NewApiBundle\Component\Import\Entity\BeneficiaryDuplicity;
+use NewApiBundle\Component\Import\Entity\File;
+use NewApiBundle\Component\Import\Entity\QueueDuplicity;
 use NewApiBundle\Entity\Role;
 use NewApiBundle\Enum\RoleType;
 use RuntimeException;
@@ -142,52 +142,12 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
      */
     protected $twoFactorAuthentication = false;
 
-    /**
-     * @var Import[]|Collection
-     * 
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\Import", mappedBy="createdBy")
-     */
-    private $imports;
-
-    /**
-     * @var ImportBeneficiary[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiary", mappedBy="createdBy")
-     */
-    private $importBeneficiaries;
-
-    /**
-     * @var ImportBeneficiaryDuplicity[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiaryDuplicity", mappedBy="decideBy")
-     */
-    private $importBeneficiaryDuplicities;
-
-    /**
-     * @var ImportFile[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportFile", mappedBy="user")
-     */
-    private $importFiles;
-
-    /**
-     * @var ImportQueueDuplicity[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportQueueDuplicity", mappedBy="decideBy")
-     */
-    private $importQueueDuplicities;
-
     public function __construct()
     {
         parent::__construct();
         $this->countries = new ArrayCollection();
         $this->projects = new ArrayCollection();
         $this->roles = new ArrayCollection();
-        $this->imports = new ArrayCollection();
-        $this->importBeneficiaries = new ArrayCollection();
-        $this->importBeneficiaryDuplicities = new ArrayCollection();
-        $this->importFiles = new ArrayCollection();
-        $this->importQueueDuplicities = new ArrayCollection();
     }
 
     public function injectObjectManager(ObjectManager $objectManager, ?ClassMetadata $classMetadata = null)
@@ -571,34 +531,11 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     }
 
     /**
-     * @return Collection|ImportBeneficiary[]
+     * @return Collection|File[]
      */
-    public function getImportBeneficiaries()
-    {
-        return $this->importBeneficiaries;
-    }
-
-    /**
-     * @return Collection|ImportBeneficiaryDuplicity[]
-     */
-    public function getImportBeneficiaryDuplicities()
-    {
-        return $this->importBeneficiaryDuplicities;
-    }
-
-    /**
-     * @return Collection|ImportFile[]
-     */
-    public function getImportFiles()
+    public function getFiles()
     {
         return $this->importFiles;
     }
 
-    /**
-     * @return Collection|ImportQueueDuplicity[]
-     */
-    public function getImportQueueDuplicities()
-    {
-        return $this->importQueueDuplicities;
-    }
 }

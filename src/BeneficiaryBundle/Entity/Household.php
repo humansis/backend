@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 // use Symfony\Component\Serializer\Annotation\ as JMS_Type;
 use InvalidArgumentException;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Component\Import\Entity\BeneficiaryDuplicity;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -216,9 +216,9 @@ class Household extends AbstractBeneficiary
     private $proxy;
 
     /**
-     * @var ImportBeneficiaryDuplicity[]|Collection
+     * @var BeneficiaryDuplicity[]|Collection
      *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiaryDuplicity", mappedBy="theirs", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Component\Import\Entity\BeneficiaryDuplicity", mappedBy="theirs", cascade={"remove"})
      */
     private $importBeneficiaryDuplicities;
 
@@ -791,7 +791,7 @@ class Household extends AbstractBeneficiary
     }
 
     /**
-     * @return Collection|ImportBeneficiaryDuplicity[]
+     * @return Collection|BeneficiaryDuplicity[]
      */
     public function getImportBeneficiaryDuplicities()
     {

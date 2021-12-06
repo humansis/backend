@@ -4,12 +4,12 @@ declare(strict_types=1);
 namespace Tests\NewApiBundle\Component\Import;
 
 use Doctrine\ORM\EntityManagerInterface;
-use NewApiBundle\Component\Import\IntegrityChecker;
-use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportFile;
-use NewApiBundle\Entity\ImportQueue;
-use NewApiBundle\Enum\ImportQueueState;
-use NewApiBundle\Enum\ImportState;
+use NewApiBundle\Component\Import\Integrity\IntegrityChecker;
+use NewApiBundle\Component\Import\Entity\Import;
+use NewApiBundle\Component\Import\Entity\File;
+use NewApiBundle\Component\Import\Entity\Queue;
+use NewApiBundle\Component\Import\Enum\QueueState;
+use NewApiBundle\Component\Import\Enum\State;
 use ProjectBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -41,8 +41,8 @@ class IntegrityCheckerTest extends KernelTestCase
         $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
 
         $import = new Import('test', null, $project, $user);
-        $file = new ImportFile('fake_file.xlsx', $import, $user);
-        $item = new ImportQueue($import, $file, [[/** empty row */]]);
+        $file = new File('fake_file.xlsx', $import, $user);
+        $item = new Queue($import, $file, [[/** empty row */]]);
         self::$entityManager->persist($import);
         self::$entityManager->persist($file);
         self::$entityManager->persist($item);
@@ -61,8 +61,8 @@ class IntegrityCheckerTest extends KernelTestCase
         $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
 
         $import = new Import('test', null, $project, $user);
-        $file = new ImportFile('fake_file.xlsx', $import, $user);
-        $item = new ImportQueue($import, $file, json_decode(ImportFinishServiceTest::TEST_QUEUE_ITEM, true));
+        $file = new File('fake_file.xlsx', $import, $user);
+        $item = new Queue($import, $file, json_decode(ImportFinishServiceTest::TEST_QUEUE_ITEM, true));
         self::$entityManager->persist($import);
         self::$entityManager->persist($file);
         self::$entityManager->persist($item);
@@ -83,10 +83,10 @@ class IntegrityCheckerTest extends KernelTestCase
         $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
 
         $import = new Import('test', null, $project, $user);
-        $import->setState(ImportState::INTEGRITY_CHECKING);
+        $import->setState(State::INTEGRITY_CHECKING);
 
-        $file = new ImportFile('fake_file.xlsx', $import, $user);
-        $item = new ImportQueue($import, $file, json_decode(ImportFinishServiceTest::TEST_QUEUE_ITEM, true));
+        $file = new File('fake_file.xlsx', $import, $user);
+        $item = new Queue($import, $file, json_decode(ImportFinishServiceTest::TEST_QUEUE_ITEM, true));
         self::$entityManager->persist($import);
         self::$entityManager->persist($file);
         self::$entityManager->persist($item);
@@ -95,10 +95,10 @@ class IntegrityCheckerTest extends KernelTestCase
         $checker = self::$integrityChecker;
         $checker->check($import);
 
-        $queue = self::$entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
+        $queue = self::$entityManager->getRepository(\NewApiBundle\Component\Import\Entity\Queue::class)->findBy(['import' => $import], ['id' => 'asc']);
         $this->assertCount(1, $queue);
         foreach ($queue as $item) {
-            $this->assertEquals(ImportQueueState::VALID, $item->getState(), "Queue is invalid because ".$item->getMessage());
+            $this->assertEquals(QueueState::VALID, $item->getState(), "Queue is invalid because ".$item->getMessage());
         }
     }
 

@@ -119,9 +119,9 @@ doctrine:
             enum_livelihood: ProjectBundle\DBAL\LivelihoodEnum
             enum_sector: ProjectBundle\DBAL\SectorEnum
             enum_sub_sector: ProjectBundle\DBAL\SubSectorEnum
-            enum_import_state: NewApiBundle\DBAL\ImportStateEnum
-            enum_import_queue_state: NewApiBundle\DBAL\ImportStateQueueEnum
-            enum_import_duplicity_state: NewApiBundle\DBAL\ImportDuplicityStateEnum
+            enum_import_state: NewApiBundle\Component\Import\DBAL\StateEnum
+            enum_import_queue_state: NewApiBundle\Component\Import\DBAL\StateQueueEnum
+            enum_import_duplicity_state: NewApiBundle\Component\Import\DBAL\DuplicityStateEnum
             enum_product_category_type: NewApiBundle\DBAL\ProductCategoryTypeEnum
             enum_synchronization_batch_validation_type: NewApiBundle\DBAL\SynchronizationBatchValidationTypeEnum
             enum_relief_package_state: NewApiBundle\DBAL\ReliefPackageStateEnum
@@ -131,6 +131,13 @@ doctrine:
         auto_generate_proxy_classes: '%kernel.debug%'
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
         auto_mapping: true
+        mappings:
+            ImportComponent:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/src/NewApiBundle/Component/Import/Entity'
+                prefix: 'NewApiBundle\Component\Import\Entity'
+                alias: ImportComponent
         dql:
             string_functions:
                  soundex:       DoctrineExtensions\Query\Mysql\Soundex

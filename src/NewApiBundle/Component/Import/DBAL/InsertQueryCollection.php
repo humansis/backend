@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace NewApiBundle\Component\Import\DBAL;
 
 use Doctrine\ORM\EntityManagerInterface;
-use NewApiBundle\Entity\ImportFile;
-use NewApiBundle\Enum\ImportQueueState;
+use NewApiBundle\Component\Import\Entity\File;
+use NewApiBundle\Component\Import\Enum\QueueState;
 
 class InsertQueryCollection
 {
@@ -21,9 +21,9 @@ class InsertQueryCollection
         $this->em = $em;
     }
 
-    public function add(ImportFile $importFile, string $content)
+    public function add(File $importFile, string $content)
     {
-        array_push($this->params, $importFile->getImport()->getId(), $importFile->getId(), $content, ImportQueueState::NEW);
+        array_push($this->params, $importFile->getImport()->getId(), $importFile->getId(), $content, QueueState::NEW);
 
         if (500 === ++$this->counter) {
             $this->save();

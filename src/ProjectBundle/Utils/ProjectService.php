@@ -9,7 +9,7 @@ use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use InvalidArgumentException;
-use NewApiBundle\Entity\Import;
+use NewApiBundle\Component\Import\Entity\Import;
 use NewApiBundle\Exception\ConstraintViolationException;
 use NewApiBundle\InputType\AddHouseholdsToProjectInputType;
 use NewApiBundle\InputType\ProjectCreateInputType;

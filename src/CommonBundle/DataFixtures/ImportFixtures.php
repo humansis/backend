@@ -8,9 +8,9 @@ use BeneficiaryBundle\Entity\NationalId;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportFile;
-use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Component\Import\Entity\Import;
+use NewApiBundle\Component\Import\Entity\File;
+use NewApiBundle\Component\Import\Entity\Queue;
 use ProjectBundle\Entity\Project;
 use UserBundle\Entity\User;
 
@@ -24,11 +24,11 @@ class ImportFixtures extends Fixture implements DependentFixtureInterface
         $import = new Import('test_fixtures', null, $this->getProject($manager), $this->getUser($manager));
         $manager->persist($import);
 
-        $file = new ImportFile('fake_file.xlsx', $import, $this->getUser($manager));
+        $file = new File('fake_file.xlsx', $import, $this->getUser($manager));
         $file->setIsLoaded(true);
         $manager->persist($file);
 
-        $item = new ImportQueue($import, $file, [
+        $item = new Queue($import, $file, [
             [
                 'ID Type' => [
                     'value' => NationalId::TYPE_NATIONAL_ID,
@@ -56,7 +56,7 @@ class ImportFixtures extends Fixture implements DependentFixtureInterface
         ]);
         $manager->persist($item);
 
-        $item = new ImportQueue($import, $file, [
+        $item = new Queue($import, $file, [
             [
                 'ID Type' => [
                     'value' => NationalId::TYPE_NATIONAL_ID,
@@ -72,7 +72,7 @@ class ImportFixtures extends Fixture implements DependentFixtureInterface
         ]);
         $manager->persist($item);
 
-        $item = new ImportQueue($import, $file, [
+        $item = new Queue($import, $file, [
             [
                 'ID Type' => [
                     'value' => NationalId::TYPE_NATIONAL_ID,

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
-use NewApiBundle\Enum\ImportQueueState;
+use NewApiBundle\Component\Import\Enum\QueueState;
 use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -28,10 +28,10 @@ class DuplicityResolveInputType implements InputTypeInterface
     public static function allowedStatuses(): array
     {
         return [
-            ImportQueueState::TO_CREATE,
-            ImportQueueState::TO_UPDATE,
-            ImportQueueState::TO_LINK,
-            ImportQueueState::TO_IGNORE,
+            QueueState::TO_CREATE,
+            QueueState::TO_UPDATE,
+            QueueState::TO_LINK,
+            QueueState::TO_IGNORE,
         ];
     }
 

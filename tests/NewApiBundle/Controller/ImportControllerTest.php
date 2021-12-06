@@ -5,11 +5,11 @@ namespace Tests\NewApiBundle\Controller;
 
 use Doctrine\ORM\NoResultException;
 use Exception;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
-use NewApiBundle\Entity\ImportFile;
-use NewApiBundle\Entity\ImportInvalidFile;
-use NewApiBundle\Entity\ImportQueue;
-use NewApiBundle\Enum\ImportState;
+use NewApiBundle\Component\Import\Entity\BeneficiaryDuplicity;
+use NewApiBundle\Component\Import\Entity\File;
+use NewApiBundle\Component\Import\Entity\InvalidFile;
+use NewApiBundle\Component\Import\Entity\Queue;
+use NewApiBundle\Component\Import\Enum\State;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -162,7 +162,7 @@ class ImportControllerTest extends BMSServiceTestCase
             ],
             'status change' => [
                 'status',
-                ImportState::CANCELED,
+                State::CANCELED,
             ],
             'description change' => [
                 'description',
@@ -199,8 +199,8 @@ class ImportControllerTest extends BMSServiceTestCase
 
     public function testGetDuplicities()
     {
-        /** @var ImportBeneficiaryDuplicity|null $duplicity */
-        $duplicity = $this->em->getRepository(ImportBeneficiaryDuplicity::class)->findOneBy([], ['id' => 'asc']);
+        /** @var BeneficiaryDuplicity|null $duplicity */
+        $duplicity = $this->em->getRepository(BeneficiaryDuplicity::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($duplicity)) {
             $this->markTestSkipped('There needs to be at least one import duplicity in system.');
@@ -230,8 +230,8 @@ class ImportControllerTest extends BMSServiceTestCase
 
     public function testGetImportStatistics()
     {
-        /** @var ImportQueue|null $importQueue */
-        $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy([], ['id' => 'asc']);
+        /** @var Queue|null $importQueue */
+        $importQueue = $this->em->getRepository(Queue::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($importQueue)) {
             $this->markTestSkipped('There needs to be at least one import with entries in queue in system.');
@@ -259,8 +259,8 @@ class ImportControllerTest extends BMSServiceTestCase
 
     public function testGetQueueItem()
     {
-        /** @var ImportQueue|null $importQueue */
-        $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy([], ['id' => 'asc']);
+        /** @var Queue|null $importQueue */
+        $importQueue = $this->em->getRepository(Queue::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($importQueue)) {
             $this->markTestSkipped('There needs to be at least one import import with entries in queue in system.');
@@ -285,8 +285,8 @@ class ImportControllerTest extends BMSServiceTestCase
 
     public function testResolveDuplicity()
     {
-        /** @var ImportBeneficiaryDuplicity|null $importQueue */
-        $duplicity = $this->em->getRepository(ImportBeneficiaryDuplicity::class)->findOneBy([], ['id' => 'asc']);
+        /** @var BeneficiaryDuplicity|null $importQueue */
+        $duplicity = $this->em->getRepository(BeneficiaryDuplicity::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($duplicity)) {
             $this->markTestSkipped('There needs to be at least one duplicity with entries in queue in system.');
@@ -310,8 +310,8 @@ class ImportControllerTest extends BMSServiceTestCase
      */
     public function testListValidImportedFiles(): int
     {
-        /** @var ImportFile|null $importFile */
-        $importFile = $this->em->getRepository(ImportFile::class)->findOneBy([
+        /** @var File|null $importFile */
+        $importFile = $this->em->getRepository(File::class)->findOneBy([
             'structureViolations' => null,
             'isLoaded' => true,
         ], ['id' => 'asc']);
@@ -358,9 +358,9 @@ class ImportControllerTest extends BMSServiceTestCase
     public function testListInvalidImportedFiles(): int
     {
         try {
-            /** @var ImportFile $importFile */
+            /** @var File $importFile */
             $importFile = $this->em->createQueryBuilder()->select('if')
-                ->from(ImportFile::class, 'if')
+                ->from(File::class, 'if')
                 ->where('if.structureViolations IS NOT NULL and if.isLoaded = true')
                 ->setMaxResults(1)
                 ->getQuery()->getSingleResult();
@@ -399,8 +399,8 @@ class ImportControllerTest extends BMSServiceTestCase
 
     public function testListInvalidFiles(): int
     {
-        /** @var ImportInvalidFile|null $importInvalidFile */
-        $importInvalidFile = $this->em->getRepository(ImportInvalidFile::class)->findOneBy([], ['id' => 'asc']);
+        /** @var InvalidFile|null $importInvalidFile */
+        $importInvalidFile = $this->em->getRepository(InvalidFile::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($importInvalidFile)) {
             $this->markTestSkipped('There needs to be at least one import invalid file in system.');
@@ -447,8 +447,8 @@ class ImportControllerTest extends BMSServiceTestCase
 
     public function testListQueue()
     {
-        /** @var ImportQueue|null $importQueue */
-        $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy([], ['id' => 'asc']);
+        /** @var Queue|null $importQueue */
+        $importQueue = $this->em->getRepository(Queue::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($importQueue)) {
             $this->markTestSkipped('There needs to be at least one import with items in queue in system.');

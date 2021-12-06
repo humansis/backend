@@ -3,20 +3,20 @@ declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Component\Import;
 
-use NewApiBundle\Component\Import\ImportFileValidator;
-use NewApiBundle\Entity\ImportQueue;
-use NewApiBundle\Enum\ImportQueueState;
+use NewApiBundle\Component\Import\Integrity\FileValidator;
+use NewApiBundle\Component\Import\Entity\Queue;
+use NewApiBundle\Component\Import\Enum\QueueState;
 use NewApiBundle\InputType\DuplicityResolveInputType;
 use ProjectBundle\Utils\ProjectService;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\EntityManagerInterface;
-use NewApiBundle\Component\Import\ImportService;
-use NewApiBundle\Component\Import\UploadImportService;
-use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportFile;
-use NewApiBundle\Enum\ImportState;
+use NewApiBundle\Component\Import\Service\ImportService;
+use NewApiBundle\Component\Import\Service\UploadImportService;
+use NewApiBundle\Component\Import\Entity\Import;
+use NewApiBundle\Component\Import\Entity\File;
+use NewApiBundle\Component\Import\Enum\State;
 use ProjectBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Filesystem\Filesystem;
@@ -54,7 +54,7 @@ class ImportTest extends KernelTestCase
     /** @var Household */
     private $originHousehold;
 
-    /** @var ImportFile */
+    /** @var File */
     private $importFile;
     /** @var ProjectService */
     private $projectService;
@@ -75,7 +75,7 @@ class ImportTest extends KernelTestCase
         $this->uploadService = new UploadImportService(
             $this->entityManager,
             $kernel->getContainer()->getParameter('import.uploadedFilesDirectory'),
-            $kernel->getContainer()->get(ImportFileValidator::class)
+            $kernel->getContainer()->get(FileValidator::class)
         );
         $this->projectService = $kernel->getContainer()->get('project.project_service');
 
@@ -131,7 +131,7 @@ class ImportTest extends KernelTestCase
         $this->userStartedSimilarityCheck($import, true);
 
         $this->assertQueueCount($expectedHouseholdCount, $import);
-        $this->assertQueueCount($expectedHouseholdCount, $import, [ImportQueueState::TO_CREATE]);
+        $this->assertQueueCount($expectedHouseholdCount, $import, [QueueState::TO_CREATE]);
 
         $this->userStartedFinishing($import);
 
@@ -173,26 +173,26 @@ class ImportTest extends KernelTestCase
         $this->assertEquals($expectedDuplicities, $stats->getAmountDuplicities());
 
         // resolve all as duplicity to update and continue
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::IDENTITY_CANDIDATE], ['id' => 'asc']);
+        $queue = $this->entityManager->getRepository(Queue::class)->findBy(['import' => $import, 'state' => QueueState::IDENTITY_CANDIDATE], ['id' => 'asc']);
         foreach ($queue as $item) {
             $this->assertGreaterThan(0, count($item->getDuplicities()));
             $firstDuplicity = $item->getDuplicities()->first();
 
             $duplicityResolve = new DuplicityResolveInputType();
-            $duplicityResolve->setStatus(ImportQueueState::TO_UPDATE);
+            $duplicityResolve->setStatus(QueueState::TO_UPDATE);
             $duplicityResolve->setAcceptedDuplicityId($firstDuplicity->getId());
             $this->importService->resolveDuplicity($item, $duplicityResolve, $this->getUser());
         }
 
-        $this->assertQueueCount(0, $import, [ImportQueueState::IDENTITY_CANDIDATE]);
-        $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
+        $this->assertQueueCount(0, $import, [QueueState::IDENTITY_CANDIDATE]);
+        $this->assertEquals(State::IDENTITY_CHECK_CORRECT, $import->getState());
 
         $this->userStartedSimilarityCheck($import, true);
 
         $this->assertQueueCount($expectedHouseholdCount, $import);
-        $this->assertQueueCount($expectedHouseholdCount-$expectedDuplicities, $import, [ImportQueueState::TO_CREATE]);
-        $this->assertQueueCount($expectedDuplicities, $import, [ImportQueueState::TO_UPDATE]);
-        $this->assertQueueCount(0, $import, [ImportQueueState::TO_LINK]);
+        $this->assertQueueCount($expectedHouseholdCount-$expectedDuplicities, $import, [QueueState::TO_CREATE]);
+        $this->assertQueueCount($expectedDuplicities, $import, [QueueState::TO_UPDATE]);
+        $this->assertQueueCount(0, $import, [QueueState::TO_LINK]);
 
         // save to DB
         $this->userStartedFinishing($import);
@@ -249,22 +249,22 @@ class ImportTest extends KernelTestCase
         $this->entityManager->refresh($secondImport);
 
         // resolve all as duplicity on second import to update and continue
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $secondImport, 'state' => ImportQueueState::IDENTITY_CANDIDATE], ['id' => 'asc']);
+        $queue = $this->entityManager->getRepository(Queue::class)->findBy(['import' => $secondImport, 'state' => QueueState::IDENTITY_CANDIDATE], ['id' => 'asc']);
         foreach ($queue as $item) {
             echo "Duplicity for {$item->getId()}\n";
             $this->assertGreaterThan(0, count($item->getDuplicities()));
             $firstDuplicity = $item->getDuplicities()->first();
 
             $duplicityResolve = new DuplicityResolveInputType();
-            $duplicityResolve->setStatus(ImportQueueState::TO_UPDATE);
+            $duplicityResolve->setStatus(QueueState::TO_UPDATE);
             $duplicityResolve->setAcceptedDuplicityId($firstDuplicity->getId());
             $this->importService->resolveDuplicity($item, $duplicityResolve, $this->getUser());
         }
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $secondImport, 'state' => ImportQueueState::IDENTITY_CANDIDATE], ['id' => 'asc']);
+        $queue = $this->entityManager->getRepository(Queue::class)->findBy(['import' => $secondImport, 'state' => QueueState::IDENTITY_CANDIDATE], ['id' => 'asc']);
         foreach ($queue as $item) {
             echo "Unresolved Duplicity for {$item->getId()}\n";
         }
-        $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
+        $this->assertEquals(State::IDENTITY_CHECK_CORRECT, $import->getState());
 
         // start similarity check on second import
         $this->userStartedSimilarityCheck($secondImport, true);
@@ -320,11 +320,11 @@ class ImportTest extends KernelTestCase
      * @dataProvider incorrectFiles
      * @param string $fileName
      */
-    public function testIncorrectImportFileInIntegrityCheck(string $fileName): void
+    public function testIncorrectFileInIntegrityCheck(string $fileName): void
     {
         $this->project = $this->createBlankProject(self::TEST_COUNTRY, [__METHOD__, $fileName]);
         $this->originHousehold = $this->createBlankHousehold($this->project);
-        $import = $this->createImport('testIncorrectImportFileInIntegrityCheck', $this->project);
+        $import = $this->createImport('testIncorrectFileInIntegrityCheck', $this->project);
 
         try {
             $this->uploadFile($import, $fileName);
@@ -361,6 +361,6 @@ class ImportTest extends KernelTestCase
         $importFile = $this->uploadService->uploadFile($import, $file, $this->getUser());
         $this->uploadService->load($importFile);
 
-        $this->assertNotNull($importFile->getId(), "ImportFile wasn't saved to DB");
+        $this->assertNotNull($importFile->getId(), "File wasn't saved to DB");
     }
 }
