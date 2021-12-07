@@ -255,52 +255,6 @@ class ImportController extends AbstractController
     }
 
     /**
-     * for testing purposes ONLY, it must be removed in 2021
-     * @Rest\Get("/web-app/v1/imports/{id}/cli")
-     *
-     * @param Import $import
-     *
-     * @return Response
-     * @throws \Exception
-     */
-    public function cli(Import $import): Response
-    {
-        $kernel = $this->get('kernel');
-        $application = new Application($kernel);
-        $application->setAutoExit(false);
-
-        $output = new BufferedOutput();
-        switch ($import->getState()) {
-            case ImportState::INTEGRITY_CHECKING:
-                $application->run(new ArrayInput([
-                    'command' => 'app:import:integrity',
-                    'import' => $import->getId(),
-                ]), $output);
-                break;
-            case ImportState::IDENTITY_CHECKING:
-                $application->run(new ArrayInput([
-                    'command' => 'app:import:identity',
-                    'import' => $import->getId(),
-                ]), $output);
-                break;
-            case ImportState::SIMILARITY_CHECKING:
-                $application->run(new ArrayInput([
-                    'command' => 'app:import:similarity',
-                    'import' => $import->getId(),
-                ]), $output);
-                break;
-            case ImportState::IMPORTING:
-                $application->run(new ArrayInput([
-                    'command' => 'app:import:finish',
-                    'import' => $import->getId(),
-                ]), $output);
-                break;
-        }
-
-        return new Response($output->fetch());
-    }
-
-    /**
      * @Rest\Get("/web-app/v1/imports/invalid-files/{id}")
      *
      * @param ImportInvalidFile $importInvalidFile
