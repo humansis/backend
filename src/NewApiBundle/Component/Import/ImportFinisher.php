@@ -122,13 +122,13 @@ class ImportFinisher
             $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
             $this->logImportInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
 
-            WorkflowTool::checkAndApply($this->importQueueStateMachine, $item, [ImportQueueTransitions::LINK]);
+            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::LINK);
             $this->em->persist($item);
         }
 
         $this->em->flush();
 
-        WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::FINISH]);
+        $this->importStateMachine->apply($import, ImportTransitions::FINISH);
         $this->em->persist($import);
         $this->em->flush();
     }
@@ -136,7 +136,7 @@ class ImportFinisher
     /**
      * @param Import $import
      */
-    public function finish(Import $import)
+    public function resetOtherImports(Import $import)
     {
         if ($import->getState() !== ImportState::FINISHED) {
             throw new BadMethodCallException('Wrong import status');
