@@ -93,3 +93,8 @@ rest-new:
     prefix: /api/{firewall}
     defaults: { _format: 'json', disable-common-request-listener: true }
     resource: '@NewApiBundle/Controller'
+
+importCli:
+    type:     annotation
+    defaults: { _format: 'json', disable-common-request-listener: true }
+    resource: '@NewApiBundle/Controller/ImportCliController.php'

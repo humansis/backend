@@ -87,6 +87,7 @@ security:
         - { path: ^/login$,    role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register,  role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/imports/cli/[0-9]+, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/jwt/web-app/v[0-9]+/login,      role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/jwt/web-app/v[0-9]+/users/salt, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/jwt/web-app/v[0-9]+,            role: IS_AUTHENTICATED_FULLY }
