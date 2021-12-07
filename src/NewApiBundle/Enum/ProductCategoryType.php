@@ -5,6 +5,8 @@ namespace NewApiBundle\Enum;
 
 final class ProductCategoryType
 {
+    use EnumTrait;
+
     public const FOOD = 'Food';
     public const NONFOOD = 'Non-Food';
     public const CASHBACK = 'Cashback';

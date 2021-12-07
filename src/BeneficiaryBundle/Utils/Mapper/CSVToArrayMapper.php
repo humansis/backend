@@ -13,6 +13,9 @@ use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Enum\HouseholdAssets;
+use NewApiBundle\Enum\HouseholdShelterStatus;
+use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use ProjectBundle\Enum\Livelihood;
 
 class CSVToArrayMapper
@@ -534,9 +537,9 @@ class CSVToArrayMapper
         $gender_string = trim($formattedHouseholdArray['beneficiaries']['gender']);
 
         if (strcasecmp(trim($gender_string), 'Male') === 0 || strcasecmp(trim($gender_string), 'M') === 0) {
-            $formattedHouseholdArray['beneficiaries']['gender'] = \BeneficiaryBundle\Entity\Person::GENDER_MALE;
+            $formattedHouseholdArray['beneficiaries']['gender'] = \NewApiBundle\Enum\PersonGender::MALE;
         } else if (strcasecmp(trim($gender_string), 'Female') === 0 || strcasecmp(trim($gender_string), 'F') === 0) {
-            $formattedHouseholdArray['beneficiaries']['gender'] = \BeneficiaryBundle\Entity\Person::GENDER_FEMALE;
+            $formattedHouseholdArray['beneficiaries']['gender'] = \NewApiBundle\Enum\PersonGender::FEMALE;
         }
     }
 
@@ -709,7 +712,7 @@ class CSVToArrayMapper
     private function mapShelterStatus(&$formattedHouseholdArray)
     {
         if (isset($formattedHouseholdArray['shelter_status'])) {
-            foreach (Household::SHELTER_STATUSES as $id => $status) {
+            foreach (HouseholdShelterStatus::values() as $id => $status) {
                 if (0 === strcasecmp(trim($formattedHouseholdArray['shelter_status']), $status)) {
                     $formattedHouseholdArray['shelter_status'] = $id;
                     return;
@@ -725,7 +728,7 @@ class CSVToArrayMapper
         if (isset($formattedHouseholdArray['assets'])) {
             $assets = [];
             foreach (explode(',', $formattedHouseholdArray['assets']) as $value) {
-                foreach (Household::ASSETS as $id => $asset) {
+                foreach (HouseholdAssets::values() as $id => $asset) {
                     if (0 === strcasecmp(trim($value), $asset)) {
                         $assets[] = $id;
                         continue 2;
@@ -755,7 +758,7 @@ class CSVToArrayMapper
         if (isset($formattedHouseholdArray['support_received_types'])) {
             $types = [];
             foreach (explode(',', $formattedHouseholdArray['support_received_types']) as $value) {
-                foreach (Household::SUPPORT_RECIEVED_TYPES as $id => $type) {
+                foreach (HouseholdSupportReceivedType::values() as $id => $type) {
                     if (0 === strcasecmp(trim($value), $type)) {
                         $types[] = $id;
                         continue 2;

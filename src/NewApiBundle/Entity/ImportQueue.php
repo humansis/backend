@@ -6,6 +6,7 @@ namespace NewApiBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\EnumTrait;
 use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
 
@@ -14,6 +15,8 @@ use NewApiBundle\Enum\ImportQueueState;
  */
 class ImportQueue
 {
+    use EnumTrait;
+
     /**
      * @var int
      *
@@ -191,14 +194,12 @@ class ImportQueue
     }
 
     /**
+     * @see ImportQueueState::values()
      * @param string $state one of ImportQueueState::* values
      */
     public function setState(string $state)
     {
-        if (!in_array($state, ImportQueueState::values())) {
-            throw new \InvalidArgumentException('Invalid argument. '.$state.' is not valid Import queue state');
-        }
-
+        self::validateValue('state', ImportQueueState::class, $state, false);
         $this->state = $state;
     }
 

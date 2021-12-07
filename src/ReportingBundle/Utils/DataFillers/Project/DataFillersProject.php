@@ -9,6 +9,8 @@ use BeneficiaryBundle\Entity\Person;
 use \BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use \DistributionBundle\Entity\AssistanceBeneficiary;
 
+use NewApiBundle\DBAL\PersonGenderEnum;
+use NewApiBundle\Enum\PersonGender;
 use \ProjectBundle\Entity\Donor;
 use \ProjectBundle\Entity\Project;
 use \ReportingBundle\Entity\ReportingIndicator;
@@ -117,7 +119,7 @@ class DataFillersProject
                                         ->where('h.id = :household')
                                             ->setParameter('household', $household->getId())
                                         ->andWhere('b.gender = :gender')
-                                            ->setParameter('gender', Person::GENDER_MALE)
+                                            ->setParameter('gender', PersonGenderEnum::valueToDB(PersonGender::MALE))
                                         ->select('Distinct count(b) AS value');
                 $result = $qb->getQuery()->getArrayResult();
                 //foreach men find, increment the counter
@@ -173,7 +175,7 @@ class DataFillersProject
                                         ->where('h.id = :household')
                                             ->setParameter('household', $household->getId())
                                         ->andWhere('b.gender = :gender')
-                                            ->setParameter('gender', Person::GENDER_FEMALE)
+                                            ->setParameter('gender', PersonGenderEnum::valueToDB(PersonGender::FEMALE))
                                         ->select('Distinct count(b) AS value');
                 $result = $qb->getQuery()->getArrayResult();
                 //foreach women find, increment the counter

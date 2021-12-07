@@ -9,6 +9,9 @@ use BeneficiaryBundle\Enum\ResidencyStatus;
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\Common\Persistence\ObjectManager;
 use NewApiBundle\Component\Import\ImportService;
+use NewApiBundle\Enum\HouseholdAssets;
+use NewApiBundle\Enum\HouseholdShelterStatus;
+use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\AddressInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
@@ -136,12 +139,12 @@ class HouseholdServiceTest extends KernelTestCase
         $this->assertCount(1, $household->getProjects());
         $this->assertEquals(1, $household->getProjects()[0]->getId());
         $this->assertEquals('KHM', $household->getProjects()[0]->getIso3());
-        $this->assertContains(2, $household->getAssets());
-        $this->assertContains(3, $household->getAssets());
+        $this->assertContains(HouseholdAssets::CAR, $household->getAssets());
+        $this->assertContains(HouseholdAssets::FLATSCREEN_TV, $household->getAssets());
         $this->assertEquals(3, $household->getIncomeLevel());
         $this->assertEquals(3, $household->getCopingStrategiesIndex());
         $this->assertEquals(3, $household->getFoodConsumptionScore());
-        $this->assertEquals(3, $household->getShelterStatus());
+        $this->assertEquals(HouseholdShelterStatus::TRANSITIONAL_SHELTER, $household->getShelterStatus());
         $this->assertEquals(3, $household->getDebtLevel());
         $this->assertEquals('1900-01-01', $household->getSupportDateReceived()->format('Y-m-d'));
         $this->assertEquals('OSN', $household->getSupportOrganizationName());
@@ -165,7 +168,7 @@ class HouseholdServiceTest extends KernelTestCase
         $this->assertNotNull($head, "Missing head");
         $person = $head->getPerson();
         $this->assertEquals('2000-12-31', $person->getDateOfBirth()->format('Y-m-d'));
-        $this->assertEquals(0, $person->getGender());
+        $this->assertEquals(PersonGender::FEMALE, $person->getGender());
         $this->assertEquals('testFamily', $person->getLocalFamilyName());
         $this->assertEquals('testGiven', $person->getLocalGivenName());
         $this->assertNull($person->getEnGivenName());
@@ -174,7 +177,7 @@ class HouseholdServiceTest extends KernelTestCase
 
         $person = $household->getBeneficiaries()->first()->getPerson();
         $this->assertEquals('1999-01-01', $person->getDateOfBirth()->format('Y-m-d'));
-        $this->assertEquals(1, $person->getGender());
+        $this->assertEquals(PersonGender::MALE, $person->getGender());
         $this->assertEquals('testFamilyMember', $person->getLocalFamilyName());
         $this->assertEquals('testGivenMember', $person->getLocalGivenName());
         $this->assertNull($person->getEnGivenName());
@@ -293,16 +296,16 @@ class HouseholdServiceTest extends KernelTestCase
         $this->assertCount(2, $household->getProjects());
         $this->assertEquals(1, $household->getProjects()[0]->getId());
         $this->assertEquals('KHM', $household->getProjects()[0]->getIso3());
-        $this->assertContains(1, $household->getAssets());
-        $this->assertContains(3, $household->getAssets());
-        $this->assertContains(5, $household->getAssets());
+        $this->assertContains(HouseholdAssets::AGRICULTURAL_LAND, $household->getAssets());
+        $this->assertContains(HouseholdAssets::FLATSCREEN_TV, $household->getAssets());
+        $this->assertContains(HouseholdAssets::MOTORBIKE, $household->getAssets());
 
         $this->assertCount(2, $household->getBeneficiaries(), "Wrong beneficiary count");
         $head = $household->getHouseholdHead();
         $this->assertNotNull($head);
         $person = $head->getPerson();
         $this->assertEquals('2000-01-01', $person->getDateOfBirth()->format('Y-m-d'));
-        $this->assertEquals(0, $person->getGender());
+        $this->assertEquals(PersonGender::FEMALE, $person->getGender());
         $this->assertEquals('testFamily', $person->getLocalFamilyName());
         $this->assertEquals('testGiven', $person->getLocalGivenName());
         $this->assertNull($person->getEnGivenName());
@@ -311,7 +314,7 @@ class HouseholdServiceTest extends KernelTestCase
 
         $person = $household->getBeneficiaries()->last()->getPerson();
         $this->assertEquals('2000-01-01', $person->getDateOfBirth()->format('Y-m-d'));
-        $this->assertEquals(1, $person->getGender());
+        $this->assertEquals(PersonGender::MALE, $person->getGender());
         $this->assertEquals('000Head', $person->getLocalFamilyName());
         $this->assertEquals('000Head', $person->getLocalGivenName());
         $this->assertEquals('000Head', $person->getEnGivenName());
@@ -350,7 +353,7 @@ class HouseholdServiceTest extends KernelTestCase
         $householdCreateInputType = new HouseholdCreateInputType();
         $householdCreateInputType->setProjectIds([$project->getId()]);
         $householdCreateInputType->setIso3('KHM');
-        $householdCreateInputType->setAssets([current(array_keys(Household::ASSETS))]);
+        $householdCreateInputType->setAssets([HouseholdAssets::valueToAPI(HouseholdAssets::MOTORBIKE)]);
         $householdCreateInputType->setShelterStatus(3);
 
         $addressData = new ResidenceAddressInputType();
@@ -379,7 +382,7 @@ class HouseholdServiceTest extends KernelTestCase
         $householdUpdateInputType = new HouseholdUpdateInputType();
         $householdUpdateInputType->setProjectIds([$project->getId()]);
         $householdUpdateInputType->setIso3('KHM');
-        $householdUpdateInputType->setAssets([current(array_keys(Household::ASSETS))]);
+        $householdUpdateInputType->setAssets([HouseholdAssets::valueToAPI(HouseholdAssets::LIVESTOCK)]);
         $householdCreateInputType->setShelterStatus(2);
 
         $beneficiaryInputType->setResidencyStatus(ResidencyStatus::IDP);

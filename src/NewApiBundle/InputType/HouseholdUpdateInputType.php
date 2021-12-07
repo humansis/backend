@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace NewApiBundle\InputType;
 
 use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Enum\HouseholdAssets;
+use NewApiBundle\Enum\HouseholdShelterStatus;
+use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use NewApiBundle\InputType\Beneficiary\Address\CampAddressInputType;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\Address\TemporarySettlementAddressInputType;
@@ -12,6 +15,7 @@ use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 use NewApiBundle\InputType\Beneficiary\CountrySpecificsAnswerInputType;
 use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 use NewApiBundle\InputType\Beneficiary\PhoneInputType;
+use NewApiBundle\InputType\Helper\EnumsBuilder;
 use NewApiBundle\Request\InputTypeInterface;
 use NewApiBundle\Validator\Constraints\Country;
 use NewApiBundle\Validator\Constraints\Iso8601;
@@ -65,17 +69,12 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
 
     /**
      * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Choice(callback="assets", strict=true, groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
      */
     private $assets;
 
     /**
-     * @Assert\Choice(callback="shelterStatuses", strict=true)
+     * @Assert\NotNull
+     * @Assert\NotBlank
      */
     private $shelterStatus;
 
@@ -146,12 +145,6 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
 
     /**
      * @Assert\Type("array")
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Choice(callback="supportReceivedTypes", strict=true, groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
      */
     private $supportReceivedTypes = [];
 
@@ -242,36 +235,6 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      */
     private $proxyPhone;
 
-    final public static function assets()
-    {
-        $keys = [];
-        foreach (Household::ASSETS as $key => $value) {
-            $keys[] = (int) $key;
-        }
-
-        return $keys;
-    }
-
-    final public static function shelterStatuses()
-    {
-        $keys = [];
-        foreach (Household::SHELTER_STATUSES as $key => $value) {
-            $keys[] = (int) $key;
-        }
-
-        return $keys;
-    }
-
-    final public static function supportReceivedTypes()
-    {
-        $keys = [];
-        foreach (Household::SUPPORT_RECIEVED_TYPES as $key => $value) {
-            $keys[] = (string) $key;
-        }
-
-        return $keys;
-    }
-
     /**
      * @return string
      */
@@ -305,11 +268,20 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     }
 
     /**
-     * @return int[]
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Choice(callback={"\NewApiBundle\Enum\HouseholdAssets", "values"}, strict=true, groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
+     *
+     * @return string[]
      */
-    public function getAssets()
+    public function getAssets(): array
     {
-        return $this->assets;
+        $enumBuilder = new EnumsBuilder(HouseholdAssets::class);
+        $enumBuilder->setNullToEmptyArrayTransformation();
+        return $enumBuilder->buildInputValues($this->assets);
     }
 
     /**
@@ -323,11 +295,11 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     }
 
     /**
-     * @return int|null
+     * @return string|null
      */
     public function getShelterStatus()
     {
-        return $this->shelterStatus;
+        return $this->shelterStatus ? HouseholdShelterStatus::valueFromAPI($this->shelterStatus) : null;
     }
 
     /**
@@ -335,9 +307,6 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      */
     public function setShelterStatus($shelterStatus)
     {
-        if (null !== $shelterStatus && is_string($shelterStatus)) {
-            $shelterStatus = (int) $shelterStatus;
-        }
         $this->shelterStatus = $shelterStatus;
     }
 
@@ -512,15 +481,24 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     }
 
     /**
-     * @return int|null
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Choice(callback={"\NewApiBundle\Enum\HouseholdSupportReceivedType", "values"}, strict=true, groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
+     *
+     * @return string[]
      */
-    public function getSupportReceivedTypes()
+    public function getSupportReceivedTypes(): array
     {
-        return $this->supportReceivedTypes;
+        $enumBuilder = new EnumsBuilder(HouseholdSupportReceivedType::class);
+        $enumBuilder->setNullToEmptyArrayTransformation();
+        return $enumBuilder->buildInputValues($this->supportReceivedTypes);
     }
 
     /**
-     * @param int|null $supportReceivedTypes
+     * @param array|null $supportReceivedTypes
      */
     public function setSupportReceivedTypes($supportReceivedTypes)
     {

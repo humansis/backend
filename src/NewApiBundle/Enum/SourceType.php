@@ -5,6 +5,8 @@ namespace NewApiBundle\Enum;
 
 final class SourceType
 {
+    use EnumTrait;
+
     const WEB_APP = 'Web';
     const VENDOR_APP = 'Vendor';
     const USER_APP = 'User';

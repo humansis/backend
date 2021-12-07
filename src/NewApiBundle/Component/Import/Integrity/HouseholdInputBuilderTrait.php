@@ -6,11 +6,14 @@ namespace NewApiBundle\Component\Import\Integrity;
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Entity\Location;
 use NewApiBundle\Component\Import\Utils\ImportDateConverter;
+use NewApiBundle\Enum\HouseholdAssets;
+use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 use NewApiBundle\InputType\Beneficiary\CountrySpecificsAnswerInputType;
 use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 use NewApiBundle\InputType\Beneficiary\PhoneInputType;
+use NewApiBundle\InputType\Helper\EnumsBuilder;
 use NewApiBundle\InputType\HouseholdCreateInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
 use ProjectBundle\Enum\Livelihood;
@@ -56,7 +59,7 @@ trait HouseholdInputBuilderTrait
         $household->setLongitude($this->longitude);
         $household->setLivelihood($this->livelihood);
         $household->setEnumeratorName($this->enumeratorName);
-        $household->setShelterStatus($this->shelterStatus);
+        $household->setShelterStatus($this->getShelterStatus());
         $household->setSupportDateReceived($this->supportDateReceived ? ImportDateConverter::toDatetime($this->supportDateReceived)->format(\DateTimeInterface::ISO8601) : null);
 
         if (null !== $this->livelihood) {
@@ -67,16 +70,15 @@ trait HouseholdInputBuilderTrait
         if (null !== $this->supportReceivedTypes) {
             $receivedTypes = [];
             foreach (explode(',', $this->supportReceivedTypes) as $typeName) {
-                $receivedTypes[] = array_search($typeName, Household::SUPPORT_RECIEVED_TYPES);
+                $receivedTypes[] = HouseholdSupportReceivedType::valueFromAPI($typeName);
             }
             $household->setSupportReceivedTypes($receivedTypes);
         }
 
+
         if (null !== $this->assets) {
-            $assets = [];
-            foreach (explode(',', $this->assets) as $assetName) {
-                $assets[] = array_search($assetName, Household::ASSETS);
-            }
+            $enumBuilder = new EnumsBuilder(HouseholdAssets::class);
+            $assets = $enumBuilder->buildInputValuesFromExplode($this->assets);
             $household->setAssets($assets);
         }
 

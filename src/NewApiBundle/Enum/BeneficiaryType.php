@@ -5,6 +5,8 @@ namespace NewApiBundle\Enum;
 
 final class BeneficiaryType
 {
+    use EnumTrait;
+
     const HOUSEHOLD = 'Household';
     const BENEFICIARY = 'Beneficiary';
     const COMMUNITY = 'Community';

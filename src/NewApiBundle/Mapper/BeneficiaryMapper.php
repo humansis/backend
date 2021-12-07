@@ -5,6 +5,7 @@ namespace NewApiBundle\Mapper;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Serializer\MapperInterface;
 
 class BeneficiaryMapper implements MapperInterface
@@ -43,7 +44,7 @@ class BeneficiaryMapper implements MapperInterface
 
     public function getGender(): string
     {
-        return 1 === $this->object->getPerson()->getGender() ? 'M' : 'F';
+        return PersonGender::MALE === $this->object->getPerson()->getGender() ? 'M' : 'F';
     }
 
     public function getNationalIds(): array

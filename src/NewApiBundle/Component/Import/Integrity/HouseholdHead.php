@@ -8,6 +8,10 @@ use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\CellParameters;
+use NewApiBundle\Enum\HouseholdAssets;
+use NewApiBundle\Enum\HouseholdShelterStatus;
+use NewApiBundle\Enum\HouseholdSupportReceivedType;
+use NewApiBundle\InputType\Helper\EnumsBuilder;
 use NewApiBundle\Validator\Constraints\ImportDate;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -214,7 +218,7 @@ class HouseholdHead
     protected $idNumber;
 
     /**
-     * @Assert\Choice(choices=\BeneficiaryBundle\Entity\Household::SHELTER_STATUSES)
+     * @Assert\Type("string")
      */
     protected $shelterStatus;
 
@@ -353,6 +357,16 @@ class HouseholdHead
     }
 
     /**
+     * @Assert\Choice(callback={"NewApiBundle\Enum\HouseholdShelterStatus", "values"}, strict=true)
+     * @return string
+     */
+    public function getShelterStatus(): ?string
+    {
+        if (empty($this->shelterStatus)) return null;
+        return HouseholdShelterStatus::valueFromAPI($this->shelterStatus);
+    }
+
+    /**
      * @Assert\IsTrue(message="There is no Adm1 like this", payload={"propertyPath"="adm1"})
      */
     public function isValidAdm1(): bool
@@ -425,27 +439,34 @@ class HouseholdHead
     }
 
     /**
-     * @Assert\Choice(choices=\BeneficiaryBundle\Entity\Household::ASSETS, multiple=true)
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Choice(callback={"\NewApiBundle\Enum\HouseholdAssets", "values"}, strict=true, groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
      * @return array
      */
     public function getAssets(): array
     {
-        if (empty($this->assets)) {
-            return [];
-        }
-
-        return explode(',', $this->assets);
+        $enumBuilder = new EnumsBuilder(HouseholdAssets::class);
+        $enumBuilder->setNullToEmptyArrayTransformation();
+        return $enumBuilder->buildInputValuesFromExplode($this->assets);
     }
 
     /**
-     * @Assert\Choice(choices=\BeneficiaryBundle\Entity\Household::SUPPORT_RECIEVED_TYPES, multiple=true)
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Choice(callback={"\NewApiBundle\Enum\HouseholdSupportReceivedType", "values"}, strict=true, groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
      * @return array
      */
     public function getSupportReceivedTypes(): array
     {
-        if (empty($this->supportReceivedTypes)) {
-            return [];
-        }
-        return explode(',', $this->supportReceivedTypes);
+        $enumBuilder = new EnumsBuilder(HouseholdSupportReceivedType::class);
+        $enumBuilder->setNullToEmptyArrayTransformation();
+        return $enumBuilder->buildInputValuesFromExplode($this->supportReceivedTypes);
     }
 }

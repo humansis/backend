@@ -5,6 +5,8 @@ namespace NewApiBundle\Enum;
 
 final class ImportDuplicityState
 {
+    use EnumTrait;
+
     const DUPLICITY_CANDIDATE = 'Duplicity Candidate';
     const DUPLICITY_KEEP_OURS = 'Duplicity Keep Ours';
     const DUPLICITY_KEEP_THEIRS = 'Duplicity Keep Theirs';

@@ -9,6 +9,8 @@ use Doctrine\ORM\Query\Expr\Join;
 use \DateTime;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\DBAL\PersonGenderEnum;
+use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\AssistanceByProjectOfflineAppFilterInputType;
 use NewApiBundle\InputType\AssistanceFilterInputType;
 use NewApiBundle\InputType\AssistanceOrderInputType;
@@ -111,14 +113,14 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function getNoHeadHouseholdsByGender(int $distributionId, int $gender) {
+    public function getNoHeadHouseholdsByGender(int $distributionId, string $gender) {
         $qb = $this->createQueryBuilder('dd');
         $qb
             ->andWhere('dd.id = :distributionId')
                 ->setParameter('distributionId', $distributionId)
             ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
             ->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.gender = :gender AND b.status = 1')
-                ->setParameter('gender', $gender)
+                ->setParameter('gender', PersonGenderEnum::valueToDB($gender))
             ->select('COUNT(b)');
         return $qb->getQuery()->getSingleScalarResult();
     }
@@ -135,7 +137,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function getNoBenificiaryByAgeAndByGender(int $distributionId, int $gender, int $minAge, int $maxAge, DateTime $distributionDate, string $distributionType) {
+    public function getNoBenificiaryByAgeAndByGender(int $distributionId, string $gender, int $minAge, int $maxAge, DateTime $distributionDate, string $distributionType) {
         $maxDateOfBirth = clone $distributionDate;
         $minDateOfBirth = clone $distributionDate;
         $maxDateOfBirth->sub(new \DateInterval('P'.$minAge.'Y'));
@@ -155,7 +157,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
         }
                 $qb->setParameter('minDateOfBirth', $minDateOfBirth)
                 ->setParameter('maxDateOfBirth', $maxDateOfBirth)
-                ->setParameter('gender', $gender)
+                ->setParameter('gender', PersonGenderEnum::valueToDB($gender))
             ->select('COUNT(DISTINCT b)');
         return $qb->getQuery()->getSingleScalarResult();
     }
