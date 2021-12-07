@@ -126,11 +126,11 @@ class ImportFinisher
             $this->em->persist($item);
         }
 
+        $this->em->persist($import);
+        $this->importStateMachine->apply($import, ImportTransitions::FINISH);
         $this->em->flush();
 
-        $this->importStateMachine->apply($import, ImportTransitions::FINISH);
-        $this->em->persist($import);
-        $this->em->flush();
+        $this->resetOtherImports($import);
     }
 
     /**
@@ -145,8 +145,15 @@ class ImportFinisher
         $importConflicts = $this->em->getRepository(Import::class)->getConflictingImports($import);
         $this->logImportInfo($import, count($importConflicts)." conflicting imports to reset duplicity checks");
         foreach ($importConflicts as $conflictImport) {
-            $this->logImportInfo($conflictImport, " reset to ".ImportState::IDENTITY_CHECKING);
-            $this->importStateMachine->apply($conflictImport, ImportTransitions::RESET);
+            if ($this->importStateMachine->can($conflictImport, ImportTransitions::RESET)) {
+                $this->logImportInfo($conflictImport, " reset to ".ImportState::IDENTITY_CHECKING);
+                $this->importStateMachine->apply($conflictImport, ImportTransitions::RESET);
+            } else {
+                foreach ($this->importStateMachine->buildTransitionBlockerList($conflictImport, ImportTransitions::RESET) as $block) {
+                    $this->logImportInfo($conflictImport, " can't be reset to ".ImportState::IDENTITY_CHECKING." because ".$block->getMessage());
+                }
+            }
+
         }
         $this->em->flush();
     }
