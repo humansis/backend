@@ -53,20 +53,6 @@ class DuplicityResolveSubscriber implements EventSubscriberInterface
     {
         /** @var ImportQueue $importQueue */
         $importQueue = $enteredEvent->getSubject();
-        if ($importQueue->getImport()->getState() === ImportState::IDENTITY_CHECK_FAILED
-        || $importQueue->getImport()->getState() === ImportState::SIMILARITY_CHECK_FAILED) {
-            echo "Item#{$importQueue->getId()} state {$importQueue->getImport()->getState()}\n";
-            echo ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES."\n";
-            foreach ($this->importStateMachine->buildTransitionBlockerList($importQueue->getImport(),
-                ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES) as $block) {
-                echo "cant go bcs ".$block->getMessage()."\n";
-            }
-            echo ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES."\n";
-            foreach ($this->importStateMachine->buildTransitionBlockerList($importQueue->getImport(),
-                ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES) as $block) {
-                echo "cant go bcs ".$block->getMessage()."\n";
-            }
-        }
         WorkflowTool::checkAndApply($this->importStateMachine, $importQueue->getImport(),
             [ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES, ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES], false);
     }

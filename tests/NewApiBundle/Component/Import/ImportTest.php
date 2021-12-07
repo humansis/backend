@@ -236,23 +236,34 @@ class ImportTest extends KernelTestCase
 
         // finish first
         $firstImport = $imports['first'];
+        $secondImport = $imports['second'];
+
+        $this->assertQueueCount(1, $firstImport, [ImportQueueState::TO_CREATE]);
+        $this->assertQueueCount(1, $secondImport, [ImportQueueState::TO_CREATE]);
+
         $this->userStartedFinishing($firstImport);
+
+        $this->assertQueueCount(1, $firstImport, [ImportQueueState::CREATED]);
+        $this->assertQueueCount(1, $secondImport, [ImportQueueState::VALID]);
+
         $this->entityManager->refresh($firstImport);
+        $this->entityManager->refresh($secondImport);
+        $this->assertEquals(ImportState::IDENTITY_CHECKING, $import->getState());
 
         $firstImportBeneficiary = $firstImport->getImportBeneficiaries()[0]->getBeneficiary();
         $this->assertEquals(1, $firstImport->getImportBeneficiaries()->count());
         $this->assertEquals('John', $firstImportBeneficiary->getPerson()->getLocalGivenName());
 
         //check identity again on second import
-        $secondImport = $imports['second'];
-
         $this->userStartedIdentityCheck($import, false);
         $this->entityManager->refresh($secondImport);
+
+        $this->assertQueueCount(1, $firstImport, [ImportQueueState::CREATED]);
+        $this->assertQueueCount(1, $secondImport, [ImportQueueState::IDENTITY_CANDIDATE]);
 
         // resolve all as duplicity on second import to update and continue
         $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $secondImport, 'state' => ImportQueueState::IDENTITY_CANDIDATE], ['id' => 'asc']);
         foreach ($queue as $item) {
-            echo "Duplicity for {$item->getId()}\n";
             $this->assertGreaterThan(0, count($item->getDuplicities()));
             $firstDuplicity = $item->getDuplicities()->first();
 
@@ -261,17 +272,19 @@ class ImportTest extends KernelTestCase
             $duplicityResolve->setAcceptedDuplicityId($firstDuplicity->getId());
             $this->importService->resolveDuplicity($item, $duplicityResolve, $this->getUser());
         }
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $secondImport, 'state' => ImportQueueState::IDENTITY_CANDIDATE], ['id' => 'asc']);
-        foreach ($queue as $item) {
-            echo "Unresolved Duplicity for {$item->getId()}\n";
-        }
         $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
+
+        $this->assertQueueCount(1, $firstImport, [ImportQueueState::CREATED]);
+        $this->assertQueueCount(1, $secondImport, [ImportQueueState::TO_UPDATE]);
 
         // start similarity check on second import
         $this->userStartedSimilarityCheck($secondImport, true);
 
         // finish second import
         $this->userStartedFinishing($secondImport);
+
+        $this->assertQueueCount(1, $firstImport, [ImportQueueState::CREATED]);
+        $this->assertQueueCount(1, $secondImport, [ImportQueueState::UPDATED]);
 
         $secondImportBeneficiary = $secondImport->getImportBeneficiaries()[0]->getBeneficiary();
         $this->assertEquals(1, $secondImport->getImportBeneficiaries()->count());
