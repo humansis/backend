@@ -8,6 +8,7 @@ use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\NationalId;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Enum\ImportState;
+use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\ImportCreateInputType;
 use ProjectBundle\Entity\Project;
 use UserBundle\Entity\User;
@@ -35,7 +36,7 @@ trait DefaultDataTrait
         $hhh->getPerson()->setEnGivenName('empty');
         $hhh->getPerson()->setLocalFamilyName('empty');
         $hhh->getPerson()->setLocalGivenName('empty');
-        $hhh->getPerson()->setGender(0);
+        $hhh->getPerson()->setGender(PersonGender::FEMALE);
         $hhh->setHead(true);
         $hhh->setResidencyStatus('empty');
 
