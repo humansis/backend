@@ -8,7 +8,7 @@ use Doctrine\Persistence\ObjectRepository;
 use NewApiBundle\Component\Import\Service\InvalidFileService;
 use NewApiBundle\Component\Import\Entity\Import;
 use NewApiBundle\Component\Import\Entity\Queue;
-use NewApiBundle\Repository\QueueRepository;
+use NewApiBundle\Component\Import\Repository\QueueRepository;
 use NewApiBundle\Component\Import\Enum\Transitions;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\CompletedEvent;

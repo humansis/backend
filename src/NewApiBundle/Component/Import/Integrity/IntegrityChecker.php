@@ -11,7 +11,7 @@ use NewApiBundle\Component\Import\Entity\File;
 use NewApiBundle\Component\Import\Entity\Queue;
 use NewApiBundle\Component\Import\Enum\QueueState;
 use NewApiBundle\Component\Import\Enum\State;
-use NewApiBundle\Repository\QueueRepository;
+use NewApiBundle\Component\Import\Repository\QueueRepository;
 use NewApiBundle\Component\Import\Enum\QueueTransitions;
 use NewApiBundle\Component\Import\Enum\Transitions;
 use NewApiBundle\Workflow\WorkflowTool;

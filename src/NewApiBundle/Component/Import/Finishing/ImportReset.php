@@ -7,7 +7,7 @@ use Doctrine\Persistence\ObjectRepository;
 use NewApiBundle\Component\Import\Entity\Import;
 use NewApiBundle\Component\Import\Entity\Queue;
 use NewApiBundle\Component\Import\Utils\ImportLoggerTrait;
-use NewApiBundle\Repository\QueueRepository;
+use NewApiBundle\Component\Import\Repository\QueueRepository;
 use NewApiBundle\Component\Import\Enum\QueueTransitions;
 use NewApiBundle\Workflow\WorkflowTool;
 use Psr\Log\LoggerInterface;

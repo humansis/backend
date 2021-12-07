@@ -20,7 +20,7 @@ use NewApiBundle\Component\Import\Enum\State;
 use NewApiBundle\InputType\DuplicityResolveInputType;
 use NewApiBundle\InputType\ImportCreateInputType;
 use NewApiBundle\InputType\ImportPatchInputType;
-use NewApiBundle\Repository\QueueRepository;
+use NewApiBundle\Component\Import\Repository\QueueRepository;
 use NewApiBundle\Component\Import\Enum\Transitions;
 use NewApiBundle\Workflow\WorkflowTool;
 use ProjectBundle\Entity\Project;

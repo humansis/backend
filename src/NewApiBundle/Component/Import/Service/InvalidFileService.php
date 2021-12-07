@@ -7,7 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\Entity\Import;
 use NewApiBundle\Component\Import\Entity\InvalidFile;
 use NewApiBundle\Component\Import\Entity\Queue;
-use NewApiBundle\Repository\QueueRepository;
+use NewApiBundle\Component\Import\Repository\QueueRepository;
 use NewApiBundle\Component\Import\Enum\QueueTransitions;
 use NewApiBundle\Workflow\WorkflowTool;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
