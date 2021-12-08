@@ -359,6 +359,7 @@ services:
             - { name: kernel.event_subscriber }
 
     NewApiBundle\Factory\AwsStorageFactory:
+        public: true
 
     NewApiBundle\Factory\LogsStorageConfigFactory:
         public: true
