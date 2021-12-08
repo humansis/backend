@@ -9,3 +9,7 @@ parameters:
         aws.logs.version: 'latest'
         aws.logs.bucket: 'logs.humansis.org'
         aws.logs.folder: 'logs'
+
+        logs.vendorAppPath: 'vendor_app/vendor-<<vendorId>>/<<datetime>>/'
+        logs.fieldAppPath: 'field_app/user-<<userId>>/<<datetime>>/'
+        logs.lifetime: 42 #in days. (6 weeks)

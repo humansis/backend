@@ -4,7 +4,9 @@ namespace NewApiBundle\Component\Storage\Aws;
 
 use Aws\S3\S3Client;
 use Aws\S3\S3ClientInterface;
+use DateTime;
 use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
+use League\Flysystem\FileAttributes;
 use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemAdapter;
 use League\Flysystem\FilesystemException;
@@ -56,6 +58,28 @@ class AwsStorage implements IStorage
         $this->filesystem->write($path, $file, [StorageEnum::VISIBILITY => $visibility]);
 
         return $path;
+    }
+
+    public function list(string $path): iterable
+    {
+        return $this->filesystem->listContents($path, true);
+    }
+
+    /**
+     * @throws FilesystemException
+     *
+     * @return FileAttributes[]
+     */
+    public function listModifiedBefore(DateTime $time): iterable
+    {
+        $list = $this->filesystem->listContents('', true);
+
+        /** @var FileAttributes $item */
+        foreach ($list as $item) {
+            if ( (new DateTime())->setTimestamp($item->lastModified()) < $time ) {
+                yield $item;
+            }
+        }
     }
 
     /**
