@@ -96,7 +96,7 @@ abstract class AbstractImportQueueCommand extends Command
                 $this->importStateMachine->apply($import, $transition);
                 return;
             } else {
-                $this->logImportTransitionConstraints($import, $transition);
+                $this->logImportTransitionConstraints($this->importStateMachine, $import, $transition);
             }
         }
     }

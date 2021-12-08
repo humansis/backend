@@ -81,7 +81,7 @@ class ImportReset
         if ($this->importQueueStateMachine->can($item, ImportQueueTransitions::RESET)) {
             $this->importQueueStateMachine->apply($item, ImportQueueTransitions::RESET);
         } else {
-            $this->logQueueTransitionConstraints($item,ImportQueueTransitions::RESET);
+            $this->logQueueTransitionConstraints($this->importQueueStateMachine, $item,ImportQueueTransitions::RESET);
         }
 
         $this->em->persist($item);

@@ -5,6 +5,7 @@ namespace NewApiBundle\Component\Import;
 
 use NewApiBundle\Entity\Import;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 trait ImportLoggerTrait
 {
@@ -31,9 +32,9 @@ trait ImportLoggerTrait
         $this->logger->error("[Import#{$import->getId()}] ({$import->getTitle()}|{$import->getState()}) $message");
     }
 
-    protected function logImportTransitionConstraints(Import $import, string $transition): void
+    protected function logImportTransitionConstraints(WorkflowInterface $workflow, Import $import, string $transition): void
     {
-        foreach ($this->importStateMachine->buildTransitionBlockerList($import, $transition) as $block) {
+        foreach ($workflow->buildTransitionBlockerList($import, $transition) as $block) {
             $this->logImportDebug($import, " can't go to '$transition' because ".$block->getMessage());
         }
     }

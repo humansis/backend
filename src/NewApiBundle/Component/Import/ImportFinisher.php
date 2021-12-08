@@ -149,7 +149,7 @@ class ImportFinisher
                 $this->logImportInfo($conflictImport, " reset to ".ImportState::IDENTITY_CHECKING);
                 $this->importStateMachine->apply($conflictImport, ImportTransitions::RESET);
             } else {
-                $this->logImportTransitionConstraints($conflictImport, ImportTransitions::RESET);
+                $this->logImportTransitionConstraints($this->importStateMachine, $conflictImport, ImportTransitions::RESET);
             }
 
         }
