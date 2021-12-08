@@ -100,7 +100,6 @@ class ImportTest extends KernelTestCase
             'minimal xlsx' => ['KHM', 'KHM-Import-4HH-0HHM-0HHM.xlsx', 4, 4, 4],
             'camp only' => ['SYR', 'SYR-only-camp-1HH.xlsx', 1, 7, 1],
             'excel date format' => ['KHM', 'KHM-Import-1HH-0HHM-0HHM-excel-date-format.xlsx', 1, 1, 1],
-            'error from stage' => ['SYR', 'import27.xlsx', 1, 1, 1],
         ];
     }
 
