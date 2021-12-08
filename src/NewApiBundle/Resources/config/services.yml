@@ -374,5 +374,7 @@ services:
 
     NewApiBundle\Component\LogsStorage\LogsStorageService:
         arguments:
-            - '%aws.logs.folder%'
+            - '%logs.vendorAppPath%'
+            - '%logs.fieldAppPath%'
+            - '%logs.lifetime%'
 
