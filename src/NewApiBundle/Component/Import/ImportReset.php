@@ -15,6 +15,7 @@ use Symfony\Component\Workflow\WorkflowInterface;
 class ImportReset
 {
     use ImportLoggerTrait;
+    use ImportQueueLoggerTrait;
 
     /**
      * @var EntityManagerInterface
@@ -62,7 +63,7 @@ class ImportReset
         }
         $this->em->flush();
         $this->logImportInfo($conflictImport,
-            "Duplicity checks of ".count($conflictQueue)." queue items reset because finish Import #{$conflictImport->getId()} ({$conflictImport->getTitle()})");
+            "Duplicity checks of ".count($conflictQueue)." queue items reset because finish Import#{$conflictImport->getId()} ({$conflictImport->getTitle()})");
     }
 
     /**
@@ -77,7 +78,12 @@ class ImportReset
             $this->em->remove($duplicity);
         }
 
-        $this->importQueueStateMachine->apply($item, ImportQueueTransitions::RESET);
+        if ($this->importQueueStateMachine->can($item, ImportQueueTransitions::RESET)) {
+            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::RESET);
+        } else {
+            $this->logQueueTransitionConstraints($item,ImportQueueTransitions::RESET);
+        }
+
         $this->em->persist($item);
     }
 }

@@ -96,10 +96,7 @@ abstract class AbstractImportQueueCommand extends Command
                 $this->importStateMachine->apply($import, $transition);
                 return;
             } else {
-                /** @var \Symfony\Component\Workflow\TransitionBlocker $block */
-                foreach ($this->importStateMachine->buildTransitionBlockerList($import, $transition) as $block) {
-                    $this->logImportDebug($import, "can't go to '$transition' because: ".$block->getMessage());
-                }
+                $this->logImportTransitionConstraints($import, $transition);
             }
         }
     }

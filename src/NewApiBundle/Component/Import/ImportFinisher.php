@@ -149,9 +149,7 @@ class ImportFinisher
                 $this->logImportInfo($conflictImport, " reset to ".ImportState::IDENTITY_CHECKING);
                 $this->importStateMachine->apply($conflictImport, ImportTransitions::RESET);
             } else {
-                foreach ($this->importStateMachine->buildTransitionBlockerList($conflictImport, ImportTransitions::RESET) as $block) {
-                    $this->logImportInfo($conflictImport, " can't be reset to ".ImportState::IDENTITY_CHECKING." because ".$block->getMessage());
-                }
+                $this->logImportTransitionConstraints($conflictImport, ImportTransitions::RESET);
             }
 
         }
