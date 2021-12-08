@@ -61,8 +61,7 @@ class IntegrityChecker
         }
 
         if ($this->hasImportValidFile($import) === false) {
-            WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::FAIL_INTEGRITY]);
-
+            $this->importStateMachine->apply($import, ImportTransitions::FAIL_INTEGRITY);
             return;
         }
 
@@ -80,6 +79,12 @@ class IntegrityChecker
      */
     protected function checkOne(ImportQueue $item): void
     {
+        if (in_array($item->getState(), [ImportQueueState::INVALID, ImportQueueState::VALID])) {
+            return; // there is nothing to check
+        }
+        if ($item->getState() !== ImportQueueState::NEW) {
+            throw new \InvalidArgumentException("Wrong ImportQueue state for Integrity check: ".$item->getState());
+        }
         $violations = $this->getQueueItemViolations($item);
         $message = $violations['message'];
         if ($violations['hasViolations']) {

@@ -195,6 +195,9 @@ framework:
         !php/const NewApiBundle\Workflow\ImportQueueTransitions::INVALIDATE:
           from: !php/const NewApiBundle\Enum\ImportQueueState::NEW
           to: !php/const NewApiBundle\Enum\ImportQueueState::INVALID
+        !php/const NewApiBundle\Workflow\ImportQueueTransitions::INVALIDATE_EXPORT:
+          from: !php/const NewApiBundle\Enum\ImportQueueState::INVALID
+          to: !php/const NewApiBundle\Enum\ImportQueueState::INVALID_EXPORTED
 
         # identity
         !php/const NewApiBundle\Workflow\ImportQueueTransitions::IDENTITY_CANDIDATE:
