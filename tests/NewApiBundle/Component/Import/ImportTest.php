@@ -142,6 +142,23 @@ class ImportTest extends KernelTestCase
         $this->assertCount($expectedBeneficiaryCount, $bnfCount, "Wrong beneficiary count");
     }
 
+    public function testEnumCaseSensitivity()
+    {
+        $filename = 'KHM-Import-insensitive-2HH-3HHM-24HHM.ods';
+        $this->project = $this->createBlankProject('KHM', [__METHOD__, $filename]);
+        $this->originHousehold = $this->createBlankHousehold($this->project);
+        $import = $this->createImport("testMinimalWorkflow", $this->project, $filename);
+
+        $this->userStartedIntegrityCheck($import, true);
+        $this->userStartedIdentityCheck($import, true);
+        $this->userStartedSimilarityCheck($import, true);
+        $this->userStartedFinishing($import);
+
+        $this->assertQueueCount(2, $import, [ImportQueueState::CREATED]);
+        $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->getImported($import);
+        $this->assertCount(8, $bnfCount, "Wrong beneficiary count");
+    }
+
     /**
      * @dataProvider correctFiles
      */

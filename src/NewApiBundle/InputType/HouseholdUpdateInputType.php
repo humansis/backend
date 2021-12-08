@@ -19,6 +19,7 @@ use NewApiBundle\InputType\Helper\EnumsBuilder;
 use NewApiBundle\Request\InputTypeInterface;
 use NewApiBundle\Validator\Constraints\Country;
 use NewApiBundle\Validator\Constraints\Iso8601;
+use ProjectBundle\Enum\Livelihood;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\GroupSequenceProviderInterface;
 
@@ -63,7 +64,8 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     private $iso3;
 
     /**
-     * @Assert\Choice(callback={"ProjectBundle\Enum\Livelihood", "values"}, strict=true)
+     * @Assert\NotNull
+     * @Assert\NotBlank
      */
     private $livelihood;
 
@@ -252,15 +254,17 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     }
 
     /**
-     * @return int|null
+     * @Assert\Choice(callback={"\ProjectBundle\Enum\Livelihood", "values"}, strict=true, groups={"Strict"})
+     * @return string|null
+     * @throws \NewApiBundle\Enum\EnumValueNoFoundException
      */
     public function getLivelihood()
     {
-        return $this->livelihood;
+        return $this->livelihood ? Livelihood::valueFromAPI($this->livelihood) : null;
     }
 
     /**
-     * @param int|null $livelihood
+     * @param string|null $livelihood
      */
     public function setLivelihood($livelihood)
     {

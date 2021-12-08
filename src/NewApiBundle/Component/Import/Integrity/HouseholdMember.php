@@ -12,6 +12,7 @@ use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use NewApiBundle\InputType\Helper\EnumsBuilder;
 use NewApiBundle\Validator\Constraints\ImportDate;
+use ProjectBundle\Enum\Livelihood;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class HouseholdMember
@@ -44,7 +45,7 @@ class HouseholdMember
     protected $tentNumber;
 
     /**
-     * @Assert\Choice(choices=ProjectBundle\Enum\Livelihood::TRANSLATIONS)
+     * @Assert\Type("string")
      */
     protected $livelihood;
 
@@ -376,6 +377,16 @@ class HouseholdMember
     {
         if (empty($this->shelterStatus)) return null;
         return HouseholdShelterStatus::valueFromAPI($this->shelterStatus);
+    }
+
+    /**
+     * @Assert\Choice(callback={"\ProjectBundle\Enum\Livelihood", "values"}, strict=true, groups={"Strict"})
+     * @return string|null
+     * @throws \NewApiBundle\Enum\EnumValueNoFoundException
+     */
+    public function getLivelihood(): ?string
+    {
+        return $this->livelihood ? Livelihood::valueFromAPI($this->livelihood) : null;
     }
 
     /**
