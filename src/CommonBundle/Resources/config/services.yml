@@ -267,6 +267,7 @@ services:
         arguments:
             - "@=service('kernel').getEnvironment()"
             - '@smartcard_service'
+            - '@voucher.purchase_service'
         tags:
             - { name: doctrine.fixture.orm }
 
