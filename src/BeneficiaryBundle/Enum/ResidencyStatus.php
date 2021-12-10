@@ -2,8 +2,12 @@
 
 namespace BeneficiaryBundle\Enum;
 
+use NewApiBundle\Enum\EnumTrait;
+
 class ResidencyStatus
 {
+    use EnumTrait;
+
     const REFUGEE = 'refugee';
     const IDP = 'IDP';
     const RESIDENT = 'resident';
@@ -16,7 +20,16 @@ class ResidencyStatus
         self::RETURNEE,
     ];
 
+    /**
+     * @deprecated use ResidencyStatus::values instead
+     * @return string[]
+     */
     public static function all()
+    {
+        return self::$values;
+    }
+
+    public static function values(): array
     {
         return self::$values;
     }

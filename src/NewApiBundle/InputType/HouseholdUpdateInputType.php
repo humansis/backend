@@ -294,7 +294,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     public function setAssets(array $assets)
     {
         foreach ($assets as $asset) {
-            $this->assets[] = (int) $asset;
+            $this->assets[] = $asset;
         }
     }
 

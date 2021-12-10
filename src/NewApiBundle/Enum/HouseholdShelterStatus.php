@@ -17,7 +17,7 @@ class HouseholdShelterStatus
     const OTHER = 'Other';
     const HOUSE_APARTMENT_LIGHTLY_DAMAGED = 'House/Apartment - Lightly Damaged';
 
-    private static $values = [
+    protected static $values = [
         1 => self::TENT,
         2 => self::MAKESHIFT_SHELTER,
         3 => self::TRANSITIONAL_SHELTER,

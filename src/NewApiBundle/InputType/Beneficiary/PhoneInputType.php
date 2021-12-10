@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType\Beneficiary;
 
+use NewApiBundle\Enum\PhoneTypes;
 use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -30,7 +31,6 @@ class PhoneInputType implements InputTypeInterface
      * @Assert\Length(max="45")
      * @Assert\NotBlank
      * @Assert\NotNull
-     * @Assert\Choice(callback={"NewApiBundle\Enum\PhoneTypes", "values"}, strict=true, groups={"Strict"})
      */
     private $type;
 
@@ -73,11 +73,12 @@ class PhoneInputType implements InputTypeInterface
     }
 
     /**
+     * @Assert\Choice(callback={"\NewApiBundle\Enum\PhoneTypes", "values"}, strict=true, groups={"Strict"})
      * @return string
      */
     public function getType()
     {
-        return $this->type;
+        return PhoneTypes::valueFromAPI($this->type);
     }
 
     /**

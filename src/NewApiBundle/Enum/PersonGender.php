@@ -11,8 +11,8 @@ class PersonGender
     const FEMALE = 'female';
 
     protected static $values = [
-        0 => self::FEMALE,
-        1 => self::MALE,
+        'Female' => self::FEMALE,
+        'Male' => self::MALE,
     ];
 
     public static function values(): array
@@ -23,8 +23,8 @@ class PersonGender
     protected static function apiAlternatives(): array
     {
         return [
-            self::MALE => ['m', 'man', 'men', true, 'true'],
-            self::FEMALE => ['f', 'fem', 'false', false],
+            self::MALE => [1, 'm', 'man', 'men', 'true'],
+            self::FEMALE => [0, 'f', 'fem', 'false', 'woman'],
         ];
     }
 

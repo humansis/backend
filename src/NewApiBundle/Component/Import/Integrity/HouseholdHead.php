@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Component\Import\Integrity;
 
 use BeneficiaryBundle\Entity\CountrySpecific;
+use BeneficiaryBundle\Enum\ResidencyStatus;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
@@ -11,6 +12,9 @@ use NewApiBundle\Component\Import\CellParameters;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
+use NewApiBundle\Enum\PersonGender;
+use NewApiBundle\Enum\PhoneTypes;
+use NewApiBundle\Enum\VariableBool;
 use NewApiBundle\InputType\Helper\EnumsBuilder;
 use NewApiBundle\Validator\Constraints\ImportDate;
 use ProjectBundle\Enum\Livelihood;
@@ -18,6 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class HouseholdHead
 {
+    use EnumNormalizeTrait;
     use HouseholdInputBuilderTrait;
 
     /**
@@ -140,19 +145,19 @@ class HouseholdHead
     protected $englishParentsName;
 
     /**
-     * @Assert\Choice({"Male", "Female"}),
+     * @Assert\Type("scalar")
      * @Assert\NotBlank(),
      */
     protected $gender;
 
     /**
-     * @Assert\Choice({"true", "false"}),
+     * @Assert\Type("string")
      * @Assert\NotBlank(),
      */
     protected $head;
 
     /**
-     * @Assert\Choice({"Refugee", "IDP", "Resident", "Returnee"}),
+     * @Assert\Type("string")
      * @Assert\NotBlank(),
      */
     protected $residencyStatus;
@@ -169,7 +174,7 @@ class HouseholdHead
     protected $vulnerabilityCriteria;
 
     /**
-     * @Assert\Choice({"Mobile", "Landline"}),
+     * @Assert\Type("string")
      */
     protected $typePhone1;
 
@@ -184,12 +189,12 @@ class HouseholdHead
     protected $numberPhone1;
 
     /**
-     * @Assert\Choice({"Y", "N"}),
+     * @Assert\Type("string")
      */
     protected $proxyPhone1;
 
     /**
-     * @Assert\Choice({"Mobile", "Landline"}),
+     * @Assert\Type("string")
      */
     protected $typePhone2;
 
@@ -204,7 +209,7 @@ class HouseholdHead
     protected $numberPhone2;
 
     /**
-     * @Assert\Choice({"Y", "N"}),
+     * @Assert\Type("string")
      */
     protected $proxyPhone2;
 
@@ -358,26 +363,6 @@ class HouseholdHead
     }
 
     /**
-     * @Assert\Choice(callback={"NewApiBundle\Enum\HouseholdShelterStatus", "values"}, strict=true)
-     * @return string
-     */
-    public function getShelterStatus(): ?string
-    {
-        if (empty($this->shelterStatus)) return null;
-        return HouseholdShelterStatus::valueFromAPI($this->shelterStatus);
-    }
-
-    /**
-     * @Assert\Choice(callback={"\ProjectBundle\Enum\Livelihood", "values"}, strict=true, groups={"Strict"})
-     * @return string|null
-     * @throws \NewApiBundle\Enum\EnumValueNoFoundException
-     */
-    public function getLivelihood(): ?string
-    {
-        return $this->livelihood ? Livelihood::valueFromAPI($this->livelihood) : null;
-    }
-
-    /**
      * @Assert\IsTrue(message="There is no Adm1 like this", payload={"propertyPath"="adm1"})
      */
     public function isValidAdm1(): bool
@@ -447,37 +432,5 @@ class HouseholdHead
             $this->adm4
         );
         return null !== $location;
-    }
-
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Choice(callback={"\NewApiBundle\Enum\HouseholdAssets", "values"}, strict=true, groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     * @return array
-     */
-    public function getAssets(): array
-    {
-        $enumBuilder = new EnumsBuilder(HouseholdAssets::class);
-        $enumBuilder->setNullToEmptyArrayTransformation();
-        return $enumBuilder->buildInputValuesFromExplode($this->assets);
-    }
-
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Choice(callback={"\NewApiBundle\Enum\HouseholdSupportReceivedType", "values"}, strict=true, groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     * @return array
-     */
-    public function getSupportReceivedTypes(): array
-    {
-        $enumBuilder = new EnumsBuilder(HouseholdSupportReceivedType::class);
-        $enumBuilder->setNullToEmptyArrayTransformation();
-        return $enumBuilder->buildInputValuesFromExplode($this->supportReceivedTypes);
     }
 }

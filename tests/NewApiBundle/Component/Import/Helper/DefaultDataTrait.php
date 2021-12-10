@@ -8,6 +8,7 @@ use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\NationalId;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Enum\ImportState;
+use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\ImportCreateInputType;
 use ProjectBundle\Entity\Project;
@@ -41,7 +42,7 @@ trait DefaultDataTrait
         $hhh->setResidencyStatus('empty');
 
         $nationalId = new NationalId();
-        $nationalId->setIdType('National ID');
+        $nationalId->setIdType(NationalIdType::NATIONAL_ID);
         $nationalId->setIdNumber('123456789');
         $hhh->getPerson()->addNationalId($nationalId);
         $nationalId->setPerson($hhh->getPerson());

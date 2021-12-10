@@ -17,7 +17,7 @@ class LivelihoodEnum extends AbstractEnum
 
     public static function all(): array
     {
-        return Livelihood::values();
+        return array_keys(self::databaseMap());
     }
 
     public static function databaseMap(): array

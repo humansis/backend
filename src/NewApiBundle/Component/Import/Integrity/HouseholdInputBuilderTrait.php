@@ -3,20 +3,19 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import\Integrity;
 
-use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Enum\ResidencyStatus;
 use CommonBundle\Entity\Location;
 use NewApiBundle\Component\Import\Utils\ImportDateConverter;
-use NewApiBundle\Enum\HouseholdAssets;
-use NewApiBundle\Enum\HouseholdSupportReceivedType;
+use NewApiBundle\Enum\NationalIdType;
+use NewApiBundle\Enum\PersonGender;
+use NewApiBundle\Enum\PhoneTypes;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
-use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 use NewApiBundle\InputType\Beneficiary\CountrySpecificsAnswerInputType;
 use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 use NewApiBundle\InputType\Beneficiary\PhoneInputType;
-use NewApiBundle\InputType\Helper\EnumsBuilder;
 use NewApiBundle\InputType\HouseholdCreateInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
-use ProjectBundle\Enum\Livelihood;
+use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 
 /* TODO many unused parameters in HouseholdHead / HouseholdMember:
     $campName
@@ -49,6 +48,7 @@ trait HouseholdInputBuilderTrait
      */
     private function fillHousehold(HouseholdUpdateInputType $household): void
     {
+        $household->setProjectIds([]);
         $household->setCopingStrategiesIndex($this->copingStrategiesIndex);
         $household->setDebtLevel($this->debtLevel);
         $household->setFoodConsumptionScore($this->foodConsumptionScore);
@@ -57,30 +57,12 @@ trait HouseholdInputBuilderTrait
         $household->setNotes($this->notes);
         $household->setLatitude($this->latitude);
         $household->setLongitude($this->longitude);
-        $household->setLivelihood($this->livelihood);
+        $household->setLivelihood($this->getLivelihood());
         $household->setEnumeratorName($this->enumeratorName);
         $household->setShelterStatus($this->getShelterStatus());
         $household->setSupportDateReceived($this->supportDateReceived ? ImportDateConverter::toDatetime($this->supportDateReceived)->format(\DateTimeInterface::ISO8601) : null);
-
-        if (null !== $this->livelihood) {
-            $hoodKey = array_search($this->livelihood, Livelihood::TRANSLATIONS);
-            $household->setLivelihood($hoodKey);
-        }
-
-        if (null !== $this->supportReceivedTypes) {
-            $receivedTypes = [];
-            foreach (explode(',', $this->supportReceivedTypes) as $typeName) {
-                $receivedTypes[] = HouseholdSupportReceivedType::valueFromAPI($typeName);
-            }
-            $household->setSupportReceivedTypes($receivedTypes);
-        }
-
-
-        if (null !== $this->assets) {
-            $enumBuilder = new EnumsBuilder(HouseholdAssets::class);
-            $assets = $enumBuilder->buildInputValuesFromExplode($this->assets);
-            $household->setAssets($assets);
-        }
+        $household->setSupportReceivedTypes($this->getSupportReceivedTypes());
+        $household->setAssets($this->getAssets());
 
         foreach ($this->countrySpecifics as $countrySpecificId => $answer) {
             $specificAnswer = new CountrySpecificsAnswerInputType();
@@ -107,7 +89,7 @@ trait HouseholdInputBuilderTrait
 
         $i = 1;
         foreach ($this->buildNamelessMembers() as $namelessMember) {
-            $namelessMember->setResidencyStatus($this->residencyStatus);
+            $namelessMember->setResidencyStatus($head->getResidencyStatus());
             $namelessMember->setLocalFamilyName($head->getLocalFamilyName());
             $namelessMember->setEnFamilyName($head->getEnFamilyName());
             $namelessMember->setEnGivenName("Member $i");
@@ -120,19 +102,20 @@ trait HouseholdInputBuilderTrait
     public function buildBeneficiaryInputType(): BeneficiaryInputType
     {
         $beneficiary = new BeneficiaryInputType();
-        $beneficiary->setDateOfBirth(ImportDateConverter::toDatetime($this->dateOfBirth)->format(\DateTimeInterface::ISO8601));
+        $beneficiary->setDateOfBirth($this->getBirthDate() ? $this->getBirthDate()->format(\DateTimeInterface::ISO8601) : null);
         $beneficiary->setLocalFamilyName($this->localFamilyName);
         $beneficiary->setLocalGivenName($this->localGivenName);
         $beneficiary->setLocalParentsName($this->localParentsName);
         $beneficiary->setEnFamilyName($this->englishFamilyName);
         $beneficiary->setEnGivenName($this->englishGivenName);
         $beneficiary->setEnParentsName($this->englishParentsName);
-        $beneficiary->setGender($this->gender == 'Male' ? 'M' : 'F');
-        $beneficiary->setResidencyStatus($this->residencyStatus);
+        $beneficiary->setGender(PersonGender::valueToAPI($this->getGender()));
+        $beneficiary->setResidencyStatus(ResidencyStatus::valueToAPI($this->getResidencyStatus()));
+        $beneficiary->setIsHead(false);
 
         if (!is_null($this->idType)) { //TODO check, that id card is filled completely
             $nationalId = new NationalIdCardInputType();
-            $nationalId->setType($this->idType);
+            $nationalId->setType($this->getIdType() ? NationalIdType::valueToAPI($this->getIdType()) : null);
             $nationalId->setNumber((string) $this->idNumber);
             $beneficiary->addNationalIdCard($nationalId);
         }
@@ -140,18 +123,18 @@ trait HouseholdInputBuilderTrait
         if (!is_null($this->numberPhone1)) { //TODO check, that phone is filled completely in import
             $phone1 = new PhoneInputType();
             $phone1->setNumber((string) $this->numberPhone1);
-            $phone1->setType($this->typePhone1);
+            $phone1->setType($this->getTypePhone1() ? PhoneTypes::valueToAPI($this->getTypePhone1()) : null);
             $phone1->setPrefix((string) $this->prefixPhone1);
-            $phone1->setProxy($this->proxyPhone1 === 'Y');
+            $phone1->setProxy($this->isProxyPhone1());
             $beneficiary->addPhone($phone1);
         }
 
         if (!is_null($this->numberPhone2)) { //TODO check, that phone is filled completely in import
             $phone2 = new PhoneInputType();
             $phone2->setNumber((string) $this->numberPhone2);
-            $phone2->setType($this->typePhone2);
+            $phone2->setType($this->getTypePhone2() ? PhoneTypes::valueToAPI($this->getTypePhone2()) : null);
             $phone2->setPrefix((string) $this->prefixPhone2);
-            $phone2->setProxy($this->proxyPhone2  === 'Y');
+            $phone2->setProxy($this->isProxyPhone2());
             $beneficiary->addPhone($phone2);
         }
 

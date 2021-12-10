@@ -1,11 +1,9 @@
 <?php
-
 declare(strict_types=1);
 
 namespace NewApiBundle\InputType\Beneficiary;
 
-use BeneficiaryBundle\Entity\Person;
-use BeneficiaryBundle\Entity\Referral;
+use BeneficiaryBundle\Enum\ResidencyStatus;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Request\InputTypeInterface;
 use NewApiBundle\Validator\Constraints\Iso8601;
@@ -70,33 +68,33 @@ class BeneficiaryInputType implements InputTypeInterface
     private $enParentsName;
 
     /**
-     * @Assert\Choice({"M", "F"})
      * @Assert\NotBlank
      * @Assert\NotNull
      */
     private $gender;
 
     /**
+     * @var NationalIdCardInputType
      * @Assert\Type("array")
      * @Assert\Valid
      */
     private $nationalIdCards = [];
 
     /**
+     * @var PhoneInputType
      * @Assert\Type("array")
      * @Assert\Valid
      */
     private $phones = [];
 
     /**
-     * @Assert\Choice(callback={"BeneficiaryBundle\Enum\ResidencyStatus", "all"})
      * @Assert\NotBlank
      * @Assert\NotNull
      */
     private $residencyStatus;
 
     /**
-     * @Assert\Choice(callback={"BeneficiaryBundle\Entity\Referral", "types"})
+     * @Assert\Choice(callback={"\BeneficiaryBundle\Entity\Referral", "types"}, strict=true, groups={"Strict"})
      * @Assert\Length(max="255")
      */
     private $referralType;
@@ -242,7 +240,8 @@ class BeneficiaryInputType implements InputTypeInterface
     }
 
     /**
-     * @return int one of Person::GENDER_*
+     * @see PersonGender::values()
+     * @return string
      */
     public function getGender()
     {
@@ -304,7 +303,8 @@ class BeneficiaryInputType implements InputTypeInterface
      */
     public function getResidencyStatus()
     {
-        return $this->residencyStatus;
+        if (empty($this->residencyStatus)) return null;
+        return ResidencyStatus::valueFromAPI($this->residencyStatus);
     }
 
     /**

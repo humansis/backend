@@ -10,6 +10,7 @@ use NewApiBundle\Component\Import\CellParameters;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
+use NewApiBundle\Enum\VariableBool;
 use NewApiBundle\InputType\Helper\EnumsBuilder;
 use NewApiBundle\Validator\Constraints\ImportDate;
 use ProjectBundle\Enum\Livelihood;
@@ -17,6 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class HouseholdMember
 {
+    use EnumNormalizeTrait;
     use HouseholdInputBuilderTrait;
 
     /**
@@ -138,19 +140,19 @@ class HouseholdMember
     protected $englishParentsName;
 
     /**
-     * @Assert\Choice({"Male", "Female"}),
+     * @Assert\Type("scalar")
      * @Assert\NotBlank(),
      */
     protected $gender;
 
     /**
-     * @Assert\Choice({"true", "false"}),
+     * @Assert\Type("string")
      * @Assert\NotBlank(),
      */
     protected $head;
 
     /**
-     * @Assert\Choice({"Refugee", "IDP", "Resident", "Returnee"}),
+     * @Assert\Type("string")
      * @Assert\NotBlank(),
      */
     protected $residencyStatus;
@@ -167,7 +169,7 @@ class HouseholdMember
     protected $vulnerabilityCriteria;
 
     /**
-     * @Assert\Choice({"Mobile", "Landline"}),
+     * @Assert\Type("string")
      */
     protected $typePhone1;
 
@@ -182,12 +184,12 @@ class HouseholdMember
     protected $numberPhone1;
 
     /**
-     * @Assert\Choice({"Y", "N"}),
+     * @Assert\Type("string")
      */
     protected $proxyPhone1;
 
     /**
-     * @Assert\Choice({"Mobile", "Landline"}),
+     * @Assert\Type("string")
      */
     protected $typePhone2;
 
@@ -202,7 +204,7 @@ class HouseholdMember
     protected $numberPhone2;
 
     /**
-     * @Assert\Choice({"Y", "N"}),
+     * @Assert\Type("string")
      */
     protected $proxyPhone2;
 
@@ -217,7 +219,7 @@ class HouseholdMember
     protected $idNumber;
 
     /**
-     * @Assert\Choice(callback={"NewApiBundle\Enum\HouseholdShelterStatus", "values"}, strict=true)
+     * @Assert\Type("string")
      */
     protected $shelterStatus;
 
@@ -370,26 +372,6 @@ class HouseholdMember
     }
 
     /**
-     * @Assert\Choice(callback={"NewApiBundle\Enum\HouseholdShelterStatus", "values"}, strict=true)
-     * @return string
-     */
-    public function getShelterStatus(): ?string
-    {
-        if (empty($this->shelterStatus)) return null;
-        return HouseholdShelterStatus::valueFromAPI($this->shelterStatus);
-    }
-
-    /**
-     * @Assert\Choice(callback={"\ProjectBundle\Enum\Livelihood", "values"}, strict=true, groups={"Strict"})
-     * @return string|null
-     * @throws \NewApiBundle\Enum\EnumValueNoFoundException
-     */
-    public function getLivelihood(): ?string
-    {
-        return $this->livelihood ? Livelihood::valueFromAPI($this->livelihood) : null;
-    }
-
-    /**
      * @Assert\IsTrue(message="There is no Adm4 in this location", payload={"propertyPath"="adm4"})
      */
     public function isValidAdm4(): bool
@@ -405,27 +387,5 @@ class HouseholdMember
             $this->adm4
         );
         return null !== $location;
-    }
-
-    /**
-     * @Assert\Choice(choices={"\NewApiBundle\Enum\HouseholdAssets", "values"}, multiple=true)
-     * @return array
-     */
-    public function getAssets(): array
-    {
-        $enumBuilder = new EnumsBuilder(HouseholdAssets::class);
-        $enumBuilder->setNullToEmptyArrayTransformation();
-        return $enumBuilder->buildInputValuesFromExplode($this->assets);
-    }
-
-    /**
-     * @Assert\Choice(choices={"\NewApiBundle\Enum\HouseholdSupportReceivedType", "values"}, multiple=true)
-     * @return array
-     */
-    public function getSupportReceivedTypes(): array
-    {
-        $enumBuilder = new EnumsBuilder(HouseholdSupportReceivedType::class);
-        $enumBuilder->setNullToEmptyArrayTransformation();
-        return $enumBuilder->buildInputValuesFromExplode($this->supportReceivedTypes);
     }
 }
