@@ -138,9 +138,9 @@ class IntegrityChecker
             $violationList->addAll(
                 $this->validator->validate($hhm)
             );
-            // $violationList->addAll(
-            //     $this->validator->validate($hhm->buildBeneficiaryInputType())
-            // );
+            $violationList->addAll(
+                $this->validator->validate($hhm->buildBeneficiaryInputType())
+            );
 
             foreach ($violationList as $violation) {
                 $message[$index][] = $this->buildErrorMessage($violation);

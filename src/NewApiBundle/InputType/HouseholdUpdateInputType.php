@@ -175,6 +175,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     private $enumeratorName;
 
     /**
+     * @var ResidenceAddressInputType
      * @Assert\Valid
      */
     private $residenceAddress;

@@ -128,11 +128,12 @@ class BeneficiaryInputType implements InputTypeInterface
     }
 
     /**
+     * @Assert\NotNull
      * @return \DateTimeInterface
      */
     public function getDateOfBirth()
     {
-        return new \DateTime($this->dateOfBirth);
+        return $this->dateOfBirth ? new \DateTime($this->dateOfBirth) : null;
     }
 
     /**
