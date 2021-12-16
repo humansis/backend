@@ -4,12 +4,6 @@ parameters:
         import.maxFileSizeToLoad: 1 #in MB
         import.batch_size: 200
 
-        aws.logs.key: '%env(AWS_LOGS_ACCESS_KEY)%'
-        aws.logs.secret: '%env(AWS_LOGS_SECRET_KEY)%'
-        aws.logs.region: 'eu-central-1'
-        aws.logs.version: 'latest'
-        aws.logs.bucket: 'logs.humansis.org'
-        aws.logs.folder: 'logs'
 
         logs.vendorAppPath: 'vendor_app/vendor-<<vendorId>>/<<datetime>>/'
         logs.fieldAppPath: 'field_app/user-<<userId>>/<<datetime>>/'

@@ -30,3 +30,10 @@ parameters:
     gelf_server_name: '%env(GELF_SERVER_NAME)%'
     gelf_host: '%env(GELF_HOST)%'
     gelf_port: '%env(GELF_PORT)%'
+
+    aws.logs.key: '%env(AWS_LOGS_ACCESS_KEY)%'
+    aws.logs.secret: '%env(AWS_LOGS_SECRET_KEY)%'
+    aws.logs.region: 'eu-central-1'
+    aws.logs.version: 'latest'
+    aws.logs.bucket: 'logs.humansis.org'
+    aws.logs.folder: 'logs'
