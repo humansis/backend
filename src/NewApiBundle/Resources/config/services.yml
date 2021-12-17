@@ -357,3 +357,22 @@ services:
             - '@NewApiBundle\Component\Import\DuplicityResolver'
         tags:
             - { name: kernel.event_subscriber }
+
+    NewApiBundle\Factory\AwsStorageFactory:
+        public: true
+
+    NewApiBundle\Factory\LogsStorageConfigFactory:
+        public: true
+        arguments:
+            - '%aws.logs.key%'
+            - '%aws.logs.secret%'
+            - '%aws.logs.region%'
+            - '%aws.logs.version%'
+            - '%aws.logs.bucket%'
+
+    NewApiBundle\Component\LogsStorage\LogsStorageService:
+        arguments:
+            - '%logs.vendorAppPath%'
+            - '%logs.fieldAppPath%'
+            - '%logs.lifetime%'
+

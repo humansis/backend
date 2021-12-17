@@ -109,6 +109,8 @@ php:
         PHP_IDE_CONFIG: 'serverName=humansis.local'
         AWS_ACCESS_KEY: 'aaa'
         AWS_SECRET_KEY: 'aaa'
+        AWS_LOGS_ACCESS_KEY: 'access_key'
+        AWS_LOGS_SECRET_KEY: 'secret_key'
         SES_USERNAME: 'aaa'
         SES_PASSWORD: 'aaa'
         RDS_HOSTNAME: db
