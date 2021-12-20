@@ -51,12 +51,30 @@ security:
                 provider: basic-auth-provider
 
         jwt_login:
-            pattern: ^/api/jwt/(web-app|vendor-app|offline-app)/v[0-9]+/login
+            pattern: ^/api/jwt/web-app/v[0-9]+/login
             stateless: true
             anonymous: true
             provider: jwt_provider
             json_login:
                 check_path: /api/jwt/web-app/v1/login
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        jwt_login_offline_app:
+            pattern: ^/api/jwt/offline-app/v[0-9]+/login
+            stateless: true
+            anonymous: true
+            provider: jwt_provider
+            json_login:
+                check_path: /api/jwt/offline-app/v1/login
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        jwt_login_vendor_app:
+            pattern: ^/api/jwt/vendor-app/v[0-9]+/login
+            stateless: true
+            anonymous: true
+            provider: jwt_provider
+            json_login:
+                check_path: /api/jwt/vendor-app/v1/login
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
         jwt_salt:
