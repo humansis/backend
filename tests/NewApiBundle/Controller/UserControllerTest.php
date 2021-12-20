@@ -297,4 +297,23 @@ class UserControllerTest extends BMSServiceTestCase
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }
+
+    public function testOfflineAppLogin(): void
+    {
+        $body = [
+            'username' => 'admin@example.org',
+            'password' => 'pin1234',
+        ];
+
+        $this->client->request('POST', '/api/jwt/offline-app/v2/login', [], [], [], json_encode($body));
+
+        $responseBody = json_decode($this->client->getResponse()->getContent(), true);
+        //$this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        // $this->assertTrue(gettype($success) == 'array');
+        // $this->assertArrayHasKey('id', $success);
+        // $this->assertArrayHasKey('username', $success);
+        // $this->assertArrayHasKey('password', $success);
+        // $this->assertArrayHasKey('roles', $success);
+        // $this->assertArrayHasKey('email', $success);
+    }
 }
