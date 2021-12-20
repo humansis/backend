@@ -296,6 +296,7 @@ class UserControllerTest extends BMSServiceTestCase
             'password' => 'pin1234'
         ];
 
+        $this->request('POST', '/api/jwt/offline-app/v1/login', $body);
         $responseBody = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         // $this->assertTrue(gettype($success) == 'array');
