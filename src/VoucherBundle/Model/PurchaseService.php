@@ -90,11 +90,12 @@ class PurchaseService
             return $purchase;
         }
 
-        $assistanceRepository = $this->em->getRepository(Assistance::class);
         $assistance = null;
         if ($input instanceof SmartcardPurchaseInputType) {
+            $assistanceRepository = $this->em->getRepository(Assistance::class);
+
             /** @var Assistance|null $assistance */
-            $assistance = $assistanceRepository->findOneBy(['id' => $input->getAssistanceId()]);
+            $assistance = $assistanceRepository->find($input->getAssistanceId());
             if (!$assistance) {
                 throw new NotFoundHttpException('Assistance ID must exists');
             }
