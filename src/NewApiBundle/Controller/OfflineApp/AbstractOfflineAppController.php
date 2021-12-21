@@ -2,12 +2,12 @@
 
 namespace NewApiBundle\Controller\OfflineApp;
 
+use NewApiBundle\Controller\AbstractController;
 use NewApiBundle\Serializer\MapperInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-class AbstractOfflineAppController extends Controller
+class AbstractOfflineAppController extends AbstractController
 {
     /**
      * @param       $data
@@ -17,7 +17,7 @@ class AbstractOfflineAppController extends Controller
      *
      * @return JsonResponse
      */
-    protected function json($data, int $status = Response::HTTP_OK, array $headers = [], array $context = []): JsonResponse
+    protected function json($data, $status = Response::HTTP_OK, $headers = [], $context = []): JsonResponse
     {
         if (!isset($context[MapperInterface::OFFLINE_APP])) {
             $context[MapperInterface::OFFLINE_APP] = true;

@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller\VendorApp;
 
+use NewApiBundle\Controller\AbstractController;
 use NewApiBundle\Serializer\MapperInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-class AbstractVendorAppController extends Controller
+class AbstractVendorAppController extends AbstractController
 {
     /**
      * @param       $data
