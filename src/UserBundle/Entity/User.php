@@ -40,13 +40,13 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullUser", "OfflineLogin"})
+     * @SymfonyGroups({"FullUser"})
      */
     protected $id;
 
     /**
      * @var string
-     * @SymfonyGroups({"FullUser", "FullVendor", "OfflineLogin"})
+     * @SymfonyGroups({"FullUser", "FullVendor"})
      * @SymfonyGroups({"HouseholdChanges"})
      * @Assert\NotBlank(message="Username can't be empty")
      * @Assert\Length(
@@ -60,7 +60,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     
     /**
      * @var string
-     * @SymfonyGroups({"FullUser", "FullVendor", "OfflineLogin"})
+     * @SymfonyGroups({"FullUser", "FullVendor"})
      */
     protected $password;
 
@@ -78,7 +78,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
 
     /**
      * @var string
-     * @SymfonyGroups({"FullUser", "OfflineLogin"})
+     * @SymfonyGroups({"FullUser"})
      * @SymfonyGroups({"HouseholdChanges"})
      * @Assert\NotBlank(message="Email can't be empty")
      */

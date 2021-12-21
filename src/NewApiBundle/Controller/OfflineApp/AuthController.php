@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller\OfflineApp;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use UserBundle\Entity\User;
 
 class AuthController extends AbstractOfflineAppController
@@ -13,18 +13,21 @@ class AuthController extends AbstractOfflineAppController
     /**
      * @Rest\Post("/offline-app/v2/login")
      *
-     * @param JWTTokenManagerInterface $JWTManager
-     *
-     * @return JsonResponse
+     * @return JsonResponse|Response
      */
-    public function loginFieldApp(JWTTokenManagerInterface $JWTManager): JsonResponse
+    public function loginFieldApp()
     {
         /** @var User $user */
         $user = $this->getUser();
 
-        return $this->json([
-            'token' => $JWTManager->create($user),
-            'userId' => $user->getId(),
-        ]);
+        if ($user->getVendor()) {
+            return new Response('Vendor can not connect to the field app.', Response::HTTP_FORBIDDEN);
+        }
+
+        if ($user->getChangePassword()) {
+            return new Response("You must login to web app and change password", 419);
+        }
+
+        return $this->json($user, Response::HTTP_OK, [], ['login' => true]);
     }
 }

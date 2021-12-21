@@ -105,6 +105,20 @@ services:
             - '@=service("doctrine.orm.entity_manager").getRepository("ProjectBundle:Project")'
         tags: [ 'app.mapper' ]
 
+    NewApiBundle\Mapper\VendorLoginMapper:
+        public: true
+        tags: [ 'app.mapper' ]
+        arguments:
+            - '@lexik_jwt_authentication.jwt_manager'
+            - '@serializer'
+
+    NewApiBundle\Mapper\OfflineLoginMapper:
+        public: true
+        tags: [ 'app.mapper' ]
+        arguments:
+            - '@lexik_jwt_authentication.jwt_manager'
+            - '@user.user_service'
+
     NewApiBundle\Controller\AssistanceController:
         arguments:
             - '@NewApiBundle\Export\VulnerabilityScoreExport'

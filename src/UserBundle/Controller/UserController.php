@@ -3,10 +3,6 @@
 namespace UserBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\View\View;
-
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
-use NewApiBundle\Serializer\MapperInterface;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -15,10 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use UserBundle\Adapter\UserAdapter;
 use UserBundle\Entity\User;
-use UserBundle\Enum\FirewallType;
-use UserBundle\Utils\Firewall\FirewallDetector;
 
 /**
  * Class UserController
@@ -159,19 +152,13 @@ class UserController extends Controller
      */
     public function offlineLoginAction(Request $request)
     {
-        $firewall = FirewallDetector::detect($request->getRequestUri());
+        $username = $request->request->get('username');
+        $saltedPassword = $request->request->get('password');
 
-        if($firewall === FirewallType::WSSE){
-            $username = $request->request->get('username');
-            $saltedPassword = $request->request->get('password');
-
-            try {
-                $user = $this->container->get('user.user_service')->login($username, $saltedPassword);
-            } catch (\Exception $exception) {
-                return new Response($exception->getMessage(), Response::HTTP_FORBIDDEN);
-            }
-        }else {
-            $user = $this->getUser();
+        try {
+            $user = $this->container->get('user.user_service')->login($username, $saltedPassword);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_FORBIDDEN);
         }
 
         if ($user->getVendor() !== null) {

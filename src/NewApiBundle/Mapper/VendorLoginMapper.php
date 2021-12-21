@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace VoucherBundle\Mapper;
+namespace NewApiBundle\Mapper;
 
 use ArrayObject;
 use Countable;

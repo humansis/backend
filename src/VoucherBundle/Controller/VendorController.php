@@ -3,7 +3,6 @@
 namespace VoucherBundle\Controller;
 
 
-use NewApiBundle\Serializer\MapperInterface;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -12,8 +11,6 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use UserBundle\Enum\FirewallType;
-use UserBundle\Utils\Firewall\FirewallDetector;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Booklet;
 use UserBundle\Entity\User;
@@ -338,24 +335,21 @@ class VendorController extends Controller
      */
     public function vendorLoginAction(Request $request): Response
     {
-        $firewall = FirewallDetector::detect($request->getRequestUri());
-
-        if ($firewall === FirewallType::WSSE) {
-            $username = $request->request->get('username');
-            $saltedPassword = $request->request->get('salted_password');
-
-            try {
-                $user = $this->container->get('user.user_service')->login($username, $saltedPassword);
-            } catch (\Exception $exception) {
-                return new Response($exception->getMessage(), Response::HTTP_FORBIDDEN);
-            }
-        } else {
-            $user = $this->getUser();
+        $username = $request->request->get('username');
+        $saltedPassword = $request->request->get('salted_password');
+        
+        try {
+            $user = $this->container->get('user.user_service')->login($username, $saltedPassword);
+            $vendor = $this->container->get('voucher.vendor_service')->login($user);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_FORBIDDEN);
         }
-
-        $vendor = $this->container->get('voucher.vendor_service')->login($user);
-
-        return $this->json($vendor, 200, [], ['login' => true, MapperInterface::VENDOR_APP => true]);
+        
+        /** @var Serializer $serializer */
+        $serializer = $this->get('serializer');
+        
+        $vendorJson = $serializer->serialize($vendor, 'json', ['groups' => ['FullVendor']]);
+        return new Response($vendorJson);
     }
 
     /**
