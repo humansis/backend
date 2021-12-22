@@ -110,7 +110,6 @@ services:
         tags: [ 'app.mapper' ]
         arguments:
             - '@lexik_jwt_authentication.jwt_manager'
-            - '@serializer'
 
     NewApiBundle\Mapper\OfflineLoginMapper:
         public: true

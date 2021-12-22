@@ -14,7 +14,7 @@ class AuthController extends AbstractVendorAppController
      *
      * @return JsonResponse|Response
      */
-    public function loginVendorApp()
+    public function loginVendorApp(): Response
     {
         /** @var User $user */
         $user = $this->getUser();

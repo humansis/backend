@@ -25,7 +25,7 @@ class AuthController extends AbstractOfflineAppController
         }
 
         if ($user->getChangePassword()) {
-            return new Response("You must login to web app and change password", 419);
+            return new Response("You must login to web app and change password", Response::HTTP_FORBIDDEN);
         }
 
         return $this->json($user, Response::HTTP_OK, [], ['login' => true]);

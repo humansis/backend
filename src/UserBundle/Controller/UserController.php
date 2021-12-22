@@ -169,7 +169,7 @@ class UserController extends Controller
             return new Response("You must login to web app and change password", 419);
         }
 
-        $userJson = $this->get('serializer')->serialize($user, 'json', ['groups' => ['OfflineLogin']]);
+        $userJson = $this->get('serializer')->serialize($user, 'json', ['groups' => ['FullUser']]);
 
         // add available countries to user
         $object = json_decode($userJson);

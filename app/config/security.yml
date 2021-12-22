@@ -50,7 +50,7 @@ security:
                 realm: Secured Areaa
                 provider: basic-auth-provider
 
-        jwt_login:
+        jwt_login_web_app:
             pattern: ^/api/jwt/web-app/v[0-9]+/login
             stateless: true
             anonymous: true

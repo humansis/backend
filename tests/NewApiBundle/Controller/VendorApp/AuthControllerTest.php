@@ -18,7 +18,7 @@ class AuthControllerTest extends BMSServiceTestCase
     public function testOfflineAppLogin(): void
     {
         $body = [
-            'username' => 'admin@example.org',
+            'username' => 'vendor.syr@example.org',
             'password' => 'pin1234',
         ];
 
@@ -27,9 +27,9 @@ class AuthControllerTest extends BMSServiceTestCase
         $responseBody = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertTrue(gettype($responseBody) == 'array');
-        $this->assertArrayHasKey('userId', $responseBody);
+        $this->assertArrayHasKey('id', $responseBody);
         $this->assertArrayHasKey('username', $responseBody);
         $this->assertArrayHasKey('token', $responseBody);
-        $this->assertArrayHasKey('location', $responseBody);
+        $this->assertArrayHasKey('countryISO3', $responseBody);
     }
 }

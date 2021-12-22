@@ -131,7 +131,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
      /**
      * @var boolean
      * @ORM\Column(name="changePassword", type="boolean", options={"default" : 0})
-     * @SymfonyGroups({"FullUser","OfflineLogin"})
+     * @SymfonyGroups({"FullUser"})
      */
     protected $changePassword = false;
 

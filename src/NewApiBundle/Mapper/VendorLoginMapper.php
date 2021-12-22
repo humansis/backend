@@ -2,13 +2,9 @@
 
 namespace NewApiBundle\Mapper;
 
-use ArrayObject;
-use Countable;
 use InvalidArgumentException;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use NewApiBundle\Serializer\MapperInterface;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
-use Symfony\Component\Serializer\Serializer;
 use VoucherBundle\Entity\Vendor;
 
 class VendorLoginMapper implements MapperInterface
@@ -21,15 +17,9 @@ class VendorLoginMapper implements MapperInterface
      */
     private $JWTTokenManager;
 
-    /**
-     * @var Serializer
-     */
-    private $serializer;
-
-    public function __construct(JWTTokenManagerInterface $JWTTokenManager, Serializer $serializer)
+    public function __construct(JWTTokenManagerInterface $JWTTokenManager)
     {
         $this->JWTTokenManager = $JWTTokenManager;
-        $this->serializer = $serializer;
     }
 
     public function supports(object $object, $format = null, array $context = null): bool
@@ -50,7 +40,7 @@ class VendorLoginMapper implements MapperInterface
         throw new InvalidArgumentException('Invalid argument. It should be instance of '.Vendor::class.', '.get_class($object).' given.');
     }
 
-    public function getUserId(): int
+    public function getId(): int
     {
         return $this->object->getUser()->getId();
     }
@@ -65,12 +55,8 @@ class VendorLoginMapper implements MapperInterface
         return $this->JWTTokenManager->create($this->object->getUser());
     }
 
-    /**
-     * @return array|ArrayObject|bool|Countable|float|int|mixed|string|null
-     * @throws ExceptionInterface
-     */
-    public function getLocation()
+    public function getCountryISO3(): string
     {
-        return $this->serializer->normalize($this->object->getLocation(), null, ['groups' => ['FullVendor']]);
+        return $this->object->getLocation()->getCountryISO3();
     }
 }
