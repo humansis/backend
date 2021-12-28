@@ -158,7 +158,7 @@ class UserControllerTest extends AbstractFunctionalApiTest
             'changePassword' => false,
         ];
 
-        $this->client->request('PUT', '/api/basic/web-app/v1/users/'.$result['id'], $data);
+        $this->client->request('PUT', '/api/basic/web-app/v1/users/'.$result['id'], $data, [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

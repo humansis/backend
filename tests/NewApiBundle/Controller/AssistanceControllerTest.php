@@ -367,7 +367,7 @@ class AssistanceControllerTest extends AbstractFunctionalApiTest
         /** @var ModalityType $modalityType */
         $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Smartcard'], ['id' => 'asc'])[0];
 
-        $this->request('POST', '/api/basic/web-app/v1/assistances', [
+        $this->client->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
@@ -412,7 +412,7 @@ class AssistanceControllerTest extends AbstractFunctionalApiTest
             'cashbackLimit' => null,
             'allowedProductCategoryTypes' => [],
             'remoteDistributionAllowed' => true
-        ]);
+        ], [], $this->addAuth());
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -452,7 +452,7 @@ class AssistanceControllerTest extends AbstractFunctionalApiTest
         /** @var ModalityType $modalityType */
         $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Smartcard'], ['id' => 'asc'])[0];
 
-        $this->request('POST', '/api/basic/web-app/v1/assistances', [
+        $this->client->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
@@ -497,7 +497,7 @@ class AssistanceControllerTest extends AbstractFunctionalApiTest
             'cashbackLimit' => null,
             'allowedProductCategoryTypes' => [],
             'remoteDistributionAllowed' => true
-        ]);
+        ], [], $this->addAuth());
 
         $this->assertTrue(
             $this->client->getResponse()->getStatusCode() === 400,

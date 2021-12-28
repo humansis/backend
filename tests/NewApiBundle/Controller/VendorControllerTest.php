@@ -120,7 +120,7 @@ class VendorControllerTest extends AbstractFunctionalApiTest
             'canSellNonFood' => true,
             'canSellCashback' => true,
             'canDoRemoteDistributions' => false,
-        ]);
+        ], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

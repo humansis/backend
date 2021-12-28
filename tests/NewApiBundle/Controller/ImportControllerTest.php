@@ -381,7 +381,7 @@ class ImportControllerTest extends AbstractFunctionalApiTest
 
         $importId = $importInvalidFile->getImport()->getId();
 
-        $this->client->request('GET', "/api/basic/web-app/v1/imports/$importId/invalid-files");
+        $this->client->request('GET', "/api/basic/web-app/v1/imports/$importId/invalid-files", [], [], $this->addAuth());
 
         $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 

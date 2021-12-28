@@ -23,6 +23,8 @@ class SmartcardDepositControllerTest extends AbstractFunctionalApiTest
 
     private function removeSmartcards(string $serialNumber): void
     {
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $smartcards = $em->getRepository(Smartcard::class)->findBy(['serialNumber' => $serialNumber], ['id' => 'asc']);
         foreach ($smartcards as $smartcard) {
             $em->remove($smartcard);
@@ -38,7 +40,7 @@ class SmartcardDepositControllerTest extends AbstractFunctionalApiTest
 
         $reliefPackage = $this->createReliefPackage($ab);
 
-        $this->client->request('POST', '/api/wsse/offline-app/v4/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
+        $this->client->request('POST', '/api/basic/offline-app/v4/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
             'assistanceId' => $ab->getAssistance()->getId(),
             'value' => 255.25,
             'balanceBefore' => 260.00,
