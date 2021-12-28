@@ -74,8 +74,10 @@ trait EnumTrait
     public static function normalizeValue($value): string
     {
         if (is_string($value)) {
-            $trimmed = strtolower(trim($value));
-            return preg_replace('|[\W_]+|', '', $trimmed);
+            $lowered = mb_strtolower($value);
+
+            //removes every character which is not a number or a letter
+            return preg_replace('|[\W_]+|', '', $lowered);
         }
         if (is_bool($value)) return $value === true ? 'true' : 'false';
         return (string) $value;
