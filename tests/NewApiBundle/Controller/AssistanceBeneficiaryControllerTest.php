@@ -193,10 +193,11 @@ class AssistanceBeneficiaryControllerTest extends AbstractFunctionalApiTest
         $institution = $em->getRepository(Institution::class)->findOneBy([], ['id'=>'desc']);
 
         // clean assistance data
-        $assistanceBeneficiary = $em->getRepository(AssistanceBeneficiary::class)
-            ->findOneBy(['beneficiary' => $institution, 'assistance' => $assistance]);
-        $em->remove($assistanceBeneficiary);
-        $em->flush();
+        $assistanceBeneficiarys = $em->getRepository(AssistanceBeneficiary::class)
+            ->findBy(['beneficiary' => $institution, 'assistance' => $assistance]);
+        foreach ($assistanceBeneficiarys as $assistanceBeneficiary){
+            $em->remove($assistanceBeneficiary);
+        }
 
         $this->client->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/assistances-institutions', [
             'institutionIds' => [$institution->getId()],
@@ -241,9 +242,11 @@ class AssistanceBeneficiaryControllerTest extends AbstractFunctionalApiTest
         $community = $em->getRepository(Community::class)->findOneBy([], ['id'=>'desc']);
 
         // clean assistance data
-        $assistanceBeneficiary = $em->getRepository(AssistanceBeneficiary::class)
-            ->findOneBy(['beneficiary' => $community, 'assistance' => $assistance]);
-        $em->remove($assistanceBeneficiary);
+        $assistanceBeneficiarys = $em->getRepository(AssistanceBeneficiary::class)
+            ->findBy(['beneficiary' => $community, 'assistance' => $assistance]);
+        foreach ($assistanceBeneficiarys as $assistanceBeneficiary){
+            $em->remove($assistanceBeneficiary);
+        }
         $em->flush();
 
         $this->client->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/assistances-communities', [
