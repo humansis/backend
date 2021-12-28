@@ -7,13 +7,15 @@ use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportInvalidFile;
 use NewApiBundle\Entity\ImportQueue;
-use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Repository\ImportQueueRepository;
+use NewApiBundle\Workflow\ImportQueueTransitions;
+use NewApiBundle\Workflow\WorkflowTool;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 class ImportInvalidFileService
 {
@@ -37,12 +39,23 @@ class ImportInvalidFileService
      */
     private $em;
 
-    public function __construct(ImportQueueRepository $importQueueRepository, ImportTemplate $importTemplate, string $importInvalidFilesDirectory, EntityManagerInterface $em)
-    {
+    /**
+     * @var WorkflowInterface
+     */
+    private $importQueueStateMachine;
+
+    public function __construct(
+        ImportQueueRepository $importQueueRepository,
+        ImportTemplate $importTemplate,
+        string $importInvalidFilesDirectory,
+        EntityManagerInterface $em,
+        WorkflowInterface $importQueueStateMachine
+    ) {
         $this->importTemplate = $importTemplate;
         $this->importQueueRepository = $importQueueRepository;
         $this->importInvalidFilesDirectory = $importInvalidFilesDirectory;
         $this->em = $em;
+        $this->importQueueStateMachine = $importQueueStateMachine;
     }
 
     public function generateFile(Import $import): ImportInvalidFile
@@ -101,19 +114,21 @@ class ImportInvalidFileService
         foreach ($entries as $entry) {
 
             foreach ($entry->getContent() as $i => $row) {
+                //TODO parse json only once
                 $invalidColumns = $this->parseInvalidColumns($entry->getMessage(), $i);
 
                 foreach ($header as $column) {
+                    $cell = $sheet->getCellByColumnAndRow($currentColumn, $currentRow);
+
                     if (isset($row[$column])) {
-                        $cellValue = $row[$column];
-                    } else {
-                        $cellValue = '';
+                        $cellValue = $row[$column][CellParameters::VALUE];
+
+                        $cell->setValueExplicit($cellValue, $row[$column][CellParameters::DATA_TYPE]);
+                        $cell->getStyle()->getNumberFormat()->setFormatCode($row[$column][CellParameters::NUMBER_FORMAT]);
                     }
 
-                    $sheet->setCellValueByColumnAndRow($currentColumn, $currentRow, $cellValue);
-
                     if (in_array($column, $invalidColumns)) {
-                        $sheet->getStyleByColumnAndRow($currentColumn, $currentRow)
+                        $cell->getStyle()
                             ->getFill()
                             ->setFillType(Fill::FILL_SOLID)
                             ->getStartColor()
@@ -127,8 +142,9 @@ class ImportInvalidFileService
                 ++$currentRow;
             }
 
-            $entry->setState(ImportQueueState::INVALID_EXPORTED);
+            WorkflowTool::checkAndApply($this->importQueueStateMachine, $entry, [ImportQueueTransitions::INVALIDATE_EXPORT]);
         }
+        $this->em->flush();
     }
 
     private function parseInvalidColumns(?string $messageJson, $rowNumber): array

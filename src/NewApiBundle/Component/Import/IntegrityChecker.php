@@ -7,30 +7,47 @@ use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\Integrity;
 use NewApiBundle\Entity\Import;
+use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
+use NewApiBundle\Workflow\ImportQueueTransitions;
+use NewApiBundle\Workflow\ImportTransitions;
+use NewApiBundle\Workflow\WorkflowTool;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 class IntegrityChecker
 {
-    const BATCH_SIZE = 1;
-
     /** @var ValidatorInterface */
     private $validator;
+
     /** @var EntityManagerInterface */
     private $entityManager;
+
     /** @var ImportQueueRepository */
     private $queueRepository;
 
-    public function __construct(ValidatorInterface $validator, EntityManagerInterface $entityManager)
-    {
+    /** @var WorkflowInterface */
+    private $importStateMachine;
+
+    /** @var WorkflowInterface */
+    private $importQueueStateMachine;
+
+    public function __construct(
+        ValidatorInterface     $validator,
+        EntityManagerInterface $entityManager,
+        WorkflowInterface      $importStateMachine,
+        WorkflowInterface      $importQueueStateMachine
+    ) {
         $this->validator = $validator;
         $this->entityManager = $entityManager;
         $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
+        $this->importStateMachine = $importStateMachine;
+        $this->importQueueStateMachine = $importQueueStateMachine;
     }
 
     /**
@@ -43,26 +60,46 @@ class IntegrityChecker
             throw new \BadMethodCallException('Unable to execute checker. Import is not ready to integrity check.');
         }
 
+        if ($this->hasImportValidFile($import) === false) {
+            WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::FAIL_INTEGRITY]);
+
+            return;
+        }
+
         foreach ($this->queueRepository->getItemsToIntegrityCheck($import, $batchSize) as $i => $item) {
             $this->checkOne($item);
-
             if ($i % 500 === 0) {
                 $this->entityManager->flush();
             }
         }
-
         $this->entityManager->flush();
-
-        if (0 === $this->queueRepository->countItemsToIntegrityCheck($import)) {
-            $isInvalid = $this->isImportQueueInvalid($import);
-            $import->setState($isInvalid ? ImportState::INTEGRITY_CHECK_FAILED : ImportState::INTEGRITY_CHECK_CORRECT);
-
-            $this->entityManager->persist($import);
-            $this->entityManager->flush();
-        }
     }
 
-    protected function checkOne(ImportQueue $item)
+    /**
+     * @param ImportQueue $item
+     */
+    protected function checkOne(ImportQueue $item): void
+    {
+        $violations = $this->getQueueItemViolations($item);
+        $message = $violations['message'];
+        if ($violations['hasViolations']) {
+            $message['raw'] = $item->getContent();
+            $item->setMessage(json_encode($message));
+            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::INVALIDATE);
+        } else {
+            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::VALIDATE);
+        }
+
+        $this->entityManager->persist($item);
+        $this->entityManager->flush();
+    }
+
+    /**
+     * @param ImportQueue $item
+     *
+     * @return array
+     */
+    private function getQueueItemViolations(ImportQueue $item): array
     {
         $iso3 = $item->getImport()->getProject()->getIso3();
 
@@ -93,37 +130,29 @@ class IntegrityChecker
             $index++;
         }
 
-        if ($anyViolation) {
-            $message['raw'] = $item->getContent();
-
-            $item->setMessage(json_encode($message));
-            $item->setState(ImportQueueState::INVALID);
-        } else {
-            $item->setState(ImportQueueState::VALID);
-        }
-
-        // $item->setIntegrityCheckedAt(new \DateTime());
-
-        $this->entityManager->persist($item);
+        return ['hasViolations' => $anyViolation, 'message' => $message];
     }
 
-    /**
-     * @param Import $import
-     *
-     * @return bool
-     */
-    private function isImportQueueInvalid(Import $import): bool
+    public function hasImportQueueInvalidItems(Import $import): bool
     {
         $invalidQueue = $this->entityManager->getRepository(ImportQueue::class)
             ->findBy(['import' => $import, 'state' => ImportQueueState::INVALID]);
 
-        $validQueue = $this->entityManager->getRepository(ImportQueue::class)
-            ->findBy(['import' => $import, 'state' => ImportQueueState::VALID]);
-
-        return count($invalidQueue) > 0 || count($validQueue) === 0;
+        return count($invalidQueue) > 0;
     }
 
-    private function buildErrorMessage(ConstraintViolationInterface $violation)
+    public function isImportWithoutContent(Import $import): bool
+    {
+        $queueSize = $this->entityManager->getRepository(ImportQueue::class)
+            ->count([
+                'import' => $import,
+                'state' => [ImportQueueState::NEW, ImportQueueState::INVALID, ImportQueueState::VALID]
+            ]);
+
+        return $queueSize == 0;
+    }
+
+    public function buildErrorMessage(ConstraintViolationInterface $violation)
     {
         $property = $violation->getConstraint()->payload['propertyPath'] ?? $violation->getPropertyPath();
 
@@ -133,5 +162,18 @@ class IntegrityChecker
         }
 
         return ['column' => $mapping[$property], 'violation' => $violation->getMessage(), 'value' => $violation->getInvalidValue()];
+    }
+
+    /**
+     * @param Import $import
+     *
+     * @return bool
+     */
+    private function hasImportValidFile(Import $import): bool
+    {
+        return (0 != $this->entityManager->getRepository(ImportFile::class)->count([
+                'import' => $import,
+                'structureViolations' => null,
+            ]));
     }
 }

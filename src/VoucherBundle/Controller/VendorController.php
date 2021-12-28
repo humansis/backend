@@ -5,7 +5,6 @@ namespace VoucherBundle\Controller;
 
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -334,7 +333,7 @@ class VendorController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function vendorLoginAction(Request $request)
+    public function vendorLoginAction(Request $request): Response
     {
         $username = $request->request->get('username');
         $saltedPassword = $request->request->get('salted_password');

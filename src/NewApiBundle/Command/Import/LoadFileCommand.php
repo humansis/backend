@@ -10,6 +10,7 @@ use NewApiBundle\Entity\ImportFile;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 class LoadFileCommand extends AbstractImportQueueCommand
 {
@@ -18,9 +19,11 @@ class LoadFileCommand extends AbstractImportQueueCommand
      */
     private $uploadImportService;
 
-    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger, UploadImportService $uploadImportService)
+    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger, UploadImportService $uploadImportService,
+                               WorkflowInterface $importStateMachine
+    )
     {
-        parent::__construct($manager, $importService, $importLogger);
+        parent::__construct($manager, $importService, $importLogger, $importStateMachine);
 
         $this->uploadImportService = $uploadImportService;
     }

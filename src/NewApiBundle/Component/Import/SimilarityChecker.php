@@ -3,16 +3,17 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\NationalId;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
+use NewApiBundle\Workflow\ImportQueueTransitions;
+use NewApiBundle\Workflow\ImportTransitions;
+use NewApiBundle\Workflow\WorkflowTool;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 class SimilarityChecker
 {
@@ -20,14 +21,27 @@ class SimilarityChecker
 
     /** @var EntityManagerInterface */
     private $entityManager;
+
     /** @var ImportQueueRepository */
     private $queueRepository;
 
-    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
-    {
+    /** @var WorkflowInterface */
+    private $importStateMachine;
+
+    /** @var WorkflowInterface */
+    private $importQueueStateMachine;
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        LoggerInterface        $logger,
+        WorkflowInterface      $importStateMachine,
+        WorkflowInterface      $importQueueStateMachine
+    ) {
         $this->entityManager = $entityManager;
         $this->logger = $logger;
         $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
+        $this->importStateMachine = $importStateMachine;
+        $this->importQueueStateMachine = $importQueueStateMachine;
     }
 
     /**
@@ -53,26 +67,32 @@ class SimilarityChecker
         $queueSize = $this->queueRepository->countItemsToSimilarityCheck($import);
         if (0 === $queueSize) {
             $this->logImportInfo($import, 'Batch ended - nothing left, similarity checking ends');
-            $this->postCheck($import);
+            WorkflowTool::checkAndApply($this->importStateMachine, $import,
+                [ImportTransitions::COMPLETE_SIMILARITY, ImportTransitions::FAIL_SIMILARITY]);
+            $this->entityManager->flush();
         } else {
             $this->logImportInfo($import, "Batch ended - $queueSize items left, similarity checking continues");
         }
     }
 
-    protected function checkOne(ImportQueue $item)
+    /**
+     * @param ImportQueue $item
+     */
+    protected function checkOne(ImportQueue $item): void
     {
         // TODO: similarity check
-
         $item->setSimilarityCheckedAt(new \DateTime());
-
         $this->entityManager->persist($item);
+
+        WorkflowTool::checkAndApply($this->importQueueStateMachine, $item, [ImportQueueTransitions::TO_CREATE]);
+        $this->entityManager->flush();
     }
 
-    private function postCheck(Import $import)
+    /**
+     * @param Import $import
+     */
+    public function postCheck(Import $import): void
     {
-        $isSuspicious = count($this->queueRepository->getSuspiciousItemsToUserCheck($import)) > 0;
-        $import->setState($isSuspicious ? ImportState::SIMILARITY_CHECK_FAILED : ImportState::SIMILARITY_CHECK_CORRECT);
-
         $newCheckedImportQueues = $this->entityManager->getRepository(ImportQueue::class)
             ->findBy([
                 'import' => $import,
@@ -81,11 +101,9 @@ class SimilarityChecker
 
         /** @var ImportQueue $importQueue */
         foreach ($newCheckedImportQueues as $importQueue) {
-            $importQueue->setState(ImportQueueState::TO_CREATE);
-            $this->entityManager->persist($importQueue);
+            WorkflowTool::checkAndApply($this->importQueueStateMachine, $importQueue, [ImportQueueTransitions::TO_CREATE]);
         }
 
-        $this->entityManager->persist($import);
         $this->entityManager->flush();
         $this->logImportDebug($import, "Ended with status ".$import->getState());
     }
@@ -98,7 +116,7 @@ class SimilarityChecker
     public function isImportQueueSuspicious(Import $import): bool
     {
         $queue = $this->entityManager->getRepository(ImportQueue::class)
-            ->findBy(['import' => $import, 'state' => ImportQueueState::SUSPICIOUS, 'decidedAt' => null]);
+            ->findBy(['import' => $import, 'state' => ImportQueueState::SIMILARITY_CANDIDATE, 'decidedAt' => null]);
 
         return count($queue) > 0;
     }

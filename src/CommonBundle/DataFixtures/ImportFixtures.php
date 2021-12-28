@@ -29,18 +29,62 @@ class ImportFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($file);
 
         $item = new ImportQueue($import, $file, [
-            ['ID Type' => NationalId::TYPE_NATIONAL_ID, 'ID Number' => '123456789'],
-            ['ID Type' => NationalId::TYPE_NATIONAL_ID, 'ID Number' => '111222333'],
+            [
+                'ID Type' => [
+                    'value' => NationalId::TYPE_NATIONAL_ID,
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+                'ID Number' => [
+                    'value' => '123456789',
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+            ],
+            [
+                'ID Type' => [
+                    'value' => NationalId::TYPE_NATIONAL_ID,
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+                'ID Number' => [
+                    'value' => '111222333',
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+            ],
         ]);
         $manager->persist($item);
 
         $item = new ImportQueue($import, $file, [
-            ['ID Type' => NationalId::TYPE_NATIONAL_ID, 'ID Number' => '987654321'],
+            [
+                'ID Type' => [
+                    'value' => NationalId::TYPE_NATIONAL_ID,
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+                'ID Number' => [
+                    'value' => '987654321',
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+            ],
         ]);
         $manager->persist($item);
 
         $item = new ImportQueue($import, $file, [
-            ['ID Type' => NationalId::TYPE_NATIONAL_ID, 'ID Number' => '111222333'],
+            [
+                'ID Type' => [
+                    'value' => NationalId::TYPE_NATIONAL_ID,
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+                'ID Number' => [
+                    'value' => '111222333',
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+            ],
         ]);
         $manager->persist($item);
 

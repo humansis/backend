@@ -6,6 +6,8 @@ namespace NewApiBundle\Enum;
 
 final class ModalityType
 {
+    use EnumTrait;
+
     public const MOBILE_MONEY = 'Mobile Money';
     public const CASH = 'Cash';
     public const SMART_CARD = 'Smartcard';

@@ -5,6 +5,8 @@ namespace NewApiBundle\Enum;
 
 final class SynchronizationBatchState
 {
+    use EnumTrait;
+
     const UPLOADED = 'Uploaded';
     const CORRECT = 'Correct';
     const INCORRECT = 'Errors';

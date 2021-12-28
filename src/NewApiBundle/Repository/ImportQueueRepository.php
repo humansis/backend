@@ -134,7 +134,7 @@ class ImportQueueRepository extends EntityRepository
     {
         return $this->findBy([
             'import' => $import,
-            'state' => [ImportQueueState::VALID, ImportQueueState::SUSPICIOUS],
+            'state' => [ImportQueueState::VALID, ImportQueueState::UNIQUE_CANDIDATE],
             'similarityCheckedAt' => null
         ], ['id' => 'asc'], $batchSize);
     }
@@ -147,7 +147,7 @@ class ImportQueueRepository extends EntityRepository
             ->andWhere('iq.state IN (:states)')
             ->andWhere('iq.similarityCheckedAt IS NULL')
             ->setParameter('import', $import)
-            ->setParameter('states', [ImportQueueState::VALID, ImportQueueState::SUSPICIOUS])
+            ->setParameter('states', [ImportQueueState::VALID, ImportQueueState::IDENTITY_CANDIDATE])
         ;
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
@@ -166,7 +166,7 @@ class ImportQueueRepository extends EntityRepository
             ->join('iq.duplicities', 'dup')
             ->andWhere('dup.decideAt IS NULL')
             ->setParameter('import', $import)
-            ->setParameter('states', [ImportQueueState::SUSPICIOUS])
+            ->setParameter('states', [ImportQueueState::SIMILARITY_CANDIDATE])
         ;
         if ($batchSize) {
             $qb->setMaxResults($batchSize);

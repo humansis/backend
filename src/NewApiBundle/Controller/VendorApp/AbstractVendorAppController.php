@@ -8,7 +8,7 @@ use NewApiBundle\Serializer\MapperInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-class AbstractVendorAppController  extends AbstractController
+class AbstractVendorAppController extends AbstractController
 {
     /**
      * @param       $data

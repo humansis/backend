@@ -5,6 +5,9 @@ namespace Tests\NewApiBundle\Controller;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use Exception;
+use NewApiBundle\Enum\HouseholdAssets;
+use NewApiBundle\Enum\HouseholdShelterStatus;
+use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use ProjectBundle\Enum\Livelihood;
 use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
@@ -41,7 +44,7 @@ class HouseholdCodelistControllerTest extends AbstractFunctionalApiTest
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
         $this->assertIsArray($result['data']);
-        $this->assertEquals(count(Household::ASSETS), $result['totalCount']);
+        $this->assertEquals(count(HouseholdAssets::values()), $result['totalCount']);
     }
 
     /**
@@ -53,7 +56,7 @@ class HouseholdCodelistControllerTest extends AbstractFunctionalApiTest
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
-            "totalCount": '.count(Household::SUPPORT_RECIEVED_TYPES).',
+            "totalCount": '.count(HouseholdSupportReceivedType::values()).',
             "data": "*"
         }', $this->client->getResponse()->getContent());
     }
@@ -72,7 +75,7 @@ class HouseholdCodelistControllerTest extends AbstractFunctionalApiTest
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
         $this->assertIsArray($result['data']);
-        $this->assertEquals(count(Household::SHELTER_STATUSES), $result['totalCount']);
+        $this->assertEquals(count(HouseholdShelterStatus::values()), $result['totalCount']);
     }
 
     /**
