@@ -2,19 +2,10 @@
 
 namespace Tests\NewApiBundle\Controller\VendorApp;
 
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
-class AuthControllerTest extends BMSServiceTestCase
+class AuthControllerTest extends AbstractFunctionalApiTest
 {
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     public function testOfflineAppLogin(): void
     {
         $this->markTestSkipped('Support for JWT in test environment needs to be done first');

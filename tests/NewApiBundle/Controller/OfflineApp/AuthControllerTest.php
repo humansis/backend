@@ -2,38 +2,16 @@
 
 namespace Tests\NewApiBundle\Controller\OfflineApp;
 
-use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
-use Doctrine\Persistence\ObjectRepository;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 use UserBundle\Entity\User;
-use UserBundle\Repository\UserRepository;
 
-class AuthControllerTest extends BMSServiceTestCase
+class AuthControllerTest extends AbstractFunctionalApiTest
 {
     private const PASSWORD = 'pin1234';
     private const USER = 'test-no-vendor@test.org';
-
-    /** @var EntityRepository|ObjectRepository|UserRepository  */
-    private $userRepository;
-
-    /** @var User */
-    private $user;
-
-    /**
-     * @throws OptimisticLockException
-     * @throws ORMException
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        parent::setUpFunctionnal();
-
-        $this->client = self::$container->get('test.client');
-        $this->userRepository = $this->em->getRepository(User::class);
-        $this->user = $this->getUser();
-    }
 
     /**
      * @return User
@@ -42,7 +20,10 @@ class AuthControllerTest extends BMSServiceTestCase
      */
     private function getUser(): User
     {
-        $user = $this->userRepository->findOneBy(['username' => self::USER]);
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+
+        $user = $this->getTestUser(self::USER);
         if(is_null($user)){
             $user = new User();
             $user->setUsername('test-no-vendor@test.org');
@@ -52,8 +33,8 @@ class AuthControllerTest extends BMSServiceTestCase
             $user->setSalt('fhn91jwIbBnFAgZjQZA3mE4XUrjYzWfOoZDcjt/9');
             $user->setPassword('WvbKrt5YeWcDtzWg4C8uUW9a3pmHi6SkXvnvvCisIbNQqUVtaTm8Myv/Hst1IEUDv3NtrqyUDC4BygbjQ/zePw==');
             $user->setEnabled(true);
-            $this->em->persist($user);
-            $this->em->flush();
+            $em->persist($user);
+            $em->flush();
         }
 
         return $user;
@@ -65,8 +46,11 @@ class AuthControllerTest extends BMSServiceTestCase
      */
     protected function tearDown()
     {
-        $this->em->remove($this->user);
-        $this->em->flush();
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+
+        $em->remove($this->getTestUser(self::USER));
+        $em->flush();
         parent::tearDown();
     }
 
@@ -75,7 +59,7 @@ class AuthControllerTest extends BMSServiceTestCase
         $this->markTestSkipped('Support for JWT in test environment needs to be done first');
 
         $body = [
-            'username' => $this->user->getUsername(),
+            'username' => self::USER,
             'password' => self::PASSWORD,
         ];
 
