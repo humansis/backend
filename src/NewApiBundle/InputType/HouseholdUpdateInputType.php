@@ -179,11 +179,13 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     private $residenceAddress;
 
     /**
+     * @var TemporarySettlementAddressInputType
      * @Assert\Valid
      */
     private $temporarySettlementAddress;
 
     /**
+     * @var CampAddressInputType
      * @Assert\Valid
      */
     private $campAddress;
@@ -227,11 +229,13 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     private $proxyLocalParentsName;
 
     /**
+     * @var NationalIdCardInputType|null
      * @Assert\Valid
      */
     private $proxyNationalIdCard;
 
     /**
+     * @var PhoneInputType|null
      * @Assert\Valid
      */
     private $proxyPhone;
@@ -253,9 +257,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     }
 
     /**
-     * @Assert\Choice(callback={"\ProjectBundle\Enum\Livelihood", "values"}, strict=true, groups={"Strict"})
      * @return string|null
-     * @throws \NewApiBundle\Enum\EnumValueNoFoundException
      */
     public function getLivelihood()
     {

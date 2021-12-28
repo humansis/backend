@@ -28,16 +28,14 @@ trait EnumNormalizeTrait
         return PersonGender::valueFromAPI($this->gender);
     }
 
-    public function getResidencyStatus(): ?string
+    public function getResidencyStatus(): string
     {
-        if (empty($this->residencyStatus)) return null;
         return ResidencyStatus::valueFromAPI($this->residencyStatus);
     }
 
     public function getShelterStatus(): ?string
     {
-        if (empty($this->shelterStatus)) return null;
-        return HouseholdShelterStatus::valueFromAPI($this->shelterStatus);
+        return $this->shelterStatus ? HouseholdShelterStatus::valueFromAPI($this->shelterStatus) : null;
     }
 
     public function getLivelihood(): ?string
@@ -52,35 +50,28 @@ trait EnumNormalizeTrait
 
     public function getTypePhone1(): ?string
     {
-        if (empty($this->typePhone1)) return null;
-        return PhoneTypes::valueFromAPI($this->typePhone1);
+        return $this->typePhone1 ? PhoneTypes::valueFromAPI($this->typePhone1) : null;
     }
 
-    /**
-     * @return bool|null
-     */
     public function isProxyPhone1(): bool
     {
-        if (empty($this->proxyPhone1)) return false;
-        return VariableBool::valueFromAPI($this->proxyPhone1);
+        return $this->proxyPhone1 && VariableBool::valueFromAPI($this->proxyPhone1);
     }
 
     public function getTypePhone2(): ?string
     {
-        if (empty($this->typePhone2)) return null;
-        return PhoneTypes::valueFromAPI($this->typePhone2);
+        return $this->typePhone2 ? PhoneTypes::valueFromAPI($this->typePhone2) : null;
     }
 
     public function isProxyPhone2(): bool
     {
-        if (empty($this->proxyPhone2)) return false;
-        return VariableBool::valueFromAPI($this->proxyPhone2);
+        return $this->proxyPhone2 && VariableBool::valueFromAPI($this->proxyPhone2);
     }
 
     /**
      * @Assert\All(
      *     constraints={
-     *         @Assert\Choice(callback={"\NewApiBundle\Enum\HouseholdAssets", "values"}, strict=true)
+     *         @Enum(enumClass="NewApiBundle\Enum\HouseholdAssets")
      *     },
      *     groups={"Strict"}
      * )
@@ -96,7 +87,7 @@ trait EnumNormalizeTrait
     /**
      * @Assert\All(
      *     constraints={
-     *         @Assert\Choice(callback={"\NewApiBundle\Enum\HouseholdSupportReceivedType", "values"}, strict=true)
+     *         @Enum(enumClass="NewApiBundle\Enum\HouseholdSupportReceivedType")
      *     },
      *     groups={"Strict"}
      * )

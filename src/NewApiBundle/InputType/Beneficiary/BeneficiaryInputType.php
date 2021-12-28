@@ -306,8 +306,7 @@ class BeneficiaryInputType implements InputTypeInterface
      */
     public function getResidencyStatus()
     {
-        if (empty($this->residencyStatus)) return null;
-        return ResidencyStatus::valueFromAPI($this->residencyStatus);
+        return $this->residencyStatus ? ResidencyStatus::valueFromAPI($this->residencyStatus) : null;
     }
 
     /**

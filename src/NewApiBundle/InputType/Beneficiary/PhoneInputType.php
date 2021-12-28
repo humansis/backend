@@ -29,6 +29,7 @@ class PhoneInputType implements InputTypeInterface
     private $number;
 
     /**
+     * @Assert\NotNull
      * @Enum(enumClass="NewApiBundle\Enum\PhoneTypes")
      */
     private $type;
@@ -71,7 +72,6 @@ class PhoneInputType implements InputTypeInterface
     }
 
     /**
-     * @Assert\Choice(callback={"\NewApiBundle\Enum\PhoneTypes", "values"}, strict=true, groups={"Strict"})
      * @return string
      */
     public function getType()
