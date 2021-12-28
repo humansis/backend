@@ -2,10 +2,12 @@
 
 namespace Tests\NewApiBundle\Controller;
 
+use CommonBundle\DataFixtures\UserFixtures;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
+use UserBundle\Entity\User;
 use UserBundle\Entity\UserProject;
 
 class LocationControllerTest extends AbstractFunctionalApiTest
@@ -51,7 +53,8 @@ class LocationControllerTest extends AbstractFunctionalApiTest
 
     public function testGetUserCountriesNoAdmin(): void
     {
-        $testUserVendorId = 2;
+        $testUser = self::$container->get('doctrine')->getRepository(User::class)->findOneBy(['username'=>UserFixtures::REF_VENDOR_KHM], ['id' => 'asc']);
+        $testUserVendorId = $testUser->getId();
         $this->client->request('GET', '/api/basic/web-app/v1/users/'.$testUserVendorId.'/countries', [], [], $this->addAuth());
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
