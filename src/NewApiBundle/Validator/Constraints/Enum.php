@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraint;
  */
 class Enum extends Constraint
 {
-    public $message = 'Provided value {{ providedValue }} is not allowed for {{ parameter }}. Allowed values are: [ {{ allowedValues }} ].';
+    public $message = 'Provided value {{ providedValue }} is not allowed for parameter "{{ parameter }}". Allowed values are: [ {{ allowedValues }} ].';
 
     public $enumClass;
     public $includeAPIAlternatives = true;

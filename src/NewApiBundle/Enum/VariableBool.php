@@ -20,11 +20,11 @@ class VariableBool
         return self::$values;
     }
 
-    protected static function apiAlternatives(): array
+    public static function apiAlternatives(): array
     {
         return [
-            self::TRUE => [1, 'true', 'truth', 'T', 'Y', 'yes', 'pravda'],
-            self::FALSE => [0, 'false', 'F', 'N', 'no', 'nepravda'],
+            self::TRUE => [1, 'true', 'truth', 'T', 'Y', 'yes', 'pravda', true],
+            self::FALSE => [0, 'false', 'F', 'N', 'no', 'nepravda', false],
         ];
     }
 

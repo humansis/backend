@@ -134,7 +134,7 @@ class BMSServiceTestCase extends KernelTestCase
                 "national_ids" => [
                     [
                         "id_number" => "0000_TEST",
-                        "id_type" => "ID_TYPE_TEST"
+                        "id_type" => "National ID"
                     ]
                 ]
             ],
@@ -168,7 +168,7 @@ class BMSServiceTestCase extends KernelTestCase
                 "national_ids" => [
                     [
                         "id_number" => "1111_TEST",
-                        "id_type" => "ID_TYPE_TEST"
+                        "id_type" => "National ID"
                     ]
                 ]
             ],
@@ -202,7 +202,7 @@ class BMSServiceTestCase extends KernelTestCase
                 "national_ids" => [
                     [
                         "id_number" => "1111_TEST",
-                        "id_type" => "ID_TYPE_TEST"
+                        "id_type" => "National ID"
                     ]
                 ]
             ]

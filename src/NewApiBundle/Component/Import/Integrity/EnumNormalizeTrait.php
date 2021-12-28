@@ -23,59 +23,33 @@ trait EnumNormalizeTrait
         return VariableBool::valueFromAPI($this->head);
     }
 
-    /**
-     * @Assert\Choice(callback={"\NewApiBundle\Enum\PersonGender", "values"}, strict=true)
-     * @return string
-     */
     public function getGender(): string
     {
         return PersonGender::valueFromAPI($this->gender);
     }
 
-    /**
-     * @Assert\Choice(callback={"\BeneficiaryBundle\Enum\ResidencyStatus", "values"}, strict=true)
-     * @return string
-     */
     public function getResidencyStatus(): ?string
     {
         if (empty($this->residencyStatus)) return null;
         return ResidencyStatus::valueFromAPI($this->residencyStatus);
     }
 
-    /**
-     * @Assert\Choice(callback={"\NewApiBundle\Enum\HouseholdShelterStatus", "values"}, strict=true)
-     * @return string
-     */
     public function getShelterStatus(): ?string
     {
         if (empty($this->shelterStatus)) return null;
         return HouseholdShelterStatus::valueFromAPI($this->shelterStatus);
     }
 
-    /**
-     * @Assert\Choice(callback={"\ProjectBundle\Enum\Livelihood", "values"}, strict=true)
-     * @return string|null
-     * @throws \NewApiBundle\Enum\EnumValueNoFoundException
-     */
     public function getLivelihood(): ?string
     {
         return $this->livelihood ? Livelihood::valueFromAPI($this->livelihood) : null;
     }
 
-    /**
-     * @Assert\Choice(callback={"\NewApiBundle\Enum\NationalIdType", "values"}, strict=true)
-     * @return string|null
-     * @throws \NewApiBundle\Enum\EnumValueNoFoundException
-     */
     public function getIdType(): ?string
     {
         return $this->idType ? NationalIdType::valueFromAPI($this->idType) : null;
     }
 
-    /**
-     * @Assert\Choice(callback={"\NewApiBundle\Enum\PhoneTypes", "values"}, strict=true)
-     * @return string
-     */
     public function getTypePhone1(): ?string
     {
         if (empty($this->typePhone1)) return null;
@@ -91,19 +65,12 @@ trait EnumNormalizeTrait
         return VariableBool::valueFromAPI($this->proxyPhone1);
     }
 
-    /**
-     * @Assert\Choice(callback={"\NewApiBundle\Enum\PhoneTypes", "values"}, strict=true)
-     * @return string
-     */
     public function getTypePhone2(): ?string
     {
         if (empty($this->typePhone2)) return null;
         return PhoneTypes::valueFromAPI($this->typePhone2);
     }
 
-    /**
-     * @return bool|null
-     */
     public function isProxyPhone2(): bool
     {
         if (empty($this->proxyPhone2)) return false;
@@ -142,7 +109,7 @@ trait EnumNormalizeTrait
         return $enumBuilder->buildInputValuesFromExplode($this->supportReceivedTypes);
     }
 
-    public function getBirthDate(): \DateTimeInterface
+    public function getDateOfBirth(): \DateTimeInterface
     {
         return ImportDateConverter::toDatetime($this->dateOfBirth);
     }

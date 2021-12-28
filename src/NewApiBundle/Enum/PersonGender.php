@@ -20,7 +20,7 @@ class PersonGender
         return array_values(self::$values);
     }
 
-    protected static function apiAlternatives(): array
+    public static function apiAlternatives(): array
     {
         return [
             self::MALE => [1, 'm', 'man', 'men', 'true'],

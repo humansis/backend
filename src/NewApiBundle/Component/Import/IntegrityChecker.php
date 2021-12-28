@@ -114,15 +114,13 @@ class IntegrityChecker
         $violationList->addAll(
             $this->validator->validate($hhh)
         );
-        $violationList->addAll(
-            $this->validator->validate($hhh->buildBeneficiaryInputType())
-        );
-        // $violationList->addAll(
-        //     $this->validator->validate($hhh->buildHouseholdUpdateType())
-        // );
-        // $violationList->addAll(
-        //     $this->validator->validate($hhh->buildHouseholdInputType())
-        // );
+
+        if ($violationList->count() === 0) { //$hhh->buildBeneficiaryInputType() requires to have $hhh validated
+            $violationList->addAll(
+                $this->validator->validate($hhh->buildBeneficiaryInputType())
+            );
+        }
+
         $anyViolation = false;
         $message[0] = [];
         foreach ($violationList as $violation) {
@@ -138,9 +136,12 @@ class IntegrityChecker
             $violationList->addAll(
                 $this->validator->validate($hhm)
             );
-            $violationList->addAll(
-                $this->validator->validate($hhm->buildBeneficiaryInputType())
-            );
+
+            if ($violationList->count() === 0) { //$hhm->buildBeneficiaryInputType() requires to have $hhm validated
+                $violationList->addAll(
+                    $this->validator->validate($hhm->buildBeneficiaryInputType())
+                );
+            }
 
             foreach ($violationList as $violation) {
                 $message[$index][] = $this->buildErrorMessage($violation);

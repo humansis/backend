@@ -10,7 +10,7 @@ trait EnumTrait
     /**
      * @return string[][] key = value, value = array of possible values from API
      */
-    protected static function apiAlternatives(): array {
+    public static function apiAlternatives(): array {
         return [];
     }
 
@@ -71,7 +71,7 @@ trait EnumTrait
         return self::apiMap()[$value];
     }
 
-    private static function normalizeValue($value): string
+    public static function normalizeValue($value): string
     {
         if (is_string($value)) {
             $trimmed = strtolower(trim($value));

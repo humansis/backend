@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
-use BeneficiaryBundle\Entity\Household;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
@@ -22,6 +21,7 @@ use NewApiBundle\Validator\Constraints\Iso8601;
 use ProjectBundle\Enum\Livelihood;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\GroupSequenceProviderInterface;
+use NewApiBundle\Validator\Constraints\Enum;
 
 /**
  * @Assert\GroupSequenceProvider()
@@ -64,8 +64,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     private $iso3;
 
     /**
-     * @Assert\NotNull
-     * @Assert\NotBlank
+     * @Enum(enumClass="ProjectBundle\Enum\Livelihood")
      */
     private $livelihood;
 
@@ -75,8 +74,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     private $assets;
 
     /**
-     * @Assert\NotNull
-     * @Assert\NotBlank
+     * @Enum(enumClass="NewApiBundle\Enum\HouseholdShelterStatus")
      */
     private $shelterStatus;
 
@@ -308,7 +306,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     }
 
     /**
-     * @param int|null $shelterStatus
+     * @param int|string|null $shelterStatus
      */
     public function setShelterStatus($shelterStatus)
     {

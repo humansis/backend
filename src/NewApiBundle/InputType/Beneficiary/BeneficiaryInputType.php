@@ -5,9 +5,11 @@ namespace NewApiBundle\InputType\Beneficiary;
 
 use BeneficiaryBundle\Enum\ResidencyStatus;
 use NewApiBundle\Enum\PersonGender;
+use NewApiBundle\Enum\VariableBool;
 use NewApiBundle\Request\InputTypeInterface;
 use NewApiBundle\Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
+use NewApiBundle\Validator\Constraints\Enum;
 
 /**
  * @Assert\GroupSequence({"BeneficiaryInputType", "Strict"})
@@ -68,8 +70,8 @@ class BeneficiaryInputType implements InputTypeInterface
     private $enParentsName;
 
     /**
-     * @Assert\NotBlank
-     * @Assert\NotNull
+     * @Assert\NotNull()
+     * @Enum(enumClass="NewApiBundle\Enum\PersonGender")
      */
     private $gender;
 
@@ -88,8 +90,8 @@ class BeneficiaryInputType implements InputTypeInterface
     private $phones = [];
 
     /**
-     * @Assert\NotBlank
-     * @Assert\NotNull
+     * @Assert\NotNull()
+     * @Enum(enumClass="BeneficiaryBundle\Enum\ResidencyStatus")
      */
     private $residencyStatus;
 
@@ -106,8 +108,8 @@ class BeneficiaryInputType implements InputTypeInterface
     private $referralComment;
 
     /**
-     * @Assert\Type("boolean")
-     * @Assert\NotNull
+     * @Assert\NotNull()
+     * @Enum(enumClass="NewApiBundle\Enum\VariableBool")
      */
     private $isHead;
 
@@ -360,11 +362,11 @@ class BeneficiaryInputType implements InputTypeInterface
      */
     public function isHead()
     {
-        return $this->isHead === true;
+        return VariableBool::valueFromAPI($this->isHead);
     }
 
     /**
-     * @param boolean $isHead
+     * @param boolean|int|string $isHead
      */
     public function setIsHead($isHead)
     {

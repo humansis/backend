@@ -22,11 +22,11 @@ class EnumValidator extends ConstraintValidator
             return;
         }
 
-        if (gettype($constraint->enumClass) !== 'string') {
+        if (!is_string($constraint->enumClass)) {
             throw new InvalidArgumentException('Provided value for parameter "enumClass" has to be type string. Got ' . gettype($constraint->enumClass) . ' instead.');
         }
 
-        if (gettype($constraint->includeAPIAlternatives) !== 'boolean') {
+        if (!is_bool($constraint->includeAPIAlternatives)) {
             throw new InvalidArgumentException('Provided value for parameter "includeAPIAlternatives" has to be type bool. Got ' . gettype($constraint->includeAPIAlternatives) . ' instead.');
         }
 
@@ -55,7 +55,13 @@ class EnumValidator extends ConstraintValidator
             }
         }
 
-        if (!in_array($value, $allowedValues)) {
+        $valueNormalized = EnumTrait::normalizeValue($value);
+
+        $allowedValuesNormalized = array_map(function ($value) {
+            return EnumTrait::normalizeValue($value);
+        }, $allowedValues);
+
+        if (!in_array($valueNormalized, $allowedValuesNormalized)) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ providedValue }}', '"' . $value . '"')
                 ->setParameter('{{ parameter }}', $this->context->getPropertyName())

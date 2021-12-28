@@ -4,21 +4,13 @@ declare(strict_types=1);
 namespace NewApiBundle\Component\Import\Integrity;
 
 use BeneficiaryBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Enum\ResidencyStatus;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\CellParameters;
-use NewApiBundle\Enum\HouseholdAssets;
-use NewApiBundle\Enum\HouseholdShelterStatus;
-use NewApiBundle\Enum\HouseholdSupportReceivedType;
-use NewApiBundle\Enum\PersonGender;
-use NewApiBundle\Enum\PhoneTypes;
-use NewApiBundle\Enum\VariableBool;
-use NewApiBundle\InputType\Helper\EnumsBuilder;
 use NewApiBundle\Validator\Constraints\ImportDate;
-use ProjectBundle\Enum\Livelihood;
 use Symfony\Component\Validator\Constraints as Assert;
+use NewApiBundle\Validator\Constraints\Enum;
 
 class HouseholdHead
 {
@@ -51,7 +43,7 @@ class HouseholdHead
     protected $tentNumber;
 
     /**
-     * @Assert\Type(type="string")
+     * @Enum(enumClass="ProjectBundle\Enum\Livelihood")
      */
     protected $livelihood;
 
@@ -145,20 +137,20 @@ class HouseholdHead
     protected $englishParentsName;
 
     /**
-     * @Assert\Type("scalar")
-     * @Assert\NotBlank(),
+     * @Assert\NotNull()
+     * @Enum(enumClass="NewApiBundle\Enum\PersonGender")
      */
     protected $gender;
 
     /**
-     * @Assert\Type("string")
-     * @Assert\NotBlank(),
+     * @Assert\NotNull()
+     * @Enum(enumClass="NewApiBundle\Enum\VariableBool")
      */
     protected $head;
 
     /**
-     * @Assert\Type("string")
-     * @Assert\NotBlank(),
+     * @Assert\NotNull()
+     * @Enum(enumClass="BeneficiaryBundle\Enum\ResidencyStatus")
      */
     protected $residencyStatus;
 
@@ -174,7 +166,7 @@ class HouseholdHead
     protected $vulnerabilityCriteria;
 
     /**
-     * @Assert\Type("string")
+     * @Enum(enumClass="NewApiBundle\Enum\PhoneTypes")
      */
     protected $typePhone1;
 
@@ -189,12 +181,12 @@ class HouseholdHead
     protected $numberPhone1;
 
     /**
-     * @Assert\Type("string")
+     * @Enum(enumClass="NewApiBundle\Enum\VariableBool")
      */
     protected $proxyPhone1;
 
     /**
-     * @Assert\Type("string")
+     * @Enum(enumClass="NewApiBundle\Enum\PhoneTypes")
      */
     protected $typePhone2;
 
@@ -209,12 +201,12 @@ class HouseholdHead
     protected $numberPhone2;
 
     /**
-     * @Assert\Type("string")
+     * @Enum(enumClass="NewApiBundle\Enum\VariableBool")
      */
     protected $proxyPhone2;
 
     /**
-     * @Assert\Type("scalar")
+     * @Enum(enumClass="NewApiBundle\Enum\NationalIdType")
      */
     protected $idType;
 
@@ -224,7 +216,7 @@ class HouseholdHead
     protected $idNumber;
 
     /**
-     * @Assert\Type("string")
+     * @Enum(enumClass="NewApiBundle\Enum\HouseholdShelterStatus")
      */
     protected $shelterStatus;
 

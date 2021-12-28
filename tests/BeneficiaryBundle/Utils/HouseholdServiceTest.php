@@ -4,24 +4,21 @@ namespace Tests\BeneficiaryBundle\Utils;
 
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
-use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Enum\ResidencyStatus;
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\Common\Persistence\ObjectManager;
-use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\PersonGender;
+use NewApiBundle\Enum\PhoneTypes;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
-use NewApiBundle\InputType\Beneficiary\AddressInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\InputType\HouseholdCreateInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
 use ProjectBundle\Entity\Project;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -252,14 +249,14 @@ class HouseholdServiceTest extends KernelTestCase
 
         $phone = new PhoneInputType();
         $phone->setPrefix('111');
-        $phone->setType('111');
+        $phone->setType(PhoneTypes::LANDLINE);
         $phone->setProxy(false);
         $phone->setNumber('111');
         $head->addPhone($phone);
 
         $phone = new PhoneInputType();
         $phone->setPrefix('222');
-        $phone->setType('222');
+        $phone->setType(PhoneTypes::MOBILE);
         $phone->setProxy(true);
         $phone->setNumber('222');
         $head->addPhone($phone);
@@ -326,12 +323,12 @@ class HouseholdServiceTest extends KernelTestCase
         $this->assertCount(2, $phones, "Wrong phone count");
         $this->assertEquals('111', $phones[0]->getPrefix());
         $this->assertEquals('111', $phones[0]->getNumber());
-        $this->assertEquals('111', $phones[0]->getType());
+        $this->assertEquals(PhoneTypes::LANDLINE, $phones[0]->getType());
         $this->assertFalse($phones[0]->getProxy());
 
         $this->assertEquals('222', $phones[1]->getPrefix());
         $this->assertEquals('222', $phones[1]->getNumber());
-        $this->assertEquals('222', $phones[1]->getType());
+        $this->assertEquals(PhoneTypes::MOBILE, $phones[1]->getType());
         $this->assertTrue($phones[1]->getProxy());
 
         $nationalIds = $head->getPerson()->getNationalIds();

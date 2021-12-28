@@ -102,20 +102,20 @@ trait HouseholdInputBuilderTrait
     public function buildBeneficiaryInputType(): BeneficiaryInputType
     {
         $beneficiary = new BeneficiaryInputType();
-        $beneficiary->setDateOfBirth($this->getBirthDate() ? $this->getBirthDate()->format(\DateTimeInterface::ISO8601) : null);
+        $beneficiary->setDateOfBirth($this->getDateOfBirth() ? $this->getDateOfBirth()->format(\DateTimeInterface::ISO8601) : null);
         $beneficiary->setLocalFamilyName($this->localFamilyName);
         $beneficiary->setLocalGivenName($this->localGivenName);
         $beneficiary->setLocalParentsName($this->localParentsName);
         $beneficiary->setEnFamilyName($this->englishFamilyName);
         $beneficiary->setEnGivenName($this->englishGivenName);
         $beneficiary->setEnParentsName($this->englishParentsName);
-        $beneficiary->setGender(PersonGender::valueToAPI($this->getGender()));
-        $beneficiary->setResidencyStatus(ResidencyStatus::valueToAPI($this->getResidencyStatus()));
+        $beneficiary->setGender($this->getGender());
+        $beneficiary->setResidencyStatus($this->getResidencyStatus());
         $beneficiary->setIsHead(false);
 
         if (!is_null($this->idType)) { //TODO check, that id card is filled completely
             $nationalId = new NationalIdCardInputType();
-            $nationalId->setType($this->getIdType() ? NationalIdType::valueToAPI($this->getIdType()) : null);
+            $nationalId->setType($this->getIdType());
             $nationalId->setNumber((string) $this->idNumber);
             $beneficiary->addNationalIdCard($nationalId);
         }
@@ -123,7 +123,7 @@ trait HouseholdInputBuilderTrait
         if (!is_null($this->numberPhone1)) { //TODO check, that phone is filled completely in import
             $phone1 = new PhoneInputType();
             $phone1->setNumber((string) $this->numberPhone1);
-            $phone1->setType($this->getTypePhone1() ? PhoneTypes::valueToAPI($this->getTypePhone1()) : null);
+            $phone1->setType($this->getTypePhone1());
             $phone1->setPrefix((string) $this->prefixPhone1);
             $phone1->setProxy($this->isProxyPhone1());
             $beneficiary->addPhone($phone1);
@@ -132,7 +132,7 @@ trait HouseholdInputBuilderTrait
         if (!is_null($this->numberPhone2)) { //TODO check, that phone is filled completely in import
             $phone2 = new PhoneInputType();
             $phone2->setNumber((string) $this->numberPhone2);
-            $phone2->setType($this->getTypePhone2() ? PhoneTypes::valueToAPI($this->getTypePhone2()) : null);
+            $phone2->setType($this->getTypePhone2());
             $phone2->setPrefix((string) $this->prefixPhone2);
             $phone2->setProxy($this->isProxyPhone2());
             $beneficiary->addPhone($phone2);
