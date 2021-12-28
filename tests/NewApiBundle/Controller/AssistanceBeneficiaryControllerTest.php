@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Institution;
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NoResultException;
@@ -191,6 +192,12 @@ class AssistanceBeneficiaryControllerTest extends AbstractFunctionalApiTest
         ], ['id' => 'asc']);
         $institution = $em->getRepository(Institution::class)->findOneBy([], ['id'=>'desc']);
 
+        // clean assistance data
+        $assistanceBeneficiary = $em->getRepository(AssistanceBeneficiary::class)
+            ->findOneBy(['beneficiary' => $institution, 'assistance' => $assistance]);
+        $em->remove($assistanceBeneficiary);
+        $em->flush();
+
         $this->client->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/assistances-institutions', [
             'institutionIds' => [$institution->getId()],
             'justification' => 'test',
@@ -232,6 +239,12 @@ class AssistanceBeneficiaryControllerTest extends AbstractFunctionalApiTest
             'targetType' => AssistanceTargetType::COMMUNITY,
         ], ['id' => 'asc']);
         $community = $em->getRepository(Community::class)->findOneBy([], ['id'=>'desc']);
+
+        // clean assistance data
+        $assistanceBeneficiary = $em->getRepository(AssistanceBeneficiary::class)
+            ->findOneBy(['beneficiary' => $community, 'assistance' => $assistance]);
+        $em->remove($assistanceBeneficiary);
+        $em->flush();
 
         $this->client->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/assistances-communities', [
             'communityIds' => [$community->getId()],

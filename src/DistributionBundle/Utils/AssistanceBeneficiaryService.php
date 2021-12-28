@@ -18,6 +18,7 @@ use NewApiBundle\Workflow\ReliefPackageTransitions;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
@@ -213,7 +214,7 @@ class AssistanceBeneficiaryService
 
             // $beneficiariesArray contains at least the country so a unique beneficiary would be a size of 2
             if ($sameAssistanceBeneficiary && sizeof($validBNFs) <= 2 && !$sameAssistanceBeneficiary->getRemoved()) {
-                throw new \Exception("Beneficiary/household {$beneficiary->getId()} is already part of the distribution", Response::HTTP_BAD_REQUEST);
+                throw new BadRequestHttpException("Beneficiary/{$assistance->getTargetType()} {$beneficiary->getId()} is already part of the distribution");
             } elseif ($sameAssistanceBeneficiary && sizeof($validBNFs) <= 2 && $sameAssistanceBeneficiary->getRemoved()) {
                 $sameAssistanceBeneficiary->setRemoved(0)
                     ->setJustification($beneficiariesData['justification']);
