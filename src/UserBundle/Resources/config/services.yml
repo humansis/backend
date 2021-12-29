@@ -17,20 +17,3 @@ services:
         class: UserBundle\Utils\UserService
         arguments: ['%google_client%', '%humanitarian_secret%', '@doctrine.orm.entity_manager', '@validator', '@service_container', '@security.encoder_factory']
         public: true
-
-
-#######################################################################################
-##                                       WSSE                                        ##
-#######################################################################################
-
-    wsse.security.authentication.provider:
-        class: UserBundle\Security\Authentication\Provider\WsseProvider
-        arguments: ["@fos_user.user_provider.username", "%kernel.cache_dir%/security/nonces", "@logger"]
-        public: false
-
-    wsse.security.authentication.listener:
-        class: UserBundle\Security\Firewall\WsseListener
-        arguments: ["@security.token_storage", "@wsse.security.authentication.provider"]
-        public: false
-        tags:
-            - { name: monolog.logger, channel: wsse }

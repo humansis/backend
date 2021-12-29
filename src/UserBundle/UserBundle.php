@@ -3,7 +3,6 @@
 namespace UserBundle;
 
 use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
-use UserBundle\Security\Factory\WsseFactory;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -21,7 +20,6 @@ class UserBundle extends Bundle
         parent::build($container);
 
         $extension = $container->getExtension('security');
-        $extension->addSecurityListenerFactory(new WsseFactory());
 
         $mappings = [
             realpath(__DIR__ . '/Resources/config/doctrine/model') => 'FOS\UserBundle\Model',

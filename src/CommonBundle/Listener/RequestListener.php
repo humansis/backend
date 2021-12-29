@@ -105,8 +105,7 @@ class RequestListener
             }
         }
         // return error response if api request (i.e. not profiler or doc) or login routes (for api tester)
-        elseif (preg_match('/api/', $event->getRequest()->getPathInfo()) &&
-                !preg_match('/api\/wsse\/(login|salt)/', $event->getRequest()->getPathInfo())) {
+        elseif (preg_match('/api/', $event->getRequest()->getPathInfo())) {
             $this->container->get('logger')->error("'country' header missing from request (iso3 code).", [$event->getRequest()->getPathInfo()]);
             $response = new Response("'country' header missing from request (iso3 code).", Response::HTTP_BAD_REQUEST);
             $event->setResponse($response);
