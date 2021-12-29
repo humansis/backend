@@ -4,10 +4,8 @@ namespace ReportingBundle\Utils\DataRetrievers;
 
 use Doctrine\ORM\EntityManager;
 
-use function GuzzleHttp\Psr7\str;
 use ReportingBundle\Entity\ReportingAssistance;
 use \ProjectBundle\Entity\Project;
-use \DistributionBundle\Entity\Assistance;
 
 /**
  * Class AssistanceRetrievers

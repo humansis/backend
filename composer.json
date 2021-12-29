@@ -40,7 +40,13 @@
 		"friendsofsymfony/user-bundle": "^2.1",
 		"google/apiclient": "^2.2",
 		"graylog2/gelf-php": "^1.7",
+		"humansis/user-app-api": "2.5.*",
+		"humansis/user-app-legacy-api": "1.0.0",
+		"humansis/vendor-app-api": "2.5.*",
+		"humansis/vendor-app-legacy-api": "1.0.0",
+		"humansis/web-api": "3.2.*",
 		"incenteev/composer-parameter-handler": "^2.0",
+		"jms/serializer": "^3.14",
 		"jrk/levenshtein-bundle": "dev-master",
 		"knplabs/knp-gaufrette-bundle": "^0.5.3",
 		"league/flysystem": "^2.3",
@@ -76,6 +82,44 @@
 		"symfony/phpunit-bridge": "^4.0",
 		"squizlabs/php_codesniffer": "3.*"
 	},
+	"repositories": [
+		{
+			"url": "https://gitlab-public.quanti.cz/humansis/api/webapp.git",
+			"type": "git"
+		},
+		{
+			"url": "https://gitlab-public.quanti.cz/humansis/api/vendorapp.git",
+			"type": "git"
+		},
+		{
+			"type": "package",
+			"package": {
+				"name": "humansis/vendor-app-legacy-api",
+				"version": "v1.0.0",
+				"source": {
+					"url": "https://gitlab-public.quanti.cz/humansis/api/vendorapp.git",
+					"type": "git",
+					"reference": "v1.0.0"
+				}
+			}
+		},
+		{
+			"url": "https://gitlab-public.quanti.cz/humansis/api/userapp.git",
+			"type": "git"
+		},
+		{
+			"type": "package",
+			"package": {
+				"name": "humansis/user-app-legacy-api",
+				"version": "v1.0.0",
+				"source": {
+					"url": "https://gitlab-public.quanti.cz/humansis/api/userapp.git",
+					"type": "git",
+					"reference": "v1.0.0"
+				}
+			}
+		}
+	],
 	"scripts": {
 	},
 	"config": {

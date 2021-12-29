@@ -37,8 +37,7 @@ class ImportParser
                 break;
             }
 
-            //TODO what if Head is null?
-            if ('true' === strtolower($row['Head'][CellParameters::VALUE])) {
+            if ('true' === strtolower($row['Head'][CellParameters::VALUE]) || (is_string($row['Head'][CellParameters::VALUE]) && 'true' === strtolower($row['Head'][CellParameters::VALUE]))) {
                 if ([] !== $household) {
                     // everytime new household head is found, previous HH is added to list
                     $list[] = $household;

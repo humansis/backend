@@ -238,7 +238,7 @@ class DistributionCSVService
         
         // Create
         foreach ($data['created'] as $beneficiaryToCreate) {
-            if ($beneficiaryToCreate['head'] !== 'true') {
+            if ($beneficiaryToCreate['head'] !== 'true' && $beneficiaryToCreate['head'] !== true) {
                 throw new \Exception("You can only insert a head of the household in the file to import.");
             }
 
@@ -446,7 +446,7 @@ class DistributionCSVService
             $toUpdate->setLocalGivenName($beneficiaryToUpdate['localGivenName']);
             $toUpdate->setLocalFamilyName($beneficiaryToUpdate['localFamilyName']);
             $toUpdate->setGender($beneficiaryToUpdate['gender']);
-            $toUpdate->setStatus(($beneficiaryToUpdate['head']) === 'true' ? 1 : 0);
+            $toUpdate->setStatus(($beneficiaryToUpdate['head']) == 'true' ? 1 : 0);
             $toUpdate->setResidencyStatus($beneficiaryToUpdate['residencyStatus']);
             $toUpdate->setDateOfBirth(\DateTime::createFromFormat('d-m-Y', $beneficiaryToUpdate['dateOfBirth']));
             
