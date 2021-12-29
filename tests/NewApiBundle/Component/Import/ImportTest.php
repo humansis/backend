@@ -3,11 +3,18 @@ declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Component\Import;
 
+use BeneficiaryBundle\Entity\NationalId;
+use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use NewApiBundle\Component\Import\ImportFileValidator;
 use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Enum\HouseholdAssets;
+use NewApiBundle\Enum\HouseholdShelterStatus;
+use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use NewApiBundle\Enum\ImportQueueState;
+use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\DuplicityResolveInputType;
+use ProjectBundle\Enum\Livelihood;
 use ProjectBundle\Utils\ProjectService;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use BeneficiaryBundle\Entity\Beneficiary;
@@ -140,6 +147,120 @@ class ImportTest extends KernelTestCase
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->getImported($import);
         $this->assertCount($expectedBeneficiaryCount, $bnfCount, "Wrong beneficiary count");
+    }
+
+    public function testEnumCaseSensitivity()
+    {
+        foreach ($this->entityManager->getRepository(NationalId::class)->findBy(['idNumber'=>[
+            '98300834', '124483434', '102', '789465432654', '789', '456', '8798798', '345456'
+        ]]) as $idCard) {
+            $this->entityManager->remove($idCard);
+        }
+        $this->entityManager->flush();
+
+        $filename = 'KHM-Import-insensitive-2HH-3HHM-24HHM.ods';
+        $this->project = $this->createBlankProject('KHM', [__METHOD__, $filename]);
+        $this->originHousehold = $this->createBlankHousehold($this->project);
+        $import = $this->createImport("testMinimalWorkflow", $this->project, $filename);
+
+        $this->userStartedIntegrityCheck($import, true);
+        $this->userStartedIdentityCheck($import, true);
+        $this->userStartedSimilarityCheck($import, true);
+        $this->userStartedFinishing($import);
+
+        $this->assertQueueCount(2, $import, [ImportQueueState::CREATED]);
+        /** @var BeneficiaryRepository $bnfRepo */
+        $bnfRepo = $this->entityManager->getRepository(Beneficiary::class);
+        $bnfs = $bnfRepo->getImported($import);
+        $this->assertCount(32, $bnfs, "Wrong beneficiary count");
+
+        // John Smith
+        $bnf = $this->findOneIdentity(NationalIdType::NATIONAL_ID, '98300834');
+        $this->assertIsHead($bnf);
+        $this->assertHHHasAssets($bnf->getHousehold(), [HouseholdAssets::AC, HouseholdAssets::CAR]);
+        $this->assertHHHasSupportTypes($bnf->getHousehold(), [HouseholdSupportReceivedType::MPCA]);
+        $this->assertHHHasShelterStatus($bnf->getHousehold(), HouseholdShelterStatus::TENT);
+        $this->assertHHHasLivelihood($bnf->getHousehold(), Livelihood::GOVERNMENT);
+        $this->assertEquals(PersonGender::MALE, $bnf->getPerson()->getGender());
+        // Homer Simpson
+        $bnf = $this->findOneIdentity(NationalIdType::NATIONAL_ID, '124483434');
+        $this->assertIsHead($bnf);
+        $this->assertHHHasAssets($bnf->getHousehold(), [HouseholdAssets::MOTORBIKE, HouseholdAssets::WASHING_MACHINE]);
+        $this->assertHHHasSupportTypes($bnf->getHousehold(), [HouseholdSupportReceivedType::FOOD_KIT, HouseholdSupportReceivedType::LIVELIHOODS_SUPPORT]);
+        $this->assertHHHasShelterStatus($bnf->getHousehold(), HouseholdShelterStatus::HOUSE_APARTMENT_LIGHTLY_DAMAGED);
+        $this->assertHHHasLivelihood($bnf->getHousehold(), Livelihood::FARMING_LIVESTOCK);
+        $this->assertEquals(PersonGender::MALE, $bnf->getPerson()->getGender());
+        // Marge simpson
+        $bnf = $this->findOneIdentity(NationalIdType::FAMILY, '102');
+        $this->assertIsMember($bnf);
+        $this->assertEquals(PersonGender::FEMALE, $bnf->getPerson()->getGender());
+        // Bart Simpson
+        $bnf = $this->findOneIdentity(NationalIdType::NATIONAL_ID, '789465432654');
+        $this->assertIsMember($bnf);
+        $this->assertEquals(PersonGender::MALE, $bnf->getPerson()->getGender());
+        // Lisa Simpson
+        $bnf = $this->findOneIdentity(NationalIdType::NATIONAL_ID, '789');
+        $this->assertIsMember($bnf);
+        $this->assertEquals(PersonGender::FEMALE, $bnf->getPerson()->getGender());
+        // Maggie	Simpson
+        $bnf = $this->findOneIdentity(NationalIdType::NATIONAL_ID, '456');
+        $this->assertIsMember($bnf);
+        $this->assertEquals(PersonGender::FEMALE, $bnf->getPerson()->getGender());
+        // Abraham	Simpson
+        $bnf = $this->findOneIdentity(NationalIdType::NATIONAL_ID, '8798798');
+        $this->assertIsMember($bnf);
+        $this->assertEquals(PersonGender::MALE, $bnf->getPerson()->getGender());
+        // Mona	Simpson
+        $bnf = $this->findOneIdentity(NationalIdType::NATIONAL_ID, '345456');
+        $this->assertIsMember($bnf);
+        $this->assertEquals(PersonGender::FEMALE, $bnf->getPerson()->getGender());
+    }
+
+    private function assertIsMember(Beneficiary $beneficiary): void
+    {
+        $this->assertEquals(false, $beneficiary->isHead(), "Beneficiary {$beneficiary->getLocalGivenName()} {$beneficiary->getLocalFamilyName()} shouldn't be head.");
+    }
+
+    private function assertIsHead(Beneficiary $beneficiary): void
+    {
+        $this->assertEquals(true, $beneficiary->isHead(), "Beneficiary {$beneficiary->getLocalGivenName()} {$beneficiary->getLocalFamilyName()} should be head.");
+    }
+
+    private function assertHHHasShelterStatus(Household $household, string $expectedType): void
+    {
+        $this->assertEquals($expectedType, $household->getShelterStatus(), "Shelter status doesn't fit for HH ".$household->getHouseholdHead()->getLocalFamilyName()." [{$household->getShelterStatus()}]");
+    }
+
+    private function assertHHHasLivelihood(Household $household, string $expectedLivelihood): void
+    {
+        $this->assertEquals($expectedLivelihood, $household->getLivelihood(), "Livelihood doesn't fit for HH ".$household->getHouseholdHead()->getLocalFamilyName()." [{$household->getLivelihood()}]");
+    }
+
+    private function assertHHHasSupportTypes(Household $household, array $expectedTypes): void
+    {
+        $this->assertCount(count($expectedTypes), $household->getSupportReceivedTypes(), "Support types count doesn't fit for HH ".$household->getHouseholdHead()->getLocalFamilyName());
+        $supportTypes = implode(', ', $household->getSupportReceivedTypes());
+        foreach ($expectedTypes as $expectedAsset) {
+            $this->assertContains($expectedAsset, $household->getSupportReceivedTypes(), "Support types doesn't fit for HH ".$household->getHouseholdHead()->getLocalFamilyName()." [$supportTypes]");
+        }
+    }
+
+    private function assertHHHasAssets(Household $household, array $expectedAssets): void
+    {
+        $this->assertCount(count($expectedAssets), $household->getAssets(), "Asset count doesn't fit for HH ".$household->getHouseholdHead()->getLocalFamilyName());
+        $hhAssets = implode(', ', $household->getAssets());
+        foreach ($expectedAssets as $expectedAsset) {
+            $this->assertContains($expectedAsset, $household->getAssets(), "Assets doesn't fit for HH ".$household->getHouseholdHead()->getLocalFamilyName()." [$hhAssets]");
+        }
+    }
+
+    private function findOneIdentity(string $idType, string $idNumber): Beneficiary
+    {
+        /** @var BeneficiaryRepository $bnfRepo */
+        $bnfRepo = $this->entityManager->getRepository(Beneficiary::class);
+        $identities = $bnfRepo->findIdentity($idType, $idNumber);
+        $this->assertCount(1, $identities, "There are ID conflict for $idType with $idNumber");
+        return $identities[0];
     }
 
     /**

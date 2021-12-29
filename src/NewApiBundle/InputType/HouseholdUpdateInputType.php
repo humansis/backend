@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
-use BeneficiaryBundle\Entity\Household;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
@@ -19,8 +18,10 @@ use NewApiBundle\InputType\Helper\EnumsBuilder;
 use NewApiBundle\Request\InputTypeInterface;
 use NewApiBundle\Validator\Constraints\Country;
 use NewApiBundle\Validator\Constraints\Iso8601;
+use ProjectBundle\Enum\Livelihood;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\GroupSequenceProviderInterface;
+use NewApiBundle\Validator\Constraints\Enum;
 
 /**
  * @Assert\GroupSequenceProvider()
@@ -63,7 +64,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     private $iso3;
 
     /**
-     * @Assert\Choice(callback={"ProjectBundle\Enum\Livelihood", "values"}, strict=true)
+     * @Enum(enumClass="ProjectBundle\Enum\Livelihood")
      */
     private $livelihood;
 
@@ -73,8 +74,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     private $assets;
 
     /**
-     * @Assert\NotNull
-     * @Assert\NotBlank
+     * @Enum(enumClass="NewApiBundle\Enum\HouseholdShelterStatus")
      */
     private $shelterStatus;
 
@@ -173,16 +173,19 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     private $enumeratorName;
 
     /**
+     * @var ResidenceAddressInputType
      * @Assert\Valid
      */
     private $residenceAddress;
 
     /**
+     * @var TemporarySettlementAddressInputType
      * @Assert\Valid
      */
     private $temporarySettlementAddress;
 
     /**
+     * @var CampAddressInputType
      * @Assert\Valid
      */
     private $campAddress;
@@ -226,11 +229,13 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     private $proxyLocalParentsName;
 
     /**
+     * @var NationalIdCardInputType|null
      * @Assert\Valid
      */
     private $proxyNationalIdCard;
 
     /**
+     * @var PhoneInputType|null
      * @Assert\Valid
      */
     private $proxyPhone;
@@ -252,15 +257,15 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     }
 
     /**
-     * @return int|null
+     * @return string|null
      */
     public function getLivelihood()
     {
-        return $this->livelihood;
+        return $this->livelihood ? Livelihood::valueFromAPI($this->livelihood) : null;
     }
 
     /**
-     * @param int|null $livelihood
+     * @param string|null $livelihood
      */
     public function setLivelihood($livelihood)
     {
@@ -290,7 +295,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     public function setAssets(array $assets)
     {
         foreach ($assets as $asset) {
-            $this->assets[] = (int) $asset;
+            $this->assets[] = $asset;
         }
     }
 
@@ -303,7 +308,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     }
 
     /**
-     * @param int|null $shelterStatus
+     * @param int|string|null $shelterStatus
      */
     public function setShelterStatus($shelterStatus)
     {

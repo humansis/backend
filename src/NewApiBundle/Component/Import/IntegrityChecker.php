@@ -110,9 +110,17 @@ class IntegrityChecker
 
         $message = [];
         $violationList = new ConstraintViolationList();
+        $hhh = new Integrity\HouseholdHead($item->getHeadContent(), $iso3, $this->entityManager);
         $violationList->addAll(
-            $this->validator->validate(new Integrity\HouseholdHead($item->getHeadContent(), $iso3, $this->entityManager))
+            $this->validator->validate($hhh)
         );
+
+        if ($violationList->count() === 0) { //$hhh->buildBeneficiaryInputType() requires to have $hhh validated
+            $violationList->addAll(
+                $this->validator->validate($hhh->buildBeneficiaryInputType())
+            );
+        }
+
         $anyViolation = false;
         $message[0] = [];
         foreach ($violationList as $violation) {
@@ -124,9 +132,16 @@ class IntegrityChecker
         foreach ($item->getMemberContents() as $memberContent) {
             $message[$index] = [];
             $violationList = new ConstraintViolationList();
+            $hhm = new Integrity\HouseholdMember($memberContent, $iso3, $this->entityManager);
             $violationList->addAll(
-                $this->validator->validate(new Integrity\HouseholdMember($memberContent, $iso3, $this->entityManager))
+                $this->validator->validate($hhm)
             );
+
+            if ($violationList->count() === 0) { //$hhm->buildBeneficiaryInputType() requires to have $hhm validated
+                $violationList->addAll(
+                    $this->validator->validate($hhm->buildBeneficiaryInputType())
+                );
+            }
 
             foreach ($violationList as $violation) {
                 $message[$index][] = $this->buildErrorMessage($violation);

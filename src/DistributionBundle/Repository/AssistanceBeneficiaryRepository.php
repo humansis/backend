@@ -12,6 +12,7 @@ use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use InvalidArgumentException;
+use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\InputType\CommunityFilterType;
@@ -202,7 +203,7 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
                             $qb->leftJoin('b.person', 'p');
                         }
                         $qb->leftJoin('p.nationalIds', 'n', 'WITH', 'n.idType = :type')
-                            ->setParameter('type', \BeneficiaryBundle\Entity\NationalId::TYPE_NATIONAL_ID)
+                            ->setParameter('type', NationalIdType::NATIONAL_ID)
                             ->orderBy('n.idNumber', $direction);
                         break;
                     default:

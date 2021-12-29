@@ -15,6 +15,7 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\DBAL\PersonGenderEnum;
 use NewApiBundle\Entity\Import;
+use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
@@ -829,7 +830,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                         break;
                     case BeneficiaryOrderInputType::SORT_BY_NATIONAL_ID:
                         $qbr->leftJoin('p.nationalIds', 'n', 'WITH', 'n.idType = :type')
-                            ->setParameter('type', \BeneficiaryBundle\Entity\NationalId::TYPE_NATIONAL_ID)
+                            ->setParameter('type', NationalIdType::NATIONAL_ID)
                             ->orderBy('n.idNumber', $direction);
                         break;
                     default:

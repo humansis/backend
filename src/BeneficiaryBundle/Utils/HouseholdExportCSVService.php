@@ -5,6 +5,7 @@ namespace BeneficiaryBundle\Utils;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use CommonBundle\Utils\ExportService;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Enum\NationalIdType;
 
 class HouseholdExportCSVService
 {
@@ -163,7 +164,7 @@ class HouseholdExportCSVService
         'Prefix phone 2' => "'+855",
         'Number phone 2' => "'223543767",
         'Proxy phone 2' => 'N',
-        'ID Type' => 'National ID',
+        'ID Type' => NationalIdType::NATIONAL_ID,
         'ID Number' => '030617701',
         'Shelter status' => '',
         'Assets' => '',

@@ -5,6 +5,9 @@ namespace NewApiBundle\DBAL;
 
 trait EnumTrait
 {
+    /**
+     * @return array dbValue => enumValue
+     */
     public abstract static function databaseMap(): array;
 
     public static function valueFromDB($dbValue): ?string

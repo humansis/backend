@@ -17,4 +17,13 @@ final class PhoneTypes
             self::MOBILE,
         ];
     }
+
+    protected static function apiMap(): array
+    {
+        return [
+            self::LANDLINE => self::LANDLINE,
+            self::MOBILE => self::MOBILE,
+        ];
+    }
+
 }
