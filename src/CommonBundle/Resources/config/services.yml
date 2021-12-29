@@ -1,10 +1,5 @@
 services:
 
-    CommonBundle\Controller\:
-        resource: '../../Controller'
-        public: true
-        tags: [ 'app.controller' ]
-
     CommonBundle\Command\AdmXML2DBCommand:
         public: true
         tags:

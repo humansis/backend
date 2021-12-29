@@ -4,11 +4,6 @@ services:
         autoconfigure: true
         public: false
 
-    ReportingBundle\Controller\:
-        resource: '../../Controller'
-        public: true
-        tags: [ 'app.controller' ]
-
     reporting.reporting_service:
         class: ReportingBundle\Utils\ReportingService
         arguments: ['@doctrine.orm.entity_manager', '@service_container']

@@ -4,11 +4,6 @@ services:
         autoconfigure: true
         public: false
 
-    DistributionBundle\Controller\:
-        resource: '../../Controller'
-        public: true
-        tags: [ 'app.controller' ]
-
     DistributionBundle\Extension\BeneficiaryGenderExtension:
         tags:
             - { name: twig.extension }

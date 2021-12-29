@@ -4,11 +4,6 @@ services:
         autoconfigure: true
         public: false
 
-    UserBundle\Controller\:
-        resource: '../../Controller'
-        public: true
-        tags: [ 'app.controller' ]
-
 #######################################################################################
 ##                                       CRUD                                        ##
 #######################################################################################

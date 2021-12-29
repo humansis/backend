@@ -4,11 +4,6 @@ services:
         autoconfigure: true
         public: false
 
-    TransactionBundle\Controller\:
-        resource: '../../Controller'
-        public: true
-        tags: [ 'app.controller' ]
-
     transaction.transaction_service:
         class: TransactionBundle\Utils\TransactionService
         public: true
