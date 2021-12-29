@@ -41,9 +41,9 @@
 		"google/apiclient": "^2.2",
 		"graylog2/gelf-php": "^1.7",
 		"humansis/user-app-api": "2.5.*",
-		"humansis/user-app-legacy-api": "1.0.0",
+		"humansis/user-app-legacy-api": "2.5.2",
 		"humansis/vendor-app-api": "2.5.*",
-		"humansis/vendor-app-legacy-api": "1.0.0",
+		"humansis/vendor-app-legacy-api": "2.5.2",
 		"humansis/web-api": "3.2.*",
 		"incenteev/composer-parameter-handler": "^2.0",
 		"jms/serializer": "^3.14",
@@ -95,11 +95,11 @@
 			"type": "package",
 			"package": {
 				"name": "humansis/vendor-app-legacy-api",
-				"version": "v1.0.0",
+				"version": "v2.5.2",
 				"source": {
 					"url": "https://gitlab-public.quanti.cz/humansis/api/vendorapp.git",
 					"type": "git",
-					"reference": "v1.0.0"
+					"reference": "v2.5.2"
 				}
 			}
 		},
@@ -111,11 +111,11 @@
 			"type": "package",
 			"package": {
 				"name": "humansis/user-app-legacy-api",
-				"version": "v1.0.0",
+				"version": "v2.5.2",
 				"source": {
 					"url": "https://gitlab-public.quanti.cz/humansis/api/userapp.git",
 					"type": "git",
-					"reference": "v1.0.0"
+					"reference": "v2.5.2"
 				}
 			}
 		}

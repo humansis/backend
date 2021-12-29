@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "80b1d30dbe493c32c2146c14dc9e2915",
+    "content-hash": "e79047eadd06557323b4f6a386b6dc6f",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -2861,11 +2861,11 @@
         },
         {
             "name": "humansis/user-app-api",
-            "version": "v2.5.1",
+            "version": "v2.5.2",
             "source": {
                 "type": "git",
                 "url": "https://gitlab-public.quanti.cz/humansis/api/userapp.git",
-                "reference": "5ea1b06c2e783d5adc73f6870bca66360b1413b0"
+                "reference": "cd2d0056363136852efe8e7942bf7a14af5f6ed0"
             },
             "type": "library",
             "license": [
@@ -2878,25 +2878,25 @@
                 }
             ],
             "description": "OpenAPI definition of interface with mobile application for users",
-            "time": "2021-12-07T18:19:47+00:00"
+            "time": "2021-12-20T17:17:48+00:00"
         },
         {
             "name": "humansis/user-app-legacy-api",
-            "version": "v1.0.0",
+            "version": "v2.5.2",
             "source": {
                 "type": "git",
                 "url": "https://gitlab-public.quanti.cz/humansis/api/userapp.git",
-                "reference": "v1.0.0"
+                "reference": "v2.5.2"
             },
             "type": "library"
         },
         {
             "name": "humansis/vendor-app-api",
-            "version": "v2.5.1",
+            "version": "v2.5.2",
             "source": {
                 "type": "git",
                 "url": "https://gitlab-public.quanti.cz/humansis/api/vendorapp.git",
-                "reference": "f04f36a64c24e40d3e3e7d94bc35ed1a052254e4"
+                "reference": "f5e2fbc1e867401ce892691f7fa1abac59f6b10e"
             },
             "type": "library",
             "license": [
@@ -2909,25 +2909,25 @@
                 }
             ],
             "description": "OpenAPI definition of interface with mobile application for vendors",
-            "time": "2021-11-30T13:45:30+00:00"
+            "time": "2021-12-20T17:03:06+00:00"
         },
         {
             "name": "humansis/vendor-app-legacy-api",
-            "version": "v1.0.0",
+            "version": "v2.5.2",
             "source": {
                 "type": "git",
                 "url": "https://gitlab-public.quanti.cz/humansis/api/vendorapp.git",
-                "reference": "v1.0.0"
+                "reference": "v2.5.2"
             },
             "type": "library"
         },
         {
             "name": "humansis/web-api",
-            "version": "v3.2.1",
+            "version": "v3.2.3",
             "source": {
                 "type": "git",
                 "url": "https://gitlab-public.quanti.cz/humansis/api/webapp.git",
-                "reference": "c290c8cddb9546b795a43314cce8b9a9578b4fd4"
+                "reference": "f1af8fe6a9ba99994ae54462942b4e5091892fd6"
             },
             "type": "library",
             "license": [
@@ -2940,7 +2940,7 @@
                 }
             ],
             "description": "OpenAPI definition of interface with frontend",
-            "time": "2021-11-02T09:32:39+00:00"
+            "time": "2021-12-14T14:51:19+00:00"
         },
         {
             "name": "incenteev/composer-parameter-handler",
@@ -9256,7 +9256,6 @@
                     "type": "github"
                 }
             ],
-            "abandoned": true,
             "time": "2020-11-30T07:30:19+00:00"
         },
         {

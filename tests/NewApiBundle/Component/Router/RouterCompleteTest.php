@@ -28,33 +28,6 @@ class RouterCompleteTest extends KernelTestCase
 
     // TODO: there mustn't be any exception -> fix this
     const EXCEPTION_TO_NOT_DOCUMENT = [
-        '/api/{firewall}/offline-app/v1/login',
-        '/api/{firewall}/vendor-app/v1/salt/{username}',
-        '/api/{firewall}/offline-app/v1/salt/{username}',
-        '/api/{firewall}/offline-app/v1/projects',
-        '/api/{firewall}/offline-app/v1/beneficiaries/{id}',
-        '/api/{firewall}/offline-app/v1/smartcards/{serialnumber}/beneficiary',
-        '/api/{firewall}/offline-app/v1/distributions/{id}/beneficiaries',
-        '/api/{firewall}/web-app/v1/distributions/projects/{id}',
-        '/api/{firewall}/offline-app/v1/projects/{id}/distributions',
-        '/api/{firewall}/offline-app/v1/distributions/generalrelief/distributed',
-        '/api/{firewall}/offline-app/v1/master-key',
-        '/api/{firewall}/vendor-app/v1/master-key',
-        '/api/{firewall}/vendor-app/v1/deactivated-booklets',
-        '/api/{firewall}/vendor-app/v1/protected-booklets',
-        '/api/{firewall}/vendor-app/v1/deactivate-booklets',
-        '/api/{firewall}/offline-app/v1/booklets/assign/{distributionid}/{beneficiaryid}',
-        '/api/{firewall}/vendor-app/v1/products',
-        '/api/{firewall}/offline-app/v1/smartcards',
-        '/api/{firewall}/offline-app/v1/smartcards/{serialnumber}',
-        '/api/{firewall}/offline-app/v1/smartcards/{serialnumber}',
-        '/api/{firewall}/vendor-app/v1/smartcards/blocked',
-        '/api/{firewall}/offline-app/v1/smartcards/{serialnumber}/deposit',
-        '/api/{firewall}/vendor-app/v1/smartcards/{serialnumber}/purchase',
-        '/api/{firewall}/web-app/v1/smartcards/batch/{id}/legacy-export',
-        '/api/{firewall}/vendor-app/v1/vendors/{id}',
-        '/api/{firewall}/vendor-app/v1/login',
-        '/api/{firewall}/vendor-app/v1/vouchers/purchase',
         '/api/{firewall}/web-app/v1/acl/roles/{code}',
         '/api/{firewall}/web-app/v1/languages',
         '/api/{firewall}/web-app/v1/currencies',
@@ -72,29 +45,52 @@ class RouterCompleteTest extends KernelTestCase
         '/api/{firewall}/offline-app/v1/assistances/{id}/assistances-communities',
         '/api/{firewall}/offline-app/v1/last-smartcard-deposit/{id}',
         '/api/{firewall}/web-app/v1/smartcard-purchased-items/exports',
+        '/api/{firewall}/offline-app/v2/assistances/{id}/assistances-beneficiaries',
+        '/api/{firewall}/offline-app/v2/commodities',
+        '/api/{firewall}/offline-app/v2/projects/{id}/assistances',
+        '/api/{firewall}/offline-app/v2/beneficiaries',
+        '/api/{firewall}/offline-app/v2/beneficiary/{id}',
+        '/api/{firewall}/offline-app/v1/booklets',
+        '/api/{firewall}/offline-app/v2/general-relief-items/{id}',
+        '/api/{firewall}/offline-app/v1/general-relief-items',
+        '/api/{firewall}/offline-app/v1/users/{id}/logs',
+        '/api/{firewall}/offline-app/v1/modality-types',
+        '/api/{firewall}/offline-app/v1/smartcard-deposits',
+        '/api/{firewall}/offline-app/v2/projects',
+        '/api/{firewall}/offline-app/v1/transactions',
+        '/api/{firewall}/vendor-app/v2/smartcard-purchases',
+        '/api/{firewall}/vendor-app/v1/vendors/{vendorid}/projects/{projectid}/currencies/{currency}/smartcard-purchases',
+        '/api/{firewall}/vendor-app/v2/vendors/{id}/smartcard-redemption-candidates',
+        '/api/{firewall}/vendor-app/v1/vendors/{id}/logs',
     ];
 
     // TODO: there mustn't be any exception -> fix this
     const EXCEPTION_TO_NOT_IMPLEMENT = [
         '/api/{firewall}/web-app/v1/acl/roles/{name}',
         '/api/{firewall}/web-app/v1/v1/users/{id}/countries',
-        '/api/{firewall}/offline-app/v1/general-relief-items',
         '/api/{firewall}/web-app/v1/assistances/{id}/exports',
         '/api/{firewall}/web-app/v1/assistances/{id}/vulnerability-scores/exports',
-        '/api/{firewall}/offline-app/v2/assistances/{id}/assistances-beneficiaries',
-        '/api/{firewall}/offline-app/v2/beneficiaries',
         '/api/{firewall}/web-app/households/exports',
-        '/api/{firewall}/offline-app/v1/transactions',
         '/api/{firewall}/web-app/assistance-selections/{id}/selection-criteria',
         '/api/{firewall}/web-app/assistance-selections/{id}',
-        '/api/{firewall}/offline-app/v1/smartcard-deposits',
-        '/api/{firewall}/offline-app/v1/booklets',
         '/api/{firewall}/web-app/v1/smartcard-purchased-items',
         '/api/{firewall}/web-app/v1/smartcard-purchased-items/export',
-        '/api/{firewall}/offline-app/v2/beneficiary/{id}',
-        '/api/{firewall}/vendor-app/v1/vendors/{vendorid}/incomplete-smartcard-purchases',
-        '/api/{firewall}/vendor-app/v1/relief-packages/{id}',
-        '/api/{firewall}/offline-app/v1/smartcard-deposit/{id}',
+        '/api/{firewall}/offline-app/v1/projects/{id}/distributions',
+        '/api/{firewall}/offline-app/v1/projects',
+        '/api/{firewall}/vendor-app/v1/vendors/{id}/projects/{projectid}/currencies/{currency}/smartcard-purchases',
+        '/api/{firewall}/vendor-app/v1/deactivated-booklets',
+        '/api/{firewall}/vendor-app/v1/protected-booklets',
+        '/api/{firewall}/vendor-app/v1/vouchers/purchase',
+        '/api/{firewall}/vendor-app/v1/deactivate-booklets',
+        '/api/{firewall}/vendor-app/v1/smartcards/blocked',
+        '/api/{firewall}/vendor-app/v1/vendors/{id}/incomplete-smartcard-purchases',
+        '/api/{firewall}/offline-app/v1/vendors/{id}/logs',
+        '/api/{firewall}/offline-app/v1/distributions/generalrelief/distributed',
+        '/api/{firewall}/offline-app/v1/booklets/assign/{assistanceid}/{beneficiaryid}',
+        '/api/{firewall}/offline-app/v1/beneficiaries/{beneficiaryid}',
+        '/api/{firewall}/offline-app/v1/beneficiaries/{beneficiaryid}',
+        '/api/{firewall}/offline-app/v1/smartcards',
+        '/api/{firewall}/offline-app/v1/smartcards/{serialnumber}',
     ];
 
     public static function setUpBeforeClass()
@@ -186,4 +182,36 @@ class RouterCompleteTest extends KernelTestCase
         $this->assertArrayHasKey($path, self::$swaggerEndpoints, "Swagger definition missing endpoint $path [$method]");
         $this->assertContains($method, self::$swaggerEndpoints[$path], "Swagger definition missing endpoint $path [$method]");
     }
+
+    public function implementationExceptionProvider()
+    {
+        foreach (self::EXCEPTION_TO_NOT_DOCUMENT as $exception) {
+            yield $exception => [$exception];
+        }
+    }
+
+    public function swaggerExceptionProvider()
+    {
+        foreach (self::EXCEPTION_TO_NOT_IMPLEMENT as $exception) {
+            yield $exception => [$exception];
+        }
+    }
+
+    /**
+     * @dataProvider implementationExceptionProvider
+     */
+    public function testExceptionalImplementationWithoutDocumentationExists(string $path): void
+    {
+        $this->assertArrayHasKey($path, self::$applicationEndpoints, "Application missing exception with path $path");
+    }
+
+    /**
+     * @dataProvider swaggerExceptionProvider
+     */
+    public function testExceptionalDocumentationWithoutImplementationExists(string $path): void
+    {
+        // $this->assertArrayHasKey($path, self::$applicationEndpoints, "Application missing exception with path $path");
+        $this->assertArrayHasKey($path, self::$swaggerEndpoints, "Documentation missing exception with path $path");
+    }
+
 }
