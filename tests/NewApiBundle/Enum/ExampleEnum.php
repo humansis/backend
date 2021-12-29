@@ -24,7 +24,7 @@ class ExampleEnum
         ];
     }
 
-    protected static function apiAlternatives(): array
+    public static function apiAlternatives(): array
     {
         return [
             self::HORSE => ['kun', 1],

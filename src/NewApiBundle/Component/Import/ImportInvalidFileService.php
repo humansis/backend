@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportInvalidFile;
 use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\WorkflowTool;
@@ -112,6 +113,9 @@ class ImportInvalidFileService
 
         /** @var ImportQueue $entry */
         foreach ($entries as $entry) {
+            if ($entry->getState() !== ImportQueueState::INVALID) {
+                throw new \InvalidArgumentException("Wrong ImportQueue state for export invalid items: ".$entry->getState());
+            }
 
             foreach ($entry->getContent() as $i => $row) {
                 //TODO parse json only once
@@ -142,7 +146,7 @@ class ImportInvalidFileService
                 ++$currentRow;
             }
 
-            WorkflowTool::checkAndApply($this->importQueueStateMachine, $entry, [ImportQueueTransitions::INVALIDATE_EXPORT]);
+            $this->importQueueStateMachine->apply($entry, ImportQueueTransitions::INVALIDATE_EXPORT);
         }
         $this->em->flush();
     }

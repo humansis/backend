@@ -13,6 +13,7 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Entity\GeneralReliefItem;
 use InvalidArgumentException;
+use NewApiBundle\Enum\NationalIdType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -406,7 +407,7 @@ class AssistanceSpreadsheetExport
     private static function getNationalId(Person $person): ?string
     {
         foreach ($person->getNationalIds() as $nationalId) {
-            if (NationalId::TYPE_NATIONAL_ID === $nationalId->getIdType()) {
+            if (NationalIdType::NATIONAL_ID === $nationalId->getIdType()) {
                 return $nationalId->getIdNumber();
             }
         }

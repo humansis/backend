@@ -72,8 +72,6 @@ class Person
      * @var int|null
      *
      * @ORM\Column(name="gender", type="smallint", nullable=true)
-     *
-     * @Assert\NotBlank(message="The gender is required.")
      */
     private $gender;
 

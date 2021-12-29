@@ -43,8 +43,6 @@ class FinishSubscriber implements EventSubscriberInterface
     {
         return [
             'workflow.import.guard.'.ImportTransitions::IMPORT => ['guardIfThereIsOnlyOneFinishingImport'],
-            // 'workflow.import.entered.'.ImportTransitions::IMPORT => ['doImport'],
-            'workflow.import.entered.'.ImportTransitions::FINISH => ['finishImport'],
             'workflow.import.completed.'.ImportTransitions::RESET => ['resetImport'],
         ];
     }
@@ -61,28 +59,6 @@ class FinishSubscriber implements EventSubscriberInterface
             ->isCountryFreeFromImporting($import, $import->getProject()->getIso3())) {
             $event->addTransitionBlocker(new TransitionBlocker('There can be only one finishing import in country in single time.', '0'));
         }
-    }
-
-    // /**
-    //  * @param EnteredEvent $enteredEvent
-    //  *
-    //  * @throws EntityNotFoundException
-    //  */
-    // public function doImport(EnteredEvent $enteredEvent): void
-    // {
-    //     /** @var Import $import */
-    //     $import = $enteredEvent->getSubject();
-    //     $this->importFinisher->import($import);
-    // }
-
-    /**
-     * @param EnteredEvent $enteredEvent
-     */
-    public function finishImport(EnteredEvent $enteredEvent): void
-    {
-        /** @var Import $import */
-        $import = $enteredEvent->getSubject();
-        $this->importFinisher->finish($import);
     }
 
     /**

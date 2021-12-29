@@ -8,6 +8,7 @@ use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Symfony\Component\HttpFoundation\File\File;
+use NewApiBundle\Enum\VariableBool;
 
 class ImportParser
 {
@@ -37,7 +38,7 @@ class ImportParser
                 break;
             }
 
-            if ('true' === strtolower($row['Head'][CellParameters::VALUE]) || (is_string($row['Head'][CellParameters::VALUE]) && 'true' === strtolower($row['Head'][CellParameters::VALUE]))) {
+            if (VariableBool::valueFromAPI($row['Head'][CellParameters::VALUE])) {
                 if ([] !== $household) {
                     // everytime new household head is found, previous HH is added to list
                     $list[] = $household;

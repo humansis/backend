@@ -14,6 +14,7 @@ use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Entity\DistributedItem;
 use NewApiBundle\Entity\PurchasedItem;
+use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\InputType\PurchasedItemFilterInputType;
 use NewApiBundle\InputType\PurchasedItemOrderInputType;
 use NewApiBundle\Request\Pagination;
@@ -111,7 +112,7 @@ class PurchasedItemRepository extends EntityRepository
                         ")
                     ->setParameter('fulltext', $filter->getFulltext())
                     ->setParameter('fulltextLike', '%'.$filter->getFulltext().'%')
-                    ->setParameter('niType', NationalId::TYPE_NATIONAL_ID)
+                    ->setParameter('niType', NationalIdType::NATIONAL_ID)
                 ;
             }
             if ($filter->hasProjects()) {

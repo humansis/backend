@@ -9,6 +9,7 @@ use BeneficiaryBundle\Enum\ResidencyStatus;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use NewApiBundle\Enum\BeneficiaryType;
+use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\PhoneTypes;
 use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
@@ -101,7 +102,7 @@ class BeneficiaryCodelistControllerTest extends AbstractFunctionalApiTest
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
         $this->assertIsArray($result['data']);
-        $this->assertEquals(count(NationalId::types()), $result['totalCount']);
+        $this->assertEquals(count(NationalIdType::values()), $result['totalCount']);
     }
 
     /**

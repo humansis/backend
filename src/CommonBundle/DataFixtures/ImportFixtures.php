@@ -11,6 +11,7 @@ use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Enum\NationalIdType;
 use ProjectBundle\Entity\Project;
 use UserBundle\Entity\User;
 
@@ -31,7 +32,7 @@ class ImportFixtures extends Fixture implements DependentFixtureInterface
         $item = new ImportQueue($import, $file, [
             [
                 'ID Type' => [
-                    'value' => NationalId::TYPE_NATIONAL_ID,
+                    'value' => NationalIdType::NATIONAL_ID,
                     'dataType' => 's',
                     'numberFormat' => 'General',
                 ],
@@ -43,7 +44,7 @@ class ImportFixtures extends Fixture implements DependentFixtureInterface
             ],
             [
                 'ID Type' => [
-                    'value' => NationalId::TYPE_NATIONAL_ID,
+                    'value' => NationalIdType::NATIONAL_ID,
                     'dataType' => 's',
                     'numberFormat' => 'General',
                 ],
@@ -59,7 +60,7 @@ class ImportFixtures extends Fixture implements DependentFixtureInterface
         $item = new ImportQueue($import, $file, [
             [
                 'ID Type' => [
-                    'value' => NationalId::TYPE_NATIONAL_ID,
+                    'value' => NationalIdType::NATIONAL_ID,
                     'dataType' => 's',
                     'numberFormat' => 'General',
                 ],
@@ -75,7 +76,7 @@ class ImportFixtures extends Fixture implements DependentFixtureInterface
         $item = new ImportQueue($import, $file, [
             [
                 'ID Type' => [
-                    'value' => NationalId::TYPE_NATIONAL_ID,
+                    'value' => NationalIdType::NATIONAL_ID,
                     'dataType' => 's',
                     'numberFormat' => 'General',
                 ],

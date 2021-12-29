@@ -14,6 +14,7 @@ use CommonBundle\Entity\Adm4;
 use DistributionBundle\Entity\Assistance;
 use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Component\Country\Country;
+use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\InputType\PurchasedItemFilterInputType;
 use NewApiBundle\Repository\PurchasedItemRepository;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -186,7 +187,7 @@ class PurchasedSummarySpreadsheetExport
     {
         /** @var NationalId $nationalId */
         foreach ($beneficiary->getPerson()->getNationalIds() as $nationalId) {
-            if (NationalId::TYPE_NATIONAL_ID === $nationalId->getIdType()) {
+            if (NationalIdType::NATIONAL_ID === $nationalId->getIdType()) {
                 return $nationalId->getIdNumber();
             }
         }
