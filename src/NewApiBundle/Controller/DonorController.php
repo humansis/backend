@@ -13,6 +13,7 @@ use NewApiBundle\InputType\DonorOrderInputType;
 use NewApiBundle\InputType\DonorUpdateInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Donor;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -45,14 +46,15 @@ class DonorController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/donors/{id}")
+     * @Cache(lastModified="donor.getLastModifiedAt()", public=true)
      *
-     * @param Donor $object
+     * @param Donor $donor
      *
      * @return JsonResponse
      */
-    public function item(Donor $object): JsonResponse
+    public function item(Donor $donor): JsonResponse
     {
-        return $this->json($object);
+        return $this->json($donor);
     }
 
     /**
