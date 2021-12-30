@@ -5,6 +5,8 @@ namespace ProjectBundle\Entity;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use NewApiBundle\Entity\Helper\CreatedAt;
+use NewApiBundle\Entity\Helper\LastModifiedAt;
 use NewApiBundle\Enum\ProductCategoryType;
 use ProjectBundle\DTO\Sector;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
@@ -20,6 +22,9 @@ use BeneficiaryBundle\Entity\Household;
  */
 class Project implements ExportableInterface
 {
+    use CreatedAt;
+    use LastModifiedAt;
+
     /**
      * @var int
      *
