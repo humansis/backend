@@ -2,7 +2,7 @@
 
 namespace VoucherBundle\Utils;
 
-use CommonBundle\Controller\ExportController;
+
 use CommonBundle\InputType\Country;
 use CommonBundle\InputType\DataTableType;
 use CommonBundle\InputType\RequestConverter;
@@ -31,6 +31,11 @@ class VoucherService
     /** @var ValidatorInterface $validator */
     private $validator;
 
+    /** @var int */
+    private $exportLimit;
+    /** @var int */
+    private $exportLimitCSV;
+
     /** @var ContainerInterface $container */
     private $container;
 
@@ -45,6 +50,8 @@ class VoucherService
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
+        $this->exportLimit = $container->getParameter('app.export.limit');
+        $this->exportLimitCSV = $container->getParameter('app.export.limit_csv');
     }
 
     /**
@@ -271,19 +278,19 @@ class VoucherService
 
         // If csv type, return the response
         if ('csv' === $type) {
-            if ($exportableCount >= ExportController::EXPORT_LIMIT_CSV) {
+            if ($exportableCount >= $this->exportLimitCSV) {
                 $totalBooklets = $ids ? count($ids) : count($booklets);
                 throw new \Exception("Too much vouchers for the export ($exportableCount vouchers in $totalBooklets booklets). ".
-                    "Export the data in batches of ".ExportController::EXPORT_LIMIT_CSV." vouchers or less");
+                    "Export the data in batches of {$this->exportLimitCSV} vouchers or less");
             }
             return $this->csvExport($exportableTable);
         }
 
         $total = $ids ? $this->em->getRepository(Voucher::class)->countByBookletsIds($ids) : $this->em->getRepository(Voucher::class)->countByBooklets($booklets);
-        if ($total > ExportController::EXPORT_LIMIT) {
+        if ($total > $this->exportLimit) {
             $totalBooklets = $ids ? count($ids) : count($booklets);
             throw new \Exception("Too much vouchers for the export ($total vouchers in $totalBooklets booklets). ".
-            "Export the data in batches of ".ExportController::EXPORT_LIMIT." vouchers or less");
+            "Export the data in batches of {$this->exportLimit} vouchers or less");
         }
         return $this->container->get('export_csv_service')->export($exportableTable->getResult(), 'bookletCodes', $type);
     }
@@ -315,10 +322,10 @@ class VoucherService
         }
 
         $total = $ids ? $this->em->getRepository(Voucher::class)->countByBookletsIds($ids) : $this->em->getRepository(Voucher::class)->countByBooklets($booklets);
-        if ($total > ExportController::EXPORT_LIMIT) {
+        if ($total > $this->exportLimit) {
             $totalBooklets = $ids ? count($ids) : count($booklets);
             throw new \Exception("Too much vouchers for the export ($total vouchers in $totalBooklets). ".
-                "Export the data in batches of ".ExportController::EXPORT_LIMIT." vouchers or less");
+                "Export the data in batches of {$this->exportLimit} vouchers or less");
         }
 
         try {

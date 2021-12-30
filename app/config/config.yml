@@ -61,6 +61,9 @@ parameters:
           currency: ZMW
           adms: [ Region, District, Ward, Constituency ]
 
+    app.export.limit: 10000
+    app.export.limit_csv: 20000
+
 framework:
     #esi: ~
     translator:

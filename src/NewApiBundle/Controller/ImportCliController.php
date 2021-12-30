@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-use CommonBundle\Controller\ExportController;
+
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Import\ImportFileValidator;

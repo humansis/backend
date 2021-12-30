@@ -11,7 +11,7 @@ use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\Referral;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
-use CommonBundle\Controller\ExportController;
+
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\BenefciaryPatchInputType;
@@ -56,6 +56,11 @@ class BeneficiaryService
     /** @var AssistanceBeneficiaryService $dbs */
     private $dbs;
 
+    /** @var int */
+    private $exportLimit;
+    /** @var int */
+    private $exportLimitCSV;
+
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -72,6 +77,8 @@ class BeneficiaryService
         $this->container = $container;
         $this->beneficiary = new Beneficiary();
         $this->dbs = $assistanceBeneficiary;
+        $this->exportLimit = $container->getParameter('app.export.limit');
+        $this->exportLimitCSV = $container->getParameter('app.export.limit_csv');
     }
 
 
@@ -577,13 +584,13 @@ class BeneficiaryService
             $exportableTable = $this->em->getRepository(Beneficiary::class)->getAllInCountry($countryIso3);	
         }
 
-        if ('csv' !== $type && count($households) > ExportController::EXPORT_LIMIT) {
+        if ('csv' !== $type && count($households) > $this->exportLimit) {
             $count = count($households);
-            throw new BadRequestHttpException("Too much households ($count) to export. Limit is ".ExportController::EXPORT_LIMIT);
+            throw new BadRequestHttpException("Too much households ($count) to export. Limit is ".$this->exportLimit);
         }
-        if ('csv' === $type && count($households) > ExportController::EXPORT_LIMIT_CSV) {
+        if ('csv' === $type && count($households) > $this->exportLimitCSV) {
             $count = count($households);
-            throw new BadRequestHttpException("Too much households ($count) to export. Limit for CSV is ".ExportController::EXPORT_LIMIT_CSV);
+            throw new BadRequestHttpException("Too much households ($count) to export. Limit for CSV is ".$this->exportLimitCSV);
         }
         
         if ($households) {
@@ -594,15 +601,15 @@ class BeneficiaryService
             }
         }
 
-        if ('csv' !== $type && count($exportableTable) > ExportController::EXPORT_LIMIT) {
+        if ('csv' !== $type && count($exportableTable) > $this->exportLimit) {
             $BNFcount = count($exportableTable);
             $HHcount = count($households);
-            throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit is ".ExportController::EXPORT_LIMIT);
+            throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit is ".$this->exportLimit);
         }
-        if ('csv' === $type && count($exportableTable) > ExportController::EXPORT_LIMIT_CSV) {
+        if ('csv' === $type && count($exportableTable) > $this->exportLimitCSV) {
             $BNFcount = count($exportableTable);
             $HHcount = count($households);
-            throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit for CSV is ".ExportController::EXPORT_LIMIT_CSV);
+            throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit for CSV is ".$this->exportLimitCSV);
         }
 
         return $this->container->get('export_csv_service')->export($exportableTable, 'beneficiaryhousehoulds', $type);
@@ -627,13 +634,13 @@ class BeneficiaryService
     {
         $households = $this->em->getRepository(Household::class)->findByParams($countryIso3, $filter, $order, $pagination);
 
-        if ('csv' !== $type && count($households) > ExportController::EXPORT_LIMIT) {
+        if ('csv' !== $type && count($households) > $this->exportLimit) {
             $count = count($households);
-            throw new BadRequestHttpException("Too much households ($count) to export. Limit is ".ExportController::EXPORT_LIMIT);
+            throw new BadRequestHttpException("Too much households ($count) to export. Limit is ".$this->exportLimit);
         }
-        if ('csv' === $type && count($households) > ExportController::EXPORT_LIMIT_CSV) {
+        if ('csv' === $type && count($households) > $this->exportLimitCSV) {
             $count = count($households);
-            throw new BadRequestHttpException("Too much households ($count) to export. Limit for CSV is ".ExportController::EXPORT_LIMIT_CSV);
+            throw new BadRequestHttpException("Too much households ($count) to export. Limit for CSV is ".$this->exportLimitCSV);
         }
 
         $exportableTable = [];
@@ -645,15 +652,15 @@ class BeneficiaryService
             }
         }
 
-        if ('csv' !== $type && count($exportableTable) > ExportController::EXPORT_LIMIT) {
+        if ('csv' !== $type && count($exportableTable) > $this->exportLimit) {
             $BNFcount = count($exportableTable);
             $HHcount = count($households);
-            throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit is ".ExportController::EXPORT_LIMIT);
+            throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit is ".$this->exportLimit);
         }
-        if ('csv' === $type && count($exportableTable) > ExportController::EXPORT_LIMIT_CSV) {
+        if ('csv' === $type && count($exportableTable) > $this->exportLimitCSV) {
             $BNFcount = count($exportableTable);
             $HHcount = count($households);
-            throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit for CSV is ".ExportController::EXPORT_LIMIT_CSV);
+            throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit for CSV is ".$this->exportLimitCSV);
         }
 
         return $this->container->get('export_csv_service')->export($exportableTable, 'beneficiaryhousehoulds', $type);
