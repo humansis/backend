@@ -1,5 +1,5 @@
-[![Build Status](https=//travis-ci.com/humansis/api.svg?branch=develop)](https=//travis-ci.com/humansis/api)
-[![GitHub version](https=//badge.fury.io/gh/humansis%2Fapi.svg)](https=//badge.fury.io/gh/humansis%2Fapi)
+[![Build Status](https://travis-ci.com/humansis/api.svg?branch=develop)](https://travis-ci.com/humansis/api)
+[![GitHub version](https://badge.fury.io/gh/humansis%2Fapi.svg)](https://badge.fury.io/gh/humansis%2Fapi)
 
 HUMANSIS
 ==============
@@ -10,7 +10,7 @@ A platform that allows humanitarian organisations to manage relief activities an
 
 Humansis is the first fully open-source relief platform for humanitarian actors to efficiently manage relief operations after a disaster.
 
-The global project documentation is in README.md of the frontend [repository](https=//github.com/humansis/front)
+The global project documentation is in README.md of the frontend [repository](https://github.com/humansis/front)
 
 # Documentation
 
@@ -29,36 +29,36 @@ before that the controller process.
 #### General Information
 
 We are using the doctrine extension `LevenshteinFunction`, from the package `jrk/levenshtein-bundle`
-- The Git repository = https=//github.com/jr-k/JrkLevenshteinBundle
-To trick Levenshtein activation, run= `php bin/console jrk=levenshtein=install`
+- The Git repository : https://github.com/jr-k/JrkLevenshteinBundle
+To trick Levenshtein activation, run: `php bin/console jrk:levenshtein:install`
 
 #### Docker
 
-- `docker-compose up --build` = build and run the docker image
-- `docker-compose exec php bash` = access to the container bash of PHP image
+- `docker-compose up --build` : build and run the docker image
+- `docker-compose exec php bash` : access to the container bash of PHP image
 
 #### Inside Docker
 
-- `cleanAndTest` = Delete your database, create a new one, migrate migrations, load fixtures, clean cache of import CSV, start the cron service and execute unit tests
-- `clean` = Delete your database, create a new one, migrate migrations, load fixtures, start the cron service and clean cache of import CSV
-- `cron-launch` = Start the cron service
+- `cleanAndTest` : Delete your database, create a new one, migrate migrations, load fixtures, clean cache of import CSV, start the cron service and execute unit tests
+- `clean` : Delete your database, create a new one, migrate migrations, load fixtures, start the cron service and clean cache of import CSV
+- `cron-launch` : Start the cron service
 
 #### Git Hooks
 
-Just after installation, don't forget to set your hook directory in order to enable the custom hooks (pre-commit and pre-push)=
+Just after installation, don't forget to set your hook directory in order to enable the custom hooks (pre-commit and pre-push):
 
 `git config core.hooksPath hooks`
 
 #### Useful Commands
 
-- `php bin/console r=c=c` = clear cache files created for the import process of households
-- `php bin/console r=i=t` = test and display execution time of import process of households
+- `php bin/console r:c:c` : clear cache files created for the import process of households
+- `php bin/console r:i:t` : test and display execution time of import process of households
 
 #### AWS
 
 - The API is hosted on AWS EC2 and the database on AWS RDS
 
-- When the database is dumped, you need to create the Levenshtein function manually in the RDS database =
+- When the database is dumped, you need to create the Levenshtein function manually in the RDS database :
 ```
 CREATE DEFINER=`bms_user`@`%` FUNCTION `LEVENSHTEIN`(`s1` VARCHAR(255), `s2` VARCHAR(255)) RETURNS INT(11) NOT DETERMINISTIC CONTAINS SQL SQL SECURITY DEFINER BEGIN
  DECLARE s1_len, s2_len, i, j, c, c_temp, cost INT;
@@ -96,42 +96,42 @@ END
 # Setting project development
 
 ```
-git clone https=//gitlab-public.quanti.cz/humansis/web-platform/backend customdir
+git clone https://gitlab-public.quanti.cz/humansis/web-platform/backend customdir
 cd customdir
 cp docker-compose.yml.dist docker-compose.yml
 ```
 
-Open `docker-compose.yml` and add=
+Open `docker-compose.yml` and add:
 ```
-php=
-    environment=
-        XDEBUG_CONFIG= 'remote_host=172.17.0.1'
-        PHP_IDE_CONFIG= 'serverName=humansis.local'
-        AWS_ACCESS_KEY= 'aaa'
-        AWS_SECRET_KEY= 'aaa'
-        SES_USERNAME= 'aaa'
-        SES_PASSWORD= 'aaa'
-        RDS_HOSTNAME= db
-        RDS_PORT= 3306
-        RDS_DB_NAME= bmstest
-        RDS_USERNAME= bms_user
-        RDS_PASSWORD= aA123
-        HID_SECRET= xxx
-        GOOGLE_CLIENT= xxx
-        MOBILE_MASTER_KEY= xxx
-        MOBILE_MASTER_KEY_VERSION= xxx
-        JWT_PASSPHRASE= xxx
-        GELF_SERVER_NAME= xxx
-        GELF_HOST= xxx
-        GELF_PORT= 9999
-        MOBILE_APP_VERSION= xxx
-        MOBILE_APP_ID= xxx
-        AWS_LOGS_ACCESS_KEY= secret_key
-        AWS_LOGS_SECRET_KEY= secret_key
+php:
+    environment:
+        XDEBUG_CONFIG: 'remote_host=172.17.0.1'
+        PHP_IDE_CONFIG: 'serverName=humansis.local'
+        AWS_ACCESS_KEY: 'aaa'
+        AWS_SECRET_KEY: 'aaa'
+        SES_USERNAME: 'aaa'
+        SES_PASSWORD: 'aaa'
+        RDS_HOSTNAME: db
+        RDS_PORT: 3306
+        RDS_DB_NAME: bmstest
+        RDS_USERNAME: bms_user
+        RDS_PASSWORD: aA123
+        HID_SECRET: xxx
+        GOOGLE_CLIENT: xxx
+        MOBILE_MASTER_KEY: xxx
+        MOBILE_MASTER_KEY_VERSION: xxx
+        JWT_PASSPHRASE: xxx
+        GELF_SERVER_NAME: xxx
+        GELF_HOST: xxx
+        GELF_PORT: 9999
+        MOBILE_APP_VERSION: xxx
+        MOBILE_APP_ID: xxx
+        AWS_LOGS_ACCESS_KEY: secret_key
+        AWS_LOGS_SECRET_KEY: secret_key
 ```
 
 ### Test interpret and docker environment
-- Run in terminal=
+- Run in terminal:
   - start containers `docker-compose up -d`
   - enter container `docker-compose exec php bash`
   - create DB and run tests `cleanAndTest` Should be longer and ends without errors.
@@ -141,7 +141,7 @@ php=
 - Add PHPUnit
 - Command line > Interpreter > ...
 - Add "From Docker, ..."
-- set=
+- set:
   ```
   server = Local Docker
   Configuration files = ./docker-compose.yml
@@ -149,7 +149,7 @@ php=
   Lifecycle = Always start a new container
   ```
 - OK
-- set=
+- set:
   ```
   Interpreter = recently created
   Directory = customdir/tests
