@@ -63,16 +63,6 @@ class SimilarityChecker
         }
 
         $this->entityManager->flush();
-
-        $queueSize = $this->queueRepository->countItemsToSimilarityCheck($import);
-        if (0 === $queueSize) {
-            $this->logImportInfo($import, 'Batch ended - nothing left, similarity checking ends');
-            WorkflowTool::checkAndApply($this->importStateMachine, $import,
-                [ImportTransitions::COMPLETE_SIMILARITY, ImportTransitions::FAIL_SIMILARITY]);
-            $this->entityManager->flush();
-        } else {
-            $this->logImportInfo($import, "Batch ended - $queueSize items left, similarity checking continues");
-        }
     }
 
     /**
@@ -82,10 +72,9 @@ class SimilarityChecker
     {
         // TODO: similarity check
         $item->setSimilarityCheckedAt(new \DateTime());
-        $this->entityManager->persist($item);
+        $this->importQueueStateMachine->apply($item, ImportQueueTransitions::TO_CREATE);
 
-        WorkflowTool::checkAndApply($this->importQueueStateMachine, $item, [ImportQueueTransitions::TO_CREATE]);
-        $this->entityManager->flush();
+        $this->entityManager->persist($item);
     }
 
     /**

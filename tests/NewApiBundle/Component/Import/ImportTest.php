@@ -107,7 +107,7 @@ class ImportTest extends KernelTestCase
             'minimal xlsx' => ['KHM', 'KHM-Import-4HH-0HHM-0HHM.xlsx', 4, 4, 4],
             'camp only' => ['SYR', 'SYR-only-camp-1HH.xlsx', 1, 7, 1],
             'excel date format' => ['KHM', 'KHM-Import-1HH-0HHM-0HHM-excel-date-format.xlsx', 1, 1, 1],
-            'very big import' => ['SYR', 'SYR-Import-5kHH-0HHM.xlsx', 5157, 5157, 0],
+            'very big import' => ['SYR', 'SYR-Import-500HH-0HHM.xlsx', 500, 500, 0],
         ];
     }
 
@@ -129,15 +129,15 @@ class ImportTest extends KernelTestCase
 
         $this->assertQueueCount($expectedHouseholdCount, $import);
 
-        $this->userStartedIntegrityCheck($import, true);
+        $this->userStartedIntegrityCheck($import, true, $this->getBatchCount($import));
 
         $this->assertQueueCount($expectedHouseholdCount, $import);
 
-        $this->userStartedIdentityCheck($import, true);
+        $this->userStartedIdentityCheck($import, true, $this->getBatchCount($import));
 
         $this->assertQueueCount($expectedHouseholdCount, $import);
 
-        $this->userStartedSimilarityCheck($import, true);
+        $this->userStartedSimilarityCheck($import, true, $this->getBatchCount($import));
 
         $this->assertQueueCount($expectedHouseholdCount, $import);
         $this->assertQueueCount($expectedHouseholdCount, $import, [ImportQueueState::TO_CREATE]);
@@ -276,9 +276,9 @@ class ImportTest extends KernelTestCase
         foreach (['first', 'second'] as $runName) {
             $import = $this->createImport("testRepeatedUploadSameFile[$runName]", $this->project, $filename);
 
-            $this->userStartedIntegrityCheck($import, true);
-            $this->userStartedIdentityCheck($import, true);
-            $this->userStartedSimilarityCheck($import, true);
+            $this->userStartedIntegrityCheck($import, true, $this->getBatchCount($import));
+            $this->userStartedIdentityCheck($import, true, $this->getBatchCount($import));
+            $this->userStartedSimilarityCheck($import, true, $this->getBatchCount($import));
 
             $imports[$runName] = $import;
         }
@@ -447,7 +447,7 @@ class ImportTest extends KernelTestCase
 
         $import = $this->createImport('testWrongCountryIntegrityCheck', $project, $filename);
 
-        $this->userStartedIntegrityCheck($import, false);
+        $this->userStartedIntegrityCheck($import, false, $this->getBatchCount($import));
 
         $this->cli('app:import:clean', $import);
     }
@@ -498,5 +498,17 @@ class ImportTest extends KernelTestCase
         $this->uploadService->load($importFile);
 
         $this->assertNotNull($importFile->getId(), "ImportFile wasn't saved to DB");
+    }
+
+    private function getBatchCount(Import $import)
+    {
+        $count = $this->entityManager->getRepository(ImportQueue::class)->count(['import' => $import]);
+        // $count = $import->getImportQueue()->count();
+        $batch = self::$container->getParameter('import.batch_size');
+        // echo "count $count\n";
+        // echo "batch $batch\n";
+        // echo "do times ".($count/$batch)."\n";
+        // echo "do times rounded ".intval(ceil($count/$batch))."\n";
+        return 1+intval(ceil($count/$batch));
     }
 }

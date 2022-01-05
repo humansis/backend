@@ -9,11 +9,13 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 trait CliTrait
 {
-    private function userStartedIntegrityCheck(Import $import, bool $shouldEndCorrect): void
+    private function userStartedIntegrityCheck(Import $import, bool $shouldEndCorrect, int $commandCallCount = 1): void
     {
         $this->importService->updateStatus($import, ImportState::INTEGRITY_CHECKING);
         $this->assertEquals(ImportState::INTEGRITY_CHECKING, $import->getState());
-        $this->cli('app:import:integrity', $import);
+        for ($i=0; $i<$commandCallCount; $i++) {
+            $this->cli('app:import:integrity', $import);
+        }
         $this->cli('app:import:integrity', $import);
         if ($shouldEndCorrect) {
             $this->assertEquals(ImportState::INTEGRITY_CHECK_CORRECT, $import->getState());
@@ -22,11 +24,13 @@ trait CliTrait
         }
     }
 
-    private function userStartedIdentityCheck(Import $import, bool $shouldEndCorrect): void
+    private function userStartedIdentityCheck(Import $import, bool $shouldEndCorrect, int $commandCallCount = 1): void
     {
         $this->importService->updateStatus($import, ImportState::IDENTITY_CHECKING);
         $this->assertEquals(ImportState::IDENTITY_CHECKING, $import->getState());
-        $this->cli('app:import:identity', $import);
+        for ($i=0; $i<$commandCallCount; $i++) {
+            $this->cli('app:import:identity', $import);
+        }
         $this->cli('app:import:identity', $import);
         if ($shouldEndCorrect) {
             $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
@@ -35,11 +39,13 @@ trait CliTrait
         }
     }
 
-    private function userStartedSimilarityCheck(Import $import, bool $shouldEndCorrect): void
+    private function userStartedSimilarityCheck(Import $import, bool $shouldEndCorrect, int $commandCallCount = 1): void
     {
         $this->importService->updateStatus($import, ImportState::SIMILARITY_CHECKING);
         $this->assertEquals(ImportState::SIMILARITY_CHECKING, $import->getState());
-        $this->cli('app:import:similarity', $import);
+        for ($i=0; $i<$commandCallCount; $i++) {
+            $this->cli('app:import:similarity', $import);
+        }
         $this->cli('app:import:similarity', $import);
         if ($shouldEndCorrect) {
             $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
