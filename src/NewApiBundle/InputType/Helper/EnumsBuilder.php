@@ -14,7 +14,7 @@ class EnumsBuilder
     private $enumClassName;
     /** @var bool */
     private $nullToEmptyArrayTransformation = false;
-    private $explodeDelimiters = [',', ' ', ';'];
+    private $explodeDelimiters = [',', ';'];
 
     /**
      * @param string $enumClassName
@@ -40,7 +40,7 @@ class EnumsBuilder
         $this->explodeDelimiters = $explodeDelimiters;
     }
 
-    public function buildInputValues(?array $apiValues): ?array
+    public function buildInputValues(?iterable $apiValues): ?array
     {
         if (null === $apiValues) {
             return $this->nullToEmptyArrayTransformation ? [] : null;
@@ -48,7 +48,8 @@ class EnumsBuilder
         $enumValues = [];
         foreach ($apiValues as $apiValue) {
             try {
-                $enumValues[] = $this->enumClassName::valueFromAPI($apiValue);
+                $enumValues[] = $transformed = $this->enumClassName::valueFromAPI($apiValue);
+                // echo "$apiValue => $transformed\n";
             } catch (EnumValueNoFoundException $exception) {
                 $enumValues[] = $apiValue;
             }
@@ -72,7 +73,7 @@ class EnumsBuilder
     {
         foreach ($values as $value) {
             foreach (explode($delimiter, $value) as $shard) {
-                if (!empty(trim($shard))) yield trim($shard);
+                if (strlen(trim($shard))>0) yield trim($shard);
             }
         }
     }

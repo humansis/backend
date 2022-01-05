@@ -17,7 +17,7 @@ class HouseholdAssetsEnum extends \CommonBundle\DBAL\AbstractEnum
 
     public static function all(): array
     {
-        return HouseholdAssets::values();
+        return array_keys(self::databaseMap());
     }
 
     public static function databaseMap(): array

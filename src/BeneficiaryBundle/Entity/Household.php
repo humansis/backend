@@ -14,6 +14,7 @@ use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
+use ProjectBundle\DBAL\LivelihoodEnum;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -216,7 +217,7 @@ class Household extends AbstractBeneficiary
      */
     public function setLivelihood(?string $livelihood): self
     {
-        $this->livelihood = $livelihood;
+        $this->livelihood = LivelihoodEnum::valueToDB($livelihood);
 
         return $this;
     }
@@ -228,7 +229,7 @@ class Household extends AbstractBeneficiary
      */
     public function getLivelihood(): ?string
     {
-        return $this->livelihood;
+        return LivelihoodEnum::valueFromDB($this->livelihood);
     }
 
     /**
@@ -249,9 +250,9 @@ class Household extends AbstractBeneficiary
     public function setAssets(array $assets): self
     {
         self::validateValues('assets', HouseholdAssets::class, $assets);
-        $this->assets = array_map(function ($asset) {
+        $this->assets = array_unique(array_map(function ($asset) {
             return HouseholdAssetsEnum::valueToDB($asset);
-        }, $assets);
+        }, $assets));
 
         return $this;
     }

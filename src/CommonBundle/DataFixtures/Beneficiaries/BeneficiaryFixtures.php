@@ -19,7 +19,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             [
-            "livelihood" => Livelihood::GOVERNMENT,
+            "livelihood" => Livelihood::valueToAPI(Livelihood::GOVERNMENT),
             "income_level" => 3,
             "notes" => null,
             "latitude" => null,
@@ -84,7 +84,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
             "__country" => "KHM"
         ],
             [
-              "livelihood" => Livelihood::DAILY_LABOUR,
+              "livelihood" => Livelihood::valueToAPI(Livelihood::DAILY_LABOUR),
               "income_level" => 3,
               "notes" => null,
               "latitude" => null,
@@ -210,7 +210,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
               "__country" => "KHM"
             ],
             [
-                "livelihood" => Livelihood::FARMING_LIVESTOCK,
+                "livelihood" => Livelihood::valueToAPI(Livelihood::FARMING_LIVESTOCK),
                 "income_level" => 4,
                 "notes" => null,
                 "latitude" => null,

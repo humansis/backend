@@ -10,7 +10,7 @@ trait EnumTrait
     /**
      * @return string[][] key = value, value = array of possible values from API
      */
-    protected static function apiAlternatives(): array {
+    public static function apiAlternatives(): array {
         return [];
     }
 
@@ -19,7 +19,11 @@ trait EnumTrait
      */
     protected static function apiMap(): array {
         if (!isset(self::$values)) {
-            return [];
+            $values = [];
+            foreach (self::values() as $value) {
+                $values[$value] = $value;
+            }
+            return $values;
         }
         return array_flip(self::$values);
     }
@@ -50,7 +54,7 @@ trait EnumTrait
                 }
             }
         }
-        throw new EnumValueNoFoundException(__CLASS__, $APIValue);
+        throw new EnumValueNoFoundException(__CLASS__, (string) $APIValue);
     }
 
     /**
@@ -67,10 +71,15 @@ trait EnumTrait
         return self::apiMap()[$value];
     }
 
-    private static function normalizeValue($value): string
+    public static function normalizeValue($value): string
     {
-        if (is_string($value)) return preg_replace('|[\W_]+|', '', strtolower(trim($value)));
-        if (is_bool($value)) return $value ? 'true' : 'false';
+        if (is_string($value)) {
+            $lowered = mb_strtolower($value);
+
+            //removes every character which is not a number or a letter
+            return preg_replace('|[\W_]+|', '', $lowered);
+        }
+        if (is_bool($value)) return $value === true ? 'true' : 'false';
         return (string) $value;
     }
 }

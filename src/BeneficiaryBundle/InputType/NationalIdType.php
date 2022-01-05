@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace BeneficiaryBundle\InputType;
 
 use CommonBundle\InputType\InputTypeInterface;
@@ -9,7 +11,6 @@ class NationalIdType implements InputTypeInterface
     /**
      * @var string|null
      * @Assert\Length(max="255")
-     * @Assert\Choice(callback={"BeneficiaryBundle\Entity\NationalId","types"})
      */
     private $type;
     /**
@@ -19,11 +20,12 @@ class NationalIdType implements InputTypeInterface
     private $number;
 
     /**
+     * @Assert\Choice(callback={"\NewApiBundle\Enum\NationalIdType", "values"}, strict=true, groups={"Strict"})
      * @return string|null
      */
     public function getType(): ?string
     {
-        return $this->type;
+        return $this->type ? \NewApiBundle\Enum\NationalIdType::valueFromAPI($this->type) : null;
     }
 
     /**

@@ -122,21 +122,21 @@ class ImportFinisher
             $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
             $this->logImportInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
 
-            WorkflowTool::checkAndApply($this->importQueueStateMachine, $item, [ImportQueueTransitions::LINK]);
+            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::LINK);
             $this->em->persist($item);
         }
 
+        $this->em->persist($import);
+        $this->importStateMachine->apply($import, ImportTransitions::FINISH);
         $this->em->flush();
 
-        WorkflowTool::checkAndApply($this->importStateMachine, $import, [ImportTransitions::FINISH]);
-        $this->em->persist($import);
-        $this->em->flush();
+        $this->resetOtherImports($import);
     }
 
     /**
      * @param Import $import
      */
-    public function finish(Import $import)
+    public function resetOtherImports(Import $import)
     {
         if ($import->getState() !== ImportState::FINISHED) {
             throw new BadMethodCallException('Wrong import status');
@@ -145,8 +145,13 @@ class ImportFinisher
         $importConflicts = $this->em->getRepository(Import::class)->getConflictingImports($import);
         $this->logImportInfo($import, count($importConflicts)." conflicting imports to reset duplicity checks");
         foreach ($importConflicts as $conflictImport) {
-            $this->logImportInfo($conflictImport, " reset to ".ImportState::IDENTITY_CHECKING);
-            $this->importStateMachine->apply($conflictImport, ImportTransitions::RESET);
+            if ($this->importStateMachine->can($conflictImport, ImportTransitions::RESET)) {
+                $this->logImportInfo($conflictImport, " reset to ".ImportState::IDENTITY_CHECKING);
+                $this->importStateMachine->apply($conflictImport, ImportTransitions::RESET);
+            } else {
+                $this->logImportTransitionConstraints($this->importStateMachine, $conflictImport, ImportTransitions::RESET);
+            }
+
         }
         $this->em->flush();
     }

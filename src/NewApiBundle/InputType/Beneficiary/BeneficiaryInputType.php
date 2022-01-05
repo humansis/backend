@@ -1,15 +1,15 @@
 <?php
-
 declare(strict_types=1);
 
 namespace NewApiBundle\InputType\Beneficiary;
 
-use BeneficiaryBundle\Entity\Person;
-use BeneficiaryBundle\Entity\Referral;
+use BeneficiaryBundle\Enum\ResidencyStatus;
 use NewApiBundle\Enum\PersonGender;
+use NewApiBundle\Enum\VariableBool;
 use NewApiBundle\Request\InputTypeInterface;
 use NewApiBundle\Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
+use NewApiBundle\Validator\Constraints\Enum;
 
 /**
  * @Assert\GroupSequence({"BeneficiaryInputType", "Strict"})
@@ -70,33 +70,33 @@ class BeneficiaryInputType implements InputTypeInterface
     private $enParentsName;
 
     /**
-     * @Assert\Choice({"M", "F"})
-     * @Assert\NotBlank
-     * @Assert\NotNull
+     * @Assert\NotNull()
+     * @Enum(enumClass="NewApiBundle\Enum\PersonGender")
      */
     private $gender;
 
     /**
+     * @var NationalIdCardInputType
      * @Assert\Type("array")
      * @Assert\Valid
      */
     private $nationalIdCards = [];
 
     /**
+     * @var PhoneInputType
      * @Assert\Type("array")
      * @Assert\Valid
      */
     private $phones = [];
 
     /**
-     * @Assert\Choice(callback={"BeneficiaryBundle\Enum\ResidencyStatus", "all"})
-     * @Assert\NotBlank
-     * @Assert\NotNull
+     * @Assert\NotNull()
+     * @Enum(enumClass="BeneficiaryBundle\Enum\ResidencyStatus")
      */
     private $residencyStatus;
 
     /**
-     * @Assert\Choice(callback={"BeneficiaryBundle\Entity\Referral", "types"})
+     * @Assert\Choice(callback={"\BeneficiaryBundle\Entity\Referral", "types"}, strict=true, groups={"Strict"})
      * @Assert\Length(max="255")
      */
     private $referralType;
@@ -108,8 +108,8 @@ class BeneficiaryInputType implements InputTypeInterface
     private $referralComment;
 
     /**
-     * @Assert\Type("boolean")
-     * @Assert\NotNull
+     * @Assert\NotNull()
+     * @Enum(enumClass="NewApiBundle\Enum\VariableBool")
      */
     private $isHead;
 
@@ -130,11 +130,12 @@ class BeneficiaryInputType implements InputTypeInterface
     }
 
     /**
+     * @Assert\NotNull
      * @return \DateTimeInterface
      */
     public function getDateOfBirth()
     {
-        return new \DateTime($this->dateOfBirth);
+        return $this->dateOfBirth ? new \DateTime($this->dateOfBirth) : null;
     }
 
     /**
@@ -242,7 +243,8 @@ class BeneficiaryInputType implements InputTypeInterface
     }
 
     /**
-     * @return int one of Person::GENDER_*
+     * @see PersonGender::values()
+     * @return string
      */
     public function getGender()
     {
@@ -304,7 +306,7 @@ class BeneficiaryInputType implements InputTypeInterface
      */
     public function getResidencyStatus()
     {
-        return $this->residencyStatus;
+        return $this->residencyStatus ? ResidencyStatus::valueFromAPI($this->residencyStatus) : null;
     }
 
     /**
@@ -359,11 +361,11 @@ class BeneficiaryInputType implements InputTypeInterface
      */
     public function isHead()
     {
-        return $this->isHead === true;
+        return VariableBool::valueFromAPI($this->isHead);
     }
 
     /**
-     * @param boolean $isHead
+     * @param boolean|int|string $isHead
      */
     public function setIsHead($isHead)
     {

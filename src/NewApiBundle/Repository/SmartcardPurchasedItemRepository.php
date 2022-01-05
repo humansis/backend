@@ -9,6 +9,7 @@ use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Entity\SmartcardPurchasedItem;
+use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\InputType\PurchasedItemOrderInputType;
 use NewApiBundle\InputType\SmartcardPurchasedItemFilterInputType;
 use NewApiBundle\Request\Pagination;
@@ -76,7 +77,7 @@ class SmartcardPurchasedItemRepository  extends EntityRepository
                         ")
                     ->setParameter('fulltext', $filter->getFulltext())
                     ->setParameter('fulltextLike', '%'.$filter->getFulltext().'%')
-                    ->setParameter('niType', NationalId::TYPE_NATIONAL_ID)
+                    ->setParameter('niType', NationalIdType::NATIONAL_ID)
                 ;
             }
             if ($filter->hasProjects()) {
