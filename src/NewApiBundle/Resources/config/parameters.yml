@@ -3,3 +3,8 @@ parameters:
         import.uploadedFilesDirectory: '%kernel.project_dir%/var/imports/uploaded'
         import.maxFileSizeToLoad: 1 #in MB
         import.batch_size: 200
+
+
+        logs.vendorAppPath: 'vendor_app/vendor-<<vendorId>>/<<datetime>>/'
+        logs.fieldAppPath: 'field_app/user-<<userId>>/<<datetime>>/'
+        logs.lifetime: 42 #in days. (6 weeks)

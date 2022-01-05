@@ -128,4 +128,9 @@ class BeneficiaryMapper implements MapperInterface
     {
         return $this->object->getPerson()->getEnGivenName();
     }
+
+    public function getHouseholdId(): int
+    {
+        return $this->object->getHousehold()->getId();
+    }
 }

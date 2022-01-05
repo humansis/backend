@@ -55,6 +55,7 @@ services:
             - '@doctrine.orm.entity_manager'
             - '@voucher.purchase_service'
             - '@workflow.registry'
+            - '@logger'
         public: true
 
     VoucherBundle\Mapper\SmartcardMapper:

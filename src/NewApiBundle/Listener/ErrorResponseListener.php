@@ -10,6 +10,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 
@@ -53,10 +54,16 @@ class ErrorResponseListener
             ];
 
         } elseif ($exception instanceof HttpExceptionInterface) {
+            if ($exception instanceof BadRequestHttpException) {
+                $message = $exception->getMessage();
+            } else {
+                $message = (new Response($exception->getStatusCode()))->getReasonPhrase();
+            }
+
             $data = [
                 'code' => $exception->getStatusCode(),
                 'errors' => [
-                    'message' => (new Response($exception->getStatusCode()))->getReasonPhrase(),
+                    'message' => $message,
                 ],
             ];
 

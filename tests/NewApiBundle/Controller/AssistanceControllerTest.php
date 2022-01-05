@@ -396,4 +396,153 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "commodityIds": []
         }', $this->client->getResponse()->getContent());
     }
+
+    public function testCreateRemoteDistributionWithValidSmartcard(): void
+    {
+        /** @var Project $project */
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
+
+        /** @var Location $location */
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
+
+        /** @var ModalityType $modalityType */
+        $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Smartcard'], ['id' => 'asc'])[0];
+
+        $this->request('POST', '/api/basic/web-app/v1/assistances', [
+            'iso3' => 'KHM',
+            'projectId' => $project->getId(),
+            'locationId' => $location->getId(),
+            'dateDistribution' => '2021-03-10T13:45:32.988Z',
+            'dateExpiration' => '2022-10-10T03:45:00.000Z',
+            'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
+            'type' => AssistanceType::DISTRIBUTION,
+            'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
+            'threshold' => 1,
+            'commodities' => [
+                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+            ],
+            'selectionCriteria' => [
+                [
+                    'group' => 1,
+                    'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD_HEAD,
+                    'field' => 'hasValidSmartcard',
+                    'condition' => '=',
+                    'weight' => 1,
+                    'value' => true,
+                ],
+                [
+                    'group' => 1,
+                    'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::BENEFICIARY,
+                    'field' => 'gender',
+                    'condition' => '=',
+                    'weight' => 1,
+                    'value' => 'F',
+                ],
+                [
+                    'group' => 2,
+                    'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD_HEAD,
+                    'field' => 'hasValidSmartcard',
+                    'condition' => '=',
+                    'weight' => 1,
+                    'value' => true,
+                ],
+            ],
+            'foodLimit' => null,
+            'nonFoodLimit' => null,
+            'cashbackLimit' => null,
+            'allowedProductCategoryTypes' => [],
+            'remoteDistributionAllowed' => true
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{
+            "id": "*",
+            "name": "*",
+            "dateDistribution": "2021-03-10T13:45:32+0000",
+            "dateExpiration": "2022-10-10T03:45:00+0000",
+            "projectId": "*",
+            "locationId": "*",
+            "target": "*",
+            "type": "*",
+            "sector": "*",
+            "subsector": "*",
+            "householdsTargeted": "*",
+            "individualsTargeted": "*",
+            "deletable": true,
+            "description": "*",
+            "allowedProductCategoryTypes": [],
+            "foodLimit": null,
+            "nonFoodLimit": null,
+            "cashbackLimit": null,
+            "commodityIds": ["*"]
+        }', $this->client->getResponse()->getContent());
+    }
+
+    public function testCreateRemoteDistributionWithInvalidSmartcard(): void
+    {
+        /** @var Project $project */
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
+
+        /** @var Location $location */
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
+
+        /** @var ModalityType $modalityType */
+        $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Smartcard'], ['id' => 'asc'])[0];
+
+        $this->request('POST', '/api/basic/web-app/v1/assistances', [
+            'iso3' => 'KHM',
+            'projectId' => $project->getId(),
+            'locationId' => $location->getId(),
+            'dateDistribution' => '2021-03-10T13:45:32.988Z',
+            'dateExpiration' => '2022-10-10T03:45:00.000Z',
+            'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
+            'type' => AssistanceType::DISTRIBUTION,
+            'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
+            'threshold' => 1,
+            'commodities' => [
+                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+            ],
+            'selectionCriteria' => [
+                [
+                    'group' => 1,
+                    'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD_HEAD,
+                    'field' => 'hasValidSmartcard',
+                    'condition' => '=',
+                    'weight' => 1,
+                    'value' => false,
+                ],
+                [
+                    'group' => 1,
+                    'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::BENEFICIARY,
+                    'field' => 'gender',
+                    'condition' => '=',
+                    'weight' => 1,
+                    'value' => 'F',
+                ],
+                [
+                    'group' => 2,
+                    'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD_HEAD,
+                    'field' => 'hasValidSmartcard',
+                    'condition' => '=',
+                    'weight' => 1,
+                    'value' => true,
+                ],
+            ],
+            'foodLimit' => null,
+            'nonFoodLimit' => null,
+            'cashbackLimit' => null,
+            'allowedProductCategoryTypes' => [],
+            'remoteDistributionAllowed' => true
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->getStatusCode() === 400,
+            'Request should fail because for remote distribution should be only valid smartcard'
+        );
+    }
 }
