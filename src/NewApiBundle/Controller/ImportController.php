@@ -149,22 +149,28 @@ class ImportController extends AbstractController
 
         $output = new BufferedOutput();
         if ($import->getState() === ImportState::INTEGRITY_CHECKING) {
-            $application->run(new ArrayInput([
+            $command = new ArrayInput([
                 'command' => 'app:import:integrity',
                 'import' => $import->getId(),
-            ]), $output);
+            ]);
+            $application->run($command, $output);
+            $application->run($command, $output);
         }
         if ($import->getState() === ImportState::IDENTITY_CHECKING) {
-            $application->run(new ArrayInput([
+            $command = new ArrayInput([
                 'command' => 'app:import:identity',
                 'import' => $import->getId(),
-            ]), $output);
+            ]);
+            $application->run($command, $output);
+            $application->run($command, $output);
         }
         if ($import->getState() === ImportState::SIMILARITY_CHECKING) {
-            $application->run(new ArrayInput([
+            $command = new ArrayInput([
                 'command' => 'app:import:similarity',
                 'import' => $import->getId(),
-            ]), $output);
+            ]);
+            $application->run($command, $output);
+            $application->run($command, $output);
         }
         if ($import->getState() === ImportState::IMPORTING && $import->getImportQueue()->count() <= ImportService::ASAP_LIMIT) {
             $application->run(new ArrayInput([
