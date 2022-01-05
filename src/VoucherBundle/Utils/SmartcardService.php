@@ -16,6 +16,7 @@ use NewApiBundle\InputType\SmartcardPurchaseInputType;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Repository\ProjectRepository;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Workflow\Registry;
 use UserBundle\Entity\User;
@@ -42,11 +43,15 @@ class SmartcardService
     /** @var Registry $workflowRegistry */
     private $workflowRegistry;
 
-    public function __construct(EntityManager $em, PurchaseService $purchaseService, Registry $workflowRegistry)
+    /** @var LoggerInterface  */
+    private $logger;
+
+    public function __construct(EntityManager $em, PurchaseService $purchaseService, Registry $workflowRegistry, LoggerInterface $logger)
     {
         $this->em = $em;
         $this->purchaseService = $purchaseService;
         $this->workflowRegistry = $workflowRegistry;
+        $this->logger = $logger;
     }
 
     public function register(string $serialNumber, string $beneficiaryId, DateTime $createdAt): Smartcard
@@ -78,15 +83,32 @@ class SmartcardService
             throw new BadRequestDataException("No beneficiary #$beneficiaryId in assistance #$assistanceId");
         }
 
-        /** @var ReliefPackage|null $reliefPackage */
-        $reliefPackage = $this->em->getRepository(ReliefPackage::class)->findOneBy([
-            'state' => ReliefPackageState::TO_DISTRIBUTE,
+        /** @var ReliefPackage[] $reliefPackages */
+        $reliefPackages = $this->em->getRepository(ReliefPackage::class)->findBy([
             'modalityType' => ModalityType::SMART_CARD,
             'assistanceBeneficiary' => $target,
         ], ['id' => 'asc']);
-        if (null == $reliefPackage) {
+
+        if (empty($reliefPackages)) {
             throw new BadRequestDataException("Nothing to distribute for beneficiary #$beneficiaryId in assistance #$assistanceId");
         }
+
+        //TODO rewrite deposit function
+
+        $reliefPackageToDistribute = null;
+
+        foreach ($reliefPackages as $reliefPackage) {
+            if ($reliefPackage->getState() === ReliefPackageState::TO_DISTRIBUTE) {
+                $reliefPackageToDistribute = $reliefPackage;
+            }
+        }
+
+        if ($reliefPackageToDistribute === null) {
+            $this->logger->warning("Beneficiary #$beneficiaryId is part of assistance #$assistanceId, but it was already distributed.");
+
+            return $reliefPackages[0]->getSmartcardDeposits()->first();
+        }
+
         return $this->deposit($serialNumber, $reliefPackage->getId(), $value, $balanceBefore, $distributedAt, $user);
     }
 
