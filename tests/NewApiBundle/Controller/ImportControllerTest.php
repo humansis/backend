@@ -5,6 +5,7 @@ namespace Tests\NewApiBundle\Controller;
 
 use Doctrine\ORM\NoResultException;
 use Exception;
+use NewApiBundle\Controller\ImportController;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportInvalidFile;
@@ -181,7 +182,7 @@ class ImportControllerTest extends BMSServiceTestCase
      */
     public function testPatch(string $parameter, $value, int $id)
     {
-        $this->request('PATCH', '/api/basic/web-app/v1/imports/'.$id, [
+        $this->request('PATCH', '/api/basic/web-app/v1/imports/'.$id.'?'.ImportController::DISABLE_CRON.'=true', [
             $parameter => $value,
         ]);
 
