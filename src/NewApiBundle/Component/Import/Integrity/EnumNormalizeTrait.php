@@ -20,7 +20,7 @@ trait EnumNormalizeTrait
 {
     public function isHead(): bool
     {
-        return VariableBool::valueFromAPI($this->head);
+        return \NewApiBundle\Enum\HouseholdHead::valueFromAPI($this->head);
     }
 
     public function getGender(): string

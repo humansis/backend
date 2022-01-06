@@ -144,7 +144,7 @@ class HouseholdHead
 
     /**
      * @Assert\NotNull()
-     * @Enum(enumClass="NewApiBundle\Enum\VariableBool")
+     * @Enum(enumClass="NewApiBundle\Enum\HouseholdHead")
      */
     protected $head;
 

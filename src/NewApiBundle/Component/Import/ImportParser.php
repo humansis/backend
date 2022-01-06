@@ -8,6 +8,7 @@ use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Symfony\Component\HttpFoundation\File\File;
+use NewApiBundle\Enum\HouseholdHead;
 
 class ImportParser
 {
@@ -37,8 +38,8 @@ class ImportParser
                 break;
             }
 
-            //TODO what if Head is null?
-            if ('true' === strtolower($row['Head'][CellParameters::VALUE])) {
+            // null => member
+            if (true === HouseholdHead::valueFromAPI($row['Head'][CellParameters::VALUE])) {
                 if ([] !== $household) {
                     // everytime new household head is found, previous HH is added to list
                     $list[] = $household;

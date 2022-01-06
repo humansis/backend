@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\InputType\Beneficiary;
 
 use BeneficiaryBundle\Enum\ResidencyStatus;
+use NewApiBundle\Enum\HouseholdHead;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Enum\VariableBool;
 use NewApiBundle\Request\InputTypeInterface;
@@ -109,7 +110,7 @@ class BeneficiaryInputType implements InputTypeInterface
 
     /**
      * @Assert\NotNull()
-     * @Enum(enumClass="NewApiBundle\Enum\VariableBool")
+     * @Enum(enumClass="NewApiBundle\Enum\HouseholdHead")
      */
     private $isHead;
 
@@ -361,7 +362,7 @@ class BeneficiaryInputType implements InputTypeInterface
      */
     public function isHead()
     {
-        return VariableBool::valueFromAPI($this->isHead);
+        return HouseholdHead::valueFromAPI($this->isHead);
     }
 
     /**
