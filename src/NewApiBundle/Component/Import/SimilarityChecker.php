@@ -57,7 +57,7 @@ class SimilarityChecker
         foreach ($this->queueRepository->getItemsToSimilarityCheck($import, $batchSize) as $i => $item) {
             $this->checkOne($item);
 
-            if ($i % 500 === 0) {
+            if ($i % 200 === 0) {
                 $this->entityManager->flush();
             }
         }
@@ -70,7 +70,7 @@ class SimilarityChecker
      */
     protected function checkOne(ImportQueue $item): void
     {
-        // TODO: similarity check
+        // similarity check missing, it will be implemented later
         $item->setSimilarityCheckedAt(new \DateTime());
         $this->importQueueStateMachine->apply($item, ImportQueueTransitions::TO_CREATE);
 
@@ -82,19 +82,19 @@ class SimilarityChecker
      */
     public function postCheck(Import $import): void
     {
-        $newCheckedImportQueues = $this->entityManager->getRepository(ImportQueue::class)
-            ->findBy([
-                'import' => $import,
-                'state' => ImportQueueState::VALID,
-            ]);
-
-        /** @var ImportQueue $importQueue */
-        foreach ($newCheckedImportQueues as $importQueue) {
-            WorkflowTool::checkAndApply($this->importQueueStateMachine, $importQueue, [ImportQueueTransitions::TO_CREATE]);
-        }
-
-        $this->entityManager->flush();
-        $this->logImportDebug($import, "Ended with status ".$import->getState());
+        // $newCheckedImportQueues = $this->entityManager->getRepository(ImportQueue::class)
+        //     ->findBy([
+        //         'import' => $import,
+        //         'state' => ImportQueueState::VALID,
+        //     ]);
+        //
+        // /** @var ImportQueue $importQueue */
+        // foreach ($newCheckedImportQueues as $importQueue) {
+        //     WorkflowTool::checkAndApply($this->importQueueStateMachine, $importQueue, [ImportQueueTransitions::TO_CREATE]);
+        // }
+        //
+        // $this->entityManager->flush();
+        // $this->logImportDebug($import, "Ended with status ".$import->getState());
     }
 
     /**

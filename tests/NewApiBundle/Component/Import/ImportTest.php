@@ -503,12 +503,7 @@ class ImportTest extends KernelTestCase
     private function getBatchCount(Import $import)
     {
         $count = $this->entityManager->getRepository(ImportQueue::class)->count(['import' => $import]);
-        // $count = $import->getImportQueue()->count();
         $batch = self::$container->getParameter('import.batch_size');
-        // echo "count $count\n";
-        // echo "batch $batch\n";
-        // echo "do times ".($count/$batch)."\n";
-        // echo "do times rounded ".intval(ceil($count/$batch))."\n";
         return 1+intval(ceil($count/$batch));
     }
 }
