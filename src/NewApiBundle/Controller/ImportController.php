@@ -35,6 +35,8 @@ use UserBundle\Entity\User;
 
 class ImportController extends AbstractController
 {
+    const DISABLE_CRON = 'disable-cron-fast-forward';
+
     /**
      * @var ImportService
      */
@@ -131,10 +133,51 @@ class ImportController extends AbstractController
      * @param ImportPatchInputType $inputType
      *
      * @return JsonResponse
+     * @throws \Exception
      */
-    public function updateStatus(Import $import, ImportPatchInputType $inputType): JsonResponse
+    public function updateStatus(Request $request, Import $import, ImportPatchInputType $inputType): JsonResponse
     {
         $this->importService->patch($import, $inputType);
+
+        if ($request->get(self::DISABLE_CRON, false) === true) {
+            return $this->json(null, Response::HTTP_ACCEPTED);
+        }
+
+        $kernel = $this->get('kernel');
+        $application = new Application($kernel);
+        $application->setAutoExit(false);
+
+        $output = new BufferedOutput();
+        if ($import->getState() === ImportState::INTEGRITY_CHECKING) {
+            $command = new ArrayInput([
+                'command' => 'app:import:integrity',
+                'import' => $import->getId(),
+            ]);
+            $application->run($command, $output);
+            $application->run($command, $output);
+        }
+        if ($import->getState() === ImportState::IDENTITY_CHECKING) {
+            $command = new ArrayInput([
+                'command' => 'app:import:identity',
+                'import' => $import->getId(),
+            ]);
+            $application->run($command, $output);
+            $application->run($command, $output);
+        }
+        if ($import->getState() === ImportState::SIMILARITY_CHECKING) {
+            $command = new ArrayInput([
+                'command' => 'app:import:similarity',
+                'import' => $import->getId(),
+            ]);
+            $application->run($command, $output);
+            $application->run($command, $output);
+        }
+        if ($import->getState() === ImportState::IMPORTING && $import->getImportQueue()->count() <= ImportService::ASAP_LIMIT) {
+            $application->run(new ArrayInput([
+                'command' => 'app:import:finish',
+                'import' => $import->getId(),
+            ]), $output);
+        }
 
         return $this->json(null, Response::HTTP_ACCEPTED);
     }
