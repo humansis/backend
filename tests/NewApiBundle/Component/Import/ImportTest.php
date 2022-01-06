@@ -107,7 +107,8 @@ class ImportTest extends KernelTestCase
             'minimal xlsx' => ['KHM', 'KHM-Import-4HH-0HHM-0HHM.xlsx', 4, 4, 4],
             'camp only' => ['SYR', 'SYR-only-camp-1HH.xlsx', 1, 7, 1],
             'excel date format' => ['KHM', 'KHM-Import-1HH-0HHM-0HHM-excel-date-format.xlsx', 1, 1, 1],
-            'very big import' => ['SYR', 'SYR-Import-500HH-0HHM.xlsx', 500, 500, 0],
+            // takes too long, only for local testing
+            // 'very big import' => ['SYR', 'SYR-Import-500HH-0HHM.xlsx', 500, 500, 0],
         ];
     }
 
@@ -290,7 +291,13 @@ class ImportTest extends KernelTestCase
 
         $import = $imports['second'];
 
-        $this->userStartedIdentityCheck($import, false);
+        if ($expectedBeneficiaryCount === 0) {
+            $this->userStartedIdentityCheck($import, true, $this->getBatchCount($import));
+            return; // another check doesn't have any meaning
+        } else {
+            $this->userStartedIdentityCheck($import, false, $this->getBatchCount($import));
+        }
+
 
         $stats = $this->importService->getStatistics($import);
         $this->assertEquals($expectedDuplicities, $stats->getAmountDuplicities());
@@ -310,7 +317,7 @@ class ImportTest extends KernelTestCase
         $this->assertQueueCount(0, $import, [ImportQueueState::IDENTITY_CANDIDATE]);
         $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
 
-        $this->userStartedSimilarityCheck($import, true);
+        $this->userStartedSimilarityCheck($import, true, $this->getBatchCount($import));
 
         $this->assertQueueCount($expectedHouseholdCount, $import);
         $this->assertQueueCount($expectedHouseholdCount-$expectedDuplicities, $import, [ImportQueueState::TO_CREATE]);
