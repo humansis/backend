@@ -28,7 +28,7 @@ elif [[ $1 == "stage" ]]; then
   EC2_ASG=stage-asg
   JWT_CERT=$JWT_CERT_STAGE
   JWT_KEY=$JWT_KEY_STAGE
-  mv docker/docker-compose.yml.stage docker-compose.yml
+  mv docker/docker-compose.yml.stage-new docker-compose.yml
   bash apply_env_config.sh ${RDS_HOSTNAME_STAGE} ${RDS_DB_NAME_STAGE} ${RDS_USERNAME_STAGE} ${RDS_PASSWORD_STAGE} ${MOBILE_KEY_STAGE} ${MOBILE_APP_VERSION_STAGE} ${MOBILE_APP_ID_STAGE} ${JWT_PASSPHRASE_STAGE} ${GELF_SERVER_NAME_STAGE}
 elif [[ $1 == "test" ]]; then
   EC2_ASG=test-asg
