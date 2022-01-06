@@ -322,7 +322,7 @@ class HouseholdHead
             }
         }
 
-        $countrySpecifics = $entityManager->getRepository(CountrySpecific::class)->findByCountryIso3($countryIso3);
+        $countrySpecifics = $entityManager->getRepository(CountrySpecific::class)->findBy(['countryIso3' => $countryIso3], ['id'=>'asc']);
         foreach ($countrySpecifics as $countrySpecific) {
             if (isset($content[$countrySpecific->getFieldString()])) {
                 $this->countrySpecifics[$countrySpecific->getId()] = $content[$countrySpecific->getFieldString()];

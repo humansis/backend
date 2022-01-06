@@ -147,7 +147,7 @@ class ImportQueueRepository extends EntityRepository
             ->andWhere('iq.state IN (:states)')
             ->andWhere('iq.similarityCheckedAt IS NULL')
             ->setParameter('import', $import)
-            ->setParameter('states', [ImportQueueState::VALID, ImportQueueState::IDENTITY_CANDIDATE])
+            ->setParameter('states', [ImportQueueState::VALID, ImportQueueState::UNIQUE_CANDIDATE])
         ;
         return (int) $qb->getQuery()->getSingleScalarResult();
     }

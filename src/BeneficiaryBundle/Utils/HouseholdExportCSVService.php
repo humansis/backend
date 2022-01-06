@@ -326,13 +326,13 @@ class HouseholdExportCSVService
     }
 
     /**
-     * @param $countryISO3
+     * @param $countryIso3
      *
      * @return mixed
      */
-    private function getCountrySpecifics($countryISO3)
+    private function getCountrySpecifics($countryIso3)
     {
-        return $this->em->getRepository(CountrySpecific::class)->findByCountryIso3($countryISO3);
+        return $this->em->getRepository(CountrySpecific::class)->findBy(['countryIso3' => $countryIso3], ['id'=>'asc']);
     }
 
     /**

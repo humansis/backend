@@ -115,7 +115,7 @@ class CSVToArrayMapper
         $mappingCSVCountry = self::MAPPING;
 
         /** @var CountrySpecific[] $countrySpecifics */
-        $countrySpecifics = $this->em->getRepository(CountrySpecific::class)->findByCountryIso3($countryIso3);
+        $countrySpecifics = $this->em->getRepository(CountrySpecific::class)->findBy(['countryIso3' => $countryIso3], ['id'=>'asc']);
         foreach ($countrySpecifics as $i => $countrySpecific) {
             $mappingCSVCountry['tmp_country_specific'.$i] = $generator->getNext();
         }

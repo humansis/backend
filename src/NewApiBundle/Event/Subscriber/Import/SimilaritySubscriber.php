@@ -49,12 +49,43 @@ class SimilaritySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.import.guard.'.ImportTransitions::COMPLETE_SIMILARITY => ['guardIfImportHasNotSuspiciousItems'],
-            'workflow.import.guard.'.ImportTransitions::FAIL_SIMILARITY => ['guardIfImportHasSuspiciousItems'],
+            'workflow.import.guard.'.ImportTransitions::COMPLETE_SIMILARITY => [
+                ['guardNothingLeft', -10],
+                ['guardIfImportHasNotSuspiciousItems', 0],
+            ],
+            'workflow.import.guard.'.ImportTransitions::FAIL_SIMILARITY => [
+                ['guardNothingLeft', -10],
+                ['guardIfImportHasSuspiciousItems', 0],
+            ],
+            'workflow.import.guard.'.ImportTransitions::REDO_SIMILARITY => ['guardSomeItemsLeft'],
             'workflow.import.guard.'.ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES => ['guardIfImportHasNotSuspiciousItems'],
             'workflow.import.entered.'.ImportTransitions::COMPLETE_SIMILARITY => ['completeSimilarity'],
             'workflow.import.completed.'.ImportTransitions::REDO_SIMILARITY => ['checkSimilarity'],
         ];
+    }
+
+    public function guardNothingLeft(GuardEvent $guardEvent): void
+    {
+        /** @var Import $import */
+        $import = $guardEvent->getSubject();
+
+        $isComplete = (0 === $this->queueRepository->countItemsToSimilarityCheck($import));
+
+        if (!$isComplete) {
+            $guardEvent->addTransitionBlocker(new TransitionBlocker('Similarity check was not completed', '0'));
+        }
+    }
+
+    public function guardSomeItemsLeft(GuardEvent $guardEvent): void
+    {
+        /** @var Import $import */
+        $import = $guardEvent->getSubject();
+
+        $isComplete = (0 === $this->queueRepository->countItemsToSimilarityCheck($import));
+
+        if ($isComplete) {
+            $guardEvent->addTransitionBlocker(new TransitionBlocker('Similarity check was completed', '0'));
+        }
     }
 
     /**
@@ -64,7 +95,7 @@ class SimilaritySubscriber implements EventSubscriberInterface
     {
         /** @var Import $import */
         $import = $enteredEvent->getSubject();
-        $this->similarityChecker->postCheck($import);
+        // $this->similarityChecker->postCheck($import);
     }
 
     /**
