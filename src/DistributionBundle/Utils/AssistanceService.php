@@ -22,6 +22,7 @@ use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
+use DistributionBundle\Repository\AssistanceRepository;
 use DistributionBundle\Utils\Retriever\AbstractRetriever;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
@@ -50,6 +51,7 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
+use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use VoucherBundle\Entity\Voucher;
 
@@ -93,11 +95,14 @@ class AssistanceService
     /** @var Registry $workflowRegistry */
     private $workflowRegistry;
 
-    /** @var FilesystemAdapter */
-    private $filesystemAdapter;
+    /** @var CacheInterface */
+    private $cache;
 
     /** @var AssistanceStatisticsRepository */
     private $assistanceStatisticRepository;
+
+    /** @var AssistanceRepository */
+    private $assistanceRepository;
 
     /**
      * AssistanceService constructor.
@@ -113,7 +118,7 @@ class AssistanceService
      * @param string                    $classRetrieverString
      * @param ContainerInterface        $container
      * @param Registry                  $workflowRegistry
-     * @param FilesystemAdapter         $filesystemAdapter
+     * @param FilesystemAdapter         $cache
      *
      * @throws Exception
      */
@@ -129,7 +134,7 @@ class AssistanceService
         string $classRetrieverString,
         ContainerInterface $container,
         Registry $workflowRegistry,
-        FilesystemAdapter $filesystemAdapter
+        CacheInterface $cache
     ) {
         $this->em = $entityManager;
         $this->serializer = $serializer;
@@ -141,7 +146,7 @@ class AssistanceService
         $this->fieldDbTransformer = $fieldDbTransformer;
         $this->container = $container;
         $this->workflowRegistry = $workflowRegistry;
-        $this->filesystemAdapter = $filesystemAdapter;
+        $this->cache = $cache;
 
         try {
             $class = new ReflectionClass($classRetrieverString);
@@ -151,6 +156,7 @@ class AssistanceService
         }
 
         $this->assistanceStatisticRepository = $this->em->getRepository(AssistanceStatistics::class);
+        $this->assistanceRepository = $this->em->getRepository(Assistance::class);
     }
 
     /**
@@ -167,12 +173,20 @@ class AssistanceService
         }
         $key = CacheTarget::assistanceId($assistanceId ?? $assistance);
 
-        return $this->filesystemAdapter->get($key, function (ItemInterface $item) use ($assistance, $countryIso3) {
-            $item->tag(CacheTarget::ASSISTANCE);
+        return $this->cache->get($key, function (ItemInterface $item) use ($assistance, $countryIso3) {
             if (is_int($assistance)) {
-                $assistance = $this->assistanceStatisticRepository->find($assistance);
+                $assistanceId = $assistance;
+                $assistance = $this->assistanceRepository->find($assistance);
+                if(is_null($assistance)){
+                    throw new NotFoundHttpException("Assistance $assistanceId not found");
+                }
             }
-            $statistics = $this->assistanceStatisticRepository->findByAssistance($assistance, $countryIso3);
+
+            try{
+                $statistics = $this->assistanceStatisticRepository->findByAssistance($assistance, $countryIso3);
+            } catch (NoResultException $noResultException) {
+                throw new NotFoundHttpException("Assistance {$assistance->getId()} is not in country $countryIso3");
+            }
 
             // TODO probably better way could be normalize (or store whole) dto
             return [
@@ -922,6 +936,8 @@ class AssistanceService
      *
      * @param GeneralReliefItem           $gri
      * @param GeneralReliefPatchInputType $input
+     *
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     public function patchGeneralReliefItem(GeneralReliefItem $gri, GeneralReliefPatchInputType $input)
     {
@@ -938,6 +954,7 @@ class AssistanceService
         }
 
         $this->em->persist($gri);
+        $this->cache->delete(CacheTarget::assistanceId($gri->getAssistanceBeneficiary()->getAssistance()->getId()));
         $this->em->flush();
     }
 
@@ -1271,12 +1288,12 @@ class AssistanceService
      * @param Assistance $assistance
      *
      * @return bool
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     public function hasDistributionStarted(Assistance $assistance): bool
     {
-        /** @var AssistanceStatistics $statistics */
-        $statistics = $this->em->getRepository(AssistanceStatistics::class)->findByAssistance($assistance);
+        $statistics = $this->getStatisticByAssistance($assistance);
 
-        return $statistics->getAmountDistributed() > 0;
+        return $statistics['amountDistributed'] > 0;
     }
 }

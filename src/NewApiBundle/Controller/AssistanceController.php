@@ -31,6 +31,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolation;
 
 class AssistanceController extends AbstractController
@@ -41,10 +43,22 @@ class AssistanceController extends AbstractController
     /** @var AssistanceService */
     private $assistanceService;
 
-    public function __construct(VulnerabilityScoreExport $vulnerabilityScoreExport, AssistanceService $assistanceService)
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
+    /**
+     * @var NormalizerInterface
+     */
+    private $normalizer;
+
+    public function __construct(VulnerabilityScoreExport $vulnerabilityScoreExport, AssistanceService $assistanceService, SerializerInterface $serializer, NormalizerInterface $normalizer)
     {
         $this->vulnerabilityScoreExport = $vulnerabilityScoreExport;
         $this->assistanceService = $assistanceService;
+        $this->serializer = $serializer;
+        $this->normalizer = $normalizer;
     }
 
     /**

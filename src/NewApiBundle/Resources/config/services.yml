@@ -293,8 +293,3 @@ services:
     NewApiBundle\Export\SmartcardPurchasedItemSpreadsheet:
         arguments:
             - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:SmartcardPurchasedItem")'
-
-    cache.filesystem:
-        class: Symfony\Component\Cache\Adapter\FilesystemAdapter
-        factory: ['NewApiBundle\FactoryCacheFactory', 'create']
-        public: true
