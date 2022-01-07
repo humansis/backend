@@ -6,6 +6,7 @@ namespace NewApiBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\ConcurrencyLock;
 use NewApiBundle\Entity\Helper\EnumTrait;
 use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
@@ -16,6 +17,7 @@ use NewApiBundle\Enum\ImportQueueState;
 class ImportQueue
 {
     use EnumTrait;
+    use ConcurrencyLock;
 
     /**
      * @var int

@@ -27,6 +27,8 @@ class ImportFinisher
 {
     use ImportLoggerTrait;
 
+    const LOCK_BATCH = 10;
+
     /**
      * @var EntityManagerInterface
      */
@@ -77,15 +79,31 @@ class ImportFinisher
         if ($import->getState() !== ImportState::IMPORTING) {
             throw new BadMethodCallException('Wrong import status');
         }
-
-        $queueToInsert = $this->queueRepository->findBy([
+        $itemCountToInsert = $this->queueRepository->count([
             'import' => $import,
             'state' => ImportQueueState::TO_CREATE,
         ]);
-        $this->logImportDebug($import, "Items to save: ".count($queueToInsert));
-        foreach ($queueToInsert as $item) {
-            $this->finishCreationQueue($item, $import);
-            $this->em->persist($item);
+        $this->logImportDebug($import, "Items to create: ".$itemCountToInsert);
+        foreach (range(0, $itemCountToInsert+self::LOCK_BATCH, self::LOCK_BATCH) as $batchStart) {
+            $runCode = uniqid();
+            $this->logImportDebug($import, "Batch $batchStart - started with id $runCode");
+            $this->queueRepository->lock($import, ImportQueueState::TO_CREATE, $runCode, self::LOCK_BATCH);
+
+            $queueToInsert = $this->queueRepository->findBy([
+                'import' => $import,
+                'state' => ImportQueueState::TO_CREATE,
+                'lockedBy' => $runCode,
+            ]);
+            $this->logImportDebug($import, "Batch $batchStart - Items to save: ".count($queueToInsert));
+            foreach ($queueToInsert as $itemToCreate) {
+                $this->logImportDebug($import, $itemToCreate->getState());
+                try {
+                    $this->finishCreationQueue($itemToCreate, $import);
+                } finally {
+                    $itemToCreate->unlock();
+                }
+                $this->em->persist($itemToCreate);
+            }
         }
 
         $queueToUpdate = $this->queueRepository->findBy([
@@ -188,7 +206,7 @@ class ImportFinisher
         }
         $this->logImportInfo($import, "Created Household #{$createdHousehold->getId()}");
 
-        WorkflowTool::checkAndApply($this->importQueueStateMachine, $item, [ImportQueueTransitions::CREATE]);
+        $this->importQueueStateMachine->apply($item, ImportQueueTransitions::CREATE);
     }
 
     /**
