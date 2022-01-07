@@ -18,6 +18,7 @@ use NewApiBundle\Workflow\ReliefPackageTransitions;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Repository\ProjectRepository;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Cache\CacheInterface;
