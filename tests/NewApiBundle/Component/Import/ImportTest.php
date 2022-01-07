@@ -102,6 +102,7 @@ class ImportTest extends KernelTestCase
     public function correctFiles(): array
     {
         return [ // ISO3-filename, HH count, BNF count, duplicity in reimport
+            'minimal csv without IDs' => ['KHM', 'KHM-Import-2HH-3HHM-55HHM-no-dupl.csv', 2, 60, 0],
             'minimal csv' => ['KHM', 'KHM-Import-2HH-3HHM-55HHM.csv', 2, 60, 1],
             'minimal ods' => ['KHM', 'KHM-Import-2HH-3HHM-24HHM.ods', 2, 29, 2],
             'minimal xlsx' => ['KHM', 'KHM-Import-4HH-0HHM-0HHM.xlsx', 4, 4, 4],
@@ -291,7 +292,7 @@ class ImportTest extends KernelTestCase
 
         $import = $imports['second'];
 
-        if ($expectedBeneficiaryCount === 0) {
+        if ($expectedDuplicities === 0) {
             $this->userStartedIdentityCheck($import, true, $this->getBatchCount($import));
             return; // another check doesn't have any meaning
         } else {
