@@ -14,6 +14,7 @@ use NewApiBundle\InputType\ProjectOrderInputType;
 use NewApiBundle\InputType\ProjectUpdateInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -68,6 +69,7 @@ class ProjectController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/projects/{id}")
+     * @Cache(lastModified="project.getLastModifiedAt()", public=true)
      *
      * @param Project $project
      *
