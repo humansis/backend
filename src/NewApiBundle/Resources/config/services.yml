@@ -80,6 +80,10 @@ services:
         resource: '../../Mapper'
         tags: [ 'app.mapper' ]
 
+    Happyr\Validator\Constraint\EntityExistValidator:
+        arguments: [ '@doctrine.orm.entity_manager' ]
+        tags: [ 'validator.constraint_validator' ]
+
     NewApiBundle\Mapper\AssistanceMapper:
         arguments:
             - '@distribution.assistance_service'
