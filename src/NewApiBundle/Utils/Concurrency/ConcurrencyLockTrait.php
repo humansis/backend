@@ -1,12 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Entity\Helper;
+namespace NewApiBundle\Utils\Concurrency;
 
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
-use UserBundle\Entity\User;
 
-trait ConcurrencyLock
+trait ConcurrencyLockTrait
 {
     /**
      * @var DateTimeInterface|null

@@ -6,27 +6,21 @@ namespace NewApiBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\ConcurrencyLock;
 use NewApiBundle\Entity\Helper\EnumTrait;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
+use NewApiBundle\Utils\Concurrency\ConcurrencyLockableInterface;
+use NewApiBundle\Utils\Concurrency\ConcurrencyLockTrait;
 
 /**
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ImportQueueRepository")
  */
-class ImportQueue
+class ImportQueue implements ConcurrencyLockableInterface
 {
+    use StandardizedPrimaryKey;
     use EnumTrait;
-    use ConcurrencyLock;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use ConcurrencyLockTrait;
 
     /**
      * @var Import
@@ -115,14 +109,6 @@ class ImportQueue
         $this->importBeneficiaryDuplicities = new ArrayCollection();
         $this->importQueueDuplicitiesOurs = new ArrayCollection();
         $this->importQueueDuplicitiesTheirs = new ArrayCollection();
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     /**
