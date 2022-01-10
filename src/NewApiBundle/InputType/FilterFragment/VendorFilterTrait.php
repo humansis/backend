@@ -12,7 +12,7 @@ trait VendorFilterTrait
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("int", groups={"Strict"}),
-     *         @EntityExist(entity="\VoucherBundle\Entity\Vendor", groups={"Strict"}),
+     *         @EntityExist(entity="\VoucherBundle\Entity\Vendor", groups={"Strict"})
      *     },
      *     groups={"Strict"}
      * )
