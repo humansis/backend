@@ -10,20 +10,35 @@ use NewApiBundle\Enum\ImportQueueState;
 
 class ImportQueueRepository extends EntityRepository
 {
-    public function lock(Import $import, string $state, string $code, int $count): void
+    /**
+     * @param Import $import
+     * @param string|string[]       $state
+     * @param string $code
+     * @param int    $count
+     */
+    public function lock(Import $import, $state, string $code, int $count): void
     {
         $qb = $this->_em->createQueryBuilder();
         $builder = $qb->update("NewApiBundle:ImportQueue", 'iq')
             ->set('iq.lockedAt', ':when')->setParameter('when', new \DateTime())
             ->set('iq.lockedBy', ':code')->setParameter('code', $code)
             ->andWhere('iq.import = :import')
-            ->andWhere('iq.state = :state')
             ->andWhere('iq.lockedBy IS NULL OR iq.lockedAt <= :expiredLock')
             ->setParameter('expiredLock', (new \DateTime())->sub(date_interval_create_from_date_string('1 hours')))
             ->setParameter('import', $import)
-            ->setParameter('state', $state)
             ->setMaxResults($count)
             ;
+        if (is_string($state)) {
+            $builder
+                ->andWhere('iq.state = :state')
+                ->setParameter('state', $state)
+                ;
+        } elseif (is_array($state)) {
+            $builder
+                ->andWhere('iq.state IN (:states)')
+                ->setParameter('states', $state)
+            ;
+        }
         $builder->getQuery()->execute();
     }
 

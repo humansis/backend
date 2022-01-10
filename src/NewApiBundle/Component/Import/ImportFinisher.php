@@ -81,86 +81,54 @@ class ImportFinisher
             throw new BadMethodCallException('Wrong import status');
         }
 
-        $insertProcessor = new ConcurrencyProcessor();
-        $insertProcessor
-            ->setBatchSize(self::LOCK_BATCH)
-            ->setCountAllCallback(function() use ($import) {
-                return $this->queueRepository->count([
-                    'import' => $import,
-                    'state' => ImportQueueState::TO_CREATE,
-                ]);
-            })
-            ->setLockBatchCallback(function($runCode, $batchSize) use ($import) {
-                $this->queueRepository->lock($import, ImportQueueState::TO_CREATE, $runCode, $batchSize);
-            })
-            ->setBatchItemsCallback(function($runCode) use ($import) {
-                return $this->queueRepository->findBy([
-                    'import' => $import,
-                    'state' => ImportQueueState::TO_CREATE,
-                    'lockedBy' => $runCode,
-                ]);
-            })
-            ->processItems(function(ImportQueue $item) use ($import) {
-                $this->finishCreationQueue($item, $import);
-                $this->em->persist($item);
-            });
+        $statesToFinish = [
+            ImportQueueState::TO_CREATE,
+            ImportQueueState::TO_UPDATE,
+            ImportQueueState::TO_LINK,
+            ImportQueueState::TO_IGNORE,
+        ];
 
-        $updateProcessor = new ConcurrencyProcessor();
-        $updateProcessor
+        $itemProcessor = new ConcurrencyProcessor();
+        $itemProcessor
             ->setBatchSize(self::LOCK_BATCH)
-            ->setCountAllCallback(function() use ($import) {
+            ->setCountAllCallback(function() use ($import, $statesToFinish) {
                 return $this->queueRepository->count([
                     'import' => $import,
-                    'state' => ImportQueueState::TO_UPDATE,
+                    'state' => $statesToFinish,
                 ]);
             })
-            ->setLockBatchCallback(function($runCode, $batchSize) use ($import) {
-                $this->queueRepository->lock($import, ImportQueueState::TO_UPDATE, $runCode, $batchSize);
+            ->setLockBatchCallback(function($runCode, $batchSize) use ($import, $statesToFinish) {
+                $this->queueRepository->lock($import, $statesToFinish, $runCode, $batchSize);
             })
             ->setBatchItemsCallback(function($runCode) use ($import) {
                 return $this->queueRepository->findBy([
                     'import' => $import,
-                    'state' => ImportQueueState::TO_UPDATE,
                     'lockedBy' => $runCode,
                 ]);
             })
             ->processItems(function(ImportQueue $item) use ($import) {
-                $this->finishUpdateQueue($item, $import);
-                $this->em->persist($item);
-            });
+                switch ($item->getState()) {
+                    case ImportQueueState::TO_CREATE:
+                        $this->finishCreationQueue($item, $import);
+                        break;
+                    case ImportQueueState::TO_UPDATE:
+                        $this->finishUpdateQueue($item, $import);
+                        break;
+                    case ImportQueueState::TO_IGNORE:
+                    case ImportQueueState::TO_LINK:
+                        /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
+                        $acceptedDuplicity = $item->getAcceptedDuplicity();
+                        if (null == $acceptedDuplicity) {
+                            return;
+                        }
 
-        // TODO TO_IGNORE = TO_LINK => unify states in the future
-        $linkProcessor = new ConcurrencyProcessor();
-        $linkProcessor
-            ->setBatchSize(self::LOCK_BATCH)
-            ->setCountAllCallback(function() use ($import) {
-                return $this->queueRepository->count([
-                    'import' => $import,
-                    'state' => [ImportQueueState::TO_LINK, ImportQueueState::TO_IGNORE],
-                ]);
-            })
-            ->setLockBatchCallback(function($runCode, $batchSize) use ($import) {
-                $this->queueRepository->lock($import, ImportQueueState::TO_LINK, $runCode, $batchSize);
-                $this->queueRepository->lock($import, ImportQueueState::TO_IGNORE, $runCode, $batchSize);
-            })
-            ->setBatchItemsCallback(function($runCode) use ($import) {
-                return $this->queueRepository->findBy([
-                    'import' => $import,
-                    'state' => [ImportQueueState::TO_LINK, ImportQueueState::TO_IGNORE],
-                    'lockedBy' => $runCode,
-                ]);
-            })
-            ->processItems(function(ImportQueue $item) use ($import) {
-                /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
-                $acceptedDuplicity = $item->getAcceptedDuplicity();
-                if (null == $acceptedDuplicity) {
-                    return;
+                        $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
+                        $this->logImportInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
+
+                        $this->importQueueStateMachine->apply($item, ImportQueueTransitions::LINK);
+                        break;
                 }
 
-                $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
-                $this->logImportInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
-
-                $this->importQueueStateMachine->apply($item, ImportQueueTransitions::LINK);
                 $this->em->persist($item);
             });
 
