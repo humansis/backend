@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
+use NewApiBundle\Component\Import\Integrity\HouseholdDecoratorBuilder;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiary;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
@@ -172,18 +173,8 @@ class ImportFinisher
             throw new InvalidArgumentException("Wrong ImportQueue creation state: ".$item->getState());
         }
 
-        $headContent = $item->getContent()[0];
-        $memberContents = array_slice($item->getContent(), 1);
-        $hhh = new Integrity\HouseholdHead((array) $headContent, $import->getProject()->getIso3(), $this->em);
-        $householdCreateInputType = $hhh->buildHouseholdInputType();
-        $householdCreateInputType->setProjectIds([$import->getProject()->getId()]);
-
-        foreach ($memberContents as $memberContent) {
-            $hhm = new Integrity\HouseholdMember($memberContent, $import->getProject()->getIso3(), $this->em);
-            $householdCreateInputType->addBeneficiary($hhm->buildBeneficiaryInputType());
-        }
-
-        $createdHousehold = $this->householdService->create($householdCreateInputType);
+        $HHBuilder = new HouseholdDecoratorBuilder($import->getProject()->getIso3(), $this->em, $item);
+        $createdHousehold = $this->householdService->create($HHBuilder->buildHouseholdInputType());
 
         /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
         $acceptedDuplicity = $item->getAcceptedDuplicity();
@@ -215,19 +206,10 @@ class ImportFinisher
             return;
         }
 
-        $headContent = $item->getContent()[0];
-        $memberContents = array_slice($item->getContent(), 1);
-        $hhh = new Integrity\HouseholdHead((array) $headContent, $import->getProject()->getIso3(), $this->em);
-        $householdUpdateInputType = $hhh->buildHouseholdUpdateType();
-        $householdUpdateInputType->setProjectIds([$import->getProject()->getId()]);
-
-        foreach ($memberContents as $memberContent) {
-            $hhm = new Integrity\HouseholdMember($memberContent, $import->getProject()->getIso3(), $this->em);
-            $householdUpdateInputType->addBeneficiary($hhm->buildBeneficiaryInputType());
-        }
+        $HHBuilder = new HouseholdDecoratorBuilder($import->getProject()->getIso3(), $this->em, $item);
 
         $updatedHousehold = $acceptedDuplicity->getTheirs();
-        $this->householdService->update($updatedHousehold, $householdUpdateInputType);
+        $this->householdService->update($updatedHousehold, $HHBuilder->buildHouseholdUpdateType());
 
         $this->linkHouseholdToQueue($import, $updatedHousehold, $acceptedDuplicity->getDecideBy());
         $this->logImportInfo($import, "Updated Household #{$updatedHousehold->getId()}");

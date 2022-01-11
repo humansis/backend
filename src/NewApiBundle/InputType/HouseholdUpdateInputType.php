@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\Component\Import\Integrity\EnumNormalizeTrait;
+use NewApiBundle\Component\Import\Utils\ImportDateConverter;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
@@ -69,7 +71,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     private $livelihood;
 
     /**
-     * @Assert\Type("array")
+     * @Assert\Type({"array", "string"})
      */
     private $assets;
 
@@ -144,7 +146,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     private $supportDateReceived;
 
     /**
-     * @Assert\Type("array")
+     * @Assert\Type({"array", "string"})
      */
     private $supportReceivedTypes = [];
 
@@ -292,11 +294,9 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     /**
      * @param int[] $assets
      */
-    public function setAssets(array $assets)
+    public function setAssets($assets)
     {
-        foreach ($assets as $asset) {
-            $this->assets[] = $asset;
-        }
+        $this->assets = $assets;
     }
 
     /**
@@ -474,7 +474,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      */
     public function getSupportDateReceived()
     {
-        return $this->supportDateReceived ? new \DateTime($this->supportDateReceived) : null;
+        return $this->supportDateReceived ? ImportDateConverter::toDatetime($this->supportDateReceived) : null;
     }
 
     /**

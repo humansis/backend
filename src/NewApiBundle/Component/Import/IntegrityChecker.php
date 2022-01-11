@@ -110,14 +110,16 @@ class IntegrityChecker
 
         $message = [];
         $violationList = new ConstraintViolationList();
-        $hhh = new Integrity\HouseholdHead($item->getHeadContent(), $iso3, $this->entityManager);
+
+        $householdLine = new Integrity\ImportLine($item->getHeadContent(), $iso3, $this->entityManager);
         $violationList->addAll(
-            $this->validator->validate($hhh)
+            $this->validator->validate($householdLine, null, ["household"])
         );
 
-        if ($violationList->count() === 0) { //$hhh->buildBeneficiaryInputType() requires to have $hhh validated
+        if ($violationList->count() === 0) {
             $violationList->addAll(
-                $this->validator->validate($hhh->buildBeneficiaryInputType())
+                $this->validator->validate((new Integrity\HouseholdDecoratorBuilder($iso3, $this->entityManager, $item))
+                    ->buildHouseholdInputType(), null, ["HouseholdCreateInputType", "Strict"])
             );
         }
 
@@ -129,13 +131,26 @@ class IntegrityChecker
         }
 
         $index = 1;
-        foreach ($item->getMemberContents() as $memberContent) {
+        foreach ($item->getMemberContents() as $beneficiaryContent) {
             $message[$index] = [];
             $violationList = new ConstraintViolationList();
-            $hhm = new Integrity\HouseholdMember($memberContent, $iso3, $this->entityManager);
+            $hhm = new Integrity\ImportLine($beneficiaryContent, $iso3, $this->entityManager);
             $violationList->addAll(
-                $this->validator->validate($hhm)
+                $this->validator->validate($hhm, null, ["member"])
             );
+
+            foreach ($violationList as $violation) {
+                $message[$index][] = $this->buildErrorMessage($violation);
+                $anyViolation = true;
+            }
+            $index++;
+        }
+
+        $index = 1;
+        foreach ($item->getContent() as $beneficiaryContent) {
+            $message[$index] = [];
+            $violationList = new ConstraintViolationList();
+            $hhm = new Integrity\ImportLine($beneficiaryContent, $iso3, $this->entityManager);
 
             if ($violationList->count() === 0) { //$hhm->buildBeneficiaryInputType() requires to have $hhm validated
                 $violationList->addAll(
