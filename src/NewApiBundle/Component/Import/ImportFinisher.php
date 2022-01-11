@@ -16,6 +16,7 @@ use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
+use NewApiBundle\Utils\Concurrency\ConcurrencyProcessor;
 use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
 use NewApiBundle\Workflow\WorkflowTool;
@@ -26,6 +27,8 @@ use UserBundle\Entity\User;
 class ImportFinisher
 {
     use ImportLoggerTrait;
+
+    const LOCK_BATCH = 10;
 
     /**
      * @var EntityManagerInterface
@@ -78,53 +81,56 @@ class ImportFinisher
             throw new BadMethodCallException('Wrong import status');
         }
 
-        $queueToInsert = $this->queueRepository->findBy([
-            'import' => $import,
-            'state' => ImportQueueState::TO_CREATE,
-        ]);
-        $this->logImportDebug($import, "Items to save: ".count($queueToInsert));
-        foreach ($queueToInsert as $item) {
-            $this->finishCreationQueue($item, $import);
-            $this->em->persist($item);
-        }
+        $statesToFinish = [
+            ImportQueueState::TO_CREATE,
+            ImportQueueState::TO_UPDATE,
+            ImportQueueState::TO_LINK,
+            ImportQueueState::TO_IGNORE,
+        ];
 
-        $queueToUpdate = $this->queueRepository->findBy([
-            'import' => $import,
-            'state' => ImportQueueState::TO_UPDATE,
-        ]);
-        $this->logImportDebug($import, "Items to update: ".count($queueToUpdate));
-        foreach ($queueToUpdate as $item) {
-            $this->finishUpdateQueue($item, $import);
-            $this->em->persist($item);
-        }
+        $itemProcessor = new ConcurrencyProcessor();
+        $itemProcessor
+            ->setBatchSize(self::LOCK_BATCH)
+            ->setCountAllCallback(function() use ($import, $statesToFinish) {
+                return $this->queueRepository->count([
+                    'import' => $import,
+                    'state' => $statesToFinish,
+                ]);
+            })
+            ->setLockBatchCallback(function($runCode, $batchSize) use ($import, $statesToFinish) {
+                $this->queueRepository->lock($import, $statesToFinish, $runCode, $batchSize);
+            })
+            ->setBatchItemsCallback(function($runCode) use ($import) {
+                return $this->queueRepository->findBy([
+                    'import' => $import,
+                    'lockedBy' => $runCode,
+                ]);
+            })
+            ->processItems(function(ImportQueue $item) use ($import) {
+                switch ($item->getState()) {
+                    case ImportQueueState::TO_CREATE:
+                        $this->finishCreationQueue($item, $import);
+                        break;
+                    case ImportQueueState::TO_UPDATE:
+                        $this->finishUpdateQueue($item, $import);
+                        break;
+                    case ImportQueueState::TO_IGNORE:
+                    case ImportQueueState::TO_LINK:
+                        /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
+                        $acceptedDuplicity = $item->getAcceptedDuplicity();
+                        if (null == $acceptedDuplicity) {
+                            return;
+                        }
 
-        // will be removed in clean command
-        /*foreach ($this->queueRepository->findBy([
-            'import' => $import,
-            'state' => ImportQueueState::TO_IGNORE,
-        ]) as $item) {
-            $this->removeFinishedQueue($item);
-        }*/
+                        $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
+                        $this->logImportInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
 
-        // TODO TO_IGNORE = TO_LINK => unify states in the future
-        $queueToLink = $this->queueRepository->findBy([
-            'import' => $import,
-            'state' => [ImportQueueState::TO_LINK, ImportQueueState::TO_IGNORE],
-        ]);
-        $this->logImportDebug($import, "Items to link: ".count($queueToLink));
-        foreach ($queueToLink as $item) {
-            /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
-            $acceptedDuplicity = $item->getAcceptedDuplicity();
-            if (null == $acceptedDuplicity) {
-                continue;
-            }
+                        $this->importQueueStateMachine->apply($item, ImportQueueTransitions::LINK);
+                        break;
+                }
 
-            $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
-            $this->logImportInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
-
-            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::LINK);
-            $this->em->persist($item);
-        }
+                $this->em->persist($item);
+            });
 
         $this->em->persist($import);
         $this->importStateMachine->apply($import, ImportTransitions::FINISH);
@@ -188,7 +194,7 @@ class ImportFinisher
         }
         $this->logImportInfo($import, "Created Household #{$createdHousehold->getId()}");
 
-        WorkflowTool::checkAndApply($this->importQueueStateMachine, $item, [ImportQueueTransitions::CREATE]);
+        $this->importQueueStateMachine->apply($item, ImportQueueTransitions::CREATE);
     }
 
     /**
