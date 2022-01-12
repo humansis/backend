@@ -106,7 +106,8 @@ class HouseholdDecoratorBuilder
         }
 
         foreach ($this->importLines as $importLine) {
-            $beneficiary = $importLine->buildBeneficiaryInputType();
+            $builder = new BeneficiaryDecoratorBuilder($importLine);
+            $beneficiary = $builder->buildBeneficiaryInputType();
             $household->addBeneficiary($beneficiary);
         }
 
