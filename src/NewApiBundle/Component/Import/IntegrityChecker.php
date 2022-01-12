@@ -6,6 +6,7 @@ namespace NewApiBundle\Component\Import;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\Integrity;
+use NewApiBundle\Component\Import\Integrity\BeneficiaryDecoratorBuilder;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueue;
@@ -117,9 +118,10 @@ class IntegrityChecker
         );
 
         if ($violationList->count() === 0) {
+            $builder = new Integrity\HouseholdDecoratorBuilder($iso3, $this->entityManager, $item);
+            $household = $builder->buildHouseholdInputType();
             $violationList->addAll(
-                $this->validator->validate((new Integrity\HouseholdDecoratorBuilder($iso3, $this->entityManager, $item))
-                    ->buildHouseholdInputType(), null, ["HouseholdCreateInputType", "Strict"])
+                $this->validator->validate($household, null, ["HouseholdCreateInputType", "Strict"])
             );
         }
 
@@ -151,15 +153,15 @@ class IntegrityChecker
             $message[$index] = [];
             $violationList = new ConstraintViolationList();
             $hhm = new Integrity\ImportLine($beneficiaryContent, $iso3, $this->entityManager);
+            $builder = new BeneficiaryDecoratorBuilder($hhm);
+            $beneficiary = $builder->buildBeneficiaryInputType();
 
-            if ($violationList->count() === 0) { //$hhm->buildBeneficiaryInputType() requires to have $hhm validated
-                $violationList->addAll(
-                    $this->validator->validate($hhm->buildBeneficiaryInputType())
-                );
+            if ($violationList->count() === 0) {
+                $violationList->addAll($this->validator->validate($beneficiary));
             }
 
             foreach ($violationList as $violation) {
-                $message[$index][] = $this->buildErrorMessage($violation);
+                $message[$index][] = $this->buildNormalizedErrorMessage($violation);
                 $anyViolation = true;
             }
             $index++;
@@ -197,6 +199,13 @@ class IntegrityChecker
         }
 
         return ['column' => $mapping[$property], 'violation' => $violation->getMessage(), 'value' => $violation->getInvalidValue()];
+    }
+
+    public function buildNormalizedErrorMessage(ConstraintViolationInterface $violation)
+    {
+        $property = $violation->getConstraint()->payload['propertyPath'] ?? $violation->getPropertyPath();
+
+        return ['column' => $property, 'violation' => $violation->getMessage(), 'value' => $violation->getInvalidValue()];
     }
 
     /**
