@@ -127,7 +127,11 @@ class BeneficiaryInputType implements InputTypeInterface
 
     public static function vulnerabilities(): array
     {
-        return array_keys(\BeneficiaryBundle\Entity\VulnerabilityCriterion::all());
+        // TODO after implementing vulnerability as enum will be strtolower unnecessary
+
+        return array_map(function (string $value) {
+            return mb_strtolower($value);
+        }, array_keys(\BeneficiaryBundle\Entity\VulnerabilityCriterion::all()));
     }
 
     /**
@@ -384,9 +388,25 @@ class BeneficiaryInputType implements InputTypeInterface
     /**
      * @param string[] $vulnerabilityCriteria
      */
-    public function setVulnerabilityCriteria($vulnerabilityCriteria)
+    public function setVulnerabilityCriteria(array $vulnerabilityCriteria)
     {
-        $this->vulnerabilityCriteria = $vulnerabilityCriteria;
+        // TODO after implementing vulnerability as enum will be strtolower unnecessary
+
+        $this->vulnerabilityCriteria = array_map(function (string $value) {
+            return mb_strtolower($value);
+        }, $vulnerabilityCriteria);
+    }
+
+    /**
+     * @param string $vulnerabilityCriteria
+     *
+     * @return void
+     */
+    public function addVulnerabilityCriteria(string $vulnerabilityCriteria): void
+    {
+        // TODO after implementing vulnerability as enum will be strtolower unnecessary
+
+        $this->vulnerabilityCriteria[] = mb_strtolower($vulnerabilityCriteria);
     }
 
     /**
