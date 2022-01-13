@@ -28,4 +28,9 @@ class HouseholdAssets
     {
         return array_values(self::$values);
     }
+
+    public static function apiAlternatives(): array
+    {
+        return array_flip(self::$values);
+    }
 }

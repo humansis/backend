@@ -159,6 +159,7 @@ class HouseholdMember
 
     /**
      * @Assert\Type("string")
+     * @Enum(enumClass="NewApiBundle\Enum\VulnerabilityCriteria", array=true)
      */
     protected $vulnerabilityCriteria;
 
@@ -219,6 +220,7 @@ class HouseholdMember
 
     /**
      * @Assert\Type("string")
+     * @Enum(enumClass="NewApiBundle\Enum\HouseholdAssets", array=true)
      */
     protected $assets;
 
@@ -229,6 +231,7 @@ class HouseholdMember
 
     /**
      * @Assert\Type("string")
+     * @Enum(enumClass="NewApiBundle\Enum\HouseholdSupportReceivedType", array=true)
      */
     protected $supportReceivedTypes;
 
