@@ -9,6 +9,8 @@ use NewApiBundle\Component\Import\Utils\ImportDateConverter;
 use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Enum\PhoneTypes;
+use NewApiBundle\InputType\Beneficiary\Address\CampAddressInputType;
+use NewApiBundle\InputType\Beneficiary\Address\CampInputType;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\CountrySpecificsAnswerInputType;
 use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
@@ -64,6 +66,10 @@ trait HouseholdInputBuilderTrait
         $household->setSupportReceivedTypes($this->getSupportReceivedTypes());
         $household->setAssets($this->getAssets());
 
+        if($this->campName && $this->tentNumber){
+            $household->setCampAddress($this->buildCampAddress());
+        }
+
         foreach ($this->countrySpecifics as $countrySpecificId => $answer) {
             $specificAnswer = new CountrySpecificsAnswerInputType();
             $specificAnswer->setCountrySpecificId($countrySpecificId);
@@ -75,7 +81,7 @@ trait HouseholdInputBuilderTrait
         $locationByAdms = $locationRepository->getByNames($this->countryIso3, $this->adm1, $this->adm2, $this->adm3, $this->adm4);
         if (null !== $locationByAdms) {
             $address = new ResidenceAddressInputType();
-            $address->setNumber($this->addressStreet);
+            $address->setStreet($this->addressStreet);
             $address->setPostcode($this->addressPostcode);
             $address->setNumber($this->addressNumber);
             $address->setLocationId($locationByAdms->getId());
@@ -112,6 +118,13 @@ trait HouseholdInputBuilderTrait
         $beneficiary->setGender($this->getGender());
         $beneficiary->setResidencyStatus($this->getResidencyStatus());
         $beneficiary->setIsHead(false);
+
+        if (is_string($this->vulnerabilityCriteria)) {
+            $vulnerabilities = explode(',', $this->vulnerabilityCriteria);
+            foreach ($vulnerabilities as $vulnerability) {
+                $beneficiary->addVulnerabilityCriteria(trim($vulnerability));
+            }
+        }
 
         if (!is_null($this->idType)) { //TODO check, that id card is filled completely
             $nationalId = new NationalIdCardInputType();
@@ -170,6 +183,35 @@ trait HouseholdInputBuilderTrait
             $beneficiary->setIsHead(false);
             yield $beneficiary;
         }
+    }
+
+    /**
+     * @return CampAddressInputType
+     */
+    private function buildCampAddress(): CampAddressInputType
+    {
+        $campAddress = new CampAddressInputType();
+        $campAddress->setCamp($this->buildCampInputType());
+        $campAddress->setTentNumber($this->tentNumber);
+
+        return $campAddress;
+    }
+
+    /**
+     * @return CampInputType
+     */
+    private function buildCampInputType(): CampInputType
+    {
+        $campInput = new CampInputType();
+        $campInput->setName($this->campName);
+
+        $locationRepository = $this->entityManager->getRepository(Location::class);
+        $locationByAdms = $locationRepository->getByNames($this->countryIso3, $this->adm1, $this->adm2, $this->adm3, $this->adm4);
+        if ($locationByAdms !== null) {
+            $campInput->setLocationId($locationByAdms->getId());
+        }
+
+        return $campInput;
     }
 
 }
