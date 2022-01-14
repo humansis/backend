@@ -308,7 +308,18 @@ class HouseholdMember
 
         foreach (HouseholdExportCSVService::MAPPING_PROPERTIES as $header => $property) {
             if (isset($content[$header])) {
-                $this->$property = $content[$header][CellParameters::VALUE];
+                $value = $content[$header][CellParameters::VALUE];
+                if (is_string($value)) {
+                    $this->$property = preg_replace('/[\pZ\pC]/u', ' ', (string)$value); // replace unicode spaces by ASCII ones
+                    $this->$property = trim($this->$property);
+
+                    // back retype to int if there is only numbers
+                    if (ctype_digit($this->$property)) {
+                        $this->$property = (int) $this->$property;
+                    }
+                } else {
+                    $this->$property = $value;
+                }
             }
         }
     }

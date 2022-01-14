@@ -102,6 +102,7 @@ class ImportTest extends KernelTestCase
     public function correctFiles(): array
     {
         return [ // ISO3-filename, HH count, BNF count, duplicity in reimport
+            'zero width space' => ['KHM', 'zero-width.xlsx', 2, 2, 2],
             'minimal csv without IDs' => ['KHM', 'KHM-Import-2HH-3HHM-55HHM-no-dupl.csv', 2, 60, 0],
             'minimal csv' => ['KHM', 'KHM-Import-2HH-3HHM-55HHM.csv', 2, 60, 1],
             'minimal ods' => ['KHM', 'KHM-Import-2HH-3HHM-24HHM.ods', 2, 29, 2],
