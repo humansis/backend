@@ -15,6 +15,7 @@ class Enum extends Constraint
 
     public $enumClass;
     public $includeAPIAlternatives = true;
+    public $array = false;
 
     /**
      * @return string[]

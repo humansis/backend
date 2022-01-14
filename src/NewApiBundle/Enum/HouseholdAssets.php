@@ -28,4 +28,17 @@ class HouseholdAssets
     {
         return array_values(self::$values);
     }
+
+    public static function apiAlternatives(): array
+    {
+        return [
+            self::AC => [0],
+            self::AGRICULTURAL_LAND => [1],
+            self::CAR => [2],
+            self::FLATSCREEN_TV => [3],
+            self::LIVESTOCK => [4],
+            self::MOTORBIKE => [5],
+            self::WASHING_MACHINE => [6],
+        ];
+    }
 }

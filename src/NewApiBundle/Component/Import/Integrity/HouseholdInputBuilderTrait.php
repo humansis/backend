@@ -3,12 +3,8 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import\Integrity;
 
-use BeneficiaryBundle\Enum\ResidencyStatus;
 use CommonBundle\Entity\Location;
 use NewApiBundle\Component\Import\Utils\ImportDateConverter;
-use NewApiBundle\Enum\NationalIdType;
-use NewApiBundle\Enum\PersonGender;
-use NewApiBundle\Enum\PhoneTypes;
 use NewApiBundle\InputType\Beneficiary\Address\CampAddressInputType;
 use NewApiBundle\InputType\Beneficiary\Address\CampInputType;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
@@ -118,13 +114,7 @@ trait HouseholdInputBuilderTrait
         $beneficiary->setGender($this->getGender());
         $beneficiary->setResidencyStatus($this->getResidencyStatus());
         $beneficiary->setIsHead(false);
-
-        if (is_string($this->vulnerabilityCriteria)) {
-            $vulnerabilities = explode(',', $this->vulnerabilityCriteria);
-            foreach ($vulnerabilities as $vulnerability) {
-                $beneficiary->addVulnerabilityCriteria(trim($vulnerability));
-            }
-        }
+        $beneficiary->setVulnerabilityCriteria($this->getVulnerabilityCriteria());
 
         if (!is_null($this->idType)) { //TODO check, that id card is filled completely
             $nationalId = new NationalIdCardInputType();

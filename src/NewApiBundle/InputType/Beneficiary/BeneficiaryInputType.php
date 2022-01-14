@@ -6,7 +6,6 @@ namespace NewApiBundle\InputType\Beneficiary;
 use BeneficiaryBundle\Enum\ResidencyStatus;
 use NewApiBundle\Enum\HouseholdHead;
 use NewApiBundle\Enum\PersonGender;
-use NewApiBundle\Enum\VariableBool;
 use NewApiBundle\Request\InputTypeInterface;
 use NewApiBundle\Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -118,21 +117,12 @@ class BeneficiaryInputType implements InputTypeInterface
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *         @Assert\Choice(callback="vulnerabilities", strict=true, groups={"Strict"})
+     *         @Enum(enumClass="NewApiBundle\Enum\VulnerabilityCriteria")
      *     },
      *     groups={"Strict"}
      * )
      */
     private $vulnerabilityCriteria = [];
-
-    public static function vulnerabilities(): array
-    {
-        // TODO after implementing vulnerability as enum will be strtolower unnecessary
-
-        return array_map(function (string $value) {
-            return mb_strtolower($value);
-        }, array_keys(\BeneficiaryBundle\Entity\VulnerabilityCriterion::all()));
-    }
 
     /**
      * @Assert\NotNull
@@ -390,11 +380,7 @@ class BeneficiaryInputType implements InputTypeInterface
      */
     public function setVulnerabilityCriteria(array $vulnerabilityCriteria)
     {
-        // TODO after implementing vulnerability as enum will be strtolower unnecessary
-
-        $this->vulnerabilityCriteria = array_map(function (string $value) {
-            return mb_strtolower($value);
-        }, $vulnerabilityCriteria);
+        $this->vulnerabilityCriteria = $vulnerabilityCriteria;
     }
 
     /**
@@ -404,9 +390,7 @@ class BeneficiaryInputType implements InputTypeInterface
      */
     public function addVulnerabilityCriteria(string $vulnerabilityCriteria): void
     {
-        // TODO after implementing vulnerability as enum will be strtolower unnecessary
-
-        $this->vulnerabilityCriteria[] = mb_strtolower($vulnerabilityCriteria);
+        $this->vulnerabilityCriteria[] = $vulnerabilityCriteria;
     }
 
     /**

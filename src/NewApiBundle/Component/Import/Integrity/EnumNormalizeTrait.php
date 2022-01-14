@@ -12,9 +12,9 @@ use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Enum\PhoneTypes;
 use NewApiBundle\Enum\VariableBool;
+use NewApiBundle\Enum\VulnerabilityCriteria;
 use NewApiBundle\InputType\Helper\EnumsBuilder;
 use ProjectBundle\Enum\Livelihood;
-use Symfony\Component\Validator\Constraints as Assert;
 
 trait EnumNormalizeTrait
 {
@@ -68,15 +68,6 @@ trait EnumNormalizeTrait
         return $this->proxyPhone2 && VariableBool::valueFromAPI($this->proxyPhone2);
     }
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Enum(enumClass="NewApiBundle\Enum\HouseholdAssets")
-     *     },
-     *     groups={"Strict"}
-     * )
-     * @return array
-     */
     public function getAssets(): array
     {
         $enumBuilder = new EnumsBuilder(HouseholdAssets::class);
@@ -84,20 +75,18 @@ trait EnumNormalizeTrait
         return $enumBuilder->buildInputValuesFromExplode($this->assets);
     }
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Enum(enumClass="NewApiBundle\Enum\HouseholdSupportReceivedType")
-     *     },
-     *     groups={"Strict"}
-     * )
-     * @return array
-     */
     public function getSupportReceivedTypes(): array
     {
         $enumBuilder = new EnumsBuilder(HouseholdSupportReceivedType::class);
         $enumBuilder->setNullToEmptyArrayTransformation();
         return $enumBuilder->buildInputValuesFromExplode($this->supportReceivedTypes);
+    }
+
+    public function getVulnerabilityCriteria(): array
+    {
+        $enumBuilder = new EnumsBuilder(VulnerabilityCriteria::class);
+        $enumBuilder->setNullToEmptyArrayTransformation();
+        return $enumBuilder->buildInputValuesFromExplode($this->vulnerabilityCriteria);
     }
 
     public function getDateOfBirth(): \DateTimeInterface

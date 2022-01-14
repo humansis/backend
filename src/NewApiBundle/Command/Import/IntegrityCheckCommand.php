@@ -69,7 +69,7 @@ class IntegrityCheckCommand extends AbstractImportQueueCommand
                     $this->logImportInfo($import, "Integrity check found {$statistics->getAmountIntegrityFailed()} integrity errors");
                 }
             } catch (Throwable $e) {
-                $this->logImportError($import, 'Unknown Exception in integrity check occurred. Exception message: '.$e->getMessage());
+                $this->logImportError($import, 'Unknown Exception in integrity check occurred. Exception message: "'.$e->getMessage() . '",  File: ' . $e->getFile() . '" on line ' . $e->getLine());
             }
         }
 
