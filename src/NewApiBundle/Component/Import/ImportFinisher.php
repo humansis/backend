@@ -20,6 +20,7 @@ use NewApiBundle\Utils\Concurrency\ConcurrencyProcessor;
 use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
 use NewApiBundle\Workflow\WorkflowTool;
+use ProjectBundle\Entity\Project;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 use UserBundle\Entity\User;
@@ -219,7 +220,15 @@ class ImportFinisher
         $memberContents = array_slice($item->getContent(), 1);
         $hhh = new Integrity\HouseholdHead((array) $headContent, $import->getProject()->getIso3(), $this->em);
         $householdUpdateInputType = $hhh->buildHouseholdUpdateType();
-        $householdUpdateInputType->setProjectIds([$import->getProject()->getId()]);
+
+        $updatedHousehold = $acceptedDuplicity->getTheirs();
+        $projects = array_map(function (Project $project) {
+            return $project->getId();
+        }, $updatedHousehold->getProjects()->toArray());
+
+        $projects[] = $import->getProject()->getId();
+
+        $householdUpdateInputType->setProjectIds($projects);
 
         foreach ($memberContents as $memberContent) {
             $hhm = new Integrity\HouseholdMember($memberContent, $import->getProject()->getIso3(), $this->em);
@@ -241,5 +250,7 @@ class ImportFinisher
             $beneficiaryInImport = new ImportBeneficiary($import, $beneficiary, $decide);
             $this->em->persist($beneficiaryInImport);
         }
+
+        $household->addProject($import->getProject());
     }
 }
