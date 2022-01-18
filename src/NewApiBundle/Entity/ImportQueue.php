@@ -64,6 +64,8 @@ class ImportQueue implements ConcurrencyLockableInterface
      */
     private $message;
 
+    private $rawMessageData = [];
+
     /**
      * @var ImportBeneficiaryDuplicity[]|Collection
      *
@@ -199,12 +201,20 @@ class ImportQueue implements ConcurrencyLockableInterface
         return $this->message;
     }
 
-    /**
-     * @param string|null $message
-     */
-    public function setMessage(?string $message): void
+    public function hasViolations(?int $index = null): bool
     {
-        $this->message = $message;
+        if ($index) return !empty($this->rawMessageData[$index]);
+        return !empty($this->rawMessageData);
+    }
+
+    /**
+     * @param $message
+     */
+    public function addViolation(int $lineIndex, $message): void
+    {
+        $this->rawMessageData[$lineIndex][] = $message;
+
+        $this->message = json_encode($this->rawMessageData);
     }
 
     public function __toString()

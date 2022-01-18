@@ -86,11 +86,8 @@ class IntegrityChecker
         if ($item->getState() !== ImportQueueState::NEW) {
             throw new \InvalidArgumentException("Wrong ImportQueue state for Integrity check: ".$item->getState());
         }
-        $violations = $this->getQueueItemViolations($item);
-        $message = $violations['message'];
-        if ($violations['hasViolations']) {
-            $message['raw'] = $item->getContent();
-            $item->setMessage(json_encode($message));
+        $this->validateItem($item);
+        if ($item->hasViolations()) {
             $this->importQueueStateMachine->apply($item, ImportQueueTransitions::INVALIDATE);
         } else {
             $this->importQueueStateMachine->apply($item, ImportQueueTransitions::VALIDATE);
@@ -105,69 +102,52 @@ class IntegrityChecker
      *
      * @return array
      */
-    private function getQueueItemViolations(ImportQueue $item): array
+    private function validateItem(ImportQueue $item): void
     {
         $iso3 = $item->getImport()->getProject()->getIso3();
 
-        $message = [];
-        $violationList = new ConstraintViolationList();
-
         $householdLine = new Integrity\ImportLine($item->getHeadContent(), $iso3, $this->entityManager);
-        $violationList->addAll(
-            $this->validator->validate($householdLine, null, ["household"])
-        );
+        $violations = $this->validator->validate($householdLine, null, ["household"]);
 
-        if ($violationList->count() === 0) {
-            $builder = new Integrity\HouseholdDecoratorBuilder($iso3, $this->entityManager, $item);
-            $household = $builder->buildHouseholdInputType();
-            $violationList->addAll(
-                $this->validator->validate($household, null, ["HouseholdCreateInputType", "Strict"])
-            );
-        }
-
-        $anyViolation = false;
-        $message[0] = [];
-        foreach ($violationList as $violation) {
-            $message[0][] = $this->buildErrorMessage($violation);
-            $anyViolation = true;
+        foreach ($violations as $violation) {
+            $item->addViolation(0, $this->buildErrorMessage($violation));
         }
 
         $index = 1;
         foreach ($item->getMemberContents() as $beneficiaryContent) {
-            $message[$index] = [];
-            $violationList = new ConstraintViolationList();
             $hhm = new Integrity\ImportLine($beneficiaryContent, $iso3, $this->entityManager);
-            $violationList->addAll(
-                $this->validator->validate($hhm, null, ["member"])
-            );
+            $violations = $this->validator->validate($hhm, null, ["member"]);
 
-            foreach ($violationList as $violation) {
-                $message[$index][] = $this->buildErrorMessage($violation);
-                $anyViolation = true;
+            foreach ($violations as $violation) {
+                $item->addViolation($index, $this->buildErrorMessage($violation));
             }
             $index++;
         }
 
-        $index = 1;
+        $index = 0;
         foreach ($item->getContent() as $beneficiaryContent) {
-            $message[$index] = [];
-            $violationList = new ConstraintViolationList();
             $hhm = new Integrity\ImportLine($beneficiaryContent, $iso3, $this->entityManager);
+
+            if ($item->hasViolations($index)) continue; // don't do complex checking if there are simple errors
+
             $builder = new BeneficiaryDecoratorBuilder($hhm);
             $beneficiary = $builder->buildBeneficiaryInputType();
+            $violations = $this->validator->validate($beneficiary, null, ["BeneficiaryInputType", "Strict"]);
 
-            if ($violationList->count() === 0) {
-                $violationList->addAll($this->validator->validate($beneficiary));
-            }
-
-            foreach ($violationList as $violation) {
-                $message[$index][] = $this->buildNormalizedErrorMessage($violation);
-                $anyViolation = true;
+            foreach ($violations as $violation) {
+                $item->addViolation($index, $this->buildNormalizedErrorMessage($violation));
             }
             $index++;
         }
 
-        return ['hasViolations' => $anyViolation, 'message' => $message];
+        if (!$item->hasViolations()) { // don't do complex checking if there are simple errors
+            $builder = new Integrity\HouseholdDecoratorBuilder($iso3, $this->entityManager, $item);
+            $household = $builder->buildHouseholdInputType();
+            $violations = $this->validator->validate($household, null, ["HouseholdCreateInputType", "Strict"]);
+            foreach ($violations as $violation) {
+                $item->addViolation(0, $this->buildNormalizedErrorMessage($violation));
+            }
+        }
     }
 
     public function hasImportQueueInvalidItems(Import $import): bool

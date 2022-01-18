@@ -7,10 +7,6 @@ use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\CellParameters;
-use NewApiBundle\Component\Import\Utils\ImportDateConverter;
-use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
-use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
-use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\Validator\Constraints\ImportDate;
 use Symfony\Component\Validator\Constraints as Assert;
 use NewApiBundle\Validator\Constraints\Enum;
@@ -18,228 +14,228 @@ use NewApiBundle\Validator\Constraints\Enum;
 class ImportLine
 {
     /**
-     * @Assert\Type("scalar")
+     * @Assert\Type("scalar", groups={"household", "member"})
      */
     public $addressStreet;
 
     /**
-     * @Assert\Type("scalar")
+     * @Assert\Type("scalar", groups={"household", "member"})
      */
     public $addressNumber;
 
     /**
-     * @Assert\Type("scalar")
+     * @Assert\Type("scalar", groups={"household", "member"})
      */
     public $addressPostcode;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("string", groups={"household", "member"})
      */
     public $campName;
 
     /**
-     * @Assert\Type("numeric")
+     * @Assert\Type("numeric", groups={"household", "member"})
      */
     public $tentNumber;
 
     /**
-     * @Enum(enumClass="ProjectBundle\Enum\Livelihood")
+     * @Enum(enumClass="ProjectBundle\Enum\Livelihood", groups={"household", "member"})
      */
     public $livelihood;
 
     /**
-     * @Assert\Type("numeric"),
-     * @Assert\Range(min = 1, max = 5),
+     * @Assert\Type("numeric", groups={"household", "member"}),
+     * @Assert\Range(min = 1, max = 5, groups={"household", "member"}),
      */
     public $incomeLevel;
 
     /**
-     * @Assert\Type("numeric")
+     * @Assert\Type("numeric", groups={"household", "member"})
      */
     public $foodConsumptionScore;
 
     /**
-     * @Assert\Type("numeric")
+     * @Assert\Type("numeric", groups={"household", "member"})
      */
     public $copingStrategiesIndex;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("string", groups={"household", "member"})
      */
     public $notes;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("string", groups={"household", "member"})
      */
     public $enumeratorName;
 
     /**
-     * @Assert\Type("float")
+     * @Assert\Type("float", groups={"household", "member"})
      */
     public $latitude;
 
     /**
-     * @Assert\Type("float")
+     * @Assert\Type("float", groups={"household", "member"})
      */
     public $longitude;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("string", groups={"household", "member"})
      * @Assert\NotBlank(groups={"household"})
      */
     public $adm1;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("string", groups={"household", "member"})
      */
     public $adm2;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("string", groups={"household", "member"})
      */
     public $adm3;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("string", groups={"household", "member"})
      */
     public $adm4;
 
     /**
-     * @Assert\Type("string")
-     * @Assert\NotBlank()
+     * @Assert\Type("string", groups={"household", "member"})
+     * @Assert\NotBlank(groups={"household", "member"})
      */
     public $localGivenName;
 
     /**
-     * @Assert\Type("string")
-     * @Assert\NotBlank()
+     * @Assert\Type("string", groups={"household", "member"})
+     * @Assert\NotBlank(groups={"household", "member"})
      */
     public $localFamilyName;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("string", groups={"household", "member"})
      */
     public $localParentsName;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("string", groups={"household", "member"})
      */
     public $englishGivenName;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("string", groups={"household", "member"})
      */
     public $englishFamilyName;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("string", groups={"household", "member"})
      */
     public $englishParentsName;
 
     /**
-     * @Assert\NotNull()
-     * @Enum(enumClass="NewApiBundle\Enum\PersonGender")
+     * @Assert\NotNull(groups={"household", "member"})
+     * @Enum(enumClass="NewApiBundle\Enum\PersonGender", groups={"household", "member"})
      */
     public $gender;
 
     /**
-     * @Assert\NotNull()
-     * @Enum(enumClass="NewApiBundle\Enum\HouseholdHead")
+     * @Assert\NotNull(groups={"household", "member"})
+     * @Enum(enumClass="NewApiBundle\Enum\HouseholdHead", groups={"household", "member"})
      */
     public $head;
 
     /**
-     * @Assert\NotNull()
-     * @Enum(enumClass="BeneficiaryBundle\Enum\ResidencyStatus")
+     * @Assert\NotNull(groups={"household", "member"})
+     * @Enum(enumClass="BeneficiaryBundle\Enum\ResidencyStatus", groups={"household", "member"})
      */
     public $residencyStatus;
 
     /**
-     * @ImportDate()
-     * @Assert\NotBlank()
+     * @ImportDate(groups={"household", "member"})
+     * @Assert\NotBlank(groups={"household", "member"})
      */
     public $dateOfBirth;
 
     /**
-     * @Assert\Type("string")
-     * @Enum(enumClass="NewApiBundle\Enum\VulnerabilityCriteria", array=true)
+     * @Assert\Type("string", groups={"household", "member"})
+     * @Enum(enumClass="NewApiBundle\Enum\VulnerabilityCriteria", array=true, groups={"household", "member"})
      */
     public $vulnerabilityCriteria;
 
     /**
-     * @Enum(enumClass="NewApiBundle\Enum\PhoneTypes")
+     * @Enum(enumClass="NewApiBundle\Enum\PhoneTypes", groups={"household", "member"})
      */
     public $typePhone1;
 
     /**
-     * @Assert\Type("scalar")
+     * @Assert\Type("scalar", groups={"household", "member"})
      */
     public $prefixPhone1;
 
     /**
-     * @Assert\Type("numeric")
+     * @Assert\Type("numeric", groups={"household", "member"})
      */
     public $numberPhone1;
 
     /**
-     * @Enum(enumClass="NewApiBundle\Enum\VariableBool")
+     * @Enum(enumClass="NewApiBundle\Enum\VariableBool", groups={"household", "member"})
      */
     public $proxyPhone1;
 
     /**
-     * @Enum(enumClass="NewApiBundle\Enum\PhoneTypes")
+     * @Enum(enumClass="NewApiBundle\Enum\PhoneTypes", groups={"household", "member"})
      */
     public $typePhone2;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("string", groups={"household", "member"})
      */
     public $prefixPhone2;
 
     /**
-     * @Assert\Type("numeric")
+     * @Assert\Type("numeric", groups={"household", "member"})
      */
     public $numberPhone2;
 
     /**
-     * @Enum(enumClass="NewApiBundle\Enum\VariableBool")
+     * @Enum(enumClass="NewApiBundle\Enum\VariableBool", groups={"household", "member"})
      */
     public $proxyPhone2;
 
     /**
-     * @Enum(enumClass="NewApiBundle\Enum\NationalIdType")
+     * @Enum(enumClass="NewApiBundle\Enum\NationalIdType", groups={"household", "member"})
      */
     public $idType;
 
     /**
-     * @Assert\Type("scalar")
+     * @Assert\Type("scalar", groups={"household", "member"})
      */
     public $idNumber;
 
     /**
-     * @Enum(enumClass="NewApiBundle\Enum\HouseholdShelterStatus")
+     * @Enum(enumClass="NewApiBundle\Enum\HouseholdShelterStatus", groups={"household", "member"})
      */
     public $shelterStatus;
 
     /**
-     * @Assert\Type("string")
-     * @Enum(enumClass="NewApiBundle\Enum\HouseholdAssets", array=true)
+     * @Assert\Type("string", groups={"household", "member"})
+     * @Enum(enumClass="NewApiBundle\Enum\HouseholdAssets", array=true, groups={"household", "member"})
      */
     public $assets;
 
     /**
-     * @Assert\Type("numeric")
+     * @Assert\Type("numeric", groups={"household", "member"})
      */
     public $debtLevel;
 
     /**
-     * @Assert\Type("string")
-     * @Enum(enumClass="NewApiBundle\Enum\HouseholdSupportReceivedType", array=true)
+     * @Assert\Type("string", groups={"household", "member"})
+     * @Enum(enumClass="NewApiBundle\Enum\HouseholdSupportReceivedType", array=true, groups={"household", "member"})
      */
     public $supportReceivedTypes;
 
     /**
-     * @ImportDate(),
+     * @ImportDate(groups={"household", "member"}),
      */
     public $supportDateReceived;
 
