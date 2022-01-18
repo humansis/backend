@@ -130,7 +130,12 @@ class BeneficiaryInputType implements InputTypeInterface
      */
     public function getDateOfBirth()
     {
-        return $this->dateOfBirth ? new \DateTime($this->dateOfBirth) : null;
+        if (!$this->dateOfBirth) return null;
+        $iso = \DateTime::createFromFormat(\DateTimeInterface::ISO8601, $this->dateOfBirth);
+        if ($iso) return $iso;
+        $date = \DateTime::createFromFormat('Y-m-d', $this->dateOfBirth);
+        if ($date) return $date;
+        return null;
     }
 
     /**
