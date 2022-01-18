@@ -7,6 +7,7 @@ use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\CellParameters;
+use NewApiBundle\Enum\EnumTrait;
 use NewApiBundle\Validator\Constraints\ImportDate;
 use Symfony\Component\Validator\Constraints as Assert;
 use NewApiBundle\Validator\Constraints\Enum;
@@ -332,13 +333,7 @@ class HouseholdMember
         if (!$this->adm1) {
             return true;
         }
-        $location = $this->entityManager->getRepository(Location::class)->getByNames(
-            $this->countryIso3,
-            $this->adm1,
-            null,
-            null,
-            null
-        );
+        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNameAndLevel(EnumTrait::normalizeValue($this->adm1), 1, $this->countryIso3);
         return null !== $location;
     }
 
@@ -350,13 +345,7 @@ class HouseholdMember
         if (!$this->adm2) {
             return true;
         }
-        $location = $this->entityManager->getRepository(Location::class)->getByNames(
-            $this->countryIso3,
-            $this->adm1,
-            $this->adm2,
-            null,
-            null
-        );
+        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNameAndLevel(EnumTrait::normalizeValue($this->adm2), 2, $this->countryIso3);
         return null !== $location;
     }
 
@@ -369,13 +358,7 @@ class HouseholdMember
             return true;
         }
 
-        $location = $this->entityManager->getRepository(Location::class)->getByNames(
-            $this->countryIso3,
-            $this->adm1,
-            $this->adm2,
-            $this->adm3,
-            null
-        );
+        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNameAndLevel(EnumTrait::normalizeValue($this->adm3), 3, $this->countryIso3);
         return null !== $location;
     }
 
@@ -387,13 +370,7 @@ class HouseholdMember
         if (!$this->adm4) {
             return true;
         }
-        $location = $this->entityManager->getRepository(Location::class)->getByNames(
-            $this->countryIso3,
-            $this->adm1,
-            $this->adm2,
-            $this->adm3,
-            $this->adm4
-        );
+        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNameAndLevel(EnumTrait::normalizeValue($this->adm4), 4, $this->countryIso3);
         return null !== $location;
     }
 }

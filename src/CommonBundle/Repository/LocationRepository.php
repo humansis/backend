@@ -31,7 +31,21 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
         $this->whereCountry($qb, $country);
         return $qb->getQuery()->getResult();
     }
-    
+
+    public function getByNormalizedNameAndLevel(string $normalizedName, int $level, string $country): ?Location
+    {
+        return $this->createQueryBuilder('l')
+            ->where('l.enumNormalizedName = :normalizedName')
+            ->andWhere('l.lvl = :level')
+            ->andWhere('l.countryISO3 = :country')
+            ->setParameter('normalizedName', $normalizedName)
+            ->setParameter('level', $level)
+            ->setParameter('country', $country)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     public function getByNames(string $countryIso3, ?string $adm1, ?string $adm2, ?string $adm3, ?string $adm4): ?Location
     {
         $qb = $this->createQueryBuilder('l');

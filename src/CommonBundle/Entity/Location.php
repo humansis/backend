@@ -5,6 +5,7 @@ namespace CommonBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\NestedTreeTrait;
 use NewApiBundle\Entity\Helper\TreeInterface;
+use NewApiBundle\Enum\EnumTrait;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -68,6 +69,13 @@ class Location implements TreeInterface
      * @ORM\Column(name="code", type="string", length=255, nullable=true)
      */
     private $code;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="enum_normalized_name", type="string", length=255, nullable=false, unique=true)
+     */
+    private $enumNormalizedName;
 
     /**
      * @deprecated use nested tree
@@ -161,6 +169,7 @@ class Location implements TreeInterface
     public function setName(string $name): void
     {
         $this->name = $name;
+        $this->enumNormalizedName = EnumTrait::normalizeValue($name);
     }
 
     /**
@@ -422,5 +431,13 @@ class Location implements TreeInterface
     public function getChildren(): iterable
     {
         return $this->getChildLocations();
+    }
+
+    /**
+     * @return string
+     */
+    public function getEnumNormalizedName(): string
+    {
+        return $this->enumNormalizedName;
     }
 }
