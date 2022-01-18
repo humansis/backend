@@ -695,7 +695,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
         $shelterStatus = '';
         if ($this->getHousehold()->getShelterStatus()) {
-            $shelterStatus = $this->getHousehold()->getShelterStatus() ? HouseholdShelterStatus::valueToAPI($this->getHousehold()->getShelterStatus()) : '';
+            $shelterStatus = $this->getHousehold()->getShelterStatus() ? $this->getHousehold()->getShelterStatus() : '';
         }
 
         $tempBenef = [

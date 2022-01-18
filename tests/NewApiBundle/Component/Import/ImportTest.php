@@ -6,6 +6,7 @@ namespace Tests\NewApiBundle\Component\Import;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use NewApiBundle\Component\Import\ImportFileValidator;
+use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
@@ -102,6 +103,7 @@ class ImportTest extends KernelTestCase
     public function correctFiles(): array
     {
         return [ // ISO3-filename, HH count, BNF count, duplicity in reimport
+            'zero width space' => ['KHM', 'zero-width.xlsx', 2, 2, 2],
             'minimal csv without IDs' => ['KHM', 'KHM-Import-2HH-3HHM-55HHM-no-dupl.csv', 2, 60, 0],
             'minimal csv' => ['KHM', 'KHM-Import-2HH-3HHM-55HHM.csv', 2, 60, 1],
             'minimal ods' => ['KHM', 'KHM-Import-2HH-3HHM-24HHM.ods', 2, 29, 2],
@@ -156,7 +158,7 @@ class ImportTest extends KernelTestCase
     public function testEnumCaseSensitivity()
     {
         foreach ($this->entityManager->getRepository(NationalId::class)->findBy(['idNumber'=>[
-            '98300834', '124483434', '102', '789465432654', '789', '456', '8798798', '345456'
+            '98300834', '124483434', '102', '789465432654', '789', '456', '8798798', '345456',
         ]]) as $idCard) {
             $this->entityManager->remove($idCard);
         }
@@ -394,13 +396,16 @@ class ImportTest extends KernelTestCase
 
         // resolve all as duplicity on second import to update and continue
         $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $secondImport, 'state' => ImportQueueState::IDENTITY_CANDIDATE], ['id' => 'asc']);
+
+        /** @var ImportQueue $item */
         foreach ($queue as $item) {
             $this->assertGreaterThan(0, count($item->getDuplicities()));
+            /** @var ImportBeneficiaryDuplicity $firstDuplicity */
             $firstDuplicity = $item->getDuplicities()->first();
 
             $duplicityResolve = new DuplicityResolveInputType();
             $duplicityResolve->setStatus(ImportQueueState::TO_UPDATE);
-            $duplicityResolve->setAcceptedDuplicityId($firstDuplicity->getId());
+            $duplicityResolve->setAcceptedDuplicityId($firstDuplicity->getTheirs()->getId());
             $this->importService->resolveDuplicity($item, $duplicityResolve, $this->getUser());
         }
         $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());

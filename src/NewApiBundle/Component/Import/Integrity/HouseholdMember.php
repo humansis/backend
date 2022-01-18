@@ -1,326 +1,302 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import\Integrity;
 
-use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\CellParameters;
-use NewApiBundle\Component\Import\Utils\ImportDateConverter;
-use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
-use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
-use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\Validator\Constraints\ImportDate;
 use Symfony\Component\Validator\Constraints as Assert;
 use NewApiBundle\Validator\Constraints\Enum;
 
-class ImportLine
+class HouseholdMember
 {
-    /**
-     * @Assert\Type("scalar")
-     */
-    public $addressStreet;
+    use EnumNormalizeTrait;
+    use HouseholdInputBuilderTrait;
 
     /**
      * @Assert\Type("scalar")
      */
-    public $addressNumber;
+    protected $addressStreet;
 
     /**
      * @Assert\Type("scalar")
      */
-    public $addressPostcode;
+    protected $addressNumber;
+
+    /**
+     * @Assert\Type("scalar")
+     */
+    protected $addressPostcode;
 
     /**
      * @Assert\Type("string")
      */
-    public $campName;
+    protected $campName;
 
     /**
      * @Assert\Type("numeric")
      */
-    public $tentNumber;
+    protected $tentNumber;
 
     /**
      * @Enum(enumClass="ProjectBundle\Enum\Livelihood")
      */
-    public $livelihood;
+    protected $livelihood;
 
     /**
      * @Assert\Type("numeric"),
      * @Assert\Range(min = 1, max = 5),
      */
-    public $incomeLevel;
+    protected $incomeLevel;
 
     /**
      * @Assert\Type("numeric")
      */
-    public $foodConsumptionScore;
+    protected $foodConsumptionScore;
 
     /**
      * @Assert\Type("numeric")
      */
-    public $copingStrategiesIndex;
+    protected $copingStrategiesIndex;
 
     /**
      * @Assert\Type("string")
      */
-    public $notes;
+    protected $notes;
 
     /**
      * @Assert\Type("string")
      */
-    public $enumeratorName;
+    protected $enumeratorName;
 
     /**
      * @Assert\Type("float")
      */
-    public $latitude;
+    protected $latitude;
 
     /**
      * @Assert\Type("float")
      */
-    public $longitude;
-
-    /**
-     * @Assert\Type("string")
-     * @Assert\NotBlank(groups={"household"})
-     */
-    public $adm1;
+    protected $longitude;
 
     /**
      * @Assert\Type("string")
      */
-    public $adm2;
+    protected $adm1;
 
     /**
      * @Assert\Type("string")
      */
-    public $adm3;
+    protected $adm2;
 
     /**
      * @Assert\Type("string")
      */
-    public $adm4;
+    protected $adm3;
+
+    /**
+     * @Assert\Type("string")
+     */
+    protected $adm4;
 
     /**
      * @Assert\Type("string")
      * @Assert\NotBlank()
      */
-    public $localGivenName;
+    protected $localGivenName;
 
     /**
      * @Assert\Type("string")
      * @Assert\NotBlank()
      */
-    public $localFamilyName;
+    protected $localFamilyName;
 
     /**
      * @Assert\Type("string")
      */
-    public $localParentsName;
+    protected $localParentsName;
 
     /**
      * @Assert\Type("string")
      */
-    public $englishGivenName;
+    protected $englishGivenName;
 
     /**
      * @Assert\Type("string")
      */
-    public $englishFamilyName;
+    protected $englishFamilyName;
 
     /**
      * @Assert\Type("string")
      */
-    public $englishParentsName;
+    protected $englishParentsName;
 
     /**
-     * @Assert\NotNull()
      * @Enum(enumClass="NewApiBundle\Enum\PersonGender")
      */
-    public $gender;
+    protected $gender;
 
     /**
      * @Assert\NotNull()
      * @Enum(enumClass="NewApiBundle\Enum\HouseholdHead")
      */
-    public $head;
+    protected $head;
 
     /**
      * @Assert\NotNull()
      * @Enum(enumClass="BeneficiaryBundle\Enum\ResidencyStatus")
      */
-    public $residencyStatus;
+    protected $residencyStatus;
 
     /**
-     * @ImportDate()
-     * @Assert\NotBlank()
+     * @ImportDate(),
+     * @Assert\NotBlank(),
      */
-    public $dateOfBirth;
+    protected $dateOfBirth;
 
     /**
      * @Assert\Type("string")
      * @Enum(enumClass="NewApiBundle\Enum\VulnerabilityCriteria", array=true)
      */
-    public $vulnerabilityCriteria;
+    protected $vulnerabilityCriteria;
 
     /**
      * @Enum(enumClass="NewApiBundle\Enum\PhoneTypes")
      */
-    public $typePhone1;
-
-    /**
-     * @Assert\Type("scalar")
-     */
-    public $prefixPhone1;
-
-    /**
-     * @Assert\Type("numeric")
-     */
-    public $numberPhone1;
-
-    /**
-     * @Enum(enumClass="NewApiBundle\Enum\VariableBool")
-     */
-    public $proxyPhone1;
-
-    /**
-     * @Enum(enumClass="NewApiBundle\Enum\PhoneTypes")
-     */
-    public $typePhone2;
+    protected $typePhone1;
 
     /**
      * @Assert\Type("string")
      */
-    public $prefixPhone2;
+    protected $prefixPhone1;
 
     /**
      * @Assert\Type("numeric")
      */
-    public $numberPhone2;
+    protected $numberPhone1;
 
     /**
      * @Enum(enumClass="NewApiBundle\Enum\VariableBool")
      */
-    public $proxyPhone2;
+    protected $proxyPhone1;
+
+    /**
+     * @Enum(enumClass="NewApiBundle\Enum\PhoneTypes")
+     */
+    protected $typePhone2;
+
+    /**
+     * @Assert\Type("string")
+     */
+    protected $prefixPhone2;
+
+    /**
+     * @Assert\Type("numeric")
+     */
+    protected $numberPhone2;
+
+    /**
+     * @Enum(enumClass="NewApiBundle\Enum\VariableBool")
+     */
+    protected $proxyPhone2;
 
     /**
      * @Enum(enumClass="NewApiBundle\Enum\NationalIdType")
      */
-    public $idType;
+    protected $idType;
 
     /**
      * @Assert\Type("scalar")
      */
-    public $idNumber;
+    protected $idNumber;
 
     /**
      * @Enum(enumClass="NewApiBundle\Enum\HouseholdShelterStatus")
      */
-    public $shelterStatus;
+    protected $shelterStatus;
 
     /**
      * @Assert\Type("string")
      * @Enum(enumClass="NewApiBundle\Enum\HouseholdAssets", array=true)
      */
-    public $assets;
+    protected $assets;
 
     /**
      * @Assert\Type("numeric")
      */
-    public $debtLevel;
+    protected $debtLevel;
 
     /**
      * @Assert\Type("string")
      * @Enum(enumClass="NewApiBundle\Enum\HouseholdSupportReceivedType", array=true)
      */
-    public $supportReceivedTypes;
+    protected $supportReceivedTypes;
 
     /**
      * @ImportDate(),
      */
-    public $supportDateReceived;
+    protected $supportDateReceived;
 
     /**
-     * @Assert\IsNull(groups={"member"}),
-     * @Assert\Type(type={"integer", "null"}, groups={"household"}),
-     * @Assert\GreaterThanOrEqual(value=0, groups={"household"}),
+     * @Assert\IsNull(),
      */
-    public $f0;
+    protected $f0;
 
     /**
-     * @Assert\IsNull(groups={"member"}),
-     * @Assert\Type(type={"integer", "null"}, groups={"household"}),
-     * @Assert\GreaterThanOrEqual(value=0, groups={"household"}),
+     * @Assert\IsNull(),
      */
-    public $f2;
+    protected $f2;
 
     /**
-     * @Assert\IsNull(groups={"member"}),
-     * @Assert\Type(type={"integer", "null"}, groups={"household"}),
-     * @Assert\GreaterThanOrEqual(value=0, groups={"household"}),
+     * @Assert\IsNull(),
      */
-    public $f6;
+    protected $f6;
 
     /**
-     * @Assert\IsNull(groups={"member"}),
-     * @Assert\Type(type={"integer", "null"}, groups={"household"}),
-     * @Assert\GreaterThanOrEqual(value=0, groups={"household"}),
+     * @Assert\IsNull(),
      */
-    public $f18;
+    protected $f18;
 
     /**
-     * @Assert\IsNull(groups={"member"}),
-     * @Assert\Type(type={"integer", "null"}, groups={"household"}),
-     * @Assert\GreaterThanOrEqual(value=0, groups={"household"}),
+     * @Assert\IsNull(),
      */
-    public $f60;
+    protected $f60;
 
     /**
-     * @Assert\IsNull(groups={"member"}),
-     * @Assert\Type(type={"integer", "null"}, groups={"household"}),
-     * @Assert\GreaterThanOrEqual(value=0, groups={"household"}),
+     * @Assert\IsNull(),
      */
-    public $m0;
+    protected $m0;
 
     /**
-     * @Assert\IsNull(groups={"member"}),
-     * @Assert\Type(type={"integer", "null"}, groups={"household"}),
-     * @Assert\GreaterThanOrEqual(value=0, groups={"household"}),
+     * @Assert\IsNull(),
      */
-    public $m2;
+    protected $m2;
 
     /**
-     * @Assert\IsNull(groups={"member"}),
-     * @Assert\Type(type={"integer", "null"}, groups={"household"}),
-     * @Assert\GreaterThanOrEqual(value=0, groups={"household"}),
+     * @Assert\IsNull(),
      */
-    public $m6;
+    protected $m6;
 
     /**
-     * @Assert\IsNull(groups={"member"}),
-     * @Assert\Type(type={"integer", "null"}, groups={"household"}),
-     * @Assert\GreaterThanOrEqual(value=0, groups={"household"}),
+     * @Assert\IsNull(),
      */
-    public $m18;
+    protected $m18;
 
     /**
-     * @Assert\IsNull(groups={"member"}),
-     * @Assert\Type(type={"integer", "null"}, groups={"household"}),
-     * @Assert\GreaterThanOrEqual(value=0, groups={"household"}),
+     * @Assert\IsNull(),
      */
-    public $m60;
-
-    /**
-     * @var string[] countrySpecific::id => countrySpecificAnswer::answer
-     * @Assert\Count(max="0", groups={"member"})
-     */
-    public $countrySpecifics = [];
+    protected $m60;
 
     /** @var string */
     private $countryIso3;
+
+    /**
+     * @Assert\Count(max="0")
+     */
+    protected $countrySpecifics = [];
 
     /** @var EntityManagerInterface */
     private $entityManager;
@@ -346,37 +322,6 @@ class ImportLine
                 }
             }
         }
-
-        $countrySpecifics = $entityManager->getRepository(CountrySpecific::class)->findBy(['countryIso3' => $countryIso3], ['id'=>'asc']);
-        foreach ($countrySpecifics as $countrySpecific) {
-            if (isset($content[$countrySpecific->getFieldString()])) {
-                $this->countrySpecifics[$countrySpecific->getId()] = $content[$countrySpecific->getFieldString()];
-            }
-        }
-    }
-
-    /**
-     * @Assert\IsTrue(message="Camp must have defined both Tent number and Camp name", payload={"propertyPath"="campName"})
-     */
-    public function isCampValid(): bool
-    {
-        return ($this->tentNumber && $this->campName) xor !($this->tentNumber || $this->campName);
-    }
-
-    /**
-     * @Assert\IsTrue(message="Address must have defined street, number and postcode", payload={"propertyPath"="addressStreet"})
-     */
-    public function isAddressValid(): bool
-    {
-        return ($this->addressNumber && $this->addressPostcode && $this->addressStreet) xor !($this->addressNumber || $this->addressPostcode || $this->addressStreet);
-    }
-
-    /**
-     * @Assert\IsTrue(message="Camp or address must be fully defined", payload={"propertyPath"="addressStreet"})
-     */
-    public function isAddressExists(): bool
-    {
-        return $this->isAddressValid() || $this->isCampValid();
     }
 
     /**
@@ -385,7 +330,7 @@ class ImportLine
     public function isValidAdm1(): bool
     {
         if (!$this->adm1) {
-            return false;
+            return true;
         }
         $location = $this->entityManager->getRepository(Location::class)->getByNames(
             $this->countryIso3,
@@ -423,6 +368,7 @@ class ImportLine
         if (!$this->adm3) {
             return true;
         }
+
         $location = $this->entityManager->getRepository(Location::class)->getByNames(
             $this->countryIso3,
             $this->adm1,

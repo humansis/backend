@@ -55,18 +55,30 @@ class EnumValidator extends ConstraintValidator
             }
         }
 
-        $valueNormalized = EnumTrait::normalizeValue($value);
+        $values = [];
 
-        $allowedValuesNormalized = array_map(function ($value) {
-            return EnumTrait::normalizeValue($value);
-        }, $allowedValues);
+        if ($constraint->array && is_string($value)) {
+            $values = explode(',', $value);
+        } else {
+            $values[] = $value;
+        }
 
-        if (!in_array($valueNormalized, $allowedValuesNormalized)) {
-            $this->context->buildViolation($constraint->message)
-                ->setParameter('{{ providedValue }}', '"' . $value . '"')
-                ->setParameter('{{ parameter }}', $this->context->getPropertyName())
-                ->setParameter('{{ allowedValues }}', join(' , ', $allowedValues))
-                ->addViolation();
+        foreach ($values as $value) {
+            $valueNormalized = EnumTrait::normalizeValue($value);
+
+            $allowedValuesNormalized = array_map(function ($value) {
+                return EnumTrait::normalizeValue($value);
+            }, $allowedValues);
+
+            if (!in_array($valueNormalized, $allowedValuesNormalized)) {
+                $this->context->buildViolation($constraint->message)
+                    ->setParameter('{{ providedValue }}', '"' . $value . '"')
+                    ->setParameter('{{ parameter }}', $this->context->getPropertyName())
+                    ->setParameter('{{ allowedValues }}', join(' , ', $allowedValues))
+                    ->addViolation();
+
+                break;
+            }
         }
     }
 }

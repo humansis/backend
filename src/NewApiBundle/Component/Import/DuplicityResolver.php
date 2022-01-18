@@ -56,11 +56,11 @@ class DuplicityResolver
 
     /**
      * @param ImportQueue $importQueue
-     * @param int         $duplicityId
+     * @param int|null    $acceptedDuplicityId
      * @param string      $status
      * @param User        $user
      */
-    public function resolve(ImportQueue $importQueue, int $duplicityId, string $status, User $user)
+    public function resolve(ImportQueue $importQueue, ?int $acceptedDuplicityId, string $status, User $user)
     {
         $import = $importQueue->getImport();
         if (!in_array($import->getState(), [
@@ -79,7 +79,7 @@ class DuplicityResolver
         $links = [];
         $uniques = [];
         foreach ($duplicities as $duplicity) {
-            if ($duplicity->getId() === $duplicityId) {
+            if ($duplicity->getTheirs()->getId() === $acceptedDuplicityId) {
 
                 switch ($status) {
                     case ImportQueueState::TO_UPDATE:
