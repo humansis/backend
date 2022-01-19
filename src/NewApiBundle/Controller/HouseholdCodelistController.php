@@ -45,7 +45,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function getAssets(): JsonResponse
     {
-        $data = CodeLists::mapArray(HouseholdAssets::values());
+        $data = CodeLists::mapEnum(HouseholdAssets::values());
 
         return $this->json(new Paginator($data));
     }
