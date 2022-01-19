@@ -210,9 +210,8 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
                         break;
                     case BeneficiaryOrderInputType::SORT_BY_DISTRIBUTION_DATE:
                         $qb
-                            ->leftJoin(ReliefPackage::class, 'reliefPackage', 'WITH', 'reliefPackage.assistanceBeneficiary = db.id')
-                            ->leftJoin(SmartcardDeposit::class, 'smartcardDeposit', 'WITH', 'smartcardDeposit.reliefPackage = reliefPackage.id')
-                            ->orderBy('smartcardDeposit.distributedAt', $direction);
+                            ->leftJoin(GeneralReliefItem::class, 'generalReliefItem', 'WITH', 'generalReliefItem.assistanceBeneficiary = db.id')
+                            ->orderBy('generalReliefItem.distributedAt', $direction);
                         break;
                     default:
                         throw new \InvalidArgumentException('Invalid order by directive '.$name);
