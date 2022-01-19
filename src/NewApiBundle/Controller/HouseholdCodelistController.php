@@ -69,7 +69,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function getShelterStatuses(): JsonResponse
     {
-        $data = CodeLists::mapArray(HouseholdShelterStatus::values());
+        $data = CodeLists::mapEnum(HouseholdShelterStatus::values());
 
         return $this->json(new Paginator($data));
     }
