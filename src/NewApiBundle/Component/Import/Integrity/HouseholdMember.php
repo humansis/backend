@@ -333,7 +333,10 @@ class HouseholdMember
         if (!$this->adm1) {
             return true;
         }
-        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNameAndLevel(EnumTrait::normalizeValue($this->adm1), 1, $this->countryIso3);
+
+        $locationsArray = [EnumTrait::normalizeValue($this->adm1)];
+
+        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames($this->countryIso3, $locationsArray);
         return null !== $location;
     }
 
@@ -345,7 +348,10 @@ class HouseholdMember
         if (!$this->adm2) {
             return true;
         }
-        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNameAndLevel(EnumTrait::normalizeValue($this->adm2), 2, $this->countryIso3);
+
+        $locationsArray = [EnumTrait::normalizeValue($this->adm1), EnumTrait::normalizeValue($this->adm2)];
+
+        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames($this->countryIso3, $locationsArray);
         return null !== $location;
     }
 
@@ -358,7 +364,9 @@ class HouseholdMember
             return true;
         }
 
-        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNameAndLevel(EnumTrait::normalizeValue($this->adm3), 3, $this->countryIso3);
+        $locationsArray = [EnumTrait::normalizeValue($this->adm1), EnumTrait::normalizeValue($this->adm2), EnumTrait::normalizeValue($this->adm3)];
+
+        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames($this->countryIso3, $locationsArray);
         return null !== $location;
     }
 
@@ -370,7 +378,10 @@ class HouseholdMember
         if (!$this->adm4) {
             return true;
         }
-        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNameAndLevel(EnumTrait::normalizeValue($this->adm4), 4, $this->countryIso3);
+
+        $locationsArray = [EnumTrait::normalizeValue($this->adm1), EnumTrait::normalizeValue($this->adm2), EnumTrait::normalizeValue($this->adm3), EnumTrait::normalizeValue($this->adm4)];
+
+        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames($this->countryIso3, $locationsArray);
         return null !== $location;
     }
 }

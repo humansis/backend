@@ -8,6 +8,7 @@ use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\CellParameters;
+use NewApiBundle\Enum\EnumTrait;
 use NewApiBundle\Validator\Constraints\ImportDate;
 use Symfony\Component\Validator\Constraints as Assert;
 use NewApiBundle\Validator\Constraints\Enum;
@@ -376,13 +377,10 @@ class HouseholdHead
         if (!$this->adm1) {
             return false;
         }
-        $location = $this->entityManager->getRepository(Location::class)->getByNames(
-            $this->countryIso3,
-            $this->adm1,
-            null,
-            null,
-            null
-        );
+
+        $locationsArray = [EnumTrait::normalizeValue($this->adm1)];
+
+        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames($this->countryIso3, $locationsArray);
         return null !== $location;
     }
 
@@ -394,13 +392,10 @@ class HouseholdHead
         if (!$this->adm2) {
             return true;
         }
-        $location = $this->entityManager->getRepository(Location::class)->getByNames(
-            $this->countryIso3,
-            $this->adm1,
-            $this->adm2,
-            null,
-            null
-        );
+
+        $locationsArray = [EnumTrait::normalizeValue($this->adm1), EnumTrait::normalizeValue($this->adm2)];
+
+        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames($this->countryIso3, $locationsArray);
         return null !== $location;
     }
 
@@ -412,13 +407,10 @@ class HouseholdHead
         if (!$this->adm3) {
             return true;
         }
-        $location = $this->entityManager->getRepository(Location::class)->getByNames(
-            $this->countryIso3,
-            $this->adm1,
-            $this->adm2,
-            $this->adm3,
-            null
-        );
+
+        $locationsArray = [EnumTrait::normalizeValue($this->adm1), EnumTrait::normalizeValue($this->adm2), EnumTrait::normalizeValue($this->adm3)];
+
+        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames($this->countryIso3, $locationsArray);
         return null !== $location;
     }
 
@@ -430,13 +422,10 @@ class HouseholdHead
         if (!$this->adm4) {
             return true;
         }
-        $location = $this->entityManager->getRepository(Location::class)->getByNames(
-            $this->countryIso3,
-            $this->adm1,
-            $this->adm2,
-            $this->adm3,
-            $this->adm4
-        );
+
+        $locationsArray = [EnumTrait::normalizeValue($this->adm1), EnumTrait::normalizeValue($this->adm2), EnumTrait::normalizeValue($this->adm3), EnumTrait::normalizeValue($this->adm4)];
+
+        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames($this->countryIso3, $locationsArray);
         return null !== $location;
     }
 }

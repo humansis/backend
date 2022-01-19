@@ -32,18 +32,49 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function getByNormalizedNameAndLevel(string $normalizedName, int $level, string $country): ?Location
+    /**
+     * @param string $countryIso3
+     * @param array  $adms full path of adms from Adm1 to whatever level (for example [adm1, adm2, adm3])
+     *
+     * @return Location|null
+     */
+    public function getByNormalizedNames(string $countryIso3, array $adms): ?Location
     {
-        return $this->createQueryBuilder('l')
-            ->where('l.enumNormalizedName = :normalizedName')
+        $level = count($adms);
+
+        $lowestLevelLocation = $this->createQueryBuilder('l')
+            ->where('l.countryISO3 = :country')
+            ->andWhere('l.enumNormalizedName = :normalizedName')
             ->andWhere('l.lvl = :level')
-            ->andWhere('l.countryISO3 = :country')
-            ->setParameter('normalizedName', $normalizedName)
+            ->setParameter('country', $countryIso3)
+            ->setParameter('normalizedName', end($adms))
             ->setParameter('level', $level)
-            ->setParameter('country', $country)
-            ->setMaxResults(1)
             ->getQuery()
-            ->getOneOrNullResult();
+            ->getResult();
+
+        /** @var Location $location */
+        foreach ($lowestLevelLocation as $key => $location) {
+            $currentLevel = $level - 1;
+
+            $currentLevelLocation = $location;
+
+            while ($currentLevel > 0) {
+                $parent = $currentLevelLocation->getParentLocation();
+
+                if ($parent->getEnumNormalizedName() !== $adms[$currentLevel - 1]) {
+                    unset($lowestLevelLocation[$key]);
+                }
+
+                $currentLevelLocation = $parent;
+                $currentLevel--;
+            }
+        }
+
+        if (empty($lowestLevelLocation)) {
+            return null;
+        } else {
+            return current($lowestLevelLocation);
+        }
     }
 
     public function getByNames(string $countryIso3, ?string $adm1, ?string $adm2, ?string $adm3, ?string $adm4): ?Location
