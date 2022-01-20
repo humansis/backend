@@ -164,7 +164,7 @@ trait HouseholdInputBuilderTrait
     private function buildMembersByAgeAndGender(string $gender, int $age, int $count): iterable
     {
         if (0 === $count) return;
-        $today = new \DateTime();
+        $today = new \DateTimeImmutable();
 
         for ($i=0; $i<$count; $i++) {
             $beneficiary = new BeneficiaryInputType();
