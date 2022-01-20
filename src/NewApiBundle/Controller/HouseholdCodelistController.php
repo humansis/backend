@@ -57,7 +57,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function supportReceivedTypes(): JsonResponse
     {
-        $data = CodeLists::mapArray(HouseholdSupportReceivedType::values());
+        $data = CodeLists::mapEnum(HouseholdSupportReceivedType::values());
 
         return $this->json(new Paginator($data));
     }
