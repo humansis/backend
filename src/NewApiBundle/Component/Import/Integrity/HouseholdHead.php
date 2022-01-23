@@ -370,6 +370,19 @@ class HouseholdHead
     }
 
     /**
+     * @Assert\IsFalse(message="Address or Camp must be defined, not both", payload={"propertyPath"="addressStreet"})
+     *
+     * @return bool
+     */
+    public function isFilledAddressOrCamp(): bool
+    {
+        $isCompleteAddress = !empty($this->addressNumber) && !empty($this->addressPostcode) && !empty($this->addressStreet);
+        $isCompleteCamp = !empty($this->campName) && !empty($this->tentNumber);
+
+        return $isCompleteAddress && $isCompleteCamp;
+    }
+
+    /**
      * @Assert\IsTrue(message="There is no Adm1 like this", payload={"propertyPath"="adm1"})
      */
     public function isValidAdm1(): bool

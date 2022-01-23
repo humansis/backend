@@ -62,10 +62,6 @@ trait HouseholdInputBuilderTrait
         $household->setSupportReceivedTypes($this->getSupportReceivedTypes());
         $household->setAssets($this->getAssets());
 
-        if($this->campName && $this->tentNumber){
-            $household->setCampAddress($this->buildCampAddress());
-        }
-
         foreach ($this->countrySpecifics as $countrySpecificId => $answer) {
             $specificAnswer = new CountrySpecificsAnswerInputType();
             $specificAnswer->setCountrySpecificId($countrySpecificId);
@@ -73,15 +69,20 @@ trait HouseholdInputBuilderTrait
             $household->addCountrySpecificAnswer($specificAnswer);
         }
 
-        $locationRepository = $this->entityManager->getRepository(Location::class);
-        $locationByAdms = $locationRepository->getByNames($this->countryIso3, $this->adm1, $this->adm2, $this->adm3, $this->adm4);
-        if (null !== $locationByAdms) {
-            $address = new ResidenceAddressInputType();
-            $address->setStreet($this->addressStreet);
-            $address->setPostcode($this->addressPostcode);
-            $address->setNumber($this->addressNumber);
-            $address->setLocationId($locationByAdms->getId());
-            $household->setResidenceAddress($address);
+        // defined must be Camp or Address - it's checked in Integrity Checking
+        if($this->campName && $this->tentNumber){
+            $household->setCampAddress($this->buildCampAddress());
+        } else {
+            $locationRepository = $this->entityManager->getRepository(Location::class);
+            $locationByAdms = $locationRepository->getByNames($this->countryIso3, $this->adm1, $this->adm2, $this->adm3, $this->adm4);
+            if (null !== $locationByAdms) {
+                $address = new ResidenceAddressInputType();
+                $address->setStreet($this->addressStreet);
+                $address->setPostcode($this->addressPostcode);
+                $address->setNumber($this->addressNumber);
+                $address->setLocationId($locationByAdms->getId());
+                $household->setResidenceAddress($address);
+            }
         }
 
         $head = $this->buildBeneficiaryInputType();
