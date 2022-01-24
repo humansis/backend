@@ -64,10 +64,6 @@ trait HouseholdInputBuilderTrait
         $household->setSupportReceivedTypes($this->getSupportReceivedTypes());
         $household->setAssets($this->getAssets());
 
-        if($this->campName && $this->tentNumber){
-            $household->setCampAddress($this->buildCampAddress());
-        }
-
         foreach ($this->countrySpecifics as $countrySpecificId => $answer) {
             $specificAnswer = new CountrySpecificsAnswerInputType();
             $specificAnswer->setCountrySpecificId($countrySpecificId);
@@ -75,22 +71,27 @@ trait HouseholdInputBuilderTrait
             $household->addCountrySpecificAnswer($specificAnswer);
         }
 
-        /** @var LocationRepository $locationRepository */
-        $locationRepository = $this->entityManager->getRepository(Location::class);
-        $adms = [EnumTrait::normalizeValue($this->adm1), EnumTrait::normalizeValue($this->adm2), EnumTrait::normalizeValue($this->adm3), EnumTrait::normalizeValue($this->adm4)];
-        $locationsArray = array_filter($adms, function ($value) {
-            return !empty($value);
-        });
+        // defined must be Camp or Address - it's checked in Integrity Checking
+        if($this->campName && $this->tentNumber){
+            $household->setCampAddress($this->buildCampAddress());
+        } else {
+            /** @var LocationRepository $locationRepository */
+            $locationRepository = $this->entityManager->getRepository(Location::class);
+            $adms = [EnumTrait::normalizeValue($this->adm1), EnumTrait::normalizeValue($this->adm2), EnumTrait::normalizeValue($this->adm3), EnumTrait::normalizeValue($this->adm4)];
+            $locationsArray = array_filter($adms, function ($value) {
+                return !empty($value);
+            });
 
-        $location = $locationRepository->getByNormalizedNames($this->countryIso3, $locationsArray);
+            $location = $locationRepository->getByNormalizedNames($this->countryIso3, $locationsArray);
 
-        if (null !== $location) {
-            $address = new ResidenceAddressInputType();
-            $address->setStreet($this->addressStreet);
-            $address->setPostcode($this->addressPostcode);
-            $address->setNumber($this->addressNumber);
-            $address->setLocationId($location->getId());
-            $household->setResidenceAddress($address);
+            if (null !== $location) {
+                $address = new ResidenceAddressInputType();
+                $address->setStreet($this->addressStreet);
+                $address->setPostcode($this->addressPostcode);
+                $address->setNumber($this->addressNumber);
+                $address->setLocationId($location->getId());
+                $household->setResidenceAddress($address);
+            }
         }
 
         $head = $this->buildBeneficiaryInputType();
