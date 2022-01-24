@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace NewApiBundle\Component\Import\Integrity;
 
 use CommonBundle\Entity\Location;
+use CommonBundle\Repository\LocationRepository;
 use NewApiBundle\Component\Import\Utils\ImportDateConverter;
+use NewApiBundle\Enum\EnumTrait;
 use NewApiBundle\InputType\Beneficiary\Address\CampAddressInputType;
 use NewApiBundle\InputType\Beneficiary\Address\CampInputType;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
@@ -73,14 +75,21 @@ trait HouseholdInputBuilderTrait
         if($this->campName && $this->tentNumber){
             $household->setCampAddress($this->buildCampAddress());
         } else {
+            /** @var LocationRepository $locationRepository */
             $locationRepository = $this->entityManager->getRepository(Location::class);
-            $locationByAdms = $locationRepository->getByNames($this->countryIso3, $this->adm1, $this->adm2, $this->adm3, $this->adm4);
-            if (null !== $locationByAdms) {
+            $adms = [EnumTrait::normalizeValue($this->adm1), EnumTrait::normalizeValue($this->adm2), EnumTrait::normalizeValue($this->adm3), EnumTrait::normalizeValue($this->adm4)];
+            $locationsArray = array_filter($adms, function ($value) {
+                return !empty($value);
+            });
+
+            $location = $locationRepository->getByNormalizedNames($this->countryIso3, $locationsArray);
+
+            if (null !== $location) {
                 $address = new ResidenceAddressInputType();
                 $address->setStreet($this->addressStreet);
                 $address->setPostcode($this->addressPostcode);
                 $address->setNumber($this->addressNumber);
-                $address->setLocationId($locationByAdms->getId());
+                $address->setLocationId($location->getId());
                 $household->setResidenceAddress($address);
             }
         }
@@ -196,10 +205,18 @@ trait HouseholdInputBuilderTrait
         $campInput = new CampInputType();
         $campInput->setName($this->campName);
 
+        /** @var LocationRepository $locationRepository */
         $locationRepository = $this->entityManager->getRepository(Location::class);
-        $locationByAdms = $locationRepository->getByNames($this->countryIso3, $this->adm1, $this->adm2, $this->adm3, $this->adm4);
-        if ($locationByAdms !== null) {
-            $campInput->setLocationId($locationByAdms->getId());
+
+        $adms = [EnumTrait::normalizeValue($this->adm1), EnumTrait::normalizeValue($this->adm2), EnumTrait::normalizeValue($this->adm3), EnumTrait::normalizeValue($this->adm4)];
+
+        $locationsArray = array_filter($adms, function ($value) {
+            return !empty($value);
+        });
+
+        $location = $locationRepository->getByNormalizedNames($this->countryIso3,$locationsArray);
+        if ($location !== null) {
+            $campInput->setLocationId($location->getId());
         }
 
         return $campInput;
