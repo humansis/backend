@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import\Integrity;
 
+use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
@@ -12,7 +13,7 @@ use NewApiBundle\Validator\Constraints\ImportDate;
 use Symfony\Component\Validator\Constraints as Assert;
 use NewApiBundle\Validator\Constraints\Enum;
 
-class HouseholdMember
+class HouseholdHead
 {
     use EnumNormalizeTrait;
     use HouseholdInputBuilderTrait;
@@ -85,6 +86,7 @@ class HouseholdMember
 
     /**
      * @Assert\Type("string")
+     * @Assert\NotBlank
      */
     protected $adm1;
 
@@ -136,6 +138,7 @@ class HouseholdMember
     protected $englishParentsName;
 
     /**
+     * @Assert\NotNull()
      * @Enum(enumClass="NewApiBundle\Enum\PersonGender")
      */
     protected $gender;
@@ -153,8 +156,8 @@ class HouseholdMember
     protected $residencyStatus;
 
     /**
-     * @ImportDate(),
-     * @Assert\NotBlank(),
+     * @ImportDate()
+     * @Assert\NotBlank()
      */
     protected $dateOfBirth;
 
@@ -170,7 +173,7 @@ class HouseholdMember
     protected $typePhone1;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type("scalar")
      */
     protected $prefixPhone1;
 
@@ -242,62 +245,72 @@ class HouseholdMember
     protected $supportDateReceived;
 
     /**
-     * @Assert\IsNull(),
+     * @Assert\Type("integer"),
+     * @Assert\GreaterThanOrEqual(0),
      */
     protected $f0;
 
     /**
-     * @Assert\IsNull(),
+     * @Assert\Type("integer"),
+     * @Assert\GreaterThanOrEqual(0),
      */
     protected $f2;
 
     /**
-     * @Assert\IsNull(),
+     * @Assert\Type("integer"),
+     * @Assert\GreaterThanOrEqual(0),
      */
     protected $f6;
 
     /**
-     * @Assert\IsNull(),
+     * @Assert\Type("integer"),
+     * @Assert\GreaterThanOrEqual(0),
      */
     protected $f18;
 
     /**
-     * @Assert\IsNull(),
+     * @Assert\Type("integer"),
+     * @Assert\GreaterThanOrEqual(0),
      */
     protected $f60;
 
     /**
-     * @Assert\IsNull(),
+     * @Assert\Type("integer"),
+     * @Assert\GreaterThanOrEqual(0),
      */
     protected $m0;
 
     /**
-     * @Assert\IsNull(),
+     * @Assert\Type("integer"),
+     * @Assert\GreaterThanOrEqual(0),
      */
     protected $m2;
 
     /**
-     * @Assert\IsNull(),
+     * @Assert\Type("integer"),
+     * @Assert\GreaterThanOrEqual(0),
      */
     protected $m6;
 
     /**
-     * @Assert\IsNull(),
+     * @Assert\Type("integer"),
+     * @Assert\GreaterThanOrEqual(0),
      */
     protected $m18;
 
     /**
-     * @Assert\IsNull(),
+     * @Assert\Type("integer"),
+     * @Assert\GreaterThanOrEqual(0),
      */
     protected $m60;
 
-    /** @var string */
-    private $countryIso3;
-
     /**
-     * @Assert\Count(max="0")
+     * @var string[] countrySpecific::id => countrySpecificAnswer::answer
      */
     protected $countrySpecifics = [];
+
+    /** @var string */
+    private $countryIso3;
 
     /** @var EntityManagerInterface */
     private $entityManager;
@@ -323,6 +336,50 @@ class HouseholdMember
                 }
             }
         }
+
+        $countrySpecifics = $entityManager->getRepository(CountrySpecific::class)->findBy(['countryIso3' => $countryIso3], ['id'=>'asc']);
+        foreach ($countrySpecifics as $countrySpecific) {
+            if (isset($content[$countrySpecific->getFieldString()])) {
+                $this->countrySpecifics[$countrySpecific->getId()] = $content[$countrySpecific->getFieldString()];
+            }
+        }
+    }
+
+    /**
+     * @Assert\IsTrue(message="Camp must have defined both Tent number and Camp name", payload={"propertyPath"="campName"})
+     */
+    public function isCampValid(): bool
+    {
+        return ($this->tentNumber && $this->campName) xor !($this->tentNumber || $this->campName);
+    }
+
+    /**
+     * @Assert\IsTrue(message="Address must have defined street, number and postcode", payload={"propertyPath"="addressStreet"})
+     */
+    public function isAddressValid(): bool
+    {
+        return ($this->addressNumber && $this->addressPostcode && $this->addressStreet) xor !($this->addressNumber || $this->addressPostcode || $this->addressStreet);
+    }
+
+    /**
+     * @Assert\IsTrue(message="Camp or address must be fully defined", payload={"propertyPath"="addressStreet"})
+     */
+    public function isAddressExists(): bool
+    {
+        return $this->isAddressValid() || $this->isCampValid();
+    }
+
+    /**
+     * @Assert\IsFalse(message="Address or Camp must be defined, not both", payload={"propertyPath"="addressStreet"})
+     *
+     * @return bool
+     */
+    public function isFilledAddressOrCamp(): bool
+    {
+        $isCompleteAddress = !empty($this->addressNumber) && !empty($this->addressPostcode) && !empty($this->addressStreet);
+        $isCompleteCamp = !empty($this->campName) && !empty($this->tentNumber);
+
+        return $isCompleteAddress && $isCompleteCamp;
     }
 
     /**
@@ -331,7 +388,7 @@ class HouseholdMember
     public function isValidAdm1(): bool
     {
         if (!$this->adm1) {
-            return true;
+            return false;
         }
 
         $locationsArray = [EnumTrait::normalizeValue($this->adm1)];
