@@ -7,6 +7,7 @@ use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\CellParameters;
+use NewApiBundle\Enum\EnumTrait;
 use NewApiBundle\Validator\Constraints\ImportDate;
 use Symfony\Component\Validator\Constraints as Assert;
 use NewApiBundle\Validator\Constraints\Enum;
@@ -352,7 +353,7 @@ class ImportLine
     }
 
     /**
-     * @Assert\IsTrue(message="Camp must have defined both Tent number and Camp name", payload={"propertyPath"="campName"})
+     * @Assert\IsTrue(message="Camp must have defined both Tent number and Camp name", payload={"propertyPath"="campName"}, groups={"household", "member"})
      */
     public function isCampValid(): bool
     {
@@ -360,7 +361,7 @@ class ImportLine
     }
 
     /**
-     * @Assert\IsTrue(message="Address must have defined street, number and postcode", payload={"propertyPath"="addressStreet"})
+     * @Assert\IsTrue(message="Address must have defined street, number and postcode", payload={"propertyPath"="addressStreet"}, groups={"household", "member"})
      */
     public function isAddressValid(): bool
     {
@@ -368,7 +369,7 @@ class ImportLine
     }
 
     /**
-     * @Assert\IsTrue(message="Camp or address must be fully defined", payload={"propertyPath"="addressStreet"})
+     * @Assert\IsTrue(message="Camp or address must be fully defined", payload={"propertyPath"="addressStreet"}, groups={"household", "member"})
      */
     public function isAddressExists(): bool
     {
@@ -376,74 +377,75 @@ class ImportLine
     }
 
     /**
-     * @Assert\IsTrue(message="There is no Adm1 like this", payload={"propertyPath"="adm1"})
+     * @Assert\IsFalse(message="Address or Camp must be defined, not both", payload={"propertyPath"="addressStreet"}, groups={"household", "member"})
+     *
+     * @return bool
+     */
+    public function isFilledAddressOrCamp(): bool
+    {
+        $isCompleteAddress = !empty($this->addressNumber) && !empty($this->addressPostcode) && !empty($this->addressStreet);
+        $isCompleteCamp = !empty($this->campName) && !empty($this->tentNumber);
+
+        return $isCompleteAddress && $isCompleteCamp;
+    }
+
+    /**
+     * @Assert\IsTrue(message="There is no Adm1 like this", payload={"propertyPath"="adm1"}, groups={"household", "member"})
      */
     public function isValidAdm1(): bool
     {
         if (!$this->adm1) {
-            return false;
+            return true;
         }
-        $location = $this->entityManager->getRepository(Location::class)->getByNames(
-            $this->countryIso3,
-            $this->adm1,
-            null,
-            null,
-            null
-        );
+
+        $locationsArray = [EnumTrait::normalizeValue($this->adm1)];
+
+        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames($this->countryIso3, $locationsArray);
         return null !== $location;
     }
 
     /**
-     * @Assert\IsTrue(message="There is no Adm2 in this location", payload={"propertyPath"="adm2"})
+     * @Assert\IsTrue(message="There is no Adm2 in this location", payload={"propertyPath"="adm2"}, groups={"household", "member"})
      */
     public function isValidAdm2(): bool
     {
         if (!$this->adm2) {
             return true;
         }
-        $location = $this->entityManager->getRepository(Location::class)->getByNames(
-            $this->countryIso3,
-            $this->adm1,
-            $this->adm2,
-            null,
-            null
-        );
+
+        $locationsArray = [EnumTrait::normalizeValue($this->adm1), EnumTrait::normalizeValue($this->adm2)];
+
+        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames($this->countryIso3, $locationsArray);
         return null !== $location;
     }
 
     /**
-     * @Assert\IsTrue(message="There is no Adm3 in this location", payload={"propertyPath"="adm3"})
+     * @Assert\IsTrue(message="There is no Adm3 in this location", payload={"propertyPath"="adm3"}, groups={"household", "member"})
      */
     public function isValidAdm3(): bool
     {
         if (!$this->adm3) {
             return true;
         }
-        $location = $this->entityManager->getRepository(Location::class)->getByNames(
-            $this->countryIso3,
-            $this->adm1,
-            $this->adm2,
-            $this->adm3,
-            null
-        );
+
+        $locationsArray = [EnumTrait::normalizeValue($this->adm1), EnumTrait::normalizeValue($this->adm2), EnumTrait::normalizeValue($this->adm3)];
+
+        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames($this->countryIso3, $locationsArray);
         return null !== $location;
     }
 
     /**
-     * @Assert\IsTrue(message="There is no Adm4 in this location", payload={"propertyPath"="adm4"})
+     * @Assert\IsTrue(message="There is no Adm4 in this location", payload={"propertyPath"="adm4"}, groups={"household", "member"})
      */
     public function isValidAdm4(): bool
     {
         if (!$this->adm4) {
             return true;
         }
-        $location = $this->entityManager->getRepository(Location::class)->getByNames(
-            $this->countryIso3,
-            $this->adm1,
-            $this->adm2,
-            $this->adm3,
-            $this->adm4
-        );
+
+        $locationsArray = [EnumTrait::normalizeValue($this->adm1), EnumTrait::normalizeValue($this->adm2), EnumTrait::normalizeValue($this->adm3), EnumTrait::normalizeValue($this->adm4)];
+
+        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames($this->countryIso3, $locationsArray);
         return null !== $location;
     }
 }
