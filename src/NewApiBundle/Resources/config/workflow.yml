@@ -89,7 +89,9 @@ framework:
 
         # INTEGRITY
         !php/const NewApiBundle\Workflow\ImportTransitions::CHECK_INTEGRITY:
-          from: !php/const NewApiBundle\Enum\ImportState::NEW
+          from:
+            - !php/const NewApiBundle\Enum\ImportState::NEW
+            - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_FAILED
           to: !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECKING
         !php/const NewApiBundle\Workflow\ImportTransitions::COMPLETE_INTEGRITY:
           from: !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECKING
