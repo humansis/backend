@@ -86,10 +86,14 @@ class ConcurrencyProcessor
         $getBatchCallback = $this->batchItemsCallback;
         $itemCount = $allItemCountCallback();
 
-        $totalItemsToProcess = $itemCount > $this->maxResultsToProcess ? $this->maxResultsToProcess : $itemCount;
-        $step = $totalItemsToProcess < $this->batchSize ? $totalItemsToProcess + 1 : $this->batchSize;
+        if ($itemCount === 0) {
+            return;
+        }
 
-        foreach (range(1, $totalItemsToProcess, $step) as $batchStart) {
+        $totalItemsToProcess = $itemCount > $this->maxResultsToProcess ? $this->maxResultsToProcess : $itemCount;
+        $rounds = ceil($totalItemsToProcess / $this->batchSize);
+
+        for ($i = 0; $i < $rounds; $i++) {
             $runCode = uniqid();
             $lockItemsCallback($runCode, $this->batchSize);
 
