@@ -5,6 +5,7 @@ namespace NewApiBundle\Validator\Constraints;
 
 use NewApiBundle\Component\Country\Countries;
 use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\Constraints\Country as SymfonyCountry;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
@@ -41,7 +42,7 @@ class CountryValidator extends ConstraintValidator
         if (!$this->countries->getCountry($value)) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $this->formatValue($value))
-                ->setCode(Country::NO_SUCH_COUNTRY_ERROR)
+                ->setCode(SymfonyCountry::NO_SUCH_COUNTRY_ERROR)
                 ->addViolation();
         }
     }

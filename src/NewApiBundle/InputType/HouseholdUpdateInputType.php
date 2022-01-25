@@ -69,7 +69,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     private $livelihood;
 
     /**
-     * @Assert\Type("array")
+     * @Assert\Type({"array", "string"})
      */
     private $assets;
 
@@ -144,7 +144,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     private $supportDateReceived;
 
     /**
-     * @Assert\Type("array")
+     * @Assert\Type({"array", "string"})
      */
     private $supportReceivedTypes = [];
 
@@ -292,11 +292,9 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     /**
      * @param int[] $assets
      */
-    public function setAssets(array $assets)
+    public function setAssets($assets)
     {
-        foreach ($assets as $asset) {
-            $this->assets[] = $asset;
-        }
+        $this->assets = $assets;
     }
 
     /**
@@ -474,7 +472,12 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      */
     public function getSupportDateReceived()
     {
-        return $this->supportDateReceived ? new \DateTime($this->supportDateReceived) : null;
+        if (!$this->supportDateReceived) return null;
+        $iso = \DateTime::createFromFormat(\DateTimeInterface::ISO8601, $this->supportDateReceived);
+        if ($iso) return $iso;
+        $date = \DateTime::createFromFormat('Y-m-d', $this->supportDateReceived);
+        if ($date) return $date;
+        return null;
     }
 
     /**
