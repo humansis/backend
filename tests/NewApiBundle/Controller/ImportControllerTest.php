@@ -5,6 +5,7 @@ namespace Tests\NewApiBundle\Controller;
 
 use Doctrine\ORM\NoResultException;
 use Exception;
+use NewApiBundle\Controller\ImportController;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportInvalidFile;
@@ -37,7 +38,7 @@ class ImportControllerTest extends BMSServiceTestCase
     public function testCreate()
     {
         /** @var Project|null $projects */
-        $projects = self::$container->get('doctrine')->getRepository(Project::class)->findOneBy([]);
+        $projects = self::$container->get('doctrine')->getRepository(Project::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($projects)) {
             $this->markTestSkipped('There needs to be at least one project in system to complete this test');
@@ -156,9 +157,13 @@ class ImportControllerTest extends BMSServiceTestCase
     public function patchDataProvider(): array
     {
         return [
+            'title change' => [
+                'title',
+                'New title',
+            ],
             'status change' => [
                 'status',
-                ImportState::INTEGRITY_CHECKING,
+                ImportState::CANCELED,
             ],
             'description change' => [
                 'description',
@@ -177,7 +182,7 @@ class ImportControllerTest extends BMSServiceTestCase
      */
     public function testPatch(string $parameter, $value, int $id)
     {
-        $this->request('PATCH', '/api/basic/web-app/v1/imports/'.$id, [
+        $this->request('PATCH', '/api/basic/web-app/v1/imports/'.$id.'?'.ImportController::DISABLE_CRON.'=true', [
             $parameter => $value,
         ]);
 
@@ -185,12 +190,18 @@ class ImportControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: '.$this->client->getResponse()->getContent()
         );
+
+        $this->request('GET', '/api/basic/web-app/v1/imports/'.$id);
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertEquals($value, $result[$parameter]);
     }
 
     public function testGetDuplicities()
     {
         /** @var ImportBeneficiaryDuplicity|null $duplicity */
-        $duplicity = $this->em->getRepository(ImportBeneficiaryDuplicity::class)->findOneBy([]);
+        $duplicity = $this->em->getRepository(ImportBeneficiaryDuplicity::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($duplicity)) {
             $this->markTestSkipped('There needs to be at least one import duplicity in system.');
@@ -221,7 +232,7 @@ class ImportControllerTest extends BMSServiceTestCase
     public function testGetImportStatistics()
     {
         /** @var ImportQueue|null $importQueue */
-        $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy([]);
+        $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($importQueue)) {
             $this->markTestSkipped('There needs to be at least one import with entries in queue in system.');
@@ -250,7 +261,7 @@ class ImportControllerTest extends BMSServiceTestCase
     public function testGetQueueItem()
     {
         /** @var ImportQueue|null $importQueue */
-        $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy([]);
+        $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($importQueue)) {
             $this->markTestSkipped('There needs to be at least one import import with entries in queue in system.');
@@ -276,7 +287,7 @@ class ImportControllerTest extends BMSServiceTestCase
     public function testResolveDuplicity()
     {
         /** @var ImportBeneficiaryDuplicity|null $importQueue */
-        $duplicity = $this->em->getRepository(ImportBeneficiaryDuplicity::class)->findOneBy([]);
+        $duplicity = $this->em->getRepository(ImportBeneficiaryDuplicity::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($duplicity)) {
             $this->markTestSkipped('There needs to be at least one duplicity with entries in queue in system.');
@@ -304,7 +315,7 @@ class ImportControllerTest extends BMSServiceTestCase
         $importFile = $this->em->getRepository(ImportFile::class)->findOneBy([
             'structureViolations' => null,
             'isLoaded' => true,
-        ]);
+        ], ['id' => 'asc']);
 
         if (is_null($importFile)) {
             $this->markTestSkipped('There needs to be at least one import file in system.');
@@ -390,7 +401,7 @@ class ImportControllerTest extends BMSServiceTestCase
     public function testListInvalidFiles(): int
     {
         /** @var ImportInvalidFile|null $importInvalidFile */
-        $importInvalidFile = $this->em->getRepository(ImportInvalidFile::class)->findOneBy([]);
+        $importInvalidFile = $this->em->getRepository(ImportInvalidFile::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($importInvalidFile)) {
             $this->markTestSkipped('There needs to be at least one import invalid file in system.');
@@ -438,7 +449,7 @@ class ImportControllerTest extends BMSServiceTestCase
     public function testListQueue()
     {
         /** @var ImportQueue|null $importQueue */
-        $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy([]);
+        $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($importQueue)) {
             $this->markTestSkipped('There needs to be at least one import with items in queue in system.');

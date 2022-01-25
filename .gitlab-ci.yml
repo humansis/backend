@@ -8,6 +8,10 @@ include:
 variables:
   CHANNEL: "#pin_deployment"
   USERNAME: "PIN Deploy"
+  IMAGE_NAME: humansis-php
+  NGINX_IMAGE_NAME: humansis-nginx
+  REPOSITORY_NAME: pin-docker-local
+  REPOSITORY_URL: ${ARTIFACTORY_URL}
 
 stages:
   - static_analysis
@@ -17,7 +21,9 @@ stages:
   - report_starting
   - deploy_dev
   - deploy_test
+  - deploy_test_new
   - deploy_stage
+  - deploy_demo
   - deploy_prod
   - report_finished
   - upload_db
@@ -35,6 +41,15 @@ stages:
         PasswordAuthentication no
         PreferredAuthentications publickey
       EOF
+
+.prepare_ssh_aws: &prepare_ssh_aws
+  before_script:
+    - mkdir -p ~/.ssh
+    - echo "${SSH_PRIVATE_KEY}" | tr -d '\r' > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - aws configure set aws_access_key_id ${deploy_aws_access_key_id}
+    - aws configure set aws_secret_access_key ${deploy_aws_secret_access_key}
+    - aws configure set default.region eu-central-1
 
 .remove_key: &remove_key
   after_script:
@@ -65,6 +80,10 @@ test:
     - ./vendor/bin/phpunit
   except:
     - tags
+  cache:
+    key: $CI_COMMIT_REF_SLUG
+    paths:
+      - vendor/
 
 backup-db:
   stage: backup_db
@@ -112,6 +131,7 @@ backup-code:
 
 deploy dev:
   stage: deploy_dev
+  image: artifactory.quanti.cz/docker-local/alpine-ssh-git:dind
   environment:
     name: dev
     url: https://apidev.humansis.org
@@ -121,33 +141,42 @@ deploy dev:
     CLEAN_DATABASE: "true"
     LOAD_FIXTURES: dev
     CACHE_CLEAR_MODE: aggressive
-  <<: *prepare_ssh
+  <<: *prepare_ssh_aws
   script:
-    - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
+    - ./build-docker.sh
+    - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
+    - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
   <<: *remove_key
   only:
     - branches
   when: manual
+  tags:
+    - dind
 
 deploy test:
   stage: deploy_test
+  image: artifactory.quanti.cz/docker-local/alpine-ssh-git:dind
   environment:
-    name: test
-    url: https://apitest.humansis.org
+    name: test-new
+    url: https://api-test.humansis.org
   variables:
-    HOSTNAME: apitest.humansis.org
+    HOSTNAME: api-test.humansis.org
     ENVIRONMENT: test
-    CLEAN_DATABASE: "database"
+    CLEAN_DATABASE: "false"
     LOAD_FIXTURES: "false"
     CACHE_CLEAR_MODE: aggressive
-  <<: *prepare_ssh
+  <<: *prepare_ssh_aws
   script:
-    - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
+    - ./build-docker.sh
+    - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
+    - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
   <<: *remove_key
   only:
     - /^develop$/
   except:
     - tags
+  tags:
+    - dind
 
 report starting:
   stage: report_starting
@@ -163,6 +192,7 @@ report starting:
 
 deploy stage:
   stage: deploy_stage
+  image: artifactory.quanti.cz/docker-local/alpine-ssh-git:dind
   environment:
     name: stage
     url: https://apistage.humansis.org
@@ -172,14 +202,43 @@ deploy stage:
     CLEAN_DATABASE: "false"
     LOAD_FIXTURES: "false"
     CACHE_CLEAR_MODE: aggressive
-  <<: *prepare_ssh
+  <<: *prepare_ssh_aws
   script:
-    - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
+    - ./build-docker.sh
+    - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
+    - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
   <<: *remove_key
   only:
     - /^release\/.*$/
   except:
     - tags
+  tags:
+    - dind
+
+deploy demo:
+  stage: deploy_demo
+  image: artifactory.quanti.cz/docker-local/alpine-ssh-git:dind
+  environment:
+    name: demo
+    url: https://apidemo.humansis.org
+  variables:
+    HOSTNAME: apidemo.humansis.org
+    ENVIRONMENT: demo
+    CLEAN_DATABASE: "true"
+    LOAD_FIXTURES: "test"
+    CACHE_CLEAR_MODE: aggressive
+  <<: *prepare_ssh_aws
+  script:
+    - ./build-docker.sh
+    - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
+    - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
+  <<: *remove_key
+  only:
+    - /^release\/.*$/
+    - /^v.*$/
+  when: manual
+  tags:
+    - dind
 
 deploy prod:
   stage: deploy_prod

@@ -12,6 +12,7 @@ use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Codelist\CodeLists;
 use NewApiBundle\Enum\BeneficiaryType;
+use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\PhoneTypes;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -77,7 +78,7 @@ class BeneficiaryCodelistController extends AbstractController
      */
     public function getNationalIdTypes(): JsonResponse
     {
-        $data = CodeLists::mapEnum(NationalId::types());
+        $data = CodeLists::mapEnum(NationalIdType::values());
 
         return $this->json(new Paginator($data));
     }

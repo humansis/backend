@@ -136,9 +136,9 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
 
     private function getAssistanceBeneficiaries(ObjectManager $manager): array
     {
-        $validatedAssists = $manager->getRepository(Assistance::class)->findBy(['validated' => true]);
+        $validatedAssists = $manager->getRepository(Assistance::class)->findBy(['validated' => true], ['id' => 'asc']);
 
-        return $manager->getRepository(AssistanceBeneficiary::class)->findBy(['assistance' => $validatedAssists], [], 100);
+        return $manager->getRepository(AssistanceBeneficiary::class)->findBy(['assistance' => $validatedAssists], ['id' => 'asc'], 100);
     }
 
     public function getDependencies()

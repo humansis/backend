@@ -2,21 +2,17 @@
 
 namespace DistributionBundle\Entity;
 
-use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use CommonBundle\Entity\Location;
 use CommonBundle\Utils\ExportableInterface;
-use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Query\Expr\Select;
 use InvalidArgumentException;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
 
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
-use BeneficiaryBundle\Entity\Household;
 use TransactionBundle\Entity\Transaction;
 
 /**
@@ -74,6 +70,15 @@ class Assistance implements ExportableInterface
     private $dateDistribution;
 
     /**
+     * @var \DateTime|null
+     *
+     * @ORM\Column(name="date_expiration", type="datetime", nullable=true)
+     *
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
+     */
+    private $dateExpiration;
+
+    /**
      * @var Location
      *
      * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
@@ -92,11 +97,12 @@ class Assistance implements ExportableInterface
     private $project;
 
     /**
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\SelectionCriteria", mappedBy="assistance")
+     * @var AssistanceSelection
      *
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
+     * @ORM\OneToOne(targetEntity="DistributionBundle\Entity\AssistanceSelection", cascade={"persist"})
+     * @ORM\JoinColumn(name="assistance_selection_id", nullable=false)
      */
-    private $selectionCriteria;
+    private $assistanceSelection;
 
     /**
      * @var boolean
@@ -198,15 +204,51 @@ class Assistance implements ExportableInterface
     private $individualsTargeted;
 
     /**
+     * @var bool|null
+     *
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $remoteDistributionAllowed;
+
+    /**
+     * @var numeric|null
+     *
+     * @ORM\Column(name="food_limit", type="decimal", nullable=true)
+     */
+    private $foodLimit;
+
+    /**
+     * @var numeric|null
+     *
+     * @ORM\Column(name="non_food_limit", type="decimal", nullable=true)
+     */
+    private $nonFoodLimit;
+
+    /**
+     * @var numeric|null
+     *
+     * @ORM\Column(name="cashback_limit", type="decimal", nullable=true)
+     */
+    private $cashbackLimit;
+
+    /**
+     * @var string[]
+     *
+     * @ORM\Column(name="allowed_product_category_types", type="array", nullable=false)
+     */
+    private $allowedProductCategoryTypes;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
         $this->reportingDistribution = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->selectionCriteria = new \Doctrine\Common\Collections\ArrayCollection();
         $this->distributionBeneficiaries = new \Doctrine\Common\Collections\ArrayCollection();
         $this->commodities = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->assistanceSelection = new AssistanceSelection();
         $this->setUpdatedOn(new \DateTime());
+        $this->allowedProductCategoryTypes = [];
     }
 
     /**
@@ -464,10 +506,8 @@ class Assistance implements ExportableInterface
      */
     public function addSelectionCriterion(\DistributionBundle\Entity\SelectionCriteria $selectionCriterion)
     {
-        if (null === $this->selectionCriteria) {
-            $this->selectionCriteria = new \Doctrine\Common\Collections\ArrayCollection();
-        }
-        $this->selectionCriteria[] = $selectionCriterion;
+        $this->getAssistanceSelection()->getSelectionCriteria()->add($selectionCriterion);
+        $selectionCriterion->setAssistanceSelection($this->getAssistanceSelection());
 
         return $this;
     }
@@ -481,17 +521,24 @@ class Assistance implements ExportableInterface
      */
     public function removeSelectionCriterion(\DistributionBundle\Entity\SelectionCriteria $selectionCriterion)
     {
-        return $this->selectionCriteria->removeElement($selectionCriterion);
+        return $this->getAssistanceSelection()->getSelectionCriteria()->removeElement($selectionCriterion);
     }
 
     /**
      * Get selectionCriteria.
      *
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
+     *
      * @return \Doctrine\Common\Collections\Collection
      */
     public function getSelectionCriteria()
     {
-        return $this->selectionCriteria;
+        return $this->getAssistanceSelection()->getSelectionCriteria();
+    }
+
+    public function getAssistanceSelection(): AssistanceSelection
+    {
+        return $this->assistanceSelection;
     }
 
     /**
@@ -598,7 +645,7 @@ class Assistance implements ExportableInterface
     /**
      * Get distributionBeneficiaries.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return \Doctrine\Common\Collections\Collection|AssistanceBeneficiary[]
      */
     public function getDistributionBeneficiaries()
     {
@@ -627,6 +674,22 @@ class Assistance implements ExportableInterface
     public function getDateDistribution(): \DateTimeInterface
     {
         return $this->dateDistribution;
+    }
+
+    /**
+     * @return \DateTimeInterface|null
+     */
+    public function getDateExpiration(): ?\DateTimeInterface
+    {
+        return $this->dateExpiration;
+    }
+
+    /**
+     * @param \DateTimeInterface|null $dateExpiration
+     */
+    public function setDateExpiration(?\DateTimeInterface $dateExpiration): void
+    {
+        $this->dateExpiration = $dateExpiration;
     }
 
     /**
@@ -856,6 +919,104 @@ class Assistance implements ExportableInterface
 
             return ($correspondingGeneralRelief && $correspondingGeneralRelief->getDistributedAt() ? $commodity->getValue() : 0);
         }
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function isRemoteDistributionAllowed(): ?bool
+    {
+        return $this->remoteDistributionAllowed;
+    }
+
+    /**
+     * @param bool|true $remoteDistributionAllowed
+     */
+    public function setRemoteDistributionAllowed(?bool $remoteDistributionAllowed): void
+    {
+        $this->remoteDistributionAllowed = $remoteDistributionAllowed;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getFoodLimit(): ?string
+    {
+        return $this->foodLimit;
+    }
+
+    /**
+     * @param float|int|string|null $foodLimit
+     */
+    public function setFoodLimit($foodLimit): void
+    {
+        if (gettype($foodLimit) === 'integer' || gettype($foodLimit) === 'double') {
+            $this->foodLimit = number_format($foodLimit, 2, '.', '');
+        } else if ( (gettype($foodLimit) === 'string' && is_numeric($foodLimit)) || null === $foodLimit) {
+            $this->foodLimit = $foodLimit;
+        } else {
+            throw new InvalidArgumentException("'$foodLimit' is not valid numeric format.");
+        }
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getNonFoodLimit(): ?string
+    {
+        return $this->nonFoodLimit;
+    }
+
+    /**
+     * @param float|int|string|null $nonFoodLimit
+     */
+    public function setNonFoodLimit($nonFoodLimit): void
+    {
+        if (gettype($nonFoodLimit) === 'integer' || gettype($nonFoodLimit) === 'double') {
+            $this->nonFoodLimit = number_format($nonFoodLimit, 2, '.', '');
+        } else if ( (gettype($nonFoodLimit) === 'string' && is_numeric($nonFoodLimit)) || null === $nonFoodLimit) {
+            $this->nonFoodLimit = $nonFoodLimit;
+        } else {
+            throw new InvalidArgumentException("'$nonFoodLimit' is not valid numeric format.");
+        }
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCashbackLimit(): ?string
+    {
+        return $this->cashbackLimit;
+    }
+
+    /**
+     * @param float|int|string|null $cashbackLimit
+     */
+    public function setCashbackLimit($cashbackLimit): void
+    {
+        if (gettype($cashbackLimit) === 'integer' || gettype($cashbackLimit) === 'double') {
+            $this->cashbackLimit = number_format($cashbackLimit, 2, '.', '');
+        } else if ( (gettype($cashbackLimit) === 'string' && is_numeric($cashbackLimit)) || null === $cashbackLimit) {
+            $this->cashbackLimit = $cashbackLimit;
+        } else {
+            throw new InvalidArgumentException("'$cashbackLimit' is not valid numeric format.");
+        }
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getAllowedProductCategoryTypes(): array
+    {
+        return $this->allowedProductCategoryTypes;
+    }
+
+    /**
+     * @param string[] $allowedProductCategoryTypes
+     */
+    public function setAllowedProductCategoryTypes(array $allowedProductCategoryTypes): void
+    {
+        $this->allowedProductCategoryTypes = $allowedProductCategoryTypes;
     }
 
 }

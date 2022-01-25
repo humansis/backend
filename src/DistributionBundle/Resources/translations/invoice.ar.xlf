@@ -12,6 +12,7 @@
             <trans-unit id="Vendor No."><source>Vendor No.</source><target>رقم التاجر</target></trans-unit>
             <trans-unit id="Contract No."><source>Contract No.</source><target> رقم العقد</target></trans-unit>
             <trans-unit id="Payment Method"><source>Payment Method</source><target>طريقة الدفع</target></trans-unit>
+            <trans-unit id="Project"><source>Project</source><target>المشروع</target></trans-unit>
             <trans-unit id="Cash"><source>Cash</source><target>نقداً</target></trans-unit>
             <trans-unit id="Cheque"><source>Cheque</source><target>شيك</target></trans-unit>
             <trans-unit id="Bank"><source>Bank</source><target>بنك</target></trans-unit>
@@ -23,9 +24,9 @@
             <trans-unit id="Total Amount per Item"><source>Total Amount per Item</source><target>المبلغ</target></trans-unit>
             <trans-unit id="Currency"><source>Currency</source><target>العملة</target></trans-unit>
             <trans-unit id="SmartCards redemption payment - Food Items"><source>SmartCards redemption payment - Food Items</source><target>صرف دفعة  البطاقات الذكية - مواد غذائية</target></trans-unit>
+            <trans-unit id="SmartCards redemption payment - Non-Food Items"><source>SmartCards redemption payment - Non-Food Items</source><target>صرف دفعة  البطاقات الذكية - مواد غذائية</target></trans-unit>
+            <trans-unit id="SmartCards redemption payment - Cashback"><source>SmartCards redemption payment - Cashback</source><target>دفع مقابل صرف البطاقات الذكية - نقداً</target></trans-unit>
             <trans-unit id="Itemized breakdown in Annex I"><source>Itemized breakdown in Annex I</source><target>تفاصيل المواد في الملحق 1</target></trans-unit>
-            <trans-unit id="SmartCards redemption payment - Cash"><source>SmartCards redemption payment - Cash</source><target>دفع مقابل صرف البطاقات الذكية - نقداً</target></trans-unit>
-            <trans-unit id="redemption_payment_cash_description"><source>redemption_payment_cash_description</source><target>Itemized breakdown available from internal system under internal HUM Nr.</target></trans-unit>
             <trans-unit id="Total Amount to be Paid"><source>Total Amount to be Paid</source><target>المبلغ الذي سيتم دفعه</target></trans-unit>
             <trans-unit id="Signature/Name"><source>Signature/Name</source><target>التوقيع \ الأسم</target></trans-unit>
             <trans-unit id="Signature/Name/Position"><source>Signature/Name/Position</source><target>التوقيع \ الأسم \ المنصب</target></trans-unit>
@@ -48,13 +49,13 @@
             <trans-unit id="purchase_date"><source>purchase_date</source><target>Date</target></trans-unit>
             <trans-unit id="purchase_time"><source>purchase_time</source><target>Time</target></trans-unit>
             <trans-unit id="Item"><source>Item</source><target>المادة</target></trans-unit>
+            <trans-unit id="Item type"><source>Item type</source><target>نوع المادة</target></trans-unit>
+            <trans-unit id="Food"><source>Food</source><target>طعام</target></trans-unit>
+            <trans-unit id="Non-Food"><source>Non-Food</source><target>غير الغذائية</target></trans-unit>
+            <trans-unit id="Cashback"><source>Cashback</source><target>استرداد النقود</target></trans-unit>
             <trans-unit id="purchase_unit"><source>purchase_unit</source><target>Unit</target></trans-unit>
             <trans-unit id="purchase_item_total"><source>purchase_item_total</source><target>Total per Item</target></trans-unit>
             <trans-unit id="Total per Vendor and Period"><source>Total per Vendor and Period</source><target>الإجمالي لكل بائع والفترة</target></trans-unit>
-            <trans-unit id="People in Need address in SYR"><source>People in Need address in SYR</source><target>Idlib, Bardaqli, Syria&#13;&#10;ادلب ,البردقلي,سوريا</target></trans-unit>
-            <trans-unit id="People in Need address missing"><source>People in Need address missing</source><target>Idlib, Bardaqli, Syria&#13;&#10;ادلب ,البردقلي,سوريا</target></trans-unit>
-            <trans-unit id="People In Need address in SYR"><source>People In Need address in SYR</source><target>Idlib, Bardaqli, Syria&#13;&#10;ادلب ,البردقلي,سوريا</target></trans-unit>
-            <trans-unit id="People In Need address missing"><source>People In Need address missing</source><target>Idlib, Bardaqli, Syria&#13;&#10;ادلب ,البردقلي,سوريا</target></trans-unit>
         </body>
     </file>
 </xliff>

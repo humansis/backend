@@ -3,6 +3,8 @@
 namespace ReportingBundle\Utils\DataFillers\Distribution;
 
 use Doctrine\ORM\EntityManager;
+use NewApiBundle\DBAL\PersonGenderEnum;
+use NewApiBundle\Enum\PersonGender;
 use Symfony\Component\Validator\Constraints\DateTime;
 
 use ReportingBundle\Utils\DataFillers\DataFillers;
@@ -276,7 +278,7 @@ class DataFillersDistribution extends DataFillers
                                    ->leftjoin('db.beneficiary', 'b')
                                    ->leftjoin('db.assistance', 'dd')
                                    ->where('b.gender = :gender')
-                                        ->setParameter('gender', \BeneficiaryBundle\Entity\Person::GENDER_MALE)
+                                        ->setParameter('gender', PersonGenderEnum::valueToDB(PersonGender::MALE))
                                    ->select("count(b.id) as value", 'dd.id as distribution')
                                    ->groupBy('distribution');
             $results = $qb->getQuery()->getArrayResult();
@@ -320,7 +322,7 @@ class DataFillersDistribution extends DataFillers
                                    ->leftjoin('db.beneficiary', 'b')
                                    ->leftjoin('db.assistance', 'dd')
                                    ->where('b.gender = :gender')
-                                        ->setParameter('gender', \BeneficiaryBundle\Entity\Person::GENDER_FEMALE)
+                                        ->setParameter('gender', PersonGenderEnum::valueToDB(PersonGender::FEMALE))
                                    ->select("count(b.id) as value", 'dd.id as distribution')
                                    ->groupBy('distribution');
             $results = $qb->getQuery()->getArrayResult();

@@ -119,4 +119,29 @@ class ProjectMapper implements MapperInterface
     {
         return $this->beneficiaryRepository->countAllInProject($this->object);
     }
+
+    public function getProjectInvoiceAddressLocal(): ?string
+    {
+        return $this->object->getProjectInvoiceAddressLocal();
+    }
+
+    public function getProjectInvoiceAddressEnglish(): ?string
+    {
+        return $this->object->getProjectInvoiceAddressEnglish();
+    }
+
+    public function getAllowedProductCategoryTypes(): array
+    {
+        return $this->object->getAllowedProductCategoryTypes();
+    }
+
+    public function getCreatedAt(): DateTimeInterface
+    {
+        return $this->object->getCreatedAt();
+    }
+
+    public function getLastModifiedAt(): DateTimeInterface
+    {
+        return $this->object->getLastModifiedAt();
+    }
 }

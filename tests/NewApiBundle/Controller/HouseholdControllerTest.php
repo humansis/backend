@@ -10,6 +10,7 @@ use BeneficiaryBundle\Enum\ResidencyStatus;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use NewApiBundle\Enum\NationalIdType;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Enum\Livelihood;
 use Tests\BMSServiceTestCase;
@@ -31,8 +32,8 @@ class HouseholdControllerTest extends BMSServiceTestCase
 
     public function testCreate()
     {
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('POST', '/api/basic/web-app/v1/households', [
             'livelihood' => Livelihood::DAILY_LABOUR,
@@ -55,7 +56,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'nationalIdCards' => [
                         [
                             'number' => '022-33-1547',
-                            'type' => NationalId::TYPE_NATIONAL_ID,
+                            'type' => NationalIdType::NATIONAL_ID,
                         ],
                     ],
                     'phones' => [
@@ -82,7 +83,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'nationalIdCards' => [
                         [
                             'number' => '022-33-1548',
-                            'type' => NationalId::TYPE_NATIONAL_ID,
+                            'type' => NationalIdType::NATIONAL_ID,
                         ],
                     ],
                     'phones' => [
@@ -135,7 +136,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             'proxyEnParentsName' => null,
             'proxyNationalIdCard' => [
                 'number' => '022-33-1547',
-                'type' => NationalId::TYPE_NATIONAL_ID,
+                'type' => NationalIdType::NATIONAL_ID,
             ],
             'proxyPhone' => [
                 'prefix' => '420',
@@ -192,9 +193,9 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        $vulnerabilityCriterion = self::$container->get('doctrine')->getRepository(VulnerabilityCriterion::class)->findBy([])[0];
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([])[0];
-        $camp = self::$container->get('doctrine')->getRepository(Camp::class)->findBy([])[0];
+        $vulnerabilityCriterion = self::$container->get('doctrine')->getRepository(VulnerabilityCriterion::class)->findBy([], ['id' => 'asc'])[0];
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
+        $camp = self::$container->get('doctrine')->getRepository(Camp::class)->findBy([], ['id' => 'asc'])[0];
 
         /** @var Household $household */
         $household = $this->em->getRepository(Household::class)->find($id);
@@ -229,7 +230,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'nationalIdCards' => [
                         [
                             'number' => '022-33-1547',
-                            'type' => NationalId::TYPE_NATIONAL_ID,
+                            'type' => NationalIdType::NATIONAL_ID,
                         ],
                     ],
                     'phones' => [
@@ -257,7 +258,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'nationalIdCards' => [
                         [
                             'number' => '022-33-1548',
-                            'type' => NationalId::TYPE_NATIONAL_ID,
+                            'type' => NationalIdType::NATIONAL_ID,
                         ],
                     ],
                     'phones' => [
@@ -302,7 +303,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             'proxyEnParentsName' => null,
             'proxyNationalIdCard' => [
                 'number' => '022-33-1547',
-                'type' => NationalId::TYPE_NATIONAL_ID,
+                'type' => NationalIdType::NATIONAL_ID,
             ],
             'proxyPhone' => [
                 'prefix' => '420',
@@ -454,7 +455,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
     {
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $project = $em->getRepository(Project::class)->findOneBy([]);
+        $project = $em->getRepository(Project::class)->findOneBy([], ['id' => 'asc']);
         $household = $em->getRepository(Household::class)->findOneBy([], ['id'=>'desc']);
 
         $this->request('PUT', '/api/basic/web-app/v1/projects/'.$project->getId().'/households', [

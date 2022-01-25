@@ -21,6 +21,8 @@ sed -i -e "s|%env(RDS_PORT)%|${DB_PORT}|g" \
   -e "s|%env(HID_SECRET)%|${HID_SECRET}|g" \
   -e "s|%env(GOOGLE_CLIENT)%|${GOOGLE_CLIENT}|g" \
   -e "s|%env(GELF_HOST)%|${GELF_HOST}|g" \
+  -e "s|%env(AWS_LOGS_ACCESS_KEY)%|${AWS_LOGS_ACCESS_KEY}|g" \
+  -e "s|%env(AWS_LOGS_SECRET_KEY)%|${AWS_LOGS_SECRET_KEY}|g" \
   -e "s|%env(GELF_PORT)%|${GELF_PORT}|g" app/config/parameters.yml
 
 # per environment

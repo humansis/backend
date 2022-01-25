@@ -10,6 +10,9 @@ use BeneficiaryBundle\Entity\Referral;
 use CommonBundle\Pagination\Paginator;
 use NewApiBundle\Component\Codelist\CodeItem;
 use NewApiBundle\Component\Codelist\CodeLists;
+use NewApiBundle\Enum\HouseholdAssets;
+use NewApiBundle\Enum\HouseholdShelterStatus;
+use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use ProjectBundle\Enum\Livelihood;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -42,7 +45,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function getAssets(): JsonResponse
     {
-        $data = CodeLists::mapArray(Household::ASSETS);
+        $data = CodeLists::mapEnum(HouseholdAssets::values());
 
         return $this->json(new Paginator($data));
     }
@@ -54,7 +57,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function supportReceivedTypes(): JsonResponse
     {
-        $data = CodeLists::mapArray(Household::SUPPORT_RECIEVED_TYPES);
+        $data = CodeLists::mapEnum(HouseholdSupportReceivedType::values());
 
         return $this->json(new Paginator($data));
     }
@@ -66,7 +69,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function getShelterStatuses(): JsonResponse
     {
-        $data = CodeLists::mapArray(Household::SHELTER_STATUSES);
+        $data = CodeLists::mapEnum(HouseholdShelterStatus::values());
 
         return $this->json(new Paginator($data));
     }

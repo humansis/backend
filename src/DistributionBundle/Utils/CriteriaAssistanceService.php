@@ -96,22 +96,36 @@ class CriteriaAssistanceService
                 /** @var Beneficiary $beneficiary */
                 $beneficiary = $this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $bnf['id']);
 
-                $protocol = $this->resolver->compute($beneficiary->getHousehold(), $countryISO3, $sector);
-                $scores = ['totalScore' => $protocol->getTotalScore()];
-                foreach (CategoryEnum::all() as $value) {
-                    $scores[$value] = $protocol->getCategoryScore($value);
-                }
-
-                if ($protocol->getTotalScore() >= $threshold) {
-                    if (AssistanceTargetType::INDIVIDUAL === $targetType) {
-                        $BNFId = $beneficiary->getId();
-                        $reachedBeneficiaries[$BNFId] = $scores;
-                    } elseif (AssistanceTargetType::HOUSEHOLD === $targetType) {
-                        $HHHId = $beneficiary->getHousehold()->getHouseholdHead()->getId();
-                        $reachedBeneficiaries[$HHHId] = $scores;
-                    }
+                if (AssistanceTargetType::INDIVIDUAL === $targetType) {
+                    $BNFId = $beneficiary->getId();
+                    $reachedBeneficiaries[$BNFId] = ["Vulnerability feature was temporary disabled"];
+                } elseif (AssistanceTargetType::HOUSEHOLD === $targetType) {
+                    $HHHId = $beneficiary->getHousehold()->getHouseholdHead()->getId();
+                    $reachedBeneficiaries[$HHHId] = ["Vulnerability feature was temporary disabled"];
                 }
             }
+
+            // FIXME: disabled for performance reasons, see PIN-2630 for further details
+            // foreach ($selectableBeneficiaries as $bnf) {
+            //     /** @var Beneficiary $beneficiary */
+            //     $beneficiary = $this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $bnf['id']);
+            //
+            //     $protocol = $this->resolver->compute($beneficiary->getHousehold(), $countryISO3, $sector);
+            //     $scores = ['totalScore' => $protocol->getTotalScore()];
+            //     foreach (CategoryEnum::all() as $value) {
+            //         $scores[$value] = $protocol->getCategoryScore($value);
+            //     }
+            //
+            //     if ($protocol->getTotalScore() >= $threshold) {
+            //         if (AssistanceTargetType::INDIVIDUAL === $targetType) {
+            //             $BNFId = $beneficiary->getId();
+            //             $reachedBeneficiaries[$BNFId] = $scores;
+            //         } elseif (AssistanceTargetType::HOUSEHOLD === $targetType) {
+            //             $HHHId = $beneficiary->getHousehold()->getHouseholdHead()->getId();
+            //             $reachedBeneficiaries[$HHHId] = $scores;
+            //         }
+            //     }
+            // }
         }
         
 
@@ -167,8 +181,10 @@ class CriteriaAssistanceService
      */
     public function save(Assistance $assistance, SelectionCriteria $selectionCriteria, bool $flush)
     {
-        $selectionCriteria->setAssistance($assistance);
+        $assistance->getAssistanceSelection()->getSelectionCriteria()->add($selectionCriteria);
+        $selectionCriteria->setAssistanceSelection($assistance->getAssistanceSelection());
         $this->em->persist($selectionCriteria);
+        $this->em->persist($assistance);
         if ($flush) {
             $this->em->flush();
         }

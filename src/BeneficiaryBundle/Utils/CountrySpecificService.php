@@ -88,7 +88,7 @@ class CountrySpecificService
      */
     public function exportToCsv(string $type, string $countryIso3)
     {
-        $exportableTable = $this->em->getRepository(CountrySpecific::class)->findByCountryIso3($countryIso3);
+        $exportableTable = $this->em->getRepository(CountrySpecific::class)->findBy(['countryIso3' => $countryIso3], ['id'=>'asc']);
         return $this->container->get('export_csv_service')->export($exportableTable, 'country', $type);
     }
 }

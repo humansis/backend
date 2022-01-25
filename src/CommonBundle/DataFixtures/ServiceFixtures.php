@@ -107,7 +107,7 @@ class ServiceFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager)
     {
         foreach ($this->data as $datum) {
-            $service = $manager->getRepository(Service::class)->findOneBy(["name" => $datum["name"]]);
+            $service = $manager->getRepository(Service::class)->findOneBy(["name" => $datum["name"]], ['id' => 'asc']);
             if (!$service instanceof Service) {
                 $service = new Service();
                 $service->setName($datum["name"])

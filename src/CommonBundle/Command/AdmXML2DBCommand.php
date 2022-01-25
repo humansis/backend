@@ -3,6 +3,7 @@
 namespace CommonBundle\Command;
 
 use CommonBundle\DataFixtures\LocationFixtures;
+use CommonBundle\Utils\AdmsImporter;
 use CommonBundle\Utils\LocationImporter;
 use CommonBundle\Utils\LocationService;
 use SimpleXMLElement;
@@ -26,6 +27,7 @@ class AdmXML2DBCommand extends ContainerAwareCommand
             ->setDescription('Interactive import ADM into DB')
             ->addArgument('country', InputArgument::IS_ARRAY, 'Country iso3 code')
             ->addOption('all', null, InputOption::VALUE_NONE, 'Use all known locations')
+            ->addOption('limit', null, InputOption::VALUE_REQUIRED, 'Adm count limit per country')
             ;
     }
 
@@ -59,29 +61,48 @@ class AdmXML2DBCommand extends ContainerAwareCommand
             $countryFile = $this->getADMFiles()[$countryCode];
             $output->writeln("Importing file $countryFile");
 
+            // ADMX IMPORT
+            $importer = new AdmsImporter($this->getContainer()->get('doctrine.orm.default_entity_manager'), $countryFile);
+            $this->importLocations($input, $output, $importer);
+
+            // LOCATION IMPORT
             $importer = new LocationImporter($this->getContainer()->get('doctrine.orm.default_entity_manager'), $countryFile);
-
-            $progressBar = new ProgressBar($output, $importer->getCount());
-            $progressBar->start();
-
-            foreach ($importer->importLocations() as $importStatus) {
-                $progressBar->advance();
-
-                if (isset($importStatus['inconsistent'])) {
-                    $oldName = $importStatus['inconsistent']['old'];
-                    $newName = $importStatus['inconsistent']['new'];
-                    $output->writeln("Duplicity code but name inconsistency, old=$oldName, new=$newName");
-                }
-            }
-
-            $progressBar->finish();
-            $output->writeln([
-                "",
-                "DONE, imported {$importer->getImportedLocations()}, omitted {$importer->getOmittedLocations()}",
-            ]);
+            $this->importLocations($input, $output, $importer);
         }
 
         return 0;
+    }
+
+    /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     * @param AdmsImporter|LocationImporter $importer
+     */
+    private function importLocations(InputInterface $input, OutputInterface $output, $importer): void
+    {
+        $output->writeln(" - Importing by ".get_class($importer));
+        if ($input->hasOption('limit')) {
+            $importer->setLimit($input->getOption('limit'));
+        }
+
+        $progressBar = new ProgressBar($output, $importer->getCount());
+        $progressBar->start();
+
+        foreach ($importer->importLocations() as $importStatus) {
+            $progressBar->advance();
+
+            if (isset($importStatus['inconsistent'])) {
+                $oldName = $importStatus['old'];
+                $newName = $importStatus['new'];
+                $output->writeln("Duplicity code but name inconsistency, old=$oldName, new=$newName");
+            }
+        }
+
+        $progressBar->finish();
+        $output->writeln([
+            "",
+            "DONE, imported {$importer->getImportedLocations()}, omitted {$importer->getOmittedLocations()}",
+        ]);
     }
 
     private function getADMFiles(): array

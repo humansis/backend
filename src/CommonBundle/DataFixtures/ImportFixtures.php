@@ -11,6 +11,7 @@ use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Enum\NationalIdType;
 use ProjectBundle\Entity\Project;
 use UserBundle\Entity\User;
 
@@ -29,18 +30,62 @@ class ImportFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($file);
 
         $item = new ImportQueue($import, $file, [
-            ['ID Type' => NationalId::TYPE_NATIONAL_ID, 'ID Number' => '123456789'],
-            ['ID Type' => NationalId::TYPE_NATIONAL_ID, 'ID Number' => '111222333'],
+            [
+                'ID Type' => [
+                    'value' => NationalIdType::NATIONAL_ID,
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+                'ID Number' => [
+                    'value' => '123456789',
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+            ],
+            [
+                'ID Type' => [
+                    'value' => NationalIdType::NATIONAL_ID,
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+                'ID Number' => [
+                    'value' => '111222333',
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+            ],
         ]);
         $manager->persist($item);
 
         $item = new ImportQueue($import, $file, [
-            ['ID Type' => NationalId::TYPE_NATIONAL_ID, 'ID Number' => '987654321'],
+            [
+                'ID Type' => [
+                    'value' => NationalIdType::NATIONAL_ID,
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+                'ID Number' => [
+                    'value' => '987654321',
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+            ],
         ]);
         $manager->persist($item);
 
         $item = new ImportQueue($import, $file, [
-            ['ID Type' => NationalId::TYPE_NATIONAL_ID, 'ID Number' => '111222333'],
+            [
+                'ID Type' => [
+                    'value' => NationalIdType::NATIONAL_ID,
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+                'ID Number' => [
+                    'value' => '111222333',
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+            ],
         ]);
         $manager->persist($item);
 
@@ -60,11 +105,11 @@ class ImportFixtures extends Fixture implements DependentFixtureInterface
 
     private function getProject(ObjectManager $manager): Project
     {
-        return $manager->getRepository(Project::class)->findBy(['iso3' => 'KHM'])[0];
+        return $manager->getRepository(Project::class)->findBy(['iso3' => 'KHM'], ['id' => 'asc'])[0];
     }
 
     private function getUser(ObjectManager $manager): User
     {
-        return $manager->getRepository(User::class)->findBy([])[0];
+        return $manager->getRepository(User::class)->findBy([], ['id' => 'asc'])[0];
     }
 }

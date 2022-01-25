@@ -5,8 +5,8 @@ namespace CommonBundle\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
-use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Enum\ProductCategoryType;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
 
@@ -15,13 +15,13 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
     private $countries = ["KHM", "UKR", "SYR", "ETH", "MNG", "ARM", "ZMB"];
 
     private $explicitTestProjects = [
-        ['Dev KHM Project', 1, 1, 'notes', 'KHM'],
-        ['Dev UKR Project', 1, 1, 'notes', 'UKR'],
-        ['Dev SYR Project', 1, 1, 'notes', 'SYR'],
-        ['Dev ETH Project', 1, 1, 'notes', 'ETH'],
-        ['Dev MNG Project', 1, 1, 'notes', 'MNG'],
-        ['Dev ARM Project', 1, 1, 'notes', 'ARM'],
-        ['Dev ZMB Project', 1, 1, 'notes', 'ZMB'],
+        ['Dev KHM Project', 1, 1, 'notes', 'KHM', 'KHM eng address', 'KHM local address', [ProductCategoryType::FOOD] ],
+        ['Dev UKR Project', 1, 1, 'notes', 'UKR', 'UKR eng address', 'UKR local address', [ProductCategoryType::FOOD] ],
+        ['Dev SYR Project', 1, 1, 'notes', 'SYR', 'SYR eng address', 'SYR local address', [ProductCategoryType::FOOD] ],
+        ['Dev ETH Project', 1, 1, 'notes', 'ETH', 'ETH eng address', 'ETH local address', [ProductCategoryType::FOOD] ],
+        ['Dev MNG Project', 1, 1, 'notes', 'MNG', 'MNG eng address', 'MNG local address', [ProductCategoryType::FOOD] ],
+        ['Dev ARM Project', 1, 1, 'notes', 'ARM', 'ARM eng address', 'ARM local address', [ProductCategoryType::FOOD] ],
+        ['Dev ZMB Project', 1, 1, 'notes', 'ZMB', 'ZMB eng address', 'ZMB local address', [ProductCategoryType::FOOD] ],
     ];
 
     private $countryProjectNameTemplate = "{adjective} test project";
@@ -67,7 +67,7 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
                 $this->countryNameAdjectives[$country],
                 $this->countryProjectNameTemplate
             );
-            $this->createProjectFromData($manager, [$projectName, 1, 0, 'notes', $country]);
+            $this->createProjectFromData($manager, [$projectName, 1, 0, 'notes', $country, "$country eng address", "$country local address", [ProductCategoryType::FOOD]]);
         }
         $manager->flush();
     }
@@ -90,7 +90,10 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
                 ->setNumberOfHouseholds($data[1])
                 ->setTarget($data[2])
                 ->setNotes($data[3])
-                ->setIso3($data[4]);
+                ->setIso3($data[4])
+                ->setProjectInvoiceAddressEnglish($data[5])
+                ->setProjectInvoiceAddressLocal($data[6])
+                ->setAllowedProductCategoryTypes($data[7]);
             $manager->persist($project);
             echo $project->getName()." created\n";
         }

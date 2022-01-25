@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
@@ -188,7 +189,6 @@ class SmartcardController extends Controller
      *
      * @Rest\Patch("/offline-app/v1/smartcards/{serialNumber}")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER') or is_granted('ROLE_ENUMERATOR')")
-     * @ParamConverter("smartcard")
      *
      * @SWG\Tag(name="Smartcards")
      * @SWG\Tag(name="Offline App")
@@ -231,13 +231,19 @@ class SmartcardController extends Controller
      * @SWG\Response(response=404, description="Smartcard does not exists.")
      * @SWG\Response(response=400, description="Smartcard state can't be changed this way. State flow restriction.")
      *
-     * @param Smartcard $smartcard
-     * @param Request   $request
+     * @param string  $serialNumber
+     * @param Request $request
      *
      * @return Response
      */
-    public function change(Smartcard $smartcard, Request $request): Response
+    public function change(string $serialNumber, Request $request): Response
     {
+        $smartcard = $this->getDoctrine()->getRepository(Smartcard::class)->findActiveBySerialNumber($serialNumber);
+
+        if (!$smartcard instanceof Smartcard) {
+            throw $this->createNotFoundException("Smartcard with code '$serialNumber' was not found.");
+        }
+
         $newState = $smartcard->getState();
         if ($request->request->has('state')) {
             $newState = $request->request->get('state');
@@ -255,75 +261,6 @@ class SmartcardController extends Controller
         $this->getDoctrine()->getManager()->flush();
 
         $json = $this->get('serializer')->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
-
-        return new Response($json);
-    }
-
-    /**
-     * Put money to smartcard. If smartcard does not exists, it will be created.
-     *
-     * @Rest\Patch("/offline-app/v1/smartcards/{serialNumber}/deposit")
-     * @ParamConverter("smartcard")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER') or is_granted('ROLE_ENUMERATOR')")
-     *
-     * @SWG\Tag(name="Smartcards")
-     *
-     * @SWG\Parameter(
-     *     name="serialNumber",
-     *     in="path",
-     *     type="string",
-     *     required=true,
-     *     description="Serial number (GUID) of smartcard"
-     * )
-     *
-     * @SWG\Parameter(
-     *     name="body",
-     *     in="body",
-     *     required=true,
-     *     @SWG\Schema(
-     *         type="object",
-     *         @SWG\Property(
-     *             property="value",
-     *             type="number",
-     *             description="Value of money deposit to smartcard"
-     *         ),
-     *         @SWG\Property(
-     *             property="distributionId",
-     *             type="int",
-     *             description="ID of distribution from which are money deposited"
-     *         ),
-     *         @SWG\Property(
-     *             property="createdAt",
-     *             type="string",
-     *             description="ISO 8601 time of deposit in UTC",
-     *             example="2020-02-02T12:00:00+0200"
-     *         )
-     *     )
-     * )
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="Money succesfully succesfully deposited to smartcard",
-     *     @Model(type=Smartcard::class, groups={"SmartcardOverview"})
-     * )
-     *
-     * @param Request $request
-     *
-     * @return Response
-     */
-    public function depositDeprecated(Request $request): Response
-    {
-        $deposit = $this->get('smartcard_service')->deposit(
-            $request->get('serialNumber'),
-            $request->request->getInt('distributionId'),
-            null,
-            $request->request->get('value'),
-            null,
-            \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
-            $this->getUser()
-        );
-
-        $json = $this->get('serializer')->serialize($deposit->getSmartcard(), 'json', ['groups' => ['SmartcardOverview']]);
 
         return new Response($json);
     }
@@ -386,17 +323,28 @@ class SmartcardController extends Controller
      *
      * @return Response
      */
-    public function deposit(Request $request): Response
+    public function legacyDeposit(Request $request): Response
     {
-        $deposit = $this->get('smartcard_service')->deposit(
-            $request->get('serialNumber'),
-            $request->request->getInt('distributionId'),
-            $request->request->get('beneficiaryId'),
-            $request->request->get('value'),
-            null,
-            \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
-            $this->getUser()
-        );
+        try {
+            $deposit = $this->get('smartcard_service')->depositLegacy(
+                $request->get('serialNumber'),
+                $request->request->get('beneficiaryId'),
+                $request->request->getInt('distributionId'),
+                $request->request->get('value'),
+                null,
+                null,
+                \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
+                $this->getUser()
+            );
+        } catch (\Exception $exception) {
+            $this->writeData(
+                'depositV23',
+                $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
+                $request->get('serialNumber', 'missing'),
+                json_encode($request->request->all())
+            );
+            throw $exception;
+        }
 
         $json = $this->get('serializer')->serialize($deposit->getSmartcard(), 'json', ['groups' => ['SmartcardOverview']]);
 
@@ -451,12 +399,28 @@ class SmartcardController extends Controller
         $errors = $this->get('validator')->validate($data);
         if (count($errors) > 0) {
             $this->container->get('logger')->error('validation errors: '.((string) $errors));
+            $this->writeData(
+                'purchaseV1',
+                $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
+                $request->get('serialNumber', 'missing'),
+                json_encode($request->request->all())
+            );
             // Changed by PIN-1637: it is needed for one specific period of syncing and need to be reverted after vendor app change
             // throw new \RuntimeException((string) $errors);
             return new Response();
         }
 
-        $purchase = $this->get('smartcard_service')->purchaseWithoutReusingSC($request->get('serialNumber'), $data);
+        try {
+            $purchase = $this->get('smartcard_service')->purchaseWithoutReusingSC($request->get('serialNumber'), $data);
+        } catch (\Exception $exception) {
+            $this->writeData(
+                'purchaseV1',
+                $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
+                $request->get('serialNumber', 'missing'),
+                json_encode($request->request->all())
+            );
+            throw $exception;
+        }
 
         $json = $this->get('serializer')->serialize($purchase->getSmartcard(), 'json', ['groups' => ['SmartcardOverview']]);
 
@@ -487,10 +451,26 @@ class SmartcardController extends Controller
             $this->container->get('logger')->error('validation errors: '.((string) $errors));
             // Changed by PIN-1637: it is needed for one specific period of syncing and need to be reverted after vendor app change
             // throw new \RuntimeException((string) $errors);
+            $this->writeData(
+                'purchaseV2',
+                $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
+                $request->get('serialNumber', 'missing'),
+                json_encode($request->request->all())
+            );
             return new Response();
         }
 
-        $purchase = $this->get('smartcard_service')->purchaseWithoutReusingSC($request->get('serialNumber'), $data);
+        try {
+            $purchase = $this->get('smartcard_service')->purchaseWithoutReusingSC($request->get('serialNumber'), $data);
+        } catch (\Exception $exception) {
+            $this->writeData(
+                'purchaseV2',
+                $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
+                $request->get('serialNumber', 'missing'),
+                json_encode($request->request->all())
+            );
+            throw $exception;
+        }
 
         $json = $this->get('serializer')->serialize($purchase->getSmartcard(), 'json', ['groups' => ['SmartcardOverview']]);
 
@@ -517,13 +497,29 @@ class SmartcardController extends Controller
 
         $errors = $this->get('validator')->validate($data);
         if (count($errors) > 0) {
-            $this->container->get('logger')->error('validation errors: '.((string) $errors).' data: '.$request->getContent());
+            $this->container->get('logger')->error('validation errors: '.((string) $errors).' data: '.json_encode($request->request->all()));
             // Changed by PIN-1637: it is needed for one specific period of syncing and need to be reverted after vendor app change
             // throw new \RuntimeException((string) $errors);
+            $this->writeData(
+                'purchaseV3',
+                $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
+                $request->get('serialNumber', 'missing'),
+                json_encode($request->request->all())
+            );
             return new Response();
         }
 
-        $purchase = $this->get('smartcard_service')->purchase($request->get('serialNumber'), $data);
+        try {
+            $purchase = $this->get('smartcard_service')->purchase($request->get('serialNumber'), $data);
+        } catch (\Exception $exception) {
+            $this->writeData(
+                'purchaseV3',
+                $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
+                $request->get('serialNumber', 'missing'),
+                json_encode($request->request->all())
+            );
+            throw $exception;
+        }
 
         $json = $this->get('serializer')->serialize($purchase->getSmartcard(), 'json', ['groups' => ['SmartcardOverview']]);
 
@@ -828,5 +824,14 @@ class SmartcardController extends Controller
         }
 
         return $response;
+    }
+
+    private function writeData(string $type, string $user, string $smartcard, $data): void
+    {
+        $filename = $this->get('kernel')->getLogDir().'/';
+        $filename .= implode('_', ['SC-invalidData', $type, 'vendor-'.$user, 'sc-'.$smartcard.'.json']);
+        $logFile = fopen($filename, "a+");
+        fwrite($logFile, $data);
+        fclose($logFile);
     }
 }

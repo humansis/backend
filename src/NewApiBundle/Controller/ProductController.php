@@ -12,6 +12,7 @@ use NewApiBundle\InputType\ProductFilterInputType;
 use NewApiBundle\InputType\ProductOrderInputType;
 use NewApiBundle\InputType\ProductUpdateInputType;
 use NewApiBundle\Request\Pagination;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -50,6 +51,7 @@ class ProductController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/products/{id}")
+     * @Cache(lastModified="product.getLastModifiedAt()", public=true)
      *
      * @param Product $product
      *

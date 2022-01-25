@@ -50,7 +50,7 @@ class SmartcardRedemptionFixtures extends Fixture implements DependentFixtureInt
         $purchases = $manager->getRepository(SmartcardPurchase::class)->findBy([
             'vendor' => $this->getReference(VendorFixtures::REF_VENDOR_KHM),
             'redemptionBatch' => null,
-        ]);
+        ], ['id' => 'asc']);
         $purchaseIds = [];
         foreach ($purchases as $purchase) {
             $purchaseIds[$this->smartcardService->extractPurchaseProjectId($purchase)][] = $purchase->getId();
@@ -69,7 +69,7 @@ class SmartcardRedemptionFixtures extends Fixture implements DependentFixtureInt
         $purchases = $manager->getRepository(SmartcardPurchase::class)->findBy([
             'vendor' => $this->getReference(VendorFixtures::REF_VENDOR_SYR),
             'redemptionBatch' => null,
-        ]);
+        ], ['id' => 'asc']);
         $purchaseIds = [];
         foreach ($purchases as $purchase) {
             $purchaseIds[$this->smartcardService->extractPurchaseProjectId($purchase)][] = $purchase->getId();

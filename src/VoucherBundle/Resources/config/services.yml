@@ -47,11 +47,15 @@ services:
     voucher.purchase_service:
         class: VoucherBundle\Model\PurchaseService
         public: true
-        arguments: [ '@doctrine.orm.entity_manager' ]
+        arguments: [ '@doctrine.orm.entity_manager', '@logger' ]
 
     smartcard_service:
         class: VoucherBundle\Utils\SmartcardService
-        arguments: [ '@doctrine.orm.entity_manager', '@voucher.purchase_service' ]
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@voucher.purchase_service'
+            - '@workflow.registry'
+            - '@logger'
         public: true
 
     VoucherBundle\Mapper\SmartcardMapper:

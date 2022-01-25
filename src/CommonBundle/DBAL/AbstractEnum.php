@@ -26,7 +26,8 @@ abstract class AbstractEnum extends Type
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
         if (null !== $value && !in_array($value, $this::all())) {
-            throw new \InvalidArgumentException("Invalid '".$this->getName()."' value.");
+            $values = implode(', ', $this::all());
+            throw new \InvalidArgumentException("Invalid '".$this->getName()."' value. Value '$value' is not in [$values]");
         }
 
         return $value;

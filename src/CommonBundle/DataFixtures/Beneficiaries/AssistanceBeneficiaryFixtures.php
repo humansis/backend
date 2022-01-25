@@ -49,7 +49,7 @@ class AssistanceBeneficiaryFixtures extends Fixture implements DependentFixtureI
             echo $project->getName()."#{$project->getId()}: \n";
             $assistances = $manager->getRepository(Assistance::class)->findBy([
                 'project' => $project,
-            ]);
+            ], ['id' => 'asc']);
 
             foreach ($assistances as $assistance) {
                 echo "P#{$project->getId()} - ".$assistance->getName().": ";

@@ -25,7 +25,7 @@ class BookletGeneratorTest extends KernelTestCase
             ->getManager();
 
         // clean testing booklets, if exists
-        $result = $this->em->getRepository(Booklet::class)->findBy(['countryISO3' => 'TEST']);
+        $result = $this->em->getRepository(Booklet::class)->findBy(['countryISO3' => 'TEST'], ['id' => 'asc']);
         foreach ($result as $item) {
             $this->em->remove($item);
         }
@@ -36,12 +36,12 @@ class BookletGeneratorTest extends KernelTestCase
 
     public function testGenerateOneBooklet(): void
     {
-        $project = $this->em->getRepository(Project::class)->findBy([])[0];
+        $project = $this->em->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->generator->generate($project, 'TEST', 1, 1, 'USD', [10]);
 
         /** @var Booklet[] $result */
-        $result = $this->em->getRepository(Booklet::class)->findBy(['countryISO3' => 'TEST']);
+        $result = $this->em->getRepository(Booklet::class)->findBy(['countryISO3' => 'TEST'], ['id' => 'asc']);
 
         $this->assertCount(1, $result, 'Number of generated booklets is not correct.');
         $this->assertCount(1, $result[0]->getVouchers(), 'Booklet should contains one voucher');
@@ -50,12 +50,12 @@ class BookletGeneratorTest extends KernelTestCase
 
     public function testGenerateOneBookletMultipleVouchers(): void
     {
-        $project = $this->em->getRepository(Project::class)->findBy([])[0];
+        $project = $this->em->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->generator->generate($project, 'TEST', 1, 3, 'USD', [10]);
 
         /** @var Booklet[] $result */
-        $result = $this->em->getRepository(Booklet::class)->findBy(['countryISO3' => 'TEST']);
+        $result = $this->em->getRepository(Booklet::class)->findBy(['countryISO3' => 'TEST'], ['id' => 'asc']);
 
         $this->assertCount(1, $result, 'Number of generated booklets is not correct.');
         $this->assertCount(3, $result[0]->getVouchers()->toArray(), 'Booklet should contains three vouchers');
@@ -67,12 +67,12 @@ class BookletGeneratorTest extends KernelTestCase
 
     public function testGenerateOneBookletMultipleVouchersDifferentValues(): void
     {
-        $project = $this->em->getRepository(Project::class)->findBy([])[0];
+        $project = $this->em->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->generator->generate($project, 'TEST', 1, 3, 'USD', [10, 20, 30]);
 
         /** @var Booklet[] $result */
-        $result = $this->em->getRepository(Booklet::class)->findBy(['countryISO3' => 'TEST']);
+        $result = $this->em->getRepository(Booklet::class)->findBy(['countryISO3' => 'TEST'], ['id' => 'asc']);
 
         $this->assertCount(1, $result, 'Number of generated booklets is not correct.');
         $this->assertCount(3, $result[0]->getVouchers()->toArray(), 'Booklet should contains three vouchers');
@@ -84,12 +84,12 @@ class BookletGeneratorTest extends KernelTestCase
 
     public function testGenerateOneBookletMultipleVouchersWithLessValues(): void
     {
-        $project = $this->em->getRepository(Project::class)->findBy([])[0];
+        $project = $this->em->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->generator->generate($project, 'TEST', 1, 3, 'USD', [10, 20]);
 
         /** @var Booklet[] $result */
-        $result = $this->em->getRepository(Booklet::class)->findBy(['countryISO3' => 'TEST']);
+        $result = $this->em->getRepository(Booklet::class)->findBy(['countryISO3' => 'TEST'], ['id' => 'asc']);
 
         $this->assertCount(1, $result, 'Number of generated booklets is not correct.');
         $this->assertCount(3, $result[0]->getVouchers()->toArray(), 'Booklet should contains three vouchers');
@@ -101,12 +101,12 @@ class BookletGeneratorTest extends KernelTestCase
 
     public function testGenerateMultipleBooklets(): void
     {
-        $project = $this->em->getRepository(Project::class)->findBy([])[0];
+        $project = $this->em->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->generator->generate($project, 'TEST', 2, 1, 'USD', [10]);
 
         /** @var Booklet[] $result */
-        $result = $this->em->getRepository(Booklet::class)->findBy(['countryISO3' => 'TEST']);
+        $result = $this->em->getRepository(Booklet::class)->findBy(['countryISO3' => 'TEST'], ['id' => 'asc']);
 
         $this->assertCount(2, $result, 'Number of generated booklets is not correct.');
         $this->assertCount(1, $result[0]->getVouchers()->toArray(), 'Booklet 1 should contains one voucher');
@@ -117,12 +117,12 @@ class BookletGeneratorTest extends KernelTestCase
 
     public function testGenerateMultipleBookletsMultipleVouchers(): void
     {
-        $project = $this->em->getRepository(Project::class)->findBy([])[0];
+        $project = $this->em->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->generator->generate($project, 'TEST', 2, 3, 'USD', [10]);
 
         /** @var Booklet[] $result */
-        $result = $this->em->getRepository(Booklet::class)->findBy(['countryISO3' => 'TEST']);
+        $result = $this->em->getRepository(Booklet::class)->findBy(['countryISO3' => 'TEST'], ['id' => 'asc']);
 
         $this->assertCount(2, $result, 'Number of generated booklets is not correct.');
         $this->assertCount(3, $result[0]->getVouchers()->toArray(), 'Booklet 1 should contains three vouchers');
@@ -136,12 +136,12 @@ class BookletGeneratorTest extends KernelTestCase
 
     public function testGenerateMultipleBookletsMultipleVouchersDifferentValues(): void
     {
-        $project = $this->em->getRepository(Project::class)->findBy([])[0];
+        $project = $this->em->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->generator->generate($project, 'TEST', 2, 3, 'USD', [10, 20, 30]);
 
         /** @var Booklet[] $result */
-        $result = $this->em->getRepository(Booklet::class)->findBy(['countryISO3' => 'TEST']);
+        $result = $this->em->getRepository(Booklet::class)->findBy(['countryISO3' => 'TEST'], ['id' => 'asc']);
 
         $this->assertCount(2, $result, 'Number of generated booklets is not correct.');
         $this->assertCount(3, $result[0]->getVouchers()->toArray(), 'Booklet 1 should contains three vouchers');
@@ -155,12 +155,12 @@ class BookletGeneratorTest extends KernelTestCase
 
     public function testGenerateMultipleBookletsMultipleVouchersWithLessValues(): void
     {
-        $project = $this->em->getRepository(Project::class)->findBy([])[0];
+        $project = $this->em->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->generator->generate($project, 'TEST', 2, 3, 'USD', [10, 20]);
 
         /** @var Booklet[] $result */
-        $result = $this->em->getRepository(Booklet::class)->findBy(['countryISO3' => 'TEST']);
+        $result = $this->em->getRepository(Booklet::class)->findBy(['countryISO3' => 'TEST'], ['id' => 'asc']);
 
         $this->assertCount(2, $result, 'Number of generated booklets is not correct.');
         $this->assertCount(3, $result[0]->getVouchers()->toArray(), 'Booklet 1 should contains three vouchers');

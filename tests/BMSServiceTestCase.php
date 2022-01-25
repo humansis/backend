@@ -12,8 +12,6 @@ use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Utils\HouseholdService;
-use DistributionBundle\Entity\AssistanceBeneficiary;
-use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Utils\CommodityService;
 use DistributionBundle\Utils\ConfigurationLoader;
 use DistributionBundle\Utils\CriteriaAssistanceService;
@@ -35,6 +33,7 @@ class BMSServiceTestCase extends KernelTestCase
     protected $client;
     const USER_PHPUNIT = 'phpunit';
     const USER_TESTER = 'test@example.org';
+    const USER_TESTER_VENDOR = 'vendor.eth@example.org';
 
     // SERVICES
 
@@ -112,7 +111,7 @@ class BMSServiceTestCase extends KernelTestCase
                 "local_family_name" => "NAME_TEST",
                 "en_parents_name" => "PARENTSNAME_TEST_EN",
                 "local_parents_name" => "PARENTSNAME_TEST_LOCAL",
-                "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
+                "gender" => 1,
                 "status" => "1",
                 "residency_status" => "IDP",
                 "date_of_birth" => "10-06-1999",
@@ -135,7 +134,7 @@ class BMSServiceTestCase extends KernelTestCase
                 "national_ids" => [
                     [
                         "id_number" => "0000_TEST",
-                        "id_type" => "ID_TYPE_TEST"
+                        "id_type" => "National ID"
                     ]
                 ]
             ],
@@ -146,7 +145,7 @@ class BMSServiceTestCase extends KernelTestCase
                 "local_family_name" => "FAMILYNAME_TEST",
                 "en_parents_name" => "PARENTSNAME_TEST_EN",
                 "local_parents_name" => "PARENTSNAME_TEST_LOCAL",
-                "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
+                "gender" => 1,
                 "status" => 0,
                 "residency_status" => "resident",
                 "date_of_birth" => "10-06-1976",
@@ -169,7 +168,7 @@ class BMSServiceTestCase extends KernelTestCase
                 "national_ids" => [
                     [
                         "id_number" => "1111_TEST",
-                        "id_type" => "ID_TYPE_TEST"
+                        "id_type" => "National ID"
                     ]
                 ]
             ],
@@ -180,7 +179,7 @@ class BMSServiceTestCase extends KernelTestCase
                 "local_family_name" => "FAMILYNAME_TEST",
                 "en_parents_name" => "PARENTSNAME_TEST_EN",
                 "local_parents_name" => "PARENTSNAME_TEST_LOCAL",
-                "gender" => \BeneficiaryBundle\Entity\Person::GENDER_MALE,
+                "gender" => 1,
                 "status" => 0,
                 "residency_status" => "returnee",
                 "date_of_birth" => "10-06-1976",
@@ -203,7 +202,7 @@ class BMSServiceTestCase extends KernelTestCase
                 "national_ids" => [
                     [
                         "id_number" => "1111_TEST",
-                        "id_type" => "ID_TYPE_TEST"
+                        "id_type" => "National ID"
                     ]
                 ]
             ]
@@ -394,7 +393,7 @@ class BMSServiceTestCase extends KernelTestCase
 
         $vulnerabilityCriterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy([
             "fieldString" => "disabled"
-        ]);
+        ], ['id' => 'asc']);
         $beneficiaries = $this->bodyHousehold["beneficiaries"];
         $vulnerabilityId = $vulnerabilityCriterion->getId();
         foreach ($beneficiaries as $index => $b) {
@@ -405,7 +404,7 @@ class BMSServiceTestCase extends KernelTestCase
             "fieldString" => 'IDPoor',
             "type" => 'number',
             "countryIso3" => $this->iso3
-        ]);
+        ], ['id' => 'asc']);
         $country_specific_answers = $this->bodyHousehold["country_specific_answers"];
         $countrySpecificId = $countrySpecific->getId();
         foreach ($country_specific_answers as $index => $c) {

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace VoucherBundle\Entity;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -75,18 +76,24 @@ class SmartcardPurchase
      */
     private $redemptionBatch;
 
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="hash", type="text")
+     */
+    private $hash;
+
     protected function __construct()
     {
         $this->records = new ArrayCollection();
     }
 
-    public static function create(Smartcard $smartcard, Vendor $vendor, DateTimeInterface $createdAt)
+    public static function create(Smartcard $smartcard, Vendor $vendor, DateTimeInterface $createdAt): SmartcardPurchase
     {
         $entity = new self();
         $entity->vendor = $vendor;
         $entity->createdAt = $createdAt;
         $entity->smartcard = $smartcard;
-
         $smartcard->addPurchase($entity);
 
         return $entity;
@@ -187,4 +194,19 @@ class SmartcardPurchase
         return $this->getRecords()->first()->getCurrency();
     }
 
+    /**
+     * @return string|null
+     */
+    public function getHash(): ?string
+    {
+        return $this->hash;
+    }
+
+    /**
+     * @param string|null $hash
+     */
+    public function setHash(?string $hash): void
+    {
+        $this->hash = $hash;
+    }
 }

@@ -75,6 +75,12 @@ class VendorUpdateInputType implements InputTypeInterface
     private $canSellCashback = true;
 
     /**
+     * @var bool
+     * @Assert\Type("bool")
+     */
+    private $canDoRemoteDistributions = false;
+
+    /**
      * @return string|null
      */
     public function getShop()
@@ -250,4 +256,19 @@ class VendorUpdateInputType implements InputTypeInterface
         $this->canSellCashback = $canSellCashback;
     }
 
+    /**
+     * @return bool
+     */
+    public function getCanDoRemoteDistributions(): bool
+    {
+        return $this->canDoRemoteDistributions;
+    }
+
+    /**
+     * @param bool $canDoRemoteDistributions
+     */
+    public function setCanDoRemoteDistributions(bool $canDoRemoteDistributions): void
+    {
+        $this->canDoRemoteDistributions = $canDoRemoteDistributions;
+    }
 }

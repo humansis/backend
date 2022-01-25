@@ -13,7 +13,10 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\DBAL\PersonGenderEnum;
 use NewApiBundle\Entity\Import;
+use NewApiBundle\Enum\NationalIdType;
+use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\Request\Pagination;
@@ -22,6 +25,8 @@ use Doctrine\ORM\Query\Expr\Join;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm1;
+use VoucherBundle\Entity\Smartcard;
+use VoucherBundle\Enum\SmartcardStates;
 
 /**
  * BeneficiaryRepository.
@@ -84,7 +89,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $q->getQuery()->getResult();
     }
 
-    public function findByName(string $givenName, ?string $parentsName, string $familyName, ?int $gender = null, Household $household = null)
+    public function findByName(string $givenName, ?string $parentsName, string $familyName, ?string $gender = null, Household $household = null)
     {
         $qbr =  $this->createQueryBuilder('b')
             ->leftJoin('b.household', 'hh')
@@ -100,7 +105,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         if (null !== $gender) {
             $qbr
                 ->andWhere('p.gender = :gender')
-                ->setParameter('gender', $gender);
+                ->setParameter('gender', PersonGenderEnum::valueToDB($gender));
         }
 
         if (!is_null($household)) {
@@ -287,7 +292,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function countHouseholdHeadsByGender(Assistance $assistance, int $gender): int
+    public function countHouseholdHeadsByGender(Assistance $assistance, string $gender): int
     {
         $qb = $this->createQueryBuilder('b');
         $qb->select('COUNT(DISTINCT b)');
@@ -395,13 +400,13 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $qb->setParameter('status', 1); // status = HHH
     }
 
-    protected function whereGender(QueryBuilder $qb, int $gender)
+    protected function whereGender(QueryBuilder $qb, string $gender)
     {
         if (!in_array('p', $qb->getAllAliases())) {
             $qb->join('b.person', 'p');
         }
         $qb->andWhere('p.gender = :g');
-        $qb->setParameter('g', $gender);
+        $qb->setParameter('g', PersonGenderEnum::valueToDB($gender));
     }
 
     protected function whereBornBetween(QueryBuilder &$qb, \DateTimeInterface $minDateOfBirth, \DateTimeInterface $maxDateOfBirth)
@@ -670,21 +675,38 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     {
         // Find a way to act directly on the join table beneficiary_vulnerability
         if ('true' == $conditionString) {
-            $qb->leftJoin($on.'.vulnerabilityCriteria', 'vc'.$i, Join::WITH, 'vc'.$i.'.fieldString = :vulnerability'.$i);
-            $userConditionsStatement->add($qb->expr()->eq('vc'.$i.'.fieldString', ':vulnerability'.$i));
+            $qb->leftJoin("$on.vulnerabilityCriteria", "vc$i", Join::WITH, "vc$i.fieldString = :vulnerability$i");
+            $userConditionsStatement->add($qb->expr()->eq("vc$i.fieldString", ":vulnerability$i"));
             // If has criteria, add it to the select to calculate weight later
-            $qb->addSelect('vc'.$i.'.fieldString AS '.$on.$vulnerabilityName.$i);
+            $qb->addSelect("vc$i.fieldString AS $on$vulnerabilityName$i");
         } else {
-            $qb->leftJoin($on.'.vulnerabilityCriteria', 'vc'.$i, Join::WITH, 'vc'.$i.'.fieldString <> :vulnerability'.$i);
-            $userConditionsStatement->add($qb->expr()->eq('SIZE('.$on.'.vulnerabilityCriteria)', 0))
-                ->add($qb->expr()->neq('vc'.$i.'.fieldString', ':vulnerability'.$i));
-            // The beneficiary doesn't have a vulnerability A if all their vulnerabilities are != A or if they have no vulnerabilities
+            $qb->leftJoin("$on.vulnerabilityCriteria", "vc$i", Join::WITH, "vc$i.fieldString <> :vulnerability$i");
+            $userConditionsStatement->add($qb->expr()->eq("SIZE($on.vulnerabilityCriteria)", 0))
+                ->add($qb->expr()->neq("vc$i.fieldString", ":vulnerability$i"));
+            // The beneficiary doesn"t have a vulnerability A if all their vulnerabilities are != A or if they have no vulnerabilities
             // If has criteria, add it to the select to calculate weight later
-            $qb->addSelect('(CASE WHEN vc'.$i.'.fieldString <> :vulnerability'.$i.' THEN vc'.$i.'.fieldString WHEN SIZE('.$on.'.vulnerabilityCriteria) = 0 THEN :noCriteria ELSE :null END) AS '.$on.$vulnerabilityName.$i)
+            $qb->addSelect("(CASE WHEN vc$i.fieldString <> :vulnerability$i THEN vc$i.fieldString WHEN SIZE($on.vulnerabilityCriteria) = 0 THEN :noCriteria ELSE :null END) AS $on$vulnerabilityName$i")
                 ->setParameter('noCriteria', 'noCriteria')
                 ->setParameter('null', null);
         }
         $qb->setParameter(':vulnerability'.$i, $vulnerabilityName);
+    }
+
+    private function hasValidSmartcardCriterion(QueryBuilder &$qb, $on, $value, int $i)
+    {
+        $subQueryForSC = $this->_em->createQueryBuilder()
+            ->select("sc$i.id")
+            ->from(Smartcard::class, "sc$i")
+            ->andWhere("IDENTITY(sc$i.beneficiary) = $on.id")
+            ->andWhere("sc$i.state IN ('".SmartcardStates::ACTIVE."')")
+            ->getDQL()
+        ;
+
+        if ($value == true) {
+            $qb->andWhere("EXISTS($subQueryForSC)");
+        } else {
+            $qb->andWhere("NOT EXISTS($subQueryForSC)");
+        }
     }
 
     private function getHeadWithCriterion(&$qb, $field, $condition, $criterion, int $i, &$userConditionsStatement)
@@ -713,6 +735,9 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         } elseif ('other' === $criterion['type']) {
             if ('disabledHeadOfHousehold' === $field) {
                 $this->hasVulnerabilityCriterion($qb, 'hhh'.$i, $condition, 'disabled', $userConditionsStatement, $i);
+            }
+            if ('hasValidSmartcard' === $field) {
+                $this->hasValidSmartcardCriterion($qb, 'hhh'.$i, $criterion['value'], $i);
             }
         }
     }
@@ -805,7 +830,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                         break;
                     case BeneficiaryOrderInputType::SORT_BY_NATIONAL_ID:
                         $qbr->leftJoin('p.nationalIds', 'n', 'WITH', 'n.idType = :type')
-                            ->setParameter('type', \BeneficiaryBundle\Entity\NationalId::TYPE_NATIONAL_ID)
+                            ->setParameter('type', NationalIdType::NATIONAL_ID)
                             ->orderBy('n.idNumber', $direction);
                         break;
                     default:

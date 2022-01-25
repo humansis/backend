@@ -16,6 +16,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Enum\PersonGender;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Enum\Livelihood;
 use Symfony\Component\HttpKernel\Kernel;
@@ -36,7 +37,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         'en_family_name' => '[{householdType} found by {project}]',
         'local_given_name' => '{gender} {age}',
         'local_family_name' => '{householdType} from {country}',
-        'gender' => '0',
+        'gender' => 0,
         'status' => '1',
         'residency_status' => 'resident',
         'vulnerability_criteria' => [
@@ -118,28 +119,28 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         $adm1s = $manager->getRepository(Adm1::class)->findBy([
             'countryISO3' => $iso3,
             'name' => [LocationTestFixtures::ADM1_1.$iso3, LocationTestFixtures::ADM1_2.$iso3],
-        ]);
+        ], ['id' => 'asc']);
         foreach ($adm1s as $adm1) {
             yield $adm1->getLocation();
         }
         $adm2s = $manager->getRepository(Adm2::class)->findBy([
             'adm1' => $adm1s,
             'name' => [LocationTestFixtures::ADM2_1.$iso3, LocationTestFixtures::ADM2_2.$iso3],
-        ]);
+        ], ['id' => 'asc']);
         foreach ($adm2s as $adm2) {
             yield $adm2->getLocation();
         }
         $adm3s = $manager->getRepository(Adm3::class)->findBy([
             'adm2' => $adm2s,
             'name' => [LocationTestFixtures::ADM3_1.$iso3, LocationTestFixtures::ADM3_2.$iso3],
-        ]);
+        ], ['id' => 'asc']);
         foreach ($adm3s as $adm3) {
             yield $adm3->getLocation();
         }
         $adm4s = $manager->getRepository(Adm4::class)->findBy([
             'adm3' => $adm3s,
             'name' => [LocationTestFixtures::ADM4_1.$iso3, LocationTestFixtures::ADM4_2.$iso3],
-        ]);
+        ], ['id' => 'asc']);
         foreach ($adm4s as $adm4) {
             yield $adm4->getLocation();
         }
@@ -201,7 +202,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
             $bnfData = $this->replacePlaceholders($this->beneficiaryTemplate, [
                 '{age}' => $age,
                 '{project}' => $project->getName(),
-                '{gender}' => 'F' === $gender ? 'Female' : 'Male',
+                '{gender}' => PersonGender::valueFromAPI($gender),
                 '{householdType}' => $typeName,
                 '{country}' => $project->getIso3(),
             ]);
@@ -215,7 +216,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
             $bnf->setEnGivenName($bnfData['en_given_name']);
             $bnf->setLocalFamilyName($bnfData['local_family_name']);
             $bnf->setLocalGivenName($bnfData['local_given_name']);
-            $bnf->setGender('F' === $gender ? 0 : 1);
+            $bnf->setGender(PersonGender::valueFromAPI($gender));
             $bnf->setStatus(0 == $household->getBeneficiaries()->count());
             $bnf->setResidencyStatus($bnfData['residency_status']);
 

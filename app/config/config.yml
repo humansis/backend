@@ -2,6 +2,7 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: services.yml }
+    - { resource: ../../src/NewApiBundle/Resources/config/workflow.yml }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
@@ -124,6 +125,7 @@ doctrine:
             enum: string
         schema_filter: ~^(?!view_)~ # support views with prefix "view_"
         types:
+            enum_source_type: NewApiBundle\DBAL\SourceEnum
             enum_assistance_type: DistributionBundle\DBAL\AssistanceTypeEnum
             enum_assistance_target_type: DistributionBundle\DBAL\AssistanceTargetTypeEnum
             enum_livelihood: ProjectBundle\DBAL\LivelihoodEnum
@@ -133,6 +135,15 @@ doctrine:
             enum_import_queue_state: NewApiBundle\DBAL\ImportStateQueueEnum
             enum_import_duplicity_state: NewApiBundle\DBAL\ImportDuplicityStateEnum
             enum_product_category_type: NewApiBundle\DBAL\ProductCategoryTypeEnum
+            enum_synchronization_batch_validation_type: NewApiBundle\DBAL\SynchronizationBatchValidationTypeEnum
+            enum_relief_package_state: NewApiBundle\DBAL\ReliefPackageStateEnum
+            enum_modality_type: NewApiBundle\DBAL\ModalityTypeEnum
+            enum_synchronization_batch_state: NewApiBundle\DBAL\SynchronizationBatchEnum
+            enum_household_shelter_status: NewApiBundle\DBAL\HouseholdShelterStatusEnum
+            enum_household_support_received_type: NewApiBundle\DBAL\HouseholdSupportReceivedTypeEnum
+            enum_household_assets: NewApiBundle\DBAL\HouseholdAssetsEnum
+            enum_person_gender: NewApiBundle\DBAL\PersonGenderEnum
+            enum_national_id_type: NewApiBundle\DBAL\NationalIdTypeEnum
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
@@ -252,6 +263,10 @@ distribution:
                 target: Beneficiary
             },
             disabledHeadOfHousehold: {
+                type: other,
+                target: Head
+            },
+            hasValidSmartcard: {
                 type: other,
                 target: Head
             },

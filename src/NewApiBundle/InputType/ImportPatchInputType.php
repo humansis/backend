@@ -25,6 +25,14 @@ class ImportPatchInputType implements InputTypeInterface
     private $description;
 
     /**
+     * @var string|null
+     *
+     * @Assert\Type("string")
+     * @Assert\NotBlank(allowNull=true)
+     */
+    private $title;
+
+    /**
      * ImportUpdateStatusInputType constructor.
      *
      * @param string|null $status
@@ -64,7 +72,7 @@ class ImportPatchInputType implements InputTypeInterface
     /**
      * @return string|null
      */
-    public function getDescription(): ?string
+    public function getDescription()
     {
         return $this->description;
     }
@@ -72,8 +80,24 @@ class ImportPatchInputType implements InputTypeInterface
     /**
      * @param string|null $description
      */
-    public function setDescription(?string $description): void
+    public function setDescription($description)
     {
         $this->description = $description;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string|null $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
     }
 }

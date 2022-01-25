@@ -13,6 +13,7 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Entity\GeneralReliefItem;
 use InvalidArgumentException;
+use NewApiBundle\Enum\NationalIdType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -20,6 +21,7 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use ProjectBundle\Entity\Donor;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class AssistanceSpreadsheetExport
@@ -150,7 +152,12 @@ class AssistanceSpreadsheetExport
             $drawing->setWorksheet($worksheet);
         }
 
+        /** @var Donor $donor */
         foreach ($assistance->getProject()->getDonors() as $donor) {
+            if (null === $donor->getLogo()) {
+                continue;
+            }
+
             $resource = $this->getImageResource($donor->getLogo());
 
             $drawing = new MemoryDrawing();
@@ -400,7 +407,7 @@ class AssistanceSpreadsheetExport
     private static function getNationalId(Person $person): ?string
     {
         foreach ($person->getNationalIds() as $nationalId) {
-            if (NationalId::TYPE_NATIONAL_ID === $nationalId->getIdType()) {
+            if (NationalIdType::NATIONAL_ID === $nationalId->getIdType()) {
                 return $nationalId->getIdNumber();
             }
         }

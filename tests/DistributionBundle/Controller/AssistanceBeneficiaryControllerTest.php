@@ -55,7 +55,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             'validated' => false,
             'completed' => false,
             'archived' => false,
-        ]);
+        ], ['id' => 'desc']);
 
         if (!$assistance) {
             print_r("\nThere is no distribution with the ID specified to execute the test.\n");
@@ -63,7 +63,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
         }
 
         $alreadyExistingBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)
-            ->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $assistance]);
+            ->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $assistance], ['id' => 'asc']);
         if ($alreadyExistingBeneficiary) {
             print_r("\nThere already is beneficiary ID specified to execute the test in assistance.\n");
             $this->markTestIncomplete("There already is beneficiary ID specified to execute the test in assistance.");

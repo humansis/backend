@@ -12,6 +12,7 @@ use CommonBundle\InputType\RequestConverter;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Enum\NationalIdType;
 use ProjectBundle\Entity\Project;
 
 class InstitutionFixture extends Fixture implements DependentFixtureInterface
@@ -36,7 +37,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
                 ],
             ],
             'national_id' => [
-                'type' => NationalId::TYPE_NATIONAL_ID,
+                'type' => NationalIdType::NATIONAL_ID,
                 'number' => 'ID: 000-1234-5895-21',
             ],
             'phone_type' => 'Mobile',
@@ -64,7 +65,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
                 ],
             ],
             'national_id' => [
-                'type' => NationalId::TYPE_FAMILY,
+                'type' => NationalIdType::FAMILY,
                 'number' => 'FML: 000-1234-5895-21',
             ],
             'phone_type' => 'Mobile',
@@ -92,7 +93,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
                 ],
             ],
             'national_id' => [
-                'type' => NationalId::TYPE_CAMP_ID,
+                'type' => NationalIdType::CAMP_ID,
                 'number' => 'CMP: 000-1234-5895-21',
             ],
             'phone_type' => 'Mobile',
@@ -132,7 +133,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
             return;
         }
         foreach ($this->countries as $COUNTRY) {
-            $projects = $manager->getRepository(Project::class)->findBy(['iso3' => $COUNTRY['iso3']]);
+            $projects = $manager->getRepository(Project::class)->findBy(['iso3' => $COUNTRY['iso3']], ['id' => 'asc']);
             $projectIds = array_map(function (Project $project) {
                 return $project->getId();
             }, $projects);

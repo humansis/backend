@@ -16,6 +16,7 @@ use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueueDuplicity;
 use NewApiBundle\Entity\Role;
+use NewApiBundle\Enum\RoleType;
 use RuntimeException;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;

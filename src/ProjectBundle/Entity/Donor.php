@@ -4,6 +4,8 @@ namespace ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
+use NewApiBundle\Entity\Helper\CreatedAt;
+use NewApiBundle\Entity\Helper\LastModifiedAt;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
 
@@ -12,9 +14,13 @@ use CommonBundle\Utils\ExportableInterface;
  *
  * @ORM\Table(name="donor")
  * @ORM\Entity(repositoryClass="ProjectBundle\Repository\DonorRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Donor implements ExportableInterface
 {
+    use CreatedAt;
+    use LastModifiedAt;
+
     /**
      * @var int
      *
@@ -54,7 +60,7 @@ class Donor implements ExportableInterface
     private $dateAdded;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(name="notes", type="string", length=255, nullable=true)
      *
@@ -263,15 +269,14 @@ class Donor implements ExportableInterface
         ];
     }
 
-
      /**
      * Set logo.
      *
-     * @param string $logo
+     * @param string|null $logo
      *
      * @return Donor
      */
-    public function setLogo($logo)
+    public function setLogo(?string $logo): self
     {
         $this->logo = $logo;
 
@@ -281,9 +286,9 @@ class Donor implements ExportableInterface
     /**
      * Get logo.
      *
-     * @return string
+     * @return string|null
      */
-    public function getLogo()
+    public function getLogo(): ?string
     {
         return $this->logo;
     }

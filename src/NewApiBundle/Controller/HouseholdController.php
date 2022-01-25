@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 
 class HouseholdController extends AbstractController
@@ -39,11 +40,20 @@ class HouseholdController extends AbstractController
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        $filename = $this->get('beneficiary.beneficiary_service')->exportToCsv(
-            $request->query->get('type'),
-            $request->headers->get('country'),
-            $filter, $pagination, $order
-        );
+        try {
+            $filename = $this->get('beneficiary.beneficiary_service')->exportToCsv(
+                $request->query->get('type'),
+                $request->headers->get('country'),
+                $filter, $pagination, $order
+            );
+        } catch (BadRequestHttpException $e) {
+            return new JsonResponse([
+                'code' => 400,
+                'errors' => [[
+                    'message' => $e->getMessage(),
+                ]],
+            ],Response::HTTP_BAD_REQUEST);
+        }
 
         $response = new BinaryFileResponse(getcwd().'/'.$filename);
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, '$filename');

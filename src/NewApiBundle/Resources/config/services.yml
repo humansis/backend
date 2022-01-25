@@ -80,6 +80,11 @@ services:
         resource: '../../Mapper'
         tags: [ 'app.mapper' ]
 
+    NewApiBundle\Mapper\AssistanceMapper:
+        arguments:
+            - '@distribution.assistance_service'
+        tags: [ 'app.mapper' ]
+
     NewApiBundle\Mapper\AssistanceOfflineAppMapper:
         arguments: [ "@=service('doctrine.orm.entity_manager').getRepository('NewApiBundle:AssistanceStatistics')" ]
         tags: [ 'app.mapper' ]
@@ -100,7 +105,27 @@ services:
             - '@=service("doctrine.orm.entity_manager").getRepository("ProjectBundle:Project")'
         tags: [ 'app.mapper' ]
 
+    NewApiBundle\Mapper\VendorLoginMapper:
+        public: true
+        tags: [ 'app.mapper' ]
+        arguments:
+            - '@lexik_jwt_authentication.jwt_manager'
+
+    NewApiBundle\Mapper\OfflineLoginMapper:
+        public: true
+        tags: [ 'app.mapper' ]
+        arguments:
+            - '@lexik_jwt_authentication.jwt_manager'
+            - '@user.user_service'
+
     NewApiBundle\Controller\AssistanceController:
+        arguments:
+            - '@NewApiBundle\Export\VulnerabilityScoreExport'
+            - '@distribution.assistance_service'
+
+    NewApiBundle\Controller\AssistanceSelectionController:
+        arguments:
+            - "@transformer.selection_criterion_field"
 
     NewApiBundle\Controller\CommonController:
         arguments:
@@ -218,16 +243,36 @@ services:
         arguments:
             - "@validator"
             - "@doctrine.orm.entity_manager"
+        public: true
 
     NewApiBundle\Component\Import\IdentityChecker:
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@monolog.logger.import"
-            -
+
     NewApiBundle\Component\Import\SimilarityChecker:
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@monolog.logger.import"
+
+    NewApiBundle\Component\Import\ImportFinisher:
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@beneficiary.household_service"
+            - '@monolog.logger.import'
+
+    NewApiBundle\Component\Import\ImportReset:
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - '@monolog.logger.import'
+
+
+    NewApiBundle\Component\Import\DuplicityResolver:
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@monolog.logger.import"
+            - '@NewApiBundle\Component\Import\IdentityChecker'
+            - '@NewApiBundle\Component\Import\SimilarityChecker'
 
     NewApiBundle\Component\Import\ImportInvalidFileService:
         public: true
@@ -239,6 +284,12 @@ services:
     NewApiBundle\Component\Import\ImportTemplate:
         arguments: ['@beneficiary.household_export_csv_service']
 
+    NewApiBundle\Export\VulnerabilityScoreExport:
+        arguments:
+            - '@export_csv_service'
+            - '@translator'
+            - '@doctrine.orm.entity_manager'
+
     NewApiBundle\Controller\ImportController:
         arguments:
             - '@NewApiBundle\Component\Import\ImportService'
@@ -248,10 +299,93 @@ services:
 
     NewApiBundle\Component\Product\ProductCategoryService:
 
-    NewApiBundle\Component\Smartcard\SmartcardPurchaseService:
-        arguments: [ '@smartcard_purchase.repository' ]
-
     NewApiBundle\Component\Import\ImportFileValidator:
         arguments:
             - '%import.uploadedFilesDirectory%'
         public: true
+
+    NewApiBundle\Command\WingMoneyReportImportCommand:
+
+    NewApiBundle\Component\WingMoney\ReportParser:
+
+    NewApiBundle\Component\WingMoney\ImportService:
+        arguments:
+            - '@=service("doctrine.orm.entity_manager").getRepository("TransactionBundle:Transaction")'
+            - '@=service("doctrine.orm.entity_manager").getRepository("BeneficiaryBundle:Phone")'
+
+    NewApiBundle\Component\Smartcard\SmartcardPurchaseService:
+        arguments: [ '@smartcard_purchase.repository' ]
+
+    NewApiBundle\Component\Smartcard\SmartcardDepositService:
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@smartcard_service'
+            - '@workflow.registry'
+            - '@validator'
+
+    NewApiBundle\Export\SmartcardPurchasedItemSpreadsheet:
+        arguments:
+            - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:SmartcardPurchasedItem")'
+
+    workflow.import.integrity_subscriber:
+        class: NewApiBundle\Event\Subscriber\Import\IntegritySubscriber
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@NewApiBundle\Component\Import\IntegrityChecker'
+            - '@NewApiBundle\Component\Import\ImportInvalidFileService'
+            - '%import.batch_size%'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    workflow.import.identity_subscriber:
+        class: NewApiBundle\Event\Subscriber\Import\IdentitySubscriber
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@NewApiBundle\Component\Import\IdentityChecker'
+            - '%import.batch_size%'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    workflow.import.similarity_subscriber:
+        class: NewApiBundle\Event\Subscriber\Import\SimilaritySubscriber
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@NewApiBundle\Component\Import\SimilarityChecker'
+            - '%import.batch_size%'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    workflow.import.finisher_subscriber:
+        class: NewApiBundle\Event\Subscriber\Import\FinishSubscriber
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@NewApiBundle\Component\Import\ImportFinisher'
+            - '@NewApiBundle\Component\Import\ImportReset'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    workflow.import_queue.duplicity_resolve_subscriber:
+        class: NewApiBundle\Event\Subscriber\ImportQueue\DuplicityResolveSubscriber
+        arguments:
+            - '@NewApiBundle\Component\Import\DuplicityResolver'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    NewApiBundle\Factory\AwsStorageFactory:
+        public: true
+
+    NewApiBundle\Factory\LogsStorageConfigFactory:
+        public: true
+        arguments:
+            - '%aws.logs.key%'
+            - '%aws.logs.secret%'
+            - '%aws.logs.region%'
+            - '%aws.logs.version%'
+            - '%aws.logs.bucket%'
+
+    NewApiBundle\Component\LogsStorage\LogsStorageService:
+        arguments:
+            - '%logs.vendorAppPath%'
+            - '%logs.fieldAppPath%'
+            - '%logs.lifetime%'
+

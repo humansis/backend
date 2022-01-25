@@ -151,6 +151,7 @@ class VendorService
             ->setCanSellFood($inputType->isCanSellFood())
             ->setCanSellNonFood($inputType->isCanSellNonFood())
             ->setCanSellCashback($inputType->isCanSellCashback())
+            ->setCanDoRemoteDistributions($inputType->getCanDoRemoteDistributions())
         ;
 
         $this->em->persist($vendor);
@@ -241,6 +242,7 @@ class VendorService
             ->setCanSellFood($inputType->isCanSellFood())
             ->setCanSellNonFood($inputType->isCanSellNonFood())
             ->setCanSellCashback($inputType->isCanSellCashback())
+            ->setCanDoRemoteDistributions($inputType->getCanDoRemoteDistributions())
         ;
 
         $this->em->persist($vendor);

@@ -28,7 +28,7 @@ class BookletControllerTest extends BMSServiceTestCase
 
     public function testCreate()
     {
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([])[0];
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('POST', '/api/basic/web-app/v1/booklets/batches', [
             'iso3' => 'KHM',
@@ -48,7 +48,7 @@ class BookletControllerTest extends BMSServiceTestCase
 
     public function testUpdate()
     {
-        $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([])[0];
+        $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('PUT', '/api/basic/web-app/v1/booklets/'.$booklet->getId(), [
             'quantityOfVouchers' => 2,
@@ -68,7 +68,7 @@ class BookletControllerTest extends BMSServiceTestCase
      */
     public function testGet()
     {
-        $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([])[0];
+        $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/booklets/'.$booklet->getId());
 
@@ -142,7 +142,7 @@ class BookletControllerTest extends BMSServiceTestCase
             return;
         }
 
-        $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED])[0];
+        $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'])[0];
 
         $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$result['assistanceId'].'/beneficiaries/'.$result['beneficiaryId'].'/booklets/'.$booklet->getCode());
 
@@ -177,7 +177,7 @@ class BookletControllerTest extends BMSServiceTestCase
             return;
         }
 
-        $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED])[0];
+        $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'])[0];
 
         $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$result['assistanceId'].'/communities/'.$result['communityId'].'/booklets/'.$booklet->getCode());
 
@@ -212,7 +212,7 @@ class BookletControllerTest extends BMSServiceTestCase
             return;
         }
 
-        $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED])[0];
+        $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'])[0];
 
         $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$result['assistanceId'].'/institutions/'.$result['institutionId'].'/booklets/'.$booklet->getCode());
 

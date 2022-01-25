@@ -68,9 +68,10 @@ class SmartcardPurchaseRepository extends EntityRepository
                 FROM
                     assistance AS a
                         INNER JOIN distribution_beneficiary AS db ON a.id = db.assistance_id
-                        INNER JOIN smartcard_deposit AS sd ON db.id = sd.distribution_beneficiary_id AND sd.used_at <= sp.used_at
+                        LEFT JOIN relief_package abc ON abc.assistance_beneficiary_id=db.id
+                        INNER JOIN smartcard_deposit AS sd ON abc.id = sd.relief_package_id AND sd.distributed_at <= sp.used_at
                 WHERE s.id = sd.smartcard_id
-                ORDER BY sd.used_at DESC, sd.id DESC 
+                ORDER BY sd.distributed_at DESC, sd.id DESC 
                 LIMIT 1
             ) AS projectId,
             SUM(spr.value) as purchaseValue,
@@ -81,7 +82,8 @@ class SmartcardPurchaseRepository extends EntityRepository
                 INNER JOIN smartcard_purchase AS sp on s.id = sp.smartcard_id
                 INNER JOIN smartcard_purchase_record AS spr ON sp.id = spr.smartcard_purchase_id
         WHERE sp.redemption_batch_id IS NULL
-        GROUP BY sp.id, spr.currency, projectId, vendorId";
+        GROUP BY sp.id, spr.currency, projectId, vendorId
+        ORDER BY sp.id, spr.currency, projectId, vendorId";
 
         $purchaseValuesAggregation = "SELECT
                 pre.currency,
@@ -90,7 +92,8 @@ class SmartcardPurchaseRepository extends EntityRepository
                 pre.projectId
             FROM ($purchasePreAggregation) as pre
             WHERE pre.vendorId = {$vendor->getId()} AND currency IS NOT NULL AND projectId IS NOT NULL
-            GROUP BY pre.vendorId, pre.projectId, pre.currency";
+            GROUP BY pre.vendorId, pre.projectId, pre.currency
+            ORDER BY pre.vendorId, pre.projectId, pre.currency";
 
         $stmt = $this->_em->getConnection()->prepare($purchaseValuesAggregation);
         $stmt->execute();
@@ -105,7 +108,8 @@ class SmartcardPurchaseRepository extends EntityRepository
                 WHERE
                     pre.vendorId = {$vendor->getId()} AND
                     pre.projectId = {$candidate['projectId']} AND
-                    pre.currency = '{$candidate['currency']}'";
+                    pre.currency = '{$candidate['currency']}'
+                ORDER BY pre.purchaseId";
 
             $stmt = $this->_em->getConnection()->prepare($purchaseIdsAggregation);
             $stmt->execute();
@@ -147,15 +151,41 @@ class SmartcardPurchaseRepository extends EntityRepository
     public function countPurchasesRecordsByBatch(SmartcardRedemptionBatch $batch): array
     {
         $qb = $this->createQueryBuilder('p')
-            ->select('prod.name as name, pr.currency as currency, SUM(pr.value) as value, SUM(pr.quantity) as quantity, prod.unit as unit')
+            ->select('prod.name as name, pr.currency as currency, SUM(pr.value) as value, SUM(pr.quantity) as quantity, prod.unit as unit, MAX(category.type) as categoryType')
             ->join('p.records', 'pr')
             ->join('pr.product', 'prod')
+            ->join('prod.productCategory', 'category')
             ->where('p.id IN (:purchases)')
             ->setParameter('purchases', $batch->getPurchases())
             ->groupBy('prod.name, pr.currency, prod.unit')
         ;
 
         return $qb->getQuery()->getArrayResult();
+    }
+
+    public function sumPurchasesRecordsByCategoryType(SmartcardRedemptionBatch $batch, $productCategoryType): ?string
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select('SUM(pr.value) as value')
+            ->join('p.records', 'pr')
+            ->join('pr.product', 'prod')
+            ->join('prod.productCategory', 'category')
+            ->andWhere('IDENTITY(p.redemptionBatch) = :batch')
+            ->andWhere('category.type = :type')
+            ->andWhere('pr.currency = :currency')
+            ->setParameter('type', $productCategoryType)
+            ->setParameter('currency', $batch->getCurrency())
+            ->setParameter('batch', $batch)
+            ->groupBy('p.redemptionBatch')
+        ;
+
+        try {
+            return $qb->getQuery()->getSingleScalarResult();
+        } catch (NoResultException $e) {
+            return "-";
+        } catch (NonUniqueResultException $e) {
+            return "Error: ".$e->getMessage();
+        }
     }
 
     /**

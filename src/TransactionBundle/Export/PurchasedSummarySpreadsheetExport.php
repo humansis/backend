@@ -14,6 +14,7 @@ use CommonBundle\Entity\Adm4;
 use DistributionBundle\Entity\Assistance;
 use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Component\Country\Country;
+use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\InputType\PurchasedItemFilterInputType;
 use NewApiBundle\Repository\PurchasedItemRepository;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -22,6 +23,13 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Symfony\Component\Translation\TranslatorInterface;
 
+/**
+ * Class PurchasedSummarySpreadsheetExport
+ *
+ * @package TransactionBundle\Export
+ *
+ * @deprecated This class is deprecated and will be removed soon
+ */
 class PurchasedSummarySpreadsheetExport
 {
     /** @var TranslatorInterface */
@@ -179,7 +187,7 @@ class PurchasedSummarySpreadsheetExport
     {
         /** @var NationalId $nationalId */
         foreach ($beneficiary->getPerson()->getNationalIds() as $nationalId) {
-            if (NationalId::TYPE_NATIONAL_ID === $nationalId->getIdType()) {
+            if (NationalIdType::NATIONAL_ID === $nationalId->getIdType()) {
                 return $nationalId->getIdNumber();
             }
         }

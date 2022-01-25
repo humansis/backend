@@ -55,7 +55,7 @@ class BookletFixtures extends Fixture implements FixtureGroupInterface, Dependen
 
         foreach ($this->countries as $country) {
             $recipientCount = $manager->getRepository(Beneficiary::class)->countAllInCountry($country['iso3']);
-            $project = $manager->getRepository(Project::class)->findOneBy(['iso3' => $country['iso3']]);
+            $project = $manager->getRepository(Project::class)->findOneBy(['iso3' => $country['iso3']], ['id' => 'asc']);
             $voucherAssistanceCount = count($manager->getRepository(Assistance::class)->getActiveByCountry($country['iso3']));
 
             $count = 200;

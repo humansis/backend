@@ -31,7 +31,52 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
         $this->whereCountry($qb, $country);
         return $qb->getQuery()->getResult();
     }
-    
+
+    /**
+     * @param string $countryIso3
+     * @param array  $adms full path of adms from Adm1 to whatever level (for example [adm1, adm2, adm3])
+     *
+     * @return Location|null
+     */
+    public function getByNormalizedNames(string $countryIso3, array $adms): ?Location
+    {
+        $level = count($adms);
+
+        $lowestLevelLocation = $this->createQueryBuilder('l')
+            ->where('l.countryISO3 = :country')
+            ->andWhere('l.enumNormalizedName = :normalizedName')
+            ->andWhere('l.lvl = :level')
+            ->setParameter('country', $countryIso3)
+            ->setParameter('normalizedName', end($adms))
+            ->setParameter('level', $level)
+            ->getQuery()
+            ->getResult();
+
+        /** @var Location $location */
+        foreach ($lowestLevelLocation as $key => $location) {
+            $currentLevel = $level - 1;
+
+            $currentLevelLocation = $location;
+
+            while ($currentLevel > 0) {
+                $parent = $currentLevelLocation->getParentLocation();
+
+                if ($parent->getEnumNormalizedName() !== $adms[$currentLevel - 1]) {
+                    unset($lowestLevelLocation[$key]);
+                }
+
+                $currentLevelLocation = $parent;
+                $currentLevel--;
+            }
+        }
+
+        if (empty($lowestLevelLocation)) {
+            return null;
+        } else {
+            return current($lowestLevelLocation);
+        }
+    }
+
     public function getByNames(string $countryIso3, ?string $adm1, ?string $adm2, ?string $adm3, ?string $adm4): ?Location
     {
         $qb = $this->createQueryBuilder('l');
@@ -170,6 +215,15 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
         $qb->select("adm1.countryISO3 as country");
     }
 
+    public static function joinPathToRoot(QueryBuilder $qb, string $locationCurrentAlias, string $pathAlias) {
+        $qb->leftJoin(
+            Location::class,
+            $pathAlias,
+            Join::WITH,
+            "($pathAlias.rgt >= $locationCurrentAlias.rgt 
+                AND $pathAlias.lft <= $locationCurrentAlias.lft 
+                AND $pathAlias.lvl <= $locationCurrentAlias.lvl)");
+    }
 
 
     /**

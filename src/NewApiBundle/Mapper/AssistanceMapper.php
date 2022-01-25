@@ -4,12 +4,21 @@ declare(strict_types=1);
 namespace NewApiBundle\Mapper;
 
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Utils\AssistanceService;
 use NewApiBundle\Serializer\MapperInterface;
 
 class AssistanceMapper implements MapperInterface
 {
     /** @var Assistance */
     private $object;
+
+    /** @var AssistanceService */
+    private $service;
+
+    public function __construct(AssistanceService $service)
+    {
+        $this->service = $service;
+    }
 
     /**
      * {@inheritdoc}
@@ -46,6 +55,11 @@ class AssistanceMapper implements MapperInterface
     public function getDateDistribution(): string
     {
         return $this->object->getDateDistribution()->format(\DateTime::ISO8601);
+    }
+
+    public function getDateExpiration(): ?string
+    {
+        return $this->object->getDateExpiration() ? $this->object->getDateExpiration()->format(\DateTimeInterface::ISO8601) : null;
     }
 
     public function getProjectId(): int
@@ -135,5 +149,52 @@ class AssistanceMapper implements MapperInterface
     public function getCompleted(): bool
     {
         return (bool) $this->object->getCompleted();
+    }
+
+    public function getDistributionStarted(): bool
+    {
+        return $this->service->hasDistributionStarted($this->object);
+    }
+
+    public function getDeletable(): bool
+    {
+        return !$this->object->getValidated();
+    }
+
+    public function getSelectionId(): int
+    {
+        return $this->object->getAssistanceSelection()->getId();
+    }
+
+    public function getRemoteDistributionAllowed(): ?bool
+    {
+        return $this->object->isRemoteDistributionAllowed();
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getFoodLimit(): ?string
+    {
+        return $this->object->getFoodLimit();
+    }
+    /**
+     * @return string|null
+     */
+    public function getNonFoodLimit(): ?string
+    {
+        return $this->object->getNonFoodLimit();
+    }
+    /**
+     * @return string|null
+     */
+    public function getCashbackLimit(): ?string
+    {
+        return $this->object->getCashbackLimit();
+    }
+
+    public function getAllowedProductCategoryTypes(): array
+    {
+        return $this->object->getAllowedProductCategoryTypes();
     }
 }

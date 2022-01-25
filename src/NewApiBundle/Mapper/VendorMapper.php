@@ -112,4 +112,9 @@ class VendorMapper implements MapperInterface
         return $this->object->canSellCashback();
     }
 
+    public function getCanDoRemoteDistributions(): bool
+    {
+        return $this->object->canDoRemoteDistributions();
+    }
+
 }

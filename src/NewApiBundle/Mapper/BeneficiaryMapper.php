@@ -5,6 +5,7 @@ namespace NewApiBundle\Mapper;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Serializer\MapperInterface;
 
 class BeneficiaryMapper implements MapperInterface
@@ -17,7 +18,9 @@ class BeneficiaryMapper implements MapperInterface
      */
     public function supports(object $object, $format = null, array $context = null): bool
     {
-        return $object instanceof Beneficiary && isset($context[self::NEW_API]) && true === $context[self::NEW_API];
+        return $object instanceof Beneficiary &&
+            isset($context[self::NEW_API]) && true === $context[self::NEW_API] &&
+            !isset($context['offline-app']);
     }
 
     /**
@@ -34,41 +37,6 @@ class BeneficiaryMapper implements MapperInterface
         throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Beneficiary::class.', '.get_class($object).' given.');
     }
 
-    public function getId(): int
-    {
-        return $this->object->getId();
-    }
-
-    public function getDateOfBirth(): string
-    {
-        return $this->object->getPerson()->getDateOfBirth()->format(\DateTime::ISO8601);
-    }
-
-    public function getLocalFamilyName(): string
-    {
-        return $this->object->getPerson()->getLocalFamilyName();
-    }
-
-    public function getLocalGivenName(): string
-    {
-        return $this->object->getPerson()->getLocalGivenName();
-    }
-
-    public function getLocalParentsName(): ?string
-    {
-        return $this->object->getPerson()->getLocalParentsName();
-    }
-
-    public function getEnFamilyName(): ?string
-    {
-        return $this->object->getPerson()->getEnFamilyName();
-    }
-
-    public function getEnGivenName(): ?string
-    {
-        return $this->object->getPerson()->getEnGivenName();
-    }
-
     public function getEnParentsName(): ?string
     {
         return $this->object->getPerson()->getEnParentsName();
@@ -76,7 +44,7 @@ class BeneficiaryMapper implements MapperInterface
 
     public function getGender(): string
     {
-        return 1 === $this->object->getPerson()->getGender() ? 'M' : 'F';
+        return PersonGender::MALE === $this->object->getPerson()->getGender() ? 'M' : 'F';
     }
 
     public function getNationalIds(): array
@@ -124,5 +92,45 @@ class BeneficiaryMapper implements MapperInterface
         }
 
         return $data;
+    }
+
+    public function getId(): int
+    {
+        return $this->object->getId();
+    }
+
+    public function getDateOfBirth(): string
+    {
+        return $this->object->getPerson()->getDateOfBirth()->format(\DateTime::ISO8601);
+    }
+
+    public function getLocalFamilyName(): string
+    {
+        return $this->object->getPerson()->getLocalFamilyName();
+    }
+
+    public function getLocalGivenName(): string
+    {
+        return $this->object->getPerson()->getLocalGivenName();
+    }
+
+    public function getLocalParentsName(): ?string
+    {
+        return $this->object->getPerson()->getLocalParentsName();
+    }
+
+    public function getEnFamilyName(): ?string
+    {
+        return $this->object->getPerson()->getEnFamilyName();
+    }
+
+    public function getEnGivenName(): ?string
+    {
+        return $this->object->getPerson()->getEnGivenName();
+    }
+
+    public function getHouseholdId(): int
+    {
+        return $this->object->getHousehold()->getId();
     }
 }

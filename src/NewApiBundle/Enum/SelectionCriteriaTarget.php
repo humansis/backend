@@ -5,6 +5,8 @@ namespace NewApiBundle\Enum;
 
 final class SelectionCriteriaTarget
 {
+    use EnumTrait;
+
     const BENEFICIARY = 'Beneficiary';
     const HOUSEHOLD_HEAD = 'Head';
     const HOUSEHOLD = 'Household';

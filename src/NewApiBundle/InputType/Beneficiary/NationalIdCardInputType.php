@@ -1,11 +1,12 @@
 <?php
-
 declare(strict_types=1);
 
 namespace NewApiBundle\InputType\Beneficiary;
 
+use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use NewApiBundle\Validator\Constraints\Enum;
 
 class NationalIdCardInputType implements InputTypeInterface
 {
@@ -18,9 +19,8 @@ class NationalIdCardInputType implements InputTypeInterface
     private $number;
 
     /**
-     * @Assert\Choice(callback={"BeneficiaryBundle\Entity\NationalId","types"})
      * @Assert\NotNull
-     * @Assert\NotBlank
+     * @Enum(enumClass="NewApiBundle\Enum\NationalIdType")
      */
     private $type;
 
@@ -45,7 +45,7 @@ class NationalIdCardInputType implements InputTypeInterface
      */
     public function getType()
     {
-        return $this->type;
+        return NationalIdType::valueFromAPI($this->type);
     }
 
     /**

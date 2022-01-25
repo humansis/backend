@@ -24,7 +24,7 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
     public function testStatistics()
     {
         /** @var Assistance $assistance */
-        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy([])[0];
+        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/statistics');
 
@@ -46,7 +46,7 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
     public function testList()
     {
         /** @var Assistance $assistance */
-        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy(['archived' => false])[0];
+        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy(['archived' => false], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/assistances/statistics?filter[id][]='.$assistance->getId(), ['country' => 'KHM']);
 

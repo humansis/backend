@@ -16,33 +16,195 @@ use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
+use NewApiBundle\Enum\PersonGender;
+use NewApiBundle\InputType\ImportPatchInputType;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Utils\ProjectService;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Tests\NewApiBundle\Component\Import\Helper\ChecksTrait;
+use Tests\NewApiBundle\Component\Import\Helper\CliTrait;
+use Tests\NewApiBundle\Component\Import\Helper\DefaultDataTrait;
 use UserBundle\Entity\User;
 
 class ImportFinishServiceTest extends KernelTestCase
 {
+    use CliTrait;
+    use ChecksTrait;
+    use DefaultDataTrait;
+
     const TEST_COUNTRY = 'KHM';
     // json copied from KHM-Import-2HH-3HHM.ods
-    const TEST_QUEUE_ITEM = '[{"Adm1": "Banteay Meanchey", "Adm2": null, "Adm3": null, "Adm4": null, "Head": "true",
-    "ID Number": 123456789, "ID Type": "National ID",
-    "F 0 - 2": 1, "F 2 - 5": 2, "F 6 - 17": 3, "F 18 - 59": 4, "F 60+": 5,
-    "M 0 - 2": null, "M 2 - 5": null, "M 6 - 17": null, "M 18 - 59": null, "M 60+": null,
-    "Notes": "import from unittest", "Assets": null, "Gender": "Male",  
-    "Latitude": null, "Camp name": null, "Longitude": null, 
-    "Debt Level": 3, "Livelihood": "Government", "Tent number": null, "Income level": null, "Type phone 1": "Mobile", 
-    "Type phone 2": null, "Date of birth": "31-12-2000", "Proxy phone 1": null, "Proxy phone 2": null, "Address number": 123, 
-    "Address street": "Fake St", "Number phone 1": "10834243", "Number phone 2": null, "Prefix phone 1": "+855", 
-    "Prefix phone 2": null, "Shelter status": null, "Address postcode": 90210, "Local given name": "John", 
-    "Residency status": "Resident", "Local family name": "Smith", "English given name": null, "English family name": null, 
-    "Food Consumption Score": 3, "Support Received Types": "MPCA", "Vulnerability criteria": "disabled", "Coping Strategies Index": 2}]';
+    const TEST_QUEUE_ITEM = '[
+  {
+    "Adm1": {
+      "value": "Banteay Meanchey",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Adm2": null,
+    "Adm3": null,
+    "Adm4": null,
+    "Head": {
+      "value": "true",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "ID Number": {
+      "value": 123456789,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "ID Type": {
+      "value": "National ID",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "F 0 - 2": {
+      "value": 1,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "F 2 - 5": {
+      "value": 2,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "F 6 - 17": {
+      "value": 3,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "F 18 - 59": {
+      "value": 4,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "F 60+": {
+      "value": 5,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "M 0 - 2": null,
+    "M 2 - 5": null,
+    "M 6 - 17": null,
+    "M 18 - 59": null,
+    "M 60+": null,
+    "Notes": {
+      "value": "import from unittest",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Assets": null,
+    "Gender": {
+      "value": "Male",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Latitude": null,
+    "Camp name": null,
+    "Longitude": null,
+    "Debt Level": {
+      "value": 3,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "Livelihood": {
+      "value": "Government",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Tent number": null,
+    "Income level": null,
+    "Type phone 1": {
+      "value": "Mobile",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Type phone 2": null,
+    "Date of birth": {
+      "value": "31-12-2020",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Proxy phone 1": null,
+    "Proxy phone 2": null,
+    "Address number": {
+      "value": 123,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "Address street": {
+      "value": "Fake St",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Number phone 1": {
+      "value": "15236975",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Number phone 2": null,
+    "Prefix phone 1": {
+      "value": "+855",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Prefix phone 2": null,
+    "Shelter status": null,
+    "Address postcode": {
+      "value": 90210,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "Local given name": {
+      "value": "John",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Residency status": {
+      "value": "Resident",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Local family name": {
+      "value": "Smith",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "English given name": null,
+    "English family name": null,
+    "Food Consumption Score": {
+      "value": 3,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "Support Received Types": {
+      "value": "MPCA",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Vulnerability criteria": {
+      "value": "disabled",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Coping Strategies Index": {
+      "value": 2,
+      "dataType": "n",
+      "numberFormat": "General"
+    }
+  }
+]';
 
     /** @var EntityManagerInterface */
     private $entityManager;
 
     /** @var ImportService */
     private $importService;
+
+    /** @var Application */
+    private $application;
 
     /** @var Project */
     private $project;
@@ -68,6 +230,8 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager = $kernel->getContainer()
             ->get('doctrine')
             ->getManager();
+
+        $this->application = new Application($kernel);
 
         $this->importService = $kernel->getContainer()->get(ImportService::class);
         $this->projectService = $kernel->getContainer()->get('project.project_service');
@@ -95,18 +259,19 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->originHousehold = $this->createBlankHousehold($this->project);
 
         $this->import = new Import('unit test', 'note', $this->project, $this->getUser());
-        $this->import->setState(ImportState::IMPORTING);
+        $this->import->setState(ImportState::SIMILARITY_CHECK_CORRECT);
         $this->entityManager->persist($this->import);
 
         $this->importFile = new ImportFile('unit-test.xlsx', $this->import, $this->getUser());
         $this->importFile->setIsLoaded(true);
 
         $this->entityManager->persist($this->importFile);
+        $this->entityManager->flush();
     }
 
     public function testEmpty()
     {
-        $this->importService->finish($this->import);
+        $this->userStartedFinishing($this->import);
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
@@ -129,7 +294,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager->persist($queueItem);
         $this->entityManager->flush();
 
-        $this->importService->finish($this->import);
+        $this->userStartedFinishing($this->import);
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(17, $bnfCount, "Wrong number of created beneficiaries");
@@ -158,7 +323,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager->persist($duplicity);
         $this->entityManager->flush();
 
-        $this->importService->finish($this->import);
+        $this->userStartedFinishing($this->import);
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(17, $bnfCount, "Wrong number of created beneficiaries");
@@ -187,7 +352,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager->persist($duplicity);
         $this->entityManager->flush();
 
-        $this->importService->finish($this->import);
+        $this->userStartedFinishing($this->import);
 
         $links = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
             'import' => $this->import->getId()
@@ -213,7 +378,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager->persist($duplicity);
         $this->entityManager->flush();
 
-        $this->importService->finish($this->import);
+        $this->userStartedFinishing($this->import);
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
@@ -231,7 +396,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager->persist($queueItem);
         $this->entityManager->flush();
 
-        $this->importService->finish($this->import);
+        $this->userStartedFinishing($this->import);
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
@@ -245,7 +410,7 @@ class ImportFinishServiceTest extends KernelTestCase
     public function testUndecided()
     {
         $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
-        $queueItem->setState(ImportQueueState::SUSPICIOUS);
+        $queueItem->setState(ImportQueueState::IDENTITY_CANDIDATE);
         $duplicity = new ImportBeneficiaryDuplicity($queueItem, $this->originHousehold);
         $duplicity->setState(ImportDuplicityState::DUPLICITY_CANDIDATE);
         $duplicity->setDecideAt(new \DateTime());
@@ -255,7 +420,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->entityManager->persist($duplicity);
         $this->entityManager->flush();
 
-        $this->importService->finish($this->import);
+        $this->userStartedFinishing($this->import);
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
@@ -275,51 +440,4 @@ class ImportFinishServiceTest extends KernelTestCase
     {
         $this->assertEquals(ImportState::FINISHED, $this->import->getState(), "Wrong import state");
     }
-
-    private function createBlankHousehold(Project $project): Household
-    {
-        $hh = new Household();
-
-        $hh->setLongitude('empty');
-        $hh->setLatitude('empty');
-        $hh->setCopingStrategiesIndex(0);
-        $hh->setDebtLevel(0);
-        $hh->setFoodConsumptionScore(0);
-        $hh->setIncomeLevel(0);
-        $hh->setNotes('default HH in '.__CLASS__);
-
-        $hhh = new Beneficiary();
-        $hhh->setHousehold($hh);
-        $birthDate = new \DateTime();
-        $birthDate->modify("-30 year");
-        $hhh->getPerson()->setDateOfBirth($birthDate);
-        $hhh->getPerson()->setEnFamilyName('empty');
-        $hhh->getPerson()->setEnGivenName('empty');
-        $hhh->getPerson()->setLocalFamilyName('empty');
-        $hhh->getPerson()->setLocalGivenName('empty');
-        $hhh->getPerson()->setGender(0);
-        $hhh->setHead(true);
-        $hhh->setResidencyStatus('empty');
-
-        $nationalId = new NationalId();
-        $nationalId->setIdType('National ID');
-        $nationalId->setIdNumber('123456789');
-        $hhh->getPerson()->addNationalId($nationalId);
-        $nationalId->setPerson($hhh->getPerson());
-
-        $hh->addBeneficiary($hhh);
-        $hh->addProject($project);
-        $hhh->addProject($project);
-        $this->entityManager->persist($nationalId);
-        $this->entityManager->persist($hh);
-        $this->entityManager->persist($hhh);
-        $this->entityManager->flush();
-        return $hh;
-    }
-
-    private function getUser(): User
-    {
-        return $this->entityManager->getRepository(User::class)->findOneBy([]);
-    }
-
 }

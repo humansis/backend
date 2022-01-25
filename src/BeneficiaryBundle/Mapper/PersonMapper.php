@@ -2,6 +2,7 @@
 namespace BeneficiaryBundle\Mapper;
 
 use BeneficiaryBundle\Entity\Person;
+use NewApiBundle\Enum\PersonGender;
 
 class PersonMapper
 {
@@ -40,7 +41,7 @@ class PersonMapper
             "phones" => $this->phoneMapper->toFullArrays($person->getPhones()),
             "national_ids" => $this->nationalIdMapper->toFullArrays($person->getNationalIds()),
             "profile" => $this->profileMapper->toFullArray($person->getProfile()),
-            "gender" => $person->getGender(),
+            "gender" => $person->getGender() ? PersonGender::valueToAPI($person->getGender()) : null,
             "referral" => $person->getReferral(),
             "date_of_birth" => $person->getDateOfBirth() ? $person->getDateOfBirth()->format('d-m-Y') : null,
             "age" => $person->getAge(),

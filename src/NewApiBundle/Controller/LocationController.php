@@ -12,6 +12,7 @@ use CommonBundle\Entity\Location;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Country\Countries;
+use NewApiBundle\Enum\RoleType;
 use NewApiBundle\InputType\AdmFilterInputType;
 use NewApiBundle\InputType\LocationFilterInputType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -19,6 +20,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use UserBundle\Entity\User;
+use UserBundle\Entity\UserCountry;
+use UserBundle\Entity\UserProject;
 
 /**
  * @Cache(expires="+5 days", public=true)
@@ -57,18 +60,34 @@ class LocationController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function userCountries(User $user)
+    public function userCountries(User $user): JsonResponse
     {
-        if (0 === $user->getCountries()->count()) {
-            return $this->json(new Paginator($this->getParameter('app.countries')));
-        }
-
+        $allCountries = $this->getParameter('app.countries');
+        $userRoles = $user->getRoles();
         $data = [];
 
-        /** @var \UserBundle\Entity\UserCountry $userCountry */
-        foreach ($user->getCountries() as $userCountry) {
-            foreach ($this->getParameter('app.countries') as $country) {
-                if ($userCountry->getIso3() === $country['iso3']) {
+        if (in_array(RoleType::ADMIN, $userRoles)) {
+
+            return $this->json(new Paginator($allCountries));
+        } elseif (in_array(RoleType::COUNTRY_MANAGER, $userRoles) || in_array(RoleType::REGIONAL_MANAGER, $userRoles)) {
+
+            /** @var UserCountry $userCountry */
+            foreach ($user->getCountries() as $userCountry) {
+                foreach ($allCountries as $country) {
+                    if ($country['iso3'] === $userCountry->getIso3()) {
+                        $data[] = $country;
+                    }
+                }
+            }
+        } else {
+            $projects = [];
+
+            /** @var UserProject $userProject */
+            foreach ($user->getProjects() as $userProject) {
+                $projects[] = $userProject->getProject()->getIso3();
+            }
+            foreach ($allCountries as $country) {
+                if (in_array($country['iso3'], $projects)) {
                     $data[] = $country;
                 }
             }

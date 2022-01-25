@@ -5,7 +5,9 @@ namespace ProjectBundle\Entity;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
-
+use NewApiBundle\Entity\Helper\CreatedAt;
+use NewApiBundle\Entity\Helper\LastModifiedAt;
+use NewApiBundle\Enum\ProductCategoryType;
 use ProjectBundle\DTO\Sector;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
@@ -20,6 +22,9 @@ use BeneficiaryBundle\Entity\Household;
  */
 class Project implements ExportableInterface
 {
+    use CreatedAt;
+    use LastModifiedAt;
+
     /**
      * @var int
      *
@@ -144,6 +149,26 @@ class Project implements ExportableInterface
      */
     private $distributions;
 
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="project_invoice_address_local", type="text", nullable=true, options={"default" : null})
+     */
+    private $projectInvoiceAddressLocal = null;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="project_invoice_address_english", type="text", nullable=true, options={"default" : null})
+     */
+    private $projectInvoiceAddressEnglish = null;
+
+    /**
+     * @var string[]
+     *
+     * @ORM\Column(name="allowed_product_category_types", type="array", nullable=false)
+     */
+    private $allowedProductCategoryTypes;
 
     /**
      * Constructor
@@ -155,6 +180,8 @@ class Project implements ExportableInterface
         $this->sectors = new \Doctrine\Common\Collections\ArrayCollection();
         $this->households = new \Doctrine\Common\Collections\ArrayCollection();
         $this->distributions = new \Doctrine\Common\Collections\ArrayCollection();
+
+        $this->allowedProductCategoryTypes = [];
     }
 
     /**
@@ -691,4 +718,69 @@ class Project implements ExportableInterface
         
         $this->setNumberOfHouseholds(intval($em->getRepository(Household::class)->countUnarchivedByProject($entity)));
     }
+
+    /**
+     * @return string|null
+     */
+    public function getProjectInvoiceAddressLocal(): ?string
+    {
+        return $this->projectInvoiceAddressLocal;
+    }
+
+    /**
+     * @param string|null $projectInvoiceAddressLocal
+     *
+     * @return Project
+     */
+    public function setProjectInvoiceAddressLocal(?string $projectInvoiceAddressLocal): Project
+    {
+        $this->projectInvoiceAddressLocal = $projectInvoiceAddressLocal;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getProjectInvoiceAddressEnglish(): ?string
+    {
+        return $this->projectInvoiceAddressEnglish;
+    }
+
+    /**
+     * @param string|null $projectInvoiceAddressEnglish
+     *
+     * @return Project
+     */
+    public function setProjectInvoiceAddressEnglish(?string $projectInvoiceAddressEnglish): Project
+    {
+        $this->projectInvoiceAddressEnglish = $projectInvoiceAddressEnglish;
+
+        return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getAllowedProductCategoryTypes(): array
+    {
+        return $this->allowedProductCategoryTypes;
+    }
+
+    /**
+     * @param string[] $allowedProductCategoryTypes
+     */
+    public function setAllowedProductCategoryTypes(array $allowedProductCategoryTypes): Project
+    {
+        foreach ($allowedProductCategoryTypes as $categoryType) {
+            if (!in_array($categoryType, ProductCategoryType::values())) {
+                throw new \InvalidArgumentException("$categoryType is not valid category type value. Allowed values: [" . implode(',', ProductCategoryType::values()) . ']');
+            }
+        }
+
+        $this->allowedProductCategoryTypes = $allowedProductCategoryTypes;
+
+        return $this;
+    }
+
 }

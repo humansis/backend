@@ -65,9 +65,8 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
     ): Paginator
     {
         $qb = $this->createQueryBuilder('p')
-            ->join('p.productCategory', 'c')
+            ->leftJoin('p.productCategory', 'c')
             ->andWhere('p.archived = 0')
-            ->andWhere('c.archived = 0')
             ->andWhere('p.countryISO3 = :countryIso3')
             ->setParameter('countryIso3', $countryIso3);
 
@@ -87,6 +86,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
                 if ($vendor->canSellNonFood()) $sellableCategoryTypes[] = ProductCategoryType::NONFOOD;
                 if ($vendor->canSellCashback()) $sellableCategoryTypes[] = ProductCategoryType::CASHBACK;
 
+                $qb->andWhere('p.productCategory IS NOT NULL');
                 $qb->andWhere('c.type in (:availableTypes)')
                     ->setParameter('availableTypes', $sellableCategoryTypes)
                 ;

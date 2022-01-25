@@ -14,11 +14,13 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Workflow\ReliefPackageTransitions;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Workflow\Registry;
 
 /**
  * Class AssistanceBeneficiaryService
@@ -38,6 +40,8 @@ class AssistanceBeneficiaryService
     /** @var ContainerInterface $container */
     private $container;
 
+    /** @var Registry $workflowRegistry */
+    private $workflowRegistry;
 
     /**
      * AssistanceBeneficiaryService constructor.
@@ -46,12 +50,13 @@ class AssistanceBeneficiaryService
      * @param ValidatorInterface $validator
      * @param ContainerInterface $container
      */
-    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator, ContainerInterface $container)
+    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator, ContainerInterface $container, Registry $workflowRegistry)
     {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->container = $container;
+        $this->workflowRegistry = $workflowRegistry;
     }
 
     /**
@@ -274,6 +279,15 @@ class AssistanceBeneficiaryService
 
         $assistanceBeneficiary->setRemoved(1)
             ->setJustification($deletionData['justification']);
+
+        foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
+            $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
+
+            if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::CANCEL)) {
+                $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::CANCEL);
+            }
+        }
+
         $this->em->persist($assistanceBeneficiary);
         $this->em->flush();
         return true;

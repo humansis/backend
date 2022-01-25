@@ -71,7 +71,8 @@ class SmartcardPurchaseControllerTest extends BMSServiceTestCase
             ->join('sp.vendor', 'v')
             ->join('sp.smartcard', 's')
             ->join('s.deposites', 'sd')
-            ->join('sd.assistanceBeneficiary', 'ab')
+            ->join('sd.reliefPackage', 'pack')
+            ->join('pack.assistanceBeneficiary', 'ab')
             ->join('ab.assistance', 'a')
             ->join('a.project', 'p')
             ->where('sp.redemptionBatch IS NULL')
@@ -79,7 +80,7 @@ class SmartcardPurchaseControllerTest extends BMSServiceTestCase
             ->setMaxResults(1)
             ->getSingleResult();
 
-        $vendor = $this->em->getRepository(Vendor::class)->findOneBy(['vendorNo' => $result['vendorNo']]);
+        $vendor = $this->em->getRepository(Vendor::class)->findOneBy(['vendorNo' => $result['vendorNo']], ['id' => 'asc']);
 
         $this->request('GET', '/api/basic/vendor-app/v1/vendors/'.$vendor->getId().'/projects/'.$result['id'].'/currencies/'.$result['currency'].'/smartcard-purchases');
 
