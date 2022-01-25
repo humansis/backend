@@ -4,9 +4,13 @@ declare(strict_types=1);
 namespace NewApiBundle\Component\Import\Integrity;
 
 use CommonBundle\Entity\Location;
+use CommonBundle\Repository\LocationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\Utils\ImportDateConverter;
 use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Enum\EnumTrait;
+use NewApiBundle\InputType\Beneficiary\Address\CampAddressInputType;
+use NewApiBundle\InputType\Beneficiary\Address\CampInputType;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\CountrySpecificsAnswerInputType;
 use NewApiBundle\InputType\HouseholdCreateInputType;
@@ -90,21 +94,32 @@ class HouseholdDecoratorBuilder
             $household->addCountrySpecificAnswer($specificAnswer);
         }
 
-        $locationRepository = $this->entityManager->getRepository(Location::class);
-        $locationByAdms = $locationRepository->getByNames(
-            $this->countryIso3,
-            $this->householdLine->adm1,
-            $this->householdLine->adm2,
-            $this->householdLine->adm3,
-            $this->householdLine->adm4
-        );
-        if (null !== $locationByAdms) {
-            $address = new ResidenceAddressInputType();
-            $address->setNumber($this->householdLine->addressStreet);
-            $address->setPostcode($this->householdLine->addressPostcode);
-            $address->setNumber($this->householdLine->addressNumber);
-            $address->setLocationId($locationByAdms->getId());
-            $household->setResidenceAddress($address);
+        // defined must be Camp or Address - it's checked in Integrity Checking
+        if($this->householdLine->campName && $this->householdLine->tentNumber){
+            $household->setCampAddress($this->buildCampAddress($this->householdLine));
+        } else {
+            /** @var LocationRepository $locationRepository */
+            $locationRepository = $this->entityManager->getRepository(Location::class);
+            $adms = [
+                EnumTrait::normalizeValue($this->householdLine->adm1),
+                EnumTrait::normalizeValue($this->householdLine->adm2),
+                EnumTrait::normalizeValue($this->householdLine->adm3),
+                EnumTrait::normalizeValue($this->householdLine->adm4)
+            ];
+            $locationsArray = array_filter($adms, function ($value) {
+                return !empty($value);
+            });
+
+            $location = $locationRepository->getByNormalizedNames($this->countryIso3, $locationsArray);
+
+            if (null !== $location) {
+                $address = new ResidenceAddressInputType();
+                $address->setStreet($this->householdLine->addressStreet);
+                $address->setPostcode($this->householdLine->addressPostcode);
+                $address->setNumber($this->householdLine->addressNumber);
+                $address->setLocationId($location->getId());
+                $household->setResidenceAddress($address);
+            }
         }
 
         foreach ($this->importLines as $importLine) {
@@ -145,7 +160,7 @@ class HouseholdDecoratorBuilder
     private function buildMembersByAgeAndGender(string $gender, int $age, int $count): iterable
     {
         if (0 === $count) return;
-        $today = new \DateTime();
+        $today = new \DateTimeImmutable();
 
         for ($i=0; $i<$count; $i++) {
             $beneficiary = new BeneficiaryInputType();
@@ -154,6 +169,48 @@ class HouseholdDecoratorBuilder
             $beneficiary->setIsHead(false);
             yield $beneficiary;
         }
+    }
+
+    /**
+     * @return CampAddressInputType
+     */
+    private function buildCampAddress($line): CampAddressInputType
+    {
+        $campAddress = new CampAddressInputType();
+        $campAddress->setCamp($this->buildCampInputType($line));
+        $campAddress->setTentNumber($line->tentNumber);
+
+        return $campAddress;
+    }
+
+    /**
+     * @return CampInputType
+     */
+    private function buildCampInputType($line): CampInputType
+    {
+        $campInput = new CampInputType();
+        $campInput->setName($line->campName);
+
+        /** @var LocationRepository $locationRepository */
+        $locationRepository = $this->entityManager->getRepository(Location::class);
+
+        $adms = [
+            EnumTrait::normalizeValue($line->adm1),
+            EnumTrait::normalizeValue($line->adm2),
+            EnumTrait::normalizeValue($line->adm3),
+            EnumTrait::normalizeValue($line->adm4)
+        ];
+
+        $locationsArray = array_filter($adms, function ($value) {
+            return !empty($value);
+        });
+
+        $location = $locationRepository->getByNormalizedNames($this->countryIso3,$locationsArray);
+        if ($location !== null) {
+            $campInput->setLocationId($location->getId());
+        }
+
+        return $campInput;
     }
 
 }

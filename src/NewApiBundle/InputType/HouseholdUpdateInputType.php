@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
-use NewApiBundle\Component\Import\Integrity\EnumNormalizeTrait;
-use NewApiBundle\Component\Import\Utils\ImportDateConverter;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
