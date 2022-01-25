@@ -7,6 +7,8 @@ use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\Component\Import\ImportFinisher;
 use NewApiBundle\Component\Import\ImportReset;
 use NewApiBundle\Entity\Import;
+use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportTransitions;
 use NewApiBundle\Workflow\WorkflowTool;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -42,9 +44,24 @@ class FinishSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
+            'workflow.import.guard.'.ImportTransitions::FINISH => ['guardAllItemsAreImported'],
             'workflow.import.guard.'.ImportTransitions::IMPORT => ['guardIfThereIsOnlyOneFinishingImport'],
             'workflow.import.completed.'.ImportTransitions::RESET => ['resetImport'],
         ];
+    }
+
+    public function guardAllItemsAreImported(GuardEvent $event)
+    {
+        /** @var Import $import */
+        $import = $event->getSubject();
+
+        /** @var ImportQueueRepository $importQueueRepository */
+        $importQueueRepository = $this->entityManager->getRepository(ImportQueue::class);
+
+        $entriesReadyForImport = $importQueueRepository->getTotalReadyForSave($import);
+        if ($entriesReadyForImport > 0) {
+            $event->addTransitionBlocker(new TransitionBlocker('Import can\'t be finished because there are still ' . $entriesReadyForImport . ' entries ready for import', '0'));
+        }
     }
 
     /**

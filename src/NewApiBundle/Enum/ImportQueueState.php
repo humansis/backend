@@ -51,4 +51,13 @@ final class ImportQueueState
             self::TO_IGNORE,
         ];
     }
+
+    public static function importedStates(): array
+    {
+        return [
+            self::CREATED,
+            self::UPDATED,
+            self::LINKED,
+        ];
+    }
 }

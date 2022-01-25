@@ -12,6 +12,8 @@ class ConcurrencyProcessor
     private $lockBatchCallback;
     /** @var callable */
     private $batchItemsCallback;
+    /** @var int */
+    private $maxResultsToProcess;
 
     /**
      * @param int $batchSize
@@ -62,9 +64,20 @@ class ConcurrencyProcessor
     }
 
     /**
-     * @param callable $processItemCallback
+     * @param int $maxResultsToProcess
      *
      * @return ConcurrencyProcessor
+     */
+    public function setMaxResultsToProcess(int $maxResultsToProcess): ConcurrencyProcessor
+    {
+        $this->maxResultsToProcess = $maxResultsToProcess;
+
+        return $this;
+    }
+
+    /**
+     * @param callable $processItemCallback
+     *
      */
     public function processItems(callable $processItemCallback): void
     {
@@ -73,7 +86,10 @@ class ConcurrencyProcessor
         $getBatchCallback = $this->batchItemsCallback;
         $itemCount = $allItemCountCallback();
 
-        foreach (range(0, $itemCount+$this->batchSize, $this->batchSize) as $batchStart) {
+        $totalItemsToProcess = $itemCount > $this->maxResultsToProcess ? $this->maxResultsToProcess : $itemCount;
+        $step = $totalItemsToProcess < $this->batchSize ? $totalItemsToProcess + 1 : $this->batchSize;
+
+        foreach (range(1, $totalItemsToProcess, $step) as $batchStart) {
             $runCode = uniqid();
             $lockItemsCallback($runCode, $this->batchSize);
 

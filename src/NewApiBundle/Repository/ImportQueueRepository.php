@@ -10,36 +10,29 @@ use NewApiBundle\Enum\ImportQueueState;
 
 class ImportQueueRepository extends EntityRepository
 {
-    /**
-     * @param Import $import
-     * @param string|string[]       $state
-     * @param string $code
-     * @param int    $count
-     */
-    public function lock(Import $import, $state, string $code, int $count): void
+    public function findUnlocked(Import $import, $state,int $count)
     {
-        $qb = $this->_em->createQueryBuilder();
-        $builder = $qb->update("NewApiBundle:ImportQueue", 'iq')
-            ->set('iq.lockedAt', ':when')->setParameter('when', new \DateTime())
-            ->set('iq.lockedBy', ':code')->setParameter('code', $code)
+        $qb = $this->createQueryBuilder('iq');
+        $builder = $qb
             ->andWhere('iq.import = :import')
             ->andWhere('iq.lockedBy IS NULL OR iq.lockedAt <= :expiredLock')
             ->setParameter('expiredLock', (new \DateTime())->sub(date_interval_create_from_date_string('1 hours')))
             ->setParameter('import', $import)
             ->setMaxResults($count)
-            ;
+        ;
         if (is_string($state)) {
             $builder
                 ->andWhere('iq.state = :state')
                 ->setParameter('state', $state)
-                ;
+            ;
         } elseif (is_array($state)) {
             $builder
                 ->andWhere('iq.state IN (:states)')
                 ->setParameter('states', $state)
             ;
         }
-        $builder->getQuery()->execute();
+
+        return $builder->getQuery()->getResult();
     }
 
     public function getTotalByImportAndStatus(Import $import, string $state): int
@@ -143,7 +136,7 @@ class ImportQueueRepository extends EntityRepository
         return $this->findBy([
             'import' => $import,
             'state' => ImportQueueState::VALID,
-            'identityCheckedAt' => null
+            'identityCheckedAt' => null,
         ], ['id' => 'asc'], $batchSize);
     }
 
@@ -152,7 +145,7 @@ class ImportQueueRepository extends EntityRepository
         return $this->count([
             'import' => $import,
             'state' => ImportQueueState::VALID,
-            'identityCheckedAt' => null
+            'identityCheckedAt' => null,
         ]);
     }
 
@@ -167,7 +160,7 @@ class ImportQueueRepository extends EntityRepository
         return $this->findBy([
             'import' => $import,
             'state' => [ImportQueueState::VALID, ImportQueueState::UNIQUE_CANDIDATE],
-            'similarityCheckedAt' => null
+            'similarityCheckedAt' => null,
         ], ['id' => 'asc'], $batchSize);
     }
 
