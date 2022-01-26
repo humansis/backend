@@ -205,7 +205,8 @@ class HouseholdService
         if ($inputType->getCampId()) {
             $camp = $this->em->getRepository(Camp::class)->find($inputType->getCampId());
         } else {
-            $camp = $this->em->getRepository(Camp::class)->findOneBy(['name' => $inputType->getCamp()->getName()]);
+            $camp = $this->em->getRepository(Camp::class)
+                ->findOneBy(['name' => $inputType->getCamp()->getName(), 'location' => $inputType->getCamp()->getLocationId()]);
         }
 
         // Or create a camp with the name in the request
