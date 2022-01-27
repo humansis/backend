@@ -57,7 +57,11 @@ class ImportFinisher
      */
     private $queueRepository;
 
+    /** @var integer */
+    private $totalBatchSize;
+
     public function __construct(
+        int                    $totalBatchSize,
         EntityManagerInterface $em,
         HouseholdService       $householdService,
         LoggerInterface        $logger,
@@ -70,6 +74,7 @@ class ImportFinisher
         $this->householdService = $householdService;
         $this->queueRepository = $em->getRepository(ImportQueue::class);
         $this->logger = $logger;
+        $this->totalBatchSize = $totalBatchSize;
     }
 
     /**
@@ -93,6 +98,7 @@ class ImportFinisher
         $itemProcessor = new ConcurrencyProcessor();
         $itemProcessor
             ->setBatchSize(self::LOCK_BATCH)
+            ->setMaxResultsToProcess($this->totalBatchSize)
             ->setCountAllCallback(function() use ($import, $statesToFinish) {
                 return $this->queueRepository->count([
                     'import' => $import,
@@ -100,7 +106,7 @@ class ImportFinisher
                 ]);
             })
             ->setLockBatchCallback(function($runCode, $batchSize) use ($import, $statesToFinish) {
-                $this->queueRepository->lock($import, $statesToFinish, $runCode, $batchSize);
+                $this->lockImportQueue($import, $statesToFinish, $runCode, $batchSize);
             })
             ->setBatchItemsCallback(function($runCode) use ($import) {
                 return $this->queueRepository->findBy([
@@ -135,10 +141,27 @@ class ImportFinisher
             });
 
         $this->em->persist($import);
-        $this->importStateMachine->apply($import, ImportTransitions::FINISH);
         $this->em->flush();
 
-        $this->resetOtherImports($import);
+        if ($this->importStateMachine->can($import, ImportTransitions::FINISH)) {
+            $this->importStateMachine->apply($import, ImportTransitions::FINISH);
+
+            $this->resetOtherImports($import);
+        }
+
+        $this->em->flush();
+    }
+
+    private function lockImportQueue(Import $import, $state, string $code, int $count)
+    {
+        $unlocked = $this->queueRepository->findUnlocked($import, $state, $count);
+
+        /** @var ImportQueue $item */
+        foreach ($unlocked as $item) {
+            $item->lock($code);
+        }
+
+        $this->em->flush();
     }
 
     /**

@@ -307,13 +307,15 @@ class ImportTest extends KernelTestCase
 
         // resolve all as duplicity to update and continue
         $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::IDENTITY_CANDIDATE], ['id' => 'asc']);
+        /** @var ImportQueue $item */
         foreach ($queue as $item) {
             $this->assertGreaterThan(0, count($item->getDuplicities()));
+            /** @var ImportBeneficiaryDuplicity $firstDuplicity */
             $firstDuplicity = $item->getDuplicities()->first();
 
             $duplicityResolve = new DuplicityResolveInputType();
             $duplicityResolve->setStatus(ImportQueueState::TO_UPDATE);
-            $duplicityResolve->setAcceptedDuplicityId($firstDuplicity->getId());
+            $duplicityResolve->setAcceptedDuplicityId($firstDuplicity->getTheirs()->getId());
             $this->importService->resolveDuplicity($item, $duplicityResolve, $this->getUser());
         }
 

@@ -42,4 +42,14 @@ trait ConcurrencyLockTrait
         $this->lockedBy = null;
     }
 
+    public function lock(string $lockedBy): void
+    {
+        if (null !== $this->lockedAt || null !== $this->lockedBy) {
+            throw new \RuntimeException('Item #' . $this->getId() . ' is already locked by someone else. Locked at: "' . $this->lockedAt . '" Locked by: "' . $this->lockedBy . '".');
+        }
+
+        $this->lockedAt = new \DateTimeImmutable();
+        $this->lockedBy = $lockedBy;
+    }
+
 }
