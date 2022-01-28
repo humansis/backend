@@ -56,6 +56,7 @@ services:
             - '@voucher.purchase_service'
             - '@workflow.registry'
             - '@logger'
+            - '@cache.app'
         public: true
 
     VoucherBundle\Mapper\SmartcardMapper:

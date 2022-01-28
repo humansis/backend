@@ -10,6 +10,7 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManager;
 use NewApiBundle\Entity\ReliefPackage;
 use NewApiBundle\Enum\AssistanceBeneficiaryCommodityState;
+use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\InputType\SmartcardPurchaseInputType;
@@ -17,8 +18,10 @@ use NewApiBundle\Workflow\ReliefPackageTransitions;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Repository\ProjectRepository;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Workflow\Registry;
+use Symfony\Contracts\Cache\CacheInterface;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
@@ -46,12 +49,23 @@ class SmartcardService
     /** @var LoggerInterface  */
     private $logger;
 
-    public function __construct(EntityManager $em, PurchaseService $purchaseService, Registry $workflowRegistry, LoggerInterface $logger)
-    {
+    /**
+     * @var CacheInterface
+     */
+    private $cache;
+
+    public function __construct(
+        EntityManager   $em,
+        PurchaseService $purchaseService,
+        Registry        $workflowRegistry,
+        LoggerInterface $logger,
+        CacheInterface  $cache
+    ) {
         $this->em = $em;
         $this->purchaseService = $purchaseService;
         $this->workflowRegistry = $workflowRegistry;
         $this->logger = $logger;
+        $this->cache = $cache;
     }
 
     public function register(string $serialNumber, string $beneficiaryId, DateTime $createdAt): Smartcard
@@ -162,6 +176,7 @@ class SmartcardService
         }
 
         $this->em->persist($smartcard);
+        $this->cache->delete(CacheTarget::assistanceId($deposit->getReliefPackage()->getAssistanceBeneficiary()->getAssistance()->getId()));
         $this->em->flush();
 
         return $deposit;

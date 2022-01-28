@@ -22,6 +22,7 @@ use NewApiBundle\InputType\ProjectsAssistanceFilterInputType;
 use NewApiBundle\Request\Pagination;
 use NewApiBundle\Utils\DateTime\Iso8601Converter;
 use ProjectBundle\Entity\Project;
+use Psr\Cache\InvalidArgumentException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -30,6 +31,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolation;
 
 class AssistanceController extends AbstractController
@@ -40,10 +43,22 @@ class AssistanceController extends AbstractController
     /** @var AssistanceService */
     private $assistanceService;
 
-    public function __construct(VulnerabilityScoreExport $vulnerabilityScoreExport, AssistanceService $assistanceService)
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
+    /**
+     * @var NormalizerInterface
+     */
+    private $normalizer;
+
+    public function __construct(VulnerabilityScoreExport $vulnerabilityScoreExport, AssistanceService $assistanceService, SerializerInterface $serializer, NormalizerInterface $normalizer)
     {
         $this->vulnerabilityScoreExport = $vulnerabilityScoreExport;
         $this->assistanceService = $assistanceService;
+        $this->serializer = $serializer;
+        $this->normalizer = $normalizer;
     }
 
     /**
@@ -53,6 +68,7 @@ class AssistanceController extends AbstractController
      * @param AssistanceStatisticsFilterInputType $filter
      *
      * @return JsonResponse
+     * @throws InvalidArgumentException
      */
     public function statistics(Request $request, AssistanceStatisticsFilterInputType $filter): JsonResponse
     {
@@ -61,7 +77,18 @@ class AssistanceController extends AbstractController
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $statistics = $this->getDoctrine()->getRepository(AssistanceStatistics::class)->findByParams($countryIso3, $filter);
+        $statistics = [];
+        if($filter->hasIds()){
+            foreach($filter->getIds() as $key => $id){
+                $statistics[] = $this->assistanceService->getStatisticByAssistance($id, $countryIso3);
+            }
+        } else {
+
+            // TODO if we search only assistance IDs we can check if statistic is in cache
+
+            $statistics = $this->getDoctrine()->getRepository(AssistanceStatistics::class)->findByParams($countryIso3, $filter);
+        }
+
 
         return $this->json(new Paginator($statistics));
     }
@@ -73,10 +100,11 @@ class AssistanceController extends AbstractController
      * @param Assistance $assistance
      *
      * @return JsonResponse
+     * @throws InvalidArgumentException
      */
     public function assistanceStatistics(Assistance $assistance): JsonResponse
     {
-        $statistics = $this->getDoctrine()->getRepository(AssistanceStatistics::class)->findByAssistance($assistance);
+        $statistics = $this->assistanceService->getStatisticByAssistance($assistance);
 
         return $this->json($statistics);
     }

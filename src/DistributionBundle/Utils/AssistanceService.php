@@ -2,11 +2,18 @@
 
 namespace DistributionBundle\Utils;
 
+use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Entity\Person;
+use BeneficiaryBundle\Exception\CsvParserException;
+use CommonBundle\Entity\Location;
+use CommonBundle\Pagination\Paginator;
 use CommonBundle\Utils\LocationService;
+use DateTime;
+use DateTimeInterface;
+use DistributionBundle\DTO\VulnerabilityScore;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\Commodity;
@@ -15,25 +22,36 @@ use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
+use DistributionBundle\Repository\AssistanceRepository;
 use DistributionBundle\Utils\Retriever\AbstractRetriever;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\ORMException;
+use Exception;
+use InvalidArgumentException;
 use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
 use NewApiBundle\Entity\ReliefPackage;
 use NewApiBundle\Entity\AssistanceStatistics;
+use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\AssistanceCreateInputType;
-use NewApiBundle\InputType\GeneralReliefItemUpdateInputType;
 use NewApiBundle\InputType\GeneralReliefPatchInputType;
+use NewApiBundle\Repository\AssistanceStatisticsRepository;
 use NewApiBundle\Request\Pagination;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 use VoucherBundle\Entity\Voucher;
 
 /**
@@ -76,18 +94,31 @@ class AssistanceService
     /** @var Registry $workflowRegistry */
     private $workflowRegistry;
 
+    /** @var CacheInterface */
+    private $cache;
+
+    /** @var AssistanceStatisticsRepository */
+    private $assistanceStatisticRepository;
+
+    /** @var AssistanceRepository */
+    private $assistanceRepository;
+
     /**
      * AssistanceService constructor.
-     * @param EntityManagerInterface $entityManager
-     * @param Serializer $serializer
-     * @param ValidatorInterface $validator
-     * @param LocationService $locationService
-     * @param CommodityService $commodityService
-     * @param ConfigurationLoader $configurationLoader
+     *
+     * @param EntityManagerInterface    $entityManager
+     * @param Serializer                $serializer
+     * @param ValidatorInterface        $validator
+     * @param LocationService           $locationService
+     * @param CommodityService          $commodityService
+     * @param ConfigurationLoader       $configurationLoader
      * @param CriteriaAssistanceService $criteriaAssistanceService
-     * @param FieldDbTransformer $fieldDbTransformer
-     * @param string $classRetrieverString
-     * @param ContainerInterface $container
+     * @param FieldDbTransformer        $fieldDbTransformer
+     * @param string                    $classRetrieverString
+     * @param ContainerInterface        $container
+     * @param Registry                  $workflowRegistry
+     * @param FilesystemAdapter         $cache
+     *
      * @throws \Exception
      */
     public function __construct(
@@ -101,7 +132,8 @@ class AssistanceService
         FieldDbTransformer $fieldDbTransformer,
         string $classRetrieverString,
         ContainerInterface $container,
-        Registry $workflowRegistry
+        Registry $workflowRegistry,
+        CacheInterface $cache
     ) {
         $this->em = $entityManager;
         $this->serializer = $serializer;
@@ -113,29 +145,74 @@ class AssistanceService
         $this->fieldDbTransformer = $fieldDbTransformer;
         $this->container = $container;
         $this->workflowRegistry = $workflowRegistry;
+        $this->cache = $cache;
 
         try {
             $class = new \ReflectionClass($classRetrieverString);
             $this->retriever = $class->newInstanceArgs([$this->em]);
-        } catch (\Exception $exception) {
-            throw new \Exception("Your class Retriever is undefined or malformed.", 0, $exception);
+        } catch (Exception $exception) {
+            throw new Exception("Your class Retriever is undefined or malformed.", 0, $exception);
         }
+
+        $this->assistanceStatisticRepository = $this->em->getRepository(AssistanceStatistics::class);
+        $this->assistanceRepository = $this->em->getRepository(Assistance::class);
     }
 
+    /**
+     * @param Assistance|int $assistance
+     * @param string|null    $countryIso3
+     *
+     * @return array
+     * @throws \Psr\Cache\InvalidArgumentException
+     */
+    public function getStatisticByAssistance($assistance, ?string $countryIso3 = null): array
+    {
+        if ($assistance instanceof Assistance) {
+            $assistanceId = $assistance->getId();
+        }
+        $key = CacheTarget::assistanceId($assistanceId ?? $assistance);
+
+        return $this->cache->get($key, function (ItemInterface $item) use ($assistance, $countryIso3) {
+            if (is_int($assistance)) {
+                $assistanceId = $assistance;
+                $assistance = $this->assistanceRepository->find($assistance);
+                if(is_null($assistance)){
+                    throw new NotFoundHttpException("Assistance $assistanceId not found");
+                }
+            }
+
+            try{
+                $statistics = $this->assistanceStatisticRepository->findByAssistance($assistance, $countryIso3);
+            } catch (NoResultException $noResultException) {
+                throw new NotFoundHttpException("Assistance {$assistance->getId()} is not in country $countryIso3");
+            }
+
+            // TODO probably better way could be normalize (or store whole) dto
+            return [
+                'id' => $statistics->getId(),
+                'numberOfBeneficiaries' => $statistics->getNumberOfBeneficiaries(),
+                'amountTotal' => $statistics->getAmountTotal(),
+                'amountDistributed' => $statistics->getAmountDistributed(),
+                'amountUsed' => $statistics->getAmountUsed(),
+                'amountSent' => $statistics->getAmountSent(),
+                'amountPickedUp' => $statistics->getAmountPickedUp(),
+            ];
+        });
+    }
 
     /**
      * @param Assistance $assistance
      * @return Assistance
-     * @throws \Exception
+     * @throws Exception
      */
     public function validateDistribution(Assistance $assistance)
     {
         try {
             $assistance->setValidated(true)
-                ->setUpdatedOn(new \DateTime());
+                ->setUpdatedOn(new DateTime());
             $beneficiaries = $assistance->getDistributionBeneficiaries();
             return $this->setCommoditiesToNewBeneficiaries($assistance, $beneficiaries);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
     }
@@ -146,7 +223,7 @@ class AssistanceService
     public function unvalidateDistribution(Assistance $assistance): void
     {
         if ($this->hasDistributionStarted($assistance)) {
-            throw new \InvalidArgumentException('Unable to unvalidate the assistance. Assistance is already started.');
+            throw new InvalidArgumentException('Unable to unvalidate the assistance. Assistance is already started.');
         }
 
         $assistance
@@ -172,7 +249,7 @@ class AssistanceService
      * @param Assistance $assistance
      * @param AssistanceBeneficiary[] $beneficiaries
      * @return Assistance
-     * @throws \Exception
+     * @throws Exception
      */
     public function setCommoditiesToNewBeneficiaries(Assistance $assistance, iterable $beneficiaries): Assistance
     {
@@ -212,7 +289,7 @@ class AssistanceService
     {
         $project = $this->em->getRepository(Project::class)->find($inputType->getProjectId());
         if (!$project) {
-            throw new \Doctrine\ORM\EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
+            throw new EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
         }
 
         $filters = $this->mapping($inputType);
@@ -224,30 +301,30 @@ class AssistanceService
 
         $ids = array_slice($ids, $pagination->getOffset(), $pagination->getSize());
 
-        $beneficiaries = $this->em->getRepository(\BeneficiaryBundle\Entity\AbstractBeneficiary::class)->findBy(['id' => $ids]);
+        $beneficiaries = $this->em->getRepository(AbstractBeneficiary::class)->findBy(['id' => $ids]);
 
-        return new \CommonBundle\Pagination\Paginator($beneficiaries, $count);
+        return new Paginator($beneficiaries, $count);
     }
 
     /**
      * @param AssistanceCreateInputType $inputType
      * @param Pagination                $pagination
      *
-     * @return \CommonBundle\Pagination\Paginator|\DistributionBundle\DTO\VulnerabilityScore[]
+     * @return Paginator|VulnerabilityScore[]
      * @throws EntityNotFoundException
-     * @throws \BeneficiaryBundle\Exception\CsvParserException
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Doctrine\ORM\ORMException
+     * @throws CsvParserException
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     * @throws ORMException
      */
     public function findVulnerabilityScores(AssistanceCreateInputType $inputType, Pagination $pagination)
     {
         $project = $this->em->getRepository(Project::class)->find($inputType->getProjectId());
         if (!$project) {
-            throw new \Doctrine\ORM\EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
+            throw new EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
         }
         // FIXME: disabled for performance reasons, see PIN-2630 for further details
-        return new \CommonBundle\Pagination\Paginator([], -1);
+        return new Paginator([], -1);
 
         $filters = $this->mapping($inputType);
         $filters['criteria'] = $filters['selection_criteria'];
@@ -260,11 +337,11 @@ class AssistanceService
 
         $list = [];
         foreach ($ids as $id) {
-            $beneficiary = $this->em->getRepository(\BeneficiaryBundle\Entity\AbstractBeneficiary::class)->find($id);
-            $list[] = new \DistributionBundle\DTO\VulnerabilityScore($beneficiary, $result['finalArray'][$id]);
+            $beneficiary = $this->em->getRepository(AbstractBeneficiary::class)->find($id);
+            $list[] = new VulnerabilityScore($beneficiary, $result['finalArray'][$id]);
         }
 
-        return new \CommonBundle\Pagination\Paginator($list, $count);
+        return new Paginator($list, $count);
     }
 
     public function create(AssistanceCreateInputType $inputType)
@@ -290,7 +367,7 @@ class AssistanceService
      * @param $countryISO3
      * @param array $distributionArray
      * @return array
-     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
+     * @throws ValidationException
      */
     public function createFromArray($countryISO3, array $distributionArray)
     {
@@ -316,16 +393,16 @@ class AssistanceService
 
         /** @var Assistance $distribution */
         $distribution = $this->serializer->deserialize(json_encode($distributionArray), Assistance::class, 'json', [
-            \Symfony\Component\Serializer\Normalizer\PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true
+            PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true
         ]);
-        $distribution->setUpdatedOn(new \DateTime());
+        $distribution->setUpdatedOn(new DateTime());
         $errors = $this->validator->validate($distribution);
         if (count($errors) > 0) {
             $errorsArray = [];
             foreach ($errors as $error) {
                 $errorsArray[] = $error->getMessage();
             }
-            throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
+            throw new Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
         }
 
         $distribution->setTargetType($distributionArray['target_type']);
@@ -379,7 +456,7 @@ class AssistanceService
                 foreach ($criteriaData as $j => $criterionArray) {
                     /** @var SelectionCriteria $criterion */
                     $criterion = $this->serializer->deserialize(json_encode($criterionArray), SelectionCriteria::class, 'json', [
-                        \Symfony\Component\Serializer\Normalizer\PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true
+                        PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true
                     ]);
                     $criterion->setGroupNumber($i);
                     $this->criteriaAssistanceService->save($distribution, $criterion, false);
@@ -429,7 +506,7 @@ class AssistanceService
      * @param Assistance $assistance
      * @param array      $listReceivers
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function saveReceivers(Assistance $assistance, array $listReceivers)
     {
@@ -504,7 +581,7 @@ class AssistanceService
     {
         if (!empty($assistance)) {
                 $assistance->setCompleted()
-                                ->setUpdatedOn(new \DateTime);         
+                                ->setUpdatedOn(new DateTime);
         }
 
         /** @var AssistanceBeneficiary $assistanceBeneficiary */
@@ -532,12 +609,12 @@ class AssistanceService
      * @param Assistance $assistance
      * @param array $distributionArray
      * @return Assistance
-     * @throws \Exception
+     * @throws Exception
      */
     public function edit(Assistance $assistance, array $distributionArray)
     {
-        $assistance->setDateDistribution(\DateTime::createFromFormat('d-m-Y', $distributionArray['date_distribution']))
-            ->setUpdatedOn(new \DateTime());
+        $assistance->setDateDistribution(DateTime::createFromFormat('d-m-Y', $distributionArray['date_distribution']))
+            ->setUpdatedOn(new DateTime());
         $distributionNameWithoutDate = explode('-', $assistance->getName())[0];
         $newDistributionName = $distributionNameWithoutDate . '-' . $distributionArray['date_distribution'];
         $assistance->setName($newDistributionName);
@@ -546,23 +623,23 @@ class AssistanceService
         return $assistance;
     }
 
-    public function updateDateDistribution(Assistance $assistance, \DateTimeInterface $date)
+    public function updateDateDistribution(Assistance $assistance, DateTimeInterface $date)
     {
         $newDistributionName = self::generateName($assistance->getLocation(), $date);
 
         $assistance
             ->setDateDistribution($date)
             ->setName($newDistributionName)
-            ->setUpdatedOn(new \DateTime());
+            ->setUpdatedOn(new DateTime());
 
         $this->em->persist($assistance);
         $this->em->flush();
     }
 
-    public function updateDateExpiration(Assistance $assistance, \DateTimeInterface $date): void
+    public function updateDateExpiration(Assistance $assistance, DateTimeInterface $date): void
     {
         $assistance->setDateExpiration($date);
-        $assistance->setUpdatedOn(new \DateTime());
+        $assistance->setUpdatedOn(new DateTime());
 
         $this->em->persist($assistance);
         $this->em->flush();
@@ -749,7 +826,7 @@ class AssistanceService
         foreach ($distributionArray as $key) {
             if (!$key->getArchived()) {
                 $filteredArray[] = $key;
-            };
+            }
         }
         return $filteredArray;
     }
@@ -772,7 +849,7 @@ class AssistanceService
             }
             if ($isQrVoucher && !$distribution->getArchived()) {
                 $filteredArray[] = $distribution;
-            };
+            }
         }
         return $filteredArray;
     }
@@ -817,8 +894,8 @@ class AssistanceService
             $generalRelief = $this->em->getRepository(GeneralReliefItem::class)->find($id);
             $generalRelief->setNotes($notes);
             $this->em->flush();
-        } catch (\Exception $e) {
-            throw new \Exception("Error updating general relief item");
+        } catch (Exception $e) {
+            throw new Exception("Error updating general relief item");
         }
     }
 
@@ -838,7 +915,7 @@ class AssistanceService
             if (!($gri instanceof GeneralReliefItem)) {
                 array_push($errorArray, $griId);
             } else {
-                $gri->setDistributedAt(new \DateTime());
+                $gri->setDistributedAt(new DateTime());
                 $this->em->persist($gri);
                 array_push($successArray, $gri);
             }
@@ -858,12 +935,14 @@ class AssistanceService
      *
      * @param GeneralReliefItem           $gri
      * @param GeneralReliefPatchInputType $input
+     *
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     public function patchGeneralReliefItem(GeneralReliefItem $gri, GeneralReliefPatchInputType $input)
     {
         if ($input->isDistributedSet()) {
             if ($input->getDistributed()) {
-                $gri->setDistributedAt(new \DateTime($input->getDateOfDistribution()));
+                $gri->setDistributedAt(new DateTime($input->getDateOfDistribution()));
             } else {
                 $gri->setDistributedAt(null);
             }
@@ -874,6 +953,7 @@ class AssistanceService
         }
 
         $this->em->persist($gri);
+        $this->cache->delete(CacheTarget::assistanceId($gri->getAssistanceBeneficiary()->getAssistance()->getId()));
         $this->em->flush();
     }
 
@@ -900,8 +980,8 @@ class AssistanceService
 
             $response = $this->container->get('pdf_service')->printPdf($html, 'landscape', 'bookletCodes');
             return $response;
-        } catch (\Exception $e) {
-            throw new \Exception($e);
+        } catch (Exception $e) {
+            throw new Exception($e);
         }
     }
 
@@ -972,7 +1052,7 @@ class AssistanceService
         $this->em->flush();
     }
 
-    private function generateName(\CommonBundle\Entity\Location $location, ?\DateTimeInterface $date = null): string
+    private function generateName(Location $location, ?DateTimeInterface $date = null): string
     {
         $adm = '';
         if ($location->getAdm4()) {
@@ -994,8 +1074,8 @@ class AssistanceService
 
     public function mapping(AssistanceCreateInputType $inputType): array
     {
-        /** @var \CommonBundle\Entity\Location $location */
-        $location = $this->em->getRepository(\CommonBundle\Entity\Location::class)->find($inputType->getLocationId());
+        /** @var Location $location */
+        $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
 
         $locationArray = [];
         if ($location->getAdm4()) {
@@ -1207,12 +1287,12 @@ class AssistanceService
      * @param Assistance $assistance
      *
      * @return bool
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     public function hasDistributionStarted(Assistance $assistance): bool
     {
-        /** @var AssistanceStatistics $statistics */
-        $statistics = $this->em->getRepository(AssistanceStatistics::class)->findByAssistance($assistance);
+        $statistics = $this->getStatisticByAssistance($assistance);
 
-        return $statistics->getAmountDistributed() > 0;
+        return $statistics['amountDistributed'] > 0;
     }
 }
