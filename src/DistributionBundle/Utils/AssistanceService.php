@@ -35,13 +35,12 @@ use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
 use NewApiBundle\Entity\ReliefPackage;
 use NewApiBundle\Entity\AssistanceStatistics;
 use NewApiBundle\Enum\CacheTarget;
+use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\GeneralReliefPatchInputType;
 use NewApiBundle\Repository\AssistanceStatisticsRepository;
 use NewApiBundle\Request\Pagination;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
-use RA\RequestValidatorBundle\RequestValidator\ValidationException;
-use ReflectionClass;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
@@ -120,7 +119,7 @@ class AssistanceService
      * @param Registry                  $workflowRegistry
      * @param FilesystemAdapter         $cache
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -683,8 +682,8 @@ class AssistanceService
         {
             $idps = $bnfRepo->countByResidencyStatus($assistance, "IDP");
             $residents = $bnfRepo->countByResidencyStatus($assistance, "resident");
-            $maleHHH = $bnfRepo->countHouseholdHeadsByGender($assistance, Person::GENDER_MALE);
-            $femaleHHH = $bnfRepo->countHouseholdHeadsByGender($assistance, Person::GENDER_FEMALE);
+            $maleHHH = $bnfRepo->countHouseholdHeadsByGender($assistance, PersonGender::MALE);
+            $femaleHHH = $bnfRepo->countHouseholdHeadsByGender($assistance, PersonGender::FEMALE);
             $maleChildrenUnder23month = $bnfRepo->countByAgeAndByGender($assistance, 1, 0, 2, $assistance->getDateDistribution());
             $femaleChildrenUnder23month = $bnfRepo->countByAgeAndByGender($assistance, 0, 0, 2, $assistance->getDateDistribution());
             $maleChildrenUnder5years = $bnfRepo->countByAgeAndByGender($assistance, 1, 2, 6, $assistance->getDateDistribution());

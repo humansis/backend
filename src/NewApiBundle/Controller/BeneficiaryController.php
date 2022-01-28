@@ -11,6 +11,7 @@ use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Enum\AssistanceTargetType;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\BenefciaryPatchInputType;
 use NewApiBundle\InputType\BeneficiaryExportFilterInputType;
@@ -76,7 +77,7 @@ class BeneficiaryController extends AbstractController
                 }
 
                 $sample[] = [
-                    'gender' => (string) $bnf->getGender(),
+                    'gender' => PersonGender::valueToAPI($bnf->getGender()),
                     'en_given_name' => $bnf->getEnGivenName(),
                     'en_family_name' => $bnf->getEnFamilyName(),
                     'local_given_name' => $bnf->getLocalGivenName(),

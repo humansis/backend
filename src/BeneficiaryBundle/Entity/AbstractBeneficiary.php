@@ -90,7 +90,10 @@ abstract class AbstractBeneficiary
      */
     public function addProject(Project $project): self
     {
-        $this->projects[] = $project;
+        if (!$this->projects->contains($project)) {
+            $this->projects->add($project);
+        }
+
         return $this;
     }
 

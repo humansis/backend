@@ -4,6 +4,8 @@ namespace ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
+use NewApiBundle\Entity\Helper\CreatedAt;
+use NewApiBundle\Entity\Helper\LastModifiedAt;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
 
@@ -12,9 +14,13 @@ use CommonBundle\Utils\ExportableInterface;
  *
  * @ORM\Table(name="donor")
  * @ORM\Entity(repositoryClass="ProjectBundle\Repository\DonorRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Donor implements ExportableInterface
 {
+    use CreatedAt;
+    use LastModifiedAt;
+
     /**
      * @var int
      *

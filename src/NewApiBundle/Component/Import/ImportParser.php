@@ -8,6 +8,7 @@ use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Symfony\Component\HttpFoundation\File\File;
+use NewApiBundle\Enum\HouseholdHead;
 
 class ImportParser
 {
@@ -24,7 +25,6 @@ class ImportParser
     public function parse(File $file)
     {
         $reader = IOFactory::createReaderForFile($file->getRealPath());
-        $reader->setReadDataOnly(true);
 
         $worksheet = $reader->load($file->getRealPath())->getActiveSheet();
 
@@ -38,7 +38,8 @@ class ImportParser
                 break;
             }
 
-            if ('true' === strtolower($row['Head'])) {
+            // null => member
+            if (true === HouseholdHead::valueFromAPI($row['Head'][CellParameters::VALUE])) {
                 if ([] !== $household) {
                     // everytime new household head is found, previous HH is added to list
                     $list[] = $household;
@@ -112,7 +113,11 @@ class ImportParser
             $value = self::value($cell);
 
             $header = $headers[$c];
-            $row[$header] = $value;
+            $row[$header] = $cell ? [
+                CellParameters::VALUE => $value,
+                CellParameters::DATA_TYPE => $cell->getDataType(),
+                CellParameters::NUMBER_FORMAT => $cell->getStyle()->getNumberFormat()->getFormatCode(),
+            ] : null;
 
             $stop &= empty($value);
         }

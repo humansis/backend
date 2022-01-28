@@ -41,6 +41,12 @@ class ImportDateValidator extends \Symfony\Component\Validator\Constraints\DateV
             return;
         }
 
+        //Excel date
+        //TODO right now, even pure number will be accepted and converted to date.
+        if (is_int($value) || is_float($value)) {
+            return;
+        }
+
         if ($value instanceof \DateTimeInterface) {
             @trigger_error(sprintf('Validating a \\DateTimeInterface with "%s" is deprecated since version 4.2. Use "%s" instead or remove the constraint if the underlying model is already type hinted to \\DateTimeInterface.', Date::class, Type::class), \E_USER_DEPRECATED);
 
@@ -61,6 +67,7 @@ class ImportDateValidator extends \Symfony\Component\Validator\Constraints\DateV
 
             return;
         }
+        // die('any2?');
 
         if (!$this::checkDate((int)$matches[1], (int)$matches[2], (int)$matches[3])) {
             $this->context->buildViolation($constraint->message)
@@ -68,5 +75,6 @@ class ImportDateValidator extends \Symfony\Component\Validator\Constraints\DateV
                 ->setCode(Date::INVALID_DATE_ERROR)
                 ->addViolation();
         }
+        // die('any?');
     }
 }

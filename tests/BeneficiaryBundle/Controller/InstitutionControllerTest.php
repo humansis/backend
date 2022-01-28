@@ -12,6 +12,7 @@ use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use Mpdf\Tag\Ins;
+use NewApiBundle\Enum\NationalIdType;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
@@ -39,7 +40,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
                     ],
                 ],
                 'national_id' => [
-                    'type' => NationalId::TYPE_NATIONAL_ID,
+                    'type' => NationalIdType::NATIONAL_ID,
                     'number' => '000-1234-5895-21',
                 ],
                 'phone_type' => 'Mobile',

@@ -32,7 +32,9 @@ class InsertQueryCollection
 
     public function finish()
     {
-        $this->save();
+        if ($this->counter > 0) {
+            $this->save();
+        }
     }
 
     private function save()

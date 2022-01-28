@@ -23,6 +23,10 @@ use CommonBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Exception;
+use NewApiBundle\Enum\HouseholdAssets;
+use NewApiBundle\Enum\HouseholdShelterStatus;
+use NewApiBundle\Enum\HouseholdSupportReceivedType;
+use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\Beneficiary\Address\CampAddressInputType;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\Address\TemporarySettlementAddressInputType;
@@ -30,6 +34,7 @@ use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 use NewApiBundle\InputType\Beneficiary\CountrySpecificsAnswerInputType;
 use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 use NewApiBundle\InputType\Beneficiary\PhoneInputType;
+use NewApiBundle\InputType\Helper\EnumsBuilder;
 use NewApiBundle\InputType\HouseholdCreateInputType;
 use NewApiBundle\InputType\HouseholdProxyInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
@@ -200,7 +205,8 @@ class HouseholdService
         if ($inputType->getCampId()) {
             $camp = $this->em->getRepository(Camp::class)->find($inputType->getCampId());
         } else {
-            $camp = $this->em->getRepository(Camp::class)->findOneBy(['name' => $inputType->getCamp()->getName()]);
+            $camp = $this->em->getRepository(Camp::class)
+                ->findOneBy(['name' => $inputType->getCamp()->getName(), 'location' => $inputType->getCamp()->getLocationId()]);
         }
 
         // Or create a camp with the name in the request
@@ -382,6 +388,10 @@ class HouseholdService
             $this->em->persist($newHouseholdLocation);
         }
 
+        $shelter = isset($householdArray["shelter_status"]) ? HouseholdShelterStatus::valueFromAPI($householdArray["shelter_status"]) : null;
+
+        $enumBuilder = new EnumsBuilder(HouseholdAssets::class);
+        $assets = $enumBuilder->buildInputValues($householdArray["assets"] ?? []);
 
         $household->setNotes($householdArray["notes"])
             ->setLivelihood($householdArray["livelihood"])
@@ -390,8 +400,8 @@ class HouseholdService
             ->setIncomeLevel($householdArray["income_level"] ?? null)
             ->setCopingStrategiesIndex($householdArray["coping_strategies_index"])
             ->setFoodConsumptionScore($householdArray["food_consumption_score"])
-            ->setAssets($householdArray["assets"] ?? [])
-            ->setShelterStatus($householdArray["shelter_status"] ?? null)
+            ->setAssets($assets)
+            ->setShelterStatus($shelter)
             ->setDebtLevel($householdArray["debt_level"] ?? null)
             ->setSupportReceivedTypes($householdArray["support_received_types"] ?? [])
             ->setSupportOrganizationName($householdArray["support_organization_name"] ?? null)
@@ -451,10 +461,8 @@ class HouseholdService
             }
             foreach ($householdArray["beneficiaries"] as $beneficiaryToSave) {
                 try {
-                    if ($beneficiaryToSave['gender'] === 'Male') {
-                        $beneficiaryToSave['gender'] = Person::GENDER_MALE;
-                    } elseif ($beneficiaryToSave['gender'] === 'Female') {
-                        $beneficiaryToSave['gender'] = Person::GENDER_FEMALE;
+                    if (!is_numeric($beneficiaryToSave['gender'])) {
+                        $beneficiaryToSave['gender'] = PersonGender::valueToAPI(PersonGender::valueFromAPI($beneficiaryToSave['gender']));
                     }
 
                     $beneficiary = $this->beneficiaryService->updateOrCreate($household, $beneficiaryToSave, false);
@@ -879,7 +887,7 @@ class HouseholdService
             }
 
             $data['beneficiaries'][] = [
-                'gender' => $bnf->getGender(),
+                'gender' => $bnf->getGender() ? PersonGender::valueToAPI($bnf->getGender()) : null,
                 'date_of_birth' => $bnf->getDateOfBirth()->format('d-m-Y'),
                 'en_family_name' => $bnf->getEnFamilyName(),
                 'en_given_name' => $bnf->getEnGivenName(),

@@ -6,9 +6,15 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-// use Symfony\Component\Serializer\Annotation\ as JMS_Type;
-use InvalidArgumentException;
+use NewApiBundle\DBAL\HouseholdAssetsEnum;
+use NewApiBundle\DBAL\HouseholdShelterStatusEnum;
+use NewApiBundle\DBAL\HouseholdSupportReceivedTypeEnum;
+use NewApiBundle\Entity\Helper\EnumTrait;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Enum\HouseholdAssets;
+use NewApiBundle\Enum\HouseholdShelterStatus;
+use NewApiBundle\Enum\HouseholdSupportReceivedType;
+use ProjectBundle\DBAL\LivelihoodEnum;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -19,43 +25,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class Household extends AbstractBeneficiary
 {
-    const ASSETS = [
-        0 => 'A/C',
-        1 => 'Agricultural Land',
-        2 => 'Car',
-        3 => 'Flatscreen TV',
-        4 => 'Livestock',
-        5 => 'Motorbike',
-        6 => 'Washing Machine',
-    ];
-
-    const SHELTER_STATUSES = [
-        1 => 'Tent',
-        2 => 'Makeshift Shelter',
-        3 => 'Transitional Shelter',
-        4 => 'House/Apartment - Severely Damaged',
-        5 => 'House/Apartment - Moderately Damaged',
-        6 => 'House/Apartment - Not Damaged',
-        7 => 'Room or Space in Public Building',
-        8 => 'Room or Space in Unfinished Building',
-        9 => 'Other',
-        10 => 'House/Apartment - Lightly Damaged',
-    ];
-
-    const SUPPORT_RECIEVED_TYPES = [
-        0 => 'MPCA',
-        1 => 'Cash for Work',
-        2 => 'Food Kit',
-        3 => 'Food Voucher',
-        4 => 'Hygiene Kit',
-        5 => 'Shelter Kit',
-        6 => 'Shelter Reconstruction Support',
-        7 => 'Non Food Items',
-        8 => 'Livelihoods Support',
-        9 => 'Vocational Training',
-        10 => 'None',
-        11 => 'Other',
-    ];
+    use EnumTrait;
 
     /**
      * @var string|null
@@ -74,6 +44,7 @@ class Household extends AbstractBeneficiary
     private $assets;
 
     /**
+     * TODO: migrate to enum sometimes
      * @var int
      *
      * @ORM\Column(name="shelter_status", type="integer", nullable=true)
@@ -246,7 +217,7 @@ class Household extends AbstractBeneficiary
      */
     public function setLivelihood(?string $livelihood): self
     {
-        $this->livelihood = $livelihood;
+        $this->livelihood = LivelihoodEnum::valueToDB($livelihood);
 
         return $this;
     }
@@ -258,7 +229,7 @@ class Household extends AbstractBeneficiary
      */
     public function getLivelihood(): ?string
     {
-        return $this->livelihood;
+        return LivelihoodEnum::valueFromDB($this->livelihood);
     }
 
     /**
@@ -266,47 +237,46 @@ class Household extends AbstractBeneficiary
      */
     public function getAssets(): array
     {
-        return (array) $this->assets;
+        return array_map(function ($asset) {
+            return HouseholdAssetsEnum::valueFromDB($asset);
+        }, $this->assets);
     }
 
     /**
-     * @param int[] $assets
+     * @param string[] $assets
      *
      * @return self
      */
-    public function setAssets($assets): self
+    public function setAssets(array $assets): self
     {
-        foreach ((array) $assets as $asset) {
-            if (!isset(self::ASSETS[$asset])) {
-                throw new InvalidArgumentException(sprintf('Argument 1 contain invalid asset key %d.', $asset));
-            }
-        }
-
-        $this->assets = (array) $assets;
+        self::validateValues('assets', HouseholdAssets::class, $assets);
+        $this->assets = array_unique(array_map(function ($asset) {
+            return HouseholdAssetsEnum::valueToDB($asset);
+        }, $assets));
 
         return $this;
     }
 
     /**
-     * @return int|null
+     * @see HouseholdShelterStatus::values()
+     * @return string|null
      */
-    public function getShelterStatus(): ?int
+    public function getShelterStatus(): ?string
     {
-        return $this->shelterStatus;
+        return HouseholdShelterStatusEnum::valueFromDB($this->shelterStatus);
     }
 
     /**
-     * @param int|null $shelterStatus
+     * @see HouseholdShelterStatus::values()
+     * @param string|null $shelterStatus
      *
      * @return self
      */
-    public function setShelterStatus(?int $shelterStatus): self
+    public function setShelterStatus(?string $shelterStatus): self
     {
-        if (null !== $shelterStatus && !isset(self::SHELTER_STATUSES[$shelterStatus])) {
-            throw new InvalidArgumentException(sprintf('Argument 1 is not valid shelter status key.'));
-        }
+        self::validateValue('shelterStatus', HouseholdShelterStatus::class, $shelterStatus, true);
 
-        $this->shelterStatus = $shelterStatus;
+        $this->shelterStatus = HouseholdShelterStatusEnum::valueToDB($shelterStatus);
 
         return $this;
     }
@@ -630,27 +600,26 @@ class Household extends AbstractBeneficiary
     }
 
     /**
-     * @return int[]
+     * @return string[]
      */
     public function getSupportReceivedTypes(): array
     {
-        return (array) $this->supportReceivedTypes;
+        return array_map(function ($type) {
+            return HouseholdSupportReceivedTypeEnum::valueFromDB($type);
+        }, $this->supportReceivedTypes);
     }
 
     /**
-     * @param int[] $supportReceivedTypes
+     * @param string[] $supportReceivedTypes
      *
      * @return self
      */
-    public function setSupportReceivedTypes($supportReceivedTypes): self
+    public function setSupportReceivedTypes(array $supportReceivedTypes): self
     {
-        foreach ((array) $supportReceivedTypes as $type) {
-            if (!isset(self::SUPPORT_RECIEVED_TYPES[$type])) {
-                throw new InvalidArgumentException(sprintf('Argument 1 contain invalid received type key %d.', $type));
-            }
-        }
-
-        $this->supportReceivedTypes = (array) $supportReceivedTypes;
+        self::validateValues('supportReceivedType', HouseholdSupportReceivedType::class, $supportReceivedTypes);
+        $this->supportReceivedTypes = array_map(function ($type) {
+            return HouseholdSupportReceivedTypeEnum::valueToDB($type);
+        }, $supportReceivedTypes);
 
         return $this;
     }

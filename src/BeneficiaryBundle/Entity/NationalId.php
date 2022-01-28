@@ -3,6 +3,10 @@
 namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\DBAL\NationalIdTypeEnum;
+use NewApiBundle\Entity\Helper\EnumTrait;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use NewApiBundle\Enum\NationalIdType;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -14,24 +18,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class NationalId
 {
-    const TYPE_NATIONAL_ID = 'National ID';
-    const TYPE_PASSPORT = 'Passport';
-    const TYPE_FAMILY = 'Family Registration';
-    const TYPE_BIRTH_CERTIFICATE = 'Birth Certificate';
-    const TYPE_DRIVERS_LICENSE = 'Driver’s License';
-    const TYPE_CAMP_ID = 'Camp ID';
-    const TYPE_SOCIAL_SERVICE_ID = 'Social Service Card';
-    const TYPE_OTHER = 'Other';
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers"})
-     */
-    private $id;
+    use StandardizedPrimaryKey;
+    use EnumTrait;
 
     /**
      * @var string
@@ -46,7 +34,6 @@ class NationalId
      *
      * @ORM\Column(name="id_type", type="string", length=45)
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "FullInstitution"})
-     * @Assert\Choice(callback={"BeneficiaryBundle\Entity\NationalId", "types"})
      */
     private $idType;
 
@@ -56,30 +43,6 @@ class NationalId
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Person", inversedBy="nationalIds")
      */
     private $person;
-
-    public static function types()
-    {
-        return [
-            self::TYPE_NATIONAL_ID,
-            self::TYPE_PASSPORT,
-            self::TYPE_FAMILY,
-            self::TYPE_BIRTH_CERTIFICATE,
-            self::TYPE_DRIVERS_LICENSE,
-            self::TYPE_CAMP_ID,
-            self::TYPE_SOCIAL_SERVICE_ID,
-            self::TYPE_OTHER,
-        ];
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set idNumber.
@@ -114,7 +77,8 @@ class NationalId
      */
     public function setIdType($idType)
     {
-        $this->idType = $idType;
+        self::validateValue('idType', NationalIdType::class, $idType);
+        $this->idType = NationalIdTypeEnum::valueToDB($idType);
 
         return $this;
     }
@@ -126,7 +90,7 @@ class NationalId
      */
     public function getIdType()
     {
-        return $this->idType;
+        return NationalIdTypeEnum::valueFromDB($this->idType);
     }
 
     /**

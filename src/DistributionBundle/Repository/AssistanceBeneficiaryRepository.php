@@ -12,6 +12,8 @@ use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use InvalidArgumentException;
+use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\InputType\CommunityFilterType;
@@ -20,6 +22,7 @@ use NewApiBundle\InputType\InstitutionFilterInputType;
 use NewApiBundle\InputType\InstitutionOrderInputType;
 use NewApiBundle\Request\Pagination;
 use VoucherBundle\Entity\Booklet;
+use VoucherBundle\Entity\SmartcardDeposit;
 
 /**
  * AssistanceBeneficiaryRepository
@@ -202,8 +205,14 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
                             $qb->leftJoin('b.person', 'p');
                         }
                         $qb->leftJoin('p.nationalIds', 'n', 'WITH', 'n.idType = :type')
-                            ->setParameter('type', \BeneficiaryBundle\Entity\NationalId::TYPE_NATIONAL_ID)
+                            ->setParameter('type', NationalIdType::NATIONAL_ID)
                             ->orderBy('n.idNumber', $direction);
+                        break;
+                    case BeneficiaryOrderInputType::SORT_BY_DISTRIBUTION_DATE:
+                        $qb
+                            ->leftJoin(ReliefPackage::class, 'reliefPackage', 'WITH', 'reliefPackage.assistanceBeneficiary = db.id')
+                            ->leftJoin(SmartcardDeposit::class, 'smartcardDeposit', 'WITH', 'smartcardDeposit.reliefPackage = reliefPackage.id')
+                            ->orderBy('smartcardDeposit.distributedAt', $direction);
                         break;
                     default:
                         throw new \InvalidArgumentException('Invalid order by directive '.$name);

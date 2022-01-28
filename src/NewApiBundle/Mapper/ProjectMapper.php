@@ -134,4 +134,14 @@ class ProjectMapper implements MapperInterface
     {
         return $this->object->getAllowedProductCategoryTypes();
     }
+
+    public function getCreatedAt(): DateTimeInterface
+    {
+        return $this->object->getCreatedAt();
+    }
+
+    public function getLastModifiedAt(): DateTimeInterface
+    {
+        return $this->object->getLastModifiedAt();
+    }
 }

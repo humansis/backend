@@ -8,6 +8,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 
+use NewApiBundle\DBAL\PersonGenderEnum;
+use NewApiBundle\Entity\Helper\EnumTrait;
+use NewApiBundle\Enum\PersonGender;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -19,8 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Person
 {
-    const GENDER_FEMALE = 0;
-    const GENDER_MALE = 1;
+    use EnumTrait;
 
     /**
      * @var int
@@ -71,7 +73,6 @@ class Person
      *
      * @ORM\Column(name="gender", type="smallint", nullable=true)
      * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedAssistance", "FullBeneficiary"})
-     * @Assert\NotBlank(message="The gender is required.")
      */
     private $gender;
 
@@ -255,26 +256,29 @@ class Person
 
     /**
      * Set gender.
+     * @see PersonGender::values()
      *
-     * @param int|null $gender one of self::GENDER_*
+     * @param string|null $gender
      *
      * @return self
      */
-    public function setGender(?int $gender)
+    public function setGender(?string $gender)
     {
-        $this->gender = $gender;
+        self::validateValue('gender', PersonGender::class, $gender, true);
+        $this->gender = PersonGenderEnum::valueToDB($gender);
 
         return $this;
     }
 
     /**
      * Get gender.
+     * @see PersonGender::values()
      *
-     * @return int|null one of self::GENDER_*
+     * @return string|null
      */
-    public function getGender(): ?int
+    public function getGender(): ?string
     {
-        return $this->gender;
+        return PersonGenderEnum::valueFromDB($this->gender);
     }
 
     /**

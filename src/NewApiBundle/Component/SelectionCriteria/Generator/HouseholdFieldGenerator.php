@@ -33,7 +33,7 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
         yield new Field('location', 'Location', ['='], 'location', 'is_int');
         yield new Field('locationType', 'Location Type', ['='], 'locationType', [self::class, 'validateLocation']);
 
-        foreach ($this->countrySpecificRepository->findByCountryIso3($countryIso3) as $countrySpecific) {
+        foreach ($this->countrySpecificRepository->findBy(['countryIso3' => $countryIso3], ['id'=>'asc']) as $countrySpecific) {
             $type = $this->transformCountrySpecificType($countrySpecific->getType());
 
             yield new Field($countrySpecific->getFieldString(), $countrySpecific->getFieldString(), ['='], $type);

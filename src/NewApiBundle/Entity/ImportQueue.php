@@ -6,22 +6,21 @@ namespace NewApiBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\EnumTrait;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
+use NewApiBundle\Utils\Concurrency\ConcurrencyLockableInterface;
+use NewApiBundle\Utils\Concurrency\ConcurrencyLockTrait;
 
 /**
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ImportQueueRepository")
  */
-class ImportQueue
+class ImportQueue implements ConcurrencyLockableInterface
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
+    use EnumTrait;
+    use ConcurrencyLockTrait;
 
     /**
      * @var Import
@@ -64,6 +63,8 @@ class ImportQueue
      * @ORM\Column(name="message", type="text", nullable=true)
      */
     private $message;
+
+    private $rawMessageData = [];
 
     /**
      * @var ImportBeneficiaryDuplicity[]|Collection
@@ -110,14 +111,6 @@ class ImportQueue
         $this->importBeneficiaryDuplicities = new ArrayCollection();
         $this->importQueueDuplicitiesOurs = new ArrayCollection();
         $this->importQueueDuplicitiesTheirs = new ArrayCollection();
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     /**
@@ -191,14 +184,12 @@ class ImportQueue
     }
 
     /**
+     * @see ImportQueueState::values()
      * @param string $state one of ImportQueueState::* values
      */
     public function setState(string $state)
     {
-        if (!in_array($state, ImportQueueState::values())) {
-            throw new \InvalidArgumentException('Invalid argument. '.$state.' is not valid Import queue state');
-        }
-
+        self::validateValue('state', ImportQueueState::class, $state, false);
         $this->state = $state;
     }
 
@@ -210,12 +201,20 @@ class ImportQueue
         return $this->message;
     }
 
-    /**
-     * @param string|null $message
-     */
-    public function setMessage(?string $message): void
+    public function hasViolations(?int $index = null): bool
     {
-        $this->message = $message;
+        if ($index) return !empty($this->rawMessageData[$index]);
+        return !empty($this->rawMessageData);
+    }
+
+    /**
+     * @param $message
+     */
+    public function addViolation(int $lineIndex, $message): void
+    {
+        $this->rawMessageData[$lineIndex][] = $message;
+
+        $this->message = json_encode($this->rawMessageData);
     }
 
     public function __toString()
@@ -277,6 +276,14 @@ class ImportQueue
     public function setSimilarityCheckedAt(?\DateTimeInterface $similarityCheckedAt): void
     {
         $this->similarityCheckedAt = $similarityCheckedAt;
+    }
+
+    public function hasResolvedDuplicities(): bool
+    {
+        foreach ($this->getDuplicities() as $duplicity) {
+            if ($duplicity->getState() == ImportDuplicityState::DUPLICITY_CANDIDATE) return false;
+        }
+        return true;
     }
 
 }

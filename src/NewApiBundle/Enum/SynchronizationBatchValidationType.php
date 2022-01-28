@@ -5,6 +5,8 @@ namespace NewApiBundle\Enum;
 
 final class SynchronizationBatchValidationType
 {
+    use EnumTrait;
+
     const DEPOSIT = 'Deposit';
     const PURCHASE = 'Purchase';
 

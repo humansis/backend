@@ -5,6 +5,8 @@ namespace NewApiBundle\Enum;
 
 final class ImportState
 {
+    use EnumTrait;
+
     const NEW = 'New';
     const INTEGRITY_CHECKING = 'Integrity Checking';
     const INTEGRITY_CHECK_CORRECT = 'Integrity Check Correct';
