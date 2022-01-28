@@ -148,7 +148,7 @@ class AssistanceService
         $this->cache = $cache;
 
         try {
-            $class = new ReflectionClass($classRetrieverString);
+            $class = new \ReflectionClass($classRetrieverString);
             $this->retriever = $class->newInstanceArgs([$this->em]);
         } catch (Exception $exception) {
             throw new Exception("Your class Retriever is undefined or malformed.", 0, $exception);
