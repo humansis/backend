@@ -31,7 +31,7 @@ class CSVToArrayMapper
         'camp' => 'D',
         'tent_number' => 'E',
         'livelihood' => 'F',
-        'income_level' => 'G',
+        'income' => 'G',
         'food_consumption_score' => 'H',
         'coping_strategies_index' => 'I',
         'notes' => 'J',
@@ -261,10 +261,6 @@ class CSVToArrayMapper
         }
         // Add the country iso3 from the request
         $formattedHouseholdArray['location']['country_iso3'] = $countryIso3;
-
-        if ($formattedHouseholdArray['income_level'] && !in_array($formattedHouseholdArray['income_level'], [1,2,3,4,5])) {
-            throw new \Exception('The income level must be between 1 and 5');
-        }
 
         $this->mapLocation($formattedHouseholdArray);
 

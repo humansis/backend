@@ -25,7 +25,7 @@ trait DefaultDataTrait
         $hh->setCopingStrategiesIndex(0);
         $hh->setDebtLevel(0);
         $hh->setFoodConsumptionScore(0);
-        $hh->setIncomeLevel(0);
+        $hh->setIncome(0);
         $hh->setNotes('default HH in '.__CLASS__);
 
         $hhh = new Beneficiary();

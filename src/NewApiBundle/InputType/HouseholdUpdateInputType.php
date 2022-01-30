@@ -118,7 +118,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      * @Assert\Type("integer")
      * @Assert\GreaterThanOrEqual("0")
      */
-    private $incomeLevel;
+    private $income;
 
     /**
      * @Assert\Type("integer")
@@ -404,17 +404,27 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     /**
      * @return int|null
      */
-    public function getIncomeLevel()
+    public function getIncome()
     {
-        return $this->incomeLevel;
+        return $this->income;
     }
 
     /**
-     * @param int|null $incomeLevel
+     * @param int|null $income
      */
-    public function setIncomeLevel($incomeLevel)
+    public function setIncome($income)
     {
-        $this->incomeLevel = $incomeLevel;
+        $this->income = $income;
+    }
+
+    /**
+     * Backward compatibility for API
+     *
+     * @param int|null $income
+     */
+    public function setIncomeLevel($income)
+    {
+        $this->income = $income;
     }
 
     /**

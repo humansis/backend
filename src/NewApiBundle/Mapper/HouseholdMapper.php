@@ -117,7 +117,7 @@ class HouseholdMapper implements MapperInterface
 
     public function getIncomeLevel(): ?int
     {
-        return $this->object->getIncomeLevel();
+        return $this->object->getIncome();
     }
 
     public function getFoodConsumptionScore(): ?int

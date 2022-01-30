@@ -115,7 +115,7 @@ class ImportFinishServiceTest extends KernelTestCase
       "numberFormat": "General"
     },
     "Tent number": null,
-    "Income level": null,
+    "Income": null,
     "Type phone 1": {
       "value": "Mobile",
       "dataType": "s",
