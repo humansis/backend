@@ -99,8 +99,6 @@ class IntegrityChecker
 
     /**
      * @param ImportQueue $item
-     *
-     * @return array
      */
     private function validateItem(ImportQueue $item): void
     {
@@ -178,14 +176,14 @@ class IntegrityChecker
             $mapping = array_flip(HouseholdExportCSVService::MAPPING_PROPERTIES);
         }
 
-        return ['column' => $mapping[$property], 'violation' => $violation->getMessage(), 'value' => $violation->getInvalidValue()];
+        return ['column' => ucfirst($mapping[$property]), 'violation' => $violation->getMessage(), 'value' => $violation->getInvalidValue()];
     }
 
     public function buildNormalizedErrorMessage(ConstraintViolationInterface $violation)
     {
         $property = $violation->getConstraint()->payload['propertyPath'] ?? $violation->getPropertyPath();
 
-        return ['column' => $property, 'violation' => $violation->getMessage(), 'value' => $violation->getInvalidValue()];
+        return ['column' => ucfirst($property), 'violation' => $violation->getMessage(), 'value' => $violation->getInvalidValue()];
     }
 
     /**

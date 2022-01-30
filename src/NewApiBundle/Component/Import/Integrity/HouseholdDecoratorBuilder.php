@@ -76,8 +76,8 @@ class HouseholdDecoratorBuilder
         $household->setIncomeLevel($this->householdLine->incomeLevel);
         $household->setIso3($this->countryIso3);
         $household->setNotes($this->householdLine->notes);
-        $household->setLatitude($this->householdLine->latitude);
-        $household->setLongitude($this->householdLine->longitude);
+        $household->setLatitude((string) $this->householdLine->latitude);
+        $household->setLongitude((string) $this->householdLine->longitude);
         $household->setLivelihood($this->householdLine->livelihood);
         $household->setEnumeratorName($this->householdLine->enumeratorName);
         $household->setShelterStatus($this->householdLine->shelterStatus);
