@@ -253,7 +253,7 @@ class HouseholdExportCSVService
         'Enumerator name' => 'String',
         'Latitude' => 'Float',
         'Longitude' => 'Float',
-        'Adm1' => 'String/empty',
+        'Adm1' => 'String/empty*',
         'Adm2' => 'String/empty',
         'Adm3' => 'String/empty',
         'Adm4' => 'String/empty',
