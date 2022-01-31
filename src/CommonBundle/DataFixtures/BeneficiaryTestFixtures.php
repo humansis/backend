@@ -52,7 +52,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
 
     private $householdTemplate = [
         'livelihood' => Livelihood::GOVERNMENT,
-        'income_level' => 3,
+        'income' => 3,
         'notes' => null,
         'latitude' => null,
         'longitude' => null,
@@ -195,7 +195,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         $household->setCopingStrategiesIndex($this->householdTemplate['coping_strategies_index']);
         $household->setDebtLevel($this->householdTemplate['debt_level']);
         $household->setFoodConsumptionScore($this->householdTemplate['food_consumption_score']);
-        $household->setIncomeLevel($this->householdTemplate['income_level']);
+        $household->setIncome($this->householdTemplate['income']);
 
         foreach ($members as $member) {
             [$gender, $age] = explode('-', $member);

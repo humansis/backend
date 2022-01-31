@@ -330,11 +330,16 @@ class DistributionCSVService
                 $vulnerabilityCriteria[] = ['id' => $vulnerabilityCriterion->getId()];
             }
 
+            //incomeLevel was renamed, backward compatibility
+            if (isset($beneficiaryToCreate['incomeLevel']) && !isset($beneficiaryToCreate['income'])) {
+                $beneficiaryToCreate['income'] = $beneficiaryToCreate['incomeLevel'];
+            }
+
             $householdToCreate = array(
                 "__country" => $countryIso3,
                 "livelihood" => $beneficiaryToCreate['livelihood'],
                 "household_locations" => $householdLocations,
-                "income_level" => $beneficiaryToCreate['incomeLevel'],
+                "income" => $beneficiaryToCreate['income'],
                 "notes" => $beneficiaryToCreate['notes'],
                 "latitude" => strval($beneficiaryToCreate['latitude']),
                 "longitude" => strval($beneficiaryToCreate['longitude']),

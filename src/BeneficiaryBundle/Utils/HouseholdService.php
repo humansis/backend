@@ -397,7 +397,7 @@ class HouseholdService
             ->setLivelihood($householdArray["livelihood"])
             ->setLongitude($householdArray["longitude"])
             ->setLatitude($householdArray["latitude"])
-            ->setIncomeLevel($householdArray["income_level"] ?? null)
+            ->setIncome($householdArray["income"] ?? null)
             ->setCopingStrategiesIndex($householdArray["coping_strategies_index"])
             ->setFoodConsumptionScore($householdArray["food_consumption_score"])
             ->setAssets($assets)
@@ -766,7 +766,7 @@ class HouseholdService
             'livelihood' => $inputType->getLivelihood(),
             'longitude' => $inputType->getLongitude(),
             'latitude' => $inputType->getLatitude(),
-            'income_level' => $inputType->getIncomeLevel(),
+            'income' => $inputType->getIncome(),
             'coping_strategies_index' => $inputType->getCopingStrategiesIndex(),
             'food_consumption_score' => $inputType->getFoodConsumptionScore(),
             'assets' => $inputType->getAssets(),
@@ -944,7 +944,7 @@ class HouseholdService
             ->setLivelihood($inputType->getLivelihood())
             ->setLongitude($inputType->getLongitude())
             ->setLatitude($inputType->getLatitude())
-            ->setIncomeLevel($inputType->getIncomeLevel())
+            ->setIncome($inputType->getIncome())
             ->setCopingStrategiesIndex($inputType->getCopingStrategiesIndex())
             ->setFoodConsumptionScore($inputType->getFoodConsumptionScore())
             ->setAssets($inputType->getAssets())

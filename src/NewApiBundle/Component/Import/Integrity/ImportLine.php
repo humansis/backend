@@ -45,10 +45,10 @@ class ImportLine
     public $livelihood;
 
     /**
-     * @Assert\Type("numeric", groups={"household", "member"}),
-     * @Assert\Range(min = 1, max = 5, groups={"household", "member"}),
+     * @Assert\Type("integer", groups={"household", "member"}),
+     * @Assert\GreaterThanOrEqual("0")
      */
-    public $incomeLevel;
+    public $income;
 
     /**
      * @Assert\Type("numeric", groups={"household", "member"})

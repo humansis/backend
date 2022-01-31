@@ -57,7 +57,7 @@ class HouseholdServiceTest extends KernelTestCase
         $createData->setLongitude('12.123456');
         $createData->setLatitude('54.321');
         $createData->setNotes('Lorem ipsum');
-        $createData->setIncomeLevel(3);
+        $createData->setIncome(3);
         $createData->setCopingStrategiesIndex(3);
         $createData->setFoodConsumptionScore(3);
         $createData->setShelterStatus('3');
@@ -65,7 +65,7 @@ class HouseholdServiceTest extends KernelTestCase
         $createData->setSupportDateReceived('1900-01-01');
         $createData->setSupportOrganizationName('OSN');
         $createData->setIncomeSpentOnFood(100000);
-        $createData->setIncomeLevel(3);
+        $createData->setIncome(3);
         $createData->setEnumeratorName('tester');
 
         $addressData = new ResidenceAddressInputType();
@@ -139,7 +139,7 @@ class HouseholdServiceTest extends KernelTestCase
         $this->assertEquals('KHM', $household->getProjects()[0]->getIso3());
         $this->assertContains(HouseholdAssets::CAR, $household->getAssets());
         $this->assertContains(HouseholdAssets::FLATSCREEN_TV, $household->getAssets());
-        $this->assertEquals(3, $household->getIncomeLevel());
+        $this->assertEquals(3, $household->getIncome());
         $this->assertEquals(3, $household->getCopingStrategiesIndex());
         $this->assertEquals(3, $household->getFoodConsumptionScore());
         $this->assertEquals(HouseholdShelterStatus::TRANSITIONAL_SHELTER, $household->getShelterStatus());
@@ -147,7 +147,7 @@ class HouseholdServiceTest extends KernelTestCase
         $this->assertEquals('1900-01-01', $household->getSupportDateReceived()->format('Y-m-d'));
         $this->assertEquals('OSN', $household->getSupportOrganizationName());
         $this->assertEquals(100000, $household->getIncomeSpentOnFood());
-        $this->assertEquals(3, $household->getIncomeLevel());
+        $this->assertEquals(3, $household->getIncome());
         $this->assertEquals('tester', $household->getEnumeratorName());
 
         $locations = $household->getHouseholdLocations();

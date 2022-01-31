@@ -812,7 +812,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
             "camp" => $camp,
             "tent number" => $tentNumber,
             "livelihood" => $livelihood,
-            "incomeLevel" => $this->getHousehold()->getIncomeLevel(),
+            "incomeLevel" => $this->getHousehold()->getIncome(),
             "foodConsumptionScore" => $this->getHousehold()->getFoodConsumptionScore(),
             "copingStrategiesIndex" => $this->getHousehold()->getCopingStrategiesIndex(),
             "notes" => $this->getHousehold()->getNotes(),

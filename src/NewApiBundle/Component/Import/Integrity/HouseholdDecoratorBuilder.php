@@ -73,7 +73,7 @@ class HouseholdDecoratorBuilder
         $household->setCopingStrategiesIndex($this->householdLine->copingStrategiesIndex);
         $household->setDebtLevel($this->householdLine->debtLevel);
         $household->setFoodConsumptionScore($this->householdLine->foodConsumptionScore);
-        $household->setIncomeLevel($this->householdLine->incomeLevel);
+        $household->setIncome($this->householdLine->income);
         $household->setIso3($this->countryIso3);
         $household->setNotes($this->householdLine->notes);
         $household->setLatitude($this->householdLine->latitude);
