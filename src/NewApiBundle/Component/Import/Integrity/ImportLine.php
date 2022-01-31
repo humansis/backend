@@ -448,4 +448,28 @@ class ImportLine
         $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames($this->countryIso3, $locationsArray);
         return null !== $location;
     }
+
+    /**
+     * @Assert\IsTrue(message="When ID Number is filled, ID type has to be filled to.", payload={"propertyPath"="idType"}, groups={"household", "member"})
+     */
+    public function isIdTypeCorrectlyFilled(): bool
+    {
+        if (null === $this->idNumber) {
+            return true;
+        }
+
+        return (null !== $this->idType);
+    }
+
+    /**
+     * @Assert\IsTrue(message="When ID Type is filled, ID number has to be filled to.", payload={"propertyPath"="idNumber"}, groups={"household", "member"})
+     */
+    public function isIdNumberCorrectlyFilled(): bool
+    {
+        if (null === $this->idType) {
+            return true;
+        }
+
+        return (null !== $this->idNumber);
+    }
 }
