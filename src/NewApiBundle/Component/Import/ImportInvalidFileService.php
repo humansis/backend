@@ -154,7 +154,7 @@ class ImportInvalidFileService
     private function parseInvalidColumns(?string $messageJson, $rowNumber): array
     {
         try {
-            //dept=512 is default value
+            //depth=512 is default value
             $messages = json_decode($messageJson, true, 512, JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {
             return [];
