@@ -26,16 +26,18 @@ FROM smartcard_purchase_record spr
     FROM national_id
     WHERE national_id.person_id = p.id
     LIMIT 1
-)
-
-         JOIN smartcard_deposit sd ON sd.id = (
-    SELECT dep.id
-    FROM smartcard_deposit dep
-    WHERE sp.used_at > dep.distributed_at AND dep.smartcard_id = s.id
-    ORDER BY dep.distributed_at DESC
+    )
+    LEFT JOIN distribution_beneficiary db ON db.assistance_id = sp.assistance_id
+    LEFT JOIN relief_package rp ON rp.id = (
+    SELECT reliefPackage.id
+    FROM relief_package reliefPackage
+    WHERE reliefPackage.assistance_beneficiary_id = db.id
     LIMIT 1
-)
-
-         LEFT JOIN relief_package pack ON sd.relief_package_id = pack.id
-         LEFT JOIN distribution_beneficiary db ON pack.assistance_beneficiary_id = db.id
-         LEFT JOIN assistance a ON db.assistance_id = a.id
+    )
+    JOIN smartcard_deposit sd ON sd.id = (
+    SELECT smartcardDeposit.id
+    FROM smartcard_deposit smartcardDeposit
+    WHERE smartcardDeposit.relief_package_id = rp.id
+    LIMIT 1
+    )
+    LEFT JOIN assistance a ON db.assistance_id = a.id
