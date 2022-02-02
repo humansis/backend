@@ -14,11 +14,12 @@ final class Version20220201192438 extends AbstractMigration
     {
         $this->addSql('
             UPDATE smartcard_purchase sp
-            LEFT JOIN smartcard s ON s.id = sp.smartcard_id
-            LEFT JOIN smartcard_deposit sd ON sd.id = (
-                SELECT smartcardDeposit.id
-                FROM smartcard_deposit smartcardDeposit
-                WHERE smartcardDeposit.smartcard_id = s.id
+            JOIN smartcard s ON s.id = sp.smartcard_id
+            JOIN smartcard_deposit sd ON sd.id = (
+                SELECT dep.id
+                FROM smartcard_deposit dep
+                WHERE sp.used_at > dep.distributed_at AND dep.smartcard_id = s.id
+                ORDER BY dep.distributed_at DESC
                 LIMIT 1
             )
             LEFT JOIN relief_package rp ON rp.id = sd.relief_package_id
