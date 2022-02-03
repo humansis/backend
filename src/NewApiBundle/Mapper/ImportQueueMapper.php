@@ -33,7 +33,7 @@ class ImportQueueMapper implements MapperInterface
         return $this->object->getId();
     }
 
-    public function getValues(): string
+    public function getValues(): array
     {
         $extractValue = function ($values) {
             return $values['value'];
@@ -41,7 +41,7 @@ class ImportQueueMapper implements MapperInterface
         $extractValueFromAllBeneficiaries = function ($values) use ($extractValue) {
             return array_map($extractValue, $values);
         };
-        return json_encode(array_map($extractValueFromAllBeneficiaries, $this->object->getContent()));
+        return array_map($extractValueFromAllBeneficiaries, $this->object->getContent());
     }
 
     public function getStatus(): string
