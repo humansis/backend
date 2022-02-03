@@ -5,7 +5,6 @@ namespace NewApiBundle\Mapper;
 
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Serializer\MapperInterface;
-use function Aws\map;
 
 class ImportQueueMapper implements MapperInterface
 {
