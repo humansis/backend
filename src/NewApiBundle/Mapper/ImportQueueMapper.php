@@ -5,6 +5,7 @@ namespace NewApiBundle\Mapper;
 
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Serializer\MapperInterface;
+use function Aws\map;
 
 class ImportQueueMapper implements MapperInterface
 {
@@ -34,7 +35,13 @@ class ImportQueueMapper implements MapperInterface
 
     public function getValues(): string
     {
-        return json_encode($this->object->getContent());
+        $extractValue = function ($values) {
+            return $values['value'];
+        };
+        $extractValueFromAllBeneficiaries = function ($values) use ($extractValue) {
+            return array_map($extractValue, $values);
+        };
+        return json_encode(array_map($extractValueFromAllBeneficiaries, $this->object->getContent()));
     }
 
     public function getStatus(): string
