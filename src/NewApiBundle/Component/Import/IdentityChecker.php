@@ -99,15 +99,17 @@ class IdentityChecker
                     "[Queue#{$item->getId()}|line#$index] Duplicity checking omitted because of missing ID information");
                 continue;
             }
+            $IDType = $c['ID Type'][CellParameters::VALUE];
+            $IDNumber = $c['ID Number'][CellParameters::VALUE];
 
             $bnfDuplicities = $this->entityManager->getRepository(Beneficiary::class)->findIdentity(
-                (string) $c['ID Type'][CellParameters::VALUE],
-                (string) $c['ID Number'][CellParameters::VALUE],
+                (string) $IDType,
+                (string) $IDNumber,
                 $item->getImport()->getProject()->getIso3()
             );
 
             if (count($bnfDuplicities) > 0) {
-                $this->logImportInfo($item->getImport(), "Found ".count($bnfDuplicities)." duplicities for {$c['ID Type'][CellParameters::VALUE]} {$c['ID Number'][CellParameters::VALUE]}");
+                $this->logImportInfo($item->getImport(), "Found ".count($bnfDuplicities)." duplicities for $IDType $IDNumber");
             } else {
                 $this->logImportDebug($item->getImport(), "Found no duplicities");
             }
