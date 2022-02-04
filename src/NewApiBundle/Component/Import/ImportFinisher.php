@@ -12,7 +12,7 @@ use InvalidArgumentException;
 use NewApiBundle\Component\Import\Integrity\HouseholdDecoratorBuilder;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiary;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
@@ -124,7 +124,7 @@ class ImportFinisher
                         break;
                     case ImportQueueState::TO_IGNORE:
                     case ImportQueueState::TO_LINK:
-                        /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
+                        /** @var ImportHouseholdDuplicity $acceptedDuplicity */
                         $acceptedDuplicity = $item->getAcceptedDuplicity();
                         if (null == $acceptedDuplicity) {
                             return;
@@ -200,7 +200,7 @@ class ImportFinisher
         $HHBuilder = new HouseholdDecoratorBuilder($import->getProject()->getIso3(), $this->em, $item);
         $createdHousehold = $this->householdService->create($HHBuilder->buildHouseholdInputType());
 
-        /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
+        /** @var ImportHouseholdDuplicity $acceptedDuplicity */
         $acceptedDuplicity = $item->getAcceptedDuplicity();
         if (null !== $acceptedDuplicity) {
             $this->linkHouseholdToQueue($import, $createdHousehold, $acceptedDuplicity->getDecideBy());
@@ -224,7 +224,7 @@ class ImportFinisher
             throw new InvalidArgumentException("Wrong ImportQueue state");
         }
 
-        /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
+        /** @var ImportHouseholdDuplicity $acceptedDuplicity */
         $acceptedDuplicity = $item->getAcceptedDuplicity();
         if (null == $acceptedDuplicity) {
             return;

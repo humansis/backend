@@ -4,7 +4,7 @@ namespace NewApiBundle\Component\Import;
 
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
@@ -70,8 +70,8 @@ class DuplicityResolver
             throw new \BadMethodCallException('Unable to execute duplicity resolver. Import is not ready to duplicity resolve.');
         }
 
-        /** @var ImportBeneficiaryDuplicity[] $duplicities */
-        $duplicities = $this->em->getRepository(ImportBeneficiaryDuplicity::class)->findBy([
+        /** @var ImportHouseholdDuplicity[] $duplicities */
+        $duplicities = $this->em->getRepository(ImportHouseholdDuplicity::class)->findBy([
             'ours' => $importQueue,
         ]);
 

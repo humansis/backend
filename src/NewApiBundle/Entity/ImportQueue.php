@@ -30,9 +30,9 @@ class ImportQueue implements ConcurrencyLockableInterface
     private $import;
 
     /**
-     * @var ImportBeneficiaryDuplicity[]|Collection
+     * @var ImportHouseholdDuplicity[]|Collection
      *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiaryDuplicity", mappedBy="ours")
+     * @ORM\OneToMany(targetEntity="ImportHouseholdDuplicity", mappedBy="ours")
      */
     private $duplicities;
 
@@ -67,9 +67,9 @@ class ImportQueue implements ConcurrencyLockableInterface
     private $rawMessageData = [];
 
     /**
-     * @var ImportBeneficiaryDuplicity[]|Collection
+     * @var ImportHouseholdDuplicity[]|Collection
      *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiaryDuplicity", mappedBy="ours", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="ImportHouseholdDuplicity", mappedBy="ours", cascade={"remove"})
      */
     private $importBeneficiaryDuplicities;
 
@@ -122,7 +122,7 @@ class ImportQueue implements ConcurrencyLockableInterface
     }
 
     /**
-     * @return ImportBeneficiaryDuplicity[]
+     * @return ImportHouseholdDuplicity[]
      */
     public function getDuplicities(): Collection
     {
@@ -130,9 +130,9 @@ class ImportQueue implements ConcurrencyLockableInterface
     }
 
     /**
-     * @return ImportBeneficiaryDuplicity|null
+     * @return ImportHouseholdDuplicity|null
      */
-    public function getAcceptedDuplicity(): ?ImportBeneficiaryDuplicity
+    public function getAcceptedDuplicity(): ?ImportHouseholdDuplicity
     {
         foreach ($this->getDuplicities() as $duplicityCandidate) {
             if (ImportDuplicityState::DUPLICITY_KEEP_THEIRS === $duplicityCandidate->getState()
@@ -239,7 +239,7 @@ class ImportQueue implements ConcurrencyLockableInterface
     }
 
     /**
-     * @return Collection|ImportBeneficiaryDuplicity[]
+     * @return Collection|ImportHouseholdDuplicity[]
      */
     public function getImportBeneficiaryDuplicities()
     {

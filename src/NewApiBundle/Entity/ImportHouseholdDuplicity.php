@@ -1,31 +1,22 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace NewApiBundle\Entity;
 
-use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ImportDuplicityState;
-use NewApiBundle\Enum\ImportQueueState;
 use UserBundle\Entity\User;
 
 /**
- * Imformation about duplicity between queue record and beneficiary.
+ * Information about duplicity between queue record and household.
  *
- * @ORM\Entity()
+ * @ORM\Table(name="import_beneficiary_duplicity")
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ImportBeneficiaryDuplicityRepository")
  */
-class ImportBeneficiaryDuplicity
+class ImportHouseholdDuplicity
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var ImportQueue

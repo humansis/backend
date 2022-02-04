@@ -10,7 +10,7 @@ use NewApiBundle\DBAL\HouseholdAssetsEnum;
 use NewApiBundle\DBAL\HouseholdShelterStatusEnum;
 use NewApiBundle\DBAL\HouseholdSupportReceivedTypeEnum;
 use NewApiBundle\Entity\Helper\EnumTrait;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
@@ -187,9 +187,9 @@ class Household extends AbstractBeneficiary
     private $proxy;
 
     /**
-     * @var ImportBeneficiaryDuplicity[]|Collection
+     * @var ImportHouseholdDuplicity[]|Collection
      *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiaryDuplicity", mappedBy="theirs", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="ImportHouseholdDuplicity", mappedBy="theirs", cascade={"remove"})
      */
     private $importBeneficiaryDuplicities;
 
@@ -760,7 +760,7 @@ class Household extends AbstractBeneficiary
     }
 
     /**
-     * @return Collection|ImportBeneficiaryDuplicity[]
+     * @return Collection|ImportHouseholdDuplicity[]
      */
     public function getImportBeneficiaryDuplicities()
     {

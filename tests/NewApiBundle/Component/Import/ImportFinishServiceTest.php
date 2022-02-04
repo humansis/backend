@@ -10,7 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiary;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportDuplicityState;
@@ -314,7 +314,7 @@ class ImportFinishServiceTest extends KernelTestCase
     {
         $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
         $queueItem->setState(ImportQueueState::TO_CREATE);
-        $duplicity = new ImportBeneficiaryDuplicity($queueItem, $this->originHousehold);
+        $duplicity = new ImportHouseholdDuplicity($queueItem, $this->originHousehold);
         $duplicity->setState(ImportDuplicityState::NO_DUPLICITY);
         $duplicity->setDecideAt(new \DateTime());
         $duplicity->setDecideBy($this->getUser());
@@ -343,7 +343,7 @@ class ImportFinishServiceTest extends KernelTestCase
     {
         $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
         $queueItem->setState(ImportQueueState::TO_UPDATE);
-        $duplicity = new ImportBeneficiaryDuplicity($queueItem, $this->originHousehold);
+        $duplicity = new ImportHouseholdDuplicity($queueItem, $this->originHousehold);
         $duplicity->setState(ImportDuplicityState::DUPLICITY_KEEP_OURS);
         $duplicity->setDecideAt(new \DateTime());
         $duplicity->setDecideBy($this->getUser());
@@ -369,7 +369,7 @@ class ImportFinishServiceTest extends KernelTestCase
     {
         $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
         $queueItem->setState(ImportQueueState::TO_LINK);
-        $duplicity = new ImportBeneficiaryDuplicity($queueItem, $this->originHousehold);
+        $duplicity = new ImportHouseholdDuplicity($queueItem, $this->originHousehold);
         $duplicity->setState(ImportDuplicityState::DUPLICITY_KEEP_THEIRS);
         $duplicity->setDecideAt(new \DateTime());
         $duplicity->setDecideBy($this->getUser());
@@ -411,7 +411,7 @@ class ImportFinishServiceTest extends KernelTestCase
     {
         $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
         $queueItem->setState(ImportQueueState::IDENTITY_CANDIDATE);
-        $duplicity = new ImportBeneficiaryDuplicity($queueItem, $this->originHousehold);
+        $duplicity = new ImportHouseholdDuplicity($queueItem, $this->originHousehold);
         $duplicity->setState(ImportDuplicityState::DUPLICITY_CANDIDATE);
         $duplicity->setDecideAt(new \DateTime());
         $duplicity->setDecideBy($this->getUser());

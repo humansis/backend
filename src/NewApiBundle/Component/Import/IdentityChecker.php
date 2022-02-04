@@ -6,7 +6,7 @@ namespace NewApiBundle\Component\Import;
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
@@ -114,7 +114,7 @@ class IdentityChecker
 
             foreach ($bnfDuplicities as $bnf) {
                 if (!array_key_exists($bnf->getHousehold()->getId(), $duplicities)) {
-                    $duplicity = new ImportBeneficiaryDuplicity($item, $bnf->getHousehold());
+                    $duplicity = new ImportHouseholdDuplicity($item, $bnf->getHousehold());
                     $duplicity->setDecideAt(new \DateTime('now'));
                     $item->getImportBeneficiaryDuplicities()->add($duplicity);
                     $item->getDuplicities()->add($duplicity);

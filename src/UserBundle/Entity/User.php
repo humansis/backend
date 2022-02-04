@@ -12,7 +12,7 @@ use FOS\UserBundle\Model\User as BaseUser;
 use InvalidArgumentException;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiary;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueueDuplicity;
 use NewApiBundle\Entity\Role;
@@ -157,9 +157,9 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     private $importBeneficiaries;
 
     /**
-     * @var ImportBeneficiaryDuplicity[]|Collection
+     * @var ImportHouseholdDuplicity[]|Collection
      *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiaryDuplicity", mappedBy="decideBy")
+     * @ORM\OneToMany(targetEntity="ImportHouseholdDuplicity", mappedBy="decideBy")
      */
     private $importBeneficiaryDuplicities;
 
@@ -579,7 +579,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     }
 
     /**
-     * @return Collection|ImportBeneficiaryDuplicity[]
+     * @return Collection|ImportHouseholdDuplicity[]
      */
     public function getImportBeneficiaryDuplicities()
     {

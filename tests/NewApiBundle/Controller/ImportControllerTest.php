@@ -6,7 +6,7 @@ namespace Tests\NewApiBundle\Controller;
 use Doctrine\ORM\NoResultException;
 use Exception;
 use NewApiBundle\Controller\ImportController;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportInvalidFile;
 use NewApiBundle\Entity\ImportQueue;
@@ -200,8 +200,8 @@ class ImportControllerTest extends BMSServiceTestCase
 
     public function testGetDuplicities()
     {
-        /** @var ImportBeneficiaryDuplicity|null $duplicity */
-        $duplicity = $this->em->getRepository(ImportBeneficiaryDuplicity::class)->findOneBy([], ['id' => 'asc']);
+        /** @var ImportHouseholdDuplicity|null $duplicity */
+        $duplicity = $this->em->getRepository(ImportHouseholdDuplicity::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($duplicity)) {
             $this->markTestSkipped('There needs to be at least one import duplicity in system.');
@@ -286,8 +286,8 @@ class ImportControllerTest extends BMSServiceTestCase
 
     public function testResolveDuplicity()
     {
-        /** @var ImportBeneficiaryDuplicity|null $importQueue */
-        $duplicity = $this->em->getRepository(ImportBeneficiaryDuplicity::class)->findOneBy([], ['id' => 'asc']);
+        /** @var ImportHouseholdDuplicity|null $importQueue */
+        $duplicity = $this->em->getRepository(ImportHouseholdDuplicity::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($duplicity)) {
             $this->markTestSkipped('There needs to be at least one duplicity with entries in queue in system.');
