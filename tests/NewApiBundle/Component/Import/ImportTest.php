@@ -309,9 +309,9 @@ class ImportTest extends KernelTestCase
         $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::IDENTITY_CANDIDATE], ['id' => 'asc']);
         /** @var ImportQueue $item */
         foreach ($queue as $item) {
-            $this->assertGreaterThan(0, count($item->getDuplicities()));
+            $this->assertGreaterThan(0, count($item->getHouseholdDuplicities()));
             /** @var ImportHouseholdDuplicity $firstDuplicity */
-            $firstDuplicity = $item->getDuplicities()->first();
+            $firstDuplicity = $item->getHouseholdDuplicities()->first();
 
             $duplicityResolve = new DuplicityResolveInputType();
             $duplicityResolve->setStatus(ImportQueueState::TO_UPDATE);
@@ -400,9 +400,9 @@ class ImportTest extends KernelTestCase
 
         /** @var ImportQueue $item */
         foreach ($queue as $item) {
-            $this->assertGreaterThan(0, count($item->getDuplicities()));
+            $this->assertGreaterThan(0, count($item->getHouseholdDuplicities()));
             /** @var ImportHouseholdDuplicity $firstDuplicity */
-            $firstDuplicity = $item->getDuplicities()->first();
+            $firstDuplicity = $item->getHouseholdDuplicities()->first();
 
             $duplicityResolve = new DuplicityResolveInputType();
             $duplicityResolve->setStatus(ImportQueueState::TO_UPDATE);

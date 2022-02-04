@@ -318,7 +318,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $duplicity->setState(ImportDuplicityState::NO_DUPLICITY);
         $duplicity->setDecideAt(new \DateTime());
         $duplicity->setDecideBy($this->getUser());
-        $queueItem->getDuplicities()->add($duplicity);
+        $queueItem->getHouseholdDuplicities()->add($duplicity);
         $this->entityManager->persist($queueItem);
         $this->entityManager->persist($duplicity);
         $this->entityManager->flush();
@@ -347,7 +347,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $duplicity->setState(ImportDuplicityState::DUPLICITY_KEEP_OURS);
         $duplicity->setDecideAt(new \DateTime());
         $duplicity->setDecideBy($this->getUser());
-        $queueItem->getDuplicities()->add($duplicity);
+        $queueItem->getHouseholdDuplicities()->add($duplicity);
         $this->entityManager->persist($queueItem);
         $this->entityManager->persist($duplicity);
         $this->entityManager->flush();
@@ -373,7 +373,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $duplicity->setState(ImportDuplicityState::DUPLICITY_KEEP_THEIRS);
         $duplicity->setDecideAt(new \DateTime());
         $duplicity->setDecideBy($this->getUser());
-        $queueItem->getDuplicities()->add($duplicity);
+        $queueItem->getHouseholdDuplicities()->add($duplicity);
         $this->entityManager->persist($queueItem);
         $this->entityManager->persist($duplicity);
         $this->entityManager->flush();
@@ -415,7 +415,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $duplicity->setState(ImportDuplicityState::DUPLICITY_CANDIDATE);
         $duplicity->setDecideAt(new \DateTime());
         $duplicity->setDecideBy($this->getUser());
-        $queueItem->getDuplicities()->add($duplicity);
+        $queueItem->getHouseholdDuplicities()->add($duplicity);
         $this->entityManager->persist($queueItem);
         $this->entityManager->persist($duplicity);
         $this->entityManager->flush();

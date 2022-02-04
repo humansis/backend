@@ -6,6 +6,7 @@ namespace NewApiBundle\Component\Import;
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Entity\Import;
+use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
@@ -91,7 +92,6 @@ class IdentityChecker
     {
         $index = -1;
         $bnfDuplicities = [];
-        $duplicities = [];
         foreach ($item->getContent() as $c) {
             $index++;
             if (empty($c['ID Type'][CellParameters::VALUE]) || empty($c['ID Number'][CellParameters::VALUE])) {
@@ -115,17 +115,7 @@ class IdentityChecker
             }
 
             foreach ($bnfDuplicities as $bnf) {
-                if (!array_key_exists($bnf->getHousehold()->getId(), $duplicities)) {
-                    $duplicity = new ImportHouseholdDuplicity($item, $bnf->getHousehold());
-                    $duplicity->setDecideAt(new \DateTime('now'));
-                    $item->getImportBeneficiaryDuplicities()->add($duplicity);
-                    $item->getDuplicities()->add($duplicity);
-                    $this->entityManager->persist($duplicity);
-
-                    $duplicities[$bnf->getHousehold()->getId()] = $duplicity;
-                }
-                $importDuplicity = $duplicities[$bnf->getHousehold()->getId()];
-                $importDuplicity->addReason("Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
+                $item->addDuplicity($index, $bnf);
 
                 $this->logImportInfo($item->getImport(),
                     "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Entity;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -32,9 +33,16 @@ class ImportQueue implements ConcurrencyLockableInterface
     /**
      * @var ImportHouseholdDuplicity[]|Collection
      *
-     * @ORM\OneToMany(targetEntity="ImportHouseholdDuplicity", mappedBy="ours")
+     * @ORM\OneToMany(targetEntity="ImportHouseholdDuplicity", mappedBy="ours", cascade={"persist", "remove"})
      */
-    private $duplicities;
+    private $householdDuplicities;
+
+    /**
+     * @var ImportBeneficiaryDuplicity[]|Collection
+     *
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiaryDuplicity", mappedBy="queue", cascade={"persist", "remove"})
+     */
+    private $beneficiaryDuplicities;
 
     /**
      * @var ImportFile
@@ -107,7 +115,8 @@ class ImportQueue implements ConcurrencyLockableInterface
         $this->file = $file;
         $this->content = $content;
         $this->state = ImportQueueState::NEW;
-        $this->duplicities = new ArrayCollection();
+        $this->householdDuplicities = new ArrayCollection();
+        $this->beneficiaryDuplicities = new ArrayCollection();
         $this->importBeneficiaryDuplicities = new ArrayCollection();
         $this->importQueueDuplicitiesOurs = new ArrayCollection();
         $this->importQueueDuplicitiesTheirs = new ArrayCollection();
@@ -124,9 +133,9 @@ class ImportQueue implements ConcurrencyLockableInterface
     /**
      * @return ImportHouseholdDuplicity[]
      */
-    public function getDuplicities(): Collection
+    public function getHouseholdDuplicities(): Collection
     {
-        return $this->duplicities;
+        return $this->householdDuplicities;
     }
 
     /**
@@ -134,7 +143,7 @@ class ImportQueue implements ConcurrencyLockableInterface
      */
     public function getAcceptedDuplicity(): ?ImportHouseholdDuplicity
     {
-        foreach ($this->getDuplicities() as $duplicityCandidate) {
+        foreach ($this->getHouseholdDuplicities() as $duplicityCandidate) {
             if (ImportDuplicityState::DUPLICITY_KEEP_THEIRS === $duplicityCandidate->getState()
             || ImportDuplicityState::DUPLICITY_KEEP_OURS === $duplicityCandidate->getState()) {
                 return $duplicityCandidate;
@@ -222,6 +231,35 @@ class ImportQueue implements ConcurrencyLockableInterface
         return "ImportQueue#{$this->getId()}";
     }
 
+    public function addDuplicity(int $index, Beneficiary $beneficiary): void
+    {
+        if ($index < 0 || $index >= count($this->content)) {
+            throw new \InvalidArgumentException("Member index was not found in imported Household");
+        }
+
+        $this->beneficiaryDuplicities->add(new ImportBeneficiaryDuplicity($this, $index, $beneficiary));
+
+        if (!$this->getHouseholdDuplicityById($beneficiary->getId())) {
+            $this->householdDuplicities->add(new ImportHouseholdDuplicity($this, $beneficiary->getHousehold()));
+        }
+    }
+
+    public function getHouseholdDuplicityById(int $householdId): ?ImportHouseholdDuplicity
+    {
+        foreach ($this->householdDuplicities as $householdDuplicity) {
+            if ($householdDuplicity->getTheirs()->getId() === $householdId) return $householdDuplicity;
+        }
+        return null;
+    }
+
+    /**
+     * @return Collection|ImportBeneficiaryDuplicity[]
+     */
+    public function getBeneficiaryDuplicities()
+    {
+        return $this->beneficiaryDuplicities;
+    }
+
     /**
      * @return ImportQueueDuplicity
      */
@@ -280,7 +318,7 @@ class ImportQueue implements ConcurrencyLockableInterface
 
     public function hasResolvedDuplicities(): bool
     {
-        foreach ($this->getDuplicities() as $duplicity) {
+        foreach ($this->getHouseholdDuplicities() as $duplicity) {
             if ($duplicity->getState() == ImportDuplicityState::DUPLICITY_CANDIDATE) return false;
         }
         return true;

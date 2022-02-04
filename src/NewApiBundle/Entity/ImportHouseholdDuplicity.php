@@ -3,6 +3,7 @@
 namespace NewApiBundle\Entity;
 
 use BeneficiaryBundle\Entity\Household;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ImportDuplicityState;
@@ -46,16 +47,9 @@ class ImportHouseholdDuplicity
     private $decideBy;
 
     /**
-     * @var string[]
-     *
-     * @ORM\Column(type="array", nullable=true)
-     */
-    private $reasons;
-
-    /**
      * @var \DateTimeInterface
      *
-     * @ORM\Column(name="decide_at", type="datetimetz", nullable=false)
+     * @ORM\Column(name="decide_at", type="datetimetz", nullable=true)
      */
     private $decideAt;
 
@@ -64,15 +58,6 @@ class ImportHouseholdDuplicity
         $this->ours = $ours;
         $this->theirs = $theirs;
         $this->state = ImportDuplicityState::DUPLICITY_CANDIDATE;
-        $this->reasons = [];
-    }
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
     }
 
     /**
@@ -143,27 +128,4 @@ class ImportHouseholdDuplicity
         return $this->decideAt;
     }
 
-    /**
-     * @return string[]
-     */
-    public function getReasons(): array
-    {
-        return $this->reasons;
-    }
-
-    /**
-     * @param string[] $reasons
-     */
-    public function setReasons(array $reasons): void
-    {
-        $this->reasons = $reasons;
-    }
-
-    /**
-     * @param string $reason
-     */
-    public function addReason(string $reason): void
-    {
-        $this->reasons[] = $reason;
-    }
 }

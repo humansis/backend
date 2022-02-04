@@ -52,7 +52,7 @@ class ImportQueueDuplicity
     /**
      * @var \DateTimeInterface
      *
-     * @ORM\Column(name="decide_at", type="datetimetz", nullable=false)
+     * @ORM\Column(name="decide_at", type="datetimetz", nullable=true)
      */
     private $decideAt;
 
