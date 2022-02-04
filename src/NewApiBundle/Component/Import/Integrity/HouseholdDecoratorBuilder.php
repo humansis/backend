@@ -82,7 +82,7 @@ class HouseholdDecoratorBuilder
         $household->setEnumeratorName($this->householdLine->enumeratorName);
         $household->setShelterStatus($this->householdLine->shelterStatus);
         if (!empty($this->householdLine->supportDateReceived)) {
-            $household->setSupportDateReceived(ImportDateConverter::toIso(ImportDateConverter::toDatetime($this->householdLine->supportDateReceived)));
+            $household->setSupportDateReceived(ImportDateConverter::toIso($this->householdLine->getSupportDateReceived()));
         }
         $household->setSupportReceivedTypes($this->householdLine->supportReceivedTypes);
         $household->setAssets($this->householdLine->assets);
