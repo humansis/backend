@@ -189,7 +189,7 @@ class Household extends AbstractBeneficiary
     /**
      * @var ImportHouseholdDuplicity[]|Collection
      *
-     * @ORM\OneToMany(targetEntity="ImportHouseholdDuplicity", mappedBy="theirs", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportHouseholdDuplicity", mappedBy="theirs", cascade={"remove"})
      */
     private $importBeneficiaryDuplicities;
 

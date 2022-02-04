@@ -6,27 +6,24 @@ namespace NewApiBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\CreatedAt;
+use NewApiBundle\Entity\Helper\CreatedBy;
 use NewApiBundle\Entity\Helper\EnumTrait;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ImportState;
 use ProjectBundle\Entity\Project;
 use UserBundle\Entity\User;
 
 /**
- * @ORM\Entity()
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ImportRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Import
 {
+    use StandardizedPrimaryKey;
+    use CreatedBy;
+    use CreatedAt;
     use EnumTrait;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
 
     /**
      * @var string
@@ -55,20 +52,6 @@ class Import
      * @ORM\Column(name="state", type="enum_import_state", nullable=false)
      */
     private $state;
-
-    /**
-     * @var User
-     *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="imports")
-     */
-    private $createdBy;
-
-    /**
-     * @var \DateTimeInterface
-     *
-     * @ORM\Column(name="created_at", type="datetimetz", nullable=false)
-     */
-    private $createdAt;
 
     /**
      * @var ImportQueue[]|Collection
@@ -105,19 +88,10 @@ class Import
         $this->project = $project;
         $this->state = ImportState::NEW;
         $this->createdBy = $creator;
-        $this->createdAt = new \DateTime('now');
         $this->importQueue = new ArrayCollection();
         $this->importFiles = new ArrayCollection();
         $this->importBeneficiaries = new ArrayCollection();
         $this->importInvalidFiles = new ArrayCollection();
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     /**
@@ -145,14 +119,6 @@ class Import
     }
 
     /**
-     * @return User
-     */
-    public function getCreatedBy(): User
-    {
-        return $this->createdBy;
-    }
-
-    /**
      * @return string one of ImportState::* values
      */
     public function getState(): string
@@ -168,14 +134,6 @@ class Import
     {
         self::validateValue('state', ImportState::class, $state, false);
         $this->state = $state;
-    }
-
-    /**
-     * @return \DateTimeInterface
-     */
-    public function getCreatedAt(): \DateTimeInterface
-    {
-        return $this->createdAt;
     }
 
     /**

@@ -8,6 +8,7 @@ use NewApiBundle\Entity\Helper\EnumTrait;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
+use NewApiBundle\InputType\FilterFragment\PrimaryIdFilterTrait;
 use UserBundle\Entity\User;
 
 /**
@@ -17,16 +18,8 @@ use UserBundle\Entity\User;
  */
 class ImportQueueDuplicity
 {
+    use StandardizedPrimaryKey;
     use EnumTrait;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
 
     /**
      * @var ImportQueue
@@ -52,7 +45,7 @@ class ImportQueueDuplicity
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="importQueueDuplicities")
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User")
      */
     private $decideBy;
 
@@ -68,14 +61,6 @@ class ImportQueueDuplicity
         $this->ours = $ours;
         $this->theirs = $theirs;
         $this->state = ImportDuplicityState::DUPLICITY_CANDIDATE;
-    }
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
     }
 
     /**

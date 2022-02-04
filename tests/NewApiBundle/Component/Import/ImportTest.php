@@ -6,7 +6,7 @@ namespace Tests\NewApiBundle\Component\Import;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use NewApiBundle\Component\Import\ImportFileValidator;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
@@ -310,7 +310,7 @@ class ImportTest extends KernelTestCase
         /** @var ImportQueue $item */
         foreach ($queue as $item) {
             $this->assertGreaterThan(0, count($item->getDuplicities()));
-            /** @var ImportBeneficiaryDuplicity $firstDuplicity */
+            /** @var ImportHouseholdDuplicity $firstDuplicity */
             $firstDuplicity = $item->getDuplicities()->first();
 
             $duplicityResolve = new DuplicityResolveInputType();
@@ -401,7 +401,7 @@ class ImportTest extends KernelTestCase
         /** @var ImportQueue $item */
         foreach ($queue as $item) {
             $this->assertGreaterThan(0, count($item->getDuplicities()));
-            /** @var ImportBeneficiaryDuplicity $firstDuplicity */
+            /** @var ImportHouseholdDuplicity $firstDuplicity */
             $firstDuplicity = $item->getDuplicities()->first();
 
             $duplicityResolve = new DuplicityResolveInputType();

@@ -11,8 +11,7 @@ use UserBundle\Entity\User;
 /**
  * Information about duplicity between queue record and household.
  *
- * @ORM\Table(name="import_beneficiary_duplicity")
- * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ImportBeneficiaryDuplicityRepository")
+ * @ORM\Entity(repositoryClass="\NewApiBundle\Repository\ImportHouseholdDuplicityRepository")
  */
 class ImportHouseholdDuplicity
 {
