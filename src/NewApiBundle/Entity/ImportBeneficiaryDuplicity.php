@@ -3,11 +3,7 @@
 namespace NewApiBundle\Entity;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
-use NewApiBundle\Enum\ImportDuplicityState;
-use UserBundle\Entity\User;
 
 /**
  * Information about duplicity between queue record and beneficiary.
@@ -41,6 +37,13 @@ class ImportBeneficiaryDuplicity
     private $beneficiary;
 
     /**
+     * @var ImportHouseholdDuplicity
+     *
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ImportHouseholdDuplicity")
+     */
+    private $householdDuplicity;
+
+    /**
      * @var string[]
      *
      * @ORM\Column(type="array", nullable=true)
@@ -48,20 +51,21 @@ class ImportBeneficiaryDuplicity
     private $reasons;
 
     /**
-     * @var string[]
+     * @var array
      *
      * @ORM\Column(type="array", nullable=true)
      */
     private $differences;
 
 
-    public function __construct(ImportQueue $ours, int $memberIndex, Beneficiary $theirs)
+    public function __construct(ImportHouseholdDuplicity $householdDuplicity, ImportQueue $ours, int $memberIndex, Beneficiary $theirs)
     {
         $this->queue = $ours;
         $this->beneficiary = $theirs;
         $this->reasons = [];
         $this->differences = [];
         $this->memberIndex = $memberIndex;
+        $this->householdDuplicity = $householdDuplicity;
     }
 
 
@@ -90,6 +94,14 @@ class ImportBeneficiaryDuplicity
     }
 
     /**
+     * @return ImportHouseholdDuplicity
+     */
+    public function getHouseholdDuplicity(): ImportHouseholdDuplicity
+    {
+        return $this->householdDuplicity;
+    }
+
+    /**
      * @return string[]
      */
     public function getReasons(): array
@@ -98,9 +110,9 @@ class ImportBeneficiaryDuplicity
     }
 
     /**
-     * @param string $reason
+     * @param array $reason
      */
-    public function addReason(string $reason): void
+    public function addReason(array $reason): void
     {
         $this->reasons[] = $reason;
     }
@@ -114,12 +126,11 @@ class ImportBeneficiaryDuplicity
     }
 
     /**
-     * @param string $property
-     * @param string $difference
+     * @param array $differences
      */
-    public function addDifference(string $property, string $difference): void
+    public function setDifferences(array $differences)
     {
-        $this->differences[$property] = $difference;
+        $this->differences = $differences;
     }
 
 }

@@ -33,6 +33,13 @@ class ImportHouseholdDuplicity
     private $theirs;
 
     /**
+     * @var ImportBeneficiaryDuplicity[]
+     *
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiaryDuplicity", mappedBy="householdDuplicity", cascade={"persist", "remove"})
+     */
+    private $beneficiaryDuplicities;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="state", type="enum_import_duplicity_state", nullable=false)
@@ -58,6 +65,7 @@ class ImportHouseholdDuplicity
         $this->ours = $ours;
         $this->theirs = $theirs;
         $this->state = ImportDuplicityState::DUPLICITY_CANDIDATE;
+        $this->beneficiaryDuplicities = new ArrayCollection();
     }
 
     /**
@@ -74,6 +82,14 @@ class ImportHouseholdDuplicity
     public function getTheirs(): Household
     {
         return $this->theirs;
+    }
+
+    /**
+     * @return ArrayCollection|ImportBeneficiaryDuplicity[]
+     */
+    public function getBeneficiaryDuplicities()
+    {
+        return $this->beneficiaryDuplicities;
     }
 
     /**

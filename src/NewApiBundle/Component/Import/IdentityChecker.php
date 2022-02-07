@@ -5,6 +5,7 @@ namespace NewApiBundle\Component\Import;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Component\Import\Integrity\ImportLine;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
@@ -101,6 +102,7 @@ class IdentityChecker
             }
             $IDType = $c['ID Type'][CellParameters::VALUE];
             $IDNumber = $c['ID Number'][CellParameters::VALUE];
+            $line = new ImportLine($c, $item->getImport()->getProject()->getIso3(), $this->entityManager);
 
             $bnfDuplicities = $this->entityManager->getRepository(Beneficiary::class)->findIdentity(
                 (string) $IDType,
@@ -115,7 +117,7 @@ class IdentityChecker
             }
 
             foreach ($bnfDuplicities as $bnf) {
-                $item->addDuplicity($index, $bnf);
+                $item->addDuplicity($index, $bnf, [['ID Type'=>$IDType, 'ID Number'=>$IDNumber]], $this->differenceAnalysis($bnf, $line));
 
                 $this->logImportInfo($item->getImport(),
                     "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
@@ -126,6 +128,11 @@ class IdentityChecker
         $this->entityManager->persist($item);
 
         return $bnfDuplicities;
+    }
+
+    private function differenceAnalysis(Beneficiary $beneficiary, ImportLine $line): array
+    {
+        return []; // TODO
     }
 
     /**
