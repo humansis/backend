@@ -6,7 +6,9 @@ use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
+use Negotiation\Exception\InvalidArgument;
 use NewApiBundle\Component\Import\CellParameters;
+use NewApiBundle\Component\Import\Utils\ImportDateConverter;
 use NewApiBundle\Enum\EnumTrait;
 use NewApiBundle\Validator\Constraints\ImportDate;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -14,6 +16,8 @@ use NewApiBundle\Validator\Constraints\Enum;
 
 class ImportLine
 {
+    const MAX_PERSON_AGE = 110;
+
     /**
      * @Assert\Type("scalar", groups={"household", "member"})
      */
@@ -471,5 +475,62 @@ class ImportLine
         }
 
         return (null !== $this->idNumber);
+    }
+
+    /**
+     * @Assert\IsTrue(message="Date is not valid. Use Excel Date format or string in format DD-MM-YYYY lower than 110 years.", payload={"propertyPath"="dateOfBirth"}, groups={"household", "member"})
+     * @return bool
+     * @throws \Exception
+     */
+    public function isDateOfBirthValid(): bool
+    {
+        try {
+            $date = $this->getDateOfBirth();
+        } catch (InvalidArgument $exception) {
+            return false;
+        }
+
+        $maxDate = new \DateTime(sprintf('now - %s years', self::MAX_PERSON_AGE));
+        if ($maxDate > $date) {
+            return false;
+        }
+
+        return (bool) $date;
+    }
+
+    /**
+     * @Assert\IsTrue(message="Date is not valid. Use Excel Date format or string in format DD-MM-YYYY. Date of distribution must be higher than date of birth.", payload={"propertyPath"="supportDateReceived"}, groups={"household", "member"})
+     * @return bool
+     */
+    public function isSupportDateReceivedValid(): bool
+    {
+        if (empty($this->supportDateReceived)) {
+            return true;
+        }
+
+        try {
+            $dateOfBirth = $this->getDateOfBirth();
+            $dateOfSupport = $this->getSupportDateReceived();
+        } catch (InvalidArgument $exception) {
+            return false;
+        }
+
+        return $dateOfBirth <= $dateOfSupport;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDateOfBirth(): \DateTime
+    {
+        return ImportDateConverter::toDatetime($this->dateOfBirth);
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getSupportDateReceived(): \DateTime
+    {
+        return ImportDateConverter::toDatetime($this->supportDateReceived);
     }
 }

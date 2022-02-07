@@ -2,18 +2,11 @@
 
 namespace NewApiBundle\Component\Import\Integrity;
 
-use BeneficiaryBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Entity\Location;
-use Doctrine\ORM\EntityManagerInterface;
-use NewApiBundle\Component\Import\CellParameters;
 use NewApiBundle\Component\Import\Utils\ImportDateConverter;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 use NewApiBundle\InputType\Beneficiary\PhoneInputType;
-use NewApiBundle\Validator\Constraints\ImportDate;
-use Symfony\Component\Validator\Constraints as Assert;
-use NewApiBundle\Validator\Constraints\Enum;
 
 class BeneficiaryDecoratorBuilder
 {
@@ -31,7 +24,7 @@ class BeneficiaryDecoratorBuilder
     public function buildBeneficiaryInputType(): BeneficiaryInputType
     {
         $beneficiary = new BeneficiaryInputType();
-        $beneficiary->setDateOfBirth(ImportDateConverter::toIso(ImportDateConverter::toDatetime($this->beneficiaryLine->dateOfBirth)));
+        $beneficiary->setDateOfBirth(ImportDateConverter::toIso($this->beneficiaryLine->getDateOfBirth()));
         $beneficiary->setLocalFamilyName($this->beneficiaryLine->localFamilyName);
         $beneficiary->setLocalGivenName($this->beneficiaryLine->localGivenName);
         $beneficiary->setLocalParentsName($this->beneficiaryLine->localParentsName);

@@ -12,9 +12,9 @@ class ImportDateConverter
     public const STRING_DATE_FORMAT = 'd-m-Y';
 
     /**
-     * @param $value
+     * @param string|int|float $value
      *
-     * @return float|int|string DateTime
+     * @return DateTime
      */
     public static function toDatetime($value): DateTime
     {
