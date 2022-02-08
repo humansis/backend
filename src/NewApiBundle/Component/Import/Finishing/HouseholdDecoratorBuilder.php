@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Component\Import\Integrity;
+namespace NewApiBundle\Component\Import\Finishing;
 
 use CommonBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
@@ -15,23 +15,20 @@ use NewApiBundle\InputType\Beneficiary\CountrySpecificsAnswerInputType;
 use NewApiBundle\InputType\HouseholdCreateInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
+use NewApiBundle\Component\Import;
 
-/* TODO many unused parameters in HouseholdHead / HouseholdMember:
-    $campName
-    $tentNumber
-*/
 class HouseholdDecoratorBuilder
 {
     /** @var EntityManagerInterface */
     private $entityManager;
 
-    /** @var ImportLine */
+    /** @var Import\Integrity\ImportLine */
     private $householdLine;
 
-    /** @var ImportLine[] */
+    /** @var Import\Integrity\ImportLine[] */
     private $importLines;
 
-    /** @var ImportLineFactory */
+    /** @var Import\Integrity\ImportLineFactory */
     private $importLineFactory;
 
     /** @var BeneficiaryDecoratorBuilder */
@@ -39,10 +36,10 @@ class HouseholdDecoratorBuilder
 
     /**
      * @param EntityManagerInterface      $entityManager
-     * @param ImportLineFactory           $importLineFactory
+     * @param Import\Integrity\ImportLineFactory           $importLineFactory
      * @param BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder
      */
-    public function __construct(EntityManagerInterface $entityManager, ImportLineFactory $importLineFactory,
+    public function __construct(EntityManagerInterface $entityManager, Import\Integrity\ImportLineFactory $importLineFactory,
                                 BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder
     )
     {

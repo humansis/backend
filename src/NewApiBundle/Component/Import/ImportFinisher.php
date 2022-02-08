@@ -9,7 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
-use NewApiBundle\Component\Import\Integrity\HouseholdDecoratorBuilder;
+use NewApiBundle\Component\Import\Finishing\HouseholdDecoratorBuilder;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiary;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
@@ -70,7 +70,7 @@ class ImportFinisher
         LoggerInterface                     $logger,
         WorkflowInterface                   $importStateMachine,
         WorkflowInterface                   $importQueueStateMachine,
-        Integrity\HouseholdDecoratorBuilder $householdDecoratorBuilder
+        Finishing\HouseholdDecoratorBuilder $householdDecoratorBuilder
     ) {
         $this->em = $em;
         $this->importStateMachine = $importStateMachine;

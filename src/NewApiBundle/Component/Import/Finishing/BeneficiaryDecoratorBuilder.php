@@ -1,17 +1,17 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Component\Import\Integrity;
+namespace NewApiBundle\Component\Import\Finishing;
 
-use CommonBundle\Entity\Location;
 use NewApiBundle\Component\Import\Utils\ImportDateConverter;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 use NewApiBundle\InputType\Beneficiary\PhoneInputType;
+use NewApiBundle\Component\Import;
 
 class BeneficiaryDecoratorBuilder
 {
 
-    public function buildBeneficiaryInputType(ImportLine $beneficiaryLine): BeneficiaryInputType
+    public function buildBeneficiaryInputType(Import\Integrity\ImportLine $beneficiaryLine): BeneficiaryInputType
     {
         $beneficiary = new BeneficiaryInputType();
         $beneficiary->setDateOfBirth(ImportDateConverter::toIso($beneficiaryLine->getDateOfBirth()));

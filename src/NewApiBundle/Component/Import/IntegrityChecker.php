@@ -6,7 +6,8 @@ namespace NewApiBundle\Component\Import;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\Integrity;
-use NewApiBundle\Component\Import\Integrity\BeneficiaryDecoratorBuilder;
+use NewApiBundle\Component\Import\Finishing;
+use NewApiBundle\Component\Import\Finishing\BeneficiaryDecoratorBuilder;
 use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
@@ -36,7 +37,7 @@ class IntegrityChecker
     /** @var ImportLineFactory */
     private $importLineFactory;
 
-    /** @var Integrity\HouseholdDecoratorBuilder */
+    /** @var Finishing\HouseholdDecoratorBuilder */
     private $householdDecoratorBuilder;
 
     /** @var BeneficiaryDecoratorBuilder */
@@ -54,8 +55,8 @@ class IntegrityChecker
         WorkflowInterface                     $importStateMachine,
         WorkflowInterface                     $importQueueStateMachine,
         Integrity\ImportLineFactory           $importLineFactory,
-        Integrity\HouseholdDecoratorBuilder   $householdDecoratorBuilder,
-        Integrity\BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder
+        Finishing\HouseholdDecoratorBuilder   $householdDecoratorBuilder,
+        Finishing\BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder
     ) {
         $this->validator = $validator;
         $this->entityManager = $entityManager;
