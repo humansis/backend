@@ -6,6 +6,7 @@ namespace NewApiBundle\Component\Import;
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\Integrity\ImportLine;
+use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
@@ -29,6 +30,9 @@ class IdentityChecker
     /** @var ImportQueueRepository */
     private $queueRepository;
 
+    /** @var ImportLineFactory */
+    private $importLineFactory;
+
     /** @var WorkflowInterface */
     private $importStateMachine;
 
@@ -36,16 +40,18 @@ class IdentityChecker
     private $importQueueStateMachine;
 
     public function __construct(
-        EntityManagerInterface $entityManager,
-        LoggerInterface        $logger,
-        WorkflowInterface      $importStateMachine,
-        WorkflowInterface      $importQueueStateMachine
+        EntityManagerInterface      $entityManager,
+        LoggerInterface             $logger,
+        WorkflowInterface           $importStateMachine,
+        WorkflowInterface           $importQueueStateMachine,
+        Integrity\ImportLineFactory $importLineFactory
     ) {
         $this->entityManager = $entityManager;
         $this->logger = $logger;
         $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
         $this->importStateMachine = $importStateMachine;
         $this->importQueueStateMachine = $importQueueStateMachine;
+        $this->importLineFactory = $importLineFactory;
     }
 
     /**
@@ -93,16 +99,15 @@ class IdentityChecker
     {
         $index = -1;
         $bnfDuplicities = [];
-        foreach ($item->getContent() as $c) {
+        foreach ($this->importLineFactory->createAll($item) as $line) {
             $index++;
-            if (empty($c['ID Type'][CellParameters::VALUE]) || empty($c['ID Number'][CellParameters::VALUE])) {
+            $IDType = $line->idType;
+            $IDNumber = $line->idNumber;
+            if (empty($IDType) || empty($IDNumber)) {
                 $this->logImportDebug($item->getImport(),
                     "[Queue#{$item->getId()}|line#$index] Duplicity checking omitted because of missing ID information");
                 continue;
             }
-            $IDType = $c['ID Type'][CellParameters::VALUE];
-            $IDNumber = $c['ID Number'][CellParameters::VALUE];
-            $line = new ImportLine($c, $item->getImport()->getProject()->getIso3(), $this->entityManager);
 
             $bnfDuplicities = $this->entityManager->getRepository(Beneficiary::class)->findIdentity(
                 (string) $IDType,

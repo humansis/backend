@@ -94,6 +94,11 @@ class Import
         $this->importInvalidFiles = new ArrayCollection();
     }
 
+    public function getCountry(): string
+    {
+        return $this->getProject()->getIso3();
+    }
+
     /**
      * @return string
      */
