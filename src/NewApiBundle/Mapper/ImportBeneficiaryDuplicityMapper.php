@@ -3,14 +3,26 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
+use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
+use NewApiBundle\Component\Import\ValueObject\ImportBeneficiaryDuplicityCompare;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
-use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Serializer\MapperInterface;
 
 class ImportBeneficiaryDuplicityMapper implements MapperInterface
 {
     /** @var ImportBeneficiaryDuplicity */
     private $object;
+    /** @var ImportLineFactory */
+    private $importLineFactory;
+
+    /**
+     * @param ImportLineFactory $importLineFactory
+     */
+    public function __construct(ImportLineFactory $importLineFactory)
+    {
+        $this->importLineFactory = $importLineFactory;
+    }
 
     /**
      * {@inheritdoc}
@@ -39,9 +51,13 @@ class ImportBeneficiaryDuplicityMapper implements MapperInterface
         return $this->object->getReasons();
     }
 
-    public function getDifferences(): iterable
+    public function getDifferences(): ImportBeneficiaryDuplicityCompare
     {
-        return $this->object->getDifferences();
+        return new ImportBeneficiaryDuplicityCompare(
+            $this->importLineFactory->create($this->object->getQueue(), $this->object->getMemberIndex()),
+            $this->object->getBeneficiary(),
+            $this->object
+        );
     }
 
 }
