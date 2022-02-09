@@ -187,13 +187,6 @@ class Household extends AbstractBeneficiary
     private $proxy;
 
     /**
-     * @var ImportHouseholdDuplicity[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportHouseholdDuplicity", mappedBy="theirs", cascade={"remove"})
-     */
-    private $importBeneficiaryDuplicities;
-
-    /**
      * Constructor
      */
     public function __construct()
@@ -202,7 +195,6 @@ class Household extends AbstractBeneficiary
         $this->countrySpecificAnswers = new ArrayCollection();
         $this->beneficiaries = new ArrayCollection();
         $this->householdLocations = new ArrayCollection();
-        $this->importBeneficiaryDuplicities = new ArrayCollection();
 
         $this->assets = [];
         $this->supportReceivedTypes = [];
@@ -759,11 +751,4 @@ class Household extends AbstractBeneficiary
         $this->proxy = $proxy;
     }
 
-    /**
-     * @return Collection|ImportHouseholdDuplicity[]
-     */
-    public function getImportBeneficiaryDuplicities()
-    {
-        return $this->importBeneficiaryDuplicities;
-    }
 }

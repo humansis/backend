@@ -28,7 +28,7 @@ class ImportHouseholdDuplicity
     /**
      * @var Household
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household", inversedBy="importBeneficiaryDuplicities")
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household")
      */
     private $theirs;
 
