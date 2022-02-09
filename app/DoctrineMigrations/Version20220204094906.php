@@ -36,7 +36,6 @@ final class Version20220204094906 extends AbstractMigration
         $this->addSql('ALTER TABLE import_queue_duplicity CHANGE decide_at decide_at DATETIME NOT NULL');
         $this->addSql('ALTER TABLE relief_package RENAME INDEX idx_82b31f853049e54a TO IDX_181280CD3049E54A');
         $this->addSql('ALTER TABLE import_invalid_file CHANGE created_at created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', CHANGE invalid_queue_count invalid_queue_count INT NOT NULL');
-        $this->addSql('ALTER TABLE import_beneficiary_duplicity RENAME import_household_duplicity');
     }
 
     public function down(Schema $schema) : void
