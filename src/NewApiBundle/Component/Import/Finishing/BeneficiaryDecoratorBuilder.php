@@ -25,7 +25,7 @@ class BeneficiaryDecoratorBuilder
         $beneficiary->setResidencyStatus($beneficiaryLine->residencyStatus);
         $beneficiary->setIsHead($beneficiaryLine->head);
 
-        if (!is_null($beneficiaryLine->idType)) { //TODO check, that id card is filled completely
+        if (!is_null($beneficiaryLine->idType)) {
             $nationalId = new NationalIdCardInputType();
             $nationalId->setType($beneficiaryLine->idType);
             $nationalId->setNumber((string) $beneficiaryLine->idNumber);
