@@ -24,9 +24,9 @@ class ImportLineFactory
 
     public function createFromData(array $data, string $countryIso): ImportLine
     {
-        // if (!in_array($countryIso, $this->countries)) {
-        //     throw new \InvalidArgumentException("Country $countryIso doesn't exist");
-        // }
+        if (!in_array($countryIso, $this->countries)) {
+            throw new \InvalidArgumentException("Country $countryIso doesn't exist");
+        }
         return new ImportLine($data, $countryIso, $this->entityManager);
     }
 
