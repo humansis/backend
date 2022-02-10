@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\CreatedBy;
+use NewApiBundle\Entity\Helper\CountryDependent;
 use NewApiBundle\Entity\Helper\EnumTrait;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ImportState;
@@ -24,6 +25,7 @@ class Import
     use CreatedBy;
     use CreatedAt;
     use EnumTrait;
+    use CountryDependent;
 
     /**
      * @var string
@@ -81,8 +83,9 @@ class Import
      */
     private $importInvalidFiles;
 
-    public function __construct(string $title, ?string $notes, Project $project, User $creator)
+    public function __construct(string $countryIso3, string $title, ?string $notes, Project $project, User $creator)
     {
+        $this->countryIso3 = $countryIso3;
         $this->title = $title;
         $this->notes = $notes;
         $this->project = $project;

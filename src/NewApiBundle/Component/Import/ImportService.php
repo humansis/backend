@@ -82,7 +82,7 @@ class ImportService
         $this->duplicityResolver = $duplicityResolver;
     }
 
-    public function create(ImportCreateInputType $inputType, User $user): Import
+    public function create(string $countryIso3, ImportCreateInputType $inputType, User $user): Import
     {
         $project = $this->em->getRepository(Project::class)->find($inputType->getProjectId());
 
@@ -91,6 +91,7 @@ class ImportService
         }
 
         $import = new Import(
+            $countryIso3,
             $inputType->getTitle(),
             $inputType->getDescription(),
             $project,
