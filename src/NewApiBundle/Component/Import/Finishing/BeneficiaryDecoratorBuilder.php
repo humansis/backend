@@ -25,6 +25,13 @@ class BeneficiaryDecoratorBuilder
         $beneficiary->setResidencyStatus($beneficiaryLine->residencyStatus);
         $beneficiary->setIsHead($beneficiaryLine->head);
 
+        if (is_string($beneficiaryLine->vulnerabilityCriteria)) {
+            $vulnerabilities = explode(',', $beneficiaryLine->vulnerabilityCriteria);
+            foreach ($vulnerabilities as $vulnerability) {
+                $beneficiary->addVulnerabilityCriteria(trim($vulnerability));
+            }
+        }
+
         if (!is_null($beneficiaryLine->idType)) {
             $nationalId = new NationalIdCardInputType();
             $nationalId->setType($beneficiaryLine->idType);
