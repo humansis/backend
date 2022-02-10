@@ -4,6 +4,7 @@ namespace NewApiBundle\Entity;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * Information about duplicity between queue record and beneficiary.
@@ -12,10 +13,11 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ImportBeneficiaryDuplicity
 {
+    use StandardizedPrimaryKey;
+
     /**
      * @var ImportQueue
      *
-     * @ORM\Id
      * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ImportQueue")
      */
     private $queue;
@@ -23,7 +25,6 @@ class ImportBeneficiaryDuplicity
     /**
      * @var int
      *
-     * @ORM\Id
      * @ORM\Column(type="integer")
      */
     private $memberIndex;
@@ -31,7 +32,6 @@ class ImportBeneficiaryDuplicity
     /**
      * @var Beneficiary
      *
-     * @ORM\Id
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary")
      */
     private $beneficiary;
