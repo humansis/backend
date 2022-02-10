@@ -6,6 +6,7 @@ namespace NewApiBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\CountryDependent;
 use NewApiBundle\Entity\Helper\EnumTrait;
 use NewApiBundle\Enum\ImportState;
 use ProjectBundle\Entity\Project;
@@ -18,6 +19,7 @@ use UserBundle\Entity\User;
 class Import
 {
     use EnumTrait;
+    use CountryDependent;
 
     /**
      * @var int
@@ -98,8 +100,9 @@ class Import
      */
     private $importInvalidFiles;
 
-    public function __construct(string $title, ?string $notes, Project $project, User $creator)
+    public function __construct(string $countryIso3, string $title, ?string $notes, Project $project, User $creator)
     {
+        $this->countryIso3 = $countryIso3;
         $this->title = $title;
         $this->notes = $notes;
         $this->project = $project;

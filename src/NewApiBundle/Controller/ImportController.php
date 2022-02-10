@@ -116,12 +116,12 @@ class ImportController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function create(ImportCreateInputType $inputType): JsonResponse
+    public function create(Request $request, ImportCreateInputType $inputType): JsonResponse
     {
         /** @var User $user */
         $user = $this->getUser();
 
-        $institution = $this->importService->create($inputType, $user);
+        $institution = $this->importService->create($request->get('country'), $inputType, $user);
 
         return $this->json($institution);
     }

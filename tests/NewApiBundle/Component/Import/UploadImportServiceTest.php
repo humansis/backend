@@ -50,7 +50,7 @@ class UploadImportServiceTest extends KernelTestCase
         $project = $this->entityManager->getRepository(\ProjectBundle\Entity\Project::class)->findBy(['archived' => false], ['id' => 'asc'], 1)[0];
         $user = $this->entityManager->getRepository(\UserBundle\Entity\User::class)->findBy([], ['id' => 'asc'], 1)[0];
 
-        $import = new Import('test', null, $project, $user);
+        $import = new Import('KHM', 'test', null, $project, $user);
         $this->entityManager->persist($import);
         $this->entityManager->flush();
 
