@@ -50,20 +50,12 @@ class ImportBeneficiaryDuplicity
      */
     private $reasons;
 
-    /**
-     * @var array
-     *
-     * @ORM\Column(type="array", nullable=true)
-     */
-    private $differences;
-
 
     public function __construct(ImportHouseholdDuplicity $householdDuplicity, ImportQueue $ours, int $memberIndex, Beneficiary $theirs)
     {
         $this->queue = $ours;
         $this->beneficiary = $theirs;
         $this->reasons = [];
-        $this->differences = [];
         $this->memberIndex = $memberIndex;
         $this->householdDuplicity = $householdDuplicity;
     }
@@ -116,21 +108,4 @@ class ImportBeneficiaryDuplicity
     {
         $this->reasons[] = $reason;
     }
-
-    /**
-     * @return string[]
-     */
-    public function getDifferences(): array
-    {
-        return $this->differences;
-    }
-
-    /**
-     * @param array $differences
-     */
-    public function setDifferences(array $differences)
-    {
-        $this->differences = $differences;
-    }
-
 }

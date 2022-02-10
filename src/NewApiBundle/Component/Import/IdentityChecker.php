@@ -122,7 +122,7 @@ class IdentityChecker
             }
 
             foreach ($bnfDuplicities as $bnf) {
-                $item->addDuplicity($index, $bnf, [['ID Type'=>$IDType, 'ID Number'=>$IDNumber]], $this->differenceAnalysis($bnf, $line));
+                $item->addDuplicity($index, $bnf, [['ID Type'=>$IDType, 'ID Number'=>$IDNumber]]);
 
                 $this->logImportInfo($item->getImport(),
                     "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
@@ -133,11 +133,6 @@ class IdentityChecker
         $this->entityManager->persist($item);
 
         return $bnfDuplicities;
-    }
-
-    private function differenceAnalysis(Beneficiary $beneficiary, ImportLine $line): array
-    {
-        return []; // TODO
     }
 
     /**

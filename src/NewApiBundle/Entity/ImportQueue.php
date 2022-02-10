@@ -231,7 +231,7 @@ class ImportQueue implements ConcurrencyLockableInterface
         return "ImportQueue#{$this->getId()}";
     }
 
-    public function addDuplicity(int $index, Beneficiary $beneficiary, array $reasons, array $differences): void
+    public function addDuplicity(int $index, Beneficiary $beneficiary, array $reasons): void
     {
         if ($index < 0 || $index >= count($this->content)) {
             throw new \InvalidArgumentException("Member index was not found in imported Household");
@@ -249,8 +249,6 @@ class ImportQueue implements ConcurrencyLockableInterface
         foreach ($reasons as $reason) {
             $beneficiaryDuplicity->addReason($reason);
         }
-
-        $beneficiaryDuplicity->setDifferences($differences);
     }
 
     public function getHouseholdDuplicityById(int $householdId): ?ImportHouseholdDuplicity
