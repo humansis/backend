@@ -226,9 +226,6 @@ services:
     NewApiBundle\Component\Import\Finishing\HouseholdDecoratorBuilder:
 
     NewApiBundle\Component\Import\Integrity\ImportLineFactory:
-        arguments:
-            - "@doctrine.orm.entity_manager"
-            - "%app.countries%"
 
     NewApiBundle\Component\Import\ImportService:
         public: true

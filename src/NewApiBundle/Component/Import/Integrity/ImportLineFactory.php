@@ -3,20 +3,21 @@
 namespace NewApiBundle\Component\Import\Integrity;
 
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Entity\ImportQueue;
 
 class ImportLineFactory
 {
     /** @var EntityManagerInterface */
     private $entityManager;
-    /** @var string[] */
+    /** @var Countries */
     private $countries;
 
     /**
      * @param EntityManagerInterface $entityManager
-     * @param string[]               $countries
+     * @param Countries              $countries
      */
-    public function __construct(EntityManagerInterface $entityManager, array $countries)
+    public function __construct(EntityManagerInterface $entityManager, Countries $countries)
     {
         $this->entityManager = $entityManager;
         $this->countries = $countries;
@@ -24,7 +25,7 @@ class ImportLineFactory
 
     public function createFromData(array $data, string $countryIso): ImportLine
     {
-        if (!in_array($countryIso, $this->countries)) {
+        if (!$this->countries->hasCountry($countryIso)) {
             throw new \InvalidArgumentException("Country $countryIso doesn't exist");
         }
         return new ImportLine($data, $countryIso, $this->entityManager);
