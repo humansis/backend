@@ -325,7 +325,7 @@ class ImportLine
     private $entityManager;
 
     /** @var string[] */
-    private $excelDateTimeFormatProperties;
+    private $excelDateTimeFormatProperties = [];
 
     public function __construct(array $content, string $countryIso3, EntityManagerInterface $entityManager)
     {
