@@ -61,11 +61,6 @@ parameters:
           currency: ZMW
           adms: [ Region, District, Ward, Constituency ]
 
-        - name: Quantistan
-          iso3: QTI
-          currency: QCR
-          adms: [ Region, District, Community, Settlement ]
-
 framework:
     #esi: ~
     translator:
