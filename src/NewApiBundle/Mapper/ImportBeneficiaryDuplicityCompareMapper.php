@@ -151,11 +151,7 @@ class ImportBeneficiaryDuplicityCompareMapper implements MapperInterface
         foreach ($this->object->getBeneficiary()->getVulnerabilityCriteria() as $vulnerabilityCriterion) {
             $databaseVulnerabilities[] = $vulnerabilityCriterion->getFieldString();
         }
-        $importVulnerabilities = [];
-        // FIXME
-        //$this->object->getImportLine()->vulnerabilityCriteria;
-
-        return $this->compareLists($databaseVulnerabilities, $importVulnerabilities);
+        return $this->compareLists($databaseVulnerabilities, $this->object->getImportLine()->vulnerabilityCriteria);
     }
 
     public function getResidencyStatus(): ?array
