@@ -258,7 +258,7 @@ class ImportFinishServiceTest extends KernelTestCase
 
         $this->originHousehold = $this->createBlankHousehold($this->project);
 
-        $this->import = new Import('unit test', 'note', $this->project, $this->getUser());
+        $this->import = new Import(self::TEST_COUNTRY, 'unit test', 'note', [$this->project], $this->getUser());
         $this->import->setState(ImportState::SIMILARITY_CHECK_CORRECT);
         $this->entityManager->persist($this->import);
 

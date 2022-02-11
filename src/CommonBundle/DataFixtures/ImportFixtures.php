@@ -22,7 +22,7 @@ class ImportFixtures extends Fixture implements DependentFixtureInterface
      */
     public function load(ObjectManager $manager)
     {
-        $import = new Import('KHM','test_fixtures', null, $this->getProject($manager), $this->getUser($manager));
+        $import = new Import('KHM','test_fixtures', null, [$this->getProject($manager)], $this->getUser($manager));
         $manager->persist($import);
 
         $file = new ImportFile('fake_file.xlsx', $import, $this->getUser($manager));

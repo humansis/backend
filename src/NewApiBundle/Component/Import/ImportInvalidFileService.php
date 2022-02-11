@@ -62,9 +62,9 @@ class ImportInvalidFileService
     public function generateFile(Import $import): ImportInvalidFile
     {
         $invalidEntries = $this->importQueueRepository->getInvalidEntries($import);
-        $spreadsheet = $this->importTemplate->generateTemplateSpreadsheet($import->getProject()->getIso3());
+        $spreadsheet = $this->importTemplate->generateTemplateSpreadsheet($import->getCountryIso3());
 
-        $header = $this->importTemplate->getTemplateHeader($import->getProject()->getIso3());
+        $header = $this->importTemplate->getTemplateHeader($import->getCountryIso3());
         $this->writeEntries($spreadsheet, $invalidEntries, $header);
 
         $fileName = $this->generateInvalidFileName($import);

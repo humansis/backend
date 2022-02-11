@@ -5,6 +5,7 @@ namespace NewApiBundle\Mapper;
 
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Serializer\MapperInterface;
+use ProjectBundle\Entity\Project;
 
 class ImportMapper implements MapperInterface
 {
@@ -45,9 +46,11 @@ class ImportMapper implements MapperInterface
         return $this->object->getNotes();
     }
 
-    public function getProjectId(): int
+    public function getProjects(): array
     {
-        return $this->object->getProject()->getId();
+        return array_map(function (Project $project) {
+            return $project->getId();
+        }, $this->object->getProjects()->toArray());
     }
 
     public function getStatus(): string

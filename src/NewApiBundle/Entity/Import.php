@@ -42,11 +42,11 @@ class Import
     private $notes;
 
     /**
-     * @var Project
+     * @var Project[]|Collection
      *
-     * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project")
+     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project")
      */
-    private $project;
+    private $projects;
 
     /**
      * @var string
@@ -83,23 +83,18 @@ class Import
      */
     private $importInvalidFiles;
 
-    public function __construct(string $countryIso3, string $title, ?string $notes, Project $project, User $creator)
+    public function __construct(string $countryIso3, string $title, ?string $notes, array $projects, User $creator)
     {
         $this->countryIso3 = $countryIso3;
         $this->title = $title;
         $this->notes = $notes;
-        $this->project = $project;
+        $this->projects = $projects;
         $this->state = ImportState::NEW;
         $this->createdBy = $creator;
         $this->importQueue = new ArrayCollection();
         $this->importFiles = new ArrayCollection();
         $this->importBeneficiaries = new ArrayCollection();
         $this->importInvalidFiles = new ArrayCollection();
-    }
-
-    public function getCountry(): string
-    {
-        return $this->getProject()->getIso3();
     }
 
     /**
@@ -119,11 +114,12 @@ class Import
     }
 
     /**
-     * @return Project
+     * // TODO: nahradit volani kvuli zemi primo informaci o zemi importu
+     * @return Project[]|Collection
      */
-    public function getProject(): Project
+    public function getProjects(): iterable
     {
-        return $this->project;
+        return $this->projects;
     }
 
     /**

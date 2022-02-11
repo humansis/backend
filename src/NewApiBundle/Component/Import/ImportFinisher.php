@@ -243,12 +243,14 @@ class ImportFinisher
             return $project->getId();
         }, $updatedHousehold->getProjects()->toArray());
 
-        $projects[] = $import->getProject()->getId();
+        foreach ($import->getProjects() as $project) {
+            $projects[] = $project->getId();
+        }
 
         $householdUpdateInputType->setProjectIds($projects);
 
         $updatedHousehold = $acceptedDuplicity->getTheirs();
-        $this->householdService->update($updatedHousehold, $this->householdDecoratorBuilder->buildHouseholdUpdateType($item));
+        $this->householdService->update($updatedHousehold, $householdUpdateInputType);
 
         $this->linkHouseholdToQueue($import, $updatedHousehold, $acceptedDuplicity->getDecideBy());
         $this->logImportInfo($import, "Updated Household #{$updatedHousehold->getId()}");
@@ -263,6 +265,8 @@ class ImportFinisher
             $this->em->persist($beneficiaryInImport);
         }
 
-        $household->addProject($import->getProject());
+        foreach ($import->getProjects() as $project) {
+            $household->addProject($project);
+        }
     }
 }

@@ -39,7 +39,7 @@ class ImportLineFactory
     public function createAll(ImportQueue $importQueue): iterable
     {
         foreach ($importQueue->getContent() as $date) {
-            yield $this->createFromData($date, $importQueue->getImport()->getProject()->getIso3());
+            yield $this->createFromData($date, $importQueue->getImport()->getCountryIso3());
         }
     }
 
@@ -51,6 +51,6 @@ class ImportLineFactory
      */
     public function create(ImportQueue $importQueue, int $beneficiaryIndex): ImportLine
     {
-        return $this->createFromData($importQueue->getContent()[$beneficiaryIndex], $importQueue->getImport()->getProject()->getIso3());
+        return $this->createFromData($importQueue->getContent()[$beneficiaryIndex], $importQueue->getImport()->getCountryIso3());
     }
 }

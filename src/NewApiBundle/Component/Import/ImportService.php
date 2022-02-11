@@ -94,7 +94,7 @@ class ImportService
             $countryIso3,
             $inputType->getTitle(),
             $inputType->getDescription(),
-            $project,
+            [$project],
             $user,
         );
 

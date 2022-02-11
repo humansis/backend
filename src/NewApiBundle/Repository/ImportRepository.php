@@ -21,7 +21,7 @@ class ImportRepository extends EntityRepository
 
         if (null !== $countryIso3) {
             $qb
-                ->andWhere('p.iso3 = :country')
+                ->andWhere('i.countryIso3 = :country')
                 ->setParameter('country', $countryIso3)
             ;
         }
@@ -100,10 +100,9 @@ class ImportRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('i');
         $qb->select('count(i.id)')
-            ->innerJoin('i.project', 'p')
             ->where('i.state = :importingState')
             ->andWhere('i <> :importCandidate')
-            ->andWhere('p.iso3 = :country')
+            ->andWhere('i.countryIso3 = :country')
             ->setParameter('importingState', ImportState::IMPORTING)
             ->setParameter('importCandidate', $importCandidate)
             ->setParameter('country', $countryIso3)
@@ -121,9 +120,8 @@ class ImportRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('i');
         $qb->select('i')
-            ->innerJoin('i.project', 'p')
-            ->andWhere('p.iso3 = :country')
-            ->setParameter('country', $import->getProject()->getIso3())
+            ->andWhere('i.countryIso3 = :country')
+            ->setParameter('country', $import->getCountryIso3())
         ;
 
         return $qb->getQuery()->getResult();
