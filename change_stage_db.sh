@@ -17,5 +17,5 @@ fi
 
 export command="sed -i -e \"s/${RDS_DB_NAME_STAGE}/${DATABASE_NAME}/g\" /opt/humansis/parameters.yml"
 ssh ec2-user@${ec2_host} $command
-ssh ec2-user@${ec2_host} "/opt/humansis/clear_cache.sh aggressive"
+ssh ec2-user@${ec2_host} "cd /opt/humansis && /opt/humansis/clear_cache.sh aggressive"
 ssh ec2-user@${ec2_host} "cd /opt/humansis && sudo docker-compose exec -T php bash -c 'php bin/console doctrine:migrations:migrate -n'"
