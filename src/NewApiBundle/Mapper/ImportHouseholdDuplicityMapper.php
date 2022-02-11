@@ -12,6 +12,16 @@ class ImportHouseholdDuplicityMapper implements MapperInterface
 {
     /** @var ImportHouseholdDuplicity */
     private $object;
+    /** @var ImportBeneficiaryDuplicityMapper */
+    private $beneficiaryDuplicityMapper;
+
+    /**
+     * @param ImportBeneficiaryDuplicityMapper $beneficiaryDuplicityMapper
+     */
+    public function __construct(ImportBeneficiaryDuplicityMapper $beneficiaryDuplicityMapper)
+    {
+        $this->beneficiaryDuplicityMapper = $beneficiaryDuplicityMapper;
+    }
 
     /**
      * {@inheritdoc}
@@ -48,6 +58,24 @@ class ImportHouseholdDuplicityMapper implements MapperInterface
     public function getDuplicityCandidateId(): int
     {
         return $this->object->getTheirs()->getId();
+    }
+
+    /**
+     * @deprecated it is there only for backward compatibility, remove it after FE makes better view of duplicity reasons for BNFs
+     * @return iterable
+     */
+    public function getReasons(): iterable
+    {
+        foreach ($this->object->getBeneficiaryDuplicities() as $duplicity) {
+            $this->beneficiaryDuplicityMapper->populate($duplicity);
+            $reasons = '';
+            foreach ($this->beneficiaryDuplicityMapper->getReasons() as $reason) {
+                $reasons .= implode(': ', $reason);
+            }
+
+            yield "#".$duplicity->getMemberIndex()." BNF in imported HH => BNF#".$duplicity->getBeneficiary()->getId()." in DB<br>"
+                ."<strong>Because:</strong><br>".$reasons;
+        }
     }
 
     public function getMemberDuplicities(): iterable
