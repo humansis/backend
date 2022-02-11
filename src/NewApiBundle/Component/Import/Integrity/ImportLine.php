@@ -492,6 +492,10 @@ class ImportLine
      */
     public function isDateOfBirthValid(): bool
     {
+        if (null === $this->dateOfBirth) {
+            return true;
+        }
+
         if (is_int($this->dateOfBirth) || is_float($this->dateOfBirth)) {
             return in_array('dateOfBirth', $this->excelDateTimeFormatProperties);
         }
@@ -505,6 +509,10 @@ class ImportLine
      */
     public function isSupportDateReceivedValid(): bool
     {
+        if (null === $this->supportDateReceived) {
+            return true;
+        }
+
         if (is_int($this->supportDateReceived) || is_float($this->supportDateReceived)) {
             return in_array('supportDateReceived', $this->excelDateTimeFormatProperties);
         }
