@@ -6,13 +6,13 @@ use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
-use Negotiation\Exception\InvalidArgument;
 use NewApiBundle\Component\Import\CellParameters;
 use NewApiBundle\Component\Import\Utils\ImportDateConverter;
 use NewApiBundle\Enum\EnumTrait;
 use NewApiBundle\Validator\Constraints\ImportDate;
 use Symfony\Component\Validator\Constraints as Assert;
 use NewApiBundle\Validator\Constraints\Enum;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class ImportLine
 {
@@ -326,6 +326,9 @@ class ImportLine
     /** @var EntityManagerInterface */
     private $entityManager;
 
+    /** @var string[] */
+    private $excelDateTimeFormatProperties;
+
     public function __construct(array $content, string $countryIso3, EntityManagerInterface $entityManager)
     {
         $this->countryIso3 = $countryIso3;
@@ -334,8 +337,13 @@ class ImportLine
         foreach (HouseholdExportCSVService::MAPPING_PROPERTIES as $header => $property) {
             if (isset($content[$header])) {
                 $value = $content[$header][CellParameters::VALUE];
+
+                if (Date::isDateTimeFormatCode($content[$header][CellParameters::NUMBER_FORMAT])) {
+                    $this->excelDateTimeFormatProperties[] = $property;
+                }
+
                 if (is_string($value)) {
-                    $this->$property = preg_replace('/[\pZ\pC]/u', ' ', (string)$value); // replace unicode spaces by ASCII ones
+                    $this->$property = preg_replace('/[\pZ\pC]/u', ' ', $value); // replace unicode spaces by ASCII ones
                     $this->$property = trim($this->$property);
 
                     // back retype to int if there is only numbers
@@ -478,44 +486,30 @@ class ImportLine
     }
 
     /**
-     * @Assert\IsTrue(message="Date is not valid. Use Excel Date format or string in format DD-MM-YYYY lower than 110 years.", payload={"propertyPath"="dateOfBirth"}, groups={"household", "member"})
+     * @Assert\IsTrue(message="Date is not valid. Use Excel Date format or string in format DD-MM-YYYY.", payload={"propertyPath"="dateOfBirth"}, groups={"household", "member"})
      * @return bool
      * @throws \Exception
      */
     public function isDateOfBirthValid(): bool
     {
-        try {
-            $date = $this->getDateOfBirth();
-        } catch (InvalidArgument $exception) {
-            return false;
+        if (is_int($this->dateOfBirth) || is_float($this->dateOfBirth)) {
+            return in_array('dateOfBirth', $this->excelDateTimeFormatProperties);
         }
 
-        $maxDate = new \DateTime(sprintf('now - %s years', self::MAX_PERSON_AGE));
-        if ($maxDate > $date) {
-            return false;
-        }
-
-        return (bool) $date;
+        return true;
     }
 
     /**
-     * @Assert\IsTrue(message="Date is not valid. Use Excel Date format or string in format DD-MM-YYYY. Date of distribution must be higher than date of birth.", payload={"propertyPath"="supportDateReceived"}, groups={"household", "member"})
+     * @Assert\IsTrue(message="Date is not valid. Use Excel Date format or string in format DD-MM-YYYY.", payload={"propertyPath"="supportDateReceived"}, groups={"household", "member"})
      * @return bool
      */
     public function isSupportDateReceivedValid(): bool
     {
-        if (empty($this->supportDateReceived)) {
-            return true;
+        if (is_int($this->supportDateReceived) || is_float($this->supportDateReceived)) {
+            return in_array('supportDateReceived', $this->excelDateTimeFormatProperties);
         }
 
-        try {
-            $dateOfBirth = $this->getDateOfBirth();
-            $dateOfSupport = $this->getSupportDateReceived();
-        } catch (InvalidArgument $exception) {
-            return false;
-        }
-
-        return $dateOfBirth <= $dateOfSupport;
+        return true;
     }
 
     /**
