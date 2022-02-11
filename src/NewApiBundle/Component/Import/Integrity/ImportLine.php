@@ -16,8 +16,6 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class ImportLine
 {
-    const MAX_PERSON_AGE = 110;
-
     /**
      * @Assert\Type("scalar", groups={"household", "member"})
      */
