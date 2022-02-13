@@ -79,17 +79,17 @@ class ImportService
 
     public function create(string $countryIso3, Import\CreateInputType $inputType, User $user): Entity\Import
     {
-        $project = $this->em->getRepository(Project::class)->find($inputType->getProjectId());
+        $projects = $this->em->getRepository(Project::class)->findBy(['id'=>$inputType->getProjects()]);
 
-        if (!$project instanceof Project) {
-            throw new InvalidArgumentException('Project with ID '.$inputType->getProjectId().' not found');
+        if (count($projects) < count($inputType->getProjects())) {
+            throw new InvalidArgumentException('Some Project ID not found');
         }
 
         $import = new Entity\Import(
             $countryIso3,
             $inputType->getTitle(),
             $inputType->getDescription(),
-            [$project],
+            $projects,
             $user,
         );
 

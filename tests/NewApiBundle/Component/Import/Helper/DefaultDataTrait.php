@@ -66,7 +66,7 @@ trait DefaultDataTrait
         $createImportInput = new Import\CreateInputType();
         $createImportInput->setTitle($name);
         $createImportInput->setDescription(__METHOD__);
-        $createImportInput->setProjectId($project->getId());
+        $createImportInput->setProjects([$project->getId()]);
         $import = $this->importService->create($project->getIso3(), $createImportInput, $this->getUser());
 
         $this->assertNotNull($import->getId(), "Import wasn't saved to DB");
