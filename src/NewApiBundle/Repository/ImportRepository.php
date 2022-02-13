@@ -8,13 +8,13 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use InvalidArgumentException;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Enum\ImportState;
-use NewApiBundle\InputType\ImportFilterInputType;
-use NewApiBundle\InputType\ImportOrderInputType;
+use NewApiBundle\InputType\Import\FilterInputType;
+use NewApiBundle\InputType\Import\OrderInputType;
 use NewApiBundle\Request\Pagination;
 
 class ImportRepository extends EntityRepository
 {
-    public function findByParams(?string $countryIso3, ?Pagination $pagination = null, ?ImportFilterInputType $filter = null, ?ImportOrderInputType $orderBy = null): Paginator
+    public function findByParams(?string $countryIso3, ?Pagination $pagination = null, ?FilterInputType $filter = null, ?OrderInputType $orderBy = null): Paginator
     {
         $qb = $this->createQueryBuilder('i');
         $qb->leftJoin('i.project', 'p');
@@ -57,29 +57,29 @@ class ImportRepository extends EntityRepository
         if ($orderBy) {
             foreach ($orderBy->toArray() as $name => $direction) {
                 switch ($name) {
-                    case ImportOrderInputType::SORT_BY_ID:
+                    case OrderInputType::SORT_BY_ID:
                         $qb->orderBy('i.id', $direction);
                         break;
-                    case ImportOrderInputType::SORT_BY_TITLE:
+                    case OrderInputType::SORT_BY_TITLE:
                         $qb->orderBy('i.title', $direction);
                         break;
-                    case ImportOrderInputType::SORT_BY_DESCRIPTION:
+                    case OrderInputType::SORT_BY_DESCRIPTION:
                         $qb->orderBy('i.notes', $direction);
                         break;
-                    case ImportOrderInputType::SORT_BY_PROJECT:
+                    case OrderInputType::SORT_BY_PROJECT:
                         $qb->orderBy('p.name', $direction);
                         break;
-                    case ImportOrderInputType::SORT_BY_STATUS:
+                    case OrderInputType::SORT_BY_STATUS:
                         $qb->orderBy('i.state', $direction);
                         break;
-                    case ImportOrderInputType::SORT_BY_CREATED_BY:
+                    case OrderInputType::SORT_BY_CREATED_BY:
                         if (!in_array('u', $qb->getAllAliases())) {
                             $qb->leftJoin('i.createdBy', 'u');
                         }
 
                         $qb->orderBy('u.email', $direction);
                         break;
-                    case ImportOrderInputType::SORT_BY_CREATED_AT:
+                    case OrderInputType::SORT_BY_CREATED_AT:
                         $qb->orderBy('i.createdAt', $direction);
                         break;
                     default:

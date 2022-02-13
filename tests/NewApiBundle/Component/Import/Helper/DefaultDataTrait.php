@@ -1,16 +1,15 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Component\Import\Helper;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\NationalId;
-use NewApiBundle\Entity\Import;
+use NewApiBundle\Entity;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\PersonGender;
-use NewApiBundle\InputType\ImportCreateInputType;
+use NewApiBundle\InputType\Import;
 use ProjectBundle\Entity\Project;
 use UserBundle\Entity\User;
 
@@ -62,9 +61,9 @@ trait DefaultDataTrait
         return $this->entityManager->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
     }
 
-    private function createImport(string $name, Project $project, ?string $fileName = null): Import
+    private function createImport(string $name, Project $project, ?string $fileName = null): Entity\Import
     {
-        $createImportInput = new ImportCreateInputType();
+        $createImportInput = new Import\CreateInputType();
         $createImportInput->setTitle($name);
         $createImportInput->setDescription(__METHOD__);
         $createImportInput->setProjectId($project->getId());

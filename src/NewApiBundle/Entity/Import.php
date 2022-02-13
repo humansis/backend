@@ -114,7 +114,6 @@ class Import
     }
 
     /**
-     * // TODO: nahradit volani kvuli zemi primo informaci o zemi importu
      * @return Project[]|Collection
      */
     public function getProjects(): iterable

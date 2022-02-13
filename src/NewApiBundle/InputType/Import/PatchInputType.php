@@ -1,13 +1,12 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
-namespace NewApiBundle\InputType;
+namespace NewApiBundle\InputType\Import;
 
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class ImportPatchInputType implements InputTypeInterface
+class PatchInputType implements InputTypeInterface
 {
     /**
      * @var string|null

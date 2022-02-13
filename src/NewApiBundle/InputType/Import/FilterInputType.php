@@ -1,7 +1,6 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
-namespace NewApiBundle\InputType;
+namespace NewApiBundle\InputType\Import;
 
 use NewApiBundle\InputType\FilterFragment\FulltextFilterTrait;
 use NewApiBundle\InputType\FilterFragment\ProjectFilterTrait;
@@ -9,9 +8,9 @@ use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @Assert\GroupSequence({"ImportFilterInputType", "Strict"})
+ * @Assert\GroupSequence({"FilterInputType", "Strict"})
  */
-class ImportFilterInputType extends AbstractFilterInputType
+class FilterInputType extends AbstractFilterInputType
 {
     use FulltextFilterTrait;
     use ProjectFilterTrait;
