@@ -47,7 +47,7 @@ class ImportControllerTest extends BMSServiceTestCase
         $this->request('POST', '/api/basic/web-app/v1/imports', [
             'title' => 'test',
             'description' => 'test',
-            'projectId' => $projects->getId(),
+            'projects' => [$projects->getId()],
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
