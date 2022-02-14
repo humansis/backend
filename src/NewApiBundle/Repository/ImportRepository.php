@@ -11,13 +11,14 @@ use NewApiBundle\Enum\ImportState;
 use NewApiBundle\InputType\Import\FilterInputType;
 use NewApiBundle\InputType\Import\OrderInputType;
 use NewApiBundle\Request\Pagination;
+use ProjectBundle\Entity\Project;
 
 class ImportRepository extends EntityRepository
 {
     public function findByParams(?string $countryIso3, ?Pagination $pagination = null, ?FilterInputType $filter = null, ?OrderInputType $orderBy = null): Paginator
     {
         $qb = $this->createQueryBuilder('i');
-        $qb->leftJoin('i.project', 'p');
+        $qb->leftJoin('i.projects', 'p');
 
         if (null !== $countryIso3) {
             $qb
@@ -94,6 +95,16 @@ class ImportRepository extends EntityRepository
         }
 
         return new Paginator($qb);
+    }
+
+    public function findByProject(Project $project)
+    {
+        $qb = $this->createQueryBuilder('i')
+            ->leftJoin('i.projects', 'p')
+            ->andWhere('p = :project')
+            ->setParameter('project', $project)
+        ;
+        return $qb->getQuery()->getResult();
     }
 
     public function isCountryFreeFromImporting(Import $importCandidate, string $countryIso3): bool

@@ -45,6 +45,10 @@ class Import
      * @var Project[]|Collection
      *
      * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project")
+     * @ORM\JoinTable(name="import_project",
+     *     joinColumns={@ORM\JoinColumn(name="import_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="project_id", referencedColumnName="id")}
+     * )
      */
     private $projects;
 
@@ -88,7 +92,7 @@ class Import
         $this->countryIso3 = $countryIso3;
         $this->title = $title;
         $this->notes = $notes;
-        $this->projects = $projects;
+        $this->projects = new ArrayCollection($projects);
         $this->state = ImportState::NEW;
         $this->createdBy = $creator;
         $this->importQueue = new ArrayCollection();
@@ -116,9 +120,14 @@ class Import
     /**
      * @return Project[]|Collection
      */
-    public function getProjects(): iterable
+    public function getProjects(): Collection
     {
         return $this->projects;
+    }
+
+    public function removeProject(Project $project): void
+    {
+        $this->projects->removeElement($project);
     }
 
     /**
