@@ -113,7 +113,7 @@ class ImportController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        $institution = $this->importService->create($request->get('country'), $inputType, $user);
+        $institution = $this->importService->create($request->headers->get('country'), $inputType, $user);
 
         return $this->json($institution);
     }
