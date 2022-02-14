@@ -120,6 +120,9 @@ services:
             - "@distribution.assistance_beneficiary_service"
         public: true
 
+    BeneficiaryBundle\Utils\BeneficiaryService:
+        alias: beneficiary.beneficiary_service
+
     beneficiary.country_specific_service:
         class: BeneficiaryBundle\Utils\CountrySpecificService
         arguments:

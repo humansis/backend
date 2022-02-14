@@ -74,7 +74,7 @@ class ImportReset
         $item->setIdentityCheckedAt(null);
         $item->setSimilarityCheckedAt(null);
 
-        foreach ($item->getDuplicities() as $duplicity) {
+        foreach ($item->getHouseholdDuplicities() as $duplicity) {
             $this->em->remove($duplicity);
         }
 

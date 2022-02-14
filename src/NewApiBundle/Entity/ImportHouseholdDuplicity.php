@@ -1,39 +1,43 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace NewApiBundle\Entity;
 
+use BeneficiaryBundle\Entity\Household;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\EnumTrait;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ImportDuplicityState;
-use NewApiBundle\Enum\ImportQueueState;
-use NewApiBundle\InputType\FilterFragment\PrimaryIdFilterTrait;
 use UserBundle\Entity\User;
 
 /**
- * Imformation about duplicity between two queue records.
+ * Information about duplicity between queue record and household.
  *
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="\NewApiBundle\Repository\ImportHouseholdDuplicityRepository")
  */
-class ImportQueueDuplicity
+class ImportHouseholdDuplicity
 {
     use StandardizedPrimaryKey;
-    use EnumTrait;
 
     /**
      * @var ImportQueue
      *
-     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ImportQueue", inversedBy="importQueueDuplicitiesOurs")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ImportQueue", inversedBy="importBeneficiaryDuplicities")
      */
     private $ours;
 
     /**
-     * @var ImportQueue
+     * @var Household
      *
-     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ImportQueue", inversedBy="importQueueDuplicitiesTheirs")
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household")
      */
     private $theirs;
+
+    /**
+     * @var ImportBeneficiaryDuplicity[]
+     *
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiaryDuplicity", mappedBy="householdDuplicity", cascade={"persist", "remove"})
+     */
+    private $beneficiaryDuplicities;
 
     /**
      * @var string
@@ -45,7 +49,7 @@ class ImportQueueDuplicity
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="importBeneficiaryDuplicities")
      */
     private $decideBy;
 
@@ -56,11 +60,12 @@ class ImportQueueDuplicity
      */
     private $decideAt;
 
-    public function __construct(ImportQueue $ours, ImportQueue $theirs)
+    public function __construct(ImportQueue $ours, Household $theirs)
     {
         $this->ours = $ours;
         $this->theirs = $theirs;
         $this->state = ImportDuplicityState::DUPLICITY_CANDIDATE;
+        $this->beneficiaryDuplicities = new ArrayCollection();
     }
 
     /**
@@ -72,11 +77,19 @@ class ImportQueueDuplicity
     }
 
     /**
-     * @return ImportQueue
+     * @return Household
      */
-    public function getTheirs(): ImportQueue
+    public function getTheirs(): Household
     {
         return $this->theirs;
+    }
+
+    /**
+     * @return ArrayCollection|ImportBeneficiaryDuplicity[]
+     */
+    public function getBeneficiaryDuplicities()
+    {
+        return $this->beneficiaryDuplicities;
     }
 
     /**
@@ -88,12 +101,14 @@ class ImportQueueDuplicity
     }
 
     /**
-     * @see ImportDuplicityState::values()
      * @param string $state one of ImportDuplicityState::* values
      */
     public function setState(string $state)
     {
-        self::validateValue('state', ImportDuplicityState::class, $state, false);
+        if (!in_array($state, ImportDuplicityState::values())) {
+            throw new \InvalidArgumentException('Invalid argument. '.$state.' is not valid Import duplicity state');
+        }
+
         $this->state = $state;
     }
 
@@ -128,4 +143,5 @@ class ImportQueueDuplicity
     {
         return $this->decideAt;
     }
+
 }

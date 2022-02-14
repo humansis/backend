@@ -1,7 +1,6 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
-namespace NewApiBundle\Component\Import\Integrity;
+namespace NewApiBundle\Component\Import\Finishing;
 
 use CommonBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
@@ -16,65 +15,70 @@ use NewApiBundle\InputType\Beneficiary\CountrySpecificsAnswerInputType;
 use NewApiBundle\InputType\HouseholdCreateInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
+use NewApiBundle\Component\Import;
 
-/* TODO many unused parameters in HouseholdHead / HouseholdMember:
-    $campName
-    $tentNumber
-*/
 class HouseholdDecoratorBuilder
 {
-    /** @var string */
-    private $countryIso3;
-
     /** @var EntityManagerInterface */
     private $entityManager;
 
-    /** @var ImportLine */
+    /** @var Import\Integrity\ImportLine */
     private $householdLine;
 
-    /** @var ImportLine[] */
+    /** @var Import\Integrity\ImportLine[] */
     private $importLines;
 
+    /** @var Import\Integrity\ImportLineFactory */
+    private $importLineFactory;
+
+    /** @var BeneficiaryDecoratorBuilder */
+    private $beneficiaryDecoratorBuilder;
+
     /**
-     * @param string                 $countryIso3
-     * @param EntityManagerInterface $entityManager
-     * @param ImportQueue            $importQueue
+     * @param EntityManagerInterface      $entityManager
+     * @param Import\Integrity\ImportLineFactory           $importLineFactory
+     * @param BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder
      */
-    public function __construct(string $countryIso3, EntityManagerInterface $entityManager, ImportQueue $importQueue)
+    public function __construct(EntityManagerInterface $entityManager, Import\Integrity\ImportLineFactory $importLineFactory,
+                                BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder
+    )
     {
-        $this->countryIso3 = $countryIso3;
         $this->entityManager = $entityManager;
-        $this->householdLine = new ImportLine($importQueue->getHeadContent(), $countryIso3, $entityManager);
-        foreach ($importQueue->getContent() as $lineData) {
-            $this->importLines[] = new ImportLine($lineData, $countryIso3, $entityManager);
-        }
+        $this->importLineFactory = $importLineFactory;
+        $this->beneficiaryDecoratorBuilder = $beneficiaryDecoratorBuilder;
     }
 
-    public function buildHouseholdInputType(): ?HouseholdCreateInputType
+    public function buildHouseholdInputType(ImportQueue $importQueue): ?HouseholdCreateInputType
     {
+        $this->householdLine = $this->importLineFactory->create($importQueue, 0);
+        $this->importLines = $this->importLineFactory->createAll($importQueue);
+
         $household = new HouseholdCreateInputType();
-        $this->fillHousehold($household);
+        $this->fillHousehold($household, $importQueue->getImport()->getCountry());
         return $household;
     }
 
-    public function buildHouseholdUpdateType(): ?HouseholdUpdateInputType
+    public function buildHouseholdUpdateType(ImportQueue $importQueue): ?HouseholdUpdateInputType
     {
+        $this->householdLine = $this->importLineFactory->create($importQueue, 0);
+        $this->importLines = $this->importLineFactory->createAll($importQueue);
+
         $household = new HouseholdUpdateInputType();
-        $this->fillHousehold($household);
+        $this->fillHousehold($household, $importQueue->getImport()->getCountry());
         return $household;
     }
 
     /**
      * @param HouseholdUpdateInputType $household
      */
-    private function fillHousehold(HouseholdUpdateInputType $household): void
+    private function fillHousehold(HouseholdUpdateInputType $household, string $countryIso3): void
     {
         $household->setProjectIds([]);
         $household->setCopingStrategiesIndex($this->householdLine->copingStrategiesIndex);
         $household->setDebtLevel($this->householdLine->debtLevel);
         $household->setFoodConsumptionScore($this->householdLine->foodConsumptionScore);
         $household->setIncome($this->householdLine->income);
-        $household->setIso3($this->countryIso3);
+        $household->setIso3($countryIso3);
         $household->setNotes($this->householdLine->notes);
         $household->setLatitude((string) $this->householdLine->latitude);
         $household->setLongitude((string) $this->householdLine->longitude);
@@ -96,7 +100,7 @@ class HouseholdDecoratorBuilder
 
         // defined must be Camp or Address - it's checked in Integrity Checking
         if($this->householdLine->campName && $this->householdLine->tentNumber){
-            $household->setCampAddress($this->buildCampAddress($this->householdLine));
+            $household->setCampAddress($this->buildCampAddress($this->householdLine, $countryIso3));
         } else {
             /** @var LocationRepository $locationRepository */
             $locationRepository = $this->entityManager->getRepository(Location::class);
@@ -110,7 +114,7 @@ class HouseholdDecoratorBuilder
                 return !empty($value);
             });
 
-            $location = $locationRepository->getByNormalizedNames($this->countryIso3, $locationsArray);
+            $location = $locationRepository->getByNormalizedNames($countryIso3, $locationsArray);
 
             if (null !== $location) {
                 $address = new ResidenceAddressInputType();
@@ -123,8 +127,7 @@ class HouseholdDecoratorBuilder
         }
 
         foreach ($this->importLines as $importLine) {
-            $builder = new BeneficiaryDecoratorBuilder($importLine);
-            $beneficiary = $builder->buildBeneficiaryInputType();
+            $beneficiary = $this->beneficiaryDecoratorBuilder->buildBeneficiaryInputType($importLine);
             $household->addBeneficiary($beneficiary);
         }
 
@@ -174,10 +177,10 @@ class HouseholdDecoratorBuilder
     /**
      * @return CampAddressInputType
      */
-    private function buildCampAddress($line): CampAddressInputType
+    private function buildCampAddress($line, string $countryIso3): CampAddressInputType
     {
         $campAddress = new CampAddressInputType();
-        $campAddress->setCamp($this->buildCampInputType($line));
+        $campAddress->setCamp($this->buildCampInputType($line, $countryIso3));
         $campAddress->setTentNumber($line->tentNumber);
 
         return $campAddress;
@@ -186,7 +189,7 @@ class HouseholdDecoratorBuilder
     /**
      * @return CampInputType
      */
-    private function buildCampInputType($line): CampInputType
+    private function buildCampInputType($line, string $countryIso3): CampInputType
     {
         $campInput = new CampInputType();
         $campInput->setName($line->campName);
@@ -205,7 +208,7 @@ class HouseholdDecoratorBuilder
             return !empty($value);
         });
 
-        $location = $locationRepository->getByNormalizedNames($this->countryIso3,$locationsArray);
+        $location = $locationRepository->getByNormalizedNames($countryIso3, $locationsArray);
         if ($location !== null) {
             $campInput->setLocationId($location->getId());
         }

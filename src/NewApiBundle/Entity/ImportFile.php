@@ -1,25 +1,23 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace NewApiBundle\Entity;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\CreatedAt;
+use NewApiBundle\Entity\Helper\CreatedBy;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use UserBundle\Entity\User;
 
 /**
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ImportFileRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class ImportFile
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
+    use CreatedAt;
+    use CreatedBy;
 
     /**
      * @var string
@@ -48,20 +46,6 @@ class ImportFile
      * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Import", inversedBy="importFiles")
      */
     private $import;
-
-    /**
-     * @var User
-     *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="importFiles")
-     */
-    private $user;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="created_at", type="datetimetz", nullable=true)
-     */
-    private $createdAt;
 
     /**
      * @var ImportQueue[]|Collection
@@ -102,17 +86,8 @@ class ImportFile
     {
         $this->filename = $filename;
         $this->import = $import;
-        $this->user = $user;
-        $this->createdAt = new \DateTime('now');
+        $this->createdBy = $user;
         $this->isLoaded = false;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     /**
@@ -136,15 +111,7 @@ class ImportFile
      */
     public function getUser(): User
     {
-        return $this->user;
-    }
-
-    /**
-     * @return \DateTimeInterface
-     */
-    public function getCreatedAt(): \DateTimeInterface
-    {
-        return $this->createdAt;
+        return $this->createdBy;
     }
 
     public function __toString()

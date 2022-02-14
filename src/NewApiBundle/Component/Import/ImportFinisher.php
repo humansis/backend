@@ -9,10 +9,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
-use NewApiBundle\Component\Import\Integrity\HouseholdDecoratorBuilder;
+use NewApiBundle\Component\Import\Finishing\HouseholdDecoratorBuilder;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiary;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
@@ -36,6 +36,9 @@ class ImportFinisher
      * @var EntityManagerInterface
      */
     private $em;
+
+    /** @var HouseholdDecoratorBuilder */
+    private $householdDecoratorBuilder;
 
     /**
      * @var WorkflowInterface
@@ -61,12 +64,13 @@ class ImportFinisher
     private $totalBatchSize;
 
     public function __construct(
-        int                    $totalBatchSize,
-        EntityManagerInterface $em,
-        HouseholdService       $householdService,
-        LoggerInterface        $logger,
-        WorkflowInterface      $importStateMachine,
-        WorkflowInterface      $importQueueStateMachine
+        int                                 $totalBatchSize,
+        EntityManagerInterface              $em,
+        HouseholdService                    $householdService,
+        LoggerInterface                     $logger,
+        WorkflowInterface                   $importStateMachine,
+        WorkflowInterface                   $importQueueStateMachine,
+        Finishing\HouseholdDecoratorBuilder $householdDecoratorBuilder
     ) {
         $this->em = $em;
         $this->importStateMachine = $importStateMachine;
@@ -75,6 +79,7 @@ class ImportFinisher
         $this->queueRepository = $em->getRepository(ImportQueue::class);
         $this->logger = $logger;
         $this->totalBatchSize = $totalBatchSize;
+        $this->householdDecoratorBuilder = $householdDecoratorBuilder;
     }
 
     /**
@@ -124,7 +129,7 @@ class ImportFinisher
                         break;
                     case ImportQueueState::TO_IGNORE:
                     case ImportQueueState::TO_LINK:
-                        /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
+                        /** @var ImportHouseholdDuplicity $acceptedDuplicity */
                         $acceptedDuplicity = $item->getAcceptedDuplicity();
                         if (null == $acceptedDuplicity) {
                             return;
@@ -197,10 +202,11 @@ class ImportFinisher
             throw new InvalidArgumentException("Wrong ImportQueue creation state: ".$item->getState());
         }
 
-        $HHBuilder = new HouseholdDecoratorBuilder($import->getProject()->getIso3(), $this->em, $item);
-        $createdHousehold = $this->householdService->create($HHBuilder->buildHouseholdInputType());
+        $createdHousehold = $this->householdService->create(
+            $this->householdDecoratorBuilder->buildHouseholdInputType($item)
+        );
 
-        /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
+        /** @var ImportHouseholdDuplicity $acceptedDuplicity */
         $acceptedDuplicity = $item->getAcceptedDuplicity();
         if (null !== $acceptedDuplicity) {
             $this->linkHouseholdToQueue($import, $createdHousehold, $acceptedDuplicity->getDecideBy());
@@ -224,14 +230,13 @@ class ImportFinisher
             throw new InvalidArgumentException("Wrong ImportQueue state");
         }
 
-        /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
+        /** @var ImportHouseholdDuplicity $acceptedDuplicity */
         $acceptedDuplicity = $item->getAcceptedDuplicity();
         if (null == $acceptedDuplicity) {
             return;
         }
 
-        $HHBuilder = new HouseholdDecoratorBuilder($import->getProject()->getIso3(), $this->em, $item);
-        $householdUpdateInputType = $HHBuilder->buildHouseholdUpdateType();
+        $householdUpdateInputType = $this->householdDecoratorBuilder->buildHouseholdUpdateType($item);
 
         $updatedHousehold = $acceptedDuplicity->getTheirs();
         $projects = array_map(function (Project $project) {
@@ -243,7 +248,7 @@ class ImportFinisher
         $householdUpdateInputType->setProjectIds($projects);
 
         $updatedHousehold = $acceptedDuplicity->getTheirs();
-        $this->householdService->update($updatedHousehold, $HHBuilder->buildHouseholdUpdateType());
+        $this->householdService->update($updatedHousehold, $this->householdDecoratorBuilder->buildHouseholdUpdateType($item));
 
         $this->linkHouseholdToQueue($import, $updatedHousehold, $acceptedDuplicity->getDecideBy());
         $this->logImportInfo($import, "Updated Household #{$updatedHousehold->getId()}");

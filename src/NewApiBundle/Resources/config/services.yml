@@ -221,6 +221,12 @@ services:
     NewApiBundle\Component\File\UploadService:
         arguments: [ '@knp_gaufrette.filesystem_map', '%aws_s3_bucket_name%', '%aws_s3_region%' ]
 
+    NewApiBundle\Component\Import\Finishing\BeneficiaryDecoratorBuilder:
+
+    NewApiBundle\Component\Import\Finishing\HouseholdDecoratorBuilder:
+
+    NewApiBundle\Component\Import\Integrity\ImportLineFactory:
+
     NewApiBundle\Component\Import\ImportService:
         public: true
         arguments:

@@ -6,7 +6,7 @@ namespace Tests\NewApiBundle\Component\Import;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use NewApiBundle\Component\Import\ImportFileValidator;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
@@ -309,9 +309,9 @@ class ImportTest extends KernelTestCase
         $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::IDENTITY_CANDIDATE], ['id' => 'asc']);
         /** @var ImportQueue $item */
         foreach ($queue as $item) {
-            $this->assertGreaterThan(0, count($item->getDuplicities()));
-            /** @var ImportBeneficiaryDuplicity $firstDuplicity */
-            $firstDuplicity = $item->getDuplicities()->first();
+            $this->assertGreaterThan(0, count($item->getHouseholdDuplicities()));
+            /** @var ImportHouseholdDuplicity $firstDuplicity */
+            $firstDuplicity = $item->getHouseholdDuplicities()->first();
 
             $duplicityResolve = new DuplicityResolveInputType();
             $duplicityResolve->setStatus(ImportQueueState::TO_UPDATE);
@@ -400,9 +400,9 @@ class ImportTest extends KernelTestCase
 
         /** @var ImportQueue $item */
         foreach ($queue as $item) {
-            $this->assertGreaterThan(0, count($item->getDuplicities()));
-            /** @var ImportBeneficiaryDuplicity $firstDuplicity */
-            $firstDuplicity = $item->getDuplicities()->first();
+            $this->assertGreaterThan(0, count($item->getHouseholdDuplicities()));
+            /** @var ImportHouseholdDuplicity $firstDuplicity */
+            $firstDuplicity = $item->getHouseholdDuplicities()->first();
 
             $duplicityResolve = new DuplicityResolveInputType();
             $duplicityResolve->setStatus(ImportQueueState::TO_UPDATE);
@@ -456,7 +456,7 @@ class ImportTest extends KernelTestCase
         $project->setNotes(get_class($this));
         $project->setStartDate(new \DateTime());
         $project->setEndDate(new \DateTime());
-        $project->setIso3('QTI');
+        $project->setIso3('ARM');
         $this->entityManager->persist($project);
         $this->entityManager->flush();
 

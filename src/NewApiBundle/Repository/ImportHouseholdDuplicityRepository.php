@@ -7,7 +7,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Entity\Import;
 
-class ImportBeneficiaryDuplicityRepository extends EntityRepository
+class ImportHouseholdDuplicityRepository extends EntityRepository
 {
     public function findByImport(Import $import): Paginator
     {

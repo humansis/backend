@@ -5,8 +5,11 @@ namespace NewApiBundle\Component\Import;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Component\Import\Integrity\ImportLine;
+use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
@@ -27,6 +30,9 @@ class IdentityChecker
     /** @var ImportQueueRepository */
     private $queueRepository;
 
+    /** @var ImportLineFactory */
+    private $importLineFactory;
+
     /** @var WorkflowInterface */
     private $importStateMachine;
 
@@ -34,16 +40,18 @@ class IdentityChecker
     private $importQueueStateMachine;
 
     public function __construct(
-        EntityManagerInterface $entityManager,
-        LoggerInterface        $logger,
-        WorkflowInterface      $importStateMachine,
-        WorkflowInterface      $importQueueStateMachine
+        EntityManagerInterface      $entityManager,
+        LoggerInterface             $logger,
+        WorkflowInterface           $importStateMachine,
+        WorkflowInterface           $importQueueStateMachine,
+        Integrity\ImportLineFactory $importLineFactory
     ) {
         $this->entityManager = $entityManager;
         $this->logger = $logger;
         $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
         $this->importStateMachine = $importStateMachine;
         $this->importQueueStateMachine = $importQueueStateMachine;
+        $this->importLineFactory = $importLineFactory;
     }
 
     /**
@@ -91,39 +99,30 @@ class IdentityChecker
     {
         $index = -1;
         $bnfDuplicities = [];
-        $duplicities = [];
-        foreach ($item->getContent() as $c) {
+        foreach ($this->importLineFactory->createAll($item) as $line) {
             $index++;
-            if (empty($c['ID Type'][CellParameters::VALUE]) || empty($c['ID Number'][CellParameters::VALUE])) {
+            $IDType = $line->idType;
+            $IDNumber = $line->idNumber;
+            if (empty($IDType) || empty($IDNumber)) {
                 $this->logImportDebug($item->getImport(),
                     "[Queue#{$item->getId()}|line#$index] Duplicity checking omitted because of missing ID information");
                 continue;
             }
 
             $bnfDuplicities = $this->entityManager->getRepository(Beneficiary::class)->findIdentity(
-                (string) $c['ID Type'][CellParameters::VALUE],
-                (string) $c['ID Number'][CellParameters::VALUE],
+                (string) $IDType,
+                (string) $IDNumber,
                 $item->getImport()->getProject()->getIso3()
             );
 
             if (count($bnfDuplicities) > 0) {
-                $this->logImportInfo($item->getImport(), "Found ".count($bnfDuplicities)." duplicities for {$c['ID Type'][CellParameters::VALUE]} {$c['ID Number'][CellParameters::VALUE]}");
+                $this->logImportInfo($item->getImport(), "Found ".count($bnfDuplicities)." duplicities for $IDType $IDNumber");
             } else {
                 $this->logImportDebug($item->getImport(), "Found no duplicities");
             }
 
             foreach ($bnfDuplicities as $bnf) {
-                if (!array_key_exists($bnf->getHousehold()->getId(), $duplicities)) {
-                    $duplicity = new ImportBeneficiaryDuplicity($item, $bnf->getHousehold());
-                    $duplicity->setDecideAt(new \DateTime('now'));
-                    $item->getImportBeneficiaryDuplicities()->add($duplicity);
-                    $item->getDuplicities()->add($duplicity);
-                    $this->entityManager->persist($duplicity);
-
-                    $duplicities[$bnf->getHousehold()->getId()] = $duplicity;
-                }
-                $importDuplicity = $duplicities[$bnf->getHousehold()->getId()];
-                $importDuplicity->addReason("Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
+                $item->addDuplicity($index, $bnf, [['ID Type'=>$IDType, 'ID Number'=>$IDNumber]]);
 
                 $this->logImportInfo($item->getImport(),
                     "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
