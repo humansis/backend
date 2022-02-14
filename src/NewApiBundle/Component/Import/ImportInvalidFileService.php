@@ -10,7 +10,6 @@ use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportQueueTransitions;
-use NewApiBundle\Workflow\WorkflowTool;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -117,9 +116,10 @@ class ImportInvalidFileService
                 throw new \InvalidArgumentException("Wrong ImportQueue state for export invalid items: ".$entry->getState());
             }
 
+            $messages = $this->decodeMessages($entry->getMessage());
+
             foreach ($entry->getContent() as $i => $row) {
-                //TODO parse json only once
-                $invalidColumns = $this->parseInvalidColumns($entry->getMessage(), $i);
+                $invalidColumns = $this->parseInvalidColumns($messages, $i);
 
                 foreach ($header as $column) {
                     $cell = $sheet->getCellByColumnAndRow($currentColumn, $currentRow);
@@ -131,12 +131,20 @@ class ImportInvalidFileService
                         $cell->getStyle()->getNumberFormat()->setFormatCode($row[$column][CellParameters::NUMBER_FORMAT]);
                     }
 
-                    if (in_array($column, $invalidColumns)) {
+                    if (count($invalidColumns) === 0) {
                         $cell->getStyle()
                             ->getFill()
                             ->setFillType(Fill::FILL_SOLID)
                             ->getStartColor()
-                            ->setRGB('ffff00');
+                            ->setRGB('CCFF99');
+                    } else {
+                        if (in_array($column, $invalidColumns)) {
+                            $cell->getStyle()
+                                ->getFill()
+                                ->setFillType(Fill::FILL_SOLID)
+                                ->getStartColor()
+                                ->setRGB('ffff00');
+                        }
                     }
 
                     ++$currentColumn;
@@ -151,12 +159,19 @@ class ImportInvalidFileService
         $this->em->flush();
     }
 
-    private function parseInvalidColumns(?string $messageJson, $rowNumber): array
+    private function decodeMessages(?string $messageJson): array
     {
         try {
             //depth=512 is default value
-            $messages = json_decode($messageJson, true, 512, JSON_THROW_ON_ERROR);
+            return json_decode($messageJson, true, 512, JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {
+            return [];
+        }
+    }
+
+    private function parseInvalidColumns(array $messages, $rowNumber): array
+    {
+        if (!isset($messages[$rowNumber])) {
             return [];
         }
 

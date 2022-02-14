@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Component\Import;
 
 use NewApiBundle\Component\Import\Exception\InvalidImportException;
+use NewApiBundle\Enum\EnumValueNoFoundException;
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -39,7 +40,13 @@ class ImportParser
             }
 
             // null => member
-            if (true === HouseholdHead::valueFromAPI($row['Head'][CellParameters::VALUE])) {
+            try{
+                $isHead = HouseholdHead::valueFromAPI($row['Head'][CellParameters::VALUE]);
+            }catch (EnumValueNoFoundException $exception){
+                $isHead = false;
+            }
+
+            if (true === $isHead) {
                 if ([] !== $household) {
                     // everytime new household head is found, previous HH is added to list
                     $list[] = $household;
