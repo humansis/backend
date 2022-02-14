@@ -8,20 +8,21 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use InvalidArgumentException;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Enum\ImportState;
-use NewApiBundle\InputType\ImportFilterInputType;
-use NewApiBundle\InputType\ImportOrderInputType;
+use NewApiBundle\InputType\Import\FilterInputType;
+use NewApiBundle\InputType\Import\OrderInputType;
 use NewApiBundle\Request\Pagination;
+use ProjectBundle\Entity\Project;
 
 class ImportRepository extends EntityRepository
 {
-    public function findByParams(?string $countryIso3, ?Pagination $pagination = null, ?ImportFilterInputType $filter = null, ?ImportOrderInputType $orderBy = null): Paginator
+    public function findByParams(?string $countryIso3, ?Pagination $pagination = null, ?FilterInputType $filter = null, ?OrderInputType $orderBy = null): Paginator
     {
         $qb = $this->createQueryBuilder('i');
-        $qb->leftJoin('i.project', 'p');
+        $qb->leftJoin('i.projects', 'p');
 
         if (null !== $countryIso3) {
             $qb
-                ->andWhere('p.iso3 = :country')
+                ->andWhere('i.countryIso3 = :country')
                 ->setParameter('country', $countryIso3)
             ;
         }
@@ -57,29 +58,29 @@ class ImportRepository extends EntityRepository
         if ($orderBy) {
             foreach ($orderBy->toArray() as $name => $direction) {
                 switch ($name) {
-                    case ImportOrderInputType::SORT_BY_ID:
+                    case OrderInputType::SORT_BY_ID:
                         $qb->orderBy('i.id', $direction);
                         break;
-                    case ImportOrderInputType::SORT_BY_TITLE:
+                    case OrderInputType::SORT_BY_TITLE:
                         $qb->orderBy('i.title', $direction);
                         break;
-                    case ImportOrderInputType::SORT_BY_DESCRIPTION:
+                    case OrderInputType::SORT_BY_DESCRIPTION:
                         $qb->orderBy('i.notes', $direction);
                         break;
-                    case ImportOrderInputType::SORT_BY_PROJECT:
+                    case OrderInputType::SORT_BY_PROJECT:
                         $qb->orderBy('p.name', $direction);
                         break;
-                    case ImportOrderInputType::SORT_BY_STATUS:
+                    case OrderInputType::SORT_BY_STATUS:
                         $qb->orderBy('i.state', $direction);
                         break;
-                    case ImportOrderInputType::SORT_BY_CREATED_BY:
+                    case OrderInputType::SORT_BY_CREATED_BY:
                         if (!in_array('u', $qb->getAllAliases())) {
                             $qb->leftJoin('i.createdBy', 'u');
                         }
 
                         $qb->orderBy('u.email', $direction);
                         break;
-                    case ImportOrderInputType::SORT_BY_CREATED_AT:
+                    case OrderInputType::SORT_BY_CREATED_AT:
                         $qb->orderBy('i.createdAt', $direction);
                         break;
                     default:
@@ -96,14 +97,23 @@ class ImportRepository extends EntityRepository
         return new Paginator($qb);
     }
 
+    public function findByProject(Project $project)
+    {
+        $qb = $this->createQueryBuilder('i')
+            ->leftJoin('i.projects', 'p')
+            ->andWhere('p = :project')
+            ->setParameter('project', $project)
+        ;
+        return $qb->getQuery()->getResult();
+    }
+
     public function isCountryFreeFromImporting(Import $importCandidate, string $countryIso3): bool
     {
         $qb = $this->createQueryBuilder('i');
         $qb->select('count(i.id)')
-            ->innerJoin('i.project', 'p')
             ->where('i.state = :importingState')
             ->andWhere('i <> :importCandidate')
-            ->andWhere('p.iso3 = :country')
+            ->andWhere('i.countryIso3 = :country')
             ->setParameter('importingState', ImportState::IMPORTING)
             ->setParameter('importCandidate', $importCandidate)
             ->setParameter('country', $countryIso3)
@@ -121,9 +131,8 @@ class ImportRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('i');
         $qb->select('i')
-            ->innerJoin('i.project', 'p')
-            ->andWhere('p.iso3 = :country')
-            ->setParameter('country', $import->getProject()->getIso3())
+            ->andWhere('i.countryIso3 = :country')
+            ->setParameter('country', $import->getCountryIso3())
         ;
 
         return $qb->getQuery()->getResult();

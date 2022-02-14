@@ -55,7 +55,7 @@ class ImportFileValidator
             return;
         }
 
-        $templateHeaders = $this->importTemplate->getTemplateHeader($importFile->getImport()->getProject()->getIso3());
+        $templateHeaders = $this->importTemplate->getTemplateHeader($importFile->getImport()->getCountryIso3());
 
         //remove empty cells
         foreach ($templateHeaders as $key => $header) {

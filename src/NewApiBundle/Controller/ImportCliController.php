@@ -3,35 +3,13 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-use CommonBundle\Controller\ExportController;
-use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Component\Import\ImportFileValidator;
-use NewApiBundle\Component\Import\ImportService;
-use NewApiBundle\Component\Import\UploadImportService;
-use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportHouseholdDuplicity;
-use NewApiBundle\Entity\ImportFile;
-use NewApiBundle\Entity\ImportInvalidFile;
-use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Entity;
 use NewApiBundle\Enum\ImportState;
-use NewApiBundle\InputType\DuplicityResolveInputType;
-use NewApiBundle\InputType\ImportCreateInputType;
-use NewApiBundle\InputType\ImportFilterInputType;
-use NewApiBundle\InputType\ImportOrderInputType;
-use NewApiBundle\InputType\ImportPatchInputType;
-use NewApiBundle\Request\Pagination;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
-use UserBundle\Entity\User;
 
 class ImportCliController extends AbstractController
 {
@@ -39,12 +17,12 @@ class ImportCliController extends AbstractController
      * for testing purposes ONLY, it must be removed in 2021
      * @Rest\Get("/imports/cli/{id}")
      *
-     * @param Import $import
+     * @param Entity\Import $import
      *
      * @return Response
      * @throws \Exception
      */
-    public function cli(Import $import): Response
+    public function cli(Entity\Import $import): Response
     {
         $kernel = $this->get('kernel');
         $application = new Application($kernel);

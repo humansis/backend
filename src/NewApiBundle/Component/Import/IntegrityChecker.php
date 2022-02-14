@@ -119,7 +119,7 @@ class IntegrityChecker
      */
     private function validateItem(ImportQueue $item): void
     {
-        $iso3 = $item->getImport()->getProject()->getIso3();
+        $iso3 = $item->getImport()->getCountryIso3();
 
         $householdLine = $this->importLineFactory->create($item, 0);
         $violations = $this->validator->validate($householdLine, null, ["household"]);

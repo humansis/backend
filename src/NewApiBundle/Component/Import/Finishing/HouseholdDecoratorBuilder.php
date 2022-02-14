@@ -54,7 +54,7 @@ class HouseholdDecoratorBuilder
         $this->importLines = $this->importLineFactory->createAll($importQueue);
 
         $household = new HouseholdCreateInputType();
-        $this->fillHousehold($household, $importQueue->getImport()->getCountry());
+        $this->fillHousehold($household, $importQueue->getImport()->getCountryIso3());
         return $household;
     }
 
@@ -64,7 +64,7 @@ class HouseholdDecoratorBuilder
         $this->importLines = $this->importLineFactory->createAll($importQueue);
 
         $household = new HouseholdUpdateInputType();
-        $this->fillHousehold($household, $importQueue->getImport()->getCountry());
+        $this->fillHousehold($household, $importQueue->getImport()->getCountryIso3());
         return $household;
     }
 

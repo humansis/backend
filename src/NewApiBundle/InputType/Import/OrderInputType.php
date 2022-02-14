@@ -1,11 +1,10 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
-namespace NewApiBundle\InputType;
+namespace NewApiBundle\InputType\Import;
 
 use NewApiBundle\Request\OrderInputType\AbstractSortInputType;
 
-class ImportOrderInputType extends AbstractSortInputType
+class OrderInputType extends AbstractSortInputType
 {
     public const SORT_BY_ID = 'id';
     public const SORT_BY_TITLE = 'title';

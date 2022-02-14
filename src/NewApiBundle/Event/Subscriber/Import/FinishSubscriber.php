@@ -73,7 +73,7 @@ class FinishSubscriber implements EventSubscriberInterface
         $import = $event->getSubject();
 
         if (!$this->entityManager->getRepository(Import::class)
-            ->isCountryFreeFromImporting($import, $import->getProject()->getIso3())) {
+            ->isCountryFreeFromImporting($import, $import->getCountryIso3())) {
             $event->addTransitionBlocker(new TransitionBlocker('There can be only one finishing import in country in single time.', '0'));
         }
     }

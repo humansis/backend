@@ -1,12 +1,11 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
-namespace NewApiBundle\InputType;
+namespace NewApiBundle\InputType\Import;
 
 use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class ImportCreateInputType implements InputTypeInterface
+class CreateInputType implements InputTypeInterface
 {
     /**
      * @var string
@@ -26,12 +25,16 @@ class ImportCreateInputType implements InputTypeInterface
     private $description;
 
     /**
-     * @var integer
-     *
-     * @Assert\Type("integer")
-     * @Assert\NotNull
+     * @var int[]
+     * @Assert\Type("array")
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Type("integer", groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
      */
-    private $projectId;
+    private $projects;
 
     /**
      * @return string
@@ -66,19 +69,19 @@ class ImportCreateInputType implements InputTypeInterface
     }
 
     /**
-     * @return int
+     * @return int[]
      */
-    public function getProjectId()
+    public function getProjects()
     {
-        return $this->projectId;
+        return $this->projects;
     }
 
     /**
-     * @param int $projectId
+     * @param int[] $projects
      */
-    public function setProjectId($projectId)
+    public function setProjects($projects)
     {
-        $this->projectId = $projectId;
+        $this->projects = $projects;
     }
 
 }

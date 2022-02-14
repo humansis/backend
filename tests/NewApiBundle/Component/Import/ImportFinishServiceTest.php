@@ -2,22 +2,15 @@
 
 namespace Tests\NewApiBundle\Component\Import;
 
-use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\NationalId;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\ImportService;
-use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportBeneficiary;
-use NewApiBundle\Entity\ImportHouseholdDuplicity;
-use NewApiBundle\Entity\ImportFile;
-use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Entity;
 use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
-use NewApiBundle\Enum\PersonGender;
-use NewApiBundle\InputType\ImportPatchInputType;
+use NewApiBundle\InputType\Import;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Utils\ProjectService;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -25,7 +18,6 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Tests\NewApiBundle\Component\Import\Helper\ChecksTrait;
 use Tests\NewApiBundle\Component\Import\Helper\CliTrait;
 use Tests\NewApiBundle\Component\Import\Helper\DefaultDataTrait;
-use UserBundle\Entity\User;
 
 class ImportFinishServiceTest extends KernelTestCase
 {
@@ -209,13 +201,13 @@ class ImportFinishServiceTest extends KernelTestCase
     /** @var Project */
     private $project;
 
-    /** @var Import */
+    /** @var Entity\Import */
     private $import;
 
     /** @var Household */
     private $originHousehold;
 
-    /** @var ImportFile */
+    /** @var Entity\ImportFile */
     private $importFile;
 
     /** @var ProjectService */
@@ -237,7 +229,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->projectService = $kernel->getContainer()->get('project.project_service');
 
         // clean all import
-        foreach ($this->entityManager->getRepository(Import::class)->findAll() as $import) {
+        foreach ($this->entityManager->getRepository(Entity\Import::class)->findAll() as $import) {
             $this->entityManager->remove($import);
             foreach ($this->entityManager->getRepository(Beneficiary::class)->getImported($import) as $bnf) {
                 if ($bnf->getHousehold()) {
@@ -258,11 +250,11 @@ class ImportFinishServiceTest extends KernelTestCase
 
         $this->originHousehold = $this->createBlankHousehold($this->project);
 
-        $this->import = new Import('unit test', 'note', $this->project, $this->getUser());
+        $this->import = new Entity\Import(self::TEST_COUNTRY, 'unit test', 'note', [$this->project], $this->getUser());
         $this->import->setState(ImportState::SIMILARITY_CHECK_CORRECT);
         $this->entityManager->persist($this->import);
 
-        $this->importFile = new ImportFile('unit-test.xlsx', $this->import, $this->getUser());
+        $this->importFile = new Entity\ImportFile('unit-test.xlsx', $this->import, $this->getUser());
         $this->importFile->setIsLoaded(true);
 
         $this->entityManager->persist($this->importFile);
@@ -276,12 +268,12 @@ class ImportFinishServiceTest extends KernelTestCase
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
 
-        $originLinks = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
+        $originLinks = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
             'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
         ]);
         $this->assertEmpty($originLinks, "Origin beneficiary shouldn't have any import link");
 
-        $links = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
+        $links = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
             'import' => $this->import->getId()
         ]);
         $this->assertCount(0, $links, "There should be no link");
@@ -289,7 +281,7 @@ class ImportFinishServiceTest extends KernelTestCase
 
     public function testPlainCreate()
     {
-        $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
+        $queueItem = new Entity\ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
         $queueItem->setState(ImportQueueState::TO_CREATE);
         $this->entityManager->persist($queueItem);
         $this->entityManager->flush();
@@ -299,12 +291,12 @@ class ImportFinishServiceTest extends KernelTestCase
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(17, $bnfCount, "Wrong number of created beneficiaries");
 
-        $originLinks = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
+        $originLinks = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
             'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
         ]);
         $this->assertEmpty($originLinks, "Origin beneficiary shouldn't have any import link");
 
-        $links = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
+        $links = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
             'import' => $this->import->getId()
         ]);
         $this->assertCount(16, $links, "There should be only one link");
@@ -312,9 +304,9 @@ class ImportFinishServiceTest extends KernelTestCase
 
     public function testDecidedCreate()
     {
-        $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
+        $queueItem = new Entity\ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
         $queueItem->setState(ImportQueueState::TO_CREATE);
-        $duplicity = new ImportHouseholdDuplicity($queueItem, $this->originHousehold);
+        $duplicity = new Entity\ImportHouseholdDuplicity($queueItem, $this->originHousehold);
         $duplicity->setState(ImportDuplicityState::NO_DUPLICITY);
         $duplicity->setDecideAt(new \DateTime());
         $duplicity->setDecideBy($this->getUser());
@@ -328,12 +320,12 @@ class ImportFinishServiceTest extends KernelTestCase
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(17, $bnfCount, "Wrong number of created beneficiaries");
 
-        $originLinks = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
+        $originLinks = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
             'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
         ]);
         $this->assertEmpty($originLinks, "Origin beneficiary shouldn't have any import link");
 
-        $links = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
+        $links = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
             'import' => $this->import->getId()
         ]);
         $this->assertCount(16, $links, "There should be only one link");
@@ -341,9 +333,9 @@ class ImportFinishServiceTest extends KernelTestCase
 
     public function testUpdate()
     {
-        $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
+        $queueItem = new Entity\ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
         $queueItem->setState(ImportQueueState::TO_UPDATE);
-        $duplicity = new ImportHouseholdDuplicity($queueItem, $this->originHousehold);
+        $duplicity = new Entity\ImportHouseholdDuplicity($queueItem, $this->originHousehold);
         $duplicity->setState(ImportDuplicityState::DUPLICITY_KEEP_OURS);
         $duplicity->setDecideAt(new \DateTime());
         $duplicity->setDecideBy($this->getUser());
@@ -354,12 +346,12 @@ class ImportFinishServiceTest extends KernelTestCase
 
         $this->userStartedFinishing($this->import);
 
-        $links = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
+        $links = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
             'import' => $this->import->getId()
         ]);
         $this->assertEquals(16, count($links), "Wrong number of created beneficiaries");
 
-        $originLinks = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
+        $originLinks = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
             'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
         ]);
         $this->assertCount(1, $originLinks, "Origin beneficiary should have one import link");
@@ -367,9 +359,9 @@ class ImportFinishServiceTest extends KernelTestCase
 
     public function testLink()
     {
-        $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
+        $queueItem = new Entity\ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
         $queueItem->setState(ImportQueueState::TO_LINK);
-        $duplicity = new ImportHouseholdDuplicity($queueItem, $this->originHousehold);
+        $duplicity = new Entity\ImportHouseholdDuplicity($queueItem, $this->originHousehold);
         $duplicity->setState(ImportDuplicityState::DUPLICITY_KEEP_THEIRS);
         $duplicity->setDecideAt(new \DateTime());
         $duplicity->setDecideBy($this->getUser());
@@ -383,7 +375,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
 
-        $originLinks = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
+        $originLinks = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
             'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
         ]);
         $this->assertCount(1, $originLinks, "Origin beneficiary should have one import link");
@@ -391,7 +383,7 @@ class ImportFinishServiceTest extends KernelTestCase
 
     public function testIgnore()
     {
-        $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
+        $queueItem = new Entity\ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
         $queueItem->setState(ImportQueueState::TO_IGNORE);
         $this->entityManager->persist($queueItem);
         $this->entityManager->flush();
@@ -401,7 +393,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
 
-        $originLinks = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
+        $originLinks = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
             'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
         ]);
         $this->assertEmpty($originLinks, "Origin beneficiary shouldn't have any import link");
@@ -409,9 +401,9 @@ class ImportFinishServiceTest extends KernelTestCase
 
     public function testUndecided()
     {
-        $queueItem = new ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
+        $queueItem = new Entity\ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
         $queueItem->setState(ImportQueueState::IDENTITY_CANDIDATE);
-        $duplicity = new ImportHouseholdDuplicity($queueItem, $this->originHousehold);
+        $duplicity = new Entity\ImportHouseholdDuplicity($queueItem, $this->originHousehold);
         $duplicity->setState(ImportDuplicityState::DUPLICITY_CANDIDATE);
         $duplicity->setDecideAt(new \DateTime());
         $duplicity->setDecideBy($this->getUser());
@@ -425,12 +417,12 @@ class ImportFinishServiceTest extends KernelTestCase
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);
         $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
 
-        $originLinks = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
+        $originLinks = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
             'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
         ]);
         $this->assertEmpty($originLinks, "Origin beneficiary shouldn't have any import link");
 
-        $links = $this->entityManager->getRepository(ImportBeneficiary::class)->findBy([
+        $links = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
             'import' => $this->import->getId()
         ]);
         $this->assertCount(0, $links, "There should be no link");

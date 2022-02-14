@@ -47,7 +47,7 @@ class ImportControllerTest extends BMSServiceTestCase
         $this->request('POST', '/api/basic/web-app/v1/imports', [
             'title' => 'test',
             'description' => 'test',
-            'projectId' => $projects->getId(),
+            'projects' => [$projects->getId()],
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -61,7 +61,7 @@ class ImportControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('title', $result);
         $this->assertArrayHasKey('description', $result);
-        $this->assertArrayHasKey('projectId', $result);
+        $this->assertArrayHasKey('projects', $result);
         $this->assertArrayHasKey('status', $result);
         $this->assertArrayHasKey('createdBy', $result);
         $this->assertArrayHasKey('createdAt', $result);
@@ -128,7 +128,7 @@ class ImportControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('title', $result);
         $this->assertArrayHasKey('description', $result);
-        $this->assertArrayHasKey('projectId', $result);
+        $this->assertArrayHasKey('projects', $result);
         $this->assertArrayHasKey('status', $result);
         $this->assertArrayHasKey('createdBy', $result);
         $this->assertArrayHasKey('createdAt', $result);

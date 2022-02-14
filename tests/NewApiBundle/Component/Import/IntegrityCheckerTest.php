@@ -40,7 +40,7 @@ class IntegrityCheckerTest extends KernelTestCase
         $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'iso3' => 'KHM'], null, 1)[0];
         $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
 
-        $import = new Import('test', null, $project, $user);
+        $import = new Import('KHM', 'test', null, [$project], $user);
         $file = new ImportFile('fake_file.xlsx', $import, $user);
         $item = new ImportQueue($import, $file, [[/** empty row */]]);
         self::$entityManager->persist($import);
@@ -60,7 +60,7 @@ class IntegrityCheckerTest extends KernelTestCase
         $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'iso3' => 'KHM'], null, 1)[0];
         $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
 
-        $import = new Import('test', null, $project, $user);
+        $import = new Import('KHM', 'test', null, [$project], $user);
         $file = new ImportFile('fake_file.xlsx', $import, $user);
         $item = new ImportQueue($import, $file, json_decode(ImportFinishServiceTest::TEST_QUEUE_ITEM, true));
         self::$entityManager->persist($import);
@@ -82,7 +82,7 @@ class IntegrityCheckerTest extends KernelTestCase
         $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'iso3' => 'KHM'], null, 1)[0];
         $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
 
-        $import = new Import('test', null, $project, $user);
+        $import = new Import('KHM', 'test', null, [$project], $user);
         $import->setState(ImportState::INTEGRITY_CHECKING);
 
         $file = new ImportFile('fake_file.xlsx', $import, $user);

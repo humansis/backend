@@ -7,17 +7,12 @@ use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use NewApiBundle\Component\Import\ValueObject\ImportStatisticsValueObject;
-use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportFile;
-use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Entity;
 use NewApiBundle\Enum\ImportQueueState;
-use NewApiBundle\Enum\ImportState;
 use NewApiBundle\InputType\DuplicityResolveInputType;
-use NewApiBundle\InputType\ImportCreateInputType;
-use NewApiBundle\InputType\ImportPatchInputType;
+use NewApiBundle\InputType\Import;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportTransitions;
-use NewApiBundle\Workflow\WorkflowTool;
 use ProjectBundle\Entity\Project;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -82,18 +77,19 @@ class ImportService
         $this->duplicityResolver = $duplicityResolver;
     }
 
-    public function create(ImportCreateInputType $inputType, User $user): Import
+    public function create(string $countryIso3, Import\CreateInputType $inputType, User $user): Entity\Import
     {
-        $project = $this->em->getRepository(Project::class)->find($inputType->getProjectId());
+        $projects = $this->em->getRepository(Project::class)->findBy(['id'=>$inputType->getProjects()]);
 
-        if (!$project instanceof Project) {
-            throw new InvalidArgumentException('Project with ID '.$inputType->getProjectId().' not found');
+        if (count($projects) < count($inputType->getProjects())) {
+            throw new InvalidArgumentException('Some Project ID not found');
         }
 
-        $import = new Import(
+        $import = new Entity\Import(
+            $countryIso3,
             $inputType->getTitle(),
             $inputType->getDescription(),
-            $project,
+            $projects,
             $user,
         );
 
@@ -105,7 +101,7 @@ class ImportService
         return $import;
     }
 
-    public function patch(Import $import, ImportPatchInputType $inputType): void
+    public function patch(Entity\Import $import, Import\PatchInputType $inputType): void
     {
         if (!is_null($inputType->getDescription())) {
             $import->setNotes($inputType->getDescription());
@@ -122,7 +118,7 @@ class ImportService
         $this->em->flush();
     }
 
-    public function updateStatus(Import $import, string $status): void
+    public function updateStatus(Entity\Import $import, string $status): void
     {
         $before = $import->getState();
         if($this->importStateMachine->can($import, $status)){
@@ -134,7 +130,7 @@ class ImportService
         }
     }
 
-    public function removeFile(ImportFile $importFile)
+    public function removeFile(Entity\ImportFile $importFile)
     {
         $this->em->remove($importFile);
         $this->em->flush();
@@ -142,12 +138,12 @@ class ImportService
         $this->logImportInfo($importFile->getImport(), "Removed file '{$importFile->getFilename()}'");
     }
 
-    public function getStatistics(Import $import): ImportStatisticsValueObject
+    public function getStatistics(Entity\Import $import): ImportStatisticsValueObject
     {
         $statistics = new ImportStatisticsValueObject();
 
         /** @var ImportQueueRepository $repository */
-        $repository = $this->em->getRepository(ImportQueue::class);
+        $repository = $this->em->getRepository(Entity\ImportQueue::class);
 
         $statistics->setTotalEntries($repository->count(['import'=>$import]));
         $statistics->setAmountIntegrityCorrect($repository->getTotalByImportAndStatus($import, ImportQueueState::VALID));
@@ -160,7 +156,7 @@ class ImportService
         return $statistics;
     }
 
-    public function resolveDuplicity(ImportQueue $importQueue, DuplicityResolveInputType $inputType, User $user)
+    public function resolveDuplicity(Entity\ImportQueue $importQueue, DuplicityResolveInputType $inputType, User $user)
     {
         $this->logImportInfo($importQueue->getImport(), "[Queue#{$importQueue->getId()}] decided as ".$inputType->getStatus());
         if ($this->importQueueStateMachine->can($importQueue, $inputType->getStatus())) {
@@ -184,7 +180,7 @@ class ImportService
         }
     }
 
-    private function removeFinishedQueue(ImportQueue $queue): void
+    private function removeFinishedQueue(Entity\ImportQueue $queue): void
     {
         foreach ($queue->getHouseholdDuplicities() as $duplicity) {
             $this->em->remove($duplicity);

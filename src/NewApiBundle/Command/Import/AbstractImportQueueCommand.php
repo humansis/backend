@@ -78,7 +78,7 @@ abstract class AbstractImportQueueCommand extends Command
         $count = 0;
         $importsByCountry = [];
         foreach ($imports as $import) {
-            $importsByCountry[$import->getProject()->getIso3()][] = '#'.$import->getId()."|".$import->getState();
+            $importsByCountry[$import->getCountryIso3()][] = '#'.$import->getId()."|".$import->getState();
             $count++;
         }
         $countryList = [];
