@@ -61,7 +61,7 @@ class ImportControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('title', $result);
         $this->assertArrayHasKey('description', $result);
-        $this->assertArrayHasKey('projectId', $result);
+        $this->assertArrayHasKey('projects', $result);
         $this->assertArrayHasKey('status', $result);
         $this->assertArrayHasKey('createdBy', $result);
         $this->assertArrayHasKey('createdAt', $result);
@@ -128,7 +128,7 @@ class ImportControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('title', $result);
         $this->assertArrayHasKey('description', $result);
-        $this->assertArrayHasKey('projectId', $result);
+        $this->assertArrayHasKey('projects', $result);
         $this->assertArrayHasKey('status', $result);
         $this->assertArrayHasKey('createdBy', $result);
         $this->assertArrayHasKey('createdAt', $result);
