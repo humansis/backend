@@ -302,6 +302,26 @@ class ImportControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: '.$this->client->getResponse()->getContent()
         );
+
+        $this->request('PATCH', '/api/basic/web-app/v1/imports/queue/'.$duplicity->getOurs()->getId(), [
+            'status' => 'To Link',
+            'acceptedDuplicityId' => $duplicity->getId(),
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        $this->request('PATCH', '/api/basic/web-app/v1/imports/queue/'.$duplicity->getOurs()->getId(), [
+            'status' => 'To Update',
+            'acceptedDuplicityId' => $duplicity->getId(),
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
     }
 
     /**
