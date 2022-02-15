@@ -11,7 +11,10 @@ use BeneficiaryBundle\Enum\ResidencyStatus;
 use NewApiBundle\Component\Import\ValueObject\ImportBeneficiaryDuplicityCompare;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
+use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\PersonGender;
+use NewApiBundle\Enum\VulnerabilityCriteria;
+use NewApiBundle\InputType\Helper\EnumsBuilder;
 use NewApiBundle\Serializer\MapperInterface;
 
 class ImportBeneficiaryDuplicityCompareMapper implements MapperInterface
@@ -151,7 +154,10 @@ class ImportBeneficiaryDuplicityCompareMapper implements MapperInterface
         foreach ($this->object->getBeneficiary()->getVulnerabilityCriteria() as $vulnerabilityCriterion) {
             $databaseVulnerabilities[] = $vulnerabilityCriterion->getFieldString();
         }
-        return $this->compareLists($databaseVulnerabilities, $this->object->getImportLine()->vulnerabilityCriteria);
+        $enumBuilder = new EnumsBuilder(VulnerabilityCriteria::class);
+        $enumBuilder->setNullToEmptyArrayTransformation();
+        $importedVulnerabilities = $enumBuilder->buildInputValues($this->object->getImportLine()->vulnerabilityCriteria);
+        return $this->compareLists($databaseVulnerabilities, $importedVulnerabilities);
     }
 
     public function getResidencyStatus(): ?array
