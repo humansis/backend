@@ -60,6 +60,11 @@ class ImportHouseholdDuplicityMapper implements MapperInterface
         return $this->object->getTheirs()->getId();
     }
 
+    public function getState(): string
+    {
+        return $this->object->getState();
+    }
+
     /**
      * @deprecated it is there only for backward compatibility, remove it after FE makes better view of duplicity reasons for BNFs
      * @return iterable
