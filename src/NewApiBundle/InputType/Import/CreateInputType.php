@@ -25,6 +25,8 @@ class CreateInputType implements InputTypeInterface
     private $description;
 
     /**
+     * TODO array should not be empty (after FE implementation)
+     *
      * @var int[]
      * @Assert\Type("array")
      * @Assert\All(
@@ -35,6 +37,15 @@ class CreateInputType implements InputTypeInterface
      * )
      */
     private $projects;
+
+    /**
+     * TODO remove after FE part of PIN-2820 will be implemented
+     *
+     * @var integer
+     *
+     * @Assert\Type("integer")
+     */
+    private $projectId;
 
     /**
      * @return string
@@ -84,4 +95,19 @@ class CreateInputType implements InputTypeInterface
         $this->projects = $projects;
     }
 
+    /**
+     * @return int
+     */
+    public function getProjectId()
+    {
+        return $this->projectId;
+    }
+
+    /**
+     * @param int $projectId
+     */
+    public function setProjectId($projectId)
+    {
+        $this->projectId = $projectId;
+    }
 }
