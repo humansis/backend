@@ -186,6 +186,8 @@ class ImportController extends AbstractController
         $data = $this->getDoctrine()->getRepository(Entity\ImportFile::class)
             ->findBy([
                 'import' => $import,
+            ], [
+                'createdAt' => 'DESC',
             ]);
 
         return $this->json(New Paginator($data));
