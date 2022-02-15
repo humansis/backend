@@ -14,7 +14,7 @@ use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\PersonGender;
-use NewApiBundle\InputType\DuplicityResolveInputType;
+use NewApiBundle\InputType\Import\Duplicity\ResolveSingleDuplicityInputType;
 use ProjectBundle\Enum\Livelihood;
 use ProjectBundle\Utils\ProjectService;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -301,7 +301,6 @@ class ImportTest extends KernelTestCase
             $this->userStartedIdentityCheck($import, false, $this->getBatchCount($import));
         }
 
-
         $stats = $this->importService->getStatistics($import);
         $this->assertEquals($expectedDuplicities, $stats->getAmountDuplicities());
 
@@ -313,7 +312,7 @@ class ImportTest extends KernelTestCase
             /** @var ImportHouseholdDuplicity $firstDuplicity */
             $firstDuplicity = $item->getHouseholdDuplicities()->first();
 
-            $duplicityResolve = new DuplicityResolveInputType();
+            $duplicityResolve = new ResolveSingleDuplicityInputType();
             $duplicityResolve->setStatus(ImportQueueState::TO_UPDATE);
             $duplicityResolve->setAcceptedDuplicityId($firstDuplicity->getTheirs()->getId());
             $this->importService->resolveDuplicity($item, $duplicityResolve, $this->getUser());
@@ -404,7 +403,7 @@ class ImportTest extends KernelTestCase
             /** @var ImportHouseholdDuplicity $firstDuplicity */
             $firstDuplicity = $item->getHouseholdDuplicities()->first();
 
-            $duplicityResolve = new DuplicityResolveInputType();
+            $duplicityResolve = new ResolveSingleDuplicityInputType();
             $duplicityResolve->setStatus(ImportQueueState::TO_UPDATE);
             $duplicityResolve->setAcceptedDuplicityId($firstDuplicity->getTheirs()->getId());
             $this->importService->resolveDuplicity($item, $duplicityResolve, $this->getUser());

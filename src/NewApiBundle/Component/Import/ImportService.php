@@ -9,7 +9,6 @@ use InvalidArgumentException;
 use NewApiBundle\Component\Import\ValueObject\ImportStatisticsValueObject;
 use NewApiBundle\Entity;
 use NewApiBundle\Enum\ImportQueueState;
-use NewApiBundle\InputType\DuplicityResolveInputType;
 use NewApiBundle\InputType\Import;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportTransitions;
@@ -167,7 +166,7 @@ class ImportService
         return $statistics;
     }
 
-    public function resolveDuplicity(Entity\ImportQueue $importQueue, DuplicityResolveInputType $inputType, User $user)
+    public function resolveDuplicity(Entity\ImportQueue $importQueue, Import\Duplicity\ResolveSingleDuplicityInputType $inputType, User $user)
     {
         $this->logImportInfo($importQueue->getImport(), "[Queue#{$importQueue->getId()}] decided as ".$inputType->getStatus());
         if ($this->importQueueStateMachine->can($importQueue, $inputType->getStatus())) {

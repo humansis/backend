@@ -355,11 +355,11 @@ class ImportController extends AbstractController
      *
      * @param Entity\ImportQueue               $importQueue
      *
-     * @param DuplicityResolveInputType $inputType
+     * @param Import\Duplicity\ResolveSingleDuplicityInputType $inputType
      *
      * @return JsonResponse
      */
-    public function duplicityResolve(Entity\ImportQueue $importQueue, DuplicityResolveInputType $inputType): JsonResponse
+    public function duplicityResolve(Entity\ImportQueue $importQueue, Import\Duplicity\ResolveSingleDuplicityInputType $inputType): JsonResponse
     {
         /** @var User $user */
         $user = $this->getUser();
