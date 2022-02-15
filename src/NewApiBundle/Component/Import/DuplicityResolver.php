@@ -64,7 +64,11 @@ class DuplicityResolver
     {
         $import = $importQueue->getImport();
         if (!in_array($import->getState(), [
+            ImportState::IDENTITY_CHECKING,
+            ImportState::IDENTITY_CHECK_CORRECT,
             ImportState::IDENTITY_CHECK_FAILED,
+            ImportState::SIMILARITY_CHECKING,
+            ImportState::SIMILARITY_CHECK_CORRECT,
             ImportState::SIMILARITY_CHECK_FAILED,
         ])) {
             throw new \BadMethodCallException('Unable to execute duplicity resolver. Import is not ready to duplicity resolve.');
