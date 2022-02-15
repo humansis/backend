@@ -72,9 +72,13 @@ class ImportHouseholdDuplicityMapper implements MapperInterface
             foreach ($this->beneficiaryDuplicityMapper->getReasons() as $reason) {
                 $reasons .= implode(': ', $reason);
             }
-
-            yield "#".$duplicity->getMemberIndex()." BNF in imported HH => BNF#".$duplicity->getBeneficiary()->getId()." in DB<br>"
-                ."<strong>Because:</strong><br>".$reasons;
+            if ($duplicity->getMemberIndex() == 0) {
+                yield "Imported HHH => BNF#".$duplicity->getBeneficiary()->getId()." in DB<br>"
+                    ."<strong>Because:</strong><br>".$reasons;
+            } else {
+                yield "Imported member BNF #".$duplicity->getMemberIndex()." => BNF#".$duplicity->getBeneficiary()->getId()." in DB<br>"
+                    ."<strong>Because:</strong><br>".$reasons;
+            }
         }
     }
 
