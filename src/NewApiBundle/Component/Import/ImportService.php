@@ -172,26 +172,15 @@ class ImportService
         $this->logImportInfo($importQueue->getImport(), "[Queue#{$importQueue->getId()}] decided as ".$inputType->getStatus());
         if ($this->importQueueStateMachine->can($importQueue, $inputType->getStatus())) {
             $this->duplicityResolver->resolve($importQueue, $inputType->getAcceptedDuplicityId(),$inputType->getStatus(), $user);
+            $this->em->flush();
+        } else {
             foreach ($this->importQueueStateMachine->buildTransitionBlockerList($importQueue, $inputType->getStatus()) as $block) {
                 $this->logImportInfo($importQueue->getImport(), "[Queue#{$importQueue->getId()}] can't go '{$inputType->getStatus()}' because ".$block->getMessage());
             }
-            $this->importQueueStateMachine->apply($importQueue, $inputType->getStatus());
-            $this->em->flush();
-
-            // check if it is all to decide
-            if ($this->importStateMachine->can($importQueue->getImport(), ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES)) {
-                $this->importStateMachine->apply($importQueue->getImport(), ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES);
-            } elseif ($this->importStateMachine->can($importQueue->getImport(), ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES)) {
-                $this->importStateMachine->apply($importQueue->getImport(), ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES);
-            }
-
-            $this->em->flush();
-        } else {
             throw new BadRequestHttpException("You can't resolve duplicity. Import Queue is not in valid state.");
         }
     }
 
-    // TODO: refactor with resolveDuplicity, move a lot of code to duplicityResolver
     public function resolveAllDuplicities(Entity\Import $import, Import\Duplicity\ResolveAllDuplicitiesInputType $inputType, User $user)
     {
         if (!in_array($import->getState(), [
@@ -207,29 +196,20 @@ class ImportService
         foreach ($singleDuplicityQueues as $importQueue) {
             $duplicities = $importQueue->getHouseholdDuplicities();
             if ($duplicities->count() !== 1) {
+                // this is only for paranoid measures
                 $this->logImportError($import, "[Queue#{$importQueue->getId()}] has no or more duplicity candidates that 1");
                 continue;
-            } else {
-                /** @var Entity\ImportHouseholdDuplicity $duplicity */
-                $duplicity = $duplicities[0];
             }
+
+            /** @var Entity\ImportHouseholdDuplicity $duplicity */
+            $duplicity = $duplicities[0];
             if ($this->importQueueStateMachine->can($importQueue, $inputType->getStatus())) {
                 $this->duplicityResolver->resolve($importQueue, $duplicity->getId(), $inputType->getStatus(), $user);
+                $this->em->flush();
+            } else {
                 foreach ($this->importQueueStateMachine->buildTransitionBlockerList($importQueue, $inputType->getStatus()) as $block) {
                     $this->logImportInfo($importQueue->getImport(), "[Queue#{$importQueue->getId()}] can't go '{$inputType->getStatus()}' because ".$block->getMessage());
                 }
-                $this->importQueueStateMachine->apply($importQueue, $inputType->getStatus());
-                $this->em->flush();
-
-                // check if it is all to decide
-                if ($this->importStateMachine->can($importQueue->getImport(), ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES)) {
-                    $this->importStateMachine->apply($importQueue->getImport(), ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES);
-                } elseif ($this->importStateMachine->can($importQueue->getImport(), ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES)) {
-                    $this->importStateMachine->apply($importQueue->getImport(), ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES);
-                }
-
-                $this->em->flush();
-            } else {
                 throw new BadRequestHttpException("You can't resolve duplicity. Import Queue is not in valid state.");
             }
         }
