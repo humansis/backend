@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
-
-namespace NewApiBundle\Controller;
+namespace NewApiBundle\Controller\WebApp\Smartcards;
 
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Controller\WebApp\AbstractWebAppController;
 use NewApiBundle\InputType\SmartcardRedemptionBatchCreateInputType;
 use NewApiBundle\Request\Pagination;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -16,7 +15,7 @@ use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\SmartcardRedemptionBatch;
 use VoucherBundle\Entity\Vendor;
 
-class SmartcardRedemptionBatchController extends AbstractController
+class SmartcardRedemptionBatchController extends AbstractWebAppController
 {
     /**
      * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/exports")
@@ -68,7 +67,7 @@ class SmartcardRedemptionBatchController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function batchesForVendorApp(Vendor $vendor, Pagination $pagination): JsonResponse
+    public function batchesForVendorApp(Vendor $vendor, Pagination $pagination): Response
     {
         return $this->forward(self::class.'::batches', ['vendor' => $vendor, 'pagination' => $pagination]);
     }
