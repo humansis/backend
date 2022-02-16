@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Controller\WebApp\Smartcards;
+namespace NewApiBundle\Controller\WebApp\Smartcard;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Smartcard\SmartcardPurchaseService;
