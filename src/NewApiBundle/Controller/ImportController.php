@@ -10,7 +10,6 @@ use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Component\Import\UploadImportService;
 use NewApiBundle\Entity;
 use NewApiBundle\Enum\ImportState;
-use NewApiBundle\InputType\DuplicityResolveInputType;
 use NewApiBundle\InputType\Import;
 use NewApiBundle\Request\Pagination;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -355,18 +354,36 @@ class ImportController extends AbstractController
      *
      * @param Entity\ImportQueue               $importQueue
      *
-     * @param DuplicityResolveInputType $inputType
+     * @param Import\Duplicity\ResolveSingleDuplicityInputType $inputType
      *
      * @return JsonResponse
      */
-    public function duplicityResolve(Entity\ImportQueue $importQueue, DuplicityResolveInputType $inputType): JsonResponse
+    public function singleDuplicityResolve(Entity\ImportQueue $importQueue, Import\Duplicity\ResolveSingleDuplicityInputType $inputType): Response
     {
         /** @var User $user */
         $user = $this->getUser();
 
         $this->importService->resolveDuplicity($importQueue, $inputType, $user);
 
-        return $this->json(null, Response::HTTP_ACCEPTED);
+        return new Response('', Response::HTTP_ACCEPTED);
+    }
+
+    /**
+     * @Rest\Patch("/web-app/v1/imports/{id}")
+     *
+     * @param Entity\Import             $import
+     * @param Import\Duplicity\ResolveAllDuplicitiesInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function allDuplicitiesResolve(Entity\Import $import, Import\Duplicity\ResolveAllDuplicitiesInputType $inputType): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $this->importService->resolveAllDuplicities($import, $inputType, $user);
+
+        return new Response('', Response::HTTP_ACCEPTED);
     }
 
     /**

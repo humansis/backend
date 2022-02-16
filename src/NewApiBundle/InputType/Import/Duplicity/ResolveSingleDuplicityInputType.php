@@ -1,13 +1,12 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
-namespace NewApiBundle\InputType;
+namespace NewApiBundle\InputType\Import\Duplicity;
 
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class DuplicityResolveInputType implements InputTypeInterface
+class ResolveSingleDuplicityInputType implements InputTypeInterface
 {
     /**
      * @var string

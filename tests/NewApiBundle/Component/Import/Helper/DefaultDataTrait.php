@@ -6,11 +6,14 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\NationalId;
 use NewApiBundle\Entity;
+use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\Import;
 use ProjectBundle\Entity\Project;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use UserBundle\Entity\User;
 
 trait DefaultDataTrait
@@ -77,5 +80,39 @@ trait DefaultDataTrait
         }
 
         return $import;
+    }
+
+    private function createBlankProject(string $country, array $notes): Project
+    {
+        $project = new Project();
+        $project->setName(uniqid());
+        $project->setNotes(implode("\n", $notes));
+        $project->setStartDate(new \DateTime());
+        $project->setEndDate(new \DateTime());
+        $project->setIso3($country);
+        $this->entityManager->persist($project);
+        $this->entityManager->flush();
+        return $project;
+    }
+
+    private function uploadFile(Entity\Import $import, string $filename): void
+    {
+        $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
+
+        $fs = new Filesystem();
+        $fs->copy(__DIR__.'/../../../Resources/'.$filename, $uploadedFilePath, true);
+
+        $file = new UploadedFile($uploadedFilePath, $filename, null, null, true);
+        $importFile = $this->uploadService->uploadFile($import, $file, $this->getUser());
+        $this->uploadService->load($importFile);
+
+        $this->assertNotNull($importFile->getId(), "ImportFile wasn't saved to DB");
+    }
+
+    private function getBatchCount(Entity\Import $import)
+    {
+        $count = $this->entityManager->getRepository(ImportQueue::class)->count(['import' => $import]);
+        $batch = self::$container->getParameter('import.batch_size');
+        return 1+intval(ceil($count/$batch));
     }
 }
