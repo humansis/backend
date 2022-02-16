@@ -6,6 +6,6 @@ sudo docker-compose exec -T php bash -c 'php bin/console cache:clear'
 sudo docker-compose exec -T php bash -c 'php bin/console cache:clear --env=prod'
 
 if [[ $1 == "aggressive" ]]; then
-  rm -rf var/cache/*
+  rm -rf var/cache/* /var/cache/humansis/*
   sudo docker-compose restart php
 fi
