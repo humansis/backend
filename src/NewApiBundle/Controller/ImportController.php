@@ -332,7 +332,7 @@ class ImportController extends AbstractController
         $invalidFiles = $this->getDoctrine()->getRepository(Entity\ImportInvalidFile::class)
             ->findBy([
                 'import' => $import,
-            ]);
+            ], ['createdAt' => 'desc']);
 
         return $this->json(new Paginator($invalidFiles));
     }
