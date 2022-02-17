@@ -1,9 +1,8 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace VoucherBundle\Repository;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -242,6 +241,21 @@ class SmartcardPurchaseRepository extends EntityRepository
         $qbr = $this->createQueryBuilder('sp')
             ->andWhere('sp.redemptionBatch = :redemptionBatch')
             ->setParameter('redemptionBatch', $redemptionBatch);
+
+        if ($pagination) {
+            $qbr->setMaxResults($pagination->getLimit())
+                ->setFirstResult($pagination->getOffset());
+        }
+
+        return new Paginator($qbr);
+    }
+
+    public function findByBeneficiary(Beneficiary $beneficiary, ?Pagination $pagination = null): Paginator
+    {
+        $qbr = $this->createQueryBuilder('sp')
+            ->innerJoin('sp.smartcard', 'sc')
+            ->andWhere('sc.beneficiary = :beneficiary')
+            ->setParameter('beneficiary', $beneficiary);
 
         if ($pagination) {
             $qbr->setMaxResults($pagination->getLimit())

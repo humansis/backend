@@ -10,17 +10,19 @@ use NewApiBundle\Controller\WebApp\AbstractWebAppController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\Vendor;
+use VoucherBundle\Repository\SmartcardPurchaseRepository;
 
 class AnalyticsController extends AbstractWebAppController
 {
     /**
      * @Rest\Get("/web-app/v1/smartcard/analytics/beneficiary/{id}")
      *
-     * @param Beneficiary $beneficiary
+     * @param Beneficiary                 $beneficiary
+     * @param SmartcardPurchaseRepository $purchaseRepository
      *
      * @return JsonResponse
      */
-    public function beneficiary(Beneficiary $beneficiary): JsonResponse
+    public function beneficiary(Beneficiary $beneficiary, SmartcardPurchaseRepository $purchaseRepository): JsonResponse
     {
         $collector = new EventCollector();
         $collector->add(new Event('beneficiary', 'updated', $beneficiary->getUpdatedOn()));
@@ -50,18 +52,33 @@ class AnalyticsController extends AbstractWebAppController
 
             foreach ($assistanceBeneficiary->getSmartcardDeposits() as $deposit) {
                 $collector->add(new Event('deposit', 'sync', $deposit->getCreatedAt(), [
+                    'deposit_id' => $deposit->getId(),
+                ]));
+                $collector->add(new Event('deposit', 'got money', $deposit->getDistributedAt(), [
+                    'value' => $deposit->getValue(),
                     'assistance_id' => $assistance->getId(),
                     'assistance_name' => $assistance->getName(),
                     'deposit_id' => $deposit->getId(),
                     'smartcard_id' => $deposit->getSmartcard()->getId(),
                     'smartcard_serialNumber' => $deposit->getSmartcard()->getSerialNumber(),
                 ]));
-                $collector->add(new Event('deposit', 'got money', $deposit->getDistributedAt(), [
-                    'assistance_id'=>$assistance->getId(),
-                    'assistance_name' => $assistance->getName(),
-                    'deposit_id' => $deposit->getId(),
-                    'smartcard_id' => $deposit->getSmartcard()->getId(),
-                    'smartcard_serialNumber' => $deposit->getSmartcard()->getSerialNumber(),
+            }
+        }
+
+        foreach ($purchaseRepository->findByBeneficiary($beneficiary) as $purchase) {
+            $collector->add(new Event('purchase', 'made', $purchase->getCreatedAt(), [
+                'value' => $purchase->getRecordsValue().' '.$purchase->getCurrency(),
+                'assistance_id' => $purchase->getAssistance() ? $purchase->getAssistance()->getId() : null,
+                'assistance_name' => $purchase->getAssistance() ? $purchase->getAssistance()->getName() : null,
+                'purchase_id' => $purchase->getId(),
+                'smartcard_id' => $purchase->getSmartcard()->getId(),
+                'smartcard_serialNumber' => $purchase->getSmartcard()->getSerialNumber(),
+                'vendor_id' => $purchase->getVendor()->getId(),
+                'vendor_name' => $purchase->getVendor()->getName(),
+            ]));
+            if ($purchase->getRedemptionBatch()) {
+                $collector->add(new Event('purchase', 'invoiced', $purchase->getRedeemedAt(), [
+                    'purchase_id' => $purchase->getId(),
                 ]));
             }
         }

@@ -15,6 +15,9 @@ services:
         arguments:
             - VoucherBundle\Entity\SmartcardPurchase
 
+    VoucherBundle\Repository\SmartcardPurchaseRepository:
+        alias: smartcard_purchase.repository
+
     voucher.vendor_service:
         class: VoucherBundle\Utils\VendorService
         arguments: ['@doctrine.orm.entity_manager', '@validator', '@location_service', '@service_container']
