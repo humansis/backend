@@ -12,12 +12,19 @@ class EventCollector
         $this->events = array_merge($this->events, $eventProvider->getEvents());
     }
 
+    public function add(Event $event): void
+    {
+        $this->events[] = $event;
+    }
+
     /**
      * @return iterable|Event[]
      */
     public function getSortedEvents(): iterable
     {
-        // TODO: sort
+        usort($this->events, function (Event $a, Event $b) {
+            return $a->getWhen()->getTimestamp() - $b->getWhen()->getTimestamp();
+        });
         return $this->events;
     }
 }

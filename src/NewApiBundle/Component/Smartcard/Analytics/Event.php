@@ -2,33 +2,37 @@
 
 namespace NewApiBundle\Component\Smartcard\Analytics;
 
-use DateTime;
+use DateTimeInterface;
 
-class Event
+class Event implements \JsonSerializable
 {
     /** @var string what is about, assistance|purchase|vendor|... */
     private $subject;
     /** @var string what was happened, created|sync|closed|... */
     private $action;
-    /** @var DateTime when was it happened */
+    /** @var DateTimeInterface when was it happened */
     private $when;
 
+    private $additionalData;
+
     /**
-     * @param string   $subject
-     * @param string   $action
-     * @param DateTime $when
+     * @param string            $subject
+     * @param string            $action
+     * @param DateTimeInterface $when
+     * @param array             $additionalData
      */
-    public function __construct(string $subject, string $action, DateTime $when)
+    public function __construct(string $subject, string $action, DateTimeInterface $when, array $additionalData = [])
     {
         $this->subject = $subject;
         $this->action = $action;
         $this->when = $when;
+        $this->additionalData = $additionalData;
     }
 
     /**
      * @return string
      */
-    public function getSubject(): string
+    protected function getSubject(): string
     {
         return $this->subject;
     }
@@ -36,17 +40,26 @@ class Event
     /**
      * @return string
      */
-    public function getAction(): string
+    protected function getAction(): string
     {
         return $this->action;
     }
 
     /**
-     * @return DateTime
+     * @return DateTimeInterface
      */
-    public function getWhen(): DateTime
+    public function getWhen(): DateTimeInterface
     {
         return $this->when;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return array_merge([
+            'subject' => $this->getSubject(),
+            'action' => $this->getAction(),
+            'date' => $this->getWhen()->format('Y-m-d H:i'),
+        ], $this->additionalData);
     }
 
 }
