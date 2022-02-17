@@ -232,7 +232,7 @@ framework:
             - !php/const NewApiBundle\Enum\ImportQueueState::TO_LINK
             - !php/const NewApiBundle\Enum\ImportQueueState::TO_IGNORE
           to: !php/const NewApiBundle\Enum\ImportQueueState::TO_UPDATE
-        # to_ignore = to_link ... unify the states in the future
+        # to_ignore is reserved for duplicities between queue and queue, and it means it shouldn't be imported
         !php/const NewApiBundle\Workflow\ImportQueueTransitions::TO_IGNORE:
           from:
             - !php/const NewApiBundle\Enum\ImportQueueState::IDENTITY_CANDIDATE
@@ -250,7 +250,7 @@ framework:
             - !php/const NewApiBundle\Enum\ImportQueueState::TO_UPDATE
             - !php/const NewApiBundle\Enum\ImportQueueState::TO_LINK
             - !php/const NewApiBundle\Enum\ImportQueueState::TO_IGNORE
-          to: !php/const NewApiBundle\Enum\ImportQueueState::TO_IGNORE
+          to: !php/const NewApiBundle\Enum\ImportQueueState::TO_LINK
 
         # reset
         !php/const NewApiBundle\Workflow\ImportQueueTransitions::RESET:
