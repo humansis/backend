@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import;
 
+use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\Integrity;
@@ -187,6 +188,9 @@ class IntegrityChecker
         static $mapping;
         if (null === $mapping) {
             $mapping = array_flip(HouseholdExportCSVService::MAPPING_PROPERTIES);
+            foreach ($this->entityManager->getRepository(CountrySpecific::class)->findAll() as $countrySpecific) {
+                $mapping['countrySpecifics.'.$countrySpecific->getId()] = $countrySpecific->getFieldString();
+            }
         }
 
         return ['column' => ucfirst($mapping[$property]), 'violation' => $violation->getMessage(), 'value' => $violation->getInvalidValue()];
