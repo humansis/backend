@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Component\Import;
 
+use BeneficiaryBundle\Entity\CountrySpecific;
+use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use NewApiBundle\Component\Import\ImportFileValidator;
@@ -152,6 +154,62 @@ class ImportTest extends KernelTestCase
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->getImported($import);
         $this->assertCount($expectedBeneficiaryCount, $bnfCount, "Wrong beneficiary count");
+    }
+
+    public function testCountrySpecifics()
+    {
+        $country = 'SYR';
+        $filename = 'import-demo-3-country-specifics.xlsx';
+        $expectedHouseholdCount = 1;
+        $expectedBeneficiaryCount = 11;
+
+        // prepare country specifics
+        $customLocationSpecific = $this->entityManager->getRepository(CountrySpecific::class)->findOneBy(['fieldString'=>'Custom Location', 'countryIso3'=>$country]);
+        if (!$customLocationSpecific) {
+            $customLocationSpecific = new CountrySpecific('Custom Location', 'text', $country);
+            $this->entityManager->persist($customLocationSpecific);
+            $this->entityManager->flush();
+        }
+
+        $this->project = $this->createBlankProject($country, [__METHOD__, $filename]);
+        $this->originHousehold = $this->createBlankHousehold($this->project);
+        $import = $this->createImport("testCountrySpecifics", $this->project, $filename);
+
+        $this->assertQueueCount($expectedHouseholdCount, $import);
+
+        $this->userStartedIntegrityCheck($import, true, $this->getBatchCount($import));
+
+        $this->assertQueueCount($expectedHouseholdCount, $import);
+
+        $this->userStartedIdentityCheck($import, true, $this->getBatchCount($import));
+
+        $this->assertQueueCount($expectedHouseholdCount, $import);
+
+        $this->userStartedSimilarityCheck($import, true, $this->getBatchCount($import));
+
+        $this->assertQueueCount($expectedHouseholdCount, $import);
+        $this->assertQueueCount($expectedHouseholdCount, $import, [ImportQueueState::TO_CREATE]);
+
+        $this->userStartedFinishing($import);
+
+        $this->assertQueueCount($expectedHouseholdCount, $import);
+
+        $importedBnfs = $this->entityManager->getRepository(Beneficiary::class)->getImported($import);
+        $this->assertCount($expectedBeneficiaryCount, $importedBnfs, "Wrong beneficiary count");
+
+        foreach ($importedBnfs as $bnf) {
+            /** @var Household $hh */
+            $hh = $bnf->getHousehold();
+            $this->entityManager->refresh($hh);
+
+            $answers = $hh->getCountrySpecificAnswers();
+            $this->assertCount(1, $answers);
+
+            /** @var CountrySpecificAnswer $answer */
+            $answer = $answers[0];
+            $this->assertEquals('Custom Location', $answer->getCountrySpecific()->getFieldString());
+            $this->assertEquals('TEST-DEMO-1', $answer->getAnswer());
+        }
     }
 
     public function testEnumCaseSensitivity()

@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\CellParameters;
 use NewApiBundle\Component\Import\Utils\ImportDateConverter;
 use NewApiBundle\Enum\EnumTrait;
+use NewApiBundle\Validator\Constraints\EmptyCountrySpecifics;
 use NewApiBundle\Validator\Constraints\ImportDate;
 use Symfony\Component\Validator\Constraints as Assert;
 use NewApiBundle\Validator\Constraints\Enum;
@@ -314,7 +315,7 @@ class ImportLine
 
     /**
      * @var string[] countrySpecific::id => countrySpecificAnswer::answer
-     * @Assert\Count(max="0", groups={"member"})
+     * @EmptyCountrySpecifics(groups={"member"})
      */
     public $countrySpecifics = [];
 
@@ -357,7 +358,7 @@ class ImportLine
         $countrySpecifics = $entityManager->getRepository(CountrySpecific::class)->findBy(['countryIso3' => $countryIso3], ['id'=>'asc']);
         foreach ($countrySpecifics as $countrySpecific) {
             if (isset($content[$countrySpecific->getFieldString()])) {
-                $this->countrySpecifics[$countrySpecific->getId()] = $content[$countrySpecific->getFieldString()];
+                $this->countrySpecifics[$countrySpecific->getId()] = $content[$countrySpecific->getFieldString()][CellParameters::VALUE];
             }
         }
     }
