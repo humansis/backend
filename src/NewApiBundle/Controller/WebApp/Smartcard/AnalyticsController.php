@@ -34,38 +34,38 @@ class AnalyticsController extends AbstractWebAppController
         foreach ($beneficiary->getDistributionBeneficiaries() as $assistanceBeneficiary) {
             $assistance = $assistanceBeneficiary->getAssistance();
             $collector->add(new Event('assistance', 'started', $assistance->getDateDistribution(), [
-                'assistance_id' => $assistance->getId(),
-                'assistance_name' => $assistance->getName(),
-                'assistance_beneficiary_id' => $assistanceBeneficiary->getId(),
+                'assistanceId' => $assistance->getId(),
+                'assistanceName' => $assistance->getName(),
+                'assistance_beneficiaryId' => $assistanceBeneficiary->getId(),
             ]));
             if ($assistance->getDateExpiration()) {
                 $collector->add(new Event('assistance', 'expired', $assistance->getDateExpiration(), [
-                    'assistance_id' => $assistance->getId(),
-                    'assistance_name' => $assistance->getName(),
-                    'assistance_beneficiary_id' => $assistanceBeneficiary->getId(),
+                    'assistanceId' => $assistance->getId(),
+                    'assistanceName' => $assistance->getName(),
+                    'assistance_beneficiaryId' => $assistanceBeneficiary->getId(),
                 ]));
             }
 
             foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
                 $collector->add(new Event('assistance', 'set to distribute', $reliefPackage->getCreatedAt(), [
-                    'assistance_id' => $assistance->getId(),
-                    'assistance_name' => $assistance->getName(),
+                    'assistanceId' => $assistance->getId(),
+                    'assistanceName' => $assistance->getName(),
                     'relief_package' => $reliefPackage->getId(),
-                    'assistance_beneficiary_id' => $assistanceBeneficiary->getId(),
+                    'assistance_beneficiaryId' => $assistanceBeneficiary->getId(),
                 ]));
             }
 
             foreach ($assistanceBeneficiary->getSmartcardDeposits() as $deposit) {
                 $collector->add(new Event('deposit', 'sync', $deposit->getCreatedAt(), [
-                    'deposit_id' => $deposit->getId(),
+                    'depositId' => $deposit->getId(),
                 ]));
                 $collector->add(new Event('deposit', 'got money', $deposit->getDistributedAt(), [
                     'value' => $deposit->getValue(),
-                    'assistance_id' => $assistance->getId(),
-                    'assistance_name' => $assistance->getName(),
-                    'deposit_id' => $deposit->getId(),
-                    'smartcard_id' => $deposit->getSmartcard()->getId(),
-                    'smartcard_serialNumber' => $deposit->getSmartcard()->getSerialNumber(),
+                    'assistanceId' => $assistance->getId(),
+                    'assistanceName' => $assistance->getName(),
+                    'depositId' => $deposit->getId(),
+                    'smartcardId' => $deposit->getSmartcard()->getId(),
+                    'smartcardSerialNumber' => $deposit->getSmartcard()->getSerialNumber(),
                 ]));
             }
         }
@@ -73,17 +73,17 @@ class AnalyticsController extends AbstractWebAppController
         foreach ($purchaseRepository->findByBeneficiary($beneficiary) as $purchase) {
             $collector->add(new Event('purchase', 'made', $purchase->getCreatedAt(), [
                 'value' => $purchase->getRecordsValue().' '.$purchase->getCurrency(),
-                'assistance_id' => $purchase->getAssistance() ? $purchase->getAssistance()->getId() : null,
-                'assistance_name' => $purchase->getAssistance() ? $purchase->getAssistance()->getName() : null,
-                'purchase_id' => $purchase->getId(),
-                'smartcard_id' => $purchase->getSmartcard()->getId(),
-                'smartcard_serialNumber' => $purchase->getSmartcard()->getSerialNumber(),
-                'vendor_id' => $purchase->getVendor()->getId(),
-                'vendor_name' => $purchase->getVendor()->getName(),
+                'assistanceId' => $purchase->getAssistance() ? $purchase->getAssistance()->getId() : null,
+                'assistanceName' => $purchase->getAssistance() ? $purchase->getAssistance()->getName() : null,
+                'purchaseId' => $purchase->getId(),
+                'smartcardId' => $purchase->getSmartcard()->getId(),
+                'smartcardSerialNumber' => $purchase->getSmartcard()->getSerialNumber(),
+                'vendorId' => $purchase->getVendor()->getId(),
+                'vendorName' => $purchase->getVendor()->getName(),
             ]));
             if ($purchase->getRedemptionBatch()) {
                 $collector->add(new Event('purchase', 'invoiced', $purchase->getRedeemedAt(), [
-                    'purchase_id' => $purchase->getId(),
+                    'purchaseId' => $purchase->getId(),
                 ]));
             }
         }
@@ -130,53 +130,53 @@ class AnalyticsController extends AbstractWebAppController
             $assistance = $assistanceBeneficiary->getAssistance();
 
             $collector->add(new Event('assistance', 'set to distribute', $reliefPackage->getCreatedAt(), [
-                'assistance_id' => $assistance->getId(),
-                'assistance_name' => $assistance->getName(),
+                'assistanceId' => $assistance->getId(),
+                'assistanceName' => $assistance->getName(),
                 'relief_package' => $reliefPackage->getId(),
-                'assistance_beneficiary_id' => $assistanceBeneficiary->getId(),
+                'assistance_beneficiaryId' => $assistanceBeneficiary->getId(),
             ]));
 
             $collector->add(new Event('assistance', 'started', $assistance->getDateDistribution(), [
-                'assistance_id' => $assistance->getId(),
-                'assistance_name' => $assistance->getName(),
-                'assistance_beneficiary_id' => $assistanceBeneficiary->getId(),
+                'assistanceId' => $assistance->getId(),
+                'assistanceName' => $assistance->getName(),
+                'assistance_beneficiaryId' => $assistanceBeneficiary->getId(),
             ]));
             if ($assistance->getDateExpiration()) {
                 $collector->add(new Event('assistance', 'expired', $assistance->getDateExpiration(), [
-                    'assistance_id' => $assistance->getId(),
-                    'assistance_name' => $assistance->getName(),
-                    'assistance_beneficiary_id' => $assistanceBeneficiary->getId(),
+                    'assistanceId' => $assistance->getId(),
+                    'assistanceName' => $assistance->getName(),
+                    'assistance_beneficiaryId' => $assistanceBeneficiary->getId(),
                 ]));
             }
 
             $collector->add(new Event('deposit', 'sync', $deposit->getCreatedAt(), [
-                'deposit_id' => $deposit->getId(),
+                'depositId' => $deposit->getId(),
             ]));
 
             $collector->add(new Event('deposit', 'got money', $deposit->getDistributedAt(), [
                 'value' => $deposit->getValue(),
-                'assistance_id' => $assistance->getId(),
-                'assistance_name' => $assistance->getName(),
-                'deposit_id' => $deposit->getId(),
-                'smartcard_id' => $smartcard->getId(),
-                'smartcard_serialNumber' => $deposit->getSmartcard()->getSerialNumber(),
+                'assistanceId' => $assistance->getId(),
+                'assistanceName' => $assistance->getName(),
+                'depositId' => $deposit->getId(),
+                'smartcardId' => $smartcard->getId(),
+                'smartcardSerialNumber' => $deposit->getSmartcard()->getSerialNumber(),
             ]));
         }
 
         foreach ($smartcard->getPurchases() as $purchase) {
             $collector->add(new Event('purchase', 'made', $purchase->getCreatedAt(), [
                 'value' => $purchase->getRecordsValue().' '.$purchase->getCurrency(),
-                'assistance_id' => $purchase->getAssistance() ? $purchase->getAssistance()->getId() : null,
-                'assistance_name' => $purchase->getAssistance() ? $purchase->getAssistance()->getName() : null,
-                'purchase_id' => $purchase->getId(),
-                'smartcard_id' => $purchase->getSmartcard()->getId(),
-                'smartcard_serialNumber' => $purchase->getSmartcard()->getSerialNumber(),
-                'vendor_id' => $purchase->getVendor()->getId(),
-                'vendor_name' => $purchase->getVendor()->getName(),
+                'assistanceId' => $purchase->getAssistance() ? $purchase->getAssistance()->getId() : null,
+                'assistanceName' => $purchase->getAssistance() ? $purchase->getAssistance()->getName() : null,
+                'purchaseId' => $purchase->getId(),
+                'smartcardId' => $purchase->getSmartcard()->getId(),
+                'smartcardSerialNumber' => $purchase->getSmartcard()->getSerialNumber(),
+                'vendorId' => $purchase->getVendor()->getId(),
+                'vendorName' => $purchase->getVendor()->getName(),
             ]));
             if ($purchase->getRedemptionBatch()) {
                 $collector->add(new Event('purchase', 'invoiced', $purchase->getRedeemedAt(), [
-                    'purchase_id' => $purchase->getId(),
+                    'purchaseId' => $purchase->getId(),
                 ]));
             }
         }
@@ -197,57 +197,58 @@ class AnalyticsController extends AbstractWebAppController
         $redemptionBatchRepository = $this->getDoctrine()->getRepository(SmartcardRedemptionBatch::class);
         $depositSyncRepository = $this->getDoctrine()->getRepository(SynchronizationBatch\Deposits::class);
         $purchaseSyncRepository = $this->getDoctrine()->getRepository(SynchronizationBatch\Purchases::class);
+        $purchaseSyncRepository = $this->getDoctrine()->getRepository(SynchronizationBatch\Purchases::class);
 
         $collector = new EventCollector();
         foreach ($purchaseRepository->findBy(['vendor'=>$vendor]) as $purchase) {
             $collector->add(new Event('purchase', 'made', $purchase->getCreatedAt(), [
                 'value' => $purchase->getRecordsValue().' '.$purchase->getCurrency(),
-                'assistance_id' => $purchase->getAssistance() ? $purchase->getAssistance()->getId() : null,
-                'assistance_name' => $purchase->getAssistance() ? $purchase->getAssistance()->getName() : null,
-                'purchase_id' => $purchase->getId(),
-                'smartcard_id' => $purchase->getSmartcard()->getId(),
-                'smartcard_serialNumber' => $purchase->getSmartcard()->getSerialNumber(),
-                'vendor_id' => $purchase->getVendor()->getId(),
-                'vendor_name' => $purchase->getVendor()->getName(),
+                'assistanceId' => $purchase->getAssistance() ? $purchase->getAssistance()->getId() : null,
+                'assistanceName' => $purchase->getAssistance() ? $purchase->getAssistance()->getName() : null,
+                'purchaseId' => $purchase->getId(),
+                'smartcardId' => $purchase->getSmartcard()->getId(),
+                'smartcardSerialNumber' => $purchase->getSmartcard()->getSerialNumber(),
+                'vendorId' => $purchase->getVendor()->getId(),
+                'vendorName' => $purchase->getVendor()->getName(),
             ]));
         }
         foreach ($redemptionBatchRepository->findByVendor($vendor) as $invoice) {
             $collector->add(new Event('invoice', 'made', $invoice->getRedeemedAt(), [
                 'value' => $invoice->getValue().' '.$invoice->getCurrency(),
-                'project_id' => $invoice->getProject() ? $invoice->getProject()->getId() : null,
-                'project_name' => $invoice->getProject() ? $invoice->getProject()->getName() : null,
-                'accountant_id' => $invoice->getRedeemedBy()->getId(),
-                'accountant_name' => $invoice->getRedeemedBy()->getUsername(),
-                'vendor_id' => $invoice->getVendor()->getId(),
-                'vendor_name' => $invoice->getVendor()->getName(),
+                'projectId' => $invoice->getProject() ? $invoice->getProject()->getId() : null,
+                'projectName' => $invoice->getProject() ? $invoice->getProject()->getName() : null,
+                'accountantId' => $invoice->getRedeemedBy()->getId(),
+                'accountantName' => $invoice->getRedeemedBy()->getUsername(),
+                'vendorId' => $invoice->getVendor()->getId(),
+                'vendorName' => $invoice->getVendor()->getName(),
             ]));
         }
         foreach ($depositSyncRepository->findBy(['createdBy' => $vendor]) as $sync) {
-            $collector->add(new Event('deposit sync', 'made', $sync->getCreatedAt(), [
-                'sync_id' => $sync->getId(),
+            $collector->add(new Event('deposit', 'sync uploaded', $sync->getCreatedAt(), [
+                'syncId' => $sync->getId(),
                 'source' => $sync->getSource(),
-                'vendor_id' => $vendor->getId(),
-                'vendor_name' => $vendor->getName(),
+                'vendorId' => $vendor->getId(),
+                'vendorName' => $vendor->getName(),
             ]));
-            $collector->add(new Event('deposit sync', 'validated', $sync->getValidatedAt(), [
-                'sync_id' => $sync->getId(),
+            $collector->add(new Event('deposit', 'sync validated', $sync->getValidatedAt(), [
+                'syncId' => $sync->getId(),
                 'source' => $sync->getSource(),
-                'vendor_id' => $vendor->getId(),
-                'vendor_name' => $vendor->getName(),
+                'vendorId' => $vendor->getId(),
+                'vendorName' => $vendor->getName(),
             ]));
         }
         foreach ($purchaseSyncRepository->findBy(['createdBy' => $vendor]) as $sync) {
-            $collector->add(new Event('purchase sync', 'made', $sync->getCreatedAt(), [
-                'sync_id' => $sync->getId(),
+            $collector->add(new Event('purchase', 'sync uploaded', $sync->getCreatedAt(), [
+                'syncId' => $sync->getId(),
                 'source' => $sync->getSource(),
-                'vendor_id' => $vendor->getId(),
-                'vendor_name' => $vendor->getName(),
+                'vendorId' => $vendor->getId(),
+                'vendorName' => $vendor->getName(),
             ]));
-            $collector->add(new Event('purchase sync', 'validated', $sync->getValidatedAt(), [
-                'sync_id' => $sync->getId(),
+            $collector->add(new Event('purchase', 'sync validated', $sync->getValidatedAt(), [
+                'syncId' => $sync->getId(),
                 'source' => $sync->getSource(),
-                'vendor_id' => $vendor->getId(),
-                'vendor_name' => $vendor->getName(),
+                'vendorId' => $vendor->getId(),
+                'vendorName' => $vendor->getName(),
             ]));
         }
         return $this->json($collector->getSortedEvents());
