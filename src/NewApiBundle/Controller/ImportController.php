@@ -369,7 +369,7 @@ class ImportController extends AbstractController
     }
 
     /**
-     * @Rest\Patch("/web-app/v1/imports/{id}")
+     * @Rest\Patch("/web-app/v1/imports/{id}/duplicities")
      *
      * @param Entity\Import             $import
      * @param Import\Duplicity\ResolveAllDuplicitiesInputType $inputType
