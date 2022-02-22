@@ -197,7 +197,6 @@ class AnalyticsController extends AbstractWebAppController
         $redemptionBatchRepository = $this->getDoctrine()->getRepository(SmartcardRedemptionBatch::class);
         $depositSyncRepository = $this->getDoctrine()->getRepository(SynchronizationBatch\Deposits::class);
         $purchaseSyncRepository = $this->getDoctrine()->getRepository(SynchronizationBatch\Purchases::class);
-        $purchaseSyncRepository = $this->getDoctrine()->getRepository(SynchronizationBatch\Purchases::class);
 
         $collector = new EventCollector();
         foreach ($purchaseRepository->findBy(['vendor'=>$vendor]) as $purchase) {
