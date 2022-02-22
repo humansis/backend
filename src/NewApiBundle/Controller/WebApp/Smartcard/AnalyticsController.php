@@ -17,6 +17,10 @@ use VoucherBundle\Repository\SmartcardPurchaseRepository;
 use VoucherBundle\Repository\SmartcardRedemptionBatchRepository;
 use VoucherBundle\Repository\SmartcardRepository;
 
+/**
+ * properties *Name are there only for reason of nonexistent frontend
+ * should be removed after FE part will be done
+ */
 class AnalyticsController extends AbstractWebAppController
 {
     /**
