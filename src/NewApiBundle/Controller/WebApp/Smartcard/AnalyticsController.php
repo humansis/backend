@@ -40,13 +40,13 @@ class AnalyticsController extends AbstractWebAppController
             $collector->add(new Event('assistance', 'started', $assistance->getDateDistribution(), [
                 'assistanceId' => $assistance->getId(),
                 'assistanceName' => $assistance->getName(),
-                'assistance_beneficiaryId' => $assistanceBeneficiary->getId(),
+                'assistanceBeneficiaryId' => $assistanceBeneficiary->getId(),
             ]));
             if ($assistance->getDateExpiration()) {
                 $collector->add(new Event('assistance', 'expired', $assistance->getDateExpiration(), [
                     'assistanceId' => $assistance->getId(),
                     'assistanceName' => $assistance->getName(),
-                    'assistance_beneficiaryId' => $assistanceBeneficiary->getId(),
+                    'assistanceBeneficiaryId' => $assistanceBeneficiary->getId(),
                 ]));
             }
 
@@ -54,8 +54,8 @@ class AnalyticsController extends AbstractWebAppController
                 $collector->add(new Event('assistance', 'set to distribute', $reliefPackage->getCreatedAt(), [
                     'assistanceId' => $assistance->getId(),
                     'assistanceName' => $assistance->getName(),
-                    'relief_package' => $reliefPackage->getId(),
-                    'assistance_beneficiaryId' => $assistanceBeneficiary->getId(),
+                    'reliefPackageId' => $reliefPackage->getId(),
+                    'assistanceBeneficiaryId' => $assistanceBeneficiary->getId(),
                 ]));
             }
 
@@ -136,20 +136,20 @@ class AnalyticsController extends AbstractWebAppController
             $collector->add(new Event('assistance', 'set to distribute', $reliefPackage->getCreatedAt(), [
                 'assistanceId' => $assistance->getId(),
                 'assistanceName' => $assistance->getName(),
-                'relief_package' => $reliefPackage->getId(),
-                'assistance_beneficiaryId' => $assistanceBeneficiary->getId(),
+                'reliefPackageId' => $reliefPackage->getId(),
+                'assistanceBeneficiaryId' => $assistanceBeneficiary->getId(),
             ]));
 
             $collector->add(new Event('assistance', 'started', $assistance->getDateDistribution(), [
                 'assistanceId' => $assistance->getId(),
                 'assistanceName' => $assistance->getName(),
-                'assistance_beneficiaryId' => $assistanceBeneficiary->getId(),
+                'assistanceBeneficiaryId' => $assistanceBeneficiary->getId(),
             ]));
             if ($assistance->getDateExpiration()) {
                 $collector->add(new Event('assistance', 'expired', $assistance->getDateExpiration(), [
                     'assistanceId' => $assistance->getId(),
                     'assistanceName' => $assistance->getName(),
-                    'assistance_beneficiaryId' => $assistanceBeneficiary->getId(),
+                    'assistanceBeneficiaryId' => $assistanceBeneficiary->getId(),
                 ]));
             }
 
