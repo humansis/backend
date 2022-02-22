@@ -1,3 +1,4 @@
+CREATE VIEW view_smartcard_purchased_item AS
 SELECT
     spr.id,
     s.beneficiary_id as beneficiary_id,
