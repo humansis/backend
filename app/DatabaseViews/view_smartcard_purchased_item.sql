@@ -22,22 +22,22 @@ FROM smartcard_purchase_record spr
          LEFT JOIN beneficiary b ON s.beneficiary_id = b.id
          LEFT JOIN person p ON b.person_id = p.id
          LEFT JOIN national_id ni ON ni.id = ( -- to ensure that only 1 (first one) national id will be joined and no duplicities occur
-    SELECT national_id.id
-    FROM national_id
-    WHERE national_id.person_id = p.id
-    LIMIT 1
-    )
-    LEFT JOIN distribution_beneficiary db ON db.assistance_id = sp.assistance_id AND db.beneficiary_id = b.id
-    LEFT JOIN relief_package rp ON rp.id = (
-    SELECT reliefPackage.id
-    FROM relief_package reliefPackage
-    WHERE reliefPackage.assistance_beneficiary_id = db.id
-    LIMIT 1
-    )
-    JOIN smartcard_deposit sd ON sd.id = (
-    SELECT smartcardDeposit.id
-    FROM smartcard_deposit smartcardDeposit
-    WHERE smartcardDeposit.relief_package_id = rp.id
-    LIMIT 1
-    )
-    LEFT JOIN assistance a ON db.assistance_id = a.id
+                SELECT national_id.id
+                FROM national_id
+                WHERE national_id.person_id = p.id
+                LIMIT 1
+            )
+         LEFT JOIN distribution_beneficiary db ON db.assistance_id = sp.assistance_id AND db.beneficiary_id = b.id
+         LEFT JOIN relief_package rp ON rp.id = (
+                SELECT reliefPackage.id
+                FROM relief_package reliefPackage
+                WHERE reliefPackage.assistance_beneficiary_id = db.id
+                LIMIT 1
+            )
+         JOIN smartcard_deposit sd ON sd.id = (
+                SELECT smartcardDeposit.id
+                FROM smartcard_deposit smartcardDeposit
+                WHERE smartcardDeposit.relief_package_id = rp.id
+                LIMIT 1
+            )
+         LEFT JOIN assistance a ON db.assistance_id = a.id
