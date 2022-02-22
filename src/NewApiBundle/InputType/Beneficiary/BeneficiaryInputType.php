@@ -7,6 +7,7 @@ use BeneficiaryBundle\Enum\ResidencyStatus;
 use NewApiBundle\Enum\HouseholdHead;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Request\InputTypeInterface;
+use NewApiBundle\Utils\DateTime\Iso8601Converter;
 use NewApiBundle\Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
 use NewApiBundle\Validator\Constraints\Enum;
@@ -128,14 +129,11 @@ class BeneficiaryInputType implements InputTypeInterface
      * @Assert\NotNull
      * @return \DateTimeInterface
      */
-    public function getDateOfBirth()
+    public function getDateOfBirth(): ?\DateTimeInterface
     {
         if (!$this->dateOfBirth) return null;
-        $iso = \DateTime::createFromFormat(\DateTimeInterface::ISO8601, $this->dateOfBirth);
-        if ($iso) return $iso;
-        $date = \DateTime::createFromFormat('Y-m-d', $this->dateOfBirth);
-        if ($date) return $date;
-        return null;
+
+        return Iso8601Converter::toDateTime($this->dateOfBirth) ?: null;
     }
 
     /**
