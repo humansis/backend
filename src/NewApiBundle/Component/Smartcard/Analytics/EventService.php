@@ -83,21 +83,7 @@ class EventService
         }
 
         foreach ($this->purchaseRepository->findByBeneficiary($beneficiary) as $purchase) {
-            $collector->add(new Event('purchase', 'made', $purchase->getCreatedAt(), [], [
-                'value' => $purchase->getRecordsValue().' '.$purchase->getCurrency(),
-                'assistanceId' => $purchase->getAssistance() ? $purchase->getAssistance()->getId() : null,
-                'assistanceName' => $purchase->getAssistance() ? $purchase->getAssistance()->getName() : null,
-                'purchaseId' => $purchase->getId(),
-                'smartcardId' => $purchase->getSmartcard()->getId(),
-                'smartcardSerialNumber' => $purchase->getSmartcard()->getSerialNumber(),
-                'vendorId' => $purchase->getVendor()->getId(),
-                'vendorName' => $purchase->getVendor()->getName(),
-            ]));
-            if ($purchase->getRedemptionBatch()) {
-                $collector->add(new Event('purchase', 'invoiced', $purchase->getRedeemedAt(), [], [
-                    'purchaseId' => $purchase->getId(),
-                ]));
-            }
+            $this->collectPurchaseEvents($collector, $purchase, true);
         }
 
         return $collector->getSortedEvents();
@@ -162,21 +148,7 @@ class EventService
         }
 
         foreach ($smartcard->getPurchases() as $purchase) {
-            $collector->add(new Event('purchase', 'made', $purchase->getCreatedAt(), [], [
-                'value' => $purchase->getRecordsValue().' '.$purchase->getCurrency(),
-                'assistanceId' => $purchase->getAssistance() ? $purchase->getAssistance()->getId() : null,
-                'assistanceName' => $purchase->getAssistance() ? $purchase->getAssistance()->getName() : null,
-                'purchaseId' => $purchase->getId(),
-                'smartcardId' => $purchase->getSmartcard()->getId(),
-                'smartcardSerialNumber' => $purchase->getSmartcard()->getSerialNumber(),
-                'vendorId' => $purchase->getVendor()->getId(),
-                'vendorName' => $purchase->getVendor()->getName(),
-            ]));
-            if ($purchase->getRedemptionBatch()) {
-                $collector->add(new Event('purchase', 'invoiced', $purchase->getRedeemedAt(), [], [
-                    'purchaseId' => $purchase->getId(),
-                ]));
-            }
+            $this->collectPurchaseEvents($collector, $purchase, true);
         }
     }
 
@@ -184,16 +156,7 @@ class EventService
     {
         $collector = new EventCollector();
         foreach ($this->purchaseRepository->findBy(['vendor'=>$vendor]) as $purchase) {
-            $collector->add(new Event('purchase', 'made', $purchase->getCreatedAt(), [], [
-                'value' => $purchase->getRecordsValue().' '.$purchase->getCurrency(),
-                'assistanceId' => $purchase->getAssistance() ? $purchase->getAssistance()->getId() : null,
-                'assistanceName' => $purchase->getAssistance() ? $purchase->getAssistance()->getName() : null,
-                'purchaseId' => $purchase->getId(),
-                'smartcardId' => $purchase->getSmartcard()->getId(),
-                'smartcardSerialNumber' => $purchase->getSmartcard()->getSerialNumber(),
-                'vendorId' => $purchase->getVendor()->getId(),
-                'vendorName' => $purchase->getVendor()->getName(),
-            ]));
+            $this->collectPurchaseEvents($collector, $purchase, false);
         }
         foreach ($this->redemptionBatchRepository->findByVendor($vendor) as $invoice) {
             $collector->add(new Event('invoice', 'made', $invoice->getRedeemedAt(), [], [
@@ -235,5 +198,29 @@ class EventService
             ]));
         }
         return $collector->getSortedEvents();
+    }
+
+    /**
+     * @param EventCollector    $collector
+     * @param SmartcardPurchase $purchase
+     * @param bool              $extractInvoices
+     */
+    protected function collectPurchaseEvents(EventCollector $collector, SmartcardPurchase $purchase, bool $extractInvoices): void
+    {
+        $collector->add(new Event('purchase', 'made', $purchase->getCreatedAt(), [], [
+            'value' => $purchase->getRecordsValue().' '.$purchase->getCurrency(),
+            'assistanceId' => $purchase->getAssistance() ? $purchase->getAssistance()->getId() : null,
+            'assistanceName' => $purchase->getAssistance() ? $purchase->getAssistance()->getName() : null,
+            'purchaseId' => $purchase->getId(),
+            'smartcardId' => $purchase->getSmartcard()->getId(),
+            'smartcardSerialNumber' => $purchase->getSmartcard()->getSerialNumber(),
+            'vendorId' => $purchase->getVendor()->getId(),
+            'vendorName' => $purchase->getVendor()->getName(),
+        ]));
+        if ($extractInvoices && $purchase->getRedemptionBatch()) {
+            $collector->add(new Event('purchase', 'invoiced', $purchase->getRedeemedAt(), [], [
+                'purchaseId' => $purchase->getId(),
+            ]));
+        }
     }
 }
