@@ -13,6 +13,7 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\Component\Import\Identity\NationalIdHashSet;
 use NewApiBundle\DBAL\PersonGenderEnum;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Enum\NationalIdType;
@@ -181,6 +182,29 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         if (null !== $household) {
             $qb->andWhere('hh.id = :hhId')
                 ->setParameter('hhId', $household->getId());
+        }
+
+        return $qb->getQuery()
+            ->getResult();
+    }
+
+    public function findIdentitiesByNationalIds(string $iso3, NationalIdHashSet $ids)
+    {
+        $qb = $this->createQueryBuilder('b')
+            ->join('b.person', 'p')
+            ->join('b.household', 'hh')
+            ->join('p.nationalIds', 'id')
+            ->andWhere('b.archived = 0')
+            ->andWhere('hh.archived = 0')
+            ->andWhere('id.idNumber IN (:idNumbers)')
+            ->andWhere('id.idType IN (:idTypes)')
+            ->setParameter('idNumbers', $ids->getNumbers())
+            ->setParameter('idTypes', $ids->getTypes());
+
+        if (null !== $iso3) {
+            $qb->join('hh.projects', 'project')
+                ->andWhere('project.iso3 = :country')
+                ->setParameter('country', $iso3);
         }
 
         return $qb->getQuery()
