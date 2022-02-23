@@ -6,6 +6,7 @@ use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Entity\ReliefPackage;
+use ProjectBundle\Entity\Project;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
@@ -96,6 +97,10 @@ class Event implements \JsonSerializable
                 case Vendor::class:
                     $serializedData['vendorId'] = $object->getId();
                     $serializedData['vendorName'] = $object->getName();
+                    break;
+                case Project::class:
+                    $serializedData['projectId'] = $object->getId();
+                    $serializedData['projectName'] = $object->getName();
                     break;
             }
         }

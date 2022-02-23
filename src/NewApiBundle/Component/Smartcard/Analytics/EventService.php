@@ -105,14 +105,13 @@ class EventService
             $this->collectPurchaseEvents($collector, $purchase, false);
         }
         foreach ($this->redemptionBatchRepository->findByVendor($vendor) as $invoice) {
-            $collector->add(new Event('invoice', 'made', $invoice->getRedeemedAt(), [], [
+            $collector->add(new Event('invoice', 'made', $invoice->getRedeemedAt(), [
+                $invoice->getProject(),
+                $invoice->getVendor(),
+            ], [
                 'value' => $invoice->getValue().' '.$invoice->getCurrency(),
-                'projectId' => $invoice->getProject() ? $invoice->getProject()->getId() : null,
-                'projectName' => $invoice->getProject() ? $invoice->getProject()->getName() : null,
                 'accountantId' => $invoice->getRedeemedBy()->getId(),
                 'accountantName' => $invoice->getRedeemedBy()->getUsername(),
-                'vendorId' => $invoice->getVendor()->getId(),
-                'vendorName' => $invoice->getVendor()->getName(),
             ]));
         }
         foreach ($this->depositSyncRepository->findBy(['createdBy' => $vendor]) as $sync) {
@@ -131,19 +130,18 @@ class EventService
      */
     protected function collectPurchaseEvents(EventCollector $collector, SmartcardPurchase $purchase, bool $extractInvoices): void
     {
-        $collector->add(new Event('purchase', 'made', $purchase->getCreatedAt(), [], [
+        $collector->add(new Event('purchase', 'made', $purchase->getCreatedAt(), [
+            $purchase->getAssistance(),
+            $purchase,
+            $purchase->getSmartcard(),
+            $purchase->getVendor(),
+        ], [
             'value' => $purchase->getRecordsValue().' '.$purchase->getCurrency(),
-            'assistanceId' => $purchase->getAssistance() ? $purchase->getAssistance()->getId() : null,
-            'assistanceName' => $purchase->getAssistance() ? $purchase->getAssistance()->getName() : null,
-            'purchaseId' => $purchase->getId(),
-            'smartcardId' => $purchase->getSmartcard()->getId(),
-            'smartcardSerialNumber' => $purchase->getSmartcard()->getSerialNumber(),
-            'vendorId' => $purchase->getVendor()->getId(),
-            'vendorName' => $purchase->getVendor()->getName(),
         ]));
         if ($extractInvoices && $purchase->getRedemptionBatch()) {
-            $collector->add(new Event('purchase', 'invoiced', $purchase->getRedeemedAt(), [], [
-                'purchaseId' => $purchase->getId(),
+            $collector->add(new Event('purchase', 'invoiced', $purchase->getRedeemedAt(), [
+                $purchase
+            ], [
             ]));
         }
     }
@@ -156,17 +154,13 @@ class EventService
      */
     protected function collectSynchronizationBatchEvents(string $syncType, EventCollector $collector, $sync, Vendor $vendor): void
     {
-        $collector->add(new Event($syncType, 'sync uploaded', $sync->getCreatedAt(), [], [
+        $collector->add(new Event($syncType, 'sync uploaded', $sync->getCreatedAt(), [$vendor], [
             'syncId' => $sync->getId(),
             'source' => $sync->getSource(),
-            'vendorId' => $vendor->getId(),
-            'vendorName' => $vendor->getName(),
         ]));
-        $collector->add(new Event($syncType, 'sync validated', $sync->getValidatedAt(), [], [
+        $collector->add(new Event($syncType, 'sync validated', $sync->getValidatedAt(), [$vendor], [
             'syncId' => $sync->getId(),
             'source' => $sync->getSource(),
-            'vendorId' => $vendor->getId(),
-            'vendorName' => $vendor->getName(),
         ]));
     }
 
@@ -182,27 +176,24 @@ class EventService
                                              array                                   $reliefPackages
     ): void
     {
-        $collector->add(new Event('assistance', 'started', $assistance->getDateDistribution(), [], [
-            'assistanceId' => $assistance->getId(),
-            'assistanceName' => $assistance->getName(),
-            'assistanceBeneficiaryId' => $assistanceBeneficiary->getId(),
-        ]));
+        $collector->add(new Event('assistance', 'started', $assistance->getDateDistribution(), [
+            $assistance,
+            $assistanceBeneficiary,
+        ], []));
 
         if ($assistance->getDateExpiration()) {
-            $collector->add(new Event('assistance', 'expired', $assistance->getDateExpiration(), [], [
-                'assistanceId' => $assistance->getId(),
-                'assistanceName' => $assistance->getName(),
-                'assistanceBeneficiaryId' => $assistanceBeneficiary->getId(),
-            ]));
+            $collector->add(new Event('assistance', 'expired', $assistance->getDateExpiration(), [
+                $assistance,
+                $assistanceBeneficiary,
+            ], []));
         }
 
         foreach ($reliefPackages as $reliefPackage) {
-            $collector->add(new Event('assistance', 'set to distribute', $reliefPackage->getCreatedAt(), [], [
-                'assistanceId' => $assistance->getId(),
-                'assistanceName' => $assistance->getName(),
-                'reliefPackageId' => $reliefPackage->getId(),
-                'assistanceBeneficiaryId' => $assistanceBeneficiary->getId(),
-            ]));
+            $collector->add(new Event('assistance', 'set to distribute', $reliefPackage->getCreatedAt(), [
+                $assistance,
+                $assistanceBeneficiary,
+                $reliefPackage,
+            ], []));
         }
     }
 
@@ -214,17 +205,12 @@ class EventService
      */
     private function collectDepositEvents(EventCollector $collector, SmartcardDeposit $deposit, Assistance $assistance, Smartcard $smartcard): void
     {
-        $collector->add(new Event('deposit', 'sync', $deposit->getCreatedAt(), [], [
-            'depositId' => $deposit->getId(),
-        ]));
+        $collector->add(new Event('deposit', 'sync', $deposit->getCreatedAt(), [$deposit], []));
 
-        $collector->add(new Event('deposit', 'got money', $deposit->getDistributedAt(), [], [
+        $collector->add(new Event('deposit', 'got money', $deposit->getDistributedAt(), [
+            $assistance, $deposit, $smartcard,
+        ], [
             'value' => $deposit->getValue(),
-            'assistanceId' => $assistance->getId(),
-            'assistanceName' => $assistance->getName(),
-            'depositId' => $deposit->getId(),
-            'smartcardId' => $smartcard->getId(),
-            'smartcardSerialNumber' => $deposit->getSmartcard()->getSerialNumber(),
         ]));
     }
 }
