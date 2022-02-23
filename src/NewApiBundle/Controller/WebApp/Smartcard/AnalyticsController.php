@@ -3,6 +3,7 @@
 namespace NewApiBundle\Controller\WebApp\Smartcard;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Smartcard\Analytics\Event;
 use NewApiBundle\Component\Smartcard\Analytics\EventCollector;
@@ -34,7 +35,7 @@ class AnalyticsController extends AbstractWebAppController
      */
     public function beneficiary(Beneficiary $beneficiary, EventService $eventService): JsonResponse
     {
-        return $this->json($eventService->getBeneficiaryEvents($beneficiary));
+        return $this->json(new Paginator($eventService->getBeneficiaryEvents($beneficiary)));
     }
 
     /**
@@ -47,7 +48,7 @@ class AnalyticsController extends AbstractWebAppController
      */
     public function smartcardById(Smartcard $smartcard, EventService $eventService): JsonResponse
     {
-        return $this->json($eventService->getSmartcardEvents($smartcard));
+        return $this->json(new Paginator($eventService->getSmartcardEvents($smartcard)));
     }
 
     /**
@@ -60,7 +61,7 @@ class AnalyticsController extends AbstractWebAppController
      */
     public function smartcardBySerialNumber(string $serialNumber, EventService $eventService): JsonResponse
     {
-        return $this->json($eventService->getSmartcardsEvents($serialNumber));
+        return $this->json(new Paginator($eventService->getSmartcardsEvents($serialNumber)));
     }
 
     /**
@@ -73,6 +74,6 @@ class AnalyticsController extends AbstractWebAppController
      */
     public function vendor(Vendor $vendor, EventService $eventService): JsonResponse
     {
-        return $this->json($eventService->getVendorEvents($vendor));
+        return $this->json(new Paginator($eventService->getVendorEvents($vendor)));
     }
 }

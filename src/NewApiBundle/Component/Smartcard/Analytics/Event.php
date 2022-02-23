@@ -73,6 +73,7 @@ class Event implements \JsonSerializable
             'date' => $this->getWhen()->format('Y-m-d H:i'),
         ];
         foreach ($this->linkedObjects as $object) {
+            if ($object == null) continue;
             switch (get_class($object)) {
                 case Assistance::class:
                     $serializedData['assistanceId'] = $object->getId();

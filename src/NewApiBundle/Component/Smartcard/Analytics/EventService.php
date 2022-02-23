@@ -50,7 +50,7 @@ class EventService
         foreach ($beneficiary->getDistributionBeneficiaries() as $assistanceBeneficiary) {
             $assistance = $assistanceBeneficiary->getAssistance();
 
-            $this->collectAssistanceEvents($collector, $assistance, $assistanceBeneficiary, $assistanceBeneficiary->getReliefPackages());
+            $this->collectAssistanceEvents($collector, $assistance, $assistanceBeneficiary, $assistanceBeneficiary->getReliefPackages()->toArray());
 
             foreach ($assistanceBeneficiary->getSmartcardDeposits() as $deposit) {
                 $this->collectDepositEvents($collector, $deposit, $assistance, $deposit->getSmartcard());
