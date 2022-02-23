@@ -3,6 +3,13 @@
 namespace NewApiBundle\Component\Smartcard\Analytics;
 
 use DateTimeInterface;
+use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Entity\AssistanceBeneficiary;
+use NewApiBundle\Entity\ReliefPackage;
+use VoucherBundle\Entity\Smartcard;
+use VoucherBundle\Entity\SmartcardDeposit;
+use VoucherBundle\Entity\SmartcardPurchase;
+use VoucherBundle\Entity\Vendor;
 
 class Event implements \JsonSerializable
 {
@@ -12,7 +19,9 @@ class Event implements \JsonSerializable
     private $action;
     /** @var DateTimeInterface when was it happened */
     private $when;
-
+    /** @var object[] */
+    private $linkedObjects;
+    /** @var array */
     private $additionalData;
 
     /**
@@ -20,13 +29,15 @@ class Event implements \JsonSerializable
      * @param string            $action
      * @param DateTimeInterface $when
      * @param array             $additionalData
+     * @param object            $linkedObjects
      */
-    public function __construct(string $subject, string $action, DateTimeInterface $when, array $additionalData = [])
+    public function __construct(string $subject, string $action, DateTimeInterface $when, array $linkedObjects = [], array $additionalData = [])
     {
         $this->subject = $subject;
         $this->action = $action;
         $this->when = $when;
         $this->additionalData = $additionalData;
+        $this->linkedObjects = $linkedObjects;
     }
 
     /**
@@ -55,11 +66,43 @@ class Event implements \JsonSerializable
 
     public function jsonSerialize(): array
     {
-        return array_merge([
+        $serializedData = [
             'subject' => $this->getSubject(),
             'action' => $this->getAction(),
             'date' => $this->getWhen()->format('Y-m-d H:i'),
-        ], $this->additionalData);
+        ];
+        foreach ($this->linkedObjects as $object) {
+            switch (get_class($object)) {
+                case Assistance::class:
+                    $serializedData['assistanceId'] = $object->getId();
+                    $serializedData['assistanceName'] = $object->getName();
+                    break;
+                case AssistanceBeneficiary::class:
+                    $serializedData['assistanceBeneficiaryId'] = $object->getId();
+                    break;
+                case ReliefPackage::class:
+                    $serializedData['reliefPackageId'] = $object->getId();
+                    break;
+                case SmartcardDeposit::class:
+                    $serializedData['depositId'] = $object->getId();
+                    break;
+                case SmartcardPurchase::class:
+                    $serializedData['purchaseId'] = $object->getId();
+                    break;
+                case Smartcard::class:
+                    $serializedData['smartcardId'] = $object->getId();
+                    $serializedData['smartcardSerialNumber'] = $object->getSerialNumber();
+                    break;
+                case Vendor::class:
+                    $serializedData['vendorId'] = $object->getId();
+                    $serializedData['vendorName'] = $object->getName();
+                    break;
+            }
+        }
+        foreach ($this->additionalData as $key => $value) {
+            $serializedData[$key] = $value;
+        }
+        return $serializedData;
     }
 
 }
