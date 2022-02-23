@@ -150,8 +150,6 @@ class HouseholdService
         }
 
         $this->em->persist($household);
-        $this->em->flush();
-
         return $household;
     }
 
@@ -231,7 +229,7 @@ class HouseholdService
      * @param HouseholdUpdateInputType $inputType
      *
      * @return Household
-     * @throws EntityNotFoundException
+     * @throws Exception
      */
     public function update(Household $household, HouseholdUpdateInputType $inputType): Household
     {
@@ -268,8 +266,6 @@ class HouseholdService
         }
 
         $this->em->persist($household);
-        $this->em->flush();
-
         return $household;
     }
 
