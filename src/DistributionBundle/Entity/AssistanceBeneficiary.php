@@ -161,11 +161,11 @@ class AssistanceBeneficiary
     /**
      * Set assistance.
      *
-     * @param Assistance|null $assistance
+     * @param Assistance $assistance
      *
      * @return AssistanceBeneficiary
      */
-    public function setAssistance(Assistance $assistance = null)
+    public function setAssistance(Assistance $assistance)
     {
         $this->assistance = $assistance;
 
@@ -175,7 +175,7 @@ class AssistanceBeneficiary
     /**
      * Get assistance.
      *
-     * @return Assistance|null
+     * @return Assistance
      */
     public function getAssistance()
     {
