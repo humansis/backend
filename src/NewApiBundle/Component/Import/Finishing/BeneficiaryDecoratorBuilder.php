@@ -3,10 +3,12 @@
 namespace NewApiBundle\Component\Import\Finishing;
 
 use NewApiBundle\Component\Import\Utils\ImportDateConverter;
+use NewApiBundle\Enum\VulnerabilityCriteria;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\Component\Import;
+use NewApiBundle\InputType\Helper\EnumsBuilder;
 
 class BeneficiaryDecoratorBuilder
 {
@@ -26,10 +28,10 @@ class BeneficiaryDecoratorBuilder
         $beneficiary->setIsHead($beneficiaryLine->head);
 
         if (is_string($beneficiaryLine->vulnerabilityCriteria)) {
-            $vulnerabilities = explode(',', $beneficiaryLine->vulnerabilityCriteria);
-            foreach ($vulnerabilities as $vulnerability) {
-                $beneficiary->addVulnerabilityCriteria(trim($vulnerability));
-            }
+            $enumBuilder = new EnumsBuilder(VulnerabilityCriteria::class);
+            $enumBuilder->setNullToEmptyArrayTransformation();
+            $importedVulnerabilities = $enumBuilder->buildInputValues($beneficiaryLine->vulnerabilityCriteria);
+            $beneficiary->setVulnerabilityCriteria($importedVulnerabilities);
         }
 
         if (!is_null($beneficiaryLine->idType)) {
