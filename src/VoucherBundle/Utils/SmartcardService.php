@@ -123,7 +123,7 @@ class SmartcardService
             return $reliefPackages[0]->getSmartcardDeposits()->first();
         }
 
-        return $this->deposit($serialNumber, $reliefPackage->getId(), $value, $balanceBefore, $distributedAt, $user);
+        return $this->deposit($serialNumber, $reliefPackageToDistribute->getId(), $value, $balanceBefore, $distributedAt, $user);
     }
 
     public function deposit(string $serialNumber, int $reliefPackageId, $value, $balance, DateTimeInterface $distributedAt, User $user): SmartcardDeposit
