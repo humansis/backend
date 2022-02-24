@@ -9,7 +9,6 @@ use DateTimeInterface;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManager;
 use NewApiBundle\Entity\ReliefPackage;
-use NewApiBundle\Enum\AssistanceBeneficiaryCommodityState;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
@@ -18,7 +17,6 @@ use NewApiBundle\Workflow\ReliefPackageTransitions;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Repository\ProjectRepository;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -94,7 +92,7 @@ class SmartcardService
         ], ['id' => 'asc']);
 
         if (null == $target) {
-            throw new BadRequestDataException("No beneficiary #$beneficiaryId in assistance #$assistanceId");
+            throw new NotFoundHttpException("No beneficiary #$beneficiaryId in assistance #$assistanceId");
         }
 
         /** @var ReliefPackage[] $reliefPackages */
@@ -104,7 +102,7 @@ class SmartcardService
         ], ['id' => 'asc']);
 
         if (empty($reliefPackages)) {
-            throw new BadRequestDataException("Nothing to distribute for beneficiary #$beneficiaryId in assistance #$assistanceId");
+            throw new NotFoundHttpException("Nothing to distribute for beneficiary #$beneficiaryId in assistance #$assistanceId");
         }
 
         //TODO rewrite deposit function
@@ -123,7 +121,7 @@ class SmartcardService
             return $reliefPackages[0]->getSmartcardDeposits()->first();
         }
 
-        return $this->deposit($serialNumber, $reliefPackage->getId(), $value, $balanceBefore, $distributedAt, $user);
+        return $this->deposit($serialNumber, $reliefPackageToDistribute->getId(), $value, $balanceBefore, $distributedAt, $user);
     }
 
     public function deposit(string $serialNumber, int $reliefPackageId, $value, $balance, DateTimeInterface $distributedAt, User $user): SmartcardDeposit
