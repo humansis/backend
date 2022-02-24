@@ -92,7 +92,7 @@ class SmartcardService
         ], ['id' => 'asc']);
 
         if (null == $target) {
-            throw new BadRequestDataException("No beneficiary #$beneficiaryId in assistance #$assistanceId");
+            throw new NotFoundHttpException("No beneficiary #$beneficiaryId in assistance #$assistanceId");
         }
 
         /** @var ReliefPackage[] $reliefPackages */
@@ -102,7 +102,7 @@ class SmartcardService
         ], ['id' => 'asc']);
 
         if (empty($reliefPackages)) {
-            throw new BadRequestDataException("Nothing to distribute for beneficiary #$beneficiaryId in assistance #$assistanceId");
+            throw new NotFoundHttpException("Nothing to distribute for beneficiary #$beneficiaryId in assistance #$assistanceId");
         }
 
         //TODO rewrite deposit function
