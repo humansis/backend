@@ -1,27 +1,25 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace NewApiBundle\Entity;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\CreatedAt;
+use NewApiBundle\Entity\Helper\CreatedBy;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use UserBundle\Entity\User;
 
 /**
  * This entity tracks source (import) of beneficiary being updated.
  *
  * @ORM\Entity()
+ * @ORM\HasLifecycleCallbacks()
  */
 class ImportBeneficiary
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
+    use CreatedBy;
+    use CreatedAt;
 
     /**
      * @var Import
@@ -38,34 +36,11 @@ class ImportBeneficiary
      */
     private $beneficiary;
 
-    /**
-     * @var User
-     *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="importBeneficiaries")
-     */
-    private $createdBy;
-
-    /**
-     * @var \DateTimeInterface
-     *
-     * @ORM\Column(name="created_at", type="datetimetz", nullable=false)
-     */
-    private $createdAt;
-
     public function __construct(Import $import, Beneficiary $beneficiary, User $creator)
     {
         $this->import = $import;
         $this->beneficiary = $beneficiary;
         $this->createdBy = $creator;
-        $this->createdAt = new \DateTime('now');
-    }
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
     }
 
     /**
@@ -84,19 +59,4 @@ class ImportBeneficiary
         return $this->beneficiary;
     }
 
-    /**
-     * @return User
-     */
-    public function getCreatedBy(): User
-    {
-        return $this->createdBy;
-    }
-
-    /**
-     * @return \DateTimeInterface
-     */
-    public function getCreatedAt(): \DateTimeInterface
-    {
-        return $this->createdAt;
-    }
 }

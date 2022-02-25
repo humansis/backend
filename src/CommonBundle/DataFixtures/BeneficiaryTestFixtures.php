@@ -16,6 +16,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Enum\PersonGender;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Enum\Livelihood;
 use Symfony\Component\HttpKernel\Kernel;
@@ -36,7 +37,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         'en_family_name' => '[{householdType} found by {project}]',
         'local_given_name' => '{gender} {age}',
         'local_family_name' => '{householdType} from {country}',
-        'gender' => '0',
+        'gender' => 0,
         'status' => '1',
         'residency_status' => 'resident',
         'vulnerability_criteria' => [
@@ -51,7 +52,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
 
     private $householdTemplate = [
         'livelihood' => Livelihood::GOVERNMENT,
-        'income_level' => 3,
+        'income' => 3,
         'notes' => null,
         'latitude' => null,
         'longitude' => null,
@@ -194,14 +195,14 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         $household->setCopingStrategiesIndex($this->householdTemplate['coping_strategies_index']);
         $household->setDebtLevel($this->householdTemplate['debt_level']);
         $household->setFoodConsumptionScore($this->householdTemplate['food_consumption_score']);
-        $household->setIncomeLevel($this->householdTemplate['income_level']);
+        $household->setIncome($this->householdTemplate['income']);
 
         foreach ($members as $member) {
             [$gender, $age] = explode('-', $member);
             $bnfData = $this->replacePlaceholders($this->beneficiaryTemplate, [
                 '{age}' => $age,
                 '{project}' => $project->getName(),
-                '{gender}' => 'F' === $gender ? 'Female' : 'Male',
+                '{gender}' => PersonGender::valueFromAPI($gender),
                 '{householdType}' => $typeName,
                 '{country}' => $project->getIso3(),
             ]);
@@ -215,7 +216,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
             $bnf->setEnGivenName($bnfData['en_given_name']);
             $bnf->setLocalFamilyName($bnfData['local_family_name']);
             $bnf->setLocalGivenName($bnfData['local_given_name']);
-            $bnf->setGender('F' === $gender ? 0 : 1);
+            $bnf->setGender(PersonGender::valueFromAPI($gender));
             $bnf->setStatus(0 == $household->getBeneficiaries()->count());
             $bnf->setResidencyStatus($bnfData['residency_status']);
 

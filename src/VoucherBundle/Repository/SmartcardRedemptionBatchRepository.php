@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace VoucherBundle\Repository;
 
@@ -23,7 +21,7 @@ class SmartcardRedemptionBatchRepository extends EntityRepository
      *
      * @return Paginator|SmartcardRedemptionBatch[]
      */
-    public function findByVendor(Vendor $vendor, Pagination $pagination)
+    public function findByVendor(Vendor $vendor, ?Pagination $pagination = null)
     {
         $qbr = $this->createQueryBuilder('srb')
             ->andWhere('srb.vendor = :vendor')

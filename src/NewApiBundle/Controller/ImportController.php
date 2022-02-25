@@ -6,21 +6,15 @@ namespace NewApiBundle\Controller;
 use CommonBundle\Controller\ExportController;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Component\Import\ImportFileValidator;
 use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Component\Import\UploadImportService;
-use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
-use NewApiBundle\Entity\ImportFile;
-use NewApiBundle\Entity\ImportInvalidFile;
-use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Entity;
 use NewApiBundle\Enum\ImportState;
-use NewApiBundle\InputType\DuplicityResolveInputType;
-use NewApiBundle\InputType\ImportCreateInputType;
-use NewApiBundle\InputType\ImportFilterInputType;
-use NewApiBundle\InputType\ImportOrderInputType;
-use NewApiBundle\InputType\ImportPatchInputType;
+use NewApiBundle\InputType\Import;
 use NewApiBundle\Request\Pagination;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -32,6 +26,8 @@ use UserBundle\Entity\User;
 
 class ImportController extends AbstractController
 {
+    const DISABLE_CRON = 'disable-cron-fast-forward';
+
     /**
      * @var ImportService
      */
@@ -78,11 +74,11 @@ class ImportController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/imports/{id}")
      *
-     * @param Import $institution
+     * @param Entity\Import $institution
      *
      * @return JsonResponse
      */
-    public function item(Import $institution): JsonResponse
+    public function item(Entity\Import $institution): JsonResponse
     {
         return $this->json($institution);
     }
@@ -91,14 +87,14 @@ class ImportController extends AbstractController
      * @Rest\Get("/web-app/v1/imports")
      *
      * @param Pagination            $pagination
-     * @param ImportFilterInputType $filterInputType
-     * @param ImportOrderInputType  $orderInputType
+     * @param Import\FilterInputType $filterInputType
+     * @param Import\OrderInputType  $orderInputType
      *
      * @return JsonResponse
      */
-    public function list(Pagination $pagination, ImportFilterInputType $filterInputType, ImportOrderInputType $orderInputType, Request $request): JsonResponse
+    public function list(Pagination $pagination, Import\FilterInputType $filterInputType, Import\OrderInputType $orderInputType, Request $request): JsonResponse
     {
-        $data = $this->getDoctrine()->getRepository(Import::class)
+        $data = $this->getDoctrine()->getRepository(Entity\Import::class)
             ->findByParams($request->headers->get('country'), $pagination, $filterInputType, $orderInputType);
 
         return $this->json($data);
@@ -107,16 +103,16 @@ class ImportController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/imports")
      *
-     * @param ImportCreateInputType $inputType
+     * @param Import\CreateInputType $inputType
      *
      * @return JsonResponse
      */
-    public function create(ImportCreateInputType $inputType): JsonResponse
+    public function create(Request $request, Import\CreateInputType $inputType): JsonResponse
     {
         /** @var User $user */
         $user = $this->getUser();
 
-        $institution = $this->importService->create($inputType, $user);
+        $institution = $this->importService->create($request->headers->get('country'), $inputType, $user);
 
         return $this->json($institution);
     }
@@ -124,14 +120,55 @@ class ImportController extends AbstractController
     /**
      * @Rest\Patch("/web-app/v1/imports/{id}")
      *
-     * @param Import               $import
-     * @param ImportPatchInputType $inputType
+     * @param Entity\Import               $import
+     * @param Import\PatchInputType $inputType
      *
      * @return JsonResponse
+     * @throws \Exception
      */
-    public function updateStatus(Import $import, ImportPatchInputType $inputType): JsonResponse
+    public function updateStatus(Request $request, Entity\Import $import, Import\PatchInputType $inputType): JsonResponse
     {
         $this->importService->patch($import, $inputType);
+
+        if ($request->get(self::DISABLE_CRON, false) === true) {
+            return $this->json(null, Response::HTTP_ACCEPTED);
+        }
+
+        $kernel = $this->get('kernel');
+        $application = new Application($kernel);
+        $application->setAutoExit(false);
+
+        $output = new BufferedOutput();
+        if ($import->getState() === ImportState::INTEGRITY_CHECKING) {
+            $command = new ArrayInput([
+                'command' => 'app:import:integrity',
+                'import' => $import->getId(),
+            ]);
+            $application->run($command, $output);
+            $application->run($command, $output);
+        }
+        if ($import->getState() === ImportState::IDENTITY_CHECKING) {
+            $command = new ArrayInput([
+                'command' => 'app:import:identity',
+                'import' => $import->getId(),
+            ]);
+            $application->run($command, $output);
+            $application->run($command, $output);
+        }
+        if ($import->getState() === ImportState::SIMILARITY_CHECKING) {
+            $command = new ArrayInput([
+                'command' => 'app:import:similarity',
+                'import' => $import->getId(),
+            ]);
+            $application->run($command, $output);
+            $application->run($command, $output);
+        }
+        if ($import->getState() === ImportState::IMPORTING && $import->getImportQueue()->count() <= ImportService::ASAP_LIMIT) {
+            $application->run(new ArrayInput([
+                'command' => 'app:import:finish',
+                'import' => $import->getId(),
+            ]), $output);
+        }
 
         return $this->json(null, Response::HTTP_ACCEPTED);
     }
@@ -139,15 +176,17 @@ class ImportController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/imports/{id}/files")
      *
-     * @param Import $import
+     * @param Entity\Import $import
      *
      * @return JsonResponse
      */
-    public function listFiles(Import $import): JsonResponse
+    public function listFiles(Entity\Import $import): JsonResponse
     {
-        $data = $this->getDoctrine()->getRepository(ImportFile::class)
+        $data = $this->getDoctrine()->getRepository(Entity\ImportFile::class)
             ->findBy([
                 'import' => $import,
+            ], [
+                'createdAt' => 'DESC',
             ]);
 
         return $this->json(New Paginator($data));
@@ -156,7 +195,7 @@ class ImportController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/imports/{id}/files")
      *
-     * @param Import  $import
+     * @param Entity\Import  $import
      *
      * @param Request $request
      *BinaryFileResponse
@@ -164,7 +203,7 @@ class ImportController extends AbstractController
      * @throws \Doctrine\DBAL\ConnectionException
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    public function uploadFile(Import $import, Request $request): JsonResponse
+    public function uploadFile(Entity\Import $import, Request $request): JsonResponse
     {
         if (!in_array($import->getState(), [
             ImportState::NEW,
@@ -202,11 +241,11 @@ class ImportController extends AbstractController
     /**
      * @Rest\Delete("/web-app/v1/imports/files/{id}")
      *
-     * @param ImportFile $importFile
+     * @param Entity\ImportFile $importFile
      *
      * @return JsonResponse
      */
-    public function deleteFile(ImportFile $importFile): JsonResponse
+    public function deleteFile(Entity\ImportFile $importFile): JsonResponse
     {
         if (!in_array($importFile->getImport()->getState(), [
             ImportState::INTEGRITY_CHECKING,
@@ -224,14 +263,14 @@ class ImportController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/imports/{id}/duplicities")
      *
-     * @param Import $import
+     * @param Entity\Import $import
      *
      * @return JsonResponse
      */
-    public function duplicities(Import $import): JsonResponse
+    public function duplicities(Entity\Import $import): JsonResponse
     {
-        /** @var ImportBeneficiaryDuplicity[] $duplicities */
-        $duplicities = $this->getDoctrine()->getRepository(ImportBeneficiaryDuplicity::class)
+        /** @var Entity\ImportHouseholdDuplicity[] $duplicities */
+        $duplicities = $this->getDoctrine()->getRepository(Entity\ImportHouseholdDuplicity::class)
             ->findByImport($import);
 
         return $this->json($duplicities);
@@ -240,11 +279,11 @@ class ImportController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/imports/{id}/statistics")
      *
-     * @param Import $import
+     * @param Entity\Import $import
      *
      * @return JsonResponse
      */
-    public function queueProgress(Import $import): JsonResponse
+    public function queueProgress(Entity\Import $import): JsonResponse
     {
         $statistics = $this->importService->getStatistics($import);
 
@@ -254,11 +293,11 @@ class ImportController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/imports/invalid-files/{id}")
      *
-     * @param ImportInvalidFile $importInvalidFile
+     * @param Entity\ImportInvalidFile $importInvalidFile
      *
      * @return BinaryFileResponse
      */
-    public function getInvalidFile(ImportInvalidFile $importInvalidFile): BinaryFileResponse
+    public function getInvalidFile(Entity\ImportInvalidFile $importInvalidFile): BinaryFileResponse
     {
         $filename = $importInvalidFile->getFilename();
         $path = $this->importInvalidFilesDirectory.'/'.$filename;
@@ -284,16 +323,16 @@ class ImportController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/imports/{id}/invalid-files")
      *
-     * @param Import $import
+     * @param Entity\Import $import
      *
      * @return JsonResponse
      */
-    public function listInvalidFiles(Import $import): JsonResponse
+    public function listInvalidFiles(Entity\Import $import): JsonResponse
     {
-        $invalidFiles = $this->getDoctrine()->getRepository(ImportInvalidFile::class)
+        $invalidFiles = $this->getDoctrine()->getRepository(Entity\ImportInvalidFile::class)
             ->findBy([
                 'import' => $import,
-            ]);
+            ], ['createdAt' => 'desc']);
 
         return $this->json(new Paginator($invalidFiles));
     }
@@ -301,11 +340,11 @@ class ImportController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/imports/queue/{id}")
      *
-     * @param ImportQueue $importQueue
+     * @param Entity\ImportQueue $importQueue
      *
      * @return JsonResponse
      */
-    public function queueItem(ImportQueue $importQueue): JsonResponse
+    public function queueItem(Entity\ImportQueue $importQueue): JsonResponse
     {
         return $this->json($importQueue);
     }
@@ -313,32 +352,50 @@ class ImportController extends AbstractController
     /**
      * @Rest\Patch("/web-app/v1/imports/queue/{id}")
      *
-     * @param ImportQueue               $importQueue
+     * @param Entity\ImportQueue               $importQueue
      *
-     * @param DuplicityResolveInputType $inputType
+     * @param Import\Duplicity\ResolveSingleDuplicityInputType $inputType
      *
      * @return JsonResponse
      */
-    public function duplicityResolve(ImportQueue $importQueue, DuplicityResolveInputType $inputType): JsonResponse
+    public function singleDuplicityResolve(Entity\ImportQueue $importQueue, Import\Duplicity\ResolveSingleDuplicityInputType $inputType): Response
     {
         /** @var User $user */
         $user = $this->getUser();
 
         $this->importService->resolveDuplicity($importQueue, $inputType, $user);
 
-        return $this->json(null, Response::HTTP_ACCEPTED);
+        return new Response('', Response::HTTP_ACCEPTED);
+    }
+
+    /**
+     * @Rest\Patch("/web-app/v1/imports/{id}/duplicities")
+     *
+     * @param Entity\Import             $import
+     * @param Import\Duplicity\ResolveAllDuplicitiesInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function allDuplicitiesResolve(Entity\Import $import, Import\Duplicity\ResolveAllDuplicitiesInputType $inputType): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $this->importService->resolveAllDuplicities($import, $inputType, $user);
+
+        return new Response('', Response::HTTP_ACCEPTED);
     }
 
     /**
      * @Rest\Get("/web-app/v1/imports/{id}/queue")
      *
-     * @param Import $import
+     * @param Entity\Import $import
      *
      * @return JsonResponse
      */
-    public function listQueue(Import $import): JsonResponse
+    public function listQueue(Entity\Import $import): JsonResponse
     {
-        $importQueue = $this->getDoctrine()->getRepository(ImportQueue::class)
+        $importQueue = $this->getDoctrine()->getRepository(Entity\ImportQueue::class)
             ->findBy([
                 'import' => $import,
             ]);

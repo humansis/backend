@@ -14,12 +14,12 @@ parameters:
     mailer_encryption: tls
 
     secret: ThisTokenIsNotSoSecretChangeIt
-    aws_access_key_id: %env(AWS_ACCESS_KEY)%
-    aws_secret_access_key: %env(AWS_SECRET_KEY)%
+    aws_access_key_id: '%env(AWS_ACCESS_KEY)%'
+    aws_secret_access_key: '%env(AWS_SECRET_KEY)%'
     aws_s3_region: eu-central-1
     aws_s3_bucket_name: files-testing.bmstaging.info
-    humanitarian_secret: %env(HID_SECRET)%
-    google_client: %env(GOOGLE_CLIENT)%
+    humanitarian_secret: '%env(HID_SECRET)%'
+    google_client: '%env(GOOGLE_CLIENT)%'
 
     mobile_app_master_key: '%env(MOBILE_MASTER_KEY)%'
     mobile_app_version: '%env(MOBILE_APP_VERSION)%'
@@ -30,3 +30,11 @@ parameters:
     gelf_server_name: '%env(GELF_SERVER_NAME)%'
     gelf_host: '%env(GELF_HOST)%'
     gelf_port: '%env(GELF_PORT)%'
+
+    #TODO refactor parameters names in whole system
+    aws.logs.key: '%env(AWS_LOGS_ACCESS_KEY)%'
+    aws.logs.secret: '%env(AWS_LOGS_SECRET_KEY)%'
+    aws.logs.region: 'eu-central-1'
+    aws.logs.version: 'latest'
+    aws.logs.bucket: 'logs.humansis.org'
+    aws.logs.folder: 'logs'

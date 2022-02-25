@@ -10,6 +10,7 @@ use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Entity\DistributedItem;
+use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\InputType\DistributedItemFilterInputType;
 use NewApiBundle\InputType\DistributedItemOrderInputType;
 use NewApiBundle\Request\Pagination;
@@ -51,7 +52,7 @@ class DistributedItemRepository extends EntityRepository
                                 p.localParentsName LIKE :fulltextLike OR
                                 p.enParentsName LIKE :fulltextLike OR
                                 (ni.idNumber LIKE :fulltextLike AND ni.idType = :niType))')
-                    ->setParameter('niType', NationalId::TYPE_NATIONAL_ID)
+                    ->setParameter('niType', NationalIdType::NATIONAL_ID)
                     ->setParameter('fulltext', $filter->getFulltext())
                     ->setParameter('fulltextLike', '%'.$filter->getFulltext().'%');
             }

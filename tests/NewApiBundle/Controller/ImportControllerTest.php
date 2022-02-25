@@ -5,7 +5,8 @@ namespace Tests\NewApiBundle\Controller;
 
 use Doctrine\ORM\NoResultException;
 use Exception;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Controller\ImportController;
+use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportInvalidFile;
 use NewApiBundle\Entity\ImportQueue;
@@ -46,7 +47,7 @@ class ImportControllerTest extends BMSServiceTestCase
         $this->request('POST', '/api/basic/web-app/v1/imports', [
             'title' => 'test',
             'description' => 'test',
-            'projectId' => $projects->getId(),
+            'projects' => [$projects->getId()],
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -60,7 +61,7 @@ class ImportControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('title', $result);
         $this->assertArrayHasKey('description', $result);
-        $this->assertArrayHasKey('projectId', $result);
+        $this->assertArrayHasKey('projects', $result);
         $this->assertArrayHasKey('status', $result);
         $this->assertArrayHasKey('createdBy', $result);
         $this->assertArrayHasKey('createdAt', $result);
@@ -127,7 +128,7 @@ class ImportControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('title', $result);
         $this->assertArrayHasKey('description', $result);
-        $this->assertArrayHasKey('projectId', $result);
+        $this->assertArrayHasKey('projects', $result);
         $this->assertArrayHasKey('status', $result);
         $this->assertArrayHasKey('createdBy', $result);
         $this->assertArrayHasKey('createdAt', $result);
@@ -181,7 +182,7 @@ class ImportControllerTest extends BMSServiceTestCase
      */
     public function testPatch(string $parameter, $value, int $id)
     {
-        $this->request('PATCH', '/api/basic/web-app/v1/imports/'.$id, [
+        $this->request('PATCH', '/api/basic/web-app/v1/imports/'.$id.'?'.ImportController::DISABLE_CRON.'=true', [
             $parameter => $value,
         ]);
 
@@ -199,8 +200,8 @@ class ImportControllerTest extends BMSServiceTestCase
 
     public function testGetDuplicities()
     {
-        /** @var ImportBeneficiaryDuplicity|null $duplicity */
-        $duplicity = $this->em->getRepository(ImportBeneficiaryDuplicity::class)->findOneBy([], ['id' => 'asc']);
+        /** @var ImportHouseholdDuplicity|null $duplicity */
+        $duplicity = $this->em->getRepository(ImportHouseholdDuplicity::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($duplicity)) {
             $this->markTestSkipped('There needs to be at least one import duplicity in system.');
@@ -285,12 +286,32 @@ class ImportControllerTest extends BMSServiceTestCase
 
     public function testResolveDuplicity()
     {
-        /** @var ImportBeneficiaryDuplicity|null $importQueue */
-        $duplicity = $this->em->getRepository(ImportBeneficiaryDuplicity::class)->findOneBy([], ['id' => 'asc']);
+        /** @var ImportHouseholdDuplicity|null $importQueue */
+        $duplicity = $this->em->getRepository(ImportHouseholdDuplicity::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($duplicity)) {
             $this->markTestSkipped('There needs to be at least one duplicity with entries in queue in system.');
         }
+
+        $this->request('PATCH', '/api/basic/web-app/v1/imports/queue/'.$duplicity->getOurs()->getId(), [
+            'status' => 'To Update',
+            'acceptedDuplicityId' => $duplicity->getId(),
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        $this->request('PATCH', '/api/basic/web-app/v1/imports/queue/'.$duplicity->getOurs()->getId(), [
+            'status' => 'To Link',
+            'acceptedDuplicityId' => $duplicity->getId(),
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
 
         $this->request('PATCH', '/api/basic/web-app/v1/imports/queue/'.$duplicity->getOurs()->getId(), [
             'status' => 'To Update',

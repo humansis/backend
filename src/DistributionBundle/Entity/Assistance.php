@@ -6,6 +6,8 @@ use CommonBundle\Entity\Location;
 use CommonBundle\Utils\ExportableInterface;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
 use ProjectBundle\DBAL\SectorEnum;
@@ -14,6 +16,7 @@ use ProjectBundle\Entity\Project;
 
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use TransactionBundle\Entity\Transaction;
+use VoucherBundle\Entity\SmartcardPurchase;
 
 /**
  * Assistance
@@ -239,6 +242,13 @@ class Assistance implements ExportableInterface
     private $allowedProductCategoryTypes;
 
     /**
+     * @var SmartcardPurchase[]|Collection
+     *
+     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardPurchase", mappedBy="assistanceId")
+     */
+    private $smartcardPurchases;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -249,6 +259,7 @@ class Assistance implements ExportableInterface
         $this->assistanceSelection = new AssistanceSelection();
         $this->setUpdatedOn(new \DateTime());
         $this->allowedProductCategoryTypes = [];
+        $this->smartcardPurchases = new ArrayCollection();
     }
 
     /**
@@ -1017,6 +1028,22 @@ class Assistance implements ExportableInterface
     public function setAllowedProductCategoryTypes(array $allowedProductCategoryTypes): void
     {
         $this->allowedProductCategoryTypes = $allowedProductCategoryTypes;
+    }
+
+    /**
+     * @return SmartcardPurchase[]|Collection
+     */
+    public function getSmartcardPurchases(): Collection
+    {
+        return $this->smartcardPurchases;
+    }
+
+    /**
+     * @param Collection $smartcardPurchases
+     */
+    public function setSmartcardPurchases(Collection $smartcardPurchases): void
+    {
+        $this->smartcardPurchases = $smartcardPurchases;
     }
 
 }

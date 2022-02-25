@@ -13,6 +13,7 @@ use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use CommonBundle\Controller\ExportController;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\BenefciaryPatchInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
@@ -262,9 +263,9 @@ class BeneficiaryService
     public function updateOrCreate(Household $household, array $beneficiaryArray, $flush)
     {
         if ($beneficiaryArray["gender"] === 'Male' || $beneficiaryArray["gender"] === 'M') {
-            $beneficiaryArray["gender"] = Person::GENDER_MALE;
+            $beneficiaryArray["gender"] = 1;
         } elseif ($beneficiaryArray["gender"] === 'Female' || $beneficiaryArray["gender"] === 'F') {
-            $beneficiaryArray["gender"] = Person::GENDER_FEMALE;
+            $beneficiaryArray["gender"] = 0;
         }
 
         if (array_key_exists('phone1_type', $beneficiaryArray)) {
@@ -326,7 +327,7 @@ class BeneficiaryService
             $beneficiary->setHousehold($household);
         }
 
-        $beneficiary->setGender($beneficiaryArray["gender"])
+        $beneficiary->setGender(PersonGender::valueFromAPI($beneficiaryArray["gender"]))
             ->setDateOfBirth(\DateTime::createFromFormat('d-m-Y', $beneficiaryArray["date_of_birth"]))
             ->setEnFamilyName($beneficiaryArray["en_family_name"])
             ->setEnGivenName($beneficiaryArray["en_given_name"])

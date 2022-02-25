@@ -4,22 +4,37 @@ declare(strict_types=1);
 namespace NewApiBundle\Repository;
 
 use DistributionBundle\Entity\Assistance;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Entity\AssistanceStatistics;
 use NewApiBundle\InputType\AssistanceStatisticsFilterInputType;
 
-class AssistanceStatisticsRepository extends \Doctrine\ORM\EntityRepository
+class AssistanceStatisticsRepository extends EntityRepository
 {
     /**
-     * @param Assistance $assistance
+     * @param Assistance  $assistance
+     * @param string|null $countryIso3
      *
      * @return AssistanceStatistics
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      */
-    public function findByAssistance(Assistance $assistance): AssistanceStatistics
+    public function findByAssistance(Assistance $assistance, ?string $countryIso3 = null): AssistanceStatistics
     {
-        return $this->createQueryBuilder('stat')
+        $qb = $this->createQueryBuilder('stat')
             ->andWhere('stat.assistance = :assistance')
-            ->setParameter('assistance', $assistance)
+            ->setParameter('assistance', $assistance);
+
+        if($countryIso3){
+            $qb->join('stat.assistance', 'a')
+                ->join('a.project', 'p')
+                ->andWhere('p.iso3 = :iso3')
+                ->setParameter('iso3', $countryIso3);
+        }
+
+        return $qb
             ->getQuery()
             ->getSingleResult();
     }

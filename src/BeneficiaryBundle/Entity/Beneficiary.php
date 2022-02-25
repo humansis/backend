@@ -9,6 +9,10 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use NewApiBundle\Entity\ImportBeneficiary;
+use NewApiBundle\Enum\HouseholdAssets;
+use NewApiBundle\Enum\HouseholdShelterStatus;
+use NewApiBundle\Enum\HouseholdSupportReceivedType;
+use NewApiBundle\Enum\PersonGender;
 use ProjectBundle\Enum\Livelihood;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -102,9 +106,9 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      * @SymfonyGroups({"FullReceivers", "ValidatedAssistance", "FullBooklet", "FullBeneficiary"})
      * @return int
      */
-    public function getHouseholdId(): int
+    public function getHouseholdId(): ?int
     {
-        return $this->getHousehold()->getId();
+        return $this->getHousehold() ? $this->getHousehold()->getId() : null;
     }
 
     /**
@@ -233,9 +237,9 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedAssistance", "FullBeneficiary"})
      *
-     * @return int|null one of Person::GENDER_*
+     * @return string|null one of Person::GENDER_*
      */
-    public function getGender(): ?int
+    public function getGender(): ?string
     {
         return $this->person->getGender();
     }
@@ -624,7 +628,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
             $valueCountrySpecific[$value->getCountrySpecific()->getFieldString()] = $value->getAnswer();
         }
 
-        if ($this->getGender() == 0) {
+        if ($this->getGender() == PersonGender::FEMALE) {
             $valueGender = "Female";
         } else {
             $valueGender = "Male";
@@ -681,17 +685,17 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
         $assets = [];
         foreach ((array) $this->getHousehold()->getAssets() as $type) {
-            $assets[] = Household::ASSETS[$type];
+            $assets[] = HouseholdAssets::valueToAPI($type);
         }
 
         $supportReceivedTypes = [];
-        foreach ((array) $this->getHousehold()->getShelterStatus() as $type) {
-            $supportReceivedTypes[] = Household::SUPPORT_RECIEVED_TYPES[$type];
+        foreach ((array) $this->getHousehold()->getSupportReceivedTypes() as $type) {
+            $supportReceivedTypes[] = HouseholdSupportReceivedType::valueToAPI($type);
         }
 
         $shelterStatus = '';
         if ($this->getHousehold()->getShelterStatus()) {
-            $shelterStatus = Household::SHELTER_STATUSES[$this->getHousehold()->getShelterStatus()];
+            $shelterStatus = $this->getHousehold()->getShelterStatus() ? $this->getHousehold()->getShelterStatus() : '';
         }
 
         $tempBenef = [
@@ -736,7 +740,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     public function getCommonBeneficiaryExportFields()
     {
         $gender = '';
-        if ($this->getGender() == 0) {
+        if ($this->getGender() == PersonGender::FEMALE) {
             $gender = 'Female';
         } else {
             $gender = 'Male';
@@ -784,16 +788,16 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         }
 
         $assets = array_map(function ($value) {
-            return Household::ASSETS[$value];
+            return HouseholdAssets::valueToAPI($value);
         }, (array) $this->getHousehold()->getAssets());
 
         $shelterStatus = null;
         if (null !== $this->getHousehold()->getShelterStatus()) {
-            $shelterStatus = Household::SHELTER_STATUSES[$this->getHousehold()->getShelterStatus()];
+            $shelterStatus = HouseholdShelterStatus::valueToAPI($this->getHousehold()->getShelterStatus());
         }
 
         $supportReceivedTypes = array_map(function ($value) {
-            return Household::SUPPORT_RECIEVED_TYPES[$value];
+            return HouseholdSupportReceivedType::valueFromAPI($value);
         }, (array) $this->getHousehold()->getSupportReceivedTypes());
 
         $supportDateReceived = null;
@@ -808,7 +812,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
             "camp" => $camp,
             "tent number" => $tentNumber,
             "livelihood" => $livelihood,
-            "incomeLevel" => $this->getHousehold()->getIncomeLevel(),
+            "incomeLevel" => $this->getHousehold()->getIncome(),
             "foodConsumptionScore" => $this->getHousehold()->getFoodConsumptionScore(),
             "copingStrategiesIndex" => $this->getHousehold()->getCopingStrategiesIndex(),
             "notes" => $this->getHousehold()->getNotes(),

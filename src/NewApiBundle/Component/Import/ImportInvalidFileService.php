@@ -9,11 +9,13 @@ use NewApiBundle\Entity\ImportInvalidFile;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Repository\ImportQueueRepository;
+use NewApiBundle\Workflow\ImportQueueTransitions;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 class ImportInvalidFileService
 {
@@ -37,20 +39,31 @@ class ImportInvalidFileService
      */
     private $em;
 
-    public function __construct(ImportQueueRepository $importQueueRepository, ImportTemplate $importTemplate, string $importInvalidFilesDirectory, EntityManagerInterface $em)
-    {
+    /**
+     * @var WorkflowInterface
+     */
+    private $importQueueStateMachine;
+
+    public function __construct(
+        ImportQueueRepository $importQueueRepository,
+        ImportTemplate $importTemplate,
+        string $importInvalidFilesDirectory,
+        EntityManagerInterface $em,
+        WorkflowInterface $importQueueStateMachine
+    ) {
         $this->importTemplate = $importTemplate;
         $this->importQueueRepository = $importQueueRepository;
         $this->importInvalidFilesDirectory = $importInvalidFilesDirectory;
         $this->em = $em;
+        $this->importQueueStateMachine = $importQueueStateMachine;
     }
 
     public function generateFile(Import $import): ImportInvalidFile
     {
         $invalidEntries = $this->importQueueRepository->getInvalidEntries($import);
-        $spreadsheet = $this->importTemplate->generateTemplateSpreadsheet($import->getProject()->getIso3());
+        $spreadsheet = $this->importTemplate->generateTemplateSpreadsheet($import->getCountryIso3());
 
-        $header = $this->importTemplate->getTemplateHeader($import->getProject()->getIso3());
+        $header = $this->importTemplate->getTemplateHeader($import->getCountryIso3());
         $this->writeEntries($spreadsheet, $invalidEntries, $header);
 
         $fileName = $this->generateInvalidFileName($import);
@@ -99,25 +112,39 @@ class ImportInvalidFileService
 
         /** @var ImportQueue $entry */
         foreach ($entries as $entry) {
+            if ($entry->getState() !== ImportQueueState::INVALID) {
+                throw new \InvalidArgumentException("Wrong ImportQueue state for export invalid items: ".$entry->getState());
+            }
+
+            $messages = $this->decodeMessages($entry->getMessage());
 
             foreach ($entry->getContent() as $i => $row) {
-                $invalidColumns = $this->parseInvalidColumns($entry->getMessage(), $i);
+                $invalidColumns = $this->parseInvalidColumns($messages, $i);
 
                 foreach ($header as $column) {
+                    $cell = $sheet->getCellByColumnAndRow($currentColumn, $currentRow);
+
                     if (isset($row[$column])) {
-                        $cellValue = $row[$column];
-                    } else {
-                        $cellValue = '';
+                        $cellValue = $row[$column][CellParameters::VALUE];
+
+                        $cell->setValueExplicit($cellValue, $row[$column][CellParameters::DATA_TYPE]);
+                        $cell->getStyle()->getNumberFormat()->setFormatCode($row[$column][CellParameters::NUMBER_FORMAT]);
                     }
 
-                    $sheet->setCellValueByColumnAndRow($currentColumn, $currentRow, $cellValue);
-
-                    if (in_array($column, $invalidColumns)) {
-                        $sheet->getStyleByColumnAndRow($currentColumn, $currentRow)
+                    if (count($invalidColumns) === 0) {
+                        $cell->getStyle()
                             ->getFill()
                             ->setFillType(Fill::FILL_SOLID)
                             ->getStartColor()
-                            ->setRGB('ffff00');
+                            ->setRGB('CCFF99');
+                    } else {
+                        if (in_array($column, $invalidColumns)) {
+                            $cell->getStyle()
+                                ->getFill()
+                                ->setFillType(Fill::FILL_SOLID)
+                                ->getStartColor()
+                                ->setRGB('ffff00');
+                        }
                     }
 
                     ++$currentColumn;
@@ -127,16 +154,24 @@ class ImportInvalidFileService
                 ++$currentRow;
             }
 
-            $entry->setState(ImportQueueState::INVALID_EXPORTED);
+            $this->importQueueStateMachine->apply($entry, ImportQueueTransitions::INVALIDATE_EXPORT);
+        }
+        $this->em->flush();
+    }
+
+    private function decodeMessages(?string $messageJson): array
+    {
+        try {
+            //depth=512 is default value
+            return json_decode($messageJson, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            return [];
         }
     }
 
-    private function parseInvalidColumns(?string $messageJson, $rowNumber): array
+    private function parseInvalidColumns(array $messages, $rowNumber): array
     {
-        try {
-            //dept=512 is default value
-            $messages = json_decode($messageJson, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
+        if (!isset($messages[$rowNumber])) {
             return [];
         }
 

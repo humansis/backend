@@ -24,7 +24,7 @@
             <trans-unit id="Total Amount per Item"><source>Total Amount per Item</source><target>المبلغ</target></trans-unit>
             <trans-unit id="Currency"><source>Currency</source><target>العملة</target></trans-unit>
             <trans-unit id="SmartCards redemption payment - Food Items"><source>SmartCards redemption payment - Food Items</source><target>صرف دفعة  البطاقات الذكية - مواد غذائية</target></trans-unit>
-            <trans-unit id="SmartCards redemption payment - Non-Food Items"><source>SmartCards redemption payment - Non-Food Items</source><target>صرف دفعة  البطاقات الذكية - مواد غذائية</target></trans-unit>
+            <trans-unit id="SmartCards redemption payment - Non-Food Items"><source>SmartCards redemption payment - Non-Food Items</source><target>صرف دفعة البطاقات الذكية - مواد غير غذائية</target></trans-unit>
             <trans-unit id="SmartCards redemption payment - Cashback"><source>SmartCards redemption payment - Cashback</source><target>دفع مقابل صرف البطاقات الذكية - نقداً</target></trans-unit>
             <trans-unit id="Itemized breakdown in Annex I"><source>Itemized breakdown in Annex I</source><target>تفاصيل المواد في الملحق 1</target></trans-unit>
             <trans-unit id="Total Amount to be Paid"><source>Total Amount to be Paid</source><target>المبلغ الذي سيتم دفعه</target></trans-unit>

@@ -3,7 +3,6 @@
 namespace ProjectBundle\Utils;
 
 use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\ProjectBeneficiary;
 use dateTime;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
@@ -435,10 +434,14 @@ class ProjectService
         $assistance = $this->em->getRepository(Assistance::class)->findByProject($project);
 
         if (0 === $assistance->count()) {
-            $imports = $this->em->getRepository(Import::class)->findBy(['project'=>$project]);
+            $imports = $this->em->getRepository(Import::class)->findByProject($project);
             /** @var Import $import */
             foreach ($imports as $import) {
-                $this->em->remove($import);
+                if ($import->getProjects()->count() == 1) {
+                    $this->em->remove($import);
+                } else {
+                    $import->removeProject($project);
+                }
             }
             foreach ($project->getSectors()->getValues() as $projectSector) {
                 $this->em->remove($projectSector);

@@ -276,6 +276,12 @@ class SmartcardControllerTest extends BMSServiceTestCase
      */
     public function testPurchaseFromEmptySmartcardV4()
     {
+        /** @var Assistance|null $assistance */
+        $assistance = $this->em->getRepository(Assistance::class)->findOneBy([], ['id' => 'asc']);
+        if(!$assistance){
+            $this->markTestSkipped('There is no assistance in database.');
+        }
+
         $depositor = $this->em->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
         $assistanceBeneficiary = $this->assistanceBeneficiaryWithoutRelief();
         $bnf = $assistanceBeneficiary->getBeneficiary();
@@ -302,6 +308,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'vendorId' => 1,
             'beneficiaryId' => $bnf->getId(),
             'createdAt' => '2020-02-02T13:01:00Z',
+            'assistanceId' => $assistance->getId(),
         ]);
 
         $this->client->request('POST', '/api/wsse/vendor-app/v4/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers, $content);
@@ -399,6 +406,12 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
     public function testPurchaseShouldBeAllowedForNonexistentSmartcardV4()
     {
+        /** @var Assistance|null $assistance */
+        $assistance = $this->em->getRepository(Assistance::class)->findOneBy([], ['id' => 'asc']);
+        if(!$assistance){
+            $this->markTestSkipped('There is no assistance in database.');
+        }
+
         $nonexistentSmarcard = '23456789012';
         $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
 
@@ -417,6 +430,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'createdAt' => '2020-02-02T12:02:00Z',
             'balanceBefore' => 20,
             'balanceAfter' => 10,
+            'assistanceId' => $assistance->getId(),
         ]);
 
         $this->client->request('POST', '/api/wsse/vendor-app/v4/smartcards/'.$nonexistentSmarcard.'/purchase', [], [], $headers, $content);

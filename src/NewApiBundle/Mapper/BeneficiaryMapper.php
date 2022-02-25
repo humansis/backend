@@ -5,6 +5,7 @@ namespace NewApiBundle\Mapper;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Serializer\MapperInterface;
 
 class BeneficiaryMapper implements MapperInterface
@@ -43,7 +44,7 @@ class BeneficiaryMapper implements MapperInterface
 
     public function getGender(): string
     {
-        return 1 === $this->object->getPerson()->getGender() ? 'M' : 'F';
+        return PersonGender::MALE === $this->object->getPerson()->getGender() ? 'M' : 'F';
     }
 
     public function getNationalIds(): array
@@ -98,9 +99,9 @@ class BeneficiaryMapper implements MapperInterface
         return $this->object->getId();
     }
 
-    public function getDateOfBirth(): string
+    public function getDateOfBirth(): ?string
     {
-        return $this->object->getPerson()->getDateOfBirth()->format(\DateTime::ISO8601);
+        return $this->object->getPerson()->getDateOfBirth() ? $this->object->getPerson()->getDateOfBirth()->format(\DateTime::ISO8601) : null;
     }
 
     public function getLocalFamilyName(): string
@@ -126,5 +127,10 @@ class BeneficiaryMapper implements MapperInterface
     public function getEnGivenName(): ?string
     {
         return $this->object->getPerson()->getEnGivenName();
+    }
+
+    public function getHouseholdId(): int
+    {
+        return $this->object->getHousehold()->getId();
     }
 }

@@ -1,14 +1,16 @@
 <?php
-
 declare(strict_types=1);
 
 namespace NewApiBundle\InputType\Beneficiary;
 
-use BeneficiaryBundle\Entity\Person;
-use BeneficiaryBundle\Entity\Referral;
+use BeneficiaryBundle\Enum\ResidencyStatus;
+use NewApiBundle\Enum\HouseholdHead;
+use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Request\InputTypeInterface;
+use NewApiBundle\Utils\DateTime\Iso8601Converter;
 use NewApiBundle\Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
+use NewApiBundle\Validator\Constraints\Enum;
 
 /**
  * @Assert\GroupSequence({"BeneficiaryInputType", "Strict"})
@@ -69,33 +71,33 @@ class BeneficiaryInputType implements InputTypeInterface
     private $enParentsName;
 
     /**
-     * @Assert\Choice({"M", "F"})
-     * @Assert\NotBlank
-     * @Assert\NotNull
+     * @Assert\NotNull()
+     * @Enum(enumClass="NewApiBundle\Enum\PersonGender")
      */
     private $gender;
 
     /**
+     * @var NationalIdCardInputType
      * @Assert\Type("array")
      * @Assert\Valid
      */
     private $nationalIdCards = [];
 
     /**
+     * @var PhoneInputType
      * @Assert\Type("array")
      * @Assert\Valid
      */
     private $phones = [];
 
     /**
-     * @Assert\Choice(callback={"BeneficiaryBundle\Enum\ResidencyStatus", "all"})
-     * @Assert\NotBlank
-     * @Assert\NotNull
+     * @Assert\NotNull()
+     * @Enum(enumClass="BeneficiaryBundle\Enum\ResidencyStatus")
      */
     private $residencyStatus;
 
     /**
-     * @Assert\Choice(callback={"BeneficiaryBundle\Entity\Referral", "types"})
+     * @Assert\Choice(callback={"\BeneficiaryBundle\Entity\Referral", "types"}, strict=true, groups={"Strict"})
      * @Assert\Length(max="255")
      */
     private $referralType;
@@ -107,8 +109,8 @@ class BeneficiaryInputType implements InputTypeInterface
     private $referralComment;
 
     /**
-     * @Assert\Type("boolean")
-     * @Assert\NotNull
+     * @Assert\NotNull()
+     * @Enum(enumClass="NewApiBundle\Enum\HouseholdHead")
      */
     private $isHead;
 
@@ -116,24 +118,22 @@ class BeneficiaryInputType implements InputTypeInterface
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *         @Assert\Choice(callback="vulnerabilities", strict=true, groups={"Strict"})
+     *         @Enum(enumClass="NewApiBundle\Enum\VulnerabilityCriteria")
      *     },
      *     groups={"Strict"}
      * )
      */
     private $vulnerabilityCriteria = [];
 
-    public static function vulnerabilities(): array
-    {
-        return array_keys(\BeneficiaryBundle\Entity\VulnerabilityCriterion::all());
-    }
-
     /**
+     * @Assert\NotNull
      * @return \DateTimeInterface
      */
-    public function getDateOfBirth()
+    public function getDateOfBirth(): ?\DateTimeInterface
     {
-        return new \DateTime($this->dateOfBirth);
+        if (!$this->dateOfBirth) return null;
+
+        return Iso8601Converter::toDateTime($this->dateOfBirth) ?: null;
     }
 
     /**
@@ -241,17 +241,12 @@ class BeneficiaryInputType implements InputTypeInterface
     }
 
     /**
-     * @return int one of Person::GENDER_*
+     * @see PersonGender::values()
+     * @return string
      */
     public function getGender()
     {
-        if ('M' === $this->gender) {
-            return Person::GENDER_MALE;
-        } elseif ('F' === $this->gender) {
-            return Person::GENDER_FEMALE;
-        }
-
-        throw new \InvalidArgumentException('Invalid gender');
+        return PersonGender::valueFromAPI($this->gender);
     }
 
     /**
@@ -309,7 +304,7 @@ class BeneficiaryInputType implements InputTypeInterface
      */
     public function getResidencyStatus()
     {
-        return $this->residencyStatus;
+        return $this->residencyStatus ? ResidencyStatus::valueFromAPI($this->residencyStatus) : null;
     }
 
     /**
@@ -364,11 +359,11 @@ class BeneficiaryInputType implements InputTypeInterface
      */
     public function isHead()
     {
-        return $this->isHead === true;
+        return HouseholdHead::valueFromAPI($this->isHead);
     }
 
     /**
-     * @param boolean $isHead
+     * @param boolean|int|string $isHead
      */
     public function setIsHead($isHead)
     {
@@ -386,9 +381,19 @@ class BeneficiaryInputType implements InputTypeInterface
     /**
      * @param string[] $vulnerabilityCriteria
      */
-    public function setVulnerabilityCriteria($vulnerabilityCriteria)
+    public function setVulnerabilityCriteria(array $vulnerabilityCriteria)
     {
         $this->vulnerabilityCriteria = $vulnerabilityCriteria;
+    }
+
+    /**
+     * @param string $vulnerabilityCriteria
+     *
+     * @return void
+     */
+    public function addVulnerabilityCriteria(string $vulnerabilityCriteria): void
+    {
+        $this->vulnerabilityCriteria[] = $vulnerabilityCriteria;
     }
 
     /**

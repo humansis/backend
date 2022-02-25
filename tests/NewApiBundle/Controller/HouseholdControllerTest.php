@@ -10,6 +10,7 @@ use BeneficiaryBundle\Enum\ResidencyStatus;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use NewApiBundle\Enum\NationalIdType;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Enum\Livelihood;
 use Tests\BMSServiceTestCase;
@@ -55,7 +56,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'nationalIdCards' => [
                         [
                             'number' => '022-33-1547',
-                            'type' => NationalId::TYPE_NATIONAL_ID,
+                            'type' => NationalIdType::NATIONAL_ID,
                         ],
                     ],
                     'phones' => [
@@ -82,7 +83,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'nationalIdCards' => [
                         [
                             'number' => '022-33-1548',
-                            'type' => NationalId::TYPE_NATIONAL_ID,
+                            'type' => NationalIdType::NATIONAL_ID,
                         ],
                     ],
                     'phones' => [
@@ -135,7 +136,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             'proxyEnParentsName' => null,
             'proxyNationalIdCard' => [
                 'number' => '022-33-1547',
-                'type' => NationalId::TYPE_NATIONAL_ID,
+                'type' => NationalIdType::NATIONAL_ID,
             ],
             'proxyPhone' => [
                 'prefix' => '420',
@@ -229,7 +230,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'nationalIdCards' => [
                         [
                             'number' => '022-33-1547',
-                            'type' => NationalId::TYPE_NATIONAL_ID,
+                            'type' => NationalIdType::NATIONAL_ID,
                         ],
                     ],
                     'phones' => [
@@ -257,7 +258,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'nationalIdCards' => [
                         [
                             'number' => '022-33-1548',
-                            'type' => NationalId::TYPE_NATIONAL_ID,
+                            'type' => NationalIdType::NATIONAL_ID,
                         ],
                     ],
                     'phones' => [
@@ -302,7 +303,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             'proxyEnParentsName' => null,
             'proxyNationalIdCard' => [
                 'number' => '022-33-1547',
-                'type' => NationalId::TYPE_NATIONAL_ID,
+                'type' => NationalIdType::NATIONAL_ID,
             ],
             'proxyPhone' => [
                 'prefix' => '420',

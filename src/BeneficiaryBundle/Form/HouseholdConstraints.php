@@ -35,7 +35,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "household_locations" => $array,
             "country_specific_answers" => $array,
             "beneficiaries" => $array,
-            "income_level" => $optionalNumeric,
+            "income" => $optionalNumeric,
             "coping_strategies_index" => $optionalNumeric,
             "food_consumption_score" => $optionalNumeric,
             "assets" => $optionalArray,

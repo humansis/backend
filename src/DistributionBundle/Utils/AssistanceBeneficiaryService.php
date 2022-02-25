@@ -14,13 +14,17 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
 use ProjectBundle\Entity\Project;
+use Psr\Cache\InvalidArgumentException;
 use Psr\Container\ContainerInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
+use Symfony\Contracts\Cache\CacheInterface;
 
 /**
  * Class AssistanceBeneficiaryService
@@ -43,20 +47,33 @@ class AssistanceBeneficiaryService
     /** @var Registry $workflowRegistry */
     private $workflowRegistry;
 
+    /** @var CacheInterface */
+    private $cache;
+
     /**
      * AssistanceBeneficiaryService constructor.
+     *
      * @param EntityManagerInterface $entityManager
-     * @param Serializer $serializer
-     * @param ValidatorInterface $validator
-     * @param ContainerInterface $container
+     * @param Serializer             $serializer
+     * @param ValidatorInterface     $validator
+     * @param ContainerInterface     $container
+     * @param Registry               $workflowRegistry
+     * @param FilesystemAdapter      $filesystemAdapter
      */
-    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator, ContainerInterface $container, Registry $workflowRegistry)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        Serializer             $serializer,
+        ValidatorInterface     $validator,
+        ContainerInterface     $container,
+        Registry               $workflowRegistry,
+        CacheInterface         $filesystemAdapter
+    ) {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->container = $container;
         $this->workflowRegistry = $workflowRegistry;
+        $this->cache = $filesystemAdapter;
     }
 
     /**
@@ -146,6 +163,7 @@ class AssistanceBeneficiaryService
      *
      * @return AssistanceBeneficiary[]
      * @throws \Exception
+     * @throws InvalidArgumentException
      */
     public function addBeneficiaries(Assistance $assistance, array $beneficiariesData): array
     {
@@ -235,7 +253,7 @@ class AssistanceBeneficiaryService
 
         $assistance->setUpdatedOn(new \DateTime());
         $this->em->persist($assistance);
-
+        $this->cache->delete(CacheTarget::assistanceId($assistance->getId()));
         $this->em->flush();
 
         return $assistanceBeneficiaries;
@@ -264,6 +282,7 @@ class AssistanceBeneficiaryService
      *
      * @return bool
      * @throws Exception\RemoveBeneficiaryWithReliefException
+     * @throws InvalidArgumentException
      */
     public function removeBeneficiaryInDistribution(Assistance $assistance, AbstractBeneficiary $beneficiary, $deletionData)
     {
@@ -289,6 +308,7 @@ class AssistanceBeneficiaryService
         }
 
         $this->em->persist($assistanceBeneficiary);
+        $this->cache->delete(CacheTarget::assistanceId($assistance->getId()));
         $this->em->flush();
         return true;
     }

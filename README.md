@@ -105,22 +105,31 @@ Open `docker-compose.yml` and add:
 ```
 php:
     environment:
-        XDEBUG_CONFIG: 'remote_host=127.0.0.1'
-        PHP_IDE_CONFIG: 'serverName=localhost'
-        AWS_ACCESS_KEY: 'anyText'
-        AWS_SECRET_KEY: 'anyText'
-        SES_USERNAME: 'anyText'
-        SES_PASSWORD: 'anyText'
+        XDEBUG_CONFIG: 'remote_host=172.17.0.1'
+        PHP_IDE_CONFIG: 'serverName=humansis.local'
+        AWS_ACCESS_KEY: 'aaa'
+        AWS_SECRET_KEY: 'aaa'
+        AWS_LOGS_ACCESS_KEY: 'access_key'
+        AWS_LOGS_SECRET_KEY: 'secret_key'
+        SES_USERNAME: 'aaa'
+        SES_PASSWORD: 'aaa'
         RDS_HOSTNAME: db
         RDS_PORT: 3306
-        RDS_DB_NAME: bms
+        RDS_DB_NAME: bmstest
         RDS_USERNAME: bms_user
         RDS_PASSWORD: aA123
-        HID_SECRET: 'anyText'
-        GOOGLE_CLIENT: 'anyText'
-        MOBILE_MASTER_KEY: 'anyText'
-        MOBILE_APP_VERSION=0
-        MOBILE_APP_ID=0
+        HID_SECRET: xxx
+        GOOGLE_CLIENT: xxx
+        MOBILE_MASTER_KEY: xxx
+        MOBILE_MASTER_KEY_VERSION: xxx
+        JWT_PASSPHRASE: xxx
+        GELF_SERVER_NAME: xxx
+        GELF_HOST: xxx
+        GELF_PORT: 9999
+        MOBILE_APP_VERSION: xxx
+        MOBILE_APP_ID: xxx
+        AWS_LOGS_ACCESS_KEY: secret_key
+        AWS_LOGS_SECRET_KEY: secret_key
 ```
 
 ### Test interpret and docker environment
@@ -138,7 +147,7 @@ php:
   ```
   server = Local Docker
   Configuration files = ./docker-compose.yml
-  Env. variables = AWS_SECRET_KEY=x;SES_USERNAME=x;SES_PASSWORD=x;RDS_HOSTNAME=db;RDS_PORT=3306;RDS_DB_NAME=bms;RDS_USERNAME=bms_user;RDS_PASSWORD=aA123;GOOGLE_CLIENT=aaa;HID_SECRET=bbb;MOBILE_MASTER_KEY=aaaa;MOBILE_APP_VERSION=0;MOBILE_APP_ID=0
+  Env. variables = AWS_ACCESS_KEY=x;AWS_SECRET_KEY=x;SES_USERNAME=x;SES_PASSWORD=x;RDS_HOSTNAME=db;RDS_PORT=3306;RDS_DB_NAME=bms;RDS_USERNAME=bms_user;RDS_PASSWORD=aA123;GOOGLE_CLIENT=aaa;JWT_PASSPHRASE=xxx;GELF_SERVER_NAME=xxx;GELF_HOST=xxx;GELF_PORT=9999;HID_SECRET=bbb;MOBILE_MASTER_KEY=aaaa;MOBILE_APP_VERSION=0;MOBILE_APP_ID=0;AWS_LOGS_ACCESS_KEY=secret_key;AWS_LOGS_SECRET_KEY=secret_key
   Lifecycle = Always start a new container
   ```
 - OK
@@ -147,7 +156,7 @@ php:
   Interpreter = recently created
   Directory = customdir/tests
   Preffered Coverage engine = XDebug
-  Env. variables = AWS_SECRET_KEY=x;SES_USERNAME=x;SES_PASSWORD=x;RDS_HOSTNAME=db;RDS_PORT=3306;RDS_DB_NAME=bms;RDS_USERNAME=bms_user;RDS_PASSWORD=aA123;GOOGLE_CLIENT=aaa;HID_SECRET=bbb;MOBILE_MASTER_KEY=aaaa;MOBILE_APP_VERSION=0;MOBILE_APP_ID=0
+  Env. variables = AWS_ACCESS_KEY=x;AWS_SECRET_KEY=x;SES_USERNAME=x;SES_PASSWORD=x;RDS_HOSTNAME=db;RDS_PORT=3306;RDS_DB_NAME=bms;RDS_USERNAME=bms_user;RDS_PASSWORD=aA123;GOOGLE_CLIENT=aaa;JWT_PASSPHRASE=xxx;GELF_SERVER_NAME=xxx;GELF_HOST=xxx;GELF_PORT=9999;HID_SECRET=bbb;MOBILE_MASTER_KEY=aaaa;MOBILE_APP_VERSION=0;MOBILE_APP_ID=0;AWS_LOGS_ACCESS_KEY=secret_key;AWS_LOGS_SECRET_KEY=secret_key
   ```
 - OK
 

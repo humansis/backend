@@ -3,25 +3,25 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Entity;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\EnumTrait;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
+use NewApiBundle\Utils\Concurrency\ConcurrencyLockableInterface;
+use NewApiBundle\Utils\Concurrency\ConcurrencyLockTrait;
 
 /**
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ImportQueueRepository")
  */
-class ImportQueue
+class ImportQueue implements ConcurrencyLockableInterface
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
+    use EnumTrait;
+    use ConcurrencyLockTrait;
 
     /**
      * @var Import
@@ -31,11 +31,18 @@ class ImportQueue
     private $import;
 
     /**
+     * @var ImportHouseholdDuplicity[]|Collection
+     *
+     * @ORM\OneToMany(targetEntity="ImportHouseholdDuplicity", mappedBy="ours", cascade={"persist", "remove"})
+     */
+    private $householdDuplicities;
+
+    /**
      * @var ImportBeneficiaryDuplicity[]|Collection
      *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiaryDuplicity", mappedBy="ours")
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiaryDuplicity", mappedBy="queue", cascade={"persist", "remove"})
      */
-    private $duplicities;
+    private $beneficiaryDuplicities;
 
     /**
      * @var ImportFile
@@ -65,10 +72,12 @@ class ImportQueue
      */
     private $message;
 
+    private $rawMessageData = [];
+
     /**
-     * @var ImportBeneficiaryDuplicity[]|Collection
+     * @var ImportHouseholdDuplicity[]|Collection
      *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiaryDuplicity", mappedBy="ours", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="ImportHouseholdDuplicity", mappedBy="ours", cascade={"remove"})
      */
     private $importBeneficiaryDuplicities;
 
@@ -106,18 +115,11 @@ class ImportQueue
         $this->file = $file;
         $this->content = $content;
         $this->state = ImportQueueState::NEW;
-        $this->duplicities = new ArrayCollection();
+        $this->householdDuplicities = new ArrayCollection();
+        $this->beneficiaryDuplicities = new ArrayCollection();
         $this->importBeneficiaryDuplicities = new ArrayCollection();
         $this->importQueueDuplicitiesOurs = new ArrayCollection();
         $this->importQueueDuplicitiesTheirs = new ArrayCollection();
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     /**
@@ -129,19 +131,19 @@ class ImportQueue
     }
 
     /**
-     * @return ImportBeneficiaryDuplicity[]
+     * @return ImportHouseholdDuplicity[]
      */
-    public function getDuplicities(): Collection
+    public function getHouseholdDuplicities(): Collection
     {
-        return $this->duplicities;
+        return $this->householdDuplicities;
     }
 
     /**
-     * @return ImportBeneficiaryDuplicity|null
+     * @return ImportHouseholdDuplicity|null
      */
-    public function getAcceptedDuplicity(): ?ImportBeneficiaryDuplicity
+    public function getAcceptedDuplicity(): ?ImportHouseholdDuplicity
     {
-        foreach ($this->getDuplicities() as $duplicityCandidate) {
+        foreach ($this->getHouseholdDuplicities() as $duplicityCandidate) {
             if (ImportDuplicityState::DUPLICITY_KEEP_THEIRS === $duplicityCandidate->getState()
             || ImportDuplicityState::DUPLICITY_KEEP_OURS === $duplicityCandidate->getState()) {
                 return $duplicityCandidate;
@@ -191,14 +193,12 @@ class ImportQueue
     }
 
     /**
+     * @see ImportQueueState::values()
      * @param string $state one of ImportQueueState::* values
      */
     public function setState(string $state)
     {
-        if (!in_array($state, ImportQueueState::values())) {
-            throw new \InvalidArgumentException('Invalid argument. '.$state.' is not valid Import queue state');
-        }
-
+        self::validateValue('state', ImportQueueState::class, $state, false);
         $this->state = $state;
     }
 
@@ -210,17 +210,61 @@ class ImportQueue
         return $this->message;
     }
 
-    /**
-     * @param string|null $message
-     */
-    public function setMessage(?string $message): void
+    public function hasViolations(?int $index = null): bool
     {
-        $this->message = $message;
+        if ($index) return !empty($this->rawMessageData[$index]);
+        return !empty($this->rawMessageData);
+    }
+
+    /**
+     * @param $message
+     */
+    public function addViolation(int $lineIndex, $message): void
+    {
+        $this->rawMessageData[$lineIndex][] = $message;
+
+        $this->message = json_encode($this->rawMessageData);
     }
 
     public function __toString()
     {
         return "ImportQueue#{$this->getId()}";
+    }
+
+    public function addDuplicity(int $index, Beneficiary $beneficiary, array $reasons): void
+    {
+        if ($index < 0 || $index >= count($this->content)) {
+            throw new \InvalidArgumentException("Member index was not found in imported Household");
+        }
+
+        $householdDuplicity = $this->getHouseholdDuplicityById($beneficiary->getId());
+        if (!$householdDuplicity) {
+            $householdDuplicity = new ImportHouseholdDuplicity($this, $beneficiary->getHousehold());
+            $this->householdDuplicities->add($householdDuplicity);
+        }
+
+        $beneficiaryDuplicity = new ImportBeneficiaryDuplicity($householdDuplicity, $this, $index, $beneficiary);
+        $this->beneficiaryDuplicities->add($beneficiaryDuplicity);
+
+        foreach ($reasons as $reason) {
+            $beneficiaryDuplicity->addReason($reason);
+        }
+    }
+
+    public function getHouseholdDuplicityById(int $householdId): ?ImportHouseholdDuplicity
+    {
+        foreach ($this->householdDuplicities as $householdDuplicity) {
+            if ($householdDuplicity->getTheirs()->getId() === $householdId) return $householdDuplicity;
+        }
+        return null;
+    }
+
+    /**
+     * @return Collection|ImportBeneficiaryDuplicity[]
+     */
+    public function getBeneficiaryDuplicities()
+    {
+        return $this->beneficiaryDuplicities;
     }
 
     /**
@@ -240,7 +284,7 @@ class ImportQueue
     }
 
     /**
-     * @return Collection|ImportBeneficiaryDuplicity[]
+     * @return Collection|ImportHouseholdDuplicity[]
      */
     public function getImportBeneficiaryDuplicities()
     {
@@ -277,6 +321,14 @@ class ImportQueue
     public function setSimilarityCheckedAt(?\DateTimeInterface $similarityCheckedAt): void
     {
         $this->similarityCheckedAt = $similarityCheckedAt;
+    }
+
+    public function hasResolvedDuplicities(): bool
+    {
+        foreach ($this->getHouseholdDuplicities() as $duplicity) {
+            if ($duplicity->getState() == ImportDuplicityState::DUPLICITY_CANDIDATE) return false;
+        }
+        return true;
     }
 
 }

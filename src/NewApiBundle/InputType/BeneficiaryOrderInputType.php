@@ -11,6 +11,7 @@ class BeneficiaryOrderInputType extends AbstractSortInputType
     const SORT_BY_LOCAL_GIVEN_NAME = 'localGivenName';
     const SORT_BY_LOCAL_FAMILY_NAME = 'localFamilyName';
     const SORT_BY_NATIONAL_ID = 'nationalId';
+    const SORT_BY_DISTRIBUTION_DATE = 'distributionDate';
 
     protected function getValidNames(): array
     {
@@ -19,6 +20,7 @@ class BeneficiaryOrderInputType extends AbstractSortInputType
             self::SORT_BY_LOCAL_GIVEN_NAME,
             self::SORT_BY_LOCAL_FAMILY_NAME,
             self::SORT_BY_NATIONAL_ID,
+            self::SORT_BY_DISTRIBUTION_DATE,
         ];
     }
 }

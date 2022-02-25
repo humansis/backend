@@ -18,6 +18,8 @@ use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
+use NewApiBundle\DBAL\PersonGenderEnum;
+use NewApiBundle\Enum\PersonGender;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -120,9 +122,9 @@ class DistributionCSVService
             foreach ($headers as $index => $key) {
                 if ($key == "gender") {
                     if (strcasecmp(trim($beneficiaryArray[$index]), 'Male') === 0 || strcasecmp(trim($beneficiaryArray[$index]), 'M') === 0) {
-                        $beneficiaryArray[$index] = Person::GENDER_MALE;
+                        $beneficiaryArray[$index] = PersonGender::MALE;
                     } else {
-                        $beneficiaryArray[$index] = Person::GENDER_FEMALE;
+                        $beneficiaryArray[$index] = PersonGender::FEMALE;
                     }
                 }
 
@@ -163,7 +165,7 @@ class DistributionCSVService
                     'localGivenName' => $beneficiary->getLocalGivenName(),
                     'localFamilyName' => $beneficiary->getLocalFamilyName(),
                     'dateOfBirth' => $beneficiary->getDateOfBirthObject()->format('d-m-Y'),
-                    'gender' => $beneficiary->getGender()
+                    'gender' => $beneficiary->getGender() ? PersonGender::valueToAPI($beneficiary->getGender()) : null,
                 );
                 array_push($deleteArray, $beneficiaryToDelete);
             }
@@ -328,11 +330,16 @@ class DistributionCSVService
                 $vulnerabilityCriteria[] = ['id' => $vulnerabilityCriterion->getId()];
             }
 
+            //incomeLevel was renamed, backward compatibility
+            if (isset($beneficiaryToCreate['incomeLevel']) && !isset($beneficiaryToCreate['income'])) {
+                $beneficiaryToCreate['income'] = $beneficiaryToCreate['incomeLevel'];
+            }
+
             $householdToCreate = array(
                 "__country" => $countryIso3,
                 "livelihood" => $beneficiaryToCreate['livelihood'],
                 "household_locations" => $householdLocations,
-                "income_level" => $beneficiaryToCreate['incomeLevel'],
+                "income" => $beneficiaryToCreate['income'],
                 "notes" => $beneficiaryToCreate['notes'],
                 "latitude" => strval($beneficiaryToCreate['latitude']),
                 "longitude" => strval($beneficiaryToCreate['longitude']),
@@ -366,7 +373,7 @@ class DistributionCSVService
                 ->findOneBy([
                     "localGivenName" => $beneficiaryToCreate['localGivenName'],
                     'localFamilyName' => $beneficiaryToCreate['localFamilyName'],
-                    'gender' => $beneficiaryToCreate['gender']
+                    'gender' => PersonGenderEnum::valueToDB($beneficiaryToCreate['gender'])
                 ]);
             $toCreate = $this->em->getRepository(Beneficiary::class)->findOneByPerson($person);
             $this->em->persist($toCreate);

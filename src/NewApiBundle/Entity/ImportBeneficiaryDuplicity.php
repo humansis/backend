@@ -1,59 +1,47 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace NewApiBundle\Entity;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Enum\ImportDuplicityState;
-use NewApiBundle\Enum\ImportQueueState;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 
 /**
- * Imformation about duplicity between queue record and beneficiary.
+ * Information about duplicity between queue record and beneficiary.
  *
  * @ORM\Entity()
- * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ImportBeneficiaryDuplicityRepository")
  */
 class ImportBeneficiaryDuplicity
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var ImportQueue
      *
-     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ImportQueue", inversedBy="importBeneficiaryDuplicities")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ImportQueue")
      */
-    private $ours;
+    private $queue;
 
     /**
-     * @var Household
+     * @var int
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household", inversedBy="importBeneficiaryDuplicities")
+     * @ORM\Column(type="integer")
      */
-    private $theirs;
+    private $memberIndex;
 
     /**
-     * @var string
+     * @var Beneficiary
      *
-     * @ORM\Column(name="state", type="enum_import_duplicity_state", nullable=false)
+     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary")
      */
-    private $state;
+    private $beneficiary;
 
     /**
-     * @var User
+     * @var ImportHouseholdDuplicity
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="importBeneficiaryDuplicities")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ImportHouseholdDuplicity")
      */
-    private $decideBy;
+    private $householdDuplicity;
 
     /**
      * @var string[]
@@ -62,95 +50,47 @@ class ImportBeneficiaryDuplicity
      */
     private $reasons;
 
-    /**
-     * @var \DateTimeInterface
-     *
-     * @ORM\Column(name="decide_at", type="datetimetz", nullable=false)
-     */
-    private $decideAt;
 
-    public function __construct(ImportQueue $ours, Household $theirs)
+    public function __construct(ImportHouseholdDuplicity $householdDuplicity, ImportQueue $ours, int $memberIndex, Beneficiary $theirs)
     {
-        $this->ours = $ours;
-        $this->theirs = $theirs;
-        $this->state = ImportDuplicityState::DUPLICITY_CANDIDATE;
+        $this->queue = $ours;
+        $this->beneficiary = $theirs;
         $this->reasons = [];
+        $this->memberIndex = $memberIndex;
+        $this->householdDuplicity = $householdDuplicity;
+    }
+
+
+    /**
+     * @return ImportQueue
+     */
+    public function getQueue(): ImportQueue
+    {
+        return $this->queue;
     }
 
     /**
      * @return int
      */
-    public function getId(): int
+    public function getMemberIndex(): int
     {
-        return $this->id;
+        return $this->memberIndex;
     }
 
     /**
-     * @return ImportQueue
+     * @return Beneficiary
      */
-    public function getOurs(): ImportQueue
+    public function getBeneficiary(): Beneficiary
     {
-        return $this->ours;
+        return $this->beneficiary;
     }
 
     /**
-     * @return Household
+     * @return ImportHouseholdDuplicity
      */
-    public function getTheirs(): Household
+    public function getHouseholdDuplicity(): ImportHouseholdDuplicity
     {
-        return $this->theirs;
-    }
-
-    /**
-     * @return string one of ImportDuplicityState::* values
-     */
-    public function getState(): string
-    {
-        return $this->state;
-    }
-
-    /**
-     * @param string $state one of ImportDuplicityState::* values
-     */
-    public function setState(string $state)
-    {
-        if (!in_array($state, ImportDuplicityState::values())) {
-            throw new \InvalidArgumentException('Invalid argument. '.$state.' is not valid Import duplicity state');
-        }
-
-        $this->state = $state;
-    }
-
-    /**
-     * @param User $decideBy
-     */
-    public function setDecideBy(User $decideBy): void
-    {
-        $this->decideBy = $decideBy;
-    }
-
-    /**
-     * @return User
-     */
-    public function getDecideBy(): User
-    {
-        return $this->decideBy;
-    }
-
-    /**
-     * @param \DateTimeInterface $dateTime
-     */
-    public function setDecideAt(\DateTimeInterface $dateTime): void
-    {
-        $this->decideAt = $dateTime;
-    }
-
-    /**
-     * @return \DateTimeInterface
-     */
-    public function getDecideAt(): \DateTimeInterface
-    {
-        return $this->decideAt;
+        return $this->householdDuplicity;
     }
 
     /**
@@ -162,17 +102,9 @@ class ImportBeneficiaryDuplicity
     }
 
     /**
-     * @param string[] $reasons
+     * @param array $reason
      */
-    public function setReasons(array $reasons): void
-    {
-        $this->reasons = $reasons;
-    }
-
-    /**
-     * @param string $reason
-     */
-    public function addReason(string $reason): void
+    public function addReason(array $reason): void
     {
         $this->reasons[] = $reason;
     }

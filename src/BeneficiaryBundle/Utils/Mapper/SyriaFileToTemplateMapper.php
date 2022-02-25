@@ -442,7 +442,7 @@ class SyriaFileToTemplateMapper
             'D' => 'Camp',
             'E' => 'Tent number',
             'F' => 'Livelihood',
-            'G' => 'Income level',
+            'G' => 'Income',
             'H' => 'Notes',
             'I' => 'Latitude',
             'J' => 'Longitude',

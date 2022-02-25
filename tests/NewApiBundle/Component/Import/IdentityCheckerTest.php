@@ -8,7 +8,9 @@ use NewApiBundle\Component\Import\IdentityChecker;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueueDuplicity;
 use NewApiBundle\Enum\ImportState;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 class IdentityCheckerTest extends KernelTestCase
 {
@@ -30,7 +32,7 @@ class IdentityCheckerTest extends KernelTestCase
         $import = self::$entityManager->getRepository(Import::class)->findBy(['title' => 'test_fixtures'], ['id' => 'asc'])[0];
         $import->setState(ImportState::IDENTITY_CHECKING);
 
-        $checker = new IdentityChecker(self::$entityManager);
+        $checker = self::$container->get(IdentityChecker::class);
         $checker->check($import);
 
         $count = self::$entityManager->createQueryBuilder()

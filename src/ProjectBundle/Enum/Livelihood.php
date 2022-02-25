@@ -3,27 +3,20 @@ declare(strict_types=1);
 
 namespace ProjectBundle\Enum;
 
+use NewApiBundle\Enum\EnumTrait;
+
 final class Livelihood
 {
-    const DAILY_LABOUR = 'daily_labour';
-    const FARMING_AGRICULTURE = 'farming_agriculture';
-    const FARMING_LIVESTOCK = 'farming_livestock';
-    const GOVERNMENT = 'government';
-    const HOME_DUTIES = 'home_duties';
-    const TRADING = 'trading';
-    const OWN_BUSINESS = 'own_business';
-    const TEXTILES = 'textiles';
+    use EnumTrait;
 
-    public const TRANSLATIONS = [
-        self::DAILY_LABOUR => 'Daily Labour',
-        self::FARMING_AGRICULTURE => 'Farming - Agriculture',
-        self::FARMING_LIVESTOCK => 'Farming - Livestock',
-        self::GOVERNMENT => 'Government',
-        self::HOME_DUTIES => 'Home Duties',
-        self::TRADING => 'Trading',
-        self::OWN_BUSINESS => 'Own Business',
-        self::TEXTILES => 'Textiles',
-    ];
+    const DAILY_LABOUR = 'Daily Labour';
+    const FARMING_AGRICULTURE = 'Farming - Agriculture';
+    const FARMING_LIVESTOCK = 'Farming - Livestock';
+    const GOVERNMENT = 'Government';
+    const HOME_DUTIES = 'Home Duties';
+    const TRADING = 'Trading';
+    const OWN_BUSINESS = 'Own Business';
+    const TEXTILES = 'Textiles';
 
     public static function values()
     {
@@ -41,10 +34,6 @@ final class Livelihood
 
     public static function translate(string $livelihood): string
     {
-        if (!array_key_exists($livelihood, self::TRANSLATIONS)) {
-            throw new \InvalidArgumentException("$livelihood is not valid Livelihood value.");
-        }
-
-        return self::TRANSLATIONS[$livelihood];
+        return $livelihood;
     }
 }

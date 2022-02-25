@@ -5,6 +5,8 @@ namespace NewApiBundle\Enum;
 
 final class ReliefPackageState
 {
+    use EnumTrait;
+
     public const TO_DISTRIBUTE = 'To distribute';
     public const DISTRIBUTION_IN_PROGRESS = 'Distribution in progress';
     public const DISTRIBUTED = 'Distributed';

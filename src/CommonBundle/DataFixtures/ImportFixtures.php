@@ -11,6 +11,7 @@ use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Enum\NationalIdType;
 use ProjectBundle\Entity\Project;
 use UserBundle\Entity\User;
 
@@ -21,7 +22,7 @@ class ImportFixtures extends Fixture implements DependentFixtureInterface
      */
     public function load(ObjectManager $manager)
     {
-        $import = new Import('test_fixtures', null, $this->getProject($manager), $this->getUser($manager));
+        $import = new Import('KHM','test_fixtures', null, [$this->getProject($manager)], $this->getUser($manager));
         $manager->persist($import);
 
         $file = new ImportFile('fake_file.xlsx', $import, $this->getUser($manager));
@@ -29,18 +30,62 @@ class ImportFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($file);
 
         $item = new ImportQueue($import, $file, [
-            ['ID Type' => NationalId::TYPE_NATIONAL_ID, 'ID Number' => '123456789'],
-            ['ID Type' => NationalId::TYPE_NATIONAL_ID, 'ID Number' => '111222333'],
+            [
+                'ID Type' => [
+                    'value' => NationalIdType::NATIONAL_ID,
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+                'ID Number' => [
+                    'value' => '123456789',
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+            ],
+            [
+                'ID Type' => [
+                    'value' => NationalIdType::NATIONAL_ID,
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+                'ID Number' => [
+                    'value' => '111222333',
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+            ],
         ]);
         $manager->persist($item);
 
         $item = new ImportQueue($import, $file, [
-            ['ID Type' => NationalId::TYPE_NATIONAL_ID, 'ID Number' => '987654321'],
+            [
+                'ID Type' => [
+                    'value' => NationalIdType::NATIONAL_ID,
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+                'ID Number' => [
+                    'value' => '987654321',
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+            ],
         ]);
         $manager->persist($item);
 
         $item = new ImportQueue($import, $file, [
-            ['ID Type' => NationalId::TYPE_NATIONAL_ID, 'ID Number' => '111222333'],
+            [
+                'ID Type' => [
+                    'value' => NationalIdType::NATIONAL_ID,
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+                'ID Number' => [
+                    'value' => '111222333',
+                    'dataType' => 's',
+                    'numberFormat' => 'General',
+                ],
+            ],
         ]);
         $manager->persist($item);
 

@@ -13,6 +13,9 @@ use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Enum\HouseholdAssets;
+use NewApiBundle\Enum\HouseholdShelterStatus;
+use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use ProjectBundle\Enum\Livelihood;
 
 class CSVToArrayMapper
@@ -28,7 +31,7 @@ class CSVToArrayMapper
         'camp' => 'D',
         'tent_number' => 'E',
         'livelihood' => 'F',
-        'income_level' => 'G',
+        'income' => 'G',
         'food_consumption_score' => 'H',
         'coping_strategies_index' => 'I',
         'notes' => 'J',
@@ -112,7 +115,7 @@ class CSVToArrayMapper
         $mappingCSVCountry = self::MAPPING;
 
         /** @var CountrySpecific[] $countrySpecifics */
-        $countrySpecifics = $this->em->getRepository(CountrySpecific::class)->findByCountryIso3($countryIso3);
+        $countrySpecifics = $this->em->getRepository(CountrySpecific::class)->findBy(['countryIso3' => $countryIso3], ['id'=>'asc']);
         foreach ($countrySpecifics as $i => $countrySpecific) {
             $mappingCSVCountry['tmp_country_specific'.$i] = $generator->getNext();
         }
@@ -258,10 +261,6 @@ class CSVToArrayMapper
         }
         // Add the country iso3 from the request
         $formattedHouseholdArray['location']['country_iso3'] = $countryIso3;
-
-        if ($formattedHouseholdArray['income_level'] && !in_array($formattedHouseholdArray['income_level'], [1,2,3,4,5])) {
-            throw new \Exception('The income level must be between 1 and 5');
-        }
 
         $this->mapLocation($formattedHouseholdArray);
 
@@ -534,9 +533,9 @@ class CSVToArrayMapper
         $gender_string = trim($formattedHouseholdArray['beneficiaries']['gender']);
 
         if (strcasecmp(trim($gender_string), 'Male') === 0 || strcasecmp(trim($gender_string), 'M') === 0) {
-            $formattedHouseholdArray['beneficiaries']['gender'] = \BeneficiaryBundle\Entity\Person::GENDER_MALE;
+            $formattedHouseholdArray['beneficiaries']['gender'] = \NewApiBundle\Enum\PersonGender::MALE;
         } else if (strcasecmp(trim($gender_string), 'Female') === 0 || strcasecmp(trim($gender_string), 'F') === 0) {
-            $formattedHouseholdArray['beneficiaries']['gender'] = \BeneficiaryBundle\Entity\Person::GENDER_FEMALE;
+            $formattedHouseholdArray['beneficiaries']['gender'] = \NewApiBundle\Enum\PersonGender::FEMALE;
         }
     }
 
@@ -709,7 +708,7 @@ class CSVToArrayMapper
     private function mapShelterStatus(&$formattedHouseholdArray)
     {
         if (isset($formattedHouseholdArray['shelter_status'])) {
-            foreach (Household::SHELTER_STATUSES as $id => $status) {
+            foreach (HouseholdShelterStatus::values() as $id => $status) {
                 if (0 === strcasecmp(trim($formattedHouseholdArray['shelter_status']), $status)) {
                     $formattedHouseholdArray['shelter_status'] = $id;
                     return;
@@ -725,7 +724,7 @@ class CSVToArrayMapper
         if (isset($formattedHouseholdArray['assets'])) {
             $assets = [];
             foreach (explode(',', $formattedHouseholdArray['assets']) as $value) {
-                foreach (Household::ASSETS as $id => $asset) {
+                foreach (HouseholdAssets::values() as $id => $asset) {
                     if (0 === strcasecmp(trim($value), $asset)) {
                         $assets[] = $id;
                         continue 2;
@@ -755,7 +754,7 @@ class CSVToArrayMapper
         if (isset($formattedHouseholdArray['support_received_types'])) {
             $types = [];
             foreach (explode(',', $formattedHouseholdArray['support_received_types']) as $value) {
-                foreach (Household::SUPPORT_RECIEVED_TYPES as $id => $type) {
+                foreach (HouseholdSupportReceivedType::values() as $id => $type) {
                     if (0 === strcasecmp(trim($value), $type)) {
                         $types[] = $id;
                         continue 2;

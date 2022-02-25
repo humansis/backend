@@ -13,15 +13,17 @@ use NewApiBundle\Enum\ImportState;
 use ProjectBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
 use UserBundle\Entity\User;
 
 class IntegrityCheckerTest extends KernelTestCase
 {
-    /** @var ValidatorInterface */
-    private static $validator;
 
     /** @var EntityManagerInterface */
     private static $entityManager;
+
+    /** @var IntegrityChecker */
+    private static $integrityChecker;
 
     public static function setUpBeforeClass()
     {
@@ -29,8 +31,8 @@ class IntegrityCheckerTest extends KernelTestCase
 
         $kernel = self::bootKernel();
 
-        self::$validator = $kernel->getContainer()->get('validator');
         self::$entityManager = $kernel->getContainer()->get('doctrine')->getManager();
+        self::$integrityChecker = $kernel->getContainer()->get(IntegrityChecker::class);
     }
 
     public function testParseEmpty()
@@ -38,16 +40,17 @@ class IntegrityCheckerTest extends KernelTestCase
         $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'iso3' => 'KHM'], null, 1)[0];
         $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
 
-        $import = new Import('test', null, $project, $user);
+        $import = new Import('KHM', 'test', null, [$project], $user);
         $file = new ImportFile('fake_file.xlsx', $import, $user);
-
         $item = new ImportQueue($import, $file, [[/** empty row */]]);
+        self::$entityManager->persist($import);
+        self::$entityManager->persist($file);
+        self::$entityManager->persist($item);
+        self::$entityManager->flush();
 
-        $checker = new IntegrityChecker(self::$validator, self::$entityManager);
-
-        $method = new \ReflectionMethod($checker, 'checkOne');
+        $method = new \ReflectionMethod(self::$integrityChecker, 'checkOne');
         $method->setAccessible(true);
-        $method->invoke($checker, $item);
+        $method->invoke(self::$integrityChecker, $item);
 
         $this->assertJson($item->getMessage());
     }
@@ -57,12 +60,15 @@ class IntegrityCheckerTest extends KernelTestCase
         $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'iso3' => 'KHM'], null, 1)[0];
         $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
 
-        $import = new Import('test', null, $project, $user);
+        $import = new Import('KHM', 'test', null, [$project], $user);
         $file = new ImportFile('fake_file.xlsx', $import, $user);
-
         $item = new ImportQueue($import, $file, json_decode(ImportFinishServiceTest::TEST_QUEUE_ITEM, true));
+        self::$entityManager->persist($import);
+        self::$entityManager->persist($file);
+        self::$entityManager->persist($item);
+        self::$entityManager->flush();
 
-        $checker = new IntegrityChecker(self::$validator, self::$entityManager);
+        $checker = self::$integrityChecker;
 
         $method = new \ReflectionMethod($checker, 'checkOne');
         $method->setAccessible(true);
@@ -76,7 +82,7 @@ class IntegrityCheckerTest extends KernelTestCase
         $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'iso3' => 'KHM'], null, 1)[0];
         $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
 
-        $import = new Import('test', null, $project, $user);
+        $import = new Import('KHM', 'test', null, [$project], $user);
         $import->setState(ImportState::INTEGRITY_CHECKING);
 
         $file = new ImportFile('fake_file.xlsx', $import, $user);
@@ -86,7 +92,7 @@ class IntegrityCheckerTest extends KernelTestCase
         self::$entityManager->persist($item);
         self::$entityManager->flush();
 
-        $checker = new IntegrityChecker(self::$validator, self::$entityManager);
+        $checker = self::$integrityChecker;
         $checker->check($import);
 
         $queue = self::$entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
@@ -94,7 +100,6 @@ class IntegrityCheckerTest extends KernelTestCase
         foreach ($queue as $item) {
             $this->assertEquals(ImportQueueState::VALID, $item->getState(), "Queue is invalid because ".$item->getMessage());
         }
-        $this->assertEquals(ImportState::INTEGRITY_CHECK_CORRECT, $import->getState());
     }
 
     protected function tearDown()

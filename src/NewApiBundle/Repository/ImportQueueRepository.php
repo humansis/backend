@@ -10,6 +10,31 @@ use NewApiBundle\Enum\ImportQueueState;
 
 class ImportQueueRepository extends EntityRepository
 {
+    public function findUnlocked(Import $import, $state,int $count)
+    {
+        $qb = $this->createQueryBuilder('iq');
+        $builder = $qb
+            ->andWhere('iq.import = :import')
+            ->andWhere('iq.lockedBy IS NULL OR iq.lockedAt <= :expiredLock')
+            ->setParameter('expiredLock', (new \DateTime())->sub(date_interval_create_from_date_string('1 hours')))
+            ->setParameter('import', $import)
+            ->setMaxResults($count)
+        ;
+        if (is_string($state)) {
+            $builder
+                ->andWhere('iq.state = :state')
+                ->setParameter('state', $state)
+            ;
+        } elseif (is_array($state)) {
+            $builder
+                ->andWhere('iq.state IN (:states)')
+                ->setParameter('states', $state)
+            ;
+        }
+
+        return $builder->getQuery()->getResult();
+    }
+
     public function getTotalByImportAndStatus(Import $import, string $state): int
     {
         return (int) $this->createQueryBuilder('iq')
@@ -111,7 +136,7 @@ class ImportQueueRepository extends EntityRepository
         return $this->findBy([
             'import' => $import,
             'state' => ImportQueueState::VALID,
-            'identityCheckedAt' => null
+            'identityCheckedAt' => null,
         ], ['id' => 'asc'], $batchSize);
     }
 
@@ -120,7 +145,7 @@ class ImportQueueRepository extends EntityRepository
         return $this->count([
             'import' => $import,
             'state' => ImportQueueState::VALID,
-            'identityCheckedAt' => null
+            'identityCheckedAt' => null,
         ]);
     }
 
@@ -134,8 +159,8 @@ class ImportQueueRepository extends EntityRepository
     {
         return $this->findBy([
             'import' => $import,
-            'state' => [ImportQueueState::VALID, ImportQueueState::SUSPICIOUS],
-            'similarityCheckedAt' => null
+            'state' => [ImportQueueState::VALID, ImportQueueState::UNIQUE_CANDIDATE],
+            'similarityCheckedAt' => null,
         ], ['id' => 'asc'], $batchSize);
     }
 
@@ -147,7 +172,7 @@ class ImportQueueRepository extends EntityRepository
             ->andWhere('iq.state IN (:states)')
             ->andWhere('iq.similarityCheckedAt IS NULL')
             ->setParameter('import', $import)
-            ->setParameter('states', [ImportQueueState::VALID, ImportQueueState::SUSPICIOUS])
+            ->setParameter('states', [ImportQueueState::VALID, ImportQueueState::UNIQUE_CANDIDATE])
         ;
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
@@ -163,14 +188,28 @@ class ImportQueueRepository extends EntityRepository
         $qb = $this->createQueryBuilder('iq')
             ->andWhere('iq.import = :import')
             ->andWhere('iq.state IN (:states)')
-            ->join('iq.duplicities', 'dup')
+            ->join('iq.householdDuplicities', 'dup')
             ->andWhere('dup.decideAt IS NULL')
             ->setParameter('import', $import)
-            ->setParameter('states', [ImportQueueState::SUSPICIOUS])
+            ->setParameter('states', [ImportQueueState::SIMILARITY_CANDIDATE])
         ;
         if ($batchSize) {
             $qb->setMaxResults($batchSize);
         }
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findSingleDuplicityQueues(Import $import): iterable
+    {
+        $qb = $this->createQueryBuilder('iq')
+            ->andWhere('iq.import = :import')
+            ->andWhere('iq.state IN (:states)')
+            ->join('iq.householdDuplicities', 'dup')
+            ->groupBy('iq.id')
+            ->having('count(dup) = 1')
+            ->setParameter('import', $import)
+            ->setParameter('states', [ImportQueueState::IDENTITY_CANDIDATE, ImportQueueState::SIMILARITY_CANDIDATE])
+        ;
         return $qb->getQuery()->getResult();
     }
 }

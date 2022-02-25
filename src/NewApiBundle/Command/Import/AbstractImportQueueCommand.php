@@ -7,12 +7,12 @@ use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Component\Import\ImportLoggerTrait;
 use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportQueue;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 abstract class AbstractImportQueueCommand extends Command
 {
@@ -24,20 +24,24 @@ abstract class AbstractImportQueueCommand extends Command
     protected $manager;
     /** @var ImportService */
     protected $importService;
-    /** @var int */
-    protected $batchSize = 200;
+    /** @var WorkflowInterface */
+    protected $importStateMachine;
 
     /**
      * AbstractImportQueueCommand constructor.
      *
-     * @param ObjectManager $manager
+     * @param ObjectManager                                 $manager
+     * @param ImportService                                 $importService
+     * @param LoggerInterface                               $importLogger
+     * @param WorkflowInterface $importStateMachine
      */
-    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger)
+    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger, WorkflowInterface $importStateMachine)
     {
         parent::__construct();
         $this->manager = $manager;
         $this->logger = $importLogger;
         $this->importService = $importService;
+        $this->importStateMachine = $importStateMachine;
     }
 
     protected function configure()
@@ -74,7 +78,7 @@ abstract class AbstractImportQueueCommand extends Command
         $count = 0;
         $importsByCountry = [];
         foreach ($imports as $import) {
-            $importsByCountry[$import->getProject()->getIso3()][] = '#'.$import->getId();
+            $importsByCountry[$import->getCountryIso3()][] = '#'.$import->getId()."|".$import->getState();
             $count++;
         }
         $countryList = [];
@@ -84,19 +88,16 @@ abstract class AbstractImportQueueCommand extends Command
         $this->logger->info("$commandType will affect $count imports: ".implode(' ', $countryList));
     }
 
-    protected function logImportInfo(Import $import, string $message): void
+    protected function tryTransitions(Import $import, array $transitions): void
     {
-        $this->logger->info("[Import #{$import->getId()}] ({$import->getTitle()}) $message");
+        foreach ($transitions as $transition) {
+            if ($this->importStateMachine->can($import, $transition)) {
+                $this->logImportInfo($import, "is going to '$transition'");
+                $this->importStateMachine->apply($import, $transition);
+                return;
+            } else {
+                $this->logImportTransitionConstraints($this->importStateMachine, $import, $transition);
+            }
+        }
     }
-
-    protected function logImportDebug(Import $import, string $message): void
-    {
-        $this->logger->debug("[Import #{$import->getId()}] ({$import->getTitle()}) $message");
-    }
-
-    protected function logImportError(Import $import, string $message): void
-    {
-        $this->logger->error("[Import #{$import->getId()}] ({$import->getTitle()}) $message");
-    }
-
 }
