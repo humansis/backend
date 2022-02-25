@@ -1,12 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
+namespace NewApiBundle\Controller\WebApp\Smartcard;
 
-namespace NewApiBundle\Controller;
-
-use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Smartcard\SmartcardPurchaseService;
+use NewApiBundle\Controller\WebApp\AbstractWebAppController;
 use NewApiBundle\InputType\SmartcardPurchaseFilterInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
@@ -16,7 +14,7 @@ use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\SmartcardRedemptionBatch;
 use VoucherBundle\Entity\Vendor;
 
-class SmartcardPurchaseController extends AbstractController
+class SmartcardPurchaseController extends AbstractWebAppController
 {
     /** @var SmartcardPurchaseService */
     private $smartcardPurchaseService;

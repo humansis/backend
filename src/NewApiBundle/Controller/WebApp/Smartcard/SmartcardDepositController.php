@@ -1,25 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
+namespace NewApiBundle\Controller\WebApp\Smartcard;
 
-namespace NewApiBundle\Controller;
-
-use CommonBundle\Pagination\Paginator;
-use DistributionBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Component\Codelist\CodeLists;
+use NewApiBundle\Controller\WebApp\AbstractWebAppController;
 use NewApiBundle\InputType\SmartcardDepositFilterInputType;
-use NewApiBundle\InputType\TransactionFilterInputType;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use TransactionBundle\Entity\Transaction;
-use TransactionBundle\Repository\TransactionRepository;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Repository\SmartcardDepositRepository;
 
-class SmartcardDepositController extends AbstractController
+class SmartcardDepositController extends AbstractWebAppController
 {
     /**
      * @Rest\Get("/web-app/v1/smartcard-deposits")
