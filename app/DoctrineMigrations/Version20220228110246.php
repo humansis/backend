@@ -20,7 +20,7 @@ final class Version20220228110246 extends AbstractMigration
 
         $this->addSql('DROP INDEX duplicity_check_idx ON national_id');
         $this->addSql('ALTER TABLE national_id CHANGE id_type old_type VARCHAR(45) CHARACTER SET utf8 DEFAULT \'\' COLLATE `utf8_unicode_ci`');
-        $this->addSql('ALTER TABLE national_id ADD id_type ENUM(\'National ID\', \'Passport\', \'Family Registration\', \'Family Book\', \'Birth Certificate\', \'Driver’s License\', \'Camp ID\', \'Social Service Card\', \'Other\', \'None\') NOT NULL COMMENT \'(DC2Type:enum_national_id_type)\' AFTER old_type');
+        $this->addSql('ALTER TABLE national_id ADD id_type ENUM(\'National ID\', \'Passport\', \'Family Registration\', \'Birth Certificate\', \'Driver’s License\', \'Camp ID\', \'Social Service Card\', \'Other\', \'None\') NOT NULL COMMENT \'(DC2Type:enum_national_id_type)\' AFTER old_type');
         $this->addSql('create index duplicity_check_idx on national_id (id_type, id_number);');
     }
 

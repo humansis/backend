@@ -28,7 +28,7 @@ final class Version20220228152150 extends AbstractMigration
                 if (strlen($number) > 7) {
                     $oldValue = NationalIdType::NATIONAL_ID;
                 } else {
-                    $oldValue = NationalIdType::FAMILY_BOOK;
+                    $oldValue = NationalIdType::FAMILY;
                 }
             }
             try {
