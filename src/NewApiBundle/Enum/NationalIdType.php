@@ -9,8 +9,7 @@ final class NationalIdType
 
     const NATIONAL_ID = 'National ID';
     const PASSPORT = 'Passport';
-    const FAMILY_REGISTRATION = 'Family Registration';
-    const FAMILY_BOOK = 'Family Book';
+    const FAMILY = 'Family Registration';
     const BIRTH_CERTIFICATE = 'Birth Certificate';
     const DRIVERS_LICENSE = 'Driver’s License';
     const CAMP_ID = 'Camp ID';
@@ -23,8 +22,7 @@ final class NationalIdType
         return [
             self::NATIONAL_ID,
             self::PASSPORT,
-            self::FAMILY_REGISTRATION,
-            self::FAMILY_BOOK,
+            self::FAMILY,
             self::BIRTH_CERTIFICATE,
             self::DRIVERS_LICENSE,
             self::CAMP_ID,
@@ -37,7 +35,8 @@ final class NationalIdType
     public static function apiAlternatives(): array
     {
         return [
-            self::FAMILY_REGISTRATION => ['Family registry'],
+            self::FAMILY => ['Family registry', 'Family Book'],
+            self::NATIONAL_ID => ['Card ID'],
         ];
     }
 

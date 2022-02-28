@@ -113,7 +113,7 @@ class HouseholdServiceTest extends KernelTestCase
         $createBeneficiary->addNationalIdCard($nationalId);
 
         $nationalId = new NationalIdCardInputType();
-        $nationalId->setType(NationalIdType::FAMILY_REGISTRATION);
+        $nationalId->setType(NationalIdType::FAMILY);
         $nationalId->setNumber('7897 4657 1234 7896');
         $createBeneficiary->addNationalIdCard($nationalId);
 
@@ -198,7 +198,7 @@ class HouseholdServiceTest extends KernelTestCase
         $this->assertCount(2, $nationalIds, "Wrong nationalID count");
         $this->assertEquals(NationalIdType::NATIONAL_ID, $nationalIds[0]->getIdType());
         $this->assertEquals('111-222-333', $nationalIds[0]->getIdNumber());
-        $this->assertEquals(NationalIdType::FAMILY_REGISTRATION, $nationalIds[1]->getIdType());
+        $this->assertEquals(NationalIdType::FAMILY, $nationalIds[1]->getIdType());
         $this->assertEquals('7897 4657 1234 7896', $nationalIds[1]->getIdNumber());
 
         return $household->getId();

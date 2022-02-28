@@ -61,7 +61,7 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
                 ],
             ],
             'national_id' => [
-                'type' => NationalIdType::FAMILY_REGISTRATION,
+                'type' => NationalIdType::FAMILY,
                 'number' => 'FML: 000-1234-5895-21',
             ],
             'phone_type' => 'Mobile',

@@ -254,7 +254,7 @@ class ImportTest extends KernelTestCase
         $this->assertHHHasLivelihood($bnf->getHousehold(), Livelihood::FARMING_LIVESTOCK);
         $this->assertEquals(PersonGender::MALE, $bnf->getPerson()->getGender());
         // Marge simpson
-        $bnf = $this->findOneIdentity(NationalIdType::FAMILY_REGISTRATION, '102');
+        $bnf = $this->findOneIdentity(NationalIdType::FAMILY, '102');
         $this->assertIsMember($bnf);
         $this->assertEquals(PersonGender::FEMALE, $bnf->getPerson()->getGender());
         // Bart Simpson
