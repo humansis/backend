@@ -145,7 +145,6 @@ class ImportFinisher
                 $this->em->persist($item);
             });
 
-        $this->em->persist($import);
         $this->em->flush();
 
         if ($this->importStateMachine->can($import, ImportTransitions::FINISH)) {
@@ -255,7 +254,7 @@ class ImportFinisher
         $this->linkHouseholdToQueue($import, $updatedHousehold, $acceptedDuplicity->getDecideBy());
         $this->logImportInfo($import, "Updated Household #{$updatedHousehold->getId()}");
 
-        WorkflowTool::checkAndApply($this->importQueueStateMachine, $item, [ImportQueueTransitions::UPDATE]);
+        $this->importQueueStateMachine->apply($item, ImportQueueTransitions::UPDATE);
     }
 
     private function linkHouseholdToQueue(Import $import, Household $household, User $decide): void

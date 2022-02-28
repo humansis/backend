@@ -20,12 +20,9 @@ services:
         class: BeneficiaryBundle\Utils\HouseholdService
         arguments:
             - "@doctrine.orm.entity_manager"
-            - "@serializer"
             - "@beneficiary.beneficiary_service"
             - "@request_validator"
             - "@location_service"
-            - "@validator"
-            - "@service_container"
         public: true
 
     beneficiary.institution_service:
