@@ -13,7 +13,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * NationalId
  *
- * @ORM\Table(name="national_id")
+ * @ORM\Table(name="national_id", indexes={
+ *     @ORM\Index(name="duplicity_check_idx", columns={"id_type", "id_number"})
+ * })
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\NationalIdRepository")
  */
 class NationalId
@@ -32,7 +34,7 @@ class NationalId
     /**
      * @var string
      *
-     * @ORM\Column(name="id_type", type="string", length=45)
+     * @ORM\Column(name="id_type", type="enum_national_id_type")
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "FullInstitution"})
      */
     private $idType;

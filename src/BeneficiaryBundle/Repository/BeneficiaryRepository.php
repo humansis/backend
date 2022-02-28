@@ -167,8 +167,8 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             ->join('p.nationalIds', 'id')
             ->andWhere('b.archived = 0')
             ->andWhere('hh.archived = 0')
-            ->andWhere('id.idNumber = :idNumber')
             ->andWhere('id.idType = :idType')
+            ->andWhere('id.idNumber = :idNumber')
             ->setParameter('idNumber', $idNumber)
             ->setParameter('idType', $idType);
 
