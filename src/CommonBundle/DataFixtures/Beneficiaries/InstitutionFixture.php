@@ -65,7 +65,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
                 ],
             ],
             'national_id' => [
-                'type' => NationalIdType::FAMILY,
+                'type' => NationalIdType::FAMILY_REGISTRATION,
                 'number' => 'FML: 000-1234-5895-21',
             ],
             'phone_type' => 'Mobile',
