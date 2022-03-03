@@ -3,6 +3,7 @@
 namespace UserBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Symfony\Component\HttpKernel\Profiler\Profiler;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -64,11 +65,17 @@ class UserController extends Controller
      *     description="Bad credentials (username: myUsername)"
      * )
      *
-     * @param Request $request
+     * @param Request       $request
+     * @param Profiler|null $profiler
+     *
      * @return Response
      */
-    public function loginAction(Request $request)
+    public function loginAction(Request $request, ?Profiler $profiler)
     {
+        if (null !== $profiler) {
+            $profiler->disable();
+        }
+
         $username = $request->request->get('username');
         $saltedPassword = $request->request->get('password');
         $clientIp = $request->headers->get('x-real-ip');
@@ -147,11 +154,17 @@ class UserController extends Controller
      *     description="Bad credentials (username: myUsername)"
      * )
      *
-     * @param Request $request
+     * @param Request       $request
+     * @param Profiler|null $profiler
+     *
      * @return Response
      */
-    public function offlineLoginAction(Request $request)
+    public function offlineLoginAction(Request $request, ?Profiler $profiler)
     {
+        if (null !== $profiler) {
+            $profiler->disable();
+        }
+
         $username = $request->request->get('username');
         $saltedPassword = $request->request->get('password');
 
@@ -702,7 +715,7 @@ class UserController extends Controller
         return new JsonResponse($attach);
     }
 
-     /**
+    /**
      * Login a user via humanitarian ID
      * @Rest\Post("/login-humanitarian", name="login_humanitarian")
      *
@@ -714,10 +727,17 @@ class UserController extends Controller
      *     @SWG\Schema(type="boolean")
      * )
      *
+     * @param Request       $request
+     * @param Profiler|null $profiler
+     *
      * @return Response
      */
-    public function loginHumanitarian(Request $request)
+    public function loginHumanitarian(Request $request, ?Profiler $profiler)
     {
+        if (null !== $profiler) {
+            $profiler->disable();
+        }
+
         try {
             $code = $request->request->get('code');
             $environment = $request->request->get('environment');
@@ -745,10 +765,17 @@ class UserController extends Controller
      *     @SWG\Schema(type="boolean")
      * )
      *
+     * @param Request       $request
+     * @param Profiler|null $profiler
+     *
      * @return Response
      */
-    public function loginGoogle(Request $request)
+    public function loginGoogle(Request $request, ?Profiler $profiler)
     {
+        if (null !== $profiler) {
+            $profiler->disable();
+        }
+
         try {
             $token = $request->request->get('token');
 
