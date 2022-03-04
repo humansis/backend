@@ -3,9 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
-use NewApiBundle\Component\Import\CellParameters;
 use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Serializer\MapperInterface;
 
@@ -114,8 +112,9 @@ class ImportHouseholdDuplicityMapper implements MapperInterface
 
     public function getAddedBeneficiaries(): iterable
     {
-        foreach ($this->object->getOurs()->getContent() as $index => $beneficiaryData) {
-            yield $index => $beneficiaryData['Local given name'][CellParameters::VALUE].' '.$beneficiaryData['Local family name'][CellParameters::VALUE];
+        $importLines = $this->importLineFactory->createAll($this->object->getOurs());
+        foreach($importLines as $index => $importLine){
+            yield $index => $importLine->localGivenName.' '.$importLine->localFamilyName;
         }
     }
 
