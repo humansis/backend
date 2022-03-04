@@ -175,6 +175,7 @@ deploy test:
     - /^develop$/
   except:
     - tags
+  when: manual
   tags:
     - dind
 
