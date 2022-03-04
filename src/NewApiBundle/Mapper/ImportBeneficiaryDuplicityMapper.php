@@ -73,13 +73,12 @@ class ImportBeneficiaryDuplicityMapper implements MapperInterface
 
     public function getDuplicityFullName(): string
     {
-        $person = $this->object->getBeneficiary()->getPerson();
-        $userData = $this->object->getQueue()->getContent()[$this->object->getMemberIndex()];
+        $importLine = $this->importLineFactory->create($this->object->getQueue(), $this->object->getMemberIndex());
 
-        if (!empty($person->getLocalFamilyName()) || !empty($person->getLocalGivenName())) {
-            return $userData['Local family name'][CellParameters::VALUE].' '.$userData['Local given name'][CellParameters::VALUE];
+        if (!empty($importLine->localFamilyName) || !empty($importLine->localGivenName)) {
+            return $importLine->localFamilyName.' '.$importLine->localGivenName;
         } else {
-            return $userData['English family name'][CellParameters::VALUE].' '.$userData['English given name'][CellParameters::VALUE];
+            return $importLine->englishFamilyName.' '.$importLine->englishGivenName;
         }
     }
 
