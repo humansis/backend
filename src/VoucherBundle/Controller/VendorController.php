@@ -3,6 +3,7 @@
 namespace VoucherBundle\Controller;
 
 
+use Symfony\Component\HttpKernel\Profiler\Profiler;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -330,11 +331,17 @@ class VendorController extends Controller
      *     description="Bad credentials (username: myUsername)"
      * )
      *
-     * @param Request $request
+     * @param Request       $request
+     * @param Profiler|null $profiler
+     *
      * @return Response
      */
-    public function vendorLoginAction(Request $request): Response
+    public function vendorLoginAction(Request $request, ?Profiler $profiler): Response
     {
+        if (null !== $profiler) {
+            $profiler->disable();
+        }
+
         $username = $request->request->get('username');
         $saltedPassword = $request->request->get('salted_password');
         
