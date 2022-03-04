@@ -3,8 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
-use NewApiBundle\Component\Import\CellParameters;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Serializer\MapperInterface;
 
@@ -14,13 +13,17 @@ class ImportHouseholdDuplicityMapper implements MapperInterface
     private $object;
     /** @var ImportBeneficiaryDuplicityMapper */
     private $beneficiaryDuplicityMapper;
+    /** @var ImportLineFactory */
+    private $importLineFactory;
 
     /**
      * @param ImportBeneficiaryDuplicityMapper $beneficiaryDuplicityMapper
+     * @param ImportLineFactory                $importLineFactory
      */
-    public function __construct(ImportBeneficiaryDuplicityMapper $beneficiaryDuplicityMapper)
+    public function __construct(ImportBeneficiaryDuplicityMapper $beneficiaryDuplicityMapper, ImportLineFactory $importLineFactory)
     {
         $this->beneficiaryDuplicityMapper = $beneficiaryDuplicityMapper;
+        $this->importLineFactory = $importLineFactory;
     }
 
     /**
@@ -97,14 +100,21 @@ class ImportHouseholdDuplicityMapper implements MapperInterface
     public function getRemovedBeneficiaries(): iterable
     {
         foreach ($this->object->getTheirs()->getBeneficiaries() as $missingBeneficiary) {
-            yield $missingBeneficiary->getId();
+            yield [
+                'id' => $missingBeneficiary->getId(),
+                'name' => sprintf('%s %s',
+                    $missingBeneficiary->getPerson()->getLocalGivenName() ?: $missingBeneficiary->getPerson()->getEnGivenName(),
+                    $missingBeneficiary->getPerson()->getLocalFamilyName() ?: $missingBeneficiary->getPerson()->getEnFamilyName()
+                ),
+            ];
         }
     }
 
     public function getAddedBeneficiaries(): iterable
     {
-        foreach ($this->object->getOurs()->getContent() as $index => $beneficiaryData) {
-            yield $index => $beneficiaryData['Local given name'][CellParameters::VALUE].' '.$beneficiaryData['Local family name'][CellParameters::VALUE];
+        $importLines = $this->importLineFactory->createAll($this->object->getOurs());
+        foreach($importLines as $index => $importLine){
+            yield $index => $importLine->localGivenName.' '.$importLine->localFamilyName;
         }
     }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Mapper;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Component\Import\CellParameters;
 use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
 use NewApiBundle\Component\Import\ValueObject\ImportBeneficiaryDuplicityCompare;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
@@ -58,6 +59,27 @@ class ImportBeneficiaryDuplicityMapper implements MapperInterface
             $this->object->getBeneficiary(),
             $this->object
         );
+    }
+
+    public function getOriginFullName(): string
+    {
+        $person = $this->object->getBeneficiary()->getPerson();
+        if (!empty($person->getLocalFamilyName()) || !empty($person->getLocalGivenName())) {
+            return $person->getLocalGivenName().' '.$person->getLocalFamilyName();
+        } else {
+            return $person->getEnGivenName().' '.$person->getEnFamilyName();
+        }
+    }
+
+    public function getDuplicityFullName(): string
+    {
+        $importLine = $this->importLineFactory->create($this->object->getQueue(), $this->object->getMemberIndex());
+
+        if (!empty($importLine->localFamilyName) || !empty($importLine->localGivenName)) {
+            return $importLine->localGivenName.' '.$importLine->localFamilyName;
+        } else {
+            return $importLine->englishGivenName.' '.$importLine->englishFamilyName;
+        }
     }
 
 }
