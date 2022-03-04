@@ -73,7 +73,9 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('l.countryISO3 = :iso3')
             ->setParameter("iso3", $iso3)
         ;
-        LocationRepository::joinPathToRoot($qb, 'l', 'parentLocations');
+
+        // Advanced search are not implemented (see PIN-2908)
+        // LocationRepository::joinPathToRoot($qb, 'l', 'parentLocations');
 
         if ($filter) {
             if ($filter->hasIds()) {
@@ -92,7 +94,7 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
                                 v.addressNumber LIKE :fulltext OR
                                 v.addressPostcode LIKE :fulltext OR
                                 v.addressStreet LIKE :fulltext OR
-                                parentLocations.name LIKE :fulltext)')
+                                l.name LIKE :fulltext)')
                     ->setParameter('fulltextId', $filter->getFulltext())
                     ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
             }
