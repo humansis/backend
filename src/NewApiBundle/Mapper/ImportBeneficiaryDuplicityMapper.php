@@ -65,9 +65,9 @@ class ImportBeneficiaryDuplicityMapper implements MapperInterface
     {
         $person = $this->object->getBeneficiary()->getPerson();
         if (!empty($person->getLocalFamilyName()) || !empty($person->getLocalGivenName())) {
-            return $person->getLocalFamilyName().' '.$person->getLocalGivenName();
+            return $person->getLocalGivenName().' '.$person->getLocalFamilyName();
         } else {
-            return $person->getEnFamilyName().' '.$person->getEnGivenName();
+            return $person->getEnGivenName().' '.$person->getEnFamilyName();
         }
     }
 
@@ -76,9 +76,9 @@ class ImportBeneficiaryDuplicityMapper implements MapperInterface
         $importLine = $this->importLineFactory->create($this->object->getQueue(), $this->object->getMemberIndex());
 
         if (!empty($importLine->localFamilyName) || !empty($importLine->localGivenName)) {
-            return $importLine->localFamilyName.' '.$importLine->localGivenName;
+            return $importLine->localGivenName.' '.$importLine->localFamilyName;
         } else {
-            return $importLine->englishFamilyName.' '.$importLine->englishGivenName;
+            return $importLine->englishGivenName.' '.$importLine->englishFamilyName;
         }
     }
 
