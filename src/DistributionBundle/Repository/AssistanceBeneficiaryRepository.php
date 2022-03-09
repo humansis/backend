@@ -32,6 +32,8 @@ use VoucherBundle\Entity\SmartcardDeposit;
  */
 class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
 {
+    public const SEARCH_CONTEXT_NOT_REMOVED = 'notRemoved';
+
     public function countAll(string $iso3)
     {
         $qb = $this->createQueryBuilder("db");
@@ -150,17 +152,34 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
      * @param BeneficiaryFilterInputType|null $filter
      * @param BeneficiaryOrderInputType|null  $orderBy
      * @param Pagination|null                 $pagination
+     * @param array|null                      $context
+     *
+     * context values [
+     *      notRemoved = show only not removed assistance-bnf
+     * ]
      *
      * @return Paginator
      */
-    public function findBeneficiariesByAssistance(Assistance $assistance, ?BeneficiaryFilterInputType $filter = null, ?BeneficiaryOrderInputType $orderBy = null, ?Pagination $pagination = null): Paginator
-    {
+    public function findBeneficiariesByAssistance(
+        Assistance                  $assistance,
+        ?BeneficiaryFilterInputType $filter = null,
+        ?BeneficiaryOrderInputType  $orderBy = null,
+        ?Pagination                 $pagination = null,
+        ?array                      $context = null
+    ): Paginator {
         $qb = $this->createQueryBuilder('db')
             ->andWhere('db.assistance = :assistance')
             ->setParameter('assistance', $assistance)
             ->leftJoin('db.beneficiary', 'ab')
             ->innerJoin(Beneficiary::class, 'b', 'WITH', 'b.id = ab.id');
 
+        if ($context) {
+            if (in_array(self::SEARCH_CONTEXT_NOT_REMOVED, $context) && $context[self::SEARCH_CONTEXT_NOT_REMOVED]) {
+                $qb
+                    ->andWhere('db.removed = :removed')
+                    ->setParameter('removed', false);
+            }
+        }
 
         if ($pagination) {
             $qb->setMaxResults($pagination->getLimit());
