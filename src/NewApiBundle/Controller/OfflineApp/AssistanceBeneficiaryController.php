@@ -5,6 +5,7 @@ namespace NewApiBundle\Controller\OfflineApp;
 
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
+use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\InputType\CommunityFilterType;
@@ -76,7 +77,8 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
             throw $this->createNotFoundException();
         }
 
-        $assistanceBeneficiaries = $this->getDoctrine()->getRepository(AssistanceBeneficiary::class)->findBeneficiariesByAssistance($assistance, $filter, $orderBy, $pagination);
+        $assistanceBeneficiaries = $this->getDoctrine()->getRepository(AssistanceBeneficiary::class)
+            ->findBeneficiariesByAssistance($assistance, $filter, $orderBy, $pagination, [AssistanceBeneficiaryRepository::SEARCH_CONTEXT_NOT_REMOVED => true]);
 
         $response = $this->json($assistanceBeneficiaries, Response::HTTP_OK, [], [MapperInterface::OFFLINE_APP => true, 'expanded' => true]);
         $response->setEtag(md5($response->getContent()));
