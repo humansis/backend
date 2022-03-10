@@ -17,7 +17,7 @@ stages:
   - static_analysis
   - test
   - backup_db
-  - backup_code
+  # - backup_code
   - report_starting
   - deploy_dev
   - deploy_test
@@ -118,16 +118,16 @@ aws-db-snapshot:
   only:
     - tags
 
-backup-code:
-  stage: backup_code
-  variables:
-    HOSTNAME: api.humansis.org
-  <<: *prepare_ssh
-  script:
-    - ssh ubuntu@${HOSTNAME} "cd /var/www/html/; tar czf backup_$(date '+%Y-%m-%d').tar.gz --exclude=bms_api/var/logs bms_api/"
-  <<: *remove_key
-  only:
-    - tags
+# backup-code:
+#   stage: backup_code
+#   variables:
+#     HOSTNAME: api-old.humansis.org
+#   <<: *prepare_ssh
+#   script:
+#     - ssh ubuntu@${HOSTNAME} "cd /var/www/html/; tar czf backup_$(date '+%Y-%m-%d').tar.gz --exclude=bms_api/var/logs bms_api/"
+#   <<: *remove_key
+#   only:
+#     - tags
 
 deploy dev:
   stage: deploy_dev
@@ -246,7 +246,7 @@ deploy prod:
     name: production
     url: https://api.humansis.org
   variables:
-    HOSTNAME: api.humansis.org
+    HOSTNAME: api-old.humansis.org
     ENVIRONMENT: prod
     CLEAN_DATABASE: "false"
     LOAD_FIXTURES: "false"
