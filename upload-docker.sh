@@ -4,6 +4,12 @@ set -e
 USER=$1
 PASSWORD=$2
 
+VERSION=`git describe --tags`
+
+if [[ $CI_COMMIT_TAG =~ ^v.*$ ]]; then
+  VERSION=$CI_COMMIT_TAG
+fi
+
 docker login -u ${USER} -p ${PASSWORD} ${REPOSITORY_URL}
 
 docker tag build_image ${REPOSITORY_URL}/${REPOSITORY_NAME}/${IMAGE_NAME}:${ENVIRONMENT}
