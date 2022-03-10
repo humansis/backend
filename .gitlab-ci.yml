@@ -262,6 +262,33 @@ deploy prod:
   when: manual
   allow_failure: false
 
+deploy PROD new:
+  stage: deploy_prod
+  image: artifactory.quanti.cz/docker-local/alpine-ssh-git:dind
+  environment:
+    name: prod
+    url: https://api.humansis.org
+  variables:
+    HOSTNAME: api.humansis.org
+    ENVIRONMENT: prod
+    CLEAN_DATABASE: "false"
+    LOAD_FIXTURES: "false"
+    CACHE_CLEAR_MODE: aggressive
+  <<: *prepare_ssh_aws
+  script:
+    - ./build-docker.sh
+    - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
+    - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
+  <<: *remove_key
+  only:
+    - /^v.*$/
+  except:
+    - branches
+  when: manual
+  allow_failure: false
+  tags:
+    - dind
+
 report success:
   stage: report_finished
   extends: .slack_successful_deploy_report

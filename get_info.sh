@@ -23,3 +23,5 @@ sed -i -e "s|__TAG__|$TAG|g" web/build_info.json
 sed -i -e "s|__BRANCH__|$BRANCH|g" web/build_info.json
 
 cat web/build_info.json
+
+export VERSION=$TAG
