@@ -189,6 +189,8 @@ report starting:
       when: on_success
     - if: '$CI_COMMIT_TAG =~ /^v.*$/'
       when: on_success
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      when: on_success
     - when: never
 
 deploy stage:
@@ -273,6 +275,8 @@ report success:
       when: on_success
     - if: '$CI_COMMIT_TAG =~ /^v.*$/'
       when: on_success
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      when: on_success
     - when: never
 
 report failure:
@@ -284,6 +288,8 @@ report failure:
     - if: '$CI_COMMIT_REF_NAME =~ /^release\/.*$/'
       when: on_failure
     - if: '$CI_COMMIT_TAG =~ /^v.*$/'
+      when: on_failure
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
       when: on_failure
     - when: never
 
