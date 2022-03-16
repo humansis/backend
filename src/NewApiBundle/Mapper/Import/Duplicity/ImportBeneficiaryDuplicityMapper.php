@@ -1,7 +1,6 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
-namespace NewApiBundle\Mapper;
+namespace NewApiBundle\Mapper\Import\Duplicity;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use NewApiBundle\Component\Import\CellParameters;
@@ -36,7 +35,7 @@ class ImportBeneficiaryDuplicityMapper implements MapperInterface
     /**
      * {@inheritdoc}
      */
-    public function populate(object $object)
+    public function populate(object $object): void
     {
         if ($object instanceof ImportBeneficiaryDuplicity) {
             $this->object = $object;

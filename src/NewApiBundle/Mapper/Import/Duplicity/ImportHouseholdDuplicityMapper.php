@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace NewApiBundle\Mapper;
+namespace NewApiBundle\Mapper\Import;
 
 use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
