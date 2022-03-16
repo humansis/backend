@@ -5,11 +5,11 @@ namespace NewApiBundle\Mapper\Import\Duplicity;
 use BeneficiaryBundle\Entity\Beneficiary;
 use NewApiBundle\Component\Import\CellParameters;
 use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
-use NewApiBundle\Component\Import\ValueObject\ImportBeneficiaryDuplicityCompare;
+use NewApiBundle\Component\Import\ValueObject\BeneficiaryCompare;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Serializer\MapperInterface;
 
-class ImportBeneficiaryDuplicityMapper implements MapperInterface
+class BeneficiaryDuplicityMapper implements MapperInterface
 {
     /** @var ImportBeneficiaryDuplicity */
     private $object;
@@ -51,9 +51,9 @@ class ImportBeneficiaryDuplicityMapper implements MapperInterface
         return $this->object->getReasons();
     }
 
-    public function getDifferences(): ImportBeneficiaryDuplicityCompare
+    public function getDifferences(): BeneficiaryCompare
     {
-        return new ImportBeneficiaryDuplicityCompare(
+        return new BeneficiaryCompare(
             $this->importLineFactory->create($this->object->getQueue(), $this->object->getMemberIndex()),
             $this->object->getBeneficiary(),
             $this->object

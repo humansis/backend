@@ -1,26 +1,25 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
-namespace NewApiBundle\Mapper\Import;
+namespace NewApiBundle\Mapper\Import\Duplicity;
 
 use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Serializer\MapperInterface;
 
-class ImportHouseholdDuplicityMapper implements MapperInterface
+class HouseholdDuplicityMapper implements MapperInterface
 {
     /** @var ImportHouseholdDuplicity */
     private $object;
-    /** @var ImportBeneficiaryDuplicityMapper */
+    /** @var BeneficiaryDuplicityMapper */
     private $beneficiaryDuplicityMapper;
     /** @var ImportLineFactory */
     private $importLineFactory;
 
     /**
-     * @param ImportBeneficiaryDuplicityMapper $beneficiaryDuplicityMapper
+     * @param BeneficiaryDuplicityMapper $beneficiaryDuplicityMapper
      * @param ImportLineFactory                $importLineFactory
      */
-    public function __construct(ImportBeneficiaryDuplicityMapper $beneficiaryDuplicityMapper, ImportLineFactory $importLineFactory)
+    public function __construct(BeneficiaryDuplicityMapper $beneficiaryDuplicityMapper, ImportLineFactory $importLineFactory)
     {
         $this->beneficiaryDuplicityMapper = $beneficiaryDuplicityMapper;
         $this->importLineFactory = $importLineFactory;

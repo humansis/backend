@@ -6,7 +6,7 @@ use BeneficiaryBundle\Entity;
 use NewApiBundle\Component\Import\Integrity;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 
-class ImportBeneficiaryDuplicityCompare
+class BeneficiaryCompare
 {
     /**
      * @var Integrity\ImportLine

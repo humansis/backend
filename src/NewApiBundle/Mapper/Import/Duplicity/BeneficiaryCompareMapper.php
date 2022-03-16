@@ -7,7 +7,7 @@ use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;
-use NewApiBundle\Component\Import\ValueObject\ImportBeneficiaryDuplicityCompare;
+use NewApiBundle\Component\Import\ValueObject\BeneficiaryCompare;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Enum\HouseholdAssets;
@@ -16,9 +16,9 @@ use NewApiBundle\Enum\VulnerabilityCriteria;
 use NewApiBundle\InputType\Helper\EnumsBuilder;
 use NewApiBundle\Serializer\MapperInterface;
 
-class ImportBeneficiaryDuplicityCompareMapper implements MapperInterface
+class BeneficiaryCompareMapper implements MapperInterface
 {
-    /** @var ImportBeneficiaryDuplicityCompare */
+    /** @var BeneficiaryCompare */
     private $object;
 
     /**
@@ -26,7 +26,7 @@ class ImportBeneficiaryDuplicityCompareMapper implements MapperInterface
      */
     public function supports(object $object, $format = null, array $context = null): bool
     {
-        return $object instanceof ImportBeneficiaryDuplicityCompare && isset($context[self::NEW_API]) && true === $context[self::NEW_API];
+        return $object instanceof BeneficiaryCompare && isset($context[self::NEW_API]) && true === $context[self::NEW_API];
     }
 
     /**
@@ -34,13 +34,13 @@ class ImportBeneficiaryDuplicityCompareMapper implements MapperInterface
      */
     public function populate(object $object)
     {
-        if ($object instanceof ImportBeneficiaryDuplicityCompare) {
+        if ($object instanceof BeneficiaryCompare) {
             $this->object = $object;
 
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.ImportBeneficiaryDuplicityCompare::class.', '.get_class($object).' given.');
+        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.BeneficiaryCompare::class.', '.get_class($object).' given.');
     }
 
     private function compareScalarValue($databaseValue, $importValue): ?array
