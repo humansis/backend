@@ -3,6 +3,7 @@
 namespace NewApiBundle\Mapper\Import\Duplicity;
 
 use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
+use NewApiBundle\Component\Import\ValueObject\HouseholdCompare;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Serializer\MapperInterface;
 
@@ -65,6 +66,14 @@ class HouseholdDuplicityMapper implements MapperInterface
     public function getState(): string
     {
         return $this->object->getState();
+    }
+
+    public function getDifferences(): HouseholdCompare
+    {
+        return new HouseholdCompare(
+            $this->importLineFactory->create($this->object->getOurs(), 0),
+            $this->object->getTheirs()
+        );
     }
 
     /**

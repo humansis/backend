@@ -18,6 +18,8 @@ use NewApiBundle\Serializer\MapperInterface;
 
 class BeneficiaryCompareMapper implements MapperInterface
 {
+    use CompareTrait;
+
     /** @var BeneficiaryCompare */
     private $object;
 
@@ -43,25 +45,6 @@ class BeneficiaryCompareMapper implements MapperInterface
         throw new \InvalidArgumentException('Invalid argument. It should be instance of '.BeneficiaryCompare::class.', '.get_class($object).' given.');
     }
 
-    private function compareScalarValue($databaseValue, $importValue): ?array
-    {
-        if ($databaseValue === $importValue) return null;
-        return [
-            'database' => $databaseValue,
-            'import' => $importValue,
-        ];
-    }
-
-    private function compareLists(array $databaseValues, array $importValues): ?array
-    {
-        $data = [
-            'same' => array_intersect($databaseValues, $importValues),
-            'database' => array_diff($databaseValues, $importValues),
-            'import' => array_diff($importValues, $databaseValues),
-        ];
-        if (empty($data['database']) && empty($data['import'])) return null;
-        return $data;
-    }
 
     public function getHouseholdId(): ?array
     {
