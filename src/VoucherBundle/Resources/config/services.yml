@@ -6,6 +6,15 @@ services:
         autowire: true
         tags: [ 'app.controller' ]
 
+    VoucherBundle\Repository\VendorRepository:
+        class: Doctrine\ORM\EntityRepository
+        calls:
+            - setLocationRepository: ['@locationRepository']
+            - setAdmRepositories: ['@adm1Repository', '@adm2Repository', '@adm3Repository', '@adm4Repository']
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - VoucherBundle\Entity\Vendor
+
 #######################################################################################
 ##                                       CRUD                                        ##
 #######################################################################################

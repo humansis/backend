@@ -24,31 +24,41 @@ services:
         alias: monolog.logger
         public: true
 
-    CommonBundle\Repository\LocationRepository:
+    CommonBundle\Repository\LocationRepository: '@locationRepository'
+
+    CommonBundle\Repository\Adm1Repository: '@adm1Repository'
+
+    CommonBundle\Repository\Adm2Repository: '@adm2Repository'
+
+    CommonBundle\Repository\Adm3Repository: '@adm3Repository'
+
+    CommonBundle\Repository\Adm4Repository: '@adm4Repository'
+
+    locationRepository:
         class: Doctrine\ORM\EntityRepository
         factory: ['@doctrine.orm.default_entity_manager', getRepository]
         arguments:
             - CommonBundle\Entity\Location
 
-    CommonBundle\Repository\Adm1Repository:
+    adm1Repository:
         class: Doctrine\ORM\EntityRepository
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - CommonBundle\Entity\Adm1
 
-    CommonBundle\Repository\Adm2Repository:
+    adm2Repository:
         class: Doctrine\ORM\EntityRepository
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - CommonBundle\Entity\Adm2
 
-    CommonBundle\Repository\Adm3Repository:
+    adm3Repository:
         class: Doctrine\ORM\EntityRepository
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - CommonBundle\Entity\Adm3
 
-    CommonBundle\Repository\Adm4Repository:
+    adm4Repository:
         class: Doctrine\ORM\EntityRepository
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
