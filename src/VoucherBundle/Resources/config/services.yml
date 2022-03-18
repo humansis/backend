@@ -9,8 +9,7 @@ services:
     VoucherBundle\Repository\VendorRepository:
         class: Doctrine\ORM\EntityRepository
         calls:
-            - setLocationRepository: ['@locationRepository']
-            - setAdmRepositories: ['@adm1Repository', '@adm2Repository', '@adm3Repository', '@adm4Repository']
+            - setLocationRepository: ['@CommonBundle\Repository\LocationRepository']
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - VoucherBundle\Entity\Vendor

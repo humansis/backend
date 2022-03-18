@@ -3,11 +3,6 @@
 namespace VoucherBundle\Repository;
 
 use CommonBundle\Entity\Location;
-use CommonBundle\Repository\Adm1Repository;
-use CommonBundle\Repository\Adm2Repository;
-use CommonBundle\Repository\Adm3Repository;
-use CommonBundle\Repository\Adm4Repository;
-use CommonBundle\Repository\AdmBaseRepository;
 use CommonBundle\Repository\LocationRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\InputType\VendorFilterInputType;
@@ -29,41 +24,10 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
      */
     private $locationRepository;
 
-    /**
-     * @var Adm1Repository
-     */
-    private $adm1Repository;
-
-    /**
-     * @var Adm2Repository
-     */
-    private $adm2Repository;
-
-    /**
-     * @var Adm3Repository
-     */
-    private $adm3Repository;
-
-    /**
-     * @var Adm4Repository
-     */
-    private $adm4Repository;
 
     public function setLocationRepository(LocationRepository $locationRepository)
     {
         $this->locationRepository = $locationRepository;
-    }
-
-    public function setAdmRepositories(
-        Adm1Repository $adm1Repository,
-        Adm2Repository $adm2Repository,
-        Adm3Repository $adm3Repository,
-        Adm4Repository $adm4Repository
-    ) {
-        $this->adm1Repository = $adm1Repository;
-        $this->adm2Repository = $adm2Repository;
-        $this->adm3Repository = $adm3Repository;
-        $this->adm4Repository = $adm4Repository;
     }
 
     public function getVendorByUser(User $user)
@@ -153,29 +117,14 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
                     if (is_null($location)) {
                         throw new NotFoundHttpException("Location $locationId was not found");
                     }
-                    $locations = array_unique(array_merge($locations, $this->getChildrenLocationIdListByLocation($location)), SORT_REGULAR);
+                    $locations = array_unique(array_merge($locations, (array) $this->getChildrenLocationIdListByLocation($location)),
+                        SORT_REGULAR);
                 }
-            }
-            if ($filter->hasAdms1()) {
-                $adm1Locations = $this->getChildrenLocationIdListByAdm($this->adm1Repository, $filter->getAdms1(), 1);
-                $locations = array_unique(array_merge($locations, $adm1Locations), SORT_REGULAR);
-            }
-            if ($filter->hasAdms2()) {
-                $adm2Locations = $this->getChildrenLocationIdListByAdm($this->adm2Repository, $filter->getAdms2(), 2);
-                $locations = array_unique(array_merge($locations, $adm2Locations), SORT_REGULAR);
-            }
-            if ($filter->hasAdms3()) {
-                $adm3Locations = $this->getChildrenLocationIdListByAdm($this->adm3Repository, $filter->getAdms3(), 3);
-                $locations = array_unique(array_merge($locations, $adm3Locations), SORT_REGULAR);
-            }
-            if ($filter->hasAdms4()) {
-                $adm4Locations = $this->getChildrenLocationIdListByAdm($this->adm4Repository, $filter->getAdms4(), 4);
-                $locations = array_unique(array_merge($locations, $adm4Locations), SORT_REGULAR);
-            }
 
-            if (count($locations) > 0) {
-                $qb->andWhere($qb->expr()->in('v.location', ':locations'))
-                    ->setParameter('locations', $locations);
+                if (count($locations) > 0) {
+                    $qb->andWhere($qb->expr()->in('v.location', ':locations'))
+                        ->setParameter('locations', $locations);
+                }
             }
         }
 
@@ -226,39 +175,15 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * @param AdmBaseRepository $entityRepository
-     * @param array             $admIdList
-     * @param int               $level
-     *
-     * @return int[]
-     */
-    private function getChildrenLocationIdListByAdm(AdmBaseRepository $entityRepository, array $admIdList, int $level): array
-    {
-        $locations = [];
-        foreach ($admIdList as $admKey => $admId) {
-            $adm = $entityRepository->find($admId);
-            if (!$adm) {
-                throw new NotFoundHttpException(sprintf('Adm%s id %s does not exist', $level, $admId));
-            }
-            $locations[] = $this->getChildrenLocationIdListByLocation($adm->getLocation());
-        }
-
-        return $locations;
-    }
-
-    /**
      * @param Location $location
      *
      * @return int[]
      */
     private function getChildrenLocationIdListByLocation(Location $location): iterable
     {
-        $locations = [];
         $children = $this->locationRepository->getChildrenLocations($location);
         foreach ($children as $childKey => $child) {
-            $locations[] = $child->getId();
+            yield $child->getId();
         }
-
-        return $locations;
     }
 }
