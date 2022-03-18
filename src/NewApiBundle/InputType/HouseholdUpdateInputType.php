@@ -480,7 +480,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      * @return \DateTime|null
      * @throws \Exception
      */
-    public function getSupportDateReceived()
+    public function getSupportDateReceived(): ?\DateTime
     {
         if (!$this->supportDateReceived) return null;
         $iso = \DateTime::createFromFormat(\DateTimeInterface::ISO8601, $this->supportDateReceived);

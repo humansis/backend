@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Component\Import;
 
@@ -69,12 +68,18 @@ class ImportDuplicityTest extends KernelTestCase
     /** @var ProjectService */
     private $projectService;
 
+    /**
+     * @var object|\Symfony\Bundle\FrameworkBundle\KernelBrowser|null
+     */
+    private $client;
+
     protected function setUp()
     {
         parent::setUp();
 
         $kernel = self::bootKernel();
         $this->application = new Application($kernel);
+        $this->client = $kernel->getContainer()->get('test.client');
 
         $this->entityManager = $kernel->getContainer()
             ->get('doctrine')
@@ -115,6 +120,7 @@ class ImportDuplicityTest extends KernelTestCase
         $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::IDENTITY_CANDIDATE], ['id' => 'asc']);
         $this->assertQueueCount(2, $import);
         $this->assertQueueCount(2, $import, [ImportQueueState::IDENTITY_CANDIDATE]);
+        $this->checkDuplicityEndpoint($import);
 
         /** @var ImportQueue $item */
         foreach ($queue as $item) {
@@ -130,6 +136,7 @@ class ImportDuplicityTest extends KernelTestCase
         $this->assertQueueCount(2, $import);
         $this->assertQueueCount(2, $import, [ImportQueueState::TO_UPDATE]);
         $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
+        $this->checkDuplicityEndpoint($import);
     }
 
     public function testUpdateDuplicitiesByBatch()
@@ -141,6 +148,7 @@ class ImportDuplicityTest extends KernelTestCase
         );
         $this->assertQueueCount(2, $import);
         $this->assertQueueCount(2, $import, [ImportQueueState::IDENTITY_CANDIDATE]);
+        $this->checkDuplicityEndpoint($import);
 
         $duplicityResolve = new ResolveAllDuplicitiesInputType();
         $duplicityResolve->setStatus(ImportQueueState::TO_UPDATE);
@@ -148,6 +156,7 @@ class ImportDuplicityTest extends KernelTestCase
 
         $this->assertQueueCount(2, $import);
         $this->assertQueueCount(2, $import, [ImportQueueState::TO_UPDATE]);
+        $this->checkDuplicityEndpoint($import);
 
         $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
     }
@@ -162,6 +171,7 @@ class ImportDuplicityTest extends KernelTestCase
 
         $this->assertQueueCount(2, $import);
         $this->assertQueueCount(2, $import, [ImportQueueState::IDENTITY_CANDIDATE]);
+        $this->checkDuplicityEndpoint($import);
 
         $duplicityResolve = new ResolveAllDuplicitiesInputType();
         $duplicityResolve->setStatus(ImportQueueState::TO_UPDATE);
@@ -170,6 +180,7 @@ class ImportDuplicityTest extends KernelTestCase
         $this->assertQueueCount(2, $import);
         $this->assertQueueCount(1, $import, [ImportQueueState::TO_UPDATE]);
         $this->assertQueueCount(1, $import, [ImportQueueState::IDENTITY_CANDIDATE]);
+        $this->checkDuplicityEndpoint($import);
 
         $this->assertEquals(ImportState::IDENTITY_CHECK_FAILED, $import->getState());
     }
@@ -206,6 +217,26 @@ class ImportDuplicityTest extends KernelTestCase
         $this->entityManager->refresh($secondImport);
 
         return $secondImport;
+    }
+
+    private function checkDuplicityEndpoint(Import $import)
+    {
+        $this->request('GET', '/api/basic/web-app/v1/imports/'.$import->getId().'/duplicities');
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+    }
+
+    private function request($method, $uri, $body = [], $files = [], $headers = null)
+    {
+        $headers = array_merge([
+            'HTTP_COUNTRY' => 'SYR',
+            'PHP_AUTH_USER' => 'admin@example.org',
+            'PHP_AUTH_PW'   => 'pin1234'
+        ], (array) $headers);
+        $this->client->request($method, $uri, $body, $files, $headers);
     }
 
 }

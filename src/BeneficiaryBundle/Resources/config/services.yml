@@ -60,6 +60,11 @@ services:
         arguments:
             - BeneficiaryBundle\Entity\Beneficiary
 
+    BeneficiaryBundle\Repository\CountrySpecificRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - BeneficiaryBundle\Entity\CountrySpecific
+
     BeneficiaryBundle\Mapper\CommunityMapper:
         arguments:
             - '@BeneficiaryBundle\Mapper\AddressMapper'

@@ -62,6 +62,11 @@ services:
     CommonBundle\Mapper\LocationMapper:
         public: true
 
+    CommonBundle\Repository\LocationRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - CommonBundle\Entity\Location
+
 #######################################################################################
 ##                                     LISTENER                                      ##
 #######################################################################################

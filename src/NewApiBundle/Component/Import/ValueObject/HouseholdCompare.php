@@ -3,46 +3,45 @@
 namespace NewApiBundle\Component\Import\ValueObject;
 
 use BeneficiaryBundle\Entity;
-use NewApiBundle\Component\Import\Integrity;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
-use NewApiBundle\Entity\ImportHouseholdDuplicity;
+use NewApiBundle\InputType\HouseholdCreateInputType;
 
 class HouseholdCompare
 {
     /**
-     * @var Integrity\ImportLine
+     * @var HouseholdCreateInputType
      */
-    private $importLine;
+    private $imported;
 
     /**
      * @var Entity\Household
      */
-    private $household;
+    private $current;
 
     /**
-     * @param Integrity\ImportLine $importLine
-     * @param Entity\Household     $household
+     * @param HouseholdCreateInputType $imported
+     * @param Entity\Household         $current
      */
-    public function __construct(Integrity\ImportLine $importLine, Entity\Household $household)
+    public function __construct(HouseholdCreateInputType $imported, Entity\Household $current)
     {
-        $this->importLine = $importLine;
-        $this->household = $household;
+        $this->imported = $imported;
+        $this->current = $current;
     }
 
     /**
-     * @return Integrity\ImportLine
+     * @return HouseholdCreateInputType
      */
-    public function getImportLine(): Integrity\ImportLine
+    public function getImported(): HouseholdCreateInputType
     {
-        return $this->importLine;
+        return $this->imported;
     }
 
     /**
      * @return Entity\Household
      */
-    public function getHousehold(): Entity\Household
+    public function getCurrent(): Entity\Household
     {
-        return $this->household;
+        return $this->current;
     }
+
 
 }
