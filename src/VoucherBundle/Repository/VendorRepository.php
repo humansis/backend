@@ -4,11 +4,11 @@ namespace VoucherBundle\Repository;
 
 use CommonBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
-use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\InputType\VendorFilterInputType;
 use NewApiBundle\InputType\VendorOrderInputType;
 use NewApiBundle\Request\Pagination;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use UserBundle\Entity\User;
 
 /**
@@ -19,6 +19,17 @@ use UserBundle\Entity\User;
  */
 class VendorRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * @var LocationRepository
+     */
+    private $locationRepository;
+
+
+    public function setLocationRepository(LocationRepository $locationRepository)
+    {
+        $this->locationRepository = $locationRepository;
+    }
+
     public function getVendorByUser(User $user)
     {
         $qb = $this->createQueryBuilder('v');
@@ -74,9 +85,6 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter("iso3", $iso3)
         ;
 
-        // Advanced search are not implemented (see PIN-2908)
-        // LocationRepository::joinPathToRoot($qb, 'l', 'parentLocations');
-
         if ($filter) {
             if ($filter->hasIds()) {
                 $qb->andWhere('v.id IN (:ids)')
@@ -97,6 +105,26 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
                                 l.name LIKE :fulltext)')
                     ->setParameter('fulltextId', $filter->getFulltext())
                     ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+            }
+
+            $locations = [];
+
+            if ($filter->hasLocations()) {
+                foreach ($filter->getLocations() as $locationKey => $locationId) {
+
+                    /** @var Location|null $location */
+                    $location = $this->locationRepository->find($locationId);
+                    if (is_null($location)) {
+                        throw new NotFoundHttpException("Location $locationId was not found");
+                    }
+                    $locations = array_unique(array_merge($locations, (array) $this->getChildrenLocationIdListByLocation($location)),
+                        SORT_REGULAR);
+                }
+
+                if (count($locations) > 0) {
+                    $qb->andWhere($qb->expr()->in('v.location', ':locations'))
+                        ->setParameter('locations', $locations);
+                }
             }
         }
 
@@ -144,5 +172,18 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
         }
 
         return new Paginator($qb);
+    }
+
+    /**
+     * @param Location $location
+     *
+     * @return int[]
+     */
+    private function getChildrenLocationIdListByLocation(Location $location): iterable
+    {
+        $children = $this->locationRepository->getChildrenLocations($location);
+        foreach ($children as $childKey => $child) {
+            yield $child->getId();
+        }
     }
 }

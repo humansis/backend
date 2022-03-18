@@ -66,6 +66,7 @@ services:
     NewApiBundle\Controller\:
         resource: '../../Controller'
         public: true
+        autowire: true
         tags: [ 'app.controller' ]
 
     NewApiBundle\Command\:
