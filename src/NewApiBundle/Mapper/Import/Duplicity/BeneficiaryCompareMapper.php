@@ -1,14 +1,13 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
-namespace NewApiBundle\Mapper;
+namespace NewApiBundle\Mapper\Import\Duplicity;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;
-use NewApiBundle\Component\Import\ValueObject\ImportBeneficiaryDuplicityCompare;
+use NewApiBundle\Component\Import\ValueObject\BeneficiaryCompare;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Enum\HouseholdAssets;
@@ -17,9 +16,11 @@ use NewApiBundle\Enum\VulnerabilityCriteria;
 use NewApiBundle\InputType\Helper\EnumsBuilder;
 use NewApiBundle\Serializer\MapperInterface;
 
-class ImportBeneficiaryDuplicityCompareMapper implements MapperInterface
+class BeneficiaryCompareMapper implements MapperInterface
 {
-    /** @var ImportBeneficiaryDuplicityCompare */
+    use CompareTrait;
+
+    /** @var BeneficiaryCompare */
     private $object;
 
     /**
@@ -27,7 +28,7 @@ class ImportBeneficiaryDuplicityCompareMapper implements MapperInterface
      */
     public function supports(object $object, $format = null, array $context = null): bool
     {
-        return $object instanceof ImportBeneficiaryDuplicityCompare && isset($context[self::NEW_API]) && true === $context[self::NEW_API];
+        return $object instanceof BeneficiaryCompare && isset($context[self::NEW_API]) && true === $context[self::NEW_API];
     }
 
     /**
@@ -35,34 +36,15 @@ class ImportBeneficiaryDuplicityCompareMapper implements MapperInterface
      */
     public function populate(object $object)
     {
-        if ($object instanceof ImportBeneficiaryDuplicityCompare) {
+        if ($object instanceof BeneficiaryCompare) {
             $this->object = $object;
 
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.ImportBeneficiaryDuplicityCompare::class.', '.get_class($object).' given.');
+        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.BeneficiaryCompare::class.', '.get_class($object).' given.');
     }
 
-    private function compareScalarValue($databaseValue, $importValue): ?array
-    {
-        if ($databaseValue === $importValue) return null;
-        return [
-            'database' => $databaseValue,
-            'import' => $importValue,
-        ];
-    }
-
-    private function compareLists(array $databaseValues, array $importValues): ?array
-    {
-        $data = [
-            'same' => array_intersect($databaseValues, $importValues),
-            'database' => array_diff($databaseValues, $importValues),
-            'import' => array_diff($importValues, $databaseValues),
-        ];
-        if (empty($data['database']) && empty($data['import'])) return null;
-        return $data;
-    }
 
     public function getHouseholdId(): ?array
     {

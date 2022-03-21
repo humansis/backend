@@ -1,29 +1,30 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
-namespace NewApiBundle\Mapper;
+namespace NewApiBundle\Mapper\Import\Duplicity;
 
+use NewApiBundle\Component\Import\Finishing\HouseholdDecoratorBuilder;
 use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
+use NewApiBundle\Component\Import\ValueObject\HouseholdCompare;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Serializer\MapperInterface;
 
-class ImportHouseholdDuplicityMapper implements MapperInterface
+class HouseholdDuplicityMapper implements MapperInterface
 {
     /** @var ImportHouseholdDuplicity */
     private $object;
-    /** @var ImportBeneficiaryDuplicityMapper */
-    private $beneficiaryDuplicityMapper;
     /** @var ImportLineFactory */
     private $importLineFactory;
+    /** @var HouseholdDecoratorBuilder */
+    private $decoratorBuilder;
 
     /**
-     * @param ImportBeneficiaryDuplicityMapper $beneficiaryDuplicityMapper
-     * @param ImportLineFactory                $importLineFactory
+     * @param ImportLineFactory         $importLineFactory
+     * @param HouseholdDecoratorBuilder $decoratorBuilder
      */
-    public function __construct(ImportBeneficiaryDuplicityMapper $beneficiaryDuplicityMapper, ImportLineFactory $importLineFactory)
+    public function __construct(ImportLineFactory $importLineFactory, HouseholdDecoratorBuilder $decoratorBuilder)
     {
-        $this->beneficiaryDuplicityMapper = $beneficiaryDuplicityMapper;
         $this->importLineFactory = $importLineFactory;
+        $this->decoratorBuilder = $decoratorBuilder;
     }
 
     /**
@@ -68,26 +69,12 @@ class ImportHouseholdDuplicityMapper implements MapperInterface
         return $this->object->getState();
     }
 
-    /**
-     * @deprecated it is there only for backward compatibility, remove it after FE makes better view of duplicity reasons for BNFs
-     * @return iterable
-     */
-    public function getReasons(): iterable
+    public function getDifferences(): HouseholdCompare
     {
-        foreach ($this->object->getBeneficiaryDuplicities() as $duplicity) {
-            $this->beneficiaryDuplicityMapper->populate($duplicity);
-            $reasons = '';
-            foreach ($this->beneficiaryDuplicityMapper->getReasons() as $reason) {
-                $reasons .= implode(': ', $reason);
-            }
-            if ($duplicity->getMemberIndex() == 0) {
-                yield "Imported HHH => BNF#".$duplicity->getBeneficiary()->getId()." in DB<br>"
-                    ."<strong>Because:</strong><br>".$reasons;
-            } else {
-                yield "Imported member BNF #".$duplicity->getMemberIndex()." => BNF#".$duplicity->getBeneficiary()->getId()." in DB<br>"
-                    ."<strong>Because:</strong><br>".$reasons;
-            }
-        }
+        return new HouseholdCompare(
+            $this->decoratorBuilder->buildHouseholdInputType($this->object->getOurs()),
+            $this->object->getTheirs()
+        );
     }
 
     public function getMemberDuplicities(): iterable
