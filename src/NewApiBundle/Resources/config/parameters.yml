@@ -2,7 +2,7 @@ parameters:
         import.invalidFilesDirectory: '%kernel.project_dir%/var/imports/invalid'
         import.uploadedFilesDirectory: '%kernel.project_dir%/var/imports/uploaded'
         import.maxFileSizeToLoad: 1 #in MB
-        import.batch_size: 600
+        import.batch_size: 200
 
 
         logs.vendorAppPath: 'vendor_app/vendor-<<vendorId>>/<<datetime>>/'
