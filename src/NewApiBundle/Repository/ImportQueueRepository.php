@@ -59,7 +59,7 @@ class ImportQueueRepository extends EntityRepository
             ->getSingleScalarResult();
     }
 
-    public function getTotalResolvedDuplicities(Import $import)
+    public function getTotalResolvedDuplicities(Import $import): int
     {
         return (int) $this->createQueryBuilder('iq')
             ->select('COUNT(iq)')

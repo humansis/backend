@@ -160,7 +160,7 @@ class ImportService
         $statistics->setAmountIntegrityCorrect($repository->getTotalByImportAndStatus($import, ImportQueueState::VALID));
         $statistics->setAmountIntegrityFailed($repository->getTotalByImportAndStatus($import, ImportQueueState::INVALID));
         $statistics->setAmountDuplicities($repository->getTotalByImportAndStatus($import, ImportQueueState::IDENTITY_CANDIDATE));
-        $statistics->setAmountDuplicitiesResolved($repository->getTotalReadyForSave($import));
+        $statistics->setAmountDuplicitiesResolved($repository->getTotalResolvedDuplicities($import));
         $statistics->setAmountEntriesToImport($repository->getTotalReadyForSave($import));
         $statistics->setStatus($import->getState());
 
