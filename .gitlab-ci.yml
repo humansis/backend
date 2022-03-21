@@ -179,6 +179,32 @@ deploy test:
   tags:
     - dind
 
+deploy test clean:
+  stage: deploy_test
+  image: artifactory.quanti.cz/docker-local/alpine-ssh-git:dind
+  environment:
+    name: test-new
+    url: https://api-test.humansis.org
+  variables:
+    HOSTNAME: api-test.humansis.org
+    ENVIRONMENT: test
+    CLEAN_DATABASE: "true"
+    LOAD_FIXTURES: "test"
+    CACHE_CLEAR_MODE: aggressive
+  <<: *prepare_ssh_aws
+  script:
+    - ./build-docker.sh
+    - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
+    - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
+  <<: *remove_key
+  only:
+    - /^develop$/
+  except:
+    - tags
+  when: manual
+  tags:
+    - dind
+
 report starting:
   stage: report_starting
   extends: .slack_starting_deploy_report
