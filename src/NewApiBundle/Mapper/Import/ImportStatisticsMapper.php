@@ -57,6 +57,11 @@ class ImportStatisticsMapper implements MapperInterface
         return $this->object->getAmountDuplicitiesResolved();
     }
 
+    public function getAmountDuplicitiesToSolve(): int
+    {
+        return $this->object->getAmountDuplicities() - $this->object->getAmountDuplicitiesResolved();
+    }
+
     public function getAmountEntriesToImport(): int
     {
         return $this->object->getAmountEntriesToImport();
