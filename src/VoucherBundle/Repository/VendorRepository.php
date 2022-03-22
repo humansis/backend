@@ -4,12 +4,14 @@ namespace VoucherBundle\Repository;
 
 use CommonBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\InputType\VendorFilterInputType;
 use NewApiBundle\InputType\VendorOrderInputType;
 use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use UserBundle\Entity\User;
+use VoucherBundle\Entity\SmartcardPurchase;
 
 /**
  * VendorRepository.
@@ -70,6 +72,7 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
      * @param Pagination|null            $pagination
      *
      * @return Paginator
+     * @throws \NewApiBundle\Enum\EnumValueNoFoundException
      */
     public function findByParams(
         ?string $iso3,
@@ -105,6 +108,18 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
                                 l.name LIKE :fulltext)')
                     ->setParameter('fulltextId', $filter->getFulltext())
                     ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+            }
+            if (is_bool($filter->getIsInvoiced())) {
+                $vendors = [];
+                $vendorsSelection = $this->getVendorsByInvoicing($filter->getIsInvoiced(), $iso3)
+                    ->getQuery()->getArrayResult();
+                foreach ($vendorsSelection as $key => $vendor) {
+                    $vendors[] = $vendor['id'];
+                }
+
+                $qb
+                    ->andWhere($qb->expr()->in('v.id', ':vendorsByInvoiced'))
+                    ->setParameter('vendorsByInvoiced', $vendors);
             }
 
             $locations = [];
@@ -185,5 +200,35 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
         foreach ($children as $childKey => $child) {
             yield $child->getId();
         }
+    }
+
+    /**
+     * @param bool   $paid
+     * @param string $countryIso3
+     *
+     * @return Paginator
+     */
+    private function getVendorsByInvoicing(bool $paid, string $countryIso3): Paginator
+    {
+        $qb = $this->createQueryBuilder('v');
+        $qb
+            ->leftJoin('v.location', 'l')
+            ->leftJoin(SmartcardPurchase::class, 'sp', Join::WITH, 'sp.vendor = v.id')
+            ->andWhere(
+                $qb->expr()->eq('l.countryISO3', ':countryIso3'),
+                $qb->expr()->eq('v.archived', ':archived')
+            )
+            ->setParameters([
+                'countryIso3' => $countryIso3,
+                'archived' => 0,
+            ])
+            ->groupBy('v.id')
+            ->having(
+                $paid ?
+                    'SUM(IS_NULL(sp.redemptionBatch)) = 0 AND SUM(IS_NOT_NULL(sp.redemptionBatch)) > 0' :
+                    'SUM(IS_NULL(sp.redemptionBatch)) > 0 AND COUNT(sp.id) > 0'
+            );
+
+        return new Paginator($qb);
     }
 }
