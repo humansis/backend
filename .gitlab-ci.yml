@@ -72,6 +72,7 @@ test:
   before_script:
     - sudo composer self-update --1
     - cp app/config/parameters.yml.test app/config/parameters.yml
+    - ./substitute_variables.sh
     - composer install
     - php bin/console doctrine:database:create --env=test || true
     - php bin/console doctrine:migrations:migrate -n --env=test
@@ -143,6 +144,7 @@ deploy dev:
     CACHE_CLEAR_MODE: aggressive
   <<: *prepare_ssh_aws
   script:
+    - ./substitute_variables.sh
     - ./build-docker.sh
     - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
     - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
@@ -167,6 +169,7 @@ deploy test:
     CACHE_CLEAR_MODE: aggressive
   <<: *prepare_ssh_aws
   script:
+    - ./substitute_variables.sh
     - ./build-docker.sh
     - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
     - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
@@ -193,6 +196,7 @@ deploy test clean:
     CACHE_CLEAR_MODE: aggressive
   <<: *prepare_ssh_aws
   script:
+    - ./substitute_variables.sh
     - ./build-docker.sh
     - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
     - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
@@ -233,6 +237,7 @@ deploy stage:
     CACHE_CLEAR_MODE: aggressive
   <<: *prepare_ssh_aws
   script:
+    - ./substitute_variables.sh
     - ./build-docker.sh
     - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
     - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
@@ -258,6 +263,7 @@ deploy demo:
     CACHE_CLEAR_MODE: aggressive
   <<: *prepare_ssh_aws
   script:
+    - ./substitute_variables.sh
     - ./build-docker.sh
     - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
     - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
@@ -282,6 +288,7 @@ deploy prod:
     CACHE_CLEAR_MODE: aggressive
   <<: *prepare_ssh
   script:
+    - ./substitute_variables.sh
     - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
   <<: *remove_key
   only:
