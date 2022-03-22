@@ -38,3 +38,5 @@ parameters:
     aws.logs.version: 'latest'
     aws.logs.bucket: 'logs.humansis.org'
     aws.logs.folder: 'logs'
+
+    import.batch_size: '%env(IMPORT_BATCH_SIZE)%'
