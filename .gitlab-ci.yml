@@ -18,14 +18,12 @@ stages:
   - test
   - backup_db
   - backup_code
-  - report_starting
   - deploy_dev
   - deploy_test
   - deploy_test_new
   - deploy_stage
   - deploy_demo
   - deploy_prod
-  - report_finished
   - upload_db
 
 .prepare_ssh: &prepare_ssh
@@ -144,6 +142,7 @@ deploy dev:
     CACHE_CLEAR_MODE: aggressive
   <<: *prepare_ssh_aws
   script:
+    - ./slackScripts/slack_started.sh
     - ./build-docker.sh
     - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
     - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
@@ -151,6 +150,13 @@ deploy dev:
   <<: *remove_key
   only:
     - branches
+  after_script:
+    - >
+      if [ $CI_JOB_STATUS == 'success' ]; then
+        ./slackScripts/slack_successful.sh
+      else
+        ./slackScripts/slack_failed.sh
+      fi
   when: manual
   tags:
     - dind
@@ -169,6 +175,7 @@ deploy test:
     CACHE_CLEAR_MODE: aggressive
   <<: *prepare_ssh_aws
   script:
+    - ./slackScripts/slack_started.sh
     - ./build-docker.sh
     - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
     - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
@@ -178,6 +185,13 @@ deploy test:
     - /^develop$/
   except:
     - tags
+  after_script:
+    - >
+      if [ $CI_JOB_STATUS == 'success' ]; then
+        ./slackScripts/slack_successful.sh
+      else
+        ./slackScripts/slack_failed.sh
+      fi
   when: manual
   tags:
     - dind
@@ -196,6 +210,7 @@ deploy test clean:
     CACHE_CLEAR_MODE: aggressive
   <<: *prepare_ssh_aws
   script:
+    - ./slackScripts/slack_started.sh
     - ./build-docker.sh
     - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
     - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
@@ -205,23 +220,16 @@ deploy test clean:
     - /^develop$/
   except:
     - tags
+  after_script:
+    - >
+      if [ $CI_JOB_STATUS == 'success' ]; then
+        ./slackScripts/slack_successful.sh
+      else
+        ./slackScripts/slack_failed.sh
+      fi
   when: manual
   tags:
     - dind
-
-report starting:
-  stage: report_starting
-  extends: .slack_starting_deploy_report
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
-    - if: '$CI_COMMIT_REF_NAME =~ /^release\/.*$/'
-      when: on_success
-    - if: '$CI_COMMIT_TAG =~ /^v.*$/'
-      when: on_success
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
-      when: on_success
-    - when: never
 
 deploy stage:
   stage: deploy_stage
@@ -237,6 +245,7 @@ deploy stage:
     CACHE_CLEAR_MODE: aggressive
   <<: *prepare_ssh_aws
   script:
+    - ./slackScripts/slack_started.sh
     - ./build-docker.sh
     - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
     - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
@@ -246,6 +255,13 @@ deploy stage:
     - /^release\/.*$/
   except:
     - tags
+  after_script:
+    - >
+      if [ $CI_JOB_STATUS == 'success' ]; then
+        ./slackScripts/slack_successful.sh
+      else
+        ./slackScripts/slack_failed.sh
+      fi
   tags:
     - dind
 
@@ -263,6 +279,7 @@ deploy demo:
     CACHE_CLEAR_MODE: aggressive
   <<: *prepare_ssh_aws
   script:
+    - ./slackScripts/slack_started.sh
     - ./build-docker.sh
     - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
     - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
@@ -272,6 +289,13 @@ deploy demo:
     - /^release\/.*$/
     - /^v.*$/
   when: manual
+  after_script:
+    - >
+      if [ $CI_JOB_STATUS == 'success' ]; then
+        ./slackScripts/slack_successful.sh
+      else
+        ./slackScripts/slack_failed.sh
+      fi
   tags:
     - dind
 
@@ -288,6 +312,7 @@ deploy prod:
     CACHE_CLEAR_MODE: aggressive
   <<: *prepare_ssh
   script:
+    - ./slackScripts/slack_started.sh
     - echo "Current import batch size is $IMPORT_BATCH_SIZE"
     - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
   <<: *remove_key
@@ -296,35 +321,14 @@ deploy prod:
   except:
     - branches
   when: manual
+  after_script:
+    - >
+      if [ $CI_JOB_STATUS == 'success' ]; then
+        ./slackScripts/slack_successful.sh
+      else
+        ./slackScripts/slack_failed.sh
+      fi
   allow_failure: false
-
-report success:
-  stage: report_finished
-  extends: .slack_successful_deploy_report
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
-    - if: '$CI_COMMIT_REF_NAME =~ /^release\/.*$/'
-      when: on_success
-    - if: '$CI_COMMIT_TAG =~ /^v.*$/'
-      when: on_success
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
-      when: on_success
-    - when: never
-
-report failure:
-  stage: report_finished
-  extends: .slack_failed_deploy_report
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
-    - if: '$CI_COMMIT_REF_NAME =~ /^release\/.*$/'
-      when: on_failure
-    - if: '$CI_COMMIT_TAG =~ /^v.*$/'
-      when: on_failure
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
-      when: on_failure
-    - when: never
 
 deploy prod db to stage:
   stage: upload_db
