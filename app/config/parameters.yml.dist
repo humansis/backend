@@ -39,4 +39,4 @@ parameters:
     aws.logs.bucket: 'logs.humansis.org'
     aws.logs.folder: 'logs'
 
-    import_batch_size: '%env(IMPORT_BATCH_SIZE)%'
+    import.batch_size: '%env(IMPORT_BATCH_SIZE)%'
