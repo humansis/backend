@@ -144,7 +144,17 @@ class ImportParser
     private static function value(?Cell $cell)
     {
         if ($cell) {
-            return is_string($cell->getValue()) ? trim($cell->getValue()) : $cell->getValue();
+            if (is_string($cell->getValue())) {
+                $value = trim($cell->getValue());
+
+                // prevent bad formatted spreadsheet cell starting with apostrophe
+                $value = str_replace('\'', '', $value);
+
+            } else {
+                $value = $cell->getValue();
+            }
+
+            return $value;
         }
 
         return null;

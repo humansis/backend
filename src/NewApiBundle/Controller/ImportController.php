@@ -103,12 +103,17 @@ class ImportController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/imports")
      *
+     * @param Request                $request
      * @param Import\CreateInputType $inputType
      *
      * @return JsonResponse
      */
     public function create(Request $request, Import\CreateInputType $inputType): JsonResponse
     {
+        if (!$request->headers->has('country')) {
+            throw $this->createNotFoundException('Missing header attribute country');
+        }
+
         /** @var User $user */
         $user = $this->getUser();
 
