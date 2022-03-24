@@ -34,7 +34,7 @@ FROM smartcard_purchase_record spr
                 WHERE reliefPackage.assistance_beneficiary_id = db.id
                 LIMIT 1
             )
-         JOIN smartcard_deposit sd ON sd.id = (
+         LEFT OUTER JOIN smartcard_deposit sd ON sd.id = (
                 SELECT smartcardDeposit.id
                 FROM smartcard_deposit smartcardDeposit
                 WHERE smartcardDeposit.relief_package_id = rp.id
