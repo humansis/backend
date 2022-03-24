@@ -109,8 +109,8 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
                     ->setParameter('fulltextId', $filter->getFulltext())
                     ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
             }
-            if (is_bool($filter->getIsInvoiced())) {
-                $vendors = [];
+            if ($filter->hasIsInvoiced()) {
+                /*$vendors = [];
                 $vendorsSelection = $this->getVendorsByInvoicing($filter->getIsInvoiced(), $iso3)
                     ->getQuery()->getArrayResult();
                 foreach ($vendorsSelection as $key => $vendor) {
@@ -119,7 +119,19 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
 
                 $qb
                     ->andWhere($qb->expr()->in('v.id', ':vendorsByInvoiced'))
-                    ->setParameter('vendorsByInvoiced', $vendors);
+                    ->setParameter('vendorsByInvoiced', $vendors);*/
+
+                $purchasesToInvoiceCount = $this->_em->createQueryBuilder()
+                    ->select('count(sp)')
+                    ->from(SmartcardPurchase::class, 'sp')
+                    ->andWhere('sp.vendor = v')
+                    ->andWhere('sp.redemptionBatch IS NOT NULL');
+
+                if ($filter->getIsInvoiced()) {
+                    $qb->andWhere('(' . $purchasesToInvoiceCount->getDQL() . ') > 0');
+                } else {
+                    $qb->andWhere('(' . $purchasesToInvoiceCount->getDQL() . ') = 0');
+                }
             }
 
             $locations = [];

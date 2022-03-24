@@ -26,16 +26,17 @@ class VendorFilterInputType extends AbstractFilterInputType
      */
     protected $isInvoiced;
 
+    public function hasIsInvoiced(): bool
+    {
+        return $this->has('isInvoiced');
+    }
+
     /**
      * @return bool|null
      * @throws \NewApiBundle\Enum\EnumValueNoFoundException
      */
     public function getIsInvoiced(): ?bool
     {
-        if (is_null($this->isInvoiced)) {
-            return null;
-        } else {
-            return VariableBool::valueFromAPI($this->isInvoiced);
-        }
+        return VariableBool::valueFromAPI($this->isInvoiced);
     }
 }
