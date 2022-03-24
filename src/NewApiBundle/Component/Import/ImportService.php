@@ -204,7 +204,7 @@ class ImportService
             /** @var Entity\ImportHouseholdDuplicity $duplicity */
             $duplicity = $duplicities[0];
             if ($this->importQueueStateMachine->can($importQueue, $inputType->getStatus())) {
-                $this->duplicityResolver->resolve($importQueue, $duplicity->getId(), $inputType->getStatus(), $user);
+                $this->duplicityResolver->resolve($importQueue, $duplicity->getTheirs()->getId(), $inputType->getStatus(), $user);
                 $this->em->flush();
             } else {
                 foreach ($this->importQueueStateMachine->buildTransitionBlockerList($importQueue, $inputType->getStatus()) as $block) {
