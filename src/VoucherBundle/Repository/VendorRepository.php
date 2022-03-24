@@ -125,12 +125,12 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
                     ->select('count(sp)')
                     ->from(SmartcardPurchase::class, 'sp')
                     ->andWhere('sp.vendor = v')
-                    ->andWhere('sp.redemptionBatch IS NOT NULL');
+                    ->andWhere('sp.redemptionBatch IS NULL');
 
                 if ($filter->getIsInvoiced()) {
-                    $qb->andWhere('(' . $purchasesToInvoiceCount->getDQL() . ') > 0');
-                } else {
                     $qb->andWhere('(' . $purchasesToInvoiceCount->getDQL() . ') = 0');
+                } else {
+                    $qb->andWhere('(' . $purchasesToInvoiceCount->getDQL() . ') > 0');
                 }
             }
 
