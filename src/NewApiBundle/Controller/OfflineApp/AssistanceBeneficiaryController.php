@@ -21,6 +21,17 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AssistanceBeneficiaryController extends AbstractOfflineAppController
 {
+    /** @var AssistanceBeneficiaryRepository */
+    private $assistanceBeneficiaryRepository;
+
+    /**
+     * @param AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository
+     */
+    public function __construct(AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository)
+    {
+        $this->assistanceBeneficiaryRepository = $assistanceBeneficiaryRepository;
+    }
+
     /**
      * @Rest\Get("/offline-app/v2/assistances/{id}/assistances-beneficiaries")
      *
@@ -44,7 +55,8 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
             throw $this->createNotFoundException();
         }
 
-        $assistanceBeneficiaries = $this->getDoctrine()->getRepository(AssistanceBeneficiary::class)->findBeneficiariesByAssistance($assistance, $filter, $orderBy, $pagination);
+        $assistanceBeneficiaries = $this->assistanceBeneficiaryRepository
+            ->findBeneficiariesByAssistance($assistance, $filter, $orderBy, $pagination);
 
         $response = $this->json($assistanceBeneficiaries);
         $response->setEtag(md5($response->getContent()));
@@ -77,7 +89,7 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
             throw $this->createNotFoundException();
         }
 
-        $assistanceBeneficiaries = $this->getDoctrine()->getRepository(AssistanceBeneficiary::class)
+        $assistanceBeneficiaries = $this->assistanceBeneficiaryRepository
             ->findBeneficiariesByAssistance($assistance, $filter, $orderBy, $pagination, [AssistanceBeneficiaryRepository::SEARCH_CONTEXT_NOT_REMOVED => true]);
 
         $response = $this->json($assistanceBeneficiaries, Response::HTTP_OK, [], [MapperInterface::OFFLINE_APP => true, 'expanded' => true]);
@@ -111,7 +123,8 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
             throw $this->createNotFoundException();
         }
 
-        $assistanceInstitutions = $this->getDoctrine()->getRepository(AssistanceBeneficiary::class)->findInstitutionsByAssistance($assistance, $filter, $orderBy, $pagination);
+        $assistanceInstitutions = $this->assistanceBeneficiaryRepository
+            ->findInstitutionsByAssistance($assistance, $filter, $orderBy, $pagination);
 
         $response = $this->json($assistanceInstitutions, Response::HTTP_OK, [], [MapperInterface::OFFLINE_APP => false]);
         $response->setEtag(md5($response->getContent()));
@@ -144,7 +157,8 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
             throw $this->createNotFoundException();
         }
 
-        $assistanceCommunities = $this->getDoctrine()->getRepository(AssistanceBeneficiary::class)->findCommunitiesByAssistance($assistance, $filter, $orderBy, $pagination);
+        $assistanceCommunities = $this->assistanceBeneficiaryRepository
+            ->findCommunitiesByAssistance($assistance, $filter, $orderBy, $pagination);
 
         $response = $this->json($assistanceCommunities, Response::HTTP_OK, [], [MapperInterface::OFFLINE_APP => false]);
         $response->setEtag(md5($response->getContent()));

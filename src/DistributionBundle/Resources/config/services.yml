@@ -103,6 +103,11 @@ services:
             - "@serializer"
         public: true
 
+    DistributionBundle\Repository\AssistanceBeneficiaryRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - DistributionBundle\Entity\AssistanceBeneficiary
+
 #######################################################################################
 ##                                       CSV                                         ##
 #######################################################################################
