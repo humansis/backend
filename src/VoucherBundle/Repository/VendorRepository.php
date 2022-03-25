@@ -214,33 +214,4 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
         }
     }
 
-    /**
-     * @param bool   $paid
-     * @param string $countryIso3
-     *
-     * @return Paginator
-     */
-    private function getVendorsByInvoicing(bool $paid, string $countryIso3): Paginator
-    {
-        $qb = $this->createQueryBuilder('v');
-        $qb
-            ->leftJoin('v.location', 'l')
-            ->leftJoin(SmartcardPurchase::class, 'sp', Join::WITH, 'sp.vendor = v.id')
-            ->andWhere(
-                $qb->expr()->eq('l.countryISO3', ':countryIso3'),
-                $qb->expr()->eq('v.archived', ':archived')
-            )
-            ->setParameters([
-                'countryIso3' => $countryIso3,
-                'archived' => 0,
-            ])
-            ->groupBy('v.id')
-            ->having(
-                $paid ?
-                    'SUM(IS_NULL(sp.redemptionBatch)) = 0 AND SUM(IS_NOT_NULL(sp.redemptionBatch)) > 0' :
-                    'SUM(IS_NULL(sp.redemptionBatch)) > 0 AND COUNT(sp.id) > 0'
-            );
-
-        return new Paginator($qb);
-    }
 }

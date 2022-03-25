@@ -144,8 +144,6 @@ doctrine:
                  quarter: DoctrineExtensions\Query\Mysql\Quarter
                  month: DoctrineExtensions\Query\Mysql\Month
                  year: DoctrineExtensions\Query\Mysql\Year
-                 is_null: NewApiBundle\DoctrineExtension\IsNull
-                 is_not_null: NewApiBundle\DoctrineExtension\IsNotNull
 
             numeric_functions:
                 levenshtein:        Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinFunction
