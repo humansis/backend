@@ -192,7 +192,7 @@ class ImportLine
     public $typePhone2;
 
     /**
-     * @Assert\Type("string", groups={"household", "member"})
+     * @Assert\Type("scalar", groups={"household", "member"})
      */
     public $prefixPhone2;
 
