@@ -159,10 +159,13 @@ framework:
             - !php/const NewApiBundle\Enum\ImportState::NEW
             - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECKING
             - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_CORRECT
+            - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_FAILED
             - !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECKING
             - !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECK_CORRECT
+            - !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECK_FAILED
             - !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECKING
             - !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_CORRECT
+            - !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_FAILED
           to: !php/const NewApiBundle\Enum\ImportState::CANCELED
 
     import_queue:
