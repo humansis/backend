@@ -70,6 +70,7 @@ class VendorController extends AbstractController
      * @param VendorOrderInputType  $orderBy
      *
      * @return JsonResponse
+     * @throws \NewApiBundle\Enum\EnumValueNoFoundException
      */
     public function list(Request $request, VendorFilterInputType $filter, Pagination $pagination, VendorOrderInputType $orderBy): JsonResponse
     {

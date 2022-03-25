@@ -10,6 +10,7 @@ use NewApiBundle\InputType\VendorOrderInputType;
 use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use UserBundle\Entity\User;
+use VoucherBundle\Entity\SmartcardPurchase;
 
 /**
  * VendorRepository.
@@ -70,6 +71,7 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
      * @param Pagination|null            $pagination
      *
      * @return Paginator
+     * @throws \NewApiBundle\Enum\EnumValueNoFoundException
      */
     public function findByParams(
         ?string $iso3,
@@ -105,6 +107,25 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
                                 l.name LIKE :fulltext)')
                     ->setParameter('fulltextId', $filter->getFulltext())
                     ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+            }
+            if ($filter->hasIsInvoiced()) {
+                $purchasesToInvoiceCount = $this->_em->createQueryBuilder()
+                    ->select('count(sp)')
+                    ->from(SmartcardPurchase::class, 'sp')
+                    ->andWhere('sp.vendor = v')
+                    ->andWhere('sp.redemptionBatch IS NULL');
+
+                $existingVendorsPurchases = $this->_em->createQueryBuilder()
+                    ->select('count(sp2.id)')
+                    ->from(SmartcardPurchase::class, 'sp2')
+                    ->andWhere('sp2.vendor = v');
+
+                if ($filter->getIsInvoiced()) {
+                    $qb->andWhere('(' . $purchasesToInvoiceCount->getDQL() . ') = 0');
+                } else {
+                    $qb->andWhere('(' . $purchasesToInvoiceCount->getDQL() . ') > 0');
+                }
+                $qb->andWhere('(' . $existingVendorsPurchases->getDQL() . ') > 0');
             }
 
             $locations = [];
@@ -186,4 +207,5 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
             yield $child->getId();
         }
     }
+
 }
