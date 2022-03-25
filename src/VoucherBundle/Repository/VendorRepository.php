@@ -4,7 +4,6 @@ namespace VoucherBundle\Repository;
 
 use CommonBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
-use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\InputType\VendorFilterInputType;
 use NewApiBundle\InputType\VendorOrderInputType;
@@ -110,28 +109,23 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
                     ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
             }
             if ($filter->hasIsInvoiced()) {
-                /*$vendors = [];
-                $vendorsSelection = $this->getVendorsByInvoicing($filter->getIsInvoiced(), $iso3)
-                    ->getQuery()->getArrayResult();
-                foreach ($vendorsSelection as $key => $vendor) {
-                    $vendors[] = $vendor['id'];
-                }
-
-                $qb
-                    ->andWhere($qb->expr()->in('v.id', ':vendorsByInvoiced'))
-                    ->setParameter('vendorsByInvoiced', $vendors);*/
-
                 $purchasesToInvoiceCount = $this->_em->createQueryBuilder()
                     ->select('count(sp)')
                     ->from(SmartcardPurchase::class, 'sp')
                     ->andWhere('sp.vendor = v')
                     ->andWhere('sp.redemptionBatch IS NULL');
 
+                $existingVendorsPurchases = $this->_em->createQueryBuilder()
+                    ->select('count(sp2.id)')
+                    ->from(SmartcardPurchase::class, 'sp2')
+                    ->andWhere('sp2.vendor = v');
+
                 if ($filter->getIsInvoiced()) {
                     $qb->andWhere('(' . $purchasesToInvoiceCount->getDQL() . ') = 0');
                 } else {
                     $qb->andWhere('(' . $purchasesToInvoiceCount->getDQL() . ') > 0');
                 }
+                $qb->andWhere('(' . $existingVendorsPurchases->getDQL() . ') > 0');
             }
 
             $locations = [];
