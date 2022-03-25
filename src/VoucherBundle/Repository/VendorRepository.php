@@ -117,7 +117,7 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
                     if (is_null($location)) {
                         throw new NotFoundHttpException("Location $locationId was not found");
                     }
-                    $locations = array_unique(array_merge($locations, (array) $this->getChildrenLocationIdListByLocation($location)),
+                    $locations = array_unique(array_merge($locations, iterator_to_array($this->getChildrenLocationIdListByLocation($location))),
                         SORT_REGULAR);
                 }
 
@@ -177,9 +177,9 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
     /**
      * @param Location $location
      *
-     * @return int[]
+     * @return \Generator
      */
-    private function getChildrenLocationIdListByLocation(Location $location): iterable
+    private function getChildrenLocationIdListByLocation(Location $location): \Generator
     {
         $children = $this->locationRepository->getChildrenLocations($location);
         foreach ($children as $childKey => $child) {
