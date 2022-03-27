@@ -7,6 +7,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Institution;
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NoResultException;
@@ -169,6 +170,14 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             'targetType' => AssistanceTargetType::INDIVIDUAL,
         ], ['id' => 'asc']);
         $beneficiary = $em->getRepository(Beneficiary::class)->findOneBy([], ['id'=>'desc']);
+        $target = $em->getRepository(AssistanceBeneficiary::class)->findOneBy([
+            'beneficiary' => $beneficiary,
+            'assistance' => $assistance,
+        ], ['id'=>'asc']);
+        if ($target) {
+            $em->remove($target);
+            $em->flush();
+        }
 
         $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/assistances-beneficiaries', [
             'beneficiaryIds' => [$beneficiary->getId()],

@@ -216,7 +216,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
         );
         $result = json_decode($this->client->getResponse()->getContent(), true);
         foreach ($result['data'] as $data) {
-            $this->assertNotEquals($beneficiaryId, $data['beneficiaryId'], "Target $beneficiaryId wasn't removed");
+            $this->assertNotEquals($beneficiaryId, $data['beneficiary']['id'], "Target $beneficiaryId wasn't removed");
         }
     }
 
