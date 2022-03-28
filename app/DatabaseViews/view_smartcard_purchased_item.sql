@@ -7,7 +7,6 @@ SELECT
     a.project_id,
     a.location_id,
     spr.product_id,
-    DATE_FORMAT(sd.distributed_at, "%Y-%m-%dT%TZ") AS date_distribution,
     DATE_FORMAT(sp.used_at, "%Y-%m-%dT%TZ") AS date_purchase,
     s.code as smartcard_code,
     spr.value,
@@ -32,12 +31,6 @@ FROM smartcard_purchase_record spr
                 SELECT reliefPackage.id
                 FROM relief_package reliefPackage
                 WHERE reliefPackage.assistance_beneficiary_id = db.id
-                LIMIT 1
-            )
-         LEFT OUTER JOIN smartcard_deposit sd ON sd.id = (
-                SELECT smartcardDeposit.id
-                FROM smartcard_deposit smartcardDeposit
-                WHERE smartcardDeposit.relief_package_id = rp.id
                 LIMIT 1
             )
          LEFT JOIN assistance a ON db.assistance_id = a.id
