@@ -237,7 +237,7 @@ class ImportQueue implements ConcurrencyLockableInterface
             throw new \InvalidArgumentException("Member index was not found in imported Household");
         }
 
-        $householdDuplicity = $this->getHouseholdDuplicityById($beneficiary->getId());
+        $householdDuplicity = $this->getHouseholdDuplicityById($beneficiary->getHouseholdId());
         if (!$householdDuplicity) {
             $householdDuplicity = new ImportHouseholdDuplicity($this, $beneficiary->getHousehold());
             $this->householdDuplicities->add($householdDuplicity);
