@@ -128,6 +128,8 @@ class SmartcardService
     {
         /** @var ReliefPackage|null $reliefPackage */
         $reliefPackage = $this->em->getRepository(ReliefPackage::class)->find($reliefPackageId);
+        $suspicious = false;
+        $message = [];
 
         if (null === $reliefPackage) {
             throw new NotFoundHttpException("Relief package #$reliefPackageId does not exist.");
@@ -136,13 +138,15 @@ class SmartcardService
         $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
 
         if (!$reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
-            throw new NotFoundHttpException("Relief package #$reliefPackageId cannot be distributed.");
+            $suspicious = true;
+            $message[] = "Relief package #$reliefPackageId is in invalid state ({$reliefPackage->getState()}).";
         }
 
         $smartcard = $this->getActualSmartcard($serialNumber, $reliefPackage->getAssistanceBeneficiary()->getBeneficiary(), $distributedAt);
 
         if (!$smartcard->getBeneficiary()) {
-            throw new NotFoundHttpException('Smartcard does not have assigned beneficiary.');
+            $suspicious = true;
+            $message[] = 'Smartcard does not have assigned beneficiary.';
         }
 
         $deposit = SmartcardDeposit::create(
@@ -151,12 +155,16 @@ class SmartcardService
             $reliefPackage,
             (float) $value,
             null !== $balance ? (float) $balance : null,
-            $distributedAt
+            $distributedAt,
+            $suspicious,
+            $message
         );
 
         $smartcard->addDeposit($deposit);
 
-        $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::DISTRIBUTE);
+        if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
+            $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::DISTRIBUTE);
+        }
         $reliefPackage->setAmountDistributed($value);
 
         if (null === $smartcard->getCurrency()) {
