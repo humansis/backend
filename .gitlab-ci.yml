@@ -24,6 +24,7 @@ stages:
   - deploy_stage
   - deploy_demo
   - deploy_prod
+  - badge
   - upload_db
 
 .prepare_ssh: &prepare_ssh
@@ -329,6 +330,17 @@ deploy prod:
         ./slackScripts/slack_failed.sh
       fi
   allow_failure: false
+
+make badge:
+  stage: badge
+  image: artifactory.quanti.cz/docker-local/alpine-jq-curl
+  script:
+    - export CI_COMMIT_TAG=v3.3.0
+    - version=$(echo $CI_COMMIT_TAG | tr -d 'v')
+    - version_badge_id=$(curl --header "PRIVATE-TOKEN:${BADGE_API_TOKEN}" https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/badges | jq -c 'map(select(.name | contains("version")))[0].id')
+    - curl --request PUT --header "PRIVATE-TOKEN:${BADGE_API_TOKEN}" --data "image_url=https://img.shields.io/badge/version-${version}-blue" https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/badges/${version_badge_id}
+  only:
+    - /^v.*$/
 
 deploy prod db to stage:
   stage: upload_db
