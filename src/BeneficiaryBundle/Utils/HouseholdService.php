@@ -582,7 +582,7 @@ class HouseholdService
     /**
      * @throws EntityNotFoundException
      */
-    public function createOrUpdateCountrySpecificAnswers(Household $household, CountrySpecificsAnswerInputType $inputType): CountrySpecificAnswer
+    public function createOrUpdateCountrySpecificAnswers(Household $household, CountrySpecificsAnswerInputType $inputType): ?CountrySpecificAnswer
     {
         $countrySpecific = $this->em->getRepository(CountrySpecific::class)
             ->find($inputType->getCountrySpecificId());
