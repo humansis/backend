@@ -148,8 +148,9 @@ class ImportParser
                 $value = trim($cell->getValue());
 
                 // prevent bad formatted spreadsheet cell starting with apostrophe
-                $value = str_replace('\'', '', $value);
-
+                if(strpos($value, '\'') === 0){
+                    $value = substr_replace($value, '', 0, 1);
+                }
             } else {
                 $value = $cell->getValue();
             }
