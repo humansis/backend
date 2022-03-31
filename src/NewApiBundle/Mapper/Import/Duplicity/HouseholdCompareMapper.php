@@ -207,10 +207,4 @@ class HouseholdCompareMapper implements MapperInterface
         return $this->compareScalarValue($this->object->getCurrent()->getEnumeratorName(), $this->object->getImported()->getEnumeratorName());
     }
 
-    // proxy is not used by FE https://jira.quanti.cz/browse/PIN-2872
-    // public function getProxy(): ?array
-    // {
-    //     return $this->compareScalarValue($this->object->getCurrent()->getProxy(), $this->object->getImported()->hasProxy());
-    // }
-
 }
