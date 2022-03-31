@@ -1,4 +1,6 @@
 parameters:
+    environment: test
+
     database_driver: pdo_mysql
     database_host: 'db'
     database_port: null
