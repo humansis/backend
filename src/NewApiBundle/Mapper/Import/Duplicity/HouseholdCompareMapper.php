@@ -206,10 +206,5 @@ class HouseholdCompareMapper implements MapperInterface
     {
         return $this->compareScalarValue($this->object->getCurrent()->getEnumeratorName(), $this->object->getImported()->getEnumeratorName());
     }
-    // proxy
-    public function getProxy(): ?array
-    {
-        return $this->compareScalarValue($this->object->getCurrent()->getProxy(), $this->object->getImported()->hasProxy());
-    }
 
 }
