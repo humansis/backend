@@ -1,4 +1,6 @@
 parameters:
+    environment: '%env(ENVIRONMENT)%'
+
     database_driver: pdo_mysql
     database_host: '%env(RDS_HOSTNAME)%'
     database_port: '%env(RDS_PORT)%'

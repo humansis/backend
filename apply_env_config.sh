@@ -35,7 +35,8 @@ sed -i -e "s|%env(RDS_HOSTNAME)%|$1|g" \
   -e "s|%env(MOBILE_APP_ID)%|$7|g" \
   -e "s|%env(JWT_PASSPHRASE)%|${8}|g" \
   -e "s|%env(GELF_SERVER_NAME)%|${9}|g"\
-  -e "s|%env(IMPORT_BATCH_SIZE)%|${IMPORT_BATCH_SIZE}|g" app/config/parameters.yml
+  -e "s|%env(IMPORT_BATCH_SIZE)%|${IMPORT_BATCH_SIZE}|g" \
+  -e "s|%env(ENVIRONMENT)%|${ENVIRONMENT}|g" app/config/parameters.yml
 
 
 sed -i -e "s|%env(RDS_HOSTNAME)%|$1|g" docker-compose.yml
