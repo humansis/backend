@@ -69,7 +69,7 @@ class ProjectController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/projects/{id}")
-     * @Cache(lastModified="project.getLastModifiedAt()", public=true)
+     * @Cache(lastModified="project.getLastModifiedAtIncludingBeneficiaries()", public=true)
      *
      * @param Project $project
      *

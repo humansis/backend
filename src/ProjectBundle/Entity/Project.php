@@ -2,6 +2,7 @@
 
 namespace ProjectBundle\Entity;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
@@ -169,6 +170,11 @@ class Project implements ExportableInterface
      * @ORM\Column(name="allowed_product_category_types", type="array", nullable=false)
      */
     private $allowedProductCategoryTypes;
+
+    /**
+     * @var \DateTimeInterface
+     */
+    private $lastModifiedAtIncludingBeneficiaries;
 
     /**
      * Constructor
@@ -720,6 +726,27 @@ class Project implements ExportableInterface
     }
 
     /**
+     * @ORM\PostLoad
+     * @ORM\PostPersist
+     * @ORM\PostUpdate
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function updateLastModifiedAtIncludingBeneficiaries(LifecycleEventArgs $args)
+    {
+        /** @var Project $entity */
+        $entity = $args->getObject();
+        $em = $args->getEntityManager();
+
+        $lastModifiedBnf = $em->getRepository(Beneficiary::class)->getLastModifiedByProject($entity);
+        if ($lastModifiedBnf) {
+            $totalLastModified = $lastModifiedBnf > $entity->getLastModifiedAt() ? $lastModifiedBnf : $entity->getLastModifiedAt();
+        } else {
+            $totalLastModified = $entity->getLastModifiedAt();
+        }
+        $this->setLastModifiedAtIncludingBeneficiaries($totalLastModified);
+    }
+
+    /**
      * @return string|null
      */
     public function getProjectInvoiceAddressLocal(): ?string
@@ -781,6 +808,22 @@ class Project implements ExportableInterface
         $this->allowedProductCategoryTypes = $allowedProductCategoryTypes;
 
         return $this;
+    }
+
+    /**
+     * @return \DateTimeInterface
+     */
+    public function getLastModifiedAtIncludingBeneficiaries(): \DateTimeInterface
+    {
+        return $this->lastModifiedAtIncludingBeneficiaries;
+    }
+
+    /**
+     * @param \DateTimeInterface $lastModifiedAtIncludingBeneficiaries
+     */
+    public function setLastModifiedAtIncludingBeneficiaries(\DateTimeInterface $lastModifiedAtIncludingBeneficiaries): void
+    {
+        $this->lastModifiedAtIncludingBeneficiaries = $lastModifiedAtIncludingBeneficiaries;
     }
 
 }

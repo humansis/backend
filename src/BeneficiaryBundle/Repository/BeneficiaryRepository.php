@@ -7,6 +7,7 @@ use DistributionBundle\Entity\Assistance;
 use CommonBundle\Entity\Location;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\NonUniqueResultException;
@@ -79,13 +80,45 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $q->getQuery()->getResult();
     }
 
-    public function getUnarchivedByProject(Project $project): iterable
+    /**
+     * @param Project $project
+     *
+     * @return QueryBuilder
+     */
+    public function getQbUnarchivedByProject(Project $project): QueryBuilder
     {
         $qb = $this->createQueryBuilder("bnf");
-        $q = $qb->leftJoin("bnf.projects", "p")
+
+        return $qb->leftJoin("bnf.projects", "p")
             ->where("p = :project")
             ->setParameter("project", $project)
             ->andWhere("bnf.archived = 0");
+    }
+
+    /**
+     * @param Project $project
+     *
+     * @return null|\DateTimeInterface
+     * @throws NonUniqueResultException
+     */
+    public function getLastModifiedByProject(Project $project): ?\DateTimeInterface
+    {
+        $qb = $this->getQbUnarchivedByProject($project);
+        $qb->select('bnf.updatedOn')
+            ->orderBy('bnf.updatedOn', 'DESC')
+            ->setFirstResult(0)
+            ->setMaxResults(1);
+
+        try {
+            return $qb->getQuery()->getSingleResult(AbstractQuery::HYDRATE_ARRAY)['updatedOn'];
+        } catch (NoResultException $e) {
+            return null;
+        }
+    }
+
+    public function getUnarchivedByProject(Project $project): iterable
+    {
+        $q = $this->getQbUnarchivedByProject($project);
 
         return $q->getQuery()->getResult();
     }
