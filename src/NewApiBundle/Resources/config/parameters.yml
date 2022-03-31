@@ -1,12 +1,4 @@
-imports:
-        - { resource: parameters.yml }
-
 parameters:
         import.invalidFilesDirectory: '%kernel.project_dir%/var/imports/invalid'
         import.uploadedFilesDirectory: '%kernel.project_dir%/var/imports/uploaded'
         import.maxFileSizeToLoad: 1 #in MB
-
-
-        logs.vendorAppPath: 'vendor_app/%environment%/vendor-<<email>>_<<vendorId>>/<<datetime>>/'
-        logs.fieldAppPath: 'field_app/%environment%/user-<<email>>_<<userId>>/<<datetime>>/'
-        logs.lifetime: 42 #in days. (6 weeks)
