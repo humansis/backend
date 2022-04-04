@@ -4,6 +4,8 @@ namespace ProjectBundle\Entity;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use NewApiBundle\Entity\Helper\CreatedAt;
@@ -726,6 +728,25 @@ class Project implements ExportableInterface
     }
 
     /**
+     * @ORM\PostLoad
+     * @param LifecycleEventArgs $args
+     *
+     * @return void
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function updateLastModifiedAtInclBnfAfterPost(LifecycleEventArgs $args)
+    {
+        /** @var Project $entity */
+        $entity = $args->getObject();
+        if ($entity->getLastModifiedAt()) {
+            return;
+        } else {
+            $em = $args->getEntityManager();
+            $this->loadLastModifiedInclBnf($entity, $em);
+        }
+    }
+
+    /**
      * @ORM\PostPersist
      * @ORM\PostUpdate
      * @throws \Doctrine\ORM\NonUniqueResultException
@@ -735,12 +756,23 @@ class Project implements ExportableInterface
         /** @var Project $entity */
         $entity = $args->getObject();
         $em = $args->getEntityManager();
+        $this->loadLastModifiedInclBnf($entity, $em);
+    }
 
-        $lastModifiedBnf = $em->getRepository(Beneficiary::class)->getLastModifiedByProject($entity);
+    /**
+     * @param Project       $project
+     * @param EntityManager $em
+     *
+     * @return void
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    private function loadLastModifiedInclBnf(Project $project, EntityManager $em): void
+    {
+        $lastModifiedBnf = $em->getRepository(Beneficiary::class)->getLastModifiedByProject($project);
         if ($lastModifiedBnf) {
-            $totalLastModified = $lastModifiedBnf > $entity->getLastModifiedAt() ? $lastModifiedBnf : $entity->getLastModifiedAt();
+            $totalLastModified = $lastModifiedBnf > $project->getLastModifiedAt() ? $lastModifiedBnf : $project->getLastModifiedAt();
         } else {
-            $totalLastModified = $entity->getLastModifiedAt();
+            $totalLastModified = $project->getLastModifiedAt();
         }
         $this->setLastModifiedAtIncludingBeneficiaries($totalLastModified);
     }
