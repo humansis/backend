@@ -1,4 +1,6 @@
 parameters:
+    environment: '%env(ENVIRONMENT)%'
+
     database_driver: pdo_mysql
     database_host: '%env(RDS_HOSTNAME)%'
     database_port: '%env(RDS_PORT)%'
@@ -38,5 +40,9 @@ parameters:
     aws.logs.version: 'latest'
     aws.logs.bucket: 'logs.humansis.org'
     aws.logs.folder: 'logs'
+
+    logs.vendorAppPath: 'vendor_app/%environment%/vendor-<<email>>_<<vendorId>>/<<datetime>>/'
+    logs.fieldAppPath: 'field_app/%environment%/user-<<email>>_<<userId>>/<<datetime>>/'
+    logs.lifetime: 42 #in days. (6 weeks)
 
     import.batch_size: '%env(IMPORT_BATCH_SIZE)%'

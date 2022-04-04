@@ -106,6 +106,7 @@ Open `docker-compose.yml` and add:
 ```
 php:
     environment:
+        ENVIRONMENT: dev
         XDEBUG_CONFIG: 'remote_host=172.17.0.1'
         PHP_IDE_CONFIG: 'serverName=humansis.local'
         AWS_ACCESS_KEY: 'aaa'
