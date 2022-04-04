@@ -16,7 +16,7 @@ if [[ $1 == "prod" ]]; then
   EC2_ASG=prod-asg
   JWT_CERT=$JWT_CERT_PROD
   JWT_KEY=$JWT_KEY_PROD
-  mv docker/docker-compose.yml.prod docker-compose.yml
+  mv docker/docker-compose.yml.prod-new docker-compose.yml
   bash apply_env_config.sh ${RDS_HOSTNAME_PROD} ${RDS_DB_NAME_PROD} ${RDS_USERNAME_PROD} ${RDS_PASSWORD_PROD} ${MOBILE_KEY_PROD} ${MOBILE_APP_VERSION_PROD} ${MOBILE_APP_ID_PROD} ${JWT_PASSPHRASE_PROD} ${GELF_SERVER_NAME_PROD}
 elif [[ $1 == "demo" ]]; then
   EC2_ASG=demo-asg

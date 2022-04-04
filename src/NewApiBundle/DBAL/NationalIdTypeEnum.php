@@ -9,7 +9,6 @@ class NationalIdTypeEnum extends \CommonBundle\DBAL\AbstractEnum
 {
     use EnumTrait;
 
-    // unused yet, prepared for future migration
     public function getName(): string
     {
         return 'enum_national_id_type';
@@ -31,6 +30,7 @@ class NationalIdTypeEnum extends \CommonBundle\DBAL\AbstractEnum
             NationalIdType::CAMP_ID => NationalIdType::CAMP_ID,
             NationalIdType::SOCIAL_SERVICE_ID => NationalIdType::SOCIAL_SERVICE_ID,
             NationalIdType::OTHER => NationalIdType::OTHER,
+            NationalIdType::NONE => NationalIdType::NONE,
         ];
     }
 }

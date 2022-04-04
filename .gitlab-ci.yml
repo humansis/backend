@@ -17,7 +17,8 @@ stages:
   - static_analysis
   - test
   - backup_db
-  - backup_code
+  # - backup_code
+  - report_starting
   - deploy_dev
   - deploy_test
   - deploy_test_new
@@ -117,16 +118,16 @@ aws-db-snapshot:
   only:
     - tags
 
-backup-code:
-  stage: backup_code
-  variables:
-    HOSTNAME: api.humansis.org
-  <<: *prepare_ssh
-  script:
-    - ssh ubuntu@${HOSTNAME} "cd /var/www/html/; tar czf backup_$(date '+%Y-%m-%d').tar.gz --exclude=bms_api/var/logs bms_api/"
-  <<: *remove_key
-  only:
-    - tags
+# backup-code:
+#   stage: backup_code
+#   variables:
+#     HOSTNAME: api-old.humansis.org
+#   <<: *prepare_ssh
+#   script:
+#     - ssh ubuntu@${HOSTNAME} "cd /var/www/html/; tar czf backup_$(date '+%Y-%m-%d').tar.gz --exclude=bms_api/var/logs bms_api/"
+#   <<: *remove_key
+#   only:
+#     - tags
 
 deploy dev:
   stage: deploy_dev
@@ -305,7 +306,7 @@ deploy prod:
     name: production
     url: https://api.humansis.org
   variables:
-    HOSTNAME: api.humansis.org
+    HOSTNAME: api-old.humansis.org
     ENVIRONMENT: prod
     CLEAN_DATABASE: "false"
     LOAD_FIXTURES: "false"
@@ -329,6 +330,33 @@ deploy prod:
         ./slackScripts/slack_failed.sh
       fi
   allow_failure: false
+
+deploy PROD new:
+  stage: deploy_prod
+  image: artifactory.quanti.cz/docker-local/alpine-ssh-git:dind
+  environment:
+    name: prod
+    url: https://api.humansis.org
+  variables:
+    HOSTNAME: api.humansis.org
+    ENVIRONMENT: prod
+    CLEAN_DATABASE: "false"
+    LOAD_FIXTURES: "false"
+    CACHE_CLEAR_MODE: aggressive
+  <<: *prepare_ssh_aws
+  script:
+    - ./build-docker.sh
+    - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
+    - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
+  <<: *remove_key
+  only:
+    - /^v.*$/
+  except:
+    - branches
+  when: manual
+  allow_failure: false
+  tags:
+    - dind
 
 deploy prod db to stage:
   stage: upload_db

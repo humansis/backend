@@ -33,7 +33,7 @@ class NationalId
     /**
      * @var string
      *
-     * @ORM\Column(name="id_type", type="string", length=45)
+     * @ORM\Column(name="id_type", type="enum_national_id_type")
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "FullInstitution"})
      */
     private $idType;
