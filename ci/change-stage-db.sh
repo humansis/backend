@@ -1,6 +1,7 @@
 #!/bin/bash
 
 EC2_ASG=stage-asg
+OLD_DB_NAME="bmsdb"
 
 while [ $(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${EC2_ASG} --query 'length(AutoScalingGroups[*].Instances[?LifecycleState==`InService`][])') -gt 1 ] ; do
   aws autoscaling set-desired-capacity --auto-scaling-group-name ${EC2_ASG} --desired-capacity 1
@@ -15,7 +16,7 @@ if [[ -z `ssh-keygen -F $ec2_host` ]]; then
   ssh-keyscan -H $ec2_host >> ~/.ssh/known_hosts
 fi
 
-export command="sed -i -e \"s/${RDS_DB_NAME_STAGE}/${DATABASE_NAME}/g\" /opt/humansis/parameters.yml"
+export command="sed -i -e \"s/${OLD_DB_NAME}/${DATABASE_NAME}/g\" /opt/humansis/parameters.yml"
 ssh ec2-user@${ec2_host} $command
-ssh ec2-user@${ec2_host} "cd /opt/humansis && /opt/humansis/clear_cache.sh aggressive"
+ssh ec2-user@${ec2_host} "cd /opt/humansis && /opt/humansis/clear-cache.sh aggressive"
 ssh ec2-user@${ec2_host} "cd /opt/humansis && sudo docker-compose exec -T php bash -c 'php bin/console doctrine:migrations:migrate -n'"

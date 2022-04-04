@@ -17,7 +17,7 @@ docker push ${REPOSITORY_URL}/${REPOSITORY_NAME}/${IMAGE_NAME}:${ENVIRONMENT}
 docker tag nginx_build_image ${REPOSITORY_URL}/${REPOSITORY_NAME}/${NGINX_IMAGE_NAME}:${ENVIRONMENT}
 docker push ${REPOSITORY_URL}/${REPOSITORY_NAME}/${NGINX_IMAGE_NAME}:${ENVIRONMENT}
 
-if [[ ${ENVIRONMENT} == "prod" ]]; then
+if [[ ${ENVIRONMENT} == "production" ]]; then
   docker tag build_image ${REPOSITORY_URL}/${REPOSITORY_NAME}/${IMAGE_NAME}:${VERSION}
   docker push ${REPOSITORY_URL}/${REPOSITORY_NAME}/${IMAGE_NAME}:${VERSION}
   docker tag build_image ${REPOSITORY_URL}/${REPOSITORY_NAME}/${IMAGE_NAME}:latest
