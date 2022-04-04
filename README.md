@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.com/humansis/api.svg?branch=develop)](https://travis-ci.com/humansis/api)
-[![GitHub version](https://badge.fury.io/gh/humansis%2Fapi.svg)](https://badge.fury.io/gh/humansis%2Fapi)
+[![Build status](https://gitlab-public.quanti.cz/humansis/web-platform/backend/badges/develop/pipeline.svg)](https://gitlab-public.quanti.cz/humansis/web-platform/backend/-/commits/develop)
+[![version](https://img.shields.io/badge/version-3.3.3-blue)](https://gitlab-public.quanti.cz/humansis/web-platform/backend/)
 
 HUMANSIS
 ==============
@@ -163,7 +163,7 @@ php:
 - OK
 
 #### PhpStorm Code Style
-Code style file humansis.xml is located in root directory 
+Code style file humansis.xml is located in root directory
 
 #### Makefile
 Docker and others already described commands are accessible from Makefile

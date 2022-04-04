@@ -2,11 +2,11 @@
 set -e
 # get app version
 echo "Getting application information"
-bash get_info.sh
+./ci/get-info.sh
 echo "...done"
 
 case ${ENVIRONMENT} in
-  dev) export dockerfile="docker/prod/php/Dockerfile";
+  dev|dev1|dev2|dev3) export dockerfile="docker/prod/php/Dockerfile";
     export ENV=dev ;;
   test) export dockerfile="docker/prod/php/Dockerfile";
     export ENV=dev ;;
@@ -14,7 +14,7 @@ case ${ENVIRONMENT} in
     export ENV=prod ;;
   demo) export dockerfile="docker/prod/php/Dockerfile";
     export ENV=prod ;;
-  prod) export dockerfile="docker/prod/php/Dockerfile";
+  production) export dockerfile="docker/prod/php/Dockerfile";
     export ENV=prod ;;
 esac
 

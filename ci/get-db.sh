@@ -5,21 +5,20 @@
 # $2: database user
 # $3: database user password
 # $4: db to be copied
-# $5: environment [dev, test, stage]
+# $5: environment [dev[1:3], test, stage]
 DB_HOST=$1
 DB_USER=$2
 export MYSQL_PWD=$3
 DUMP_DB=$4
-if [[ $5 == "stage" ]]; then
-  COPY_DB=${RDS_DB_NAME_STAGE}
-elif [[ $5 == "test" ]]; then
-  COPY_DB=${RDS_DB_NAME_TEST}
-elif [[ $5 == "dev" ]]; then
-  COPY_DB=${RDS_DB_NAME_DEV}
-else
-  echo "Wrong environment parameter"
-  exit 1
-fi
+case "${5}" in
+    stage) COPY_DB=humansis_stage ;;
+    test) COPY_DB=humansis_test ;;
+    dev1) COPY_DB=humansis_dev1 ;;
+    dev2) COPY_DB=humansis_dev2 ;;
+    dev3) COPY_DB=humansis_dev3 ;;
+    *) echo "Wrong environment parameter"
+        exit 1 ;;
+esac
 
 echo "Database schema upload..."
 mysqldump --no-data -h $DB_HOST -u $DB_USER $DUMP_DB > schema.sql

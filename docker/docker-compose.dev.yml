@@ -35,7 +35,5 @@ services:
             - 8087:80
         depends_on:
             - php
-        volumes:
-            - /opt/overrides/nginx.conf:/etc/nginx/conf.d/default.conf
         networks:
             - backend
