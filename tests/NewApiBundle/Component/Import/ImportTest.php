@@ -360,7 +360,7 @@ class ImportTest extends KernelTestCase
         }
 
         $stats = $this->importService->getStatistics($import);
-        $this->assertEquals($expectedDuplicities, $stats->getAmountDuplicities());
+        $this->assertEquals($expectedDuplicities, $stats->getAmountIdentityDuplicities());
 
         // resolve all as duplicity to update and continue
         $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::IDENTITY_CANDIDATE], ['id' => 'asc']);

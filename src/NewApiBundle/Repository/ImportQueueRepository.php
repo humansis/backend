@@ -203,12 +203,10 @@ class ImportQueueRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('iq')
             ->andWhere('iq.import = :import')
-            ->andWhere('iq.state IN (:states)')
             ->join('iq.householdDuplicities', 'dup')
             ->groupBy('iq.id')
             ->having('count(dup) = 1')
             ->setParameter('import', $import)
-            ->setParameter('states', [ImportQueueState::IDENTITY_CANDIDATE, ImportQueueState::SIMILARITY_CANDIDATE])
         ;
         return $qb->getQuery()->getResult();
     }
