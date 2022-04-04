@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\NewApiBundle\Controller;
+namespace Tests\NewApiBundle\Controller\OfflineApp;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;
@@ -50,7 +50,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             return;
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-beneficiaries?sort[]=id.desc');
+        $this->request('GET', '/api/basic/offline-app/v2/assistances/'.$assistanceId.'/assistances-beneficiaries');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -64,10 +64,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
                     "beneficiaryId": "*",
                     "removed": "*",
                     "justification": "*",
-                    "generalReliefItemIds": "*",
-                    "transactionIds": "*",
-                    "smartcardDepositIds": "*",
-                    "bookletIds": "*"
+                    "lastSmartcardDepositId": "*"
                 }
             ]}', $this->client->getResponse()->getContent());
     }
@@ -92,7 +89,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             return;
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-institutions?sort[]=id.desc');
+        $this->request('GET', '/api/basic/offline-app/v1/assistances/'.$assistanceId.'/assistances-institutions?sort[]=id.desc');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -134,7 +131,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             return;
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-communities?sort[]=id.desc');
+        $this->request('GET', '/api/basic/offline-app/v1/assistances/'.$assistanceId.'/assistances-communities?sort[]=id.desc');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -211,7 +208,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             'Request failed: '.$this->client->getResponse()->getContent()
         );
 
-        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-beneficiaries?sort[]=id.desc');
+        $this->request('GET', '/api/basic/offline-app/v3/assistances/'.$assistanceId.'/targets/beneficiaries?sort[]=id.desc');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -219,9 +216,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
         );
         $result = json_decode($this->client->getResponse()->getContent(), true);
         foreach ($result['data'] as $data) {
-            if ($data['beneficiaryId'] == $beneficiaryId) {
-                $this->assertTrue($data['removed'], "Target $beneficiaryId wasn't removed");
-            }
+            $this->assertNotEquals($beneficiaryId, $data['beneficiary']['id'], "Target $beneficiaryId wasn't removed");
         }
     }
 
@@ -272,7 +267,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             'Request failed: '.$this->client->getResponse()->getContent()
         );
 
-        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-institutions?sort[]=id.desc');
+        $this->request('GET', '/api/basic/offline-app/v1/assistances/'.$assistanceId.'/assistances-institutions?sort[]=id.desc');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -280,9 +275,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
         );
         $result = json_decode($this->client->getResponse()->getContent(), true);
         foreach ($result['data'] as $data) {
-            if ($data['institutionId'] == $institutionId) {
-                $this->assertTrue($data['removed'], "Target $institutionId wasn't removed");
-            }
+            $this->assertNotEquals($institutionId, $data['institutionId'], "Target $institutionId wasn't removed");
         }
     }
 
@@ -333,7 +326,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             'Request failed: '.$this->client->getResponse()->getContent()
         );
 
-        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-communities?sort[]=id.desc');
+        $this->request('GET', '/api/basic/offline-app/v1/assistances/'.$assistanceId.'/assistances-communities?sort[]=id.desc');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -341,9 +334,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
         );
         $result = json_decode($this->client->getResponse()->getContent(), true);
         foreach ($result['data'] as $data) {
-            if ($data['communityId'] == $communityId) {
-                $this->assertTrue($data['removed'], "Target $communityId wasn't removed");
-            }
+            $this->assertNotEquals($communityId, $data['communityId'], "Target $communityId wasn't removed");
         }
     }
 }
