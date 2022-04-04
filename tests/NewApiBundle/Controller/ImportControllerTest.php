@@ -253,9 +253,10 @@ class ImportControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('totalEntries', $result);
         $this->assertArrayHasKey('amountIntegrityCorrect', $result);
         $this->assertArrayHasKey('amountIntegrityFailed', $result);
-        $this->assertArrayHasKey('amountDuplicities', $result);
-        $this->assertArrayHasKey('amountDuplicitiesResolved', $result);
-        $this->assertArrayHasKey('amountDuplicitiesToSolve', $result);
+        $this->assertArrayHasKey('amountIdentityDuplicities', $result);
+        $this->assertArrayHasKey('amountIdentityDuplicitiesResolved', $result);
+        $this->assertArrayHasKey('amountSimilarityDuplicities', $result);
+        $this->assertArrayHasKey('amountSimilarityDuplicitiesResolved', $result);
         $this->assertArrayHasKey('amountEntriesToImport', $result);
     }
 
