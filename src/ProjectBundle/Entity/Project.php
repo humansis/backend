@@ -726,7 +726,6 @@ class Project implements ExportableInterface
     }
 
     /**
-     * @ORM\PostLoad
      * @ORM\PostPersist
      * @ORM\PostUpdate
      * @throws \Doctrine\ORM\NonUniqueResultException
