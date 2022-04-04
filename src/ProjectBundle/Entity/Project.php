@@ -174,9 +174,9 @@ class Project implements ExportableInterface
     private $allowedProductCategoryTypes;
 
     /**
-     * @var \DateTimeInterface
+     * @var \DateTimeInterface|null
      */
-    private $lastModifiedAtIncludingBeneficiaries;
+    private $lastModifiedAtIncludingBeneficiaries = null;
 
     /**
      * Constructor
@@ -844,7 +844,7 @@ class Project implements ExportableInterface
     /**
      * @return \DateTimeInterface
      */
-    public function getLastModifiedAtIncludingBeneficiaries(): \DateTimeInterface
+    public function getLastModifiedAtIncludingBeneficiaries(): ?\DateTimeInterface
     {
         return $this->lastModifiedAtIncludingBeneficiaries;
     }
