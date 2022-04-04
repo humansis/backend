@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import;
 
+use NewApiBundle\Component\Import\Exception\ClientImportException;
 use NewApiBundle\Component\Import\Exception\InvalidImportException;
 use NewApiBundle\Enum\EnumValueNoFoundException;
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
@@ -144,15 +145,19 @@ class ImportParser
     private static function value(?Cell $cell)
     {
         if ($cell) {
-            if (is_string($cell->getValue())) {
-                $value = trim($cell->getValue());
+            try {
+                if (is_string($cell->getCalculatedValue())) {
+                    $value = trim($cell->getCalculatedValue());
 
-                // prevent bad formatted spreadsheet cell starting with apostrophe
-                if(strpos($value, '\'') === 0){
-                    $value = substr_replace($value, '', 0, 1);
+                    // prevent bad formatted spreadsheet cell starting with apostrophe
+                    if (strpos($value, '\'') === 0) {
+                        $value = substr_replace($value, '', 0, 1);
+                    }
+                } else {
+                    $value = $cell->getCalculatedValue();
                 }
-            } else {
-                $value = $cell->getValue();
+            } catch (\PhpOffice\PhpSpreadsheet\Calculation\Exception $exception) {
+                throw new ClientImportException("Bad cell value at position {$cell->getColumn()}{$cell->getRow()}");
             }
 
             return $value;
