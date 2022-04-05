@@ -22,7 +22,7 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
     public function findForSmartcardByAssistanceBeneficiary(Assistance $assistance, Beneficiary $beneficiary): ?ReliefPackage
     {
         $qb = $this->createQueryBuilder('rp')
-            ->join('rp.assistanceBeneficiary', 'ab')
+            ->join('rp.assistanceBeneficiary', 'ab', Join::WITH, 'ab.removed = 0')
             ->andWhere('ab.assistance = :assistance')
             ->andWhere('ab.beneficiary = :beneficiary')
             ->andWhere('rp.modalityType = :smartcardModality')
@@ -41,10 +41,10 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
     public function getForVendor(Vendor $vendor): Paginator
     {
         $qb = $this->createQueryBuilder('rp')
-            ->join('rp.assistanceBeneficiary', 'ab')
+            ->join('rp.assistanceBeneficiary', 'ab', Join::WITH, 'ab.removed = 0')
             ->join('ab.assistance', 'a')
             ->join('ab.beneficiary', 'abstB')
-            ->join(Beneficiary::class,  'b', Join::WITH, 'b.id=abstB.id')
+            ->join(Beneficiary::class,  'b', Join::WITH, 'b.id=abstB.id AND b.archived = 0')
             ->join('b.smartcards', 's', Join::WITH, 's.beneficiary=b AND s.state=:smartcardStateActive') //filter only bnf with active card
             ->join('a.location', 'l')
             ->leftJoin('l.adm4', 'adm4')

@@ -71,6 +71,13 @@ trait EnumTrait
         return self::apiMap()[$value];
     }
 
+    /**
+     * Everytime this function is updated, table location needs to be migrated. enum_normalized_name column needs to be generated again.
+     *
+     * @param $value
+     *
+     * @return string
+     */
     public static function normalizeValue($value): string
     {
         if (is_string($value)) {

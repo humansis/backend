@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-
 use CommonBundle\Entity\Organization;
 use DistributionBundle\Enum\AssistanceTargetType;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -16,6 +15,7 @@ use NewApiBundle\InputType\ProductUpdateInputType;
 use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -177,6 +177,7 @@ class ProductController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/products/{id}")
+     * @Cache(lastModified="product.getLastModifiedAt()", public=true)
      *
      * @param Product $product
      *

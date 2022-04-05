@@ -22,7 +22,7 @@ class HouseholdExportCSVService
         'Camp name' => 'campName',
         'Tent number' => 'tentNumber',
         'Livelihood' => 'livelihood',
-        'Income level' => 'incomeLevel',
+        'Income' => 'income',
         'Food Consumption Score' => 'foodConsumptionScore',
         'Coping Strategies Index' => 'copingStrategiesIndex',
         'Notes' => 'notes',
@@ -78,7 +78,7 @@ class HouseholdExportCSVService
         'Camp name' => '',
         'Tent number' => '',
         'Livelihood' => '',
-        'Income level' => '',
+        'Income' => '',
         'Food Consumption Score' => '',
         'Coping Strategies Index' => '',
         'Notes' => '#description+notes',
@@ -134,7 +134,7 @@ class HouseholdExportCSVService
         'Camp name' => 'Some Camp',
         'Tent number' => '10',
         'Livelihood' => 'Education',
-        'Income level' => '3',
+        'Income' => '3',
         'Food Consumption Score' => '3',
         'Coping Strategies Index' => '2',
         'Notes' => 'Greatest city',
@@ -190,7 +190,7 @@ class HouseholdExportCSVService
         'Camp name' => '',
         'Tent number' => '',
         'Livelihood' => '',
-        'Income level' => '',
+        'Income' => '',
         'Food Consumption Score' => '',
         'Coping Strategies Index' => '',
         'Notes' => '',
@@ -246,14 +246,14 @@ class HouseholdExportCSVService
         'Camp name' => 'String*',
         'Tent number' => 'Number*',
         'Livelihood' => 'String',
-        'Income level' => 'Number [1-5]',
+        'Income' => 'Number',
         'Food Consumption Score' => 'Number',
         'Coping Strategies Index' => 'Number',
         'Notes' => 'String',
         'Enumerator name' => 'String',
         'Latitude' => 'Float',
         'Longitude' => 'Float',
-        'Adm1' => 'String/empty',
+        'Adm1' => 'String/empty*',
         'Adm2' => 'String/empty',
         'Adm3' => 'String/empty',
         'Adm4' => 'String/empty',
@@ -326,13 +326,13 @@ class HouseholdExportCSVService
     }
 
     /**
-     * @param $countryISO3
+     * @param $countryIso3
      *
      * @return mixed
      */
-    private function getCountrySpecifics($countryISO3)
+    private function getCountrySpecifics($countryIso3)
     {
-        return $this->em->getRepository(CountrySpecific::class)->findByCountryIso3($countryISO3);
+        return $this->em->getRepository(CountrySpecific::class)->findBy(['countryIso3' => $countryIso3], ['id'=>'asc']);
     }
 
     /**

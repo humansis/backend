@@ -4,9 +4,10 @@ declare(strict_types=1);
 namespace NewApiBundle\InputType\Beneficiary;
 
 use BeneficiaryBundle\Enum\ResidencyStatus;
+use NewApiBundle\Enum\HouseholdHead;
 use NewApiBundle\Enum\PersonGender;
-use NewApiBundle\Enum\VariableBool;
 use NewApiBundle\Request\InputTypeInterface;
+use NewApiBundle\Utils\DateTime\Iso8601Converter;
 use NewApiBundle\Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
 use NewApiBundle\Validator\Constraints\Enum;
@@ -109,7 +110,7 @@ class BeneficiaryInputType implements InputTypeInterface
 
     /**
      * @Assert\NotNull()
-     * @Enum(enumClass="NewApiBundle\Enum\VariableBool")
+     * @Enum(enumClass="NewApiBundle\Enum\HouseholdHead")
      */
     private $isHead;
 
@@ -117,25 +118,22 @@ class BeneficiaryInputType implements InputTypeInterface
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *         @Assert\Choice(callback="vulnerabilities", strict=true, groups={"Strict"})
+     *         @Enum(enumClass="NewApiBundle\Enum\VulnerabilityCriteria")
      *     },
      *     groups={"Strict"}
      * )
      */
     private $vulnerabilityCriteria = [];
 
-    public static function vulnerabilities(): array
-    {
-        return array_keys(\BeneficiaryBundle\Entity\VulnerabilityCriterion::all());
-    }
-
     /**
      * @Assert\NotNull
      * @return \DateTimeInterface
      */
-    public function getDateOfBirth()
+    public function getDateOfBirth(): ?\DateTimeInterface
     {
-        return $this->dateOfBirth ? new \DateTime($this->dateOfBirth) : null;
+        if (!$this->dateOfBirth) return null;
+
+        return Iso8601Converter::toDateTime($this->dateOfBirth) ?: null;
     }
 
     /**
@@ -361,7 +359,7 @@ class BeneficiaryInputType implements InputTypeInterface
      */
     public function isHead()
     {
-        return VariableBool::valueFromAPI($this->isHead);
+        return HouseholdHead::valueFromAPI($this->isHead);
     }
 
     /**
@@ -383,9 +381,19 @@ class BeneficiaryInputType implements InputTypeInterface
     /**
      * @param string[] $vulnerabilityCriteria
      */
-    public function setVulnerabilityCriteria($vulnerabilityCriteria)
+    public function setVulnerabilityCriteria(array $vulnerabilityCriteria)
     {
         $this->vulnerabilityCriteria = $vulnerabilityCriteria;
+    }
+
+    /**
+     * @param string $vulnerabilityCriteria
+     *
+     * @return void
+     */
+    public function addVulnerabilityCriteria(string $vulnerabilityCriteria): void
+    {
+        $this->vulnerabilityCriteria[] = $vulnerabilityCriteria;
     }
 
     /**

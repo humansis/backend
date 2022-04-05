@@ -15,6 +15,7 @@ use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\Vendor;
+use VoucherBundle\Model\PurchaseService;
 use VoucherBundle\Utils\SmartcardService;
 
 class SmartcardFixtures extends Fixture implements DependentFixtureInterface
@@ -28,13 +29,20 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
     private $smartcardService;
 
     /**
+     * @var PurchaseService
+     */
+    private $purchaseService;
+
+    /**
      * @param string           $environment
      * @param SmartcardService $smartcardService
+     * @param PurchaseService  $purchaseService
      */
-    public function __construct(string $environment, SmartcardService $smartcardService)
+    public function __construct(string $environment, SmartcardService $smartcardService, PurchaseService $purchaseService)
     {
         $this->environment = $environment;
         $this->smartcardService = $smartcardService;
+        $this->purchaseService = $purchaseService;
     }
 
     /**
@@ -169,7 +177,9 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
 
     private function generatePurchase($seed, Smartcard $smartcard, Vendor $vendor, ObjectManager $manager): SmartcardPurchase
     {
-        $purchase = SmartcardPurchase::create($smartcard, $vendor, new DateTimeImmutable('now'));
+        $date = new DateTimeImmutable('now');
+        $purchase = SmartcardPurchase::create($smartcard, $vendor, $date);
+        $purchase->setHash($this->purchaseService->hashPurchase($smartcard->getBeneficiary(), $vendor, $date));
 
         for ($j = 0; $j < rand(1, 3); ++$j) {
             $quantity = rand(1, 10000);

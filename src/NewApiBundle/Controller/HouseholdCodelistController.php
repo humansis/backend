@@ -45,7 +45,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function getAssets(): JsonResponse
     {
-        $data = CodeLists::mapArray(HouseholdAssets::values());
+        $data = CodeLists::mapEnum(HouseholdAssets::values());
 
         return $this->json(new Paginator($data));
     }
@@ -57,7 +57,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function supportReceivedTypes(): JsonResponse
     {
-        $data = CodeLists::mapArray(HouseholdSupportReceivedType::values());
+        $data = CodeLists::mapEnum(HouseholdSupportReceivedType::values());
 
         return $this->json(new Paginator($data));
     }
@@ -69,7 +69,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function getShelterStatuses(): JsonResponse
     {
-        $data = CodeLists::mapArray(HouseholdShelterStatus::values());
+        $data = CodeLists::mapEnum(HouseholdShelterStatus::values());
 
         return $this->json(new Paginator($data));
     }

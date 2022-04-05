@@ -74,6 +74,7 @@ class LogsStorageService
         $extractedZip = Zip::extractToTempDir($file);
 
         $path = PathConstructor::construct($this->vendorLogPathTemple, [
+            'email' => $vendor->getUser()->getEmail(),
             'vendorId' => $vendor->getId(),
             'datetime' => (new DateTime())->format('Y-m-d_H:i:s'),
         ]);
@@ -94,6 +95,7 @@ class LogsStorageService
         $extractedZip = Zip::extractToTempDir($file);
 
         $path = PathConstructor::construct($this->fieldLogPathTemplate, [
+            'email' => $user->getEmail(),
             'userId' => $user->getId(),
             'datetime' => (new DateTime())->format('Y-m-d_H:i:s'),
         ]);

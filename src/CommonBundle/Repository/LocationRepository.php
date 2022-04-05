@@ -31,7 +31,56 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
         $this->whereCountry($qb, $country);
         return $qb->getQuery()->getResult();
     }
-    
+
+    /**
+     * @param string $countryIso3
+     * @param array  $adms full path of adms from Adm1 to whatever level (for example [adm1, adm2, adm3])
+     *
+     * @return Location|null
+     */
+    public function getByNormalizedNames(string $countryIso3, array $adms): ?Location
+    {
+        $level = count($adms);
+
+        $lowestLevelLocation = $this->createQueryBuilder('l')
+            ->where('l.countryISO3 = :country')
+            ->andWhere('l.enumNormalizedName = :normalizedName')
+            ->andWhere('l.lvl = :level')
+            ->setParameter('country', $countryIso3)
+            ->setParameter('normalizedName', end($adms))
+            ->setParameter('level', $level)
+            ->getQuery()
+            ->getResult();
+
+        /** @var Location $location */
+        foreach ($lowestLevelLocation as $key => $location) {
+            if ($this->isLocationEqualAdmPath($location, $adms)) {
+                return $location;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * It will iterate through location path and check if all parts of location are equal to ADMs array
+     * @param Location $location
+     * @param array    $adms
+     *
+     * @return bool
+     */
+    private function isLocationEqualAdmPath(Location $location, array $adms): bool {
+        $parentLevel = count($adms) - 2;
+        $currentLevelLocation = $location;
+        while(($parent = $currentLevelLocation->getParentLocation()) && $parentLevel > 0) {
+            if ($parent->getEnumNormalizedName() !== $adms[$parentLevel]) {
+                return false;
+            }
+            $currentLevelLocation = $parent;
+            $parentLevel--;
+        }
+        return true;
+    }
+
     public function getByNames(string $countryIso3, ?string $adm1, ?string $adm2, ?string $adm3, ?string $adm4): ?Location
     {
         $qb = $this->createQueryBuilder('l');
@@ -180,6 +229,27 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
                 AND $pathAlias.lvl <= $locationCurrentAlias.lvl)");
     }
 
+    /**
+     * @param Location $location
+     *
+     * @return Location[]
+     */
+    public function getChildrenLocations(Location $location): array
+    {
+        $qb = $this->createQueryBuilder('l');
+        $qb->andWhere(
+            $qb->expr()->lte('l.rgt', ':currentRgt'),
+            $qb->expr()->gte('l.lft', ':currentLft'),
+            $qb->expr()->gte('l.lvl', ':currentLvl')
+        )
+            ->setParameters([
+                'currentRgt' => $location->getRgt(),
+                'currentLft' => $location->getLft(),
+                'currentLvl' => $location->getLvl(),
+            ]);
+
+        return $qb->getQuery()->getResult();
+    }
 
     /**
      * @param LocationFilterInputType $filter

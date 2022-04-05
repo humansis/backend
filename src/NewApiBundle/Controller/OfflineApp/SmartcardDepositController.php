@@ -9,6 +9,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Repository\SmartcardDepositRepository;
 
@@ -77,6 +78,15 @@ class SmartcardDepositController extends AbstractOfflineAppController
                 \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
                 $this->getUser()
             );
+        } catch (NotFoundHttpException $exception) {
+            $this->writeData(
+                'depositV4',
+                $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
+                $request->get('serialNumber', 'missing'),
+                json_encode($request->request->all())
+            );
+            // due to PIN-2943 was removed exception propagation
+            return new Response();
         } catch (\Exception $exception) {
             $this->writeData(
                 'depositV4',

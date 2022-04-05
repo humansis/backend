@@ -5,7 +5,7 @@ namespace CommonBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\NestedTreeTrait;
 use NewApiBundle\Entity\Helper\TreeInterface;
-
+use NewApiBundle\Enum\EnumTrait;
 
 /**
  * Location
@@ -29,7 +29,6 @@ class Location implements TreeInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     *
      */
     private $id;
 
@@ -70,11 +69,17 @@ class Location implements TreeInterface
     private $code;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="enum_normalized_name", type="string", length=255, nullable=false, unique=true)
+     */
+    private $enumNormalizedName;
+
+    /**
      * @deprecated use nested tree
      * @var Adm1
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm1", mappedBy="location")
-     *
      */
     private $adm1;
 
@@ -83,7 +88,6 @@ class Location implements TreeInterface
      * @var Adm2
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm2", mappedBy="location")
-     *
      */
     private $adm2;
 
@@ -92,7 +96,6 @@ class Location implements TreeInterface
      * @var Adm3
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm3", mappedBy="location")
-     *
      */
     private $adm3;
 
@@ -101,7 +104,6 @@ class Location implements TreeInterface
      * @var Adm4
      *
      * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm4", mappedBy="location")
-     *
      */
     private $adm4;
 
@@ -161,6 +163,7 @@ class Location implements TreeInterface
     public function setName(string $name): void
     {
         $this->name = $name;
+        $this->enumNormalizedName = EnumTrait::normalizeValue($name);
     }
 
     /**
@@ -422,5 +425,13 @@ class Location implements TreeInterface
     public function getChildren(): iterable
     {
         return $this->getChildLocations();
+    }
+
+    /**
+     * @return string
+     */
+    public function getEnumNormalizedName(): string
+    {
+        return $this->enumNormalizedName;
     }
 }

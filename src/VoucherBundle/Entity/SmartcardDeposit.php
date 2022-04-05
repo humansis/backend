@@ -4,7 +4,6 @@ namespace VoucherBundle\Entity;
 
 use DateTime;
 use DateTimeInterface;
-use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\ReliefPackage;
@@ -31,8 +30,6 @@ class SmartcardDeposit
      * @ORM\Id
      * @ORM\Column(name="id", type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     *
      */
     private $id;
 
@@ -41,8 +38,6 @@ class SmartcardDeposit
      *
      * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\Smartcard", inversedBy="deposites")
      * @ORM\JoinColumn(nullable=false)
-     *
-     *
      */
     private $smartcard;
 
@@ -51,8 +46,6 @@ class SmartcardDeposit
      *
      * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User")
      * @ORM\JoinColumn(nullable=false)
-     *
-     *
      */
     private $distributedBy;
 
@@ -75,7 +68,6 @@ class SmartcardDeposit
      * @var float
      *
      * @ORM\Column(name="value", type="decimal", precision=10, scale=2, nullable=false)
-     *
      */
     private $value;
 
@@ -83,22 +75,37 @@ class SmartcardDeposit
      * @var float
      *
      * @ORM\Column(name="balance", type="decimal", precision=10, scale=2, nullable=true)
-     *
      */
     private $balance;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="suspicious", type="boolean", options={"default": false})
+     */
+    private $suspicious;
+
+    /**
+     * @var array|null
+     *
+     * @ORM\Column(name="message", type="simple_array", nullable=true, options={"default": null})
+     */
+    private $message;
 
     protected function __construct()
     {
     }
 
     public static function create(
-        Smartcard             $smartcard,
-        User                  $distributedBy,
-        ReliefPackage         $reliefPackage,
-                              $value,
-                              $balance,
-        DateTimeInterface     $distributedAt
-    ) {
+        Smartcard         $smartcard,
+        User              $distributedBy,
+        ReliefPackage     $reliefPackage,
+                          $value,
+                          $balance,
+        DateTimeInterface $distributedAt,
+        bool              $suspicious = false,
+        ?array            $message = null
+    ): SmartcardDeposit {
         $entity = new self();
         $entity->distributedBy = $distributedBy;
         $entity->distributedAt = $distributedAt;
@@ -106,6 +113,8 @@ class SmartcardDeposit
         $entity->value = $value;
         $entity->balance = $balance;
         $entity->smartcard = $smartcard;
+        $entity->suspicious = $suspicious;
+        $entity->message = $message;
 
         $smartcard->addDeposit($entity);
 
@@ -179,4 +188,37 @@ class SmartcardDeposit
     {
         $this->distributedAt = $distributedAt;
     }
+
+    /**
+     * @return bool
+     */
+    public function isSuspicious(): bool
+    {
+        return $this->suspicious;
+    }
+
+    /**
+     * @param bool $suspicious
+     */
+    public function setSuspicious(bool $suspicious): void
+    {
+        $this->suspicious = $suspicious;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getMessage(): ?array
+    {
+        return $this->message;
+    }
+
+    /**
+     * @param array|null $message
+     */
+    public function setMessage(?array $message): void
+    {
+        $this->message = $message;
+    }
+
 }

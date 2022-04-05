@@ -12,6 +12,7 @@ use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use InvalidArgumentException;
+use NewApiBundle\Entity\ReliefPackage;
 use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
@@ -21,6 +22,7 @@ use NewApiBundle\InputType\InstitutionFilterInputType;
 use NewApiBundle\InputType\InstitutionOrderInputType;
 use NewApiBundle\Request\Pagination;
 use VoucherBundle\Entity\Booklet;
+use VoucherBundle\Entity\SmartcardDeposit;
 
 /**
  * AssistanceBeneficiaryRepository
@@ -30,27 +32,28 @@ use VoucherBundle\Entity\Booklet;
  */
 class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
 {
+    public const SEARCH_CONTEXT_NOT_REMOVED = 'notRemoved';
+
     public function countAll(string $iso3)
     {
         $qb = $this->createQueryBuilder("db");
         $q = $qb->select("COUNT(DISTINCT db.beneficiary)")
-                ->leftJoin("db.beneficiary", "b")
-                ->leftJoin("b.projects", "p")
-                ->andWhere('p.iso3 = :country')
-                ->andWhere('b.archived = 0')
-        ;
+            ->leftJoin("db.beneficiary", "b")
+            ->leftJoin("b.projects", "p")
+            ->andWhere('p.iso3 = :country')
+            ->andWhere('b.archived = 0');
         $q->setParameter('country', $iso3);
 
         return $q->getQuery()->getSingleScalarResult();
     }
-    
+
     public function getByGRI(GeneralReliefItem $gri)
     {
         $qb = $this->createQueryBuilder("db");
         $q = $qb->leftJoin("db.generalReliefs", "gr")
-                    ->where("gr.id = :gri")
-                    ->setParameter('gri', $gri->getId());
-        
+            ->where("gr.id = :gri")
+            ->setParameter('gri', $gri->getId());
+
         return $q->getQuery()->getOneOrNullResult();
     }
 
@@ -58,12 +61,12 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
     {
         $qb = $this->createQueryBuilder("db");
         $q = $qb->where("db.assistance = :dd")
-                ->setParameter("dd", $assistance)
-                ->leftJoin("db.booklets", "b")
-                ->andWhere('b IS NULL')
-                ->orWhere("b.status = :s")
-                ->setParameter(':s', Booklet::UNASSIGNED);
-        
+            ->setParameter("dd", $assistance)
+            ->leftJoin("db.booklets", "b")
+            ->andWhere('b IS NULL')
+            ->orWhere("b.status = :s")
+            ->setParameter(':s', Booklet::UNASSIGNED);
+
         return $q->getQuery()->getResult();
     }
 
@@ -71,16 +74,17 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
     {
         $qb = $this->createQueryBuilder("db");
         $q = $qb->select("COUNT(db)")
-                ->where("db.assistance = :dd")
-                ->setParameter("dd", $assistance)
-                ->leftJoin("db.booklets", "b")
-                ->andWhere('b IS NULL');
-        
+            ->where("db.assistance = :dd")
+            ->setParameter("dd", $assistance)
+            ->leftJoin("db.booklets", "b")
+            ->andWhere('b IS NULL');
+
         return $q->getQuery()->getSingleScalarResult();
     }
 
     /**
      * @param Assistance $assistance
+     *
      * @return int
      */
     public function countActive(Assistance $assistance)
@@ -89,6 +93,7 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
             'assistance' => $assistance,
             'removed' => false,
         ]);
+
         return (int) $result;
     }
 
@@ -123,7 +128,7 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('db.assistance = :assistance')
             ->setParameter('assistance', $assistance)
             ->leftJoin("db.beneficiary", "beneficiary")
-            ;
+        ;
 
         switch ($assistance->getTargetType()) {
             case AssistanceTargetType::INDIVIDUAL:
@@ -148,17 +153,34 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
      * @param BeneficiaryFilterInputType|null $filter
      * @param BeneficiaryOrderInputType|null  $orderBy
      * @param Pagination|null                 $pagination
+     * @param array|null                      $context
+     *
+     * context values [
+     *      notRemoved = show only not removed assistance-bnf
+     * ]
      *
      * @return Paginator
      */
-    public function findBeneficiariesByAssistance(Assistance $assistance, ?BeneficiaryFilterInputType $filter = null, ?BeneficiaryOrderInputType $orderBy = null, ?Pagination $pagination = null): Paginator
-    {
+    public function findBeneficiariesByAssistance(
+        Assistance                  $assistance,
+        ?BeneficiaryFilterInputType $filter = null,
+        ?BeneficiaryOrderInputType  $orderBy = null,
+        ?Pagination                 $pagination = null,
+        ?array                      $context = null
+    ): Paginator {
         $qb = $this->createQueryBuilder('db')
             ->andWhere('db.assistance = :assistance')
             ->setParameter('assistance', $assistance)
             ->leftJoin('db.beneficiary', 'ab')
             ->innerJoin(Beneficiary::class, 'b', 'WITH', 'b.id = ab.id');
 
+        if ($context) {
+            if (in_array(self::SEARCH_CONTEXT_NOT_REMOVED, $context) && $context[self::SEARCH_CONTEXT_NOT_REMOVED]) {
+                $qb
+                    ->andWhere('db.removed = :removed')
+                    ->setParameter('removed', false);
+            }
+        }
 
         if ($pagination) {
             $qb->setMaxResults($pagination->getLimit());
@@ -206,6 +228,12 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
                             ->setParameter('type', NationalIdType::NATIONAL_ID)
                             ->orderBy('n.idNumber', $direction);
                         break;
+                    case BeneficiaryOrderInputType::SORT_BY_DISTRIBUTION_DATE:
+                        $qb
+                            ->leftJoin(ReliefPackage::class, 'reliefPackage', 'WITH', 'reliefPackage.assistanceBeneficiary = db.id')
+                            ->leftJoin(SmartcardDeposit::class, 'smartcardDeposit', 'WITH', 'smartcardDeposit.reliefPackage = reliefPackage.id')
+                            ->orderBy('smartcardDeposit.distributedAt', $direction);
+                        break;
                     default:
                         throw new \InvalidArgumentException('Invalid order by directive '.$name);
                 }
@@ -220,17 +248,30 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
      * @param InstitutionFilterInputType|null $filter
      * @param InstitutionOrderInputType|null  $orderBy
      * @param Pagination|null                 $pagination
+     * @param array|null                      $context
      *
      * @return Paginator
      */
-    public function findInstitutionsByAssistance(Assistance $assistance, ?InstitutionFilterInputType $filter = null, ?InstitutionOrderInputType $orderBy = null, ?Pagination $pagination = null): Paginator
-    {
+    public function findInstitutionsByAssistance(
+        Assistance                  $assistance,
+        ?InstitutionFilterInputType $filter = null,
+        ?InstitutionOrderInputType  $orderBy = null,
+        ?Pagination                 $pagination = null,
+        ?array                      $context = null
+    ): Paginator {
         $qb = $this->createQueryBuilder('db')
             ->andWhere('db.assistance = :assistance')
             ->setParameter('assistance', $assistance)
             ->join('db.beneficiary', 'ab')
             ->innerJoin(Institution::class, 'i', 'WITH', 'i.id = ab.id');
 
+        if ($context) {
+            if (in_array(self::SEARCH_CONTEXT_NOT_REMOVED, $context) && $context[self::SEARCH_CONTEXT_NOT_REMOVED]) {
+                $qb
+                    ->andWhere('db.removed = :removed')
+                    ->setParameter('removed', false);
+            }
+        }
 
         if ($filter) {
             if ($filter->hasProjects()) {
@@ -308,17 +349,30 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
      * @param CommunityFilterType|null     $filter
      * @param CommunityOrderInputType|null $orderBy
      * @param Pagination|null              $pagination
+     * @param array|null                   $context
      *
      * @return Paginator
      */
-    public function findCommunitiesByAssistance(Assistance $assistance, ?CommunityFilterType $filter = null, ?CommunityOrderInputType $orderBy = null, ?Pagination $pagination = null): Paginator
-    {
+    public function findCommunitiesByAssistance(
+        Assistance               $assistance,
+        ?CommunityFilterType     $filter = null,
+        ?CommunityOrderInputType $orderBy = null,
+        ?Pagination              $pagination = null,
+        ?array                   $context = null
+    ): Paginator {
         $qb = $this->createQueryBuilder('db')
             ->andWhere('db.assistance = :assistance')
             ->setParameter('assistance', $assistance)
             ->join('db.beneficiary', 'ab')
             ->innerJoin(Community::class, 'c', 'WITH', 'c.id = ab.id');
 
+        if ($context) {
+            if (in_array(self::SEARCH_CONTEXT_NOT_REMOVED, $context) && $context[self::SEARCH_CONTEXT_NOT_REMOVED]) {
+                $qb
+                    ->andWhere('db.removed = :removed')
+                    ->setParameter('removed', false);
+            }
+        }
 
         if ($filter) {
             if ($filter->hasFulltext()) {

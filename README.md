@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.com/humansis/api.svg?branch=develop)](https://travis-ci.com/humansis/api)
-[![GitHub version](https://badge.fury.io/gh/humansis%2Fapi.svg)](https://badge.fury.io/gh/humansis%2Fapi)
+[![Build status](https://gitlab-public.quanti.cz/humansis/web-platform/backend/badges/develop/pipeline.svg)](https://gitlab-public.quanti.cz/humansis/web-platform/backend/-/commits/develop)
+[![version](https://img.shields.io/badge/version-3.3.3-blue)](https://gitlab-public.quanti.cz/humansis/web-platform/backend/)
 
 HUMANSIS
 ==============
@@ -99,12 +99,14 @@ END
 git clone https://gitlab-public.quanti.cz/humansis/web-platform/backend customdir
 cd customdir
 cp docker-compose.yml.dist docker-compose.yml
+cp app/config/parameters.yml.dist app/config/parameters.yml
 ```
 
 Open `docker-compose.yml` and add:
 ```
 php:
     environment:
+        ENVIRONMENT: dev
         XDEBUG_CONFIG: 'remote_host=172.17.0.1'
         PHP_IDE_CONFIG: 'serverName=humansis.local'
         AWS_ACCESS_KEY: 'aaa'
@@ -128,6 +130,8 @@ php:
         GELF_PORT: 9999
         MOBILE_APP_VERSION: xxx
         MOBILE_APP_ID: xxx
+        AWS_LOGS_ACCESS_KEY: secret_key
+        AWS_LOGS_SECRET_KEY: secret_key
 ```
 
 ### Test interpret and docker environment
@@ -145,7 +149,7 @@ php:
   ```
   server = Local Docker
   Configuration files = ./docker-compose.yml
-  Env. variables = AWS_SECRET_KEY=x;SES_USERNAME=x;SES_PASSWORD=x;RDS_HOSTNAME=db;RDS_PORT=3306;RDS_DB_NAME=bms;RDS_USERNAME=bms_user;RDS_PASSWORD=aA123;GOOGLE_CLIENT=aaa;HID_SECRET=bbb;MOBILE_MASTER_KEY=aaaa;MOBILE_APP_VERSION=0;MOBILE_APP_ID=0
+  Env. variables = AWS_ACCESS_KEY=x;AWS_SECRET_KEY=x;SES_USERNAME=x;SES_PASSWORD=x;RDS_HOSTNAME=db;RDS_PORT=3306;RDS_DB_NAME=bms;RDS_USERNAME=bms_user;RDS_PASSWORD=aA123;GOOGLE_CLIENT=aaa;JWT_PASSPHRASE=xxx;GELF_SERVER_NAME=xxx;GELF_HOST=xxx;GELF_PORT=9999;HID_SECRET=bbb;MOBILE_MASTER_KEY=aaaa;MOBILE_APP_VERSION=0;MOBILE_APP_ID=0;AWS_LOGS_ACCESS_KEY=secret_key;AWS_LOGS_SECRET_KEY=secret_key
   Lifecycle = Always start a new container
   ```
 - OK
@@ -154,12 +158,12 @@ php:
   Interpreter = recently created
   Directory = customdir/tests
   Preffered Coverage engine = XDebug
-  Env. variables = AWS_SECRET_KEY=x;SES_USERNAME=x;SES_PASSWORD=x;RDS_HOSTNAME=db;RDS_PORT=3306;RDS_DB_NAME=bms;RDS_USERNAME=bms_user;RDS_PASSWORD=aA123;GOOGLE_CLIENT=aaa;HID_SECRET=bbb;MOBILE_MASTER_KEY=aaaa;MOBILE_APP_VERSION=0;MOBILE_APP_ID=0
+  Env. variables = AWS_ACCESS_KEY=x;AWS_SECRET_KEY=x;SES_USERNAME=x;SES_PASSWORD=x;RDS_HOSTNAME=db;RDS_PORT=3306;RDS_DB_NAME=bms;RDS_USERNAME=bms_user;RDS_PASSWORD=aA123;GOOGLE_CLIENT=aaa;JWT_PASSPHRASE=xxx;GELF_SERVER_NAME=xxx;GELF_HOST=xxx;GELF_PORT=9999;HID_SECRET=bbb;MOBILE_MASTER_KEY=aaaa;MOBILE_APP_VERSION=0;MOBILE_APP_ID=0;AWS_LOGS_ACCESS_KEY=secret_key;AWS_LOGS_SECRET_KEY=secret_key
   ```
 - OK
 
 #### PhpStorm Code Style
-Code style file humansis.xml is located in root directory 
+Code style file humansis.xml is located in root directory
 
 #### Makefile
 Docker and others already described commands are accessible from Makefile

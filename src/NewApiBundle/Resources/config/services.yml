@@ -66,6 +66,7 @@ services:
     NewApiBundle\Controller\:
         resource: '../../Controller'
         public: true
+        autowire: true
         tags: [ 'app.controller' ]
 
     NewApiBundle\Command\:
@@ -79,6 +80,10 @@ services:
     NewApiBundle\Mapper\:
         resource: '../../Mapper'
         tags: [ 'app.mapper' ]
+
+    Happyr\Validator\Constraint\EntityExistValidator:
+        arguments: [ '@doctrine.orm.entity_manager' ]
+        tags: [ 'validator.constraint_validator' ]
 
     NewApiBundle\Mapper\AssistanceMapper:
         arguments:
@@ -218,8 +223,16 @@ services:
     NewApiBundle\Validator\Constraints\CountryValidator:
         arguments: [ '@NewApiBundle\Component\Country\Countries' ]
 
+    NewApiBundle\Component\Smartcard\Analytics\EventService:
+
     NewApiBundle\Component\File\UploadService:
         arguments: [ '@knp_gaufrette.filesystem_map', '%aws_s3_bucket_name%', '%aws_s3_region%' ]
+
+    NewApiBundle\Component\Import\Finishing\BeneficiaryDecoratorBuilder:
+
+    NewApiBundle\Component\Import\Finishing\HouseholdDecoratorBuilder:
+
+    NewApiBundle\Component\Import\Integrity\ImportLineFactory:
 
     NewApiBundle\Component\Import\ImportService:
         public: true
@@ -257,6 +270,7 @@ services:
 
     NewApiBundle\Component\Import\ImportFinisher:
         arguments:
+            - "%import.batch_size%"
             - "@doctrine.orm.entity_manager"
             - "@beneficiary.household_service"
             - '@monolog.logger.import'

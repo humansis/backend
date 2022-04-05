@@ -36,6 +36,17 @@ class Countries
         return null;
     }
 
+    public function hasCountry(string $iso3): bool
+    {
+        foreach ($this->lazyList() as $country) {
+            if ($iso3 === $country->getIso3()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * @return Country[]
      */

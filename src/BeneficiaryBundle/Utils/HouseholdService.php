@@ -36,18 +36,12 @@ use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\InputType\Helper\EnumsBuilder;
 use NewApiBundle\InputType\HouseholdCreateInputType;
-use NewApiBundle\InputType\HouseholdProxyInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
-use PhpOffice\PhpSpreadsheet\Reader\Csv;
 use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
-use Symfony\Component\Cache\Simple\FilesystemCache;
-use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -59,9 +53,6 @@ class HouseholdService
     /** @var EntityManagerInterface $em */
     private $em;
 
-    /** @var Serializer $serializer */
-    private $serializer;
-
     /** @var BeneficiaryService $beneficiaryService */
     private $beneficiaryService;
 
@@ -71,40 +62,25 @@ class HouseholdService
     /** @var LocationService $locationService */
     private $locationService;
 
-    /** @var ValidatorInterface $validator */
-    private $validator;
-
-    /** @var ContainerInterface $container */
-    private $container;
-
-
     /**
      * HouseholdService constructor.
+     *
      * @param EntityManagerInterface $entityManager
-     * @param Serializer $serializer
-     * @param BeneficiaryService $beneficiaryService
-     * @param RequestValidator $requestValidator
-     * @param LocationService $locationService
-     * @param ValidatorInterface $validator
-     * @param ContainerInterface $container
+     * @param BeneficiaryService     $beneficiaryService
+     * @param RequestValidator       $requestValidator
+     * @param LocationService        $locationService
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        Serializer $serializer,
         BeneficiaryService $beneficiaryService,
         RequestValidator $requestValidator,
-        LocationService $locationService,
-        ValidatorInterface $validator,
-        ContainerInterface $container
+        LocationService $locationService
     )
     {
         $this->em = $entityManager;
-        $this->serializer = $serializer;
         $this->beneficiaryService = $beneficiaryService;
         $this->requestValidator = $requestValidator;
         $this->locationService = $locationService;
-        $this->validator = $validator;
-        $this->container = $container;
     }
 
     /**
@@ -150,8 +126,6 @@ class HouseholdService
         }
 
         $this->em->persist($household);
-        $this->em->flush();
-
         return $household;
     }
 
@@ -162,7 +136,7 @@ class HouseholdService
         $householdLocation->setType(HouseholdLocation::LOCATION_TYPE_RESIDENCE);
 
         $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
-        if (null === $location) {
+        if (!$location instanceof Location) {
             throw new EntityNotFoundException("Location was not found.");
         }
         $householdLocation->setAddress(Address::create(
@@ -182,7 +156,7 @@ class HouseholdService
         $householdLocation->setType(HouseholdLocation::LOCATION_TYPE_SETTLEMENT);
 
         $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
-        if (null === $location) {
+        if (!$location instanceof Location) {
             throw new EntityNotFoundException("Location was not found.");
         }
         $householdLocation->setAddress(Address::create(
@@ -205,13 +179,14 @@ class HouseholdService
         if ($inputType->getCampId()) {
             $camp = $this->em->getRepository(Camp::class)->find($inputType->getCampId());
         } else {
-            $camp = $this->em->getRepository(Camp::class)->findOneBy(['name' => $inputType->getCamp()->getName()]);
+            $camp = $this->em->getRepository(Camp::class)
+                ->findOneBy(['name' => $inputType->getCamp()->getName(), 'location' => $inputType->getCamp()->getLocationId()]);
         }
 
         // Or create a camp with the name in the request
         if (!$camp) {
             $location = $this->em->getRepository(Location::class)->find($inputType->getCamp()->getLocationId());
-            if (null === $location) {
+            if (!$location instanceof Location) {
                 throw new EntityNotFoundException("Location was not found.");
             }
             $camp = new Camp();
@@ -230,7 +205,7 @@ class HouseholdService
      * @param HouseholdUpdateInputType $inputType
      *
      * @return Household
-     * @throws EntityNotFoundException
+     * @throws Exception
      */
     public function update(Household $household, HouseholdUpdateInputType $inputType): Household
     {
@@ -267,8 +242,6 @@ class HouseholdService
         }
 
         $this->em->persist($household);
-        $this->em->flush();
-
         return $household;
     }
 
@@ -396,7 +369,7 @@ class HouseholdService
             ->setLivelihood($householdArray["livelihood"])
             ->setLongitude($householdArray["longitude"])
             ->setLatitude($householdArray["latitude"])
-            ->setIncomeLevel($householdArray["income_level"] ?? null)
+            ->setIncome($householdArray["income"] ?? null)
             ->setCopingStrategiesIndex($householdArray["coping_strategies_index"])
             ->setFoodConsumptionScore($householdArray["food_consumption_score"])
             ->setAssets($assets)
@@ -609,7 +582,7 @@ class HouseholdService
     /**
      * @throws EntityNotFoundException
      */
-    public function createOrUpdateCountrySpecificAnswers(Household $household, CountrySpecificsAnswerInputType $inputType): CountrySpecificAnswer
+    public function createOrUpdateCountrySpecificAnswers(Household $household, CountrySpecificsAnswerInputType $inputType): ?CountrySpecificAnswer
     {
         $countrySpecific = $this->em->getRepository(CountrySpecific::class)
             ->find($inputType->getCountrySpecificId());
@@ -718,16 +691,6 @@ class HouseholdService
         return "Households have been archived";
     }
 
-
-    /**
-     * @return mixed
-     */
-    public function exportToCsv()
-    {
-        $exportableTable = $this->em->getRepository(Household::class)->findAll();
-        return $this->container->get('export_csv_service')->export($exportableTable);
-    }
-
     /**
      * @param array $householdsArray
      * @return array
@@ -765,7 +728,7 @@ class HouseholdService
             'livelihood' => $inputType->getLivelihood(),
             'longitude' => $inputType->getLongitude(),
             'latitude' => $inputType->getLatitude(),
-            'income_level' => $inputType->getIncomeLevel(),
+            'income' => $inputType->getIncome(),
             'coping_strategies_index' => $inputType->getCopingStrategiesIndex(),
             'food_consumption_score' => $inputType->getFoodConsumptionScore(),
             'assets' => $inputType->getAssets(),
@@ -943,7 +906,7 @@ class HouseholdService
             ->setLivelihood($inputType->getLivelihood())
             ->setLongitude($inputType->getLongitude())
             ->setLatitude($inputType->getLatitude())
-            ->setIncomeLevel($inputType->getIncomeLevel())
+            ->setIncome($inputType->getIncome())
             ->setCopingStrategiesIndex($inputType->getCopingStrategiesIndex())
             ->setFoodConsumptionScore($inputType->getFoodConsumptionScore())
             ->setAssets($inputType->getAssets())

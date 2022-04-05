@@ -26,6 +26,16 @@ use VoucherBundle\Repository\VendorRepository;
 class VendorController extends AbstractController
 {
     /**
+     * @var VendorRepository
+     */
+    private $vendorRepository;
+
+    public function __construct(VendorRepository $vendorRepository)
+    {
+        $this->vendorRepository = $vendorRepository;
+    }
+
+    /**
      * @Rest\Get("/web-app/v1/vendors/exports")
      *
      * @param Request $request
@@ -187,6 +197,7 @@ class VendorController extends AbstractController
      * @param VendorOrderInputType  $orderBy
      *
      * @return JsonResponse
+     * @throws \NewApiBundle\Enum\EnumValueNoFoundException
      */
     public function list(Request $request, VendorFilterInputType $filter, Pagination $pagination, VendorOrderInputType $orderBy): JsonResponse
     {
@@ -194,9 +205,7 @@ class VendorController extends AbstractController
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        /** @var VendorRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(Vendor::class);
-        $data = $repository->findByParams($request->headers->get('country'), $filter, $orderBy, $pagination);
+        $data = $this->vendorRepository->findByParams($request->headers->get('country'), $filter, $orderBy, $pagination);
 
         return $this->json($data);
     }

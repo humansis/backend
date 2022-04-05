@@ -1,5 +1,13 @@
 services:
 
+    VoucherBundle\Repository\VendorRepository:
+        class: Doctrine\ORM\EntityRepository
+        calls:
+            - setLocationRepository: ['@CommonBundle\Repository\LocationRepository']
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - VoucherBundle\Entity\Vendor
+
 #######################################################################################
 ##                                       CRUD                                        ##
 #######################################################################################
@@ -10,10 +18,15 @@ services:
         arguments:
             - VoucherBundle\Entity\SmartcardPurchase
 
+    VoucherBundle\Repository\SmartcardPurchaseRepository:
+        alias: smartcard_purchase.repository
+
     voucher.vendor_service:
         class: VoucherBundle\Utils\VendorService
         arguments: ['@doctrine.orm.entity_manager', '@validator', '@location_service', '@service_container']
         public: true
+
+    VoucherBundle\Utils\VendorService: '@voucher.vendor_service'
 
     voucher.booklet_service:
         class: VoucherBundle\Utils\BookletService
@@ -51,6 +64,7 @@ services:
             - '@voucher.purchase_service'
             - '@workflow.registry'
             - '@logger'
+            - '@cache.app'
         public: true
 
     VoucherBundle\Mapper\SmartcardMapper:

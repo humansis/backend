@@ -4,7 +4,7 @@ namespace NewApiBundle\Component\Import;
 
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
@@ -18,7 +18,7 @@ use UserBundle\Entity\User;
 
 class DuplicityResolver
 {
-    use ImportLoggerTrait;
+    use ImportQueueLoggerTrait;
 
     /**
      * @var EntityManagerInterface
@@ -40,38 +40,49 @@ class DuplicityResolver
      */
     private $importQueueStateMachine;
 
+    /**
+     * @var WorkflowInterface
+     */
+    private $importStateMachine;
+
     public function __construct(
-        EntityManagerInterface $entityManager,
-        LoggerInterface        $logger,
-        IdentityChecker        $identityChecker,
-        SimilarityChecker      $similarityChecker,
-        WorkflowInterface      $importQueueStateMachine
+        EntityManagerInterface                        $entityManager,
+        LoggerInterface                               $logger,
+        IdentityChecker                               $identityChecker,
+        SimilarityChecker                             $similarityChecker,
+        WorkflowInterface                             $importQueueStateMachine,
+        WorkflowInterface $importStateMachine
     ) {
         $this->em = $entityManager;
         $this->logger = $logger;
         $this->identityChecker = $identityChecker;
         $this->similarityChecker = $similarityChecker;
         $this->importQueueStateMachine = $importQueueStateMachine;
+        $this->importStateMachine = $importStateMachine;
     }
 
     /**
      * @param ImportQueue $importQueue
-     * @param int         $duplicityId
+     * @param int|null    $acceptedDuplicityId
      * @param string      $status
      * @param User        $user
      */
-    public function resolve(ImportQueue $importQueue, int $duplicityId, string $status, User $user)
+    public function resolve(ImportQueue $importQueue, ?int $acceptedDuplicityId, string $status, User $user)
     {
         $import = $importQueue->getImport();
         if (!in_array($import->getState(), [
+            ImportState::IDENTITY_CHECKING,
+            ImportState::IDENTITY_CHECK_CORRECT,
             ImportState::IDENTITY_CHECK_FAILED,
+            ImportState::SIMILARITY_CHECKING,
+            ImportState::SIMILARITY_CHECK_CORRECT,
             ImportState::SIMILARITY_CHECK_FAILED,
         ])) {
             throw new \BadMethodCallException('Unable to execute duplicity resolver. Import is not ready to duplicity resolve.');
         }
 
-        /** @var ImportBeneficiaryDuplicity[] $duplicities */
-        $duplicities = $this->em->getRepository(ImportBeneficiaryDuplicity::class)->findBy([
+        /** @var ImportHouseholdDuplicity[] $duplicities */
+        $duplicities = $this->em->getRepository(ImportHouseholdDuplicity::class)->findBy([
             'ours' => $importQueue,
         ]);
 
@@ -79,7 +90,7 @@ class DuplicityResolver
         $links = [];
         $uniques = [];
         foreach ($duplicities as $duplicity) {
-            if ($duplicity->getId() === $duplicityId) {
+            if ($duplicity->getTheirs()->getId() === $acceptedDuplicityId) {
 
                 switch ($status) {
                     case ImportQueueState::TO_UPDATE:
@@ -100,23 +111,33 @@ class DuplicityResolver
             $duplicity->setDecideBy($user);
             $duplicity->setDecideAt(new DateTime());
         }
+        $this->importQueueStateMachine->apply($importQueue, $status);
         if (!empty($updates)) {
-            $this->logImportInfo($importQueue->getImport(),
-                "[Queue #{$importQueue->getId()}] Duplicity suspect(s) [".implode(', ', $updates)."] was resolved as more current duplicity");
+            $this->logQueueInfo($importQueue,
+                "Duplicity suspect(s) [".implode(', ', $updates)."] was resolved as more current duplicity");
         } else {
-            $this->logImportDebug($importQueue->getImport(), "[Queue #{$importQueue->getId()}] Nothing was resolved as more current duplicity");
+            $this->logQueueDebug($importQueue, "[Queue #{$importQueue->getId()}] Nothing was resolved as more current duplicity");
         }
         if (!empty($links)) {
-            $this->logImportInfo($importQueue->getImport(),
-                "[Queue #{$importQueue->getId()}] Duplicity suspect(s) [".implode(', ', $updates)."] was resolved as older duplicity");
+            $this->logQueueInfo($importQueue,
+                "Duplicity suspect(s) [".implode(', ', $updates)."] was resolved as older duplicity");
         } else {
-            $this->logImportDebug($importQueue->getImport(), "[Queue #{$importQueue->getId()}] Nothing was resolved as older duplicity");
+            $this->logQueueDebug($importQueue, "Nothing was resolved as older duplicity");
         }
         if (!empty($uniques)) {
-            $this->logImportInfo($importQueue->getImport(),
-                "[Queue #{$importQueue->getId()}] Duplicity suspect(s) [".implode(', ', $updates)."] was resolved as mistake and will be inserted");
+            $this->logQueueInfo($importQueue,
+                "Duplicity suspect(s) [".implode(', ', $updates)."] was resolved as mistake and will be inserted");
         } else {
-            $this->logImportDebug($importQueue->getImport(), "[Queue #{$importQueue->getId()}] Nothing was resolved as mistake");
+            $this->logQueueDebug($importQueue, "Nothing was resolved as mistake");
+        }
+
+        $this->em->flush();
+
+        // check if it is all to decide
+        if ($this->importStateMachine->can($importQueue->getImport(), ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES)) {
+            $this->importStateMachine->apply($importQueue->getImport(), ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES);
+        } elseif ($this->importStateMachine->can($importQueue->getImport(), ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES)) {
+            $this->importStateMachine->apply($importQueue->getImport(), ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES);
         }
 
         $this->em->flush();

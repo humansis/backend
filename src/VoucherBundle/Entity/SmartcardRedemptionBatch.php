@@ -176,17 +176,17 @@ class SmartcardRedemptionBatch implements JsonSerializable
     }
 
     /**
-     * @return DateTimeInterface|null
+     * @return DateTimeInterface
      */
-    public function getRedeemedAt(): ?DateTimeInterface
+    public function getRedeemedAt(): DateTimeInterface
     {
         return $this->redeemedAt;
     }
 
     /**
-     * @param DateTimeInterface|null $redeemedAt
+     * @param DateTimeInterface $redeemedAt
      */
-    public function setRedeemedAt(?DateTimeInterface $redeemedAt): void
+    public function setRedeemedAt(DateTimeInterface $redeemedAt): void
     {
         $this->redeemedAt = $redeemedAt;
     }

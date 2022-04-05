@@ -106,9 +106,9 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      *
      * @return int
      */
-    public function getHouseholdId(): int
+    public function getHouseholdId(): ?int
     {
-        return $this->getHousehold()->getId();
+        return $this->getHousehold() ? $this->getHousehold()->getId() : null;
     }
 
     /**
@@ -695,7 +695,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
         $shelterStatus = '';
         if ($this->getHousehold()->getShelterStatus()) {
-            $shelterStatus = $this->getHousehold()->getShelterStatus() ? HouseholdShelterStatus::valueToAPI($this->getHousehold()->getShelterStatus()) : '';
+            $shelterStatus = $this->getHousehold()->getShelterStatus() ? $this->getHousehold()->getShelterStatus() : '';
         }
 
         $tempBenef = [
@@ -812,7 +812,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
             "camp" => $camp,
             "tent number" => $tentNumber,
             "livelihood" => $livelihood,
-            "incomeLevel" => $this->getHousehold()->getIncomeLevel(),
+            "incomeLevel" => $this->getHousehold()->getIncome(),
             "foodConsumptionScore" => $this->getHousehold()->getFoodConsumptionScore(),
             "copingStrategiesIndex" => $this->getHousehold()->getCopingStrategiesIndex(),
             "notes" => $this->getHousehold()->getNotes(),

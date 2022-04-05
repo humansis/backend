@@ -7,12 +7,14 @@ use DistributionBundle\Entity\Assistance;
 use CommonBundle\Entity\Location;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\Component\Import\Identity\NationalIdHashSet;
 use NewApiBundle\DBAL\PersonGenderEnum;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Enum\NationalIdType;
@@ -78,13 +80,45 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $q->getQuery()->getResult();
     }
 
-    public function getUnarchivedByProject(Project $project): iterable
+    /**
+     * @param Project $project
+     *
+     * @return QueryBuilder
+     */
+    public function getQbUnarchivedByProject(Project $project): QueryBuilder
     {
         $qb = $this->createQueryBuilder("bnf");
-        $q = $qb->leftJoin("bnf.projects", "p")
+
+        return $qb->leftJoin("bnf.projects", "p")
             ->where("p = :project")
             ->setParameter("project", $project)
             ->andWhere("bnf.archived = 0");
+    }
+
+    /**
+     * @param Project $project
+     *
+     * @return null|\DateTimeInterface
+     * @throws NonUniqueResultException
+     */
+    public function getLastModifiedByProject(Project $project): ?\DateTimeInterface
+    {
+        $qb = $this->getQbUnarchivedByProject($project);
+        $qb->select('bnf.updatedOn')
+            ->orderBy('bnf.updatedOn', 'DESC')
+            ->setFirstResult(0)
+            ->setMaxResults(1);
+
+        try {
+            return $qb->getQuery()->getSingleResult(AbstractQuery::HYDRATE_ARRAY)['updatedOn'];
+        } catch (NoResultException $e) {
+            return null;
+        }
+    }
+
+    public function getUnarchivedByProject(Project $project): iterable
+    {
+        $q = $this->getQbUnarchivedByProject($project);
 
         return $q->getQuery()->getResult();
     }
@@ -167,8 +201,8 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             ->join('p.nationalIds', 'id')
             ->andWhere('b.archived = 0')
             ->andWhere('hh.archived = 0')
-            ->andWhere('id.idNumber = :idNumber')
             ->andWhere('id.idType = :idType')
+            ->andWhere('id.idNumber = :idNumber')
             ->setParameter('idNumber', $idNumber)
             ->setParameter('idType', $idType);
 
@@ -181,6 +215,29 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         if (null !== $household) {
             $qb->andWhere('hh.id = :hhId')
                 ->setParameter('hhId', $household->getId());
+        }
+
+        return $qb->getQuery()
+            ->getResult();
+    }
+
+    public function findIdentitiesByNationalIds(string $iso3, NationalIdHashSet $ids)
+    {
+        $qb = $this->createQueryBuilder('b')
+            ->join('b.person', 'p')
+            ->join('b.household', 'hh')
+            ->join('p.nationalIds', 'id')
+            ->andWhere('b.archived = 0')
+            ->andWhere('hh.archived = 0')
+            ->andWhere('id.idNumber IN (:idNumbers)')
+            ->andWhere('id.idType IN (:idTypes)')
+            ->setParameter('idNumbers', $ids->getNumbers())
+            ->setParameter('idTypes', $ids->getTypes());
+
+        if (null !== $iso3) {
+            $qb->join('hh.projects', 'project')
+                ->andWhere('project.iso3 = :country')
+                ->setParameter('country', $iso3);
         }
 
         return $qb->getQuery()

@@ -7,17 +7,12 @@ use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use NewApiBundle\Component\Import\ValueObject\ImportStatisticsValueObject;
-use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportFile;
-use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Entity;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
-use NewApiBundle\InputType\DuplicityResolveInputType;
-use NewApiBundle\InputType\ImportCreateInputType;
-use NewApiBundle\InputType\ImportPatchInputType;
+use NewApiBundle\InputType\Import;
+use NewApiBundle\Repository\ImportBeneficiaryDuplicityRepository;
 use NewApiBundle\Repository\ImportQueueRepository;
-use NewApiBundle\Workflow\ImportTransitions;
-use NewApiBundle\Workflow\WorkflowTool;
 use ProjectBundle\Entity\Project;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -82,18 +77,30 @@ class ImportService
         $this->duplicityResolver = $duplicityResolver;
     }
 
-    public function create(ImportCreateInputType $inputType, User $user): Import
+    public function create(string $countryIso3, Import\CreateInputType $inputType, User $user): Entity\Import
     {
-        $project = $this->em->getRepository(Project::class)->find($inputType->getProjectId());
+        if (empty($inputType->getProjects())) {
+            //TODO remove after FE part of PIN-2820 will be implemented
+            $project = $this->em->getRepository(Project::class)->find($inputType->getProjectId());
 
-        if (!$project instanceof Project) {
-            throw new InvalidArgumentException('Project with ID '.$inputType->getProjectId().' not found');
+            if (!$project instanceof Project) {
+                throw new InvalidArgumentException('Project with ID '.$inputType->getProjectId().' not found');
+            }
+
+            $projects = [$project];
+        } else {
+            $projects = $this->em->getRepository(Project::class)->findBy(['id'=>$inputType->getProjects()]);
+
+            if (count($projects) < count($inputType->getProjects())) {
+                throw new InvalidArgumentException('Some Project ID not found');
+            }
         }
 
-        $import = new Import(
+        $import = new Entity\Import(
+            $countryIso3,
             $inputType->getTitle(),
             $inputType->getDescription(),
-            $project,
+            $projects,
             $user,
         );
 
@@ -105,7 +112,7 @@ class ImportService
         return $import;
     }
 
-    public function patch(Import $import, ImportPatchInputType $inputType): void
+    public function patch(Entity\Import $import, Import\PatchInputType $inputType): void
     {
         if (!is_null($inputType->getDescription())) {
             $import->setNotes($inputType->getDescription());
@@ -122,7 +129,7 @@ class ImportService
         $this->em->flush();
     }
 
-    public function updateStatus(Import $import, string $status): void
+    public function updateStatus(Entity\Import $import, string $status): void
     {
         $before = $import->getState();
         if($this->importStateMachine->can($import, $status)){
@@ -134,7 +141,7 @@ class ImportService
         }
     }
 
-    public function removeFile(ImportFile $importFile)
+    public function removeFile(Entity\ImportFile $importFile)
     {
         $this->em->remove($importFile);
         $this->em->flush();
@@ -142,51 +149,79 @@ class ImportService
         $this->logImportInfo($importFile->getImport(), "Removed file '{$importFile->getFilename()}'");
     }
 
-    public function getStatistics(Import $import): ImportStatisticsValueObject
+    public function getStatistics(Entity\Import $import): ImportStatisticsValueObject
     {
         $statistics = new ImportStatisticsValueObject();
 
-        /** @var ImportQueueRepository $repository */
-        $repository = $this->em->getRepository(ImportQueue::class);
+        /** @var ImportQueueRepository $importQueueRepository */
+        $importQueueRepository = $this->em->getRepository(Entity\ImportQueue::class);
 
-        $statistics->setTotalEntries($repository->count(['import'=>$import]));
-        $statistics->setAmountIntegrityCorrect($repository->getTotalByImportAndStatus($import, ImportQueueState::VALID));
-        $statistics->setAmountIntegrityFailed($repository->getTotalByImportAndStatus($import, ImportQueueState::INVALID));
-        $statistics->setAmountDuplicities($repository->getTotalByImportAndStatus($import, ImportQueueState::IDENTITY_CANDIDATE));
-        $statistics->setAmountDuplicitiesResolved($repository->getTotalReadyForSave($import));
-        $statistics->setAmountEntriesToImport($repository->getTotalReadyForSave($import));
+        /** @var ImportBeneficiaryDuplicityRepository $importBeneficiaryDuplicityRepository */
+        $importBeneficiaryDuplicityRepository = $this->em->getRepository(Entity\ImportBeneficiaryDuplicity::class);
+
+        $statistics->setTotalEntries($importQueueRepository->count(['import'=>$import]));
+        $statistics->setAmountIntegrityCorrect($importQueueRepository->getTotalByImportAndStatus($import, ImportQueueState::VALID));
+        $statistics->setAmountIntegrityFailed($importQueueRepository->getTotalByImportAndStatus($import, ImportQueueState::INVALID));
+        $statistics->setAmountIdentityDuplicities($importBeneficiaryDuplicityRepository->getTotalByImport($import));
+        $statistics->setAmountIdentityDuplicitiesResolved($importQueueRepository->getTotalResolvedDuplicities($import));
+        $statistics->setAmountEntriesToImport($importQueueRepository->getTotalReadyForSave($import));
         $statistics->setStatus($import->getState());
 
         return $statistics;
     }
 
-    public function resolveDuplicity(ImportQueue $importQueue, DuplicityResolveInputType $inputType, User $user)
+    public function resolveDuplicity(Entity\ImportQueue $importQueue, Import\Duplicity\ResolveSingleDuplicityInputType $inputType, User $user)
     {
         $this->logImportInfo($importQueue->getImport(), "[Queue#{$importQueue->getId()}] decided as ".$inputType->getStatus());
         if ($this->importQueueStateMachine->can($importQueue, $inputType->getStatus())) {
             $this->duplicityResolver->resolve($importQueue, $inputType->getAcceptedDuplicityId(),$inputType->getStatus(), $user);
+            $this->em->flush();
+        } else {
             foreach ($this->importQueueStateMachine->buildTransitionBlockerList($importQueue, $inputType->getStatus()) as $block) {
                 $this->logImportInfo($importQueue->getImport(), "[Queue#{$importQueue->getId()}] can't go '{$inputType->getStatus()}' because ".$block->getMessage());
             }
-            $this->importQueueStateMachine->apply($importQueue, $inputType->getStatus());
-            $this->em->flush();
-
-            // check if it is all to decide
-            if ($this->importStateMachine->can($importQueue->getImport(), ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES)) {
-                $this->importStateMachine->apply($importQueue->getImport(), ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES);
-            } elseif ($this->importStateMachine->can($importQueue->getImport(), ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES)) {
-                $this->importStateMachine->apply($importQueue->getImport(), ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES);
-            }
-
-            $this->em->flush();
-        } else {
             throw new BadRequestHttpException("You can't resolve duplicity. Import Queue is not in valid state.");
         }
     }
 
-    private function removeFinishedQueue(ImportQueue $queue): void
+    public function resolveAllDuplicities(Entity\Import $import, Import\Duplicity\ResolveAllDuplicitiesInputType $inputType, User $user)
     {
-        foreach ($queue->getDuplicities() as $duplicity) {
+        if (!in_array($import->getState(), [
+            ImportState::IDENTITY_CHECK_FAILED,
+            ImportState::IDENTITY_CHECK_CORRECT,
+            ImportState::SIMILARITY_CHECK_FAILED,
+            ImportState::SIMILARITY_CHECK_CORRECT,
+        ])) {
+            throw new BadRequestHttpException("You can't resolve all duplicities. Import is not in valid state.");
+        }
+        $singleDuplicityQueues = $this->em->getRepository(Entity\ImportQueue::class)->findSingleDuplicityQueues($import);
+        /** @var Entity\ImportQueue $importQueue */
+        foreach ($singleDuplicityQueues as $importQueue) {
+            $duplicities = $importQueue->getHouseholdDuplicities();
+            if ($duplicities->count() !== 1) {
+                // this is only for paranoid measures
+                $this->logImportError($import, "[Queue#{$importQueue->getId()}] has no or more duplicity candidates that 1");
+                continue;
+            }
+
+            /** @var Entity\ImportHouseholdDuplicity $duplicity */
+            $duplicity = $duplicities[0];
+            if ($this->importQueueStateMachine->can($importQueue, $inputType->getStatus())) {
+                $this->duplicityResolver->resolve($importQueue, $duplicity->getTheirs()->getId(), $inputType->getStatus(), $user);
+                $this->em->flush();
+            } else {
+                foreach ($this->importQueueStateMachine->buildTransitionBlockerList($importQueue, $inputType->getStatus()) as $block) {
+                    $this->logImportInfo($importQueue->getImport(), "[Queue#{$importQueue->getId()}] can't go '{$inputType->getStatus()}' because ".$block->getMessage());
+                }
+                throw new BadRequestHttpException("You can't resolve duplicity. Import Queue is not in valid state.");
+            }
+        }
+        $this->logImportInfo($import, "All items was decided as ".$inputType->getStatus());
+    }
+
+    private function removeFinishedQueue(Entity\ImportQueue $queue): void
+    {
+        foreach ($queue->getHouseholdDuplicities() as $duplicity) {
             $this->em->remove($duplicity);
         }
         $this->em->remove($queue);

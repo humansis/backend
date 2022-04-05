@@ -3,9 +3,12 @@ declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Component\Import;
 
+use BeneficiaryBundle\Entity\CountrySpecific;
+use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use NewApiBundle\Component\Import\ImportFileValidator;
+use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
@@ -13,7 +16,7 @@ use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\PersonGender;
-use NewApiBundle\InputType\DuplicityResolveInputType;
+use NewApiBundle\InputType\Import\Duplicity\ResolveSingleDuplicityInputType;
 use ProjectBundle\Enum\Livelihood;
 use ProjectBundle\Utils\ProjectService;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -102,11 +105,15 @@ class ImportTest extends KernelTestCase
     public function correctFiles(): array
     {
         return [ // ISO3-filename, HH count, BNF count, duplicity in reimport
+            'zero width space' => ['KHM', 'zero-width.xlsx', 2, 2, 2],
+            'minimal csv without IDs' => ['KHM', 'KHM-Import-2HH-3HHM-55HHM-no-dupl.csv', 2, 60, 0],
             'minimal csv' => ['KHM', 'KHM-Import-2HH-3HHM-55HHM.csv', 2, 60, 1],
             'minimal ods' => ['KHM', 'KHM-Import-2HH-3HHM-24HHM.ods', 2, 29, 2],
             'minimal xlsx' => ['KHM', 'KHM-Import-4HH-0HHM-0HHM.xlsx', 4, 4, 4],
             'camp only' => ['SYR', 'SYR-only-camp-1HH.xlsx', 1, 7, 1],
             'excel date format' => ['KHM', 'KHM-Import-1HH-0HHM-0HHM-excel-date-format.xlsx', 1, 1, 1],
+            // takes too long, only for local testing
+            // 'very big import' => ['SYR', 'SYR-Import-500HH-0HHM.xlsx', 500, 500, 0],
         ];
     }
 
@@ -130,15 +137,15 @@ class ImportTest extends KernelTestCase
 
         $this->assertQueueCount($expectedHouseholdCount, $import);
 
-        $this->userStartedIntegrityCheck($import, true);
+        $this->userStartedIntegrityCheck($import, true, $this->getBatchCount($import));
 
         $this->assertQueueCount($expectedHouseholdCount, $import);
 
-        $this->userStartedIdentityCheck($import, true);
+        $this->userStartedIdentityCheck($import, true, $this->getBatchCount($import));
 
         $this->assertQueueCount($expectedHouseholdCount, $import);
 
-        $this->userStartedSimilarityCheck($import, true);
+        $this->userStartedSimilarityCheck($import, true, $this->getBatchCount($import));
 
         $this->assertQueueCount($expectedHouseholdCount, $import);
         $this->assertQueueCount($expectedHouseholdCount, $import, [ImportQueueState::TO_CREATE]);
@@ -151,10 +158,66 @@ class ImportTest extends KernelTestCase
         $this->assertCount($expectedBeneficiaryCount, $bnfCount, "Wrong beneficiary count");
     }
 
+    public function testCountrySpecifics()
+    {
+        $country = 'SYR';
+        $filename = 'import-demo-3-country-specifics.xlsx';
+        $expectedHouseholdCount = 1;
+        $expectedBeneficiaryCount = 11;
+
+        // prepare country specifics
+        $customLocationSpecific = $this->entityManager->getRepository(CountrySpecific::class)->findOneBy(['fieldString'=>'Custom Location', 'countryIso3'=>$country]);
+        if (!$customLocationSpecific) {
+            $customLocationSpecific = new CountrySpecific('Custom Location', 'text', $country);
+            $this->entityManager->persist($customLocationSpecific);
+            $this->entityManager->flush();
+        }
+
+        $this->project = $this->createBlankProject($country, [__METHOD__, $filename]);
+        $this->originHousehold = $this->createBlankHousehold($this->project);
+        $import = $this->createImport("testCountrySpecifics", $this->project, $filename);
+
+        $this->assertQueueCount($expectedHouseholdCount, $import);
+
+        $this->userStartedIntegrityCheck($import, true, $this->getBatchCount($import));
+
+        $this->assertQueueCount($expectedHouseholdCount, $import);
+
+        $this->userStartedIdentityCheck($import, true, $this->getBatchCount($import));
+
+        $this->assertQueueCount($expectedHouseholdCount, $import);
+
+        $this->userStartedSimilarityCheck($import, true, $this->getBatchCount($import));
+
+        $this->assertQueueCount($expectedHouseholdCount, $import);
+        $this->assertQueueCount($expectedHouseholdCount, $import, [ImportQueueState::TO_CREATE]);
+
+        $this->userStartedFinishing($import);
+
+        $this->assertQueueCount($expectedHouseholdCount, $import);
+
+        $importedBnfs = $this->entityManager->getRepository(Beneficiary::class)->getImported($import);
+        $this->assertCount($expectedBeneficiaryCount, $importedBnfs, "Wrong beneficiary count");
+
+        foreach ($importedBnfs as $bnf) {
+            /** @var Household $hh */
+            $hh = $bnf->getHousehold();
+            $this->entityManager->refresh($hh);
+
+            $answers = $hh->getCountrySpecificAnswers();
+            $this->assertCount(1, $answers);
+
+            /** @var CountrySpecificAnswer $answer */
+            $answer = $answers[0];
+            $this->assertEquals('Custom Location', $answer->getCountrySpecific()->getFieldString());
+            $this->assertEquals('TEST-DEMO-1', $answer->getAnswer());
+        }
+    }
+
     public function testEnumCaseSensitivity()
     {
         foreach ($this->entityManager->getRepository(NationalId::class)->findBy(['idNumber'=>[
-            '98300834', '124483434', '102', '789465432654', '789', '456', '8798798', '345456'
+            '98300834', '124483434', '102', '789465432654', '789', '456', '8798798', '345456',
         ]]) as $idCard) {
             $this->entityManager->remove($idCard);
         }
@@ -279,9 +342,9 @@ class ImportTest extends KernelTestCase
         foreach (['first', 'second'] as $runName) {
             $import = $this->createImport("testRepeatedUploadSameFile[$runName]", $this->project, $filename);
 
-            $this->userStartedIntegrityCheck($import, true);
-            $this->userStartedIdentityCheck($import, true);
-            $this->userStartedSimilarityCheck($import, true);
+            $this->userStartedIntegrityCheck($import, true, $this->getBatchCount($import));
+            $this->userStartedIdentityCheck($import, true, $this->getBatchCount($import));
+            $this->userStartedSimilarityCheck($import, true, $this->getBatchCount($import));
 
             $imports[$runName] = $import;
         }
@@ -293,27 +356,34 @@ class ImportTest extends KernelTestCase
 
         $import = $imports['second'];
 
-        $this->userStartedIdentityCheck($import, false);
+        if ($expectedDuplicities === 0) {
+            $this->userStartedIdentityCheck($import, true, $this->getBatchCount($import));
+            return; // another check doesn't have any meaning
+        } else {
+            $this->userStartedIdentityCheck($import, false, $this->getBatchCount($import));
+        }
 
         $stats = $this->importService->getStatistics($import);
-        $this->assertEquals($expectedDuplicities, $stats->getAmountDuplicities());
+        $this->assertEquals($expectedDuplicities, $stats->getAmountIdentityDuplicities());
 
         // resolve all as duplicity to update and continue
         $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::IDENTITY_CANDIDATE], ['id' => 'asc']);
+        /** @var ImportQueue $item */
         foreach ($queue as $item) {
-            $this->assertGreaterThan(0, count($item->getDuplicities()));
-            $firstDuplicity = $item->getDuplicities()->first();
+            $this->assertGreaterThan(0, count($item->getHouseholdDuplicities()));
+            /** @var ImportHouseholdDuplicity $firstDuplicity */
+            $firstDuplicity = $item->getHouseholdDuplicities()->first();
 
-            $duplicityResolve = new DuplicityResolveInputType();
+            $duplicityResolve = new ResolveSingleDuplicityInputType();
             $duplicityResolve->setStatus(ImportQueueState::TO_UPDATE);
-            $duplicityResolve->setAcceptedDuplicityId($firstDuplicity->getId());
+            $duplicityResolve->setAcceptedDuplicityId($firstDuplicity->getTheirs()->getId());
             $this->importService->resolveDuplicity($item, $duplicityResolve, $this->getUser());
         }
 
         $this->assertQueueCount(0, $import, [ImportQueueState::IDENTITY_CANDIDATE]);
         $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
 
-        $this->userStartedSimilarityCheck($import, true);
+        $this->userStartedSimilarityCheck($import, true, $this->getBatchCount($import));
 
         $this->assertQueueCount($expectedHouseholdCount, $import);
         $this->assertQueueCount($expectedHouseholdCount-$expectedDuplicities, $import, [ImportQueueState::TO_CREATE]);
@@ -388,13 +458,16 @@ class ImportTest extends KernelTestCase
 
         // resolve all as duplicity on second import to update and continue
         $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $secondImport, 'state' => ImportQueueState::IDENTITY_CANDIDATE], ['id' => 'asc']);
-        foreach ($queue as $item) {
-            $this->assertGreaterThan(0, count($item->getDuplicities()));
-            $firstDuplicity = $item->getDuplicities()->first();
 
-            $duplicityResolve = new DuplicityResolveInputType();
+        /** @var ImportQueue $item */
+        foreach ($queue as $item) {
+            $this->assertGreaterThan(0, count($item->getHouseholdDuplicities()));
+            /** @var ImportHouseholdDuplicity $firstDuplicity */
+            $firstDuplicity = $item->getHouseholdDuplicities()->first();
+
+            $duplicityResolve = new ResolveSingleDuplicityInputType();
             $duplicityResolve->setStatus(ImportQueueState::TO_UPDATE);
-            $duplicityResolve->setAcceptedDuplicityId($firstDuplicity->getId());
+            $duplicityResolve->setAcceptedDuplicityId($firstDuplicity->getTheirs()->getId());
             $this->importService->resolveDuplicity($item, $duplicityResolve, $this->getUser());
         }
         $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
@@ -444,13 +517,13 @@ class ImportTest extends KernelTestCase
         $project->setNotes(get_class($this));
         $project->setStartDate(new \DateTime());
         $project->setEndDate(new \DateTime());
-        $project->setIso3('QTI');
+        $project->setIso3('ARM');
         $this->entityManager->persist($project);
         $this->entityManager->flush();
 
         $import = $this->createImport('testWrongCountryIntegrityCheck', $project, $filename);
 
-        $this->userStartedIntegrityCheck($import, false);
+        $this->userStartedIntegrityCheck($import, false, $this->getBatchCount($import));
 
         $this->cli('app:import:clean', $import);
     }
@@ -501,5 +574,12 @@ class ImportTest extends KernelTestCase
         $this->uploadService->load($importFile);
 
         $this->assertNotNull($importFile->getId(), "ImportFile wasn't saved to DB");
+    }
+
+    private function getBatchCount(Import $import)
+    {
+        $count = $this->entityManager->getRepository(ImportQueue::class)->count(['import' => $import]);
+        $batch = self::$container->getParameter('import.batch_size');
+        return 1+intval(ceil($count/$batch));
     }
 }

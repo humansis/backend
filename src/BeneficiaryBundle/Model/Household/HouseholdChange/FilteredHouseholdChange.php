@@ -11,7 +11,7 @@ use BeneficiaryBundle\Entity\HouseholdActivity;
 class FilteredHouseholdChange extends AbstractHouseholdChange
 {
     const ALLOWED_FIELDS = [
-        'income_level',
+        'income',
         'debt_level',
         'food_consumption_score',
         'coping_strategies_index',

@@ -99,9 +99,9 @@ class BeneficiaryMapper implements MapperInterface
         return $this->object->getId();
     }
 
-    public function getDateOfBirth(): string
+    public function getDateOfBirth(): ?string
     {
-        return $this->object->getPerson()->getDateOfBirth()->format(\DateTime::ISO8601);
+        return $this->object->getPerson()->getDateOfBirth() ? $this->object->getPerson()->getDateOfBirth()->format(\DateTime::ISO8601) : null;
     }
 
     public function getLocalFamilyName(): string

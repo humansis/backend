@@ -15,12 +15,9 @@ services:
         class: BeneficiaryBundle\Utils\HouseholdService
         arguments:
             - "@doctrine.orm.entity_manager"
-            - "@serializer"
             - "@beneficiary.beneficiary_service"
             - "@request_validator"
             - "@location_service"
-            - "@validator"
-            - "@service_container"
         public: true
 
     beneficiary.institution_service:
@@ -54,6 +51,11 @@ services:
         public: true
         arguments:
             - BeneficiaryBundle\Entity\Beneficiary
+
+    BeneficiaryBundle\Repository\CountrySpecificRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - BeneficiaryBundle\Entity\CountrySpecific
 
     BeneficiaryBundle\Mapper\CommunityMapper:
         arguments:
@@ -114,6 +116,9 @@ services:
             - "@service_container"
             - "@distribution.assistance_beneficiary_service"
         public: true
+
+    BeneficiaryBundle\Utils\BeneficiaryService:
+        alias: beneficiary.beneficiary_service
 
     beneficiary.country_specific_service:
         class: BeneficiaryBundle\Utils\CountrySpecificService

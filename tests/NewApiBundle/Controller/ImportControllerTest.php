@@ -5,7 +5,8 @@ namespace Tests\NewApiBundle\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NoResultException;
 use Exception;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Controller\ImportController;
+use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportInvalidFile;
 use NewApiBundle\Entity\ImportQueue;
@@ -33,7 +34,7 @@ class ImportControllerTest extends AbstractFunctionalApiTest
         $this->client->request('POST', '/api/basic/web-app/v1/imports', [
             'title' => 'test',
             'description' => 'test',
-            'projectId' => $projects->getId(),
+            'projects' => [$projects->getId()],
         ], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -44,7 +45,7 @@ class ImportControllerTest extends AbstractFunctionalApiTest
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('title', $result);
         $this->assertArrayHasKey('description', $result);
-        $this->assertArrayHasKey('projectId', $result);
+        $this->assertArrayHasKey('projects', $result);
         $this->assertArrayHasKey('status', $result);
         $this->assertArrayHasKey('createdBy', $result);
         $this->assertArrayHasKey('createdAt', $result);
@@ -108,7 +109,7 @@ class ImportControllerTest extends AbstractFunctionalApiTest
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('title', $result);
         $this->assertArrayHasKey('description', $result);
-        $this->assertArrayHasKey('projectId', $result);
+        $this->assertArrayHasKey('projects', $result);
         $this->assertArrayHasKey('status', $result);
         $this->assertArrayHasKey('createdBy', $result);
         $this->assertArrayHasKey('createdAt', $result);
@@ -159,7 +160,7 @@ class ImportControllerTest extends AbstractFunctionalApiTest
      */
     public function testPatch(string $parameter, $value, int $id)
     {
-        $this->client->request('PATCH', '/api/basic/web-app/v1/imports/'.$id, [
+        $this->client->request('PATCH', '/api/basic/web-app/v1/imports/'.$id.'?'.ImportController::DISABLE_CRON.'=true', [
             $parameter => $value,
         ], [], $this->addAuth());
 
@@ -176,8 +177,8 @@ class ImportControllerTest extends AbstractFunctionalApiTest
     {
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        /** @var ImportBeneficiaryDuplicity|null $duplicity */
-        $duplicity = $em->getRepository(ImportBeneficiaryDuplicity::class)->findOneBy([], ['id' => 'asc']);
+        /** @var ImportHouseholdDuplicity|null $duplicity */
+        $duplicity = $em->getRepository(ImportHouseholdDuplicity::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($duplicity)) {
             $this->markTestSkipped('There needs to be at least one import duplicity in system.');
@@ -225,8 +226,10 @@ class ImportControllerTest extends AbstractFunctionalApiTest
         $this->assertArrayHasKey('totalEntries', $result);
         $this->assertArrayHasKey('amountIntegrityCorrect', $result);
         $this->assertArrayHasKey('amountIntegrityFailed', $result);
-        $this->assertArrayHasKey('amountDuplicities', $result);
-        $this->assertArrayHasKey('amountDuplicitiesResolved', $result);
+        $this->assertArrayHasKey('amountIdentityDuplicities', $result);
+        $this->assertArrayHasKey('amountIdentityDuplicitiesResolved', $result);
+        $this->assertArrayHasKey('amountSimilarityDuplicities', $result);
+        $this->assertArrayHasKey('amountSimilarityDuplicitiesResolved', $result);
         $this->assertArrayHasKey('amountEntriesToImport', $result);
     }
 
@@ -259,12 +262,26 @@ class ImportControllerTest extends AbstractFunctionalApiTest
     {
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        /** @var ImportBeneficiaryDuplicity|null $importQueue */
-        $duplicity = $em->getRepository(ImportBeneficiaryDuplicity::class)->findOneBy([], ['id' => 'asc']);
+        /** @var ImportHouseholdDuplicity|null $importQueue */
+        $duplicity = $em->getRepository(ImportHouseholdDuplicity::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($duplicity)) {
             $this->markTestSkipped('There needs to be at least one duplicity with entries in queue in system.');
         }
+
+        $this->client->request('PATCH', '/api/basic/web-app/v1/imports/queue/'.$duplicity->getOurs()->getId(), [
+            'status' => 'To Update',
+            'acceptedDuplicityId' => $duplicity->getId(),
+        ], [], $this->addAuth());
+
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
+
+        $this->client->request('PATCH', '/api/basic/web-app/v1/imports/queue/'.$duplicity->getOurs()->getId(), [
+            'status' => 'To Link',
+            'acceptedDuplicityId' => $duplicity->getId(),
+        ], [], $this->addAuth());
+
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         $this->client->request('PATCH', '/api/basic/web-app/v1/imports/queue/'.$duplicity->getOurs()->getId(), [
             'status' => 'To Update',

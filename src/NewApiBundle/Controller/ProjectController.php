@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-
 use CommonBundle\Entity\Organization;
 use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Enum\AssistanceTargetType;
@@ -18,6 +17,7 @@ use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -195,6 +195,7 @@ class ProjectController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/projects/{id}")
+     * @Cache(lastModified="project.getLastModifiedAtIncludingBeneficiaries()", public=true)
      *
      * @param Project $project
      *

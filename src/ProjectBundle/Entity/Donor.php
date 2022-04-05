@@ -4,7 +4,8 @@ namespace ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-
+use NewApiBundle\Entity\Helper\CreatedAt;
+use NewApiBundle\Entity\Helper\LastModifiedAt;
 use CommonBundle\Utils\ExportableInterface;
 
 /**
@@ -12,17 +13,19 @@ use CommonBundle\Utils\ExportableInterface;
  *
  * @ORM\Table(name="donor")
  * @ORM\Entity(repositoryClass="ProjectBundle\Repository\DonorRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Donor implements ExportableInterface
 {
+    use CreatedAt;
+    use LastModifiedAt;
+
     /**
      * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     *
      */
     private $id;
 
@@ -30,8 +33,6 @@ class Donor implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="fullname", type="string", length=255)
-     *
-     *
      */
     private $fullname;
 
@@ -39,8 +40,6 @@ class Donor implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="shortname", type="string", length=255, nullable=true)
-     *
-     *
      */
     private $shortname;
 
@@ -48,8 +47,6 @@ class Donor implements ExportableInterface
      * @var \DateTime
      *
      * @ORM\Column(name="dateAdded", type="datetime")
-     *
-     *
      */
     private $dateAdded;
 
@@ -57,15 +54,11 @@ class Donor implements ExportableInterface
      * @var string|null
      *
      * @ORM\Column(name="notes", type="string", length=255, nullable=true)
-     *
-     *
      */
     private $notes;
 
     /**
      * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project", mappedBy="donors")
-     *
-     *
      */
     private $projects;
 
@@ -73,7 +66,6 @@ class Donor implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="logo", type="string", length=255, nullable=true)
-     *
      */
     private $logo;
 

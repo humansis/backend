@@ -12,7 +12,7 @@ use FOS\UserBundle\Model\User as BaseUser;
 use InvalidArgumentException;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiary;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueueDuplicity;
 use NewApiBundle\Entity\Role;
@@ -142,52 +142,12 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
      */
     protected $twoFactorAuthentication = false;
 
-    /**
-     * @var Import[]|Collection
-     * 
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\Import", mappedBy="createdBy")
-     */
-    private $imports;
-
-    /**
-     * @var ImportBeneficiary[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiary", mappedBy="createdBy")
-     */
-    private $importBeneficiaries;
-
-    /**
-     * @var ImportBeneficiaryDuplicity[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiaryDuplicity", mappedBy="decideBy")
-     */
-    private $importBeneficiaryDuplicities;
-
-    /**
-     * @var ImportFile[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportFile", mappedBy="user")
-     */
-    private $importFiles;
-
-    /**
-     * @var ImportQueueDuplicity[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportQueueDuplicity", mappedBy="decideBy")
-     */
-    private $importQueueDuplicities;
-
     public function __construct()
     {
         parent::__construct();
         $this->countries = new ArrayCollection();
         $this->projects = new ArrayCollection();
         $this->roles = new ArrayCollection();
-        $this->imports = new ArrayCollection();
-        $this->importBeneficiaries = new ArrayCollection();
-        $this->importBeneficiaryDuplicities = new ArrayCollection();
-        $this->importFiles = new ArrayCollection();
-        $this->importQueueDuplicities = new ArrayCollection();
     }
 
     public function injectObjectManager(ObjectManager $objectManager, ?ClassMetadata $classMetadata = null)
@@ -560,45 +520,5 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
         return array_map(function (Role $role) {
             return $role->getCode();
         }, $this->roles->toArray());
-    }
-
-    /**
-     * @return Collection|Import[]
-     */
-    public function getImports()
-    {
-        return $this->imports;
-    }
-
-    /**
-     * @return Collection|ImportBeneficiary[]
-     */
-    public function getImportBeneficiaries()
-    {
-        return $this->importBeneficiaries;
-    }
-
-    /**
-     * @return Collection|ImportBeneficiaryDuplicity[]
-     */
-    public function getImportBeneficiaryDuplicities()
-    {
-        return $this->importBeneficiaryDuplicities;
-    }
-
-    /**
-     * @return Collection|ImportFile[]
-     */
-    public function getImportFiles()
-    {
-        return $this->importFiles;
-    }
-
-    /**
-     * @return Collection|ImportQueueDuplicity[]
-     */
-    public function getImportQueueDuplicities()
-    {
-        return $this->importQueueDuplicities;
     }
 }

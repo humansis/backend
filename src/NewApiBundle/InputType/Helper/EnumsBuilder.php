@@ -40,12 +40,15 @@ class EnumsBuilder
         $this->explodeDelimiters = $explodeDelimiters;
     }
 
-    public function buildInputValues(?iterable $apiValues): ?array
+    public function buildInputValues($apiValues): ?array
     {
         if (null === $apiValues) {
             return $this->nullToEmptyArrayTransformation ? [] : null;
         }
         $enumValues = [];
+        if (is_string($apiValues)) {
+            $apiValues = $this->buildInputValuesFromExplode($apiValues);
+        }
         foreach ($apiValues as $apiValue) {
             try {
                 $enumValues[] = $transformed = $this->enumClassName::valueFromAPI($apiValue);

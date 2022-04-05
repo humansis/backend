@@ -5,7 +5,6 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use PhpCollection\CollectionInterface;
 use ProjectBundle\Entity\Project;
 
 
@@ -90,7 +89,10 @@ abstract class AbstractBeneficiary
      */
     public function addProject(Project $project): self
     {
-        $this->projects[] = $project;
+        if (!$this->projects->contains($project)) {
+            $this->projects->add($project);
+        }
+
         return $this;
     }
 
@@ -133,7 +135,7 @@ abstract class AbstractBeneficiary
     /**
      * @return AssistanceBeneficiary
      */
-    public function getAssistanceBeneficiary(): AssistanceBeneficiary
+    public function getAssistanceBeneficiary(): ?AssistanceBeneficiary
     {
         return $this->distributionBeneficiaries->getIterator()->current();
     }

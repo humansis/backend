@@ -1,24 +1,20 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace NewApiBundle\Entity;
 
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\CreatedAt;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * @ORM\Entity()
+ * @ORM\HasLifecycleCallbacks()
  */
 class ImportInvalidFile
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
+    use CreatedAt;
 
     /**
      * @var string
@@ -35,39 +31,11 @@ class ImportInvalidFile
     private $import;
 
     /**
-     * @var DateTimeInterface
-     *
-     * @ORM\Column(name="created_at", type="datetimetz", nullable=false)
-     */
-    private $createdAt;
-
-    /**
      * @var int
      *
      * @ORM\Column(name="invalid_queue_count", type="integer", nullable=false)
      */
     private $invalidQueueCount = 0;
-
-    public function __construct()
-    {
-        $this->createdAt = new \DateTime();
-    }
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param int $id
-     */
-    public function setId(int $id): void
-    {
-        $this->id = $id;
-    }
 
     /**
      * @return string
@@ -99,22 +67,6 @@ class ImportInvalidFile
     public function setImport(Import $import): void
     {
         $this->import = $import;
-    }
-
-    /**
-     * @return DateTimeInterface
-     */
-    public function getCreatedAt(): DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * @param DateTimeInterface $createdAt
-     */
-    public function setCreatedAt(DateTimeInterface $createdAt): void
-    {
-        $this->createdAt = $createdAt;
     }
 
     /**

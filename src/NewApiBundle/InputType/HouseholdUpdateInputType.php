@@ -16,6 +16,7 @@ use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\InputType\Helper\EnumsBuilder;
 use NewApiBundle\Request\InputTypeInterface;
+use NewApiBundle\Utils\DateTime\Iso8601Converter;
 use NewApiBundle\Validator\Constraints\Country;
 use NewApiBundle\Validator\Constraints\Iso8601;
 use ProjectBundle\Enum\Livelihood;
@@ -69,7 +70,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     private $livelihood;
 
     /**
-     * @Assert\Type("array")
+     * @Assert\Type({"array", "string"})
      */
     private $assets;
 
@@ -118,7 +119,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      * @Assert\Type("integer")
      * @Assert\GreaterThanOrEqual("0")
      */
-    private $incomeLevel;
+    private $income;
 
     /**
      * @Assert\Type("integer")
@@ -144,7 +145,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     private $supportDateReceived;
 
     /**
-     * @Assert\Type("array")
+     * @Assert\Type({"array", "string"})
      */
     private $supportReceivedTypes = [];
 
@@ -292,11 +293,9 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     /**
      * @param int[] $assets
      */
-    public function setAssets(array $assets)
+    public function setAssets($assets)
     {
-        foreach ($assets as $asset) {
-            $this->assets[] = $asset;
-        }
+        $this->assets = $assets;
     }
 
     /**
@@ -406,17 +405,27 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     /**
      * @return int|null
      */
-    public function getIncomeLevel()
+    public function getIncome()
     {
-        return $this->incomeLevel;
+        return $this->income;
     }
 
     /**
-     * @param int|null $incomeLevel
+     * @param int|null $income
      */
-    public function setIncomeLevel($incomeLevel)
+    public function setIncome($income)
     {
-        $this->incomeLevel = $incomeLevel;
+        $this->income = $income;
+    }
+
+    /**
+     * Backward compatibility for API
+     *
+     * @param int|null $income
+     */
+    public function setIncomeLevel($income)
+    {
+        $this->income = $income;
     }
 
     /**
@@ -469,12 +478,12 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
 
 
     /**
-     * @return \DateTime|null
-     * @throws \Exception
+     * @return \DateTimeInterface|null
      */
-    public function getSupportDateReceived()
+    public function getSupportDateReceived(): ?\DateTimeInterface
     {
-        return $this->supportDateReceived ? new \DateTime($this->supportDateReceived) : null;
+        if (!$this->supportDateReceived) return null;
+        return Iso8601Converter::toDateTime($this->supportDateReceived) ?: null;
     }
 
     /**

@@ -3,6 +3,8 @@
 namespace VoucherBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\CreatedAt;
+use NewApiBundle\Entity\Helper\LastModifiedAt;
 use NewApiBundle\Entity\ProductCategory;
 
 use CommonBundle\Utils\ExportableInterface;
@@ -12,9 +14,13 @@ use CommonBundle\Utils\ExportableInterface;
  *
  * @ORM\Table(name="product")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\ProductRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Product implements ExportableInterface
 {
+    use CreatedAt;
+    use LastModifiedAt;
+
     /**
      * @var int
      *

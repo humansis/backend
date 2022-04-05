@@ -10,7 +10,7 @@ use NewApiBundle\DBAL\HouseholdAssetsEnum;
 use NewApiBundle\DBAL\HouseholdShelterStatusEnum;
 use NewApiBundle\DBAL\HouseholdSupportReceivedTypeEnum;
 use NewApiBundle\Entity\Helper\EnumTrait;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
@@ -31,7 +31,6 @@ class Household extends AbstractBeneficiary
      * @var string|null
      *
      * @ORM\Column(name="livelihood", type="enum_livelihood", nullable=true)
-     *
      */
     private $livelihood;
 
@@ -39,7 +38,6 @@ class Household extends AbstractBeneficiary
      * @var int[]
      *
      * @ORM\Column(name="assets", type="array", nullable=true)
-     *
      */
     private $assets;
 
@@ -48,7 +46,6 @@ class Household extends AbstractBeneficiary
      * @var int
      *
      * @ORM\Column(name="shelter_status", type="integer", nullable=true)
-     *
      */
     private $shelterStatus;
 
@@ -56,7 +53,6 @@ class Household extends AbstractBeneficiary
      * @var string
      *
      * @ORM\Column(name="notes", type="string", length=255, nullable=true)
-     *
      */
     private $notes;
 
@@ -64,7 +60,6 @@ class Household extends AbstractBeneficiary
      * @var string
      *
      * @ORM\Column(name="latitude", type="string", length=45, nullable=true)
-     *
      */
     private $latitude;
 
@@ -72,7 +67,6 @@ class Household extends AbstractBeneficiary
      * @var string
      *
      * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
-     *
      */
     private $longitude;
 
@@ -80,7 +74,6 @@ class Household extends AbstractBeneficiary
      * @var CountrySpecificAnswer
      *
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\CountrySpecificAnswer", mappedBy="household", cascade={"persist", "remove"})
-     *
      */
     private $countrySpecificAnswers;
 
@@ -88,23 +81,20 @@ class Household extends AbstractBeneficiary
      * @var Collection|Beneficiary[]
      *
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Beneficiary", mappedBy="household", cascade={"persist"})
-     *
      */
     private $beneficiaries;
 
     /**
      * @var int|null
      *
-     * @ORM\Column(name="incomeLevel", type="integer", nullable=true)
-     *
+     * @ORM\Column(name="income", type="integer", nullable=true)
      */
-    private $incomeLevel;
+    private $income;
 
     /**
      * @var int
      *
      * @ORM\Column(name="foodConsumptionScore", type="integer", nullable=true)
-     *
      */
     private $foodConsumptionScore;
 
@@ -112,13 +102,11 @@ class Household extends AbstractBeneficiary
      * @var int
      *
      * @ORM\Column(name="copingStrategiesIndex", type="integer", nullable=true)
-     *
      */
     private $copingStrategiesIndex;
 
     /**
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\HouseholdLocation", mappedBy="household", cascade={"persist", "remove"})
-     *
      */
     private $householdLocations;
 
@@ -126,7 +114,6 @@ class Household extends AbstractBeneficiary
      * @var int
      *
      * @ORM\Column(name="debt_level", type="integer", nullable=true)
-     *
      */
     private $debtLevel;
 
@@ -134,7 +121,6 @@ class Household extends AbstractBeneficiary
      * @var int[]
      *
      * @ORM\Column(name="support_received_types", type="array", nullable=true)
-     *
      */
     private $supportReceivedTypes;
 
@@ -142,7 +128,6 @@ class Household extends AbstractBeneficiary
      * @var string|null
      *
      * @ORM\Column(name="support_organization_name", type="string", nullable=true)
-     *
      */
     private $supportOrganizationName;
 
@@ -150,7 +135,6 @@ class Household extends AbstractBeneficiary
      * @var DateTimeInterface
      *
      * @ORM\Column(name="support_date_received", type="date", nullable=true)
-     *
      */
     private $supportDateReceived;
 
@@ -158,7 +142,6 @@ class Household extends AbstractBeneficiary
      * @var int|null
      *
      * @ORM\Column(name="income_spent_on_food", type="integer", nullable=true)
-     *
      */
     private $incomeSpentOnFood;
 
@@ -166,7 +149,6 @@ class Household extends AbstractBeneficiary
      * @var int|null
      *
      * @ORM\Column(name="household_income", type="integer", nullable=true)
-     *
      */
     private $householdIncome;
 
@@ -174,7 +156,6 @@ class Household extends AbstractBeneficiary
      * @var string|null
      *
      * @ORM\Column(name="enumerator_name", type="string", nullable=true)
-     *
      */
     private $enumeratorName = null;
 
@@ -187,13 +168,6 @@ class Household extends AbstractBeneficiary
     private $proxy;
 
     /**
-     * @var ImportBeneficiaryDuplicity[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiaryDuplicity", mappedBy="theirs", cascade={"remove"})
-     */
-    private $importBeneficiaryDuplicities;
-
-    /**
      * Constructor
      */
     public function __construct()
@@ -202,7 +176,6 @@ class Household extends AbstractBeneficiary
         $this->countrySpecificAnswers = new ArrayCollection();
         $this->beneficiaries = new ArrayCollection();
         $this->householdLocations = new ArrayCollection();
-        $this->importBeneficiaryDuplicities = new ArrayCollection();
 
         $this->assets = [];
         $this->supportReceivedTypes = [];
@@ -233,7 +206,7 @@ class Household extends AbstractBeneficiary
     }
 
     /**
-     * @return int[]
+     * @return string[]
      */
     public function getAssets(): array
     {
@@ -472,27 +445,27 @@ class Household extends AbstractBeneficiary
     }
 
     /**
-     * Set incomeLevel.
+     * Set income.
      *
-     * @param int|null $incomeLevel
+     * @param int|null $income
      *
      * @return Household
      */
-    public function setIncomeLevel(?int $incomeLevel)
+    public function setIncome(?int $income)
     {
-        $this->incomeLevel = $incomeLevel;
+        $this->income = $income;
 
         return $this;
     }
 
     /**
-     * Get incomeLevel.
+     * Get income.
      *
      * @return int|null
      */
-    public function getIncomeLevel(): ?int
+    public function getIncome(): ?int
     {
-        return $this->incomeLevel;
+        return $this->income;
     }
 
     /**
@@ -759,11 +732,4 @@ class Household extends AbstractBeneficiary
         $this->proxy = $proxy;
     }
 
-    /**
-     * @return Collection|ImportBeneficiaryDuplicity[]
-     */
-    public function getImportBeneficiaryDuplicities()
-    {
-        return $this->importBeneficiaryDuplicities;
-    }
 }

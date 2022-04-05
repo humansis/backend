@@ -1,14 +1,14 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import;
 
 use NewApiBundle\Component\Import\Exception\InvalidImportException;
+use NewApiBundle\Enum\EnumValueNoFoundException;
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Symfony\Component\HttpFoundation\File\File;
-use NewApiBundle\Enum\VariableBool;
+use NewApiBundle\Enum\HouseholdHead;
 
 class ImportParser
 {
@@ -38,7 +38,14 @@ class ImportParser
                 break;
             }
 
-            if (VariableBool::valueFromAPI($row['Head'][CellParameters::VALUE])) {
+            // null => member
+            try{
+                $isHead = HouseholdHead::valueFromAPI($row['Head'][CellParameters::VALUE]);
+            }catch (EnumValueNoFoundException $exception){
+                $isHead = false;
+            }
+
+            if (true === $isHead) {
                 if ([] !== $household) {
                     // everytime new household head is found, previous HH is added to list
                     $list[] = $household;
@@ -136,7 +143,18 @@ class ImportParser
     private static function value(?Cell $cell)
     {
         if ($cell) {
-            return is_string($cell->getValue()) ? trim($cell->getValue()) : $cell->getValue();
+            if (is_string($cell->getValue())) {
+                $value = trim($cell->getValue());
+
+                // prevent bad formatted spreadsheet cell starting with apostrophe
+                if(strpos($value, '\'') === 0){
+                    $value = substr_replace($value, '', 0, 1);
+                }
+            } else {
+                $value = $cell->getValue();
+            }
+
+            return $value;
         }
 
         return null;

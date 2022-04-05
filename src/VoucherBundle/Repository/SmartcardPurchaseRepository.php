@@ -1,9 +1,8 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace VoucherBundle\Repository;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -69,7 +68,7 @@ class SmartcardPurchaseRepository extends EntityRepository
                     assistance AS a
                         INNER JOIN distribution_beneficiary AS db ON a.id = db.assistance_id
                         LEFT JOIN relief_package abc ON abc.assistance_beneficiary_id=db.id
-                        INNER JOIN smartcard_deposit AS sd ON abc.id = sd.relief_package_id AND sd.distributed_at <= sp.used_at
+                        INNER JOIN smartcard_deposit AS sd ON abc.id = sd.relief_package_id AND sp.used_at > DATE_SUB(sd.distributed_at, INTERVAL 1 HOUR)
                 WHERE s.id = sd.smartcard_id
                 ORDER BY sd.distributed_at DESC, sd.id DESC 
                 LIMIT 1
@@ -242,6 +241,21 @@ class SmartcardPurchaseRepository extends EntityRepository
         $qbr = $this->createQueryBuilder('sp')
             ->andWhere('sp.redemptionBatch = :redemptionBatch')
             ->setParameter('redemptionBatch', $redemptionBatch);
+
+        if ($pagination) {
+            $qbr->setMaxResults($pagination->getLimit())
+                ->setFirstResult($pagination->getOffset());
+        }
+
+        return new Paginator($qbr);
+    }
+
+    public function findByBeneficiary(Beneficiary $beneficiary, ?Pagination $pagination = null): Paginator
+    {
+        $qbr = $this->createQueryBuilder('sp')
+            ->innerJoin('sp.smartcard', 'sc')
+            ->andWhere('sc.beneficiary = :beneficiary')
+            ->setParameter('beneficiary', $beneficiary);
 
         if ($pagination) {
             $qbr->setMaxResults($pagination->getLimit())

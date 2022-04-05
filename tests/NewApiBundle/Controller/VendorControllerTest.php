@@ -200,7 +200,7 @@ class VendorControllerTest extends AbstractFunctionalApiTest
      */
     public function testList()
     {
-        $this->client->request('GET', '/api/basic/web-app/v1/vendors?filter[id][]=1&sort[]=name.asc', [], [], $this->addAuth());
+        $this->client->request('GET', '/api/basic/web-app/v1/vendors?filter[id][]=1&filter[isInvoiced]=false&sort[]=name.asc', [], [], $this->addAuth());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

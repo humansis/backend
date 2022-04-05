@@ -8,7 +8,9 @@ interface MapperInterface
     const
         NEW_API = 'new_api',
         OFFLINE_APP = 'offline-app',
-        VENDOR_APP = 'vendor-app';
+        VENDOR_APP = 'vendor-app',
+        WEB_API = 'web-app'
+    ;
 
     /**
      * @param object     $object

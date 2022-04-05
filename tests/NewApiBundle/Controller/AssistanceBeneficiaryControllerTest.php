@@ -149,6 +149,14 @@ class AssistanceBeneficiaryControllerTest extends AbstractFunctionalApiTest
             'targetType' => AssistanceTargetType::INDIVIDUAL,
         ], ['id' => 'asc']);
         $beneficiary = $em->getRepository(Beneficiary::class)->findOneBy([], ['id'=>'desc']);
+        $target = $em->getRepository(AssistanceBeneficiary::class)->findOneBy([
+            'beneficiary' => $beneficiary,
+            'assistance' => $assistance,
+        ], ['id'=>'asc']);
+        if ($target) {
+            $em->remove($target);
+            $em->flush();
+        }
 
         $this->client->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/assistances-beneficiaries', [
             'beneficiaryIds' => [$beneficiary->getId()],
@@ -173,8 +181,17 @@ class AssistanceBeneficiaryControllerTest extends AbstractFunctionalApiTest
             'justification' => 'test',
             'removed' => true,
         ], [], $this->addAuth());
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
+
+        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-beneficiaries?sort[]=id.desc');
 
         $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+        foreach ($result['data'] as $data) {
+            if ($data['beneficiaryId'] == $beneficiaryId) {
+                $this->assertTrue($data['removed'], "Target $beneficiaryId wasn't removed");
+            }
+        }
     }
 
     /**
@@ -225,6 +242,16 @@ class AssistanceBeneficiaryControllerTest extends AbstractFunctionalApiTest
         ], [], $this->addAuth());
 
         $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
+
+        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-institutions?sort[]=id.desc');
+
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+        foreach ($result['data'] as $data) {
+            if ($data['institutionId'] == $institutionId) {
+                $this->assertTrue($data['removed'], "Target $institutionId wasn't removed");
+            }
+        }
     }
 
     /**
@@ -274,7 +301,16 @@ class AssistanceBeneficiaryControllerTest extends AbstractFunctionalApiTest
             'justification' => 'test',
             'removed' => true,
         ], [], $this->addAuth());
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
+
+        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-communities?sort[]=id.desc');
 
         $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+        foreach ($result['data'] as $data) {
+            if ($data['communityId'] == $communityId) {
+                $this->assertTrue($data['removed'], "Target $communityId wasn't removed");
+            }
+        }
     }
 }

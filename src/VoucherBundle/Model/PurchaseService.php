@@ -4,11 +4,13 @@ namespace VoucherBundle\Model;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use DateTimeInterface;
+use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\InputType\PurchaseProductInputType;
 use NewApiBundle\InputType\SmartcardPurchaseInputType;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Smartcard;
@@ -88,7 +90,18 @@ class PurchaseService
             return $purchase;
         }
 
-        $purchase = SmartcardPurchase::create($smartcard, $this->getVendor($input->getVendorId()), $input->getCreatedAt());
+        $assistance = null;
+        if ($input instanceof SmartcardPurchaseInputType) {
+            $assistanceRepository = $this->em->getRepository(Assistance::class);
+
+            /** @var Assistance|null $assistance */
+            $assistance = $assistanceRepository->find($input->getAssistanceId());
+            if (!$assistance) {
+                throw new NotFoundHttpException('Assistance ID must exists');
+            }
+        }
+
+        $purchase = SmartcardPurchase::create($smartcard, $this->getVendor($input->getVendorId()), $input->getCreatedAt(), $assistance);
         $purchase->setHash($hash);
 
         if ($input instanceof SmartcardPurchaseInput) {
@@ -119,7 +132,7 @@ class PurchaseService
      *
      * @return string
      */
-    private function hashPurchase(?Beneficiary $beneficiary, Vendor $vendor, DateTimeInterface $createdAt): string
+    public function hashPurchase(?Beneficiary $beneficiary, Vendor $vendor, DateTimeInterface $createdAt): string
     {
         $stringToHash = ($beneficiary ? $beneficiary->getId() : null).$vendor->getId().$createdAt->getTimestamp();
 

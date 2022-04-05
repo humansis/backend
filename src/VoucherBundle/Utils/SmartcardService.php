@@ -9,7 +9,7 @@ use DateTimeInterface;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManager;
 use NewApiBundle\Entity\ReliefPackage;
-use NewApiBundle\Enum\AssistanceBeneficiaryCommodityState;
+use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\InputType\SmartcardPurchaseInputType;
@@ -19,6 +19,7 @@ use ProjectBundle\Repository\ProjectRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Workflow\Registry;
+use Symfony\Contracts\Cache\CacheInterface;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
@@ -46,12 +47,23 @@ class SmartcardService
     /** @var LoggerInterface  */
     private $logger;
 
-    public function __construct(EntityManager $em, PurchaseService $purchaseService, Registry $workflowRegistry, LoggerInterface $logger)
-    {
+    /**
+     * @var CacheInterface
+     */
+    private $cache;
+
+    public function __construct(
+        EntityManager   $em,
+        PurchaseService $purchaseService,
+        Registry        $workflowRegistry,
+        LoggerInterface $logger,
+        CacheInterface  $cache
+    ) {
         $this->em = $em;
         $this->purchaseService = $purchaseService;
         $this->workflowRegistry = $workflowRegistry;
         $this->logger = $logger;
+        $this->cache = $cache;
     }
 
     public function register(string $serialNumber, string $beneficiaryId, DateTime $createdAt): Smartcard
@@ -80,7 +92,7 @@ class SmartcardService
         ], ['id' => 'asc']);
 
         if (null == $target) {
-            throw new BadRequestDataException("No beneficiary #$beneficiaryId in assistance #$assistanceId");
+            throw new NotFoundHttpException("No beneficiary #$beneficiaryId in assistance #$assistanceId");
         }
 
         /** @var ReliefPackage[] $reliefPackages */
@@ -90,7 +102,7 @@ class SmartcardService
         ], ['id' => 'asc']);
 
         if (empty($reliefPackages)) {
-            throw new BadRequestDataException("Nothing to distribute for beneficiary #$beneficiaryId in assistance #$assistanceId");
+            throw new NotFoundHttpException("Nothing to distribute for beneficiary #$beneficiaryId in assistance #$assistanceId");
         }
 
         //TODO rewrite deposit function
@@ -109,13 +121,15 @@ class SmartcardService
             return $reliefPackages[0]->getSmartcardDeposits()->first();
         }
 
-        return $this->deposit($serialNumber, $reliefPackage->getId(), $value, $balanceBefore, $distributedAt, $user);
+        return $this->deposit($serialNumber, $reliefPackageToDistribute->getId(), $value, $balanceBefore, $distributedAt, $user);
     }
 
     public function deposit(string $serialNumber, int $reliefPackageId, $value, $balance, DateTimeInterface $distributedAt, User $user): SmartcardDeposit
     {
         /** @var ReliefPackage|null $reliefPackage */
         $reliefPackage = $this->em->getRepository(ReliefPackage::class)->find($reliefPackageId);
+        $suspicious = false;
+        $message = [];
 
         if (null === $reliefPackage) {
             throw new NotFoundHttpException("Relief package #$reliefPackageId does not exist.");
@@ -124,13 +138,15 @@ class SmartcardService
         $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
 
         if (!$reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
-            throw new NotFoundHttpException("Relief package #$reliefPackageId cannot be distributed.");
+            $suspicious = true;
+            $message[] = "Relief package #$reliefPackageId is in invalid state ({$reliefPackage->getState()}).";
         }
 
         $smartcard = $this->getActualSmartcard($serialNumber, $reliefPackage->getAssistanceBeneficiary()->getBeneficiary(), $distributedAt);
 
         if (!$smartcard->getBeneficiary()) {
-            throw new NotFoundHttpException('Smartcard does not have assigned beneficiary.');
+            $suspicious = true;
+            $message[] = 'Smartcard does not have assigned beneficiary.';
         }
 
         $deposit = SmartcardDeposit::create(
@@ -139,12 +155,16 @@ class SmartcardService
             $reliefPackage,
             (float) $value,
             null !== $balance ? (float) $balance : null,
-            $distributedAt
+            $distributedAt,
+            $suspicious,
+            $message
         );
 
         $smartcard->addDeposit($deposit);
 
-        $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::DISTRIBUTE);
+        if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
+            $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::DISTRIBUTE);
+        }
         $reliefPackage->setAmountDistributed($value);
 
         if (null === $smartcard->getCurrency()) {
@@ -162,6 +182,7 @@ class SmartcardService
         }
 
         $this->em->persist($smartcard);
+        $this->cache->delete(CacheTarget::assistanceId($deposit->getReliefPackage()->getAssistanceBeneficiary()->getAssistance()->getId()));
         $this->em->flush();
 
         return $deposit;

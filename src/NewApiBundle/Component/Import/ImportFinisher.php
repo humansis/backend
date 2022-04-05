@@ -9,16 +9,19 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
+use NewApiBundle\Component\Import\Finishing\HouseholdDecoratorBuilder;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiary;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
+use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
+use NewApiBundle\Utils\Concurrency\ConcurrencyProcessor;
 use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
 use NewApiBundle\Workflow\WorkflowTool;
+use ProjectBundle\Entity\Project;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 use UserBundle\Entity\User;
@@ -27,10 +30,15 @@ class ImportFinisher
 {
     use ImportLoggerTrait;
 
+    const LOCK_BATCH = 10;
+
     /**
      * @var EntityManagerInterface
      */
     private $em;
+
+    /** @var HouseholdDecoratorBuilder */
+    private $householdDecoratorBuilder;
 
     /**
      * @var WorkflowInterface
@@ -52,12 +60,17 @@ class ImportFinisher
      */
     private $queueRepository;
 
+    /** @var integer */
+    private $totalBatchSize;
+
     public function __construct(
-        EntityManagerInterface $em,
-        HouseholdService       $householdService,
-        LoggerInterface        $logger,
-        WorkflowInterface      $importStateMachine,
-        WorkflowInterface      $importQueueStateMachine
+        int                                 $totalBatchSize,
+        EntityManagerInterface              $em,
+        HouseholdService                    $householdService,
+        LoggerInterface                     $logger,
+        WorkflowInterface                   $importStateMachine,
+        WorkflowInterface                   $importQueueStateMachine,
+        Finishing\HouseholdDecoratorBuilder $householdDecoratorBuilder
     ) {
         $this->em = $em;
         $this->importStateMachine = $importStateMachine;
@@ -65,6 +78,8 @@ class ImportFinisher
         $this->householdService = $householdService;
         $this->queueRepository = $em->getRepository(ImportQueue::class);
         $this->logger = $logger;
+        $this->totalBatchSize = $totalBatchSize;
+        $this->householdDecoratorBuilder = $householdDecoratorBuilder;
     }
 
     /**
@@ -78,59 +93,79 @@ class ImportFinisher
             throw new BadMethodCallException('Wrong import status');
         }
 
-        $queueToInsert = $this->queueRepository->findBy([
-            'import' => $import,
-            'state' => ImportQueueState::TO_CREATE,
-        ]);
-        $this->logImportDebug($import, "Items to save: ".count($queueToInsert));
-        foreach ($queueToInsert as $item) {
-            $this->finishCreationQueue($item, $import);
-            $this->em->persist($item);
-        }
+        $statesToFinish = [
+            ImportQueueState::TO_CREATE,
+            ImportQueueState::TO_UPDATE,
+            ImportQueueState::TO_LINK,
+            ImportQueueState::TO_IGNORE,
+        ];
 
-        $queueToUpdate = $this->queueRepository->findBy([
-            'import' => $import,
-            'state' => ImportQueueState::TO_UPDATE,
-        ]);
-        $this->logImportDebug($import, "Items to update: ".count($queueToUpdate));
-        foreach ($queueToUpdate as $item) {
-            $this->finishUpdateQueue($item, $import);
-            $this->em->persist($item);
-        }
+        $itemProcessor = new ConcurrencyProcessor();
+        $itemProcessor
+            ->setBatchSize(self::LOCK_BATCH)
+            ->setMaxResultsToProcess($this->totalBatchSize)
+            ->setCountAllCallback(function() use ($import, $statesToFinish) {
+                return $this->queueRepository->count([
+                    'import' => $import,
+                    'state' => $statesToFinish,
+                ]);
+            })
+            ->setLockBatchCallback(function($runCode, $batchSize) use ($import, $statesToFinish) {
+                $this->lockImportQueue($import, $statesToFinish, $runCode, $batchSize);
+            })
+            ->setBatchItemsCallback(function($runCode) use ($import) {
+                return $this->queueRepository->findBy([
+                    'import' => $import,
+                    'lockedBy' => $runCode,
+                ]);
+            })
+            ->processItems(function(ImportQueue $item) use ($import) {
+                switch ($item->getState()) {
+                    case ImportQueueState::TO_CREATE:
+                        $this->finishCreationQueue($item, $import);
+                        break;
+                    case ImportQueueState::TO_UPDATE:
+                        $this->finishUpdateQueue($item, $import);
+                        break;
+                    case ImportQueueState::TO_IGNORE:
+                    case ImportQueueState::TO_LINK:
+                        /** @var ImportHouseholdDuplicity $acceptedDuplicity */
+                        $acceptedDuplicity = $item->getAcceptedDuplicity();
+                        if (null == $acceptedDuplicity) {
+                            return;
+                        }
 
-        // will be removed in clean command
-        /*foreach ($this->queueRepository->findBy([
-            'import' => $import,
-            'state' => ImportQueueState::TO_IGNORE,
-        ]) as $item) {
-            $this->removeFinishedQueue($item);
-        }*/
+                        $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
+                        $this->logImportInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
 
-        // TODO TO_IGNORE = TO_LINK => unify states in the future
-        $queueToLink = $this->queueRepository->findBy([
-            'import' => $import,
-            'state' => [ImportQueueState::TO_LINK, ImportQueueState::TO_IGNORE],
-        ]);
-        $this->logImportDebug($import, "Items to link: ".count($queueToLink));
-        foreach ($queueToLink as $item) {
-            /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
-            $acceptedDuplicity = $item->getAcceptedDuplicity();
-            if (null == $acceptedDuplicity) {
-                continue;
-            }
+                        $this->importQueueStateMachine->apply($item, ImportQueueTransitions::LINK);
+                        break;
+                }
 
-            $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
-            $this->logImportInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
+                $this->em->persist($item);
+            });
 
-            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::LINK);
-            $this->em->persist($item);
-        }
-
-        $this->em->persist($import);
-        $this->importStateMachine->apply($import, ImportTransitions::FINISH);
         $this->em->flush();
 
-        $this->resetOtherImports($import);
+        if ($this->importStateMachine->can($import, ImportTransitions::FINISH)) {
+            $this->importStateMachine->apply($import, ImportTransitions::FINISH);
+
+            $this->resetOtherImports($import);
+        }
+
+        $this->em->flush();
+    }
+
+    private function lockImportQueue(Import $import, $state, string $code, int $count)
+    {
+        $unlocked = $this->queueRepository->findUnlocked($import, $state, $count);
+
+        /** @var ImportQueue $item */
+        foreach ($unlocked as $item) {
+            $item->lock($code);
+        }
+
+        $this->em->flush();
     }
 
     /**
@@ -166,20 +201,11 @@ class ImportFinisher
             throw new InvalidArgumentException("Wrong ImportQueue creation state: ".$item->getState());
         }
 
-        $headContent = $item->getContent()[0];
-        $memberContents = array_slice($item->getContent(), 1);
-        $hhh = new Integrity\HouseholdHead((array) $headContent, $import->getProject()->getIso3(), $this->em);
-        $householdCreateInputType = $hhh->buildHouseholdInputType();
-        $householdCreateInputType->setProjectIds([$import->getProject()->getId()]);
+        $createdHousehold = $this->householdService->create(
+            $this->householdDecoratorBuilder->buildHouseholdInputType($item)
+        );
 
-        foreach ($memberContents as $memberContent) {
-            $hhm = new Integrity\HouseholdMember($memberContent, $import->getProject()->getIso3(), $this->em);
-            $householdCreateInputType->addBeneficiary($hhm->buildBeneficiaryInputType());
-        }
-
-        $createdHousehold = $this->householdService->create($householdCreateInputType);
-
-        /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
+        /** @var ImportHouseholdDuplicity $acceptedDuplicity */
         $acceptedDuplicity = $item->getAcceptedDuplicity();
         if (null !== $acceptedDuplicity) {
             $this->linkHouseholdToQueue($import, $createdHousehold, $acceptedDuplicity->getDecideBy());
@@ -188,7 +214,7 @@ class ImportFinisher
         }
         $this->logImportInfo($import, "Created Household #{$createdHousehold->getId()}");
 
-        WorkflowTool::checkAndApply($this->importQueueStateMachine, $item, [ImportQueueTransitions::CREATE]);
+        $this->importQueueStateMachine->apply($item, ImportQueueTransitions::CREATE);
     }
 
     /**
@@ -203,22 +229,24 @@ class ImportFinisher
             throw new InvalidArgumentException("Wrong ImportQueue state");
         }
 
-        /** @var ImportBeneficiaryDuplicity $acceptedDuplicity */
+        /** @var ImportHouseholdDuplicity $acceptedDuplicity */
         $acceptedDuplicity = $item->getAcceptedDuplicity();
         if (null == $acceptedDuplicity) {
             return;
         }
 
-        $headContent = $item->getContent()[0];
-        $memberContents = array_slice($item->getContent(), 1);
-        $hhh = new Integrity\HouseholdHead((array) $headContent, $import->getProject()->getIso3(), $this->em);
-        $householdUpdateInputType = $hhh->buildHouseholdUpdateType();
-        $householdUpdateInputType->setProjectIds([$import->getProject()->getId()]);
+        $householdUpdateInputType = $this->householdDecoratorBuilder->buildHouseholdUpdateType($item);
 
-        foreach ($memberContents as $memberContent) {
-            $hhm = new Integrity\HouseholdMember($memberContent, $import->getProject()->getIso3(), $this->em);
-            $householdUpdateInputType->addBeneficiary($hhm->buildBeneficiaryInputType());
+        $updatedHousehold = $acceptedDuplicity->getTheirs();
+        $projects = array_map(function (Project $project) {
+            return $project->getId();
+        }, $updatedHousehold->getProjects()->toArray());
+
+        foreach ($import->getProjects() as $project) {
+            $projects[] = $project->getId();
         }
+
+        $householdUpdateInputType->setProjectIds($projects);
 
         $updatedHousehold = $acceptedDuplicity->getTheirs();
         $this->householdService->update($updatedHousehold, $householdUpdateInputType);
@@ -226,7 +254,7 @@ class ImportFinisher
         $this->linkHouseholdToQueue($import, $updatedHousehold, $acceptedDuplicity->getDecideBy());
         $this->logImportInfo($import, "Updated Household #{$updatedHousehold->getId()}");
 
-        WorkflowTool::checkAndApply($this->importQueueStateMachine, $item, [ImportQueueTransitions::UPDATE]);
+        $this->importQueueStateMachine->apply($item, ImportQueueTransitions::UPDATE);
     }
 
     private function linkHouseholdToQueue(Import $import, Household $household, User $decide): void
@@ -234,6 +262,10 @@ class ImportFinisher
         foreach ($household->getBeneficiaries() as $beneficiary) {
             $beneficiaryInImport = new ImportBeneficiary($import, $beneficiary, $decide);
             $this->em->persist($beneficiaryInImport);
+        }
+
+        foreach ($import->getProjects() as $project) {
+            $household->addProject($project);
         }
     }
 }

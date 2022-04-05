@@ -4,18 +4,28 @@ declare(strict_types=1);
 namespace NewApiBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\ORM\NoResultException;
 use NewApiBundle\Entity\Import;
 
 class ImportBeneficiaryDuplicityRepository extends EntityRepository
 {
-    public function findByImport(Import $import): Paginator
+    /**
+     * @param Import $import
+     *
+     * @return int
+     */
+    public function getTotalByImport(Import $import): int
     {
-        $qbr = $this->createQueryBuilder('ibd')
-            ->leftJoin('ibd.ours', 'importQueue')
-            ->andWhere('importQueue.import = :import')
-            ->setParameter('import', $import);
-
-        return new Paginator($qbr);
+        try {
+            return (int) $this->createQueryBuilder('ibd')
+                ->select('COUNT(ibd)')
+                ->join('ibd.queue', 'iq')
+                ->andWhere('iq.import = :import')
+                ->setParameter('import', $import)
+                ->getQuery()
+                ->getSingleScalarResult();
+        } catch (NoResultException $e) {
+            return 0;
+        }
     }
 }

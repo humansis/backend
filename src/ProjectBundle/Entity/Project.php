@@ -2,9 +2,14 @@
 
 namespace ProjectBundle\Entity;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use NewApiBundle\Entity\Helper\CreatedAt;
+use NewApiBundle\Entity\Helper\LastModifiedAt;
 use NewApiBundle\Enum\ProductCategoryType;
 use ProjectBundle\DTO\Sector;
 
@@ -20,6 +25,9 @@ use BeneficiaryBundle\Entity\Household;
  */
 class Project implements ExportableInterface
 {
+    use CreatedAt;
+    use LastModifiedAt;
+
     /**
      * @var int
      *
@@ -164,6 +172,11 @@ class Project implements ExportableInterface
      * @ORM\Column(name="allowed_product_category_types", type="array", nullable=false)
      */
     private $allowedProductCategoryTypes;
+
+    /**
+     * @var \DateTimeInterface|null
+     */
+    private $lastModifiedAtIncludingBeneficiaries = null;
 
     /**
      * Constructor
@@ -715,6 +728,25 @@ class Project implements ExportableInterface
     }
 
     /**
+     * @ORM\PostPersist
+     * @ORM\PostUpdate
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function updateLastModifiedAtIncludingBeneficiaries(LifecycleEventArgs $args)
+    {
+        /** @var Project $entity */
+        $project = $args->getObject();
+        $em = $args->getEntityManager();
+        $lastModifiedBnf = $em->getRepository(Beneficiary::class)->getLastModifiedByProject($project);
+        if ($lastModifiedBnf) {
+            $totalLastModified = $lastModifiedBnf > $project->getLastModifiedAt() ? $lastModifiedBnf : $project->getLastModifiedAt();
+        } else {
+            $totalLastModified = $project->getLastModifiedAt();
+        }
+        $this->setLastModifiedAtIncludingBeneficiaries($totalLastModified);
+    }
+
+    /**
      * @return string|null
      */
     public function getProjectInvoiceAddressLocal(): ?string
@@ -776,6 +808,22 @@ class Project implements ExportableInterface
         $this->allowedProductCategoryTypes = $allowedProductCategoryTypes;
 
         return $this;
+    }
+
+    /**
+     * @return \DateTimeInterface
+     */
+    public function getLastModifiedAtIncludingBeneficiaries(): ?\DateTimeInterface
+    {
+        return $this->lastModifiedAtIncludingBeneficiaries;
+    }
+
+    /**
+     * @param \DateTimeInterface $lastModifiedAtIncludingBeneficiaries
+     */
+    public function setLastModifiedAtIncludingBeneficiaries(\DateTimeInterface $lastModifiedAtIncludingBeneficiaries): void
+    {
+        $this->lastModifiedAtIncludingBeneficiaries = $lastModifiedAtIncludingBeneficiaries;
     }
 
 }
