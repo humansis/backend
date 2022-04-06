@@ -33,12 +33,12 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
         ?\DateTimeInterface   $beforeDate = null
     ): ?ReliefPackage {
         $qb = $this->createQueryBuilder('rp')
-            ->andWhere('rp.modalityType', ':smartcardModality')
-            ->andWhere('rp.assistanceBeneficiary', ':ab')
+            ->andWhere('rp.modalityType = :smartcardModality')
+            ->andWhere('rp.assistanceBeneficiary = :ab')
             ->setParameter('smartcardModality', ModalityType::SMART_CARD)
             ->setParameter('ab', $assistanceBeneficiary);
         if ($reliefPackageStatus) {
-            $qb->andWhere('rp.state', ':state')
+            $qb->andWhere('rp.state = :state')
                 ->setParameter('state', $reliefPackageStatus);
         }
 
@@ -49,6 +49,7 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
         } else {
             $qb->orderBy('rp.id', 'DESC');
         }
+        $qb->setMaxResults(1);
 
         return $qb->getQuery()->getOneOrNullResult();
     }
