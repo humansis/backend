@@ -11,6 +11,7 @@ use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportQueueTransitions;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -128,9 +129,14 @@ class ImportInvalidFileService
                     if (isset($row[$column])) {
                         $cellValue = $row[$column][CellParameters::VALUE];
 
-                        // data type 'f' (formula) is written with '=' as formula, so every formula values are exported as string
-                        $dataType = $row[$column][CellParameters::DATA_TYPE] == DataType::TYPE_FORMULA ?
-                            DataType::TYPE_STRING : $row[$column][CellParameters::DATA_TYPE];
+                        // Formulas with error can't be written as type 'f' => it triggers exception in Spreadsheet library during saving a file
+                        if ($row[$column][CellParameters::DATA_TYPE] === DataType::TYPE_FORMULA && array_key_exists(CellParameters::ERRORS,
+                                $row[$column])) {
+                            $dataType = DataType::TYPE_STRING;
+                        } else {
+                            $dataType = $row[$column][CellParameters::DATA_TYPE];
+                        }
+
                         $cell->setValueExplicit($cellValue, $dataType);
                         $cell->getStyle()->getNumberFormat()->setFormatCode($row[$column][CellParameters::NUMBER_FORMAT]);
                     }
