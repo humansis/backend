@@ -82,7 +82,7 @@ class SmartcardDepositService
                         }
 
                         $violation->add(new ConstraintViolation(
-                            "Relief package #{$depositInput->getReliefPackageId()} cannot be distributed. State of RP: '{$reliefPackage->getState()}'. Workflow blocker messages: [" . implode($tbMessages, ', ') . ']',
+                            "Relief package #{$depositInput->getReliefPackageId()} cannot be distributed. State of RP: '{$reliefPackage->getState()}'. Workflow blocker messages: [" . implode(', ', $tbMessages) . ']',
                             null,
                             [],
                             [],
