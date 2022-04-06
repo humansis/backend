@@ -45,7 +45,7 @@
 		"humansis/user-app-legacy-api": "2.5.2",
 		"humansis/vendor-app-api": "2.5.*",
 		"humansis/vendor-app-legacy-api": "2.5.2",
-		"humansis/web-api": "3.2.*",
+		"humansis/web-api": "3.3.*",
 		"incenteev/composer-parameter-handler": "^2.0",
 		"jms/serializer": "^3.14",
 		"jrk/levenshtein-bundle": "dev-master",

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "61afced9dbc460ee900566180eee58b3",
+    "content-hash": "650ec4919303216de90097d2dc41cc41",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -2978,11 +2978,11 @@
         },
         {
             "name": "humansis/web-api",
-            "version": "v3.2.3",
+            "version": "v3.3.1",
             "source": {
                 "type": "git",
                 "url": "https://gitlab-public.quanti.cz/humansis/api/webapp.git",
-                "reference": "f1af8fe6a9ba99994ae54462942b4e5091892fd6"
+                "reference": "ed7afe599b80fdd2475ed3a904642efc2a0784a7"
             },
             "type": "library",
             "license": [
@@ -2995,7 +2995,7 @@
                 }
             ],
             "description": "OpenAPI definition of interface with frontend",
-            "time": "2021-12-14T14:51:19+00:00"
+            "time": "2022-04-06T14:15:55+00:00"
         },
         {
             "name": "incenteev/composer-parameter-handler",
