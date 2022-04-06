@@ -158,7 +158,7 @@ class ProductCategoryControllerTest extends AbstractFunctionalApiTest
 
     public function testListFilteredByNonExistentVendor()
     {
-        $this->request('GET', '/api/basic/vendor-app/v1/product-categories?sort[]=name.asc&filter[vendors][]=0');
+        $this->client->request('GET', '/api/basic/vendor-app/v1/product-categories?sort[]=name.asc&filter[vendors][]=0');
 
         $this->assertTrue(
             $this->client->getResponse()->isClientError(),
