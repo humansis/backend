@@ -207,7 +207,7 @@ class ReliefPackage
     }
 
     /**
-     * @return float
+     * @return string
      */
     public function getAmountDistributed(): string
     {
@@ -229,7 +229,7 @@ class ReliefPackage
      */
     public function addAmountOfDistributed($amountDistributed): void
     {
-        $this->amountDistributed = (float) $this->amountDistributed + (float) $amountDistributed;
+        $this->setAmountDistributed((string) ((float) $this->amountDistributed + (float) $amountDistributed));
     }
 
     /**
