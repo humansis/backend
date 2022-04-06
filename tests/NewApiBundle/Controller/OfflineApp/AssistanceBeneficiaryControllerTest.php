@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller\OfflineApp;
 
@@ -12,23 +11,10 @@ use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NoResultException;
 use Exception;
-use Tests\BMSServiceTestCase;
+use Tests\NewApiBundle\Helper\AbstractFunctionalApiTest;
 
-class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
+class AssistanceBeneficiaryControllerTest extends AbstractFunctionalApiTest
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp()
-    {
-        // Configuration of BMSServiceTest
-        $this->setDefaultSerializerName('serializer');
-        parent::setUpFunctionnal();
-
-        // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-    }
-
     public function testGetAssistanceBeneficiariesByAssistance()
     {
         /** @var EntityManagerInterface $em */
@@ -50,12 +36,9 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             return;
         }
 
-        $this->request('GET', '/api/basic/offline-app/v2/assistances/'.$assistanceId.'/assistances-beneficiaries');
+        $this->client->request('GET', '/api/basic/offline-app/v2/assistances/'.$assistanceId.'/assistances-beneficiaries', [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "totalCount": "*", 
             "data": [
@@ -89,12 +72,9 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             return;
         }
 
-        $this->request('GET', '/api/basic/offline-app/v1/assistances/'.$assistanceId.'/assistances-institutions?sort[]=id.desc');
+        $this->client->request('GET', '/api/basic/offline-app/v1/assistances/'.$assistanceId.'/assistances-institutions?sort[]=id.desc', [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "totalCount": "*", 
             "data": [
@@ -131,12 +111,9 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             return;
         }
 
-        $this->request('GET', '/api/basic/offline-app/v1/assistances/'.$assistanceId.'/assistances-communities?sort[]=id.desc');
+        $this->client->request('GET', '/api/basic/offline-app/v1/assistances/'.$assistanceId.'/assistances-communities?sort[]=id.desc', [], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{
             "totalCount": "*", 
             "data": [
@@ -176,16 +153,12 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             $em->flush();
         }
 
-        $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/assistances-beneficiaries', [
+        $this->client->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/assistances-beneficiaries', [
             'beneficiaryIds' => [$beneficiary->getId()],
             'justification' => 'test',
             'added' => true,
-        ]);
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        ], [], $this->addAuth());
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         return [$assistance->getId(), $beneficiary->getId()];
     }
@@ -197,23 +170,16 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
     {
         list($assistanceId, $beneficiaryId) = $data;
 
-        $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-beneficiaries', [
+        $this->client->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-beneficiaries', [
             'beneficiaryIds' => [$beneficiaryId],
             'justification' => 'test',
             'removed' => true,
-        ]);
+        ], [], $this->addAuth());
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->client->request('GET', '/api/basic/offline-app/v3/assistances/'.$assistanceId.'/targets/beneficiaries?sort[]=id.desc');
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
-        $this->request('GET', '/api/basic/offline-app/v3/assistances/'.$assistanceId.'/targets/beneficiaries?sort[]=id.desc');
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
         $result = json_decode($this->client->getResponse()->getContent(), true);
         foreach ($result['data'] as $data) {
             $this->assertNotEquals($beneficiaryId, $data['beneficiary']['id'], "Target $beneficiaryId wasn't removed");
@@ -235,16 +201,13 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
         ], ['id' => 'asc']);
         $institution = $em->getRepository(Institution::class)->findOneBy([], ['id'=>'desc']);
 
-        $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/assistances-institutions', [
+        $this->client->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/assistances-institutions', [
             'institutionIds' => [$institution->getId()],
             'justification' => 'test',
             'added' => true,
-        ]);
+        ], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         return [$assistance->getId(), $institution->getId()];
     }
@@ -256,18 +219,15 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
     {
         list($assistanceId, $institutionId) = $data;
 
-        $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-institutions', [
+        $this->client->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-institutions', [
             'institutionIds' => [$institutionId],
             'justification' => 'test',
             'removed' => true,
-        ]);
+        ], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
-        $this->request('GET', '/api/basic/offline-app/v1/assistances/'.$assistanceId.'/assistances-institutions?sort[]=id.desc');
+        $this->client->request('GET', '/api/basic/offline-app/v1/assistances/'.$assistanceId.'/assistances-institutions?sort[]=id.desc');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -294,16 +254,13 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
         ], ['id' => 'asc']);
         $community = $em->getRepository(Community::class)->findOneBy([], ['id'=>'desc']);
 
-        $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/assistances-communities', [
+        $this->client->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/assistances-communities', [
             'communityIds' => [$community->getId()],
             'justification' => 'test',
             'added' => true,
-        ]);
+        ], [], $this->addAuth());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
         return [$assistance->getId(), $community->getId()];
     }
@@ -315,23 +272,16 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
     {
         list($assistanceId, $communityId) = $data;
 
-        $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-communities', [
+        $this->client->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-communities', [
             'communityIds' => [$communityId],
             'justification' => 'test',
             'removed' => true,
-        ]);
+        ], [], $this->addAuth());
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
+        $this->client->request('GET', '/api/basic/offline-app/v1/assistances/'.$assistanceId.'/assistances-communities?sort[]=id.desc');
+        $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
-        $this->request('GET', '/api/basic/offline-app/v1/assistances/'.$assistanceId.'/assistances-communities?sort[]=id.desc');
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
         $result = json_decode($this->client->getResponse()->getContent(), true);
         foreach ($result['data'] as $data) {
             $this->assertNotEquals($communityId, $data['communityId'], "Target $communityId wasn't removed");
