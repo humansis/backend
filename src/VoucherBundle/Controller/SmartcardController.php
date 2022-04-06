@@ -332,7 +332,6 @@ class SmartcardController extends Controller
                 $request->request->getInt('distributionId'),
                 $request->request->get('value'),
                 null,
-                null,
                 \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
                 $this->getUser()
             );
