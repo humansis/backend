@@ -25,6 +25,7 @@ class PurchasedItemControllerTest extends AbstractFunctionalApiTest
                 ->getSingleScalarResult();
         } catch (\Doctrine\ORM\NoResultException $exception) {
             $this->markTestSkipped("There is no household in purchased items.");
+            return;
         }
 
         $this->client->request('GET', '/api/basic/web-app/v1/households/'.$householdId.'/purchased-items', [], [], $this->addAuth());
@@ -53,6 +54,7 @@ class PurchasedItemControllerTest extends AbstractFunctionalApiTest
                 ->getSingleScalarResult();
         } catch (\Doctrine\ORM\NoResultException $exception) {
             $this->markTestSkipped("There is no beneficiary in purchased items.");
+            return;
         }
 
         $this->client->request('GET', '/api/basic/web-app/v1/beneficiaries/'.$beneficiaryId.'/purchased-items', [], [], $this->addAuth());

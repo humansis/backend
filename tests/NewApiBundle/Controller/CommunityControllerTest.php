@@ -261,16 +261,22 @@ class CommunityControllerTest extends AbstractFunctionalApiTest
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         try {
-            /** @var Community $institution */
-            $institution = $em->getRepository(Community::class)->createQueryBuilder('i')
+            /** @var Community $community */
+            $community = $em->getRepository(Community::class)->createQueryBuilder('i')
                 ->setMaxResults(1)
                 ->getQuery()
                 ->getSingleResult();
         } catch (NoResultException $exception) {
             $this->markTestSkipped('There is no Community to be tested');
+            return;
         }
 
-        $this->client->request('GET', '/api/basic/web-app/v1/projects/'.$institution->getProjects()[0]->getId().'/communities', [], [], $this->addAuth());
+        if (!$community || empty($community->getProjects())) {
+            $this->markTestSkipped('Community project missing');
+        }
+        $projectId = $community->getProjects()[0]->getId();
+
+        $this->client->request('GET', '/api/basic/web-app/v1/projects/'.$projectId.'/communities', [], [], $this->addAuth());
 
         $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $this->assertJsonFragment('{

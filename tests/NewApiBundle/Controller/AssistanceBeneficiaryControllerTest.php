@@ -243,7 +243,7 @@ class AssistanceBeneficiaryControllerTest extends AbstractFunctionalApiTest
 
         $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
-        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-institutions?sort[]=id.desc');
+        $this->client->request('GET', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-institutions?sort[]=id.desc', [], [], $this->addAuth());
 
         $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -303,7 +303,7 @@ class AssistanceBeneficiaryControllerTest extends AbstractFunctionalApiTest
         ], [], $this->addAuth());
         $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
 
-        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-communities?sort[]=id.desc');
+        $this->client->request('GET', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-communities?sort[]=id.desc', [], [], $this->addAuth());
 
         $this->assertResponseIsSuccessful('Request was\'t successful: '.$this->client->getResponse()->getContent());
         $result = json_decode($this->client->getResponse()->getContent(), true);

@@ -342,6 +342,7 @@ class ImportControllerTest extends AbstractFunctionalApiTest
      *
      * @depends testUploadFile
      * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NoResultException
      */
     public function testListInvalidImportedFiles(): int
     {
@@ -357,6 +358,7 @@ class ImportControllerTest extends AbstractFunctionalApiTest
                 ->getQuery()->getSingleResult();
         } catch (NoResultException $e) {
             $this->markTestSkipped('There needs to be at least one import invalid file in system.');
+            throw $e;
         }
 
         $importId = $importFile->getImport()->getId();

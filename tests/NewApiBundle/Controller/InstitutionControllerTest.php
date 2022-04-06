@@ -241,6 +241,7 @@ class InstitutionControllerTest extends AbstractFunctionalApiTest
                 ->getSingleResult();
         } catch (NoResultException $exception) {
             $this->markTestSkipped('There is no institution to be tested');
+            return;
         }
 
         $this->client->request('GET', '/api/basic/web-app/v1/projects/'.$institution->getProjects()[0]->getId().'/institutions', [], [], $this->addAuth());

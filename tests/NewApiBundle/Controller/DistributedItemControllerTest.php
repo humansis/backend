@@ -25,6 +25,7 @@ class DistributedItemControllerTest extends AbstractFunctionalApiTest
                 ->getSingleScalarResult();
         } catch (\Doctrine\ORM\NoResultException $exception) {
             $this->markTestSkipped("There is no household in distibuted items.");
+            return;
         }
 
         $this->client->request('GET', '/api/basic/web-app/v1/households/'.$householdId.'/distributed-items', [], [], $this->addAuth());
@@ -71,6 +72,7 @@ class DistributedItemControllerTest extends AbstractFunctionalApiTest
                 ->getSingleScalarResult();
         } catch (\Doctrine\ORM\NoResultException $exception) {
             $this->markTestSkipped("There is no beneficiary in distibuted items.");
+            return;
         }
 
         $this->client->request('GET', '/api/basic/web-app/v1/beneficiaries/'.$beneficiaryId.'/distributed-items', [], [], $this->addAuth());

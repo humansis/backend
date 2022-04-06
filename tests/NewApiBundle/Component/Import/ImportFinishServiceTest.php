@@ -5,7 +5,9 @@ namespace Tests\NewApiBundle\Component\Import;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Component\Import\ImportFileValidator;
 use NewApiBundle\Component\Import\ImportService;
+use NewApiBundle\Component\Import\UploadImportService;
 use NewApiBundle\Entity;
 use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
@@ -213,6 +215,9 @@ class ImportFinishServiceTest extends KernelTestCase
     /** @var ProjectService */
     private $projectService;
 
+    /** @var UploadImportService */
+    private $uploadService;
+
     protected function setUp()
     {
         parent::setUp();
@@ -227,6 +232,11 @@ class ImportFinishServiceTest extends KernelTestCase
 
         $this->importService = $kernel->getContainer()->get(ImportService::class);
         $this->projectService = $kernel->getContainer()->get('project.project_service');
+        $this->uploadService = new UploadImportService(
+            $this->entityManager,
+            $kernel->getContainer()->getParameter('import.uploadedFilesDirectory'),
+            $kernel->getContainer()->get(ImportFileValidator::class)
+        );
 
         // clean all import
         foreach ($this->entityManager->getRepository(Entity\Import::class)->findAll() as $import) {
