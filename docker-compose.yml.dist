@@ -68,6 +68,9 @@ services:
             GELF_PORT: 9999
             MOBILE_APP_VERSION: xxx
             MOBILE_APP_ID: xxx
+            IMPORT_BATCH_SIZE: 200
+            AWS_LOGS_ACCESS_KEY: xxx
+            AWS_LOGS_SECRET_KEY: xxx
 
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
