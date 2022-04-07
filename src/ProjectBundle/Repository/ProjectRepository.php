@@ -3,6 +3,7 @@
 namespace ProjectBundle\Repository;
 
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\Enum\RoleType;
 use NewApiBundle\InputType\ProjectFilterInputType;
 use NewApiBundle\InputType\ProjectOrderInputType;
 use NewApiBundle\Request\Pagination;
@@ -81,10 +82,15 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
         $qb = $this->createQueryBuilder('p')
             ->andWhere('p.archived = 0');
 
-        if ($user && !$user->getProjects()->isEmpty()) {
-            $qb->leftJoin('p.usersProject', 'up')
-                ->andWhere('up.user = :user')
-                ->setParameter('user', $user);
+        if ($user) {
+            $right = $user->getRoles();
+            if ($right[0] !== RoleType::ADMIN) {    // admin should see all
+                if (!$user->getProjects()->isEmpty()) {
+                    $qb->leftJoin('p.usersProject', 'up')
+                        ->andWhere('up.user = :user')
+                        ->setParameter('user', $user);
+                }
+            }
         }
 
         if ($iso3) {
