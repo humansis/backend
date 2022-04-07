@@ -87,6 +87,7 @@ class ImportParser
      * @param Worksheet $worksheet
      *
      * @return array
+     * @throws InvalidFormulaException
      */
     private function getHeaders(Worksheet $worksheet): array
     {
@@ -131,6 +132,8 @@ class ImportParser
             $header = $headers[$c];
             if ($cell) {
                 $dataType = $cell->getDataType();
+
+                // convert formula type to string|number type
                 if ($dataType === DataType::TYPE_FORMULA && !$cellError) {
                     $dataType = is_numeric($value) ? DataType::TYPE_NUMERIC : DataType::TYPE_STRING;
                 }
