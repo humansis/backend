@@ -83,8 +83,7 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('p.archived = 0');
 
         if ($user) {
-            $right = $user->getRoles();
-            if ($right[0] !== RoleType::ADMIN) {    // admin should see all
+            if ($user->getRoles()[0] !== RoleType::ADMIN) {    // admin should see all projects
                 if (!$user->getProjects()->isEmpty()) {
                     $qb->leftJoin('p.usersProject', 'up')
                         ->andWhere('up.user = :user')

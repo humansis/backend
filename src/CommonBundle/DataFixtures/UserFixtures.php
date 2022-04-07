@@ -6,6 +6,7 @@ namespace CommonBundle\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use FOS\UserBundle\Doctrine\UserManager;
+use NewApiBundle\Enum\RoleType;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\HttpKernel\Kernel;
@@ -156,7 +157,9 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         }
 
         $this->makeAccessRights($manager, $instance, $countries);
-        $this->makeProjectConnections($manager, $instance, $countries);
+        if ($instance->getRoles()[0] !== RoleType::ADMIN) {
+            $this->makeProjectConnections($manager, $instance, $countries);
+        }
         $manager->persist($instance);
         $manager->flush();
 
