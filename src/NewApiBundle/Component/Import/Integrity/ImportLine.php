@@ -379,13 +379,9 @@ class ImportLine
      * @return void
      * @Assert\Callback(groups={"household", "member"})
      */
-    public function violateFormulaErrors(ExecutionContextInterface $context): void
+    public function violateCellErrors(ExecutionContextInterface $context): void
     {
         foreach ($this->errors as $error) {
-            if ($error->getType() !== ErrorTypes::FORMULA_ERROR) {
-                continue;
-            }
-
             $context->buildViolation($error->getType())
                 ->atPath($error->getProperty())
                 ->setInvalidValue($error->getValue())
