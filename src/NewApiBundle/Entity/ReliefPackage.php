@@ -207,7 +207,7 @@ class ReliefPackage
     }
 
     /**
-     * @return float
+     * @return string
      */
     public function getAmountDistributed(): string
     {
@@ -222,6 +222,15 @@ class ReliefPackage
         $this->amountDistributed = $amountDistributed;
     }
 
+    /**
+     * @param int|float|string $amountDistributed
+     *
+     * @return void
+     */
+    public function addAmountOfDistributed($amountDistributed): void
+    {
+        $this->setAmountDistributed((string) ((float) $this->amountDistributed + (float) $amountDistributed));
+    }
 
     /**
      * @return Collection|SmartcardDeposit[]
