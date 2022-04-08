@@ -7,6 +7,7 @@ use NewApiBundle\Enum\RoleType;
 use NewApiBundle\InputType\ProjectFilterInputType;
 use NewApiBundle\InputType\ProjectOrderInputType;
 use NewApiBundle\Request\Pagination;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Security;
 use UserBundle\Entity\User;
 
@@ -19,11 +20,11 @@ use UserBundle\Entity\User;
 class ProjectRepository extends \Doctrine\ORM\EntityRepository
 {
     /**
-     * @var Security
+     * @var AuthorizationCheckerInterface
      */
     private $security;
 
-    public function injectSecurity(Security $security){
+    public function injectSecurity(AuthorizationCheckerInterface $security){
         $this->security = $security;
     }
     

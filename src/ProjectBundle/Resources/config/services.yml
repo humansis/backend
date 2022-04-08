@@ -53,6 +53,7 @@ services:
     ProjectBundle\Repository\ProjectRepository:
         factory: ['@doctrine.orm.default_entity_manager', getRepository]
         calls:
-            - injectSecurity: [ Symfony\Component\Security\Core\Security ]
+            - injectSecurity: [ "@security.authorization_checker"]
         arguments:
-            - ProjectBundle\Repository\Project
+            - ProjectBundle\Entity\Project
+        public: true
