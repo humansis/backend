@@ -51,7 +51,7 @@ services:
         public: true
 
     ProjectBundle\Repository\ProjectRepository:
-        factory: "@=service('doctrine.orm.entity_manager').getRepository('ProjectBundle:Project')"
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
         calls:
             - injectSecurity: [ Symfony\Component\Security\Core\Security ]
         arguments:
