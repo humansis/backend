@@ -7,9 +7,8 @@ use NewApiBundle\Enum\RoleType;
 use NewApiBundle\InputType\ProjectFilterInputType;
 use NewApiBundle\InputType\ProjectOrderInputType;
 use NewApiBundle\Request\Pagination;
+use Symfony\Component\Security\Core\Security;
 use UserBundle\Entity\User;
-use ProjectBundle\Entity\Project;
-use BeneficiaryBundle\Entity\Household;
 
 /**
  * ProjectRepository
@@ -19,6 +18,15 @@ use BeneficiaryBundle\Entity\Household;
  */
 class ProjectRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * @var Security
+     */
+    private $security;
+
+    public function injectSecurity(Security $security){
+        $this->security = $security;
+    }
+    
     public function getAllOfUser(User $user)
     {
         $qb = $this->createQueryBuilder("p");
@@ -83,7 +91,7 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('p.archived = 0');
 
         if ($user) {
-            if ($user->getRoles()[0] !== RoleType::ADMIN) {    // admin should see all projects
+            if (!$this->security->isGranted(RoleType::ADMIN)) {    // admin should see all projects
                 if (!$user->getProjects()->isEmpty()) {
                     $qb->leftJoin('p.usersProject', 'up')
                         ->andWhere('up.user = :user')

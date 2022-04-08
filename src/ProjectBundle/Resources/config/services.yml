@@ -49,3 +49,10 @@ services:
         class: ProjectBundle\Mapper\SectorMapper
         arguments: []
         public: true
+
+    ProjectBundle\Repository\ProjectRepository:
+        factory: "@=service('doctrine.orm.entity_manager').getRepository('ProjectBundle:Project')"
+        calls:
+            - injectSecurity: [ Symfony\Component\Security\Core\Security ]
+        arguments:
+            - ProjectBundle\Repository\Project
