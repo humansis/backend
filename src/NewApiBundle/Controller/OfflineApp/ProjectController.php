@@ -6,12 +6,23 @@ namespace NewApiBundle\Controller\OfflineApp;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use ProjectBundle\Entity\Project;
+use ProjectBundle\Repository\ProjectRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class ProjectController extends AbstractOfflineAppController
 {
+    /**
+     * @var ProjectRepository
+     */
+    private $projectRepository;
+
+    public function __construct(ProjectRepository $projectRepository)
+    {
+        $this->projectRepository = $projectRepository;
+    }
+
     /**
      * @Rest\Get("/offline-app/v2/projects")
      *
@@ -26,7 +37,7 @@ class ProjectController extends AbstractOfflineAppController
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $paginator = $this->getDoctrine()->getRepository(Project::class)->findByParams($this->getUser(), $countryIso3, null);
+        $paginator = $this->projectRepository->findByParams($this->getUser(), $countryIso3, null);
 
         $response = $this->json($paginator->getQuery()->getResult());
         $response->setEtag(md5($response->getContent()));
