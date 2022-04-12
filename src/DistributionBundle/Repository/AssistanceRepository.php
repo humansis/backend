@@ -253,6 +253,9 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                     case AssistanceOrderInputType::SORT_BY_DATE:
                         $qb->orderBy('dd.dateDistribution', $direction);
                         break;
+                    case AssistanceOrderInputType::SORT_BY_DATE_EXPIRATION:
+                        $qb->orderBy('dd.dateExpiration', $direction);
+                        break;
                     case AssistanceOrderInputType::SORT_BY_NAME:
                         $qb->orderBy('dd.name', $direction);
                         break;
