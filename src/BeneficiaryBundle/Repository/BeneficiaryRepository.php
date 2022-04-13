@@ -839,6 +839,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
      * @param BeneficiaryFilterInputType|null $filter
      * @param BeneficiaryOrderInputType|null  $orderBy
      * @param Pagination|null                 $pagination
+     * @param bool|null                       $onlyLive
      *
      * @return Paginator|Assistance[]
      */
@@ -846,7 +847,8 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         Assistance $assistance,
         ?BeneficiaryFilterInputType $filter,
         ?BeneficiaryOrderInputType $orderBy = null,
-        ?Pagination $pagination = null
+        ?Pagination $pagination = null,
+        ?bool $onlyLive = null
     ): Paginator
     {
         $qbr = $this->createQueryBuilder('b')
@@ -854,6 +856,13 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             ->leftJoin('b.person', 'p')
             ->andWhere('ab.assistance = :assistance')
             ->setParameter('assistance', $assistance);
+
+        if($onlyLive){
+            $qbr->andWhere('b.archived = :archived')
+                ->andWhere('ab.removed = :removed')
+                ->setParameter('archived', 0)
+                ->setParameter('removed', 0);
+        }
 
         if ($pagination) {
             $qbr->setMaxResults($pagination->getLimit());

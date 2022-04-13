@@ -3,7 +3,7 @@
 namespace BeneficiaryBundle\Mapper;
 
 use BeneficiaryBundle\Entity\AbstractBeneficiary;
-use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\SelectionCriteria;
@@ -27,17 +27,25 @@ class AssistanceMapper
     private $distributionBNFRepo;
 
     /**
+     * @var BeneficiaryRepository
+     */
+    private $beneficiaryRepository;
+
+    /**
      * AssistanceMapper constructor.
      *
-     * @param BeneficiaryMapper                 $beneficiaryMapper
+     * @param BeneficiaryMapper               $beneficiaryMapper
      * @param AssistanceBeneficiaryRepository $distributionBNFRepo
+     * @param BeneficiaryRepository           $beneficiaryRepository
      */
     public function __construct(
         BeneficiaryMapper $beneficiaryMapper,
-        AssistanceBeneficiaryRepository $distributionBNFRepo
+        AssistanceBeneficiaryRepository $distributionBNFRepo,
+        BeneficiaryRepository $beneficiaryRepository
     ) {
         $this->beneficiaryMapper = $beneficiaryMapper;
         $this->distributionBNFRepo = $distributionBNFRepo;
+        $this->beneficiaryRepository = $beneficiaryRepository;
     }
 
     public function toMinimalArray(?Assistance $assistance): ?array
@@ -144,16 +152,20 @@ class AssistanceMapper
         if (!$assistance) {
             return null;
         }
-        /** @var AbstractBeneficiary[] $bnfs */
-        $bnfs = [];
-        foreach ($assistance->getDistributionBeneficiaries() as $db) {
-            if ($db->getBeneficiary() instanceof Beneficiary
-                && !$db->getRemoved()
-                && !$db->getBeneficiary()->getArchived()
-            ) {
-                $bnfs[] = $db->getBeneficiary();
-            }
-        }
+
+        // using beneficiaryRepository is faster then iteration
+        // /** @var AbstractBeneficiary[] $bnfs */
+        // $bnfs = [];
+        // foreach ($assistance->getDistributionBeneficiaries() as $db) {
+        //     if ($db->getBeneficiary() instanceof Beneficiary
+        //         && !$db->getRemoved()
+        //         && !$db->getBeneficiary()->getArchived()
+        //     ) {
+        //         $bnfs[] = $db->getBeneficiary();
+        //     }
+        // }
+
+        $bnfs = $this->beneficiaryRepository->findByAssistance($assistance, null, null, null, true);
 
         $isFoodEnabled = in_array(ProductCategoryType::FOOD, $assistance->getAllowedProductCategoryTypes());
         $isNonFoodEnabled = in_array(ProductCategoryType::NONFOOD, $assistance->getAllowedProductCategoryTypes());

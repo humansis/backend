@@ -806,7 +806,8 @@ class AssistanceController extends Controller
     /**
      * Get distributions of one project.
      *
-     * @Rest\Get("/offline-app/v1/projects/{id}/distributions")
+     * @deprecated OLD GET /offline-app/v1/projects/{id}/distributions => endpoint was moved to NewApiBundle to not be dropped
+     *
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
      *
      * @SWG\Tag(name="Distributions")
