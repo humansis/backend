@@ -123,6 +123,12 @@ services:
             - '@lexik_jwt_authentication.jwt_manager'
             - '@user.user_service'
 
+    NewApiBundle\Controller\OfflineApp\AssistanceController:
+        arguments:
+            - '@assistance.repository'
+            - '@BeneficiaryBundle\Mapper\AssistanceMapper'
+            - '@serializer'
+
     NewApiBundle\Controller\AssistanceController:
         arguments:
             - '@NewApiBundle\Export\VulnerabilityScoreExport'

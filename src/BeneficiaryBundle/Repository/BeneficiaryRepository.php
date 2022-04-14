@@ -38,6 +38,10 @@ use VoucherBundle\Enum\SmartcardStates;
  */
 class BeneficiaryRepository extends AbstractCriteriaRepository
 {
+    public const
+        BNF_ASSISTANCE_CONTEXT_ARCHIVED = 'archived',
+        BNF_ASSISTANCE_CONTEXT_REMOVED = 'removed';
+
     /**
      * Get all beneficiaries in a selected project.
      *
@@ -839,6 +843,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
      * @param BeneficiaryFilterInputType|null $filter
      * @param BeneficiaryOrderInputType|null  $orderBy
      * @param Pagination|null                 $pagination
+     * @param array|null                      $context
      *
      * @return Paginator|Assistance[]
      */
@@ -846,7 +851,8 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         Assistance $assistance,
         ?BeneficiaryFilterInputType $filter,
         ?BeneficiaryOrderInputType $orderBy = null,
-        ?Pagination $pagination = null
+        ?Pagination $pagination = null,
+        ?array $context = null
     ): Paginator
     {
         $qbr = $this->createQueryBuilder('b')
@@ -854,6 +860,17 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             ->leftJoin('b.person', 'p')
             ->andWhere('ab.assistance = :assistance')
             ->setParameter('assistance', $assistance);
+
+        if ($context) {
+            if (array_key_exists(self::BNF_ASSISTANCE_CONTEXT_ARCHIVED, $context)) {
+                $qbr->andWhere('b.archived = :archived')
+                    ->setParameter('archived', $context[self::BNF_ASSISTANCE_CONTEXT_ARCHIVED]);
+            }
+            if (array_key_exists(self::BNF_ASSISTANCE_CONTEXT_REMOVED, $context)) {
+                $qbr->andWhere('ab.removed = :removed')
+                    ->setParameter('removed', self::BNF_ASSISTANCE_CONTEXT_REMOVED);
+            }
+        }
 
         if ($pagination) {
             $qbr->setMaxResults($pagination->getLimit());
