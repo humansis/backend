@@ -58,10 +58,13 @@ class AssistanceController extends AbstractController
     }
 
     /**
+     * @deprecated This endpoint is not consumed by app because of different interface
+     *
      * @Rest\Get("/offline-app/v2/projects/{id}/assistances")
      *
      * @param Project                                      $project
      * @param AssistanceByProjectOfflineAppFilterInputType $filter
+     * @param Request                                      $request
      *
      * @return JsonResponse
      */
