@@ -43,3 +43,8 @@ monolog:
 
 #swiftmailer:
 #    delivery_addresses: ['me@example.com']
+
+nelmio_cors:
+    defaults:
+        allow_origin: ['https://dev\d.humansis.org', 'https://dev\d-pin.humansis.org', 'http://localhost:8080']
+        origin_regex: true
