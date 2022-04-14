@@ -26,6 +26,7 @@ services:
         volumes:
             - /opt/overrides/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
         environment:
+            ENVIRONMENT: test
             PMA_HOST: %env(RDS_HOSTNAME)%
             PMA_ABSOLUTE_URI: https://apitest.humansis.org/pma_yzixy37h/
 

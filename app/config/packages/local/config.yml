@@ -1,10 +1,4 @@
-imports:
-    - { resource: config.yml }
-
 framework:
-    router:
-        resource: '%kernel.project_dir%/app/config/routing_dev.yml'
-        strict_requirements: true
     profiler: { only_exceptions: false }
 
 web_profiler:
@@ -25,15 +19,16 @@ monolog:
             channels: ['!event', '!doctrine', '!console']
         # To follow logs in real time, execute the following command:
         # `bin/console server:log -vv`
-        server_log:
-            type: server_log
-            process_psr_3_messages: false
-            host: 127.0.0.1:9911
-        graylog:
-            type: service
-            id: monolog.gelf_handler
-            level: info
-            channels: ['!event', '!doctrine', '!console']
+#        server_log:
+#            type: server_log
+#            process_psr_3_messages: false
+#            host: 127.0.0.1:9911
+#        # Uncommenting this section could cause serious performance degradation on Windows Docker environment
+#        graylog:
+#            type: service
+#            id: monolog.gelf_handler
+#            level: info
+#            channels: ['!event', '!doctrine', '!console']
         import:
             type: stream
             path: '%kernel.logs_dir%/imports.log'
