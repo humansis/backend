@@ -1,7 +1,6 @@
 imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
-    - { resource: services.yml }
     - { resource: ../../src/NewApiBundle/Resources/config/workflow.yml }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
@@ -66,9 +65,6 @@ framework:
     translator:
         fallbacks: ['%locale%']
     secret: '%secret%'
-    router:
-        resource: '%kernel.project_dir%/app/config/routing.yml'
-        strict_requirements: ~
     form: ~
     csrf_protection: ~
     validation: { enable_annotations: true }

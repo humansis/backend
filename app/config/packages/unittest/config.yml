@@ -1,6 +1,3 @@
-imports:
-    - { resource: config_dev.yml }
-
 framework:
     test: ~
     session:
@@ -8,15 +5,11 @@ framework:
     profiler:
         collect: false
 
-web_profiler:
-    toolbar: false
-    intercept_redirects: false
-
 swiftmailer:
     disable_delivery: true
 
 monolog:
-    channels: [ 'import' ]
+    channels: [ 'import', 'exception' ]
     handlers:
         import:
             type: stream

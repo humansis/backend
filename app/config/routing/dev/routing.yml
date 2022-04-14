@@ -10,5 +10,7 @@ _errors:
     resource: '@TwigBundle/Resources/config/routing/errors.xml'
     prefix: /_error
 
-_main:
-    resource: routing.yml
+app.swagger_ui:
+    path: /swg/doc
+    methods: GET
+    defaults: { _controller: nelmio_api_doc.controller.swagger_ui }

@@ -13,11 +13,6 @@ fos_user_change_password:
     resource: "@FOSUserBundle/Resources/config/routing/change_password.xml"
     prefix: /profile
 
-app.swagger_ui:
-    path: /swg/doc
-    methods: GET
-    defaults: { _controller: nelmio_api_doc.controller.swagger_ui }
-
 control_path:
     path: /
     defaults:

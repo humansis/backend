@@ -11,7 +11,7 @@
 # $8: jwt passphrase
 # $9: server hostname
 
-cp app/config/parameters.yml.dist app/config/parameters.yml
+
 # common
 sed -i -e "s|%env(RDS_PORT)%|${DB_PORT}|g" \
   -e "s|%env(SES_USERNAME)%|${MAILER_USER}|g" \
