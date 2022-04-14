@@ -153,19 +153,10 @@ class AssistanceMapper
             return null;
         }
 
-        // using beneficiaryRepository is faster then iteration
-        // /** @var AbstractBeneficiary[] $bnfs */
-        // $bnfs = [];
-        // foreach ($assistance->getDistributionBeneficiaries() as $db) {
-        //     if ($db->getBeneficiary() instanceof Beneficiary
-        //         && !$db->getRemoved()
-        //         && !$db->getBeneficiary()->getArchived()
-        //     ) {
-        //         $bnfs[] = $db->getBeneficiary();
-        //     }
-        // }
-
-        $bnfs = $this->beneficiaryRepository->findByAssistance($assistance, null, null, null, true);
+        $bnfs = $this->beneficiaryRepository->findByAssistance($assistance, null, null, null, [
+            BeneficiaryRepository::BNF_ASSISTANCE_CONTEXT_REMOVED => 0,
+            BeneficiaryRepository::BNF_ASSISTANCE_CONTEXT_ARCHIVED => 0,
+        ]);
 
         $isFoodEnabled = in_array(ProductCategoryType::FOOD, $assistance->getAllowedProductCategoryTypes());
         $isNonFoodEnabled = in_array(ProductCategoryType::NONFOOD, $assistance->getAllowedProductCategoryTypes());
