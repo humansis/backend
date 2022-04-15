@@ -1,0 +1,70 @@
+<?php declare(strict_types=1);
+
+namespace NewApiBundle\Component\Import\Integrity;
+
+use NewApiBundle\Entity\Import;
+
+class DuplicityService
+{
+    const IMPORT_PLACEHOLDER = '{IMPORT_ID}';
+
+    /** @var ImportLineFactory */
+    private $lineFactory;
+
+    /** @var string */
+    private $cacheFilePath;
+
+    /**
+     * @param ImportLineFactory $lineFactory
+     * @param string            $cacheFilePath
+     */
+    public function __construct(ImportLineFactory $lineFactory, string $cacheFilePath)
+    {
+        $this->lineFactory = $lineFactory;
+        $this->cacheFilePath = $cacheFilePath;
+    }
+
+    public function buildIdentityTable(Import $import): void
+    {
+        $identities = [];
+        foreach ($import->getImportQueue() as $item) {
+            foreach ($this->lineFactory->createAll($item) as $memberIndex => $line) {
+                if ($line->isIdNumberCorrectlyFilled() && !empty($line->idNumber)) {
+                    $cardSerialization = self::serializeIDCard((string)$line->idType, (string)$line->idNumber);
+                    $identities[$cardSerialization][$item->getId()][] = $memberIndex;
+                }
+            }
+        }
+        $fileName = $this->getFileName($import);
+        if (false === file_put_contents($fileName, json_encode($identities))) {
+            throw new \RuntimeException("File $fileName couldn't be written");
+        }
+    }
+
+    public function getIdentityCount(Import $import, string $type, string $number): int
+    {
+        $fileName = $this->getFileName($import);
+        $identityData = file_get_contents($fileName);
+        if ($identityData === false) {
+            throw new \RuntimeException("File $fileName missing");
+        }
+        $identities = json_decode($identityData, true);
+        $identity = self::serializeIDCard($type, $number);
+
+        if (isset($identities[$identity])) {
+            // TODO: count subduplicity
+            return count($identities[$identity]);
+        }
+        return 0;
+    }
+
+    private static function serializeIDCard(string $type, string $number): string
+    {
+        return $type."=".$number;
+    }
+
+    private function getFileName(Import $import): string
+    {
+        return str_replace(self::IMPORT_PLACEHOLDER, $import->getId() ?? 'NULL', $this->cacheFilePath);
+    }
+}
