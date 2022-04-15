@@ -1,9 +1,9 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Component\Import;
 
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Component\Import\Integrity\DuplicityService;
 use NewApiBundle\Component\Import\IntegrityChecker;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
@@ -12,8 +12,6 @@ use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use ProjectBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Workflow\WorkflowInterface;
 use UserBundle\Entity\User;
 
 class IntegrityCheckerTest extends KernelTestCase
@@ -25,6 +23,9 @@ class IntegrityCheckerTest extends KernelTestCase
     /** @var IntegrityChecker */
     private static $integrityChecker;
 
+    /** @var DuplicityService */
+    private static $integrityDuplicityService;
+
     public static function setUpBeforeClass()
     {
         parent::setUpBeforeClass();
@@ -33,6 +34,7 @@ class IntegrityCheckerTest extends KernelTestCase
 
         self::$entityManager = $kernel->getContainer()->get('doctrine')->getManager();
         self::$integrityChecker = $kernel->getContainer()->get(IntegrityChecker::class);
+        self::$integrityDuplicityService = $kernel->getContainer()->get(DuplicityService::class);
     }
 
     public function testParseEmpty()
@@ -67,6 +69,8 @@ class IntegrityCheckerTest extends KernelTestCase
         self::$entityManager->persist($file);
         self::$entityManager->persist($item);
         self::$entityManager->flush();
+        self::$entityManager->refresh($import);
+        self::$integrityDuplicityService->buildIdentityTable($import);
 
         $checker = self::$integrityChecker;
 
@@ -91,6 +95,8 @@ class IntegrityCheckerTest extends KernelTestCase
         self::$entityManager->persist($file);
         self::$entityManager->persist($item);
         self::$entityManager->flush();
+        self::$entityManager->refresh($import);
+        self::$integrityDuplicityService->buildIdentityTable($import);
 
         $checker = self::$integrityChecker;
         $checker->check($import);
@@ -118,6 +124,8 @@ class IntegrityCheckerTest extends KernelTestCase
         self::$entityManager->persist($itemA);
         self::$entityManager->persist($itemB);
         self::$entityManager->flush();
+        self::$entityManager->refresh($import);
+        self::$integrityDuplicityService->buildIdentityTable($import);
 
         $checker = self::$integrityChecker;
         $checker->check($import);
