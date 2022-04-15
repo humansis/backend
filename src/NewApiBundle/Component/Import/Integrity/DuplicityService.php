@@ -3,6 +3,7 @@
 namespace NewApiBundle\Component\Import\Integrity;
 
 use NewApiBundle\Entity\Import;
+use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 
 class DuplicityService
 {
@@ -41,7 +42,7 @@ class DuplicityService
         }
     }
 
-    public function getIdentityCount(Import $import, string $type, string $number): int
+    public function getIdentityCount(Import $import, NationalIdCardInputType $idCard): int
     {
         $fileName = $this->getFileName($import);
         $identityData = file_get_contents($fileName);
@@ -49,7 +50,7 @@ class DuplicityService
             throw new \RuntimeException("File $fileName missing");
         }
         $identities = json_decode($identityData, true);
-        $identity = self::serializeIDCard($type, $number);
+        $identity = self::serializeIDCard($idCard->getType(), $idCard->getNumber());
 
         if (isset($identities[$identity])) {
             // TODO: count subduplicity
