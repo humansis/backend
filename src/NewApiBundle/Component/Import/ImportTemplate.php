@@ -9,6 +9,8 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 class ImportTemplate
 {
     public const FIRST_ENTRY_ROW = 6;
+    public const ROW_NAME_STATUS = 'Humansis data';
+    public const ROW_NAME_MESSAGES = 'Humansis commentary';
 
     /**
      * @var HouseholdExportCSVService

@@ -122,8 +122,9 @@ class ImportInvalidFileService
 
             foreach ($entry->getContent() as $i => $row) {
                 $invalidColumns = $this->parseInvalidColumns($messages, $i);
+                $violations = $this->parseViolations($messages, $i);
 
-                $this->writeRow($sheet, $header, $row, $invalidColumns, $currentRow);
+                $this->writeRow($sheet, $header, $row, $invalidColumns, $currentRow, $violations);
                 ++$currentRow;
             }
 
@@ -153,6 +154,17 @@ class ImportInvalidFileService
         }, $messages[$rowNumber]);
     }
 
+    private function parseViolations(array $messages, $rowNumber): array
+    {
+        if (!isset($messages[$rowNumber])) {
+            return [];
+        }
+
+        return array_map(function (array $messages) {
+            return $messages['column'].": ".$messages['violation'];
+        }, $messages[$rowNumber]);
+    }
+
     public function removeInvalidFiles(Import $import): void
     {
         $fs = new Filesystem();
@@ -167,21 +179,28 @@ class ImportInvalidFileService
     }
 
     /**
-     * @param Worksheet                                     $sheet
-     * @param array                                         $header
-     * @param                                               $row
-     * @param array                                         $invalidColumns
-     * @param int                                           $currentRow
+     * @param Worksheet $sheet
+     * @param array     $header
+     * @param array     $row
+     * @param array     $invalidColumns
+     * @param int       $currentRow
+     * @param array     $validationViolations
      *
      * @throws Exception
      */
     private function writeRow(
         Worksheet $sheet,
         array     $header,
-                  $row,
+        array     $row,
         array     $invalidColumns,
-        int       $currentRow
+        int       $currentRow,
+        array     $validationViolations
     ): void {
+        $errorIsElsewhereInHousehold = empty($validationViolations);
+        if ($errorIsElsewhereInHousehold) {
+            $validationViolations = ['Member is OK, error is in other beneficiary'];
+        }
+
         $currentColumn = 1;
         foreach ($header as $column) {
             $cell = $sheet->getCellByColumnAndRow($currentColumn, $currentRow);
@@ -200,6 +219,11 @@ class ImportInvalidFileService
 
                 $cell->setValueExplicit($cellValue, $dataType);
                 $cell->getStyle()->getNumberFormat()->setFormatCode($row[$column][CellParameters::NUMBER_FORMAT]);
+            }
+            if ($column === ImportTemplate::ROW_NAME_STATUS) {
+                $cell->setValue($errorIsElsewhereInHousehold ? 'ERROR in Household' : 'ERROR');
+            } else if ($column === ImportTemplate::ROW_NAME_MESSAGES) {
+                $cell->setValue(implode("\n", $validationViolations));
             }
 
             if (count($invalidColumns) === 0) {
