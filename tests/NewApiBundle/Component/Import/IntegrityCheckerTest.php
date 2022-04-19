@@ -102,6 +102,37 @@ class IntegrityCheckerTest extends KernelTestCase
         }
     }
 
+    public function testValidationMessages()
+    {
+        $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'iso3' => 'KHM'], null, 1)[0];
+        $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
+
+        $import = new Import('KHM', 'test', null, [$project], $user);
+        $file = new ImportFile('fake_file.xlsx', $import, $user);
+        $correctItem = new ImportQueue($import, $file, json_decode(ImportFinishServiceTest::TEST_QUEUE_ITEM, true));
+        $incorrectItem = new ImportQueue($import, $file, json_decode(ImportFinishServiceTest::TEST_WRONG_QUEUE_ITEM, true));
+        self::$entityManager->persist($import);
+        self::$entityManager->persist($file);
+        self::$entityManager->persist($correctItem);
+        self::$entityManager->persist($incorrectItem);
+        self::$entityManager->flush();
+        self::$entityManager->refresh($correctItem);
+        self::$entityManager->refresh($incorrectItem);
+        self::$entityManager->refresh($import);
+
+        $checker = self::$integrityChecker;
+
+        $method = new \ReflectionMethod($checker, 'checkOne');
+        $method->setAccessible(true);
+        $method->invoke($checker, $correctItem);
+        $method->invoke($checker, $incorrectItem);
+
+        $this->assertEquals(ImportQueueState::VALID, $correctItem->getState(), "Correct item should be recognize as one");
+        $this->assertNull($correctItem->getMessage());
+        $this->assertEquals(ImportQueueState::INVALID, $incorrectItem->getState(), "Incorrect item should be recognize as one");
+        $this->assertNotNull($incorrectItem->getMessage());
+    }
+
     protected function tearDown()
     {
         parent::tearDown();

@@ -188,6 +188,142 @@ class ImportFinishServiceTest extends KernelTestCase
     }
   }
 ]';
+    const TEST_WRONG_QUEUE_ITEM = '[
+  {
+    "Adm1": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Adm2": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Adm3": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Adm4": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Head": {
+      "value": "true",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "ID Number": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "ID Type": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "F 0 - 2": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "F 2 - 5": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "F 6 - 17": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "F 18 - 59": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "F 60+": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "M 0 - 2": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "M 2 - 5": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "M 6 - 17": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "M 18 - 59": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "M 60+": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Assets": {
+      "value": "some wrong value, another wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Gender": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Debt Level": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Livelihood": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Date of birth": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Proxy phone 1": null,
+    "Proxy phone 2": null,
+    "Residency status": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Food Consumption Score": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Support Received Types": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Vulnerability criteria": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    }
+  }
+]';
 
     /** @var EntityManagerInterface */
     private $entityManager;
