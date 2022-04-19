@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import;
 
@@ -14,6 +13,7 @@ use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Filesystem\Filesystem;
@@ -110,9 +110,7 @@ class ImportInvalidFileService
     private function writeEntries(Spreadsheet $template, array $entries, array $header)
     {
         $sheet = $template->getActiveSheet();
-
         $currentRow = ImportTemplate::FIRST_ENTRY_ROW;
-        $currentColumn = 1;
 
         /** @var ImportQueue $entry */
         foreach ($entries as $entry) {
@@ -125,45 +123,7 @@ class ImportInvalidFileService
             foreach ($entry->getContent() as $i => $row) {
                 $invalidColumns = $this->parseInvalidColumns($messages, $i);
 
-                foreach ($header as $column) {
-                    $cell = $sheet->getCellByColumnAndRow($currentColumn, $currentRow);
-
-                    if (isset($row[$column])) {
-                        $cellValue = $row[$column][CellParameters::VALUE];
-
-                        // in case of formula error => convert to string and fill cell with default message
-                        if ($row[$column][CellParameters::DATA_TYPE] === DataType::TYPE_FORMULA && array_key_exists(CellParameters::ERRORS,
-                                $row[$column])) {
-                            $dataType = DataType::TYPE_STRING;
-                            $cellValue = self::FORMULA_ERROR_CELL_VALUE;
-                        } else {
-                            $dataType = $row[$column][CellParameters::DATA_TYPE];
-                        }
-
-                        $cell->setValueExplicit($cellValue, $dataType);
-                        $cell->getStyle()->getNumberFormat()->setFormatCode($row[$column][CellParameters::NUMBER_FORMAT]);
-                    }
-
-                    if (count($invalidColumns) === 0) {
-                        $cell->getStyle()
-                            ->getFill()
-                            ->setFillType(Fill::FILL_SOLID)
-                            ->getStartColor()
-                            ->setRGB('CCFF99');
-                    } else {
-                        if (in_array($column, $invalidColumns)) {
-                            $cell->getStyle()
-                                ->getFill()
-                                ->setFillType(Fill::FILL_SOLID)
-                                ->getStartColor()
-                                ->setRGB('ffff00');
-                        }
-                    }
-
-                    ++$currentColumn;
-                }
-
-                $currentColumn = 1;
+                $this->writeRow($sheet, $header, $row, $invalidColumns, $currentRow);
                 ++$currentRow;
             }
 
@@ -204,5 +164,61 @@ class ImportInvalidFileService
         };
 
         $this->em->flush();
+    }
+
+    /**
+     * @param Worksheet                                     $sheet
+     * @param array                                         $header
+     * @param                                               $row
+     * @param array                                         $invalidColumns
+     * @param int                                           $currentRow
+     *
+     * @throws Exception
+     */
+    private function writeRow(
+        Worksheet $sheet,
+        array     $header,
+                  $row,
+        array     $invalidColumns,
+        int       $currentRow
+    ): void {
+        $currentColumn = 1;
+        foreach ($header as $column) {
+            $cell = $sheet->getCellByColumnAndRow($currentColumn, $currentRow);
+
+            if (isset($row[$column])) {
+                $cellValue = $row[$column][CellParameters::VALUE];
+
+                // in case of formula error => convert to string and fill cell with default message
+                if ($row[$column][CellParameters::DATA_TYPE] === DataType::TYPE_FORMULA && array_key_exists(CellParameters::ERRORS,
+                        $row[$column])) {
+                    $dataType = DataType::TYPE_STRING;
+                    $cellValue = self::FORMULA_ERROR_CELL_VALUE;
+                } else {
+                    $dataType = $row[$column][CellParameters::DATA_TYPE];
+                }
+
+                $cell->setValueExplicit($cellValue, $dataType);
+                $cell->getStyle()->getNumberFormat()->setFormatCode($row[$column][CellParameters::NUMBER_FORMAT]);
+            }
+
+            if (count($invalidColumns) === 0) {
+                $cell->getStyle()
+                    ->getFill()
+                    ->setFillType(Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setRGB('CCFF99');
+            } else {
+                if (in_array($column, $invalidColumns)) {
+                    $cell->getStyle()
+                        ->getFill()
+                        ->setFillType(Fill::FILL_SOLID)
+                        ->getStartColor()
+                        ->setRGB('ffff00');
+                }
+            }
+
+            ++$currentColumn;
+        }
     }
 }
