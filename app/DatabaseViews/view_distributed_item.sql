@@ -66,11 +66,11 @@ FROM distribution_beneficiary db
         SUM(vpr.value) AS value
     FROM booklet b
              JOIN voucher v ON v.booklet_id=b.id
-             JOIN voucher_purchase vp ON vp.id=v.voucher_purchase_id
-             JOIN voucher_purchase_record vpr ON vpr.voucher_purchase_id=vp.id
+             LEFT OUTER JOIN voucher_purchase vp ON vp.id=v.voucher_purchase_id
+             LEFT OUTER JOIN voucher_purchase_record vpr ON vpr.voucher_purchase_id=vp.id
     WHERE b.distribution_beneficiary_id IS NOT NULL
     GROUP BY b.id, b.code, b.distribution_beneficiary_id
 ) AS b ON b.distribution_beneficiary_id=db.id
 
 WHERE (sd.id IS NOT NULL OR gri.id IS NOT NULL OR t.id IS NOT NULL OR b.id IS NOT NULL)
-  AND (sd.distributed_at IS NOT NULL OR t.pickup_date IS NOT NULL OR gri.distributedAt IS NOT NULL OR b.used_at)
+  AND (sd.distributed_at IS NOT NULL OR t.pickup_date IS NOT NULL OR gri.distributedAt IS NOT NULL OR b.id)
