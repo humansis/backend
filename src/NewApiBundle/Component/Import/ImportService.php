@@ -80,11 +80,13 @@ class ImportService
     public function create(string $countryIso3, Import\CreateInputType $inputType, User $user): Entity\Import
     {
         if (empty($inputType->getProjects())) {
-            //TODO remove after FE part of PIN-2820 will be implemented
             $project = $this->em->getRepository(Project::class)->find($inputType->getProjectId());
 
             if (!$project instanceof Project) {
-                throw new InvalidArgumentException('Project with ID '.$inputType->getProjectId().' not found');
+                throw new BadRequestHttpException('Project with ID '.$inputType->getProjectId().' not found');
+            }
+            if ($project->getIso3() !== $countryIso3) {
+                throw new BadRequestHttpException("Project is in {$project->getIso3()} but you works in $countryIso3");
             }
 
             $projects = [$project];
