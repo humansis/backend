@@ -6,18 +6,14 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\NationalId;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\Identity\NationalIdHashSet;
-use NewApiBundle\Component\Import\Integrity\ImportLine;
 use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
 use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
-use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
+use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportQueueTransitions;
-use NewApiBundle\Workflow\ImportTransitions;
-use NewApiBundle\Workflow\WorkflowTool;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 
@@ -58,6 +54,8 @@ class IdentityChecker
     /**
      * @param Import   $import
      * @param int|null $batchSize if null => all
+     *
+     * @throws \NewApiBundle\Enum\EnumValueNoFoundException
      */
     public function check(Import $import, ?int $batchSize = null)
     {
@@ -118,12 +116,20 @@ class IdentityChecker
         }
     }
 
+    /**
+     * @param ImportQueue       $item
+     * @param NationalIdHashSet $hashSet
+     *
+     * @return void
+     * @throws \NewApiBundle\Enum\EnumValueNoFoundException
+     */
     private function extractItemIDs(ImportQueue $item, NationalIdHashSet $hashSet): void
     {
         $index = 0;
         foreach ($this->importLineFactory->createAll($item) as $line) {
             if (empty($line->idType) || empty($line->idNumber)) continue;
-            $hashSet->add($item, $index, (string) $line->idType, (string) $line->idNumber);
+            $idType = NationalIdType::valueFromAPI($line->idType);
+            $hashSet->add($item, $index, (string) $idType, (string) $line->idNumber);
             $index++;
         }
     }
