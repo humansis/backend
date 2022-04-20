@@ -236,7 +236,6 @@ class UserController extends Controller
     /**
      * Get user's salt
      *
-     * @Rest\Get("/vendor-app/v1/salt/{username}")
      *
      * @SWG\Tag(name="Vendor App")
      *
