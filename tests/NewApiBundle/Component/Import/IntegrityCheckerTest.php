@@ -196,6 +196,35 @@ class IntegrityCheckerTest extends KernelTestCase
         }
     }
 
+    public function testNoDuplicitiesIdentified()
+    {
+        $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'iso3' => 'KHM'], null, 1)[0];
+        $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
+
+        $import = new Import('KHM', 'test', null, [$project], $user);
+        $import->setState(ImportState::INTEGRITY_CHECKING);
+
+        $file = new ImportFile('fake_file.xlsx', $import, $user);
+        $itemA = new ImportQueue($import, $file, json_decode(ImportFinishServiceTest::TEST_MINIMAL_QUEUE_ITEM, true));
+        $itemB = new ImportQueue($import, $file, json_decode(ImportFinishServiceTest::TEST_MINIMAL_QUEUE_ITEM, true));
+        self::$entityManager->persist($import);
+        self::$entityManager->persist($file);
+        self::$entityManager->persist($itemA);
+        self::$entityManager->persist($itemB);
+        self::$entityManager->flush();
+        self::$entityManager->refresh($import);
+        self::$integrityDuplicityService->buildIdentityTable($import);
+
+        $checker = self::$integrityChecker;
+        $checker->check($import);
+
+        $queue = self::$entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
+        $this->assertCount(2, $queue);
+        foreach ($queue as $item) {
+            $this->assertEquals(ImportQueueState::VALID, $item->getState(), "Queue should be valid.");
+        }
+    }
+
     protected function tearDown()
     {
         parent::tearDown();

@@ -324,6 +324,67 @@ class ImportFinishServiceTest extends KernelTestCase
     }
   }
 ]';
+    const TEST_MINIMAL_QUEUE_ITEM = '[
+  {
+    "Local given name": {
+      "value": "John",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Residency status": {
+      "value": "Resident",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Local family name": {
+      "value": "Smith",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Adm1": {
+      "value": "Banteay Meanchey",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Address number": {
+      "value": 123,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "Address street": {
+      "value": "Fake St",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Address number": {
+      "value": 123,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "Address postcode": {
+      "value": "000 00",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Gender": {
+      "value": "male",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Head": {
+      "value": "true",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Date of birth": {
+      "value": "01-01-2000",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "ID Number": null,
+    "ID Type": null
+  }
+]';
 
     /** @var EntityManagerInterface */
     private $entityManager;

@@ -151,10 +151,13 @@ class IntegrityChecker
             $beneficiary = $this->beneficiaryDecoratorBuilder->buildBeneficiaryInputType($hhm);
             $violations = $this->validator->validate($beneficiary, null, ["Default", "BeneficiaryInputType", "Strict"]);
 
-            $idCard = $beneficiary->getNationalIdCards()[0];
-            $nationalIdCount = $this->duplicityService->getIdentityCount($item->getImport(), $idCard);
-            if ($nationalIdCount > 1) {
-                $item->addViolation($index, ['violation' => 'This line has ID duplicity!', 'value' => $idCard->getType().": ".$idCard->getNumber()]);
+            $cards = $beneficiary->getNationalIdCards();
+            if (count($cards) > 0) {
+                $idCard = $cards[0];
+                $nationalIdCount = $this->duplicityService->getIdentityCount($item->getImport(), $idCard);
+                if ($nationalIdCount > 1) {
+                    $item->addViolation($index, ['violation' => 'This line has ID duplicity!', 'value' => $idCard->getType().": ".$idCard->getNumber()]);
+                }
             }
 
             foreach ($violations as $violation) {
