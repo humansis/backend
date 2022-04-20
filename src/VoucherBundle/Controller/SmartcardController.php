@@ -147,7 +147,6 @@ class SmartcardController extends Controller
      * List of blocked smardcards.
      * Blocked smartcards are not allowed to pay with.
      *
-     * @Rest\Get("/vendor-app/v1/smartcards/blocked")
      * @Security("is_granted('ROLE_VENDOR')")
      *
      * @SWG\Tag(name="Smartcards")
@@ -353,7 +352,6 @@ class SmartcardController extends Controller
     /**
      * Purchase goods from smartcard. If smartcard does not exists, it will be created.
      *
-     * @Rest\Patch("/vendor-app/v1/smartcards/{serialNumber}/purchase")
      * @Security("is_granted('ROLE_VENDOR')")
      *
      * @SWG\Tag(name="Smartcards")
@@ -429,7 +427,6 @@ class SmartcardController extends Controller
     /**
      * Purchase goods from smartcard. If smartcard does not exists, it will be created.
      *
-     * @Rest\Patch("/vendor-app/v2/smartcards/{serialNumber}/purchase")
      * @Security("is_granted('ROLE_VENDOR')")
      *
      * @param Request $request
@@ -479,7 +476,6 @@ class SmartcardController extends Controller
     /**
      * Purchase goods from smartcard. If smartcard does not exists, it will be created.
      *
-     * @Rest\Patch("/vendor-app/v3/smartcards/{serialNumber}/purchase")
      * @Security("is_granted('ROLE_VENDOR')")
      *
      *

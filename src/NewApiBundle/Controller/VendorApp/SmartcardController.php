@@ -1,13 +1,14 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace NewApiBundle\Controller\VendorApp;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\SmartcardPurchaseInputType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use VoucherBundle\Repository\SmartcardRepository;
 
 class SmartcardController extends AbstractVendorAppController
 {
@@ -56,6 +57,26 @@ class SmartcardController extends AbstractVendorAppController
         $json = $this->get('serializer')->serialize($purchase->getSmartcard(), 'json', ['groups' => ['SmartcardOverview']]);
 
         return new Response($json);
+    }
+
+    /**
+     * List of blocked smardcards.
+     * Blocked smartcards are not allowed to pay with.
+     *
+     * @Rest\Get("/vendor-app/v1/smartcards/blocked")
+     * @Security("is_granted('ROLE_VENDOR')")
+     *
+     * @param Request             $request
+     * @param SmartcardRepository $smartcardRepository
+     *
+     * @return Response
+     */
+    public function listOfBlocked(Request $request, SmartcardRepository $smartcardRepository): Response
+    {
+        $country = $request->headers->get('country');
+        $smartcards = $smartcardRepository->findBlocked($country);
+
+        return new JsonResponse($smartcards);
     }
 
     private function writeData(string $type, string $user, string $smartcard, $data): void
