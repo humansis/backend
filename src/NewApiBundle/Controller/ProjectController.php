@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Mapper\AssistanceMapper;
 use CommonBundle\Controller\ExportController;
 use CommonBundle\Pagination\Paginator;
+use DistributionBundle\Repository\AssistanceRepository;
+use DistributionBundle\Utils\AssistanceService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\ProjectCreateInputType;
 use NewApiBundle\InputType\ProjectFilterInputType;
@@ -16,6 +19,7 @@ use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Repository\ProjectRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -195,5 +199,26 @@ class ProjectController extends AbstractController
         $data = $this->projectRepository->findBy(['archived' => false]);
 
         return $this->json(new Paginator($data));
+    }
+
+    /**
+     * Get distributions of one project.
+     *
+     * @Rest\Get("/web-app/v1/projects/{id}/asssitances", name="get_distributions_of_project")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
+     *
+     * @param Project              $project
+     * @param AssistanceRepository $assistanceRepository
+     *
+     * @return JsonResponse
+     */
+    public function assistances(Project $project, AssistanceRepository $assistanceRepository): JsonResponse
+    {
+        $assistances = $assistanceRepository->findBy([
+            'project' => $project,
+            'archived' => false,
+        ], ['id' => 'asc']);
+
+        return $this->json($assistances);
     }
 }

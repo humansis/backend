@@ -710,7 +710,6 @@ class AssistanceController extends Controller
     /**
      * Get distributions of one project.
      *
-     * @Rest\Get("/web-app/v1/distributions/projects/{id}", name="get_distributions_of_project")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
      *
      * @SWG\Tag(name="Distributions")
