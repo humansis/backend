@@ -111,8 +111,6 @@ class UserController extends Controller
     /**
      * Log a user with its username and salted password.
      *
-     * @Rest\Post("/offline-app/v1/login")
-     *
      * @SWG\Tag(name="Offline App")
      * @SWG\Tag(name="Users")
      *
@@ -279,7 +277,6 @@ class UserController extends Controller
     /**
      * Get user's salt.
      *
-     * @Rest\Get("/offline-app/v1/salt/{username}")
      *
      * @SWG\Tag(name="Offline App")
      *

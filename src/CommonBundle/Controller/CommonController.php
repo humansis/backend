@@ -99,7 +99,6 @@ class CommonController extends Controller
     }
 
     /**
-     * @Rest\Get("/offline-app/v1/master-key")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Common")
