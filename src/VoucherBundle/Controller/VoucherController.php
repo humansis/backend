@@ -284,7 +284,6 @@ class VoucherController extends Controller
      * Provide purchase of goods for vouchers.
      * If vendor scan some vouchers and sell some goods for them, this request will send.
      *
-     * @Rest\Post("/vendor-app/v1/vouchers/purchase")
      * @Security("is_granted('ROLE_VENDOR')")
      *
      * @SWG\Tag(name="Vendor App")

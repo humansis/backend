@@ -29,7 +29,6 @@ class PhoneInputType implements InputTypeInterface
     private $number;
 
     /**
-     * @Assert\NotNull
      * @Enum(enumClass="NewApiBundle\Enum\PhoneTypes")
      */
     private $type;

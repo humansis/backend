@@ -1,20 +1,37 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace NewApiBundle\Controller\OfflineApp;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\SmartcardDepositFilterInputType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
+use VoucherBundle\Enum\SmartcardStates;
+use VoucherBundle\Mapper\SmartcardMapper;
 use VoucherBundle\Repository\SmartcardDepositRepository;
+use VoucherBundle\Repository\SmartcardRepository;
+use VoucherBundle\Utils\SmartcardService;
 
 class SmartcardDepositController extends AbstractOfflineAppController
 {
+    /** @var SmartcardService */
+    private $smartcardService;
+
+    /**
+     * @param SmartcardService $smartcardService
+     */
+    public function __construct(SmartcardService $smartcardService)
+    {
+        $this->smartcardService = $smartcardService;
+    }
+
     /**
      * @Rest\Get("/offline-app/v1/smartcard-deposits")
      *
@@ -64,6 +81,10 @@ class SmartcardDepositController extends AbstractOfflineAppController
      * @param Request $request
      *
      * @return Response
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     public function deposit(Request $request): Response
     {
@@ -74,7 +95,6 @@ class SmartcardDepositController extends AbstractOfflineAppController
                 $request->request->getInt('assistanceId'),
                 $request->request->get('value'),
                 $request->request->get('balanceBefore'),
-                $request->request->get('balanceAfter'),
                 \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
                 $this->getUser()
             );
@@ -99,6 +119,100 @@ class SmartcardDepositController extends AbstractOfflineAppController
 
         return $this->json($deposit->getSmartcard());
     }
+
+    /**
+     * Register smartcard to system and assign to beneficiary.
+     *
+     * @Rest\Post("/offline-app/v1/smartcards")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER') or is_granted('ROLE_ENUMERATOR')")
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function register(Request $request): JsonResponse
+    {
+        $smartcard = $this->smartcardService->register(
+            strtoupper($request->get('serialNumber')),
+            $request->get('beneficiaryId'),
+            \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
+
+        $mapper = $this->get(SmartcardMapper::class);
+
+        return $this->json($mapper->toFullArray($smartcard));
+    }
+
+    /**
+     * Update smartcard, typically its' state.
+     *
+     * @Rest\Patch("/offline-app/v1/smartcards/{serialNumber}")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER') or is_granted('ROLE_ENUMERATOR')")
+     *
+     * @param string              $serialNumber
+     * @param Request             $request
+     * @param SmartcardRepository $smartcardRepository
+     *
+     * @return Response
+     */
+    public function change(string $serialNumber, Request $request, SmartcardRepository $smartcardRepository): Response
+    {
+        $smartcard = $smartcardRepository->findActiveBySerialNumber($serialNumber);
+
+        if (!$smartcard instanceof Smartcard) {
+            throw $this->createNotFoundException("Smartcard with code '$serialNumber' was not found.");
+        }
+
+        $newState = $smartcard->getState();
+        if ($request->request->has('state')) {
+            $newState = $request->request->get('state');
+        }
+
+        if ($smartcard->getState() !== $newState) {
+            if (!SmartcardStates::isTransitionAllowed($smartcard->getState(), $newState)) {
+                throw new BadRequestHttpException('Is not possible change state from '.$smartcard->getState().' to '.$newState);
+            }
+
+            $smartcard->setState($newState);
+        }
+
+        $this->getDoctrine()->getManager()->persist($smartcard);
+        $this->getDoctrine()->getManager()->flush();
+
+        return $this->json($smartcard);
+    }
+
+    /**
+     * Info about smartcard.
+     *
+     * @Rest\Get("/offline-app/v1/smartcards/{serialNumber}")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER') or is_granted('ROLE_ENUMERATOR')")
+     * @ParamConverter("smartcard")
+     *
+     * @param Smartcard $smartcard
+     *
+     * @return Response
+     */
+    public function info(Smartcard $smartcard): Response
+    {
+        return $this->json($smartcard);
+    }
+
+    /**
+     * Beneficiary by its smartcard.
+     *
+     * @Rest\Get("/offline-app/v1/smartcards/{serialNumber}/beneficiary")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     * @ParamConverter("smartcard")
+     *
+     * @param Smartcard $smartcard
+     *
+     * @return Response
+     */
+    public function beneficiary(Smartcard $smartcard): Response
+    {
+        return $this->json($smartcard->getBeneficiary());
+    }
+
 
     private function writeData(string $type, string $user, string $smartcard, $data): void
     {

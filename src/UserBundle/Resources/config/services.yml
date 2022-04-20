@@ -10,7 +10,7 @@ services:
 
     user.user_service:
         class: UserBundle\Utils\UserService
-        arguments: ['%google_client%', '%humanitarian_secret%', '@doctrine.orm.entity_manager', '@validator', '@service_container', '@security.encoder_factory']
+        arguments: ['%google_client%', '%humanitarian_secret%', '@doctrine.orm.entity_manager', '@validator', '@service_container', '@security.role_hierarchy']
         public: true
 
     UserBundle\Utils\UserService: '@user.user_service'

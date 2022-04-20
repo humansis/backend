@@ -3,12 +3,13 @@
 namespace ProjectBundle\Repository;
 
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\Enum\RoleType;
 use NewApiBundle\InputType\ProjectFilterInputType;
 use NewApiBundle\InputType\ProjectOrderInputType;
 use NewApiBundle\Request\Pagination;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Core\Security;
 use UserBundle\Entity\User;
-use ProjectBundle\Entity\Project;
-use BeneficiaryBundle\Entity\Household;
 
 /**
  * ProjectRepository
@@ -18,6 +19,15 @@ use BeneficiaryBundle\Entity\Household;
  */
 class ProjectRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * @var AuthorizationCheckerInterface
+     */
+    private $security;
+
+    public function injectSecurity(AuthorizationCheckerInterface $security){
+        $this->security = $security;
+    }
+    
     public function getAllOfUser(User $user)
     {
         $qb = $this->createQueryBuilder("p");
@@ -81,10 +91,14 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
         $qb = $this->createQueryBuilder('p')
             ->andWhere('p.archived = 0');
 
-        if ($user && !$user->getProjects()->isEmpty()) {
-            $qb->leftJoin('p.usersProject', 'up')
-                ->andWhere('up.user = :user')
-                ->setParameter('user', $user);
+        if ($user) {
+            if (!$this->security->isGranted(RoleType::ADMIN)) {    // admin should see all projects
+                if (!$user->getProjects()->isEmpty()) {
+                    $qb->leftJoin('p.usersProject', 'up')
+                        ->andWhere('up.user = :user')
+                        ->setParameter('user', $user);
+                }
+            }
         }
 
         if ($iso3) {

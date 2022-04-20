@@ -237,8 +237,6 @@ class BookletController extends Controller
     /**
      * Get booklets that have been deactivated
      *
-     * @Rest\Get("/vendor-app/v1/deactivated-booklets")
-     *
      * @SWG\Tag(name="Vendor App")
      *
      * @SWG\Response(
@@ -310,7 +308,6 @@ class BookletController extends Controller
     /**
      * Get booklets that are protected by a password
      *
-     * @Rest\Get("/vendor-app/v1/protected-booklets")
      *
      * @SWG\Tag(name="Vendor App")
      *
@@ -444,7 +441,6 @@ class BookletController extends Controller
     /**
      * Deactivate booklets
      *
-     * @Rest\Post("/vendor-app/v1/deactivate-booklets")
      *
      * @Security("is_granted('ROLE_USER')")
      *
@@ -587,7 +583,6 @@ class BookletController extends Controller
     /**
      * Assign the booklet to a specific beneficiary.
      *
-     * @Rest\Post("/offline-app/v1/booklets/assign/{distributionId}/{beneficiaryId}")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_ASSIGN')")
      * @ParamConverter("booklet", options={"mapping": {"bookletId": "code"}})
      * @ParamConverter("assistance", options={"mapping": {"distributionId": "id"}})

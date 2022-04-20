@@ -167,7 +167,6 @@ class VendorController extends Controller
     /**
      * Get single vendor.
      *
-     * @Rest\Get("/vendor-app/v1/vendors/{id}")
      * @Security("is_granted('ROLE_USER')")
      *
      * @SWG\Tag(name="Single Vendor")
@@ -309,7 +308,6 @@ class VendorController extends Controller
      * Log a vendor with its username and salted password. Create a new one if not in the db (remove this part for prod env)
      *
      * @Rest\Post("/login_app", name="vendor_login")
-     * @Rest\Post("/vendor-app/v1/login")
      *
      * @SWG\Tag(name="Vendor App")
      *

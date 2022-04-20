@@ -6,8 +6,12 @@ namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Organization;
+use BeneficiaryBundle\Mapper\AssistanceMapper;
+use CommonBundle\Controller\ExportController;
 use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Enum\AssistanceTargetType;
+use DistributionBundle\Repository\AssistanceRepository;
+use DistributionBundle\Utils\AssistanceService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\ProjectCreateInputType;
 use NewApiBundle\InputType\ProjectFilterInputType;
@@ -15,9 +19,11 @@ use NewApiBundle\InputType\ProjectOrderInputType;
 use NewApiBundle\InputType\ProjectUpdateInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
+use ProjectBundle\Repository\ProjectRepository;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,6 +33,16 @@ use UserBundle\Entity\User;
 
 class ProjectController extends AbstractController
 {
+    /**
+     * @var ProjectRepository
+     */
+    private $projectRepository;
+
+    public function __construct(ProjectRepository $projectRepository)
+    {
+        $this->projectRepository = $projectRepository;
+    }
+
     /**
      * @Rest\Get("/web-app/v1/projects/{id}/summaries")
      *
@@ -227,7 +243,7 @@ class ProjectController extends AbstractController
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $projects = $this->getDoctrine()->getRepository(Project::class)->findByParams($this->getUser(), $countryIso3, $filter, $orderBy, $pagination);
+        $projects = $this->projectRepository->findByParams($this->getUser(), $countryIso3, $filter, $orderBy, $pagination);
 
         return $this->json($projects);
     }
@@ -301,14 +317,35 @@ class ProjectController extends AbstractController
                 return $item->getId();
             }, $user->getCountries()->toArray());
 
-            $data = $this->getDoctrine()->getRepository(Project::class)->findByCountries($countries);
+            $data = $this->projectRepository->findByCountries($countries);
 
             return $this->json(new Paginator($data));
         }
 
         // user without related projects should have access to all projects
-        $data = $this->getDoctrine()->getRepository(Project::class)->findBy(['archived' => false]);
+        $data = $this->projectRepository->findBy(['archived' => false]);
 
         return $this->json(new Paginator($data));
+    }
+
+    /**
+     * Get distributions of one project.
+     *
+     * @Rest\Get("/web-app/v1/projects/{id}/asssitances", name="get_distributions_of_project")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ', project)")
+     *
+     * @param Project              $project
+     * @param AssistanceRepository $assistanceRepository
+     *
+     * @return JsonResponse
+     */
+    public function assistances(Project $project, AssistanceRepository $assistanceRepository): JsonResponse
+    {
+        $assistances = $assistanceRepository->findBy([
+            'project' => $project,
+            'archived' => false,
+        ], ['id' => 'asc']);
+
+        return $this->json($assistances);
     }
 }

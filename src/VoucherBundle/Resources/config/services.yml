@@ -29,13 +29,15 @@ services:
     VoucherBundle\Utils\VendorService: '@voucher.vendor_service'
 
     voucher.booklet_service:
-        class: VoucherBundle\Utils\BookletService
+        alias: VoucherBundle\Utils\BookletService
+        public: true
+
+    VoucherBundle\Utils\BookletService:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@validator'
             - '@service_container'
             - '@VoucherBundle\Utils\BookletGenerator'
-        public: true
 
     voucher.voucher_service:
         class: VoucherBundle\Utils\VoucherService
@@ -43,9 +45,11 @@ services:
         public: true
 
     voucher.product_service:
-        class: VoucherBundle\Utils\ProductService
-        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
+        alias: VoucherBundle\Utils\ProductService
         public: true
+
+    VoucherBundle\Utils\ProductService:
+        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
 
     common.upload_service:
         class: CommonBundle\Utils\UploadService
@@ -53,19 +57,25 @@ services:
         public: true
 
     voucher.purchase_service:
-        class: VoucherBundle\Model\PurchaseService
         public: true
+        alias: VoucherBundle\Model\PurchaseService
+
+    VoucherBundle\Model\PurchaseService:
         arguments: [ '@doctrine.orm.entity_manager', '@logger' ]
 
     smartcard_service:
-        class: VoucherBundle\Utils\SmartcardService
+        alias: VoucherBundle\Utils\SmartcardService
+        public: true
+
+    VoucherBundle\Utils\SmartcardService:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@voucher.purchase_service'
             - '@workflow.registry'
             - '@logger'
             - '@cache.app'
-        public: true
+            - '@=service("doctrine.orm.entity_manager").getRepository("DistributionBundle:AssistanceBeneficiary")'
+            - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:ReliefPackage")'
 
     VoucherBundle\Mapper\SmartcardMapper:
         public: true

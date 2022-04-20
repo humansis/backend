@@ -3,15 +3,27 @@
 namespace NewApiBundle\Controller\OfflineApp;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Utils\BeneficiaryService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\Serializer\MapperInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class BeneficiaryController extends AbstractOfflineAppController
 {
+    /** @var BeneficiaryService */
+    private $beneficiaryService;
+
+    /**
+     * @param BeneficiaryService $beneficiaryService
+     */
+    public function __construct(BeneficiaryService $beneficiaryService)
+    {
+        $this->beneficiaryService = $beneficiaryService;
+    }
 
     /**
      * @Rest\Get("/offline-app/v2/beneficiaries")
@@ -50,5 +62,27 @@ class BeneficiaryController extends AbstractOfflineAppController
         $response->isNotModified($request);
 
         return $response;
+    }
+
+    /**
+     * @Rest\Post("/offline-app/v1/beneficiaries/{id}")
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
+     *
+     * @param Request     $request
+     * @param Beneficiary $beneficiary
+     *
+     * @return Response
+     */
+    public function updateAction(Request $request, Beneficiary $beneficiary): Response
+    {
+        $beneficiaryData = $request->request->all();
+
+        try {
+            $newBeneficiary = $this->beneficiaryService->update($beneficiary, $beneficiaryData);
+        } catch (\Exception $exception) {
+            $this->container->get('logger')->error('exception', [$exception->getMessage()]);
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+        return $this->json($newBeneficiary);
     }
 }

@@ -9,22 +9,27 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Profiler\Profiler;
 use UserBundle\Entity\User;
+use UserBundle\Utils\UserService;
 use VoucherBundle\Utils\VendorService;
 
 
 class AuthController extends AbstractVendorAppController
 {
-
+    /** @var VendorService */
     private $vendorService;
+
+    /** @var UserService */
+    private $userService;
 
     /**
      * @param VendorService $vendorService
+     * @param UserService   $userService
      */
-    public function __construct(VendorService $vendorService)
+    public function __construct(VendorService $vendorService, UserService $userService)
     {
         $this->vendorService = $vendorService;
+        $this->userService = $userService;
     }
-
 
     /**
      * @Rest\Post("/vendor-app/v2/login")
@@ -48,6 +53,22 @@ class AuthController extends AbstractVendorAppController
         }
 
         return $this->json($vendor, Response::HTTP_OK, [], ['login' => true]);
+    }
+
+    /**
+     * Get user's salt
+     *
+     * @Rest\Get("/vendor-app/v1/salt/{username}")
+     */
+    public function getSaltAction($username): Response
+    {
+        try {
+            $salt = $this->userService->getSaltOld($username);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+        }
+
+        return new JsonResponse($salt);
     }
 
 }

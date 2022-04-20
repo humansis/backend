@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace NewApiBundle\Controller\OfflineApp;
 
@@ -8,9 +7,21 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Profiler\Profiler;
 use UserBundle\Entity\User;
+use UserBundle\Utils\UserService;
 
 class AuthController extends AbstractOfflineAppController
 {
+    /** @var UserService */
+    private $userService;
+
+    /**
+     * @param UserService $userService
+     */
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
     /**
      * @Rest\Post("/offline-app/v2/login")
      *
@@ -36,5 +47,21 @@ class AuthController extends AbstractOfflineAppController
         }
 
         return $this->json($user, Response::HTTP_OK, [], ['login' => true]);
+    }
+
+    /**
+     * Get user's salt.
+     *
+     * @Rest\Get("/offline-app/v1/salt/{username}")
+     */
+    public function getSaltAction(string $username): Response
+    {
+        try {
+            $salt = $this->userService->getSaltOld($username);
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage(), $exception->getCode()>=Response::HTTP_BAD_REQUEST ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+        }
+
+        return new JsonResponse($salt);
     }
 }

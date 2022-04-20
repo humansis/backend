@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Component\Import\CellError\CellError;
 use NewApiBundle\Component\Import\CellParameters;
 use NewApiBundle\Component\Import\Utils\ImportDateConverter;
 use NewApiBundle\Enum\EnumTrait;
@@ -14,6 +15,7 @@ use NewApiBundle\Validator\Constraints\ImportDate;
 use Symfony\Component\Validator\Constraints as Assert;
 use NewApiBundle\Validator\Constraints\Enum;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class ImportLine
 {
@@ -328,6 +330,9 @@ class ImportLine
     /** @var string[] */
     private $excelDateTimeFormatProperties = [];
 
+    /** @var CellError[] */
+    private $errors = [];
+
     public function __construct(array $content, string $countryIso3, EntityManagerInterface $entityManager)
     {
         $this->countryIso3 = $countryIso3;
@@ -352,6 +357,10 @@ class ImportLine
                 } else {
                     $this->$property = $value;
                 }
+
+                if (isset($content[$header][CellParameters::ERRORS])) {
+                    $this->errors[] = new CellError($content[$header][CellParameters::ERRORS], $property, $value);
+                }
             }
         }
 
@@ -364,11 +373,19 @@ class ImportLine
     }
 
     /**
-     * @Assert\IsTrue(message="Phone type should not be blank if phone number is filled", payload={"propertyPath"="typePhone1"}, groups={"household", "member"})
+     * @param ExecutionContextInterface $context
+     *
+     * @return void
+     * @Assert\Callback(groups={"household", "member"})
      */
-    public function isTypePhone1Valid(): bool
+    public function violateCellErrors(ExecutionContextInterface $context): void
     {
-        return !$this->numberPhone1 || $this->typePhone1;
+        foreach ($this->errors as $error) {
+            $context->buildViolation($error->getType())
+                ->atPath($error->getProperty())
+                ->setInvalidValue($error->getValue())
+                ->addViolation();
+        }
     }
 
     /**
@@ -377,14 +394,6 @@ class ImportLine
     public function isPrefixPhone1Valid(): bool
     {
         return !$this->numberPhone1 || $this->prefixPhone1;
-    }
-
-    /**
-     * @Assert\IsTrue(message="Phone type should not be blank if phone number is filled", payload={"propertyPath"="typePhone2"}, groups={"household", "member"})
-     */
-    public function isPhoneType2Valid(): bool
-    {
-        return !$this->numberPhone2 || $this->typePhone2;
     }
 
     /**
