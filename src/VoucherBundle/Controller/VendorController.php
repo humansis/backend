@@ -167,7 +167,6 @@ class VendorController extends Controller
     /**
      * Get single vendor.
      *
-     * @Rest\Get("/vendor-app/v1/vendors/{id}")
      * @Security("is_granted('ROLE_USER')")
      *
      * @SWG\Tag(name="Single Vendor")
