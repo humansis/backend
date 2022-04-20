@@ -61,8 +61,10 @@ services:
         public: true
 
     voucher.purchase_service:
-        class: VoucherBundle\Model\PurchaseService
         public: true
+        alias: VoucherBundle\Model\PurchaseService
+
+    VoucherBundle\Model\PurchaseService:
         arguments: [ '@doctrine.orm.entity_manager', '@logger' ]
 
     smartcard_service:
