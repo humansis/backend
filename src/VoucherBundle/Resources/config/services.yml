@@ -35,13 +35,15 @@ services:
     VoucherBundle\Utils\VendorService: '@voucher.vendor_service'
 
     voucher.booklet_service:
-        class: VoucherBundle\Utils\BookletService
+        alias: VoucherBundle\Utils\BookletService
+        public: true
+
+    VoucherBundle\Utils\BookletService:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@validator'
             - '@service_container'
             - '@VoucherBundle\Utils\BookletGenerator'
-        public: true
 
     voucher.voucher_service:
         class: VoucherBundle\Utils\VoucherService
