@@ -302,7 +302,6 @@ class BeneficiaryController extends Controller
     /**
      * Beneficiary by its smartcard.
      *
-     * @Rest\Get("/offline-app/v1/smartcards/{serialNumber}/beneficiary")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      * @ParamConverter("smartcard")
      *

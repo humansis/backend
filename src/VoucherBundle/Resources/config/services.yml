@@ -70,7 +70,10 @@ services:
         arguments: [ '@doctrine.orm.entity_manager', '@logger' ]
 
     smartcard_service:
-        class: VoucherBundle\Utils\SmartcardService
+        alias: VoucherBundle\Utils\SmartcardService
+        public: true
+
+    VoucherBundle\Utils\SmartcardService:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@voucher.purchase_service'
@@ -79,7 +82,6 @@ services:
             - '@cache.app'
             - '@=service("doctrine.orm.entity_manager").getRepository("DistributionBundle:AssistanceBeneficiary")'
             - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:ReliefPackage")'
-        public: true
 
     VoucherBundle\Mapper\SmartcardMapper:
         public: true
