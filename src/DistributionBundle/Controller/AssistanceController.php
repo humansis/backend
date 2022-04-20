@@ -488,7 +488,6 @@ class AssistanceController extends Controller
     /**
      * Get all beneficiaries of a distribution.
      *
-     * @Rest\Get("/offline-app/v1/distributions/{id}/beneficiaries")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Offline App")
@@ -1109,7 +1108,6 @@ class AssistanceController extends Controller
     /**
      * Set general relief items as distributed.
      *
-     * @Rest\Post("/offline-app/v1/distributions/generalrelief/distributed")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_ASSIGN')")
      *
      * @SWG\Tag(name="Offline App")

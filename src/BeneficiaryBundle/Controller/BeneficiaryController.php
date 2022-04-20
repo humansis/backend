@@ -230,7 +230,6 @@ class BeneficiaryController extends Controller
     /**
      * Edit a beneficiary {id} with data in the body.
      *
-     * @Rest\Post("/offline-app/v1/beneficiaries/{id}")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *
      * @SWG\Tag(name="Offline App")
