@@ -137,7 +137,6 @@ class CommonController extends Controller
     }
 
     /**
-     * @Rest\Get("/vendor-app/v1/master-key")
      * @Security("is_granted('ROLE_VENDOR')")
      *
      * @SWG\Tag(name="Common")
