@@ -262,6 +262,7 @@ services:
             - '@doctrine.orm.entity_manager'
             - '%import.uploadedFilesDirectory%'
             - '@NewApiBundle\Component\Import\ImportFileValidator'
+            - '@NewApiBundle\Component\Import\Integrity\DuplicityService'
         public: true
 
     NewApiBundle\Component\Import\IntegrityChecker:
