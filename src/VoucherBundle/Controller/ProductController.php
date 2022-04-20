@@ -134,7 +134,6 @@ class ProductController extends Controller
     /**
      * Get Products
      *
-     * @Rest\Get("/vendor-app/v1/products")
      * @Security("is_granted('ROLE_USER')")
      *
      * @SWG\Tag(name="Vendor App")
