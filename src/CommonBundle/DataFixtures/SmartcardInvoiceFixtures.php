@@ -12,7 +12,7 @@ use VoucherBundle\InputType\SmartcardInvoice;
 use VoucherBundle\InputType\VoucherRedemptionBatch;
 use VoucherBundle\Utils\SmartcardService;
 
-class SmartcardRedemptionFixtures extends Fixture implements DependentFixtureInterface
+class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterface
 {
     /** @var string */
     private $environment;
