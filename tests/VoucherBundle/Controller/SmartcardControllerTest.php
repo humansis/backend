@@ -10,7 +10,7 @@ use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ModalityType;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\User;
-use VoucherBundle\DTO\PurchaseRedemptionBatch;
+use VoucherBundle\DTO\PreliminaryInvoice;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
@@ -681,18 +681,18 @@ class SmartcardControllerTest extends BMSServiceTestCase
             }
         }
 
-        $candidates = $repository->countPurchasesToRedeem($vendor);
-        $this->assertIsArray($candidates);
-        $this->assertGreaterThan(0, count($candidates), "Too little redemption candidates");
-        /** @var PurchaseRedemptionBatch $redemptionCandidate */
-        foreach ($candidates as $redemptionCandidate) {
-            $batchToRedeem = [
-                'purchases' => $redemptionCandidate->getPurchasesIds(),
+        $preliminaryInvoices = $repository->countPurchasesToRedeem($vendor);
+        $this->assertIsArray($preliminaryInvoices);
+        $this->assertGreaterThan(0, count($preliminaryInvoices), "Too little redemption preliminaryInvoices");
+        /** @var PreliminaryInvoice $preliminaryInvoice */
+        foreach ($preliminaryInvoices as $preliminaryInvoice) {
+            $batchToInvoice = [
+                'purchases' => $preliminaryInvoice->getPurchasesIds(),
             ];
 
             $this->setUp();
 
-            $crawler = $this->request('POST', '/api/wsse/smartcards/purchases/redeem-batch/'.$vendor->getId(), $batchToRedeem);
+            $crawler = $this->request('POST', '/api/wsse/smartcards/purchases/redeem-batch/'.$vendor->getId(), $batchToInvoice);
             $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
             $result = json_decode($this->client->getResponse()->getContent(), true);
             $this->assertArrayHasKey('id', $result);

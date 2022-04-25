@@ -12,7 +12,7 @@ use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ModalityType;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use UserBundle\Entity\User;
-use VoucherBundle\DTO\PurchaseRedemptionBatch;
+use VoucherBundle\DTO\PreliminaryInvoice;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
@@ -241,14 +241,14 @@ class SmartcardServiceTest extends KernelTestCase
             $date = clone $date;
             $date->modify('+1 day');
         }
-        /** @var PurchaseRedemptionBatch[] $batchCandidates */
-        $batchCandidates = $this->smartcardService->getRedemptionCandidates($this->vendor);
-        $this->assertIsArray($batchCandidates, "Redemption candidates must be array");
-        $this->assertCount(count($expectedResults), $batchCandidates, "Wrong count of redemption candidates");
-        foreach ($batchCandidates as $candidate) {
-            $this->assertContains([$candidate->getValue(), $candidate->getCurrency(), $candidate->getProjectId()], $expectedResults, "Result was unexpected");
+        /** @var PreliminaryInvoice[] $preliminaryInvoices */
+        $preliminaryInvoices = $this->smartcardService->getRedemptionCandidates($this->vendor);
+        $this->assertIsArray($preliminaryInvoices, "Redemption candidates must be array");
+        $this->assertCount(count($expectedResults), $preliminaryInvoices, "Wrong count of redemption candidates");
+        foreach ($preliminaryInvoices as $preliminaryInvoice) {
+            $this->assertContains([$preliminaryInvoice->getValue(), $preliminaryInvoice->getCurrency(), $preliminaryInvoice->getProjectId()], $expectedResults, "Result was unexpected");
 
-            foreach ($candidate->getPurchasesIds() as $purchaseId) {
+            foreach ($preliminaryInvoice->getPurchasesIds() as $purchaseId) {
                 /** @var SmartcardPurchase $purchase */
                 $purchase = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->find($purchaseId);
                 $this->assertNotNull($purchase, "Purchase must exists");
@@ -256,19 +256,19 @@ class SmartcardServiceTest extends KernelTestCase
             }
         }
         // redeem test
-        foreach ($batchCandidates as $candidateToSave) {
+        foreach ($preliminaryInvoices as $preliminaryInvoice) {
             $batchRequest = new SmartcardRedemtionBatch();
-            $batchRequest->setPurchases($candidateToSave->getPurchasesIds());
+            $batchRequest->setPurchases($preliminaryInvoice->getPurchasesIds());
 
             $batch = $this->smartcardService->redeem($this->vendor, $batchRequest, $admin);
 
             foreach ($batch->getPurchases() as $purchase) {
                 $this->assertEquals(2000, $purchase->getCreatedAt()->format('Y'), "Wrong purchase year");
             }
-            $this->assertEquals($candidateToSave->getValue(), $batch->getValue(), "Redemption value of batch is different");
-            $this->assertEquals($candidateToSave->getCurrency(), $batch->getCurrency(), "Redemption currency of batch is different");
-            $this->assertEquals($candidateToSave->getProjectId(), $batch->getProject()->getId(), "Redemption project of batch is different");
-            $this->assertEquals($candidateToSave->getPurchasesCount(), $batch->getPurchases()->count(), "Redemption purchase count of batch is different");
+            $this->assertEquals($preliminaryInvoice->getValue(), $batch->getValue(), "Redemption value of batch is different");
+            $this->assertEquals($preliminaryInvoice->getCurrency(), $batch->getCurrency(), "Redemption currency of batch is different");
+            $this->assertEquals($preliminaryInvoice->getProjectId(), $batch->getProject()->getId(), "Redemption project of batch is different");
+            $this->assertEquals($preliminaryInvoice->getPurchasesCount(), $batch->getPurchases()->count(), "Redemption purchase count of batch is different");
         }
     }
 
@@ -563,16 +563,16 @@ class SmartcardServiceTest extends KernelTestCase
 
         foreach ($expectedVendorResults as $vendorId => $values) {
             $vendor = $this->em->getRepository(Vendor::class)->find($vendorId);
-            $redemptionCandidates = $this->smartcardService->getRedemptionCandidates($vendor);
+            $preliminaryInvoice = $this->smartcardService->getRedemptionCandidates($vendor);
             if (is_array($values)) {
-                $this->assertCount(1, $redemptionCandidates, "Wrong number of invoice candidates");
-                /** @var PurchaseRedemptionBatch $invoice */
-                $invoice = $redemptionCandidates[0];
+                $this->assertCount(1, $preliminaryInvoice, "Wrong number of invoice candidates");
+                /** @var PreliminaryInvoice $invoice */
+                $invoice = $preliminaryInvoice[0];
                 $this->assertEquals($values['purchases'], $invoice->getPurchasesCount(), "Wrong redeemable purchases count");
                 $this->assertEquals($values['value'], $invoice->getValue(), "Wrong redeemable value");
                 $this->assertEquals($projectA, $invoice->getProjectId(), "Wrong redeemable project");
             } elseif (null === $values) {
-                $this->assertEmpty($redemptionCandidates, "Wrong number of invoice candidates");
+                $this->assertEmpty($preliminaryInvoice, "Wrong number of invoice candidates");
             } else {
                 $this->fail("Wrong test data.");
             }

@@ -11,7 +11,7 @@ use NewApiBundle\InputType\SmartcardPurchaseFilterInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 use VoucherBundle\DTO\PurchaseDetail;
-use VoucherBundle\DTO\PurchaseRedemptionBatch;
+use VoucherBundle\DTO\PreliminaryInvoice;
 use VoucherBundle\DTO\PurchaseSummary;
 use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\SmartcardRedemptionBatch;
@@ -53,7 +53,7 @@ class SmartcardPurchaseRepository extends EntityRepository
     /**
      * @param Vendor $vendor
      *
-     * @return PurchaseRedemptionBatch[]
+     * @return PreliminaryInvoice[]
      *
      * @throws NonUniqueResultException
      */
@@ -108,7 +108,7 @@ class SmartcardPurchaseRepository extends EntityRepository
                 return (int) $result['id'];
             }, $purchaseIds);
 
-            $batches[] = new PurchaseRedemptionBatch(
+            $batches[] = new PreliminaryInvoice(
                 $candidate['purchasesValue'],
                 $candidate['currency'],
                 $projectRepo->find($candidate['projectId']),

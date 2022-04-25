@@ -4,11 +4,11 @@ declare(strict_types=1);
 namespace NewApiBundle\Mapper;
 
 use NewApiBundle\Serializer\MapperInterface;
-use VoucherBundle\DTO\PurchaseRedemptionBatch;
+use VoucherBundle\DTO\PreliminaryInvoice;
 
-class SmartcardRedemptionCandidateMapper implements MapperInterface
+class SmartcardPreliminaryInvoiceVersion3Mapper implements MapperInterface
 {
-    /** @var PurchaseRedemptionBatch */
+    /** @var PreliminaryInvoice */
     private $object;
 
     /**
@@ -16,7 +16,9 @@ class SmartcardRedemptionCandidateMapper implements MapperInterface
      */
     public function supports(object $object, $format = null, array $context = null): bool
     {
-        return $object instanceof PurchaseRedemptionBatch && isset($context[self::NEW_API]) && true === $context[self::NEW_API] && !isset($context['version']);
+        return $object instanceof PreliminaryInvoice &&
+            isset($context[self::NEW_API]) && true === $context[self::NEW_API] &&
+            isset($context['version']) && 3 === $context['version'];
     }
 
     /**
@@ -24,23 +26,18 @@ class SmartcardRedemptionCandidateMapper implements MapperInterface
      */
     public function populate(object $object)
     {
-        if ($object instanceof PurchaseRedemptionBatch) {
+        if ($object instanceof PreliminaryInvoice) {
             $this->object = $object;
 
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.PurchaseRedemptionBatch::class.', '.get_class($object).' given.');
+        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.PreliminaryInvoice::class.', '.get_class($object).' given.');
     }
 
     public function getProjectId(): int
     {
         return $this->object->getProjectId();
-    }
-
-    public function getPurchaseIds(): array
-    {
-        return $this->object->getPurchasesIds();
     }
 
     public function getValue()

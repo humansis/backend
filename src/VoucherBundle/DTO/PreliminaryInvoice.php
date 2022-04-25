@@ -7,7 +7,7 @@ use ProjectBundle\Entity\Project;
 /**
  * stores statistics from repository
  */
-class PurchaseRedemptionBatch
+class PreliminaryInvoice
 {
     /** @var float */
     private $value;
