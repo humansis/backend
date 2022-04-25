@@ -9,9 +9,11 @@ use Swagger\Annotations as SWG;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+
+use Symfony\Component\Serializer\SerializerInterface;
 use VoucherBundle\Utils\BookletService;
 
 /**
@@ -29,10 +31,12 @@ class BookletController extends AbstractVendorAppController
 {
 
     private $bookletService;
+    private $serializer;
 
-    public function __construct(BookletService $bookletService)
+    public function __construct(BookletService $bookletService, SerializerInterface $serializer)
     {
         $this->bookletService = $bookletService;
+        $this->serializer = $serializer;
     }
 
 
@@ -65,7 +69,7 @@ class BookletController extends AbstractVendorAppController
     {
         try {
             $booklets = $this->bookletService->findProtected($request->headers->get('Country'));
-            $json = $this->get('serializer')->serialize(new Paginator($booklets), 'json', ['groups' => ['ProtectedBooklet']]);
+            $json = $this->serializer->serialize(new Paginator($booklets), 'json', ['groups' => ['ProtectedBooklet']]);
             $response = new Response($json);
             $response->setEtag(md5($response->getContent()));
             $response->setPublic();
