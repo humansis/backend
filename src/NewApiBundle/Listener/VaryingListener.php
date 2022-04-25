@@ -16,9 +16,17 @@ class VaryingListener
             return;
         }
 
-        // it define country header as important for cache processing
-        if ($event->getRequest()->headers->has('country')) {
-            $event->getResponse()->setVary('country', false);
+        $checkHeaders = ['country', 'origin'];
+        $varyHeaders = [];
+
+        foreach ($checkHeaders as $header) {
+            if ($event->getRequest()->headers->has($header)) {
+                $varyHeaders[] = $header;
+            }
+        }
+
+        if (count($varyHeaders) > 0) {
+            $event->getResponse()->setVary(join(', ', $varyHeaders), false);
         }
     }
 }
