@@ -32,9 +32,9 @@ class Phone
     private $number;
 
     /**
-     * @var string
+     * @var string|null
      *
-     * @ORM\Column(name="type", type="string", length=45)
+     * @ORM\Column(name="type", type="string", length=45, nullable=true)
      * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedAssistance"})
      */
     private $type;
@@ -123,11 +123,11 @@ class Phone
     /**
      * Set type.
      *
-     * @param string $type
+     * @param string|null $type
      *
      * @return Phone
      */
-    public function setType($type)
+    public function setType(?string $type): Phone
     {
         $this->type = $type;
 
@@ -137,9 +137,9 @@ class Phone
     /**
      * Get type.
      *
-     * @return string
+     * @return string|null
      */
-    public function getType()
+    public function getType(): ?string
     {
         return $this->type;
     }
