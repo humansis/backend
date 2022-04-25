@@ -159,7 +159,7 @@ class SmartcardPurchase
      */
     public function getRedeemedAt(): ?DateTimeInterface
     {
-        return $this->redemptionBatch ? $this->redemptionBatch->getRedeemedAt() : null;
+        return $this->redemptionBatch ? $this->redemptionBatch->getInvoicedAt() : null;
     }
 
     /**

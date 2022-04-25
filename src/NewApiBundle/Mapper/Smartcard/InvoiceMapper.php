@@ -5,7 +5,7 @@ namespace NewApiBundle\Mapper\Smartcard;
 use NewApiBundle\Serializer\MapperInterface;
 use VoucherBundle\Entity\Invoice;
 
-class RedemptionBatchMapper implements MapperInterface
+class InvoiceMapper implements MapperInterface
 {
     /** @var Invoice */
     private $object;
@@ -64,6 +64,6 @@ class RedemptionBatchMapper implements MapperInterface
 
     public function getDate(): string
     {
-        return $this->object->getRedeemedAt()->format(\DateTimeInterface::ISO8601);
+        return $this->object->getInvoicedAt()->format(\DateTimeInterface::ISO8601);
     }
 }

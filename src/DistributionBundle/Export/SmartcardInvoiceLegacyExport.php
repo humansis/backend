@@ -174,7 +174,7 @@ class SmartcardInvoiceLegacyExport
         $worksheet->setCellValue('B7', $translator->trans('customer', [], 'invoice'));
         $worksheet->setCellValue('C7', $organization->getName());
         $worksheet->setCellValue('E7', $locationMapper->toName($batch->getVendor()->getLocation()));
-        $worksheet->setCellValue('I7', $batch->getRedeemedAt()->format('j-n-y'));
+        $worksheet->setCellValue('I7', $batch->getInvoicedAt()->format('j-n-y'));
         $worksheet->setCellValue('H7', $translator->trans('invoice_date', [], 'invoice'));
         // style
         $worksheet->getRowDimension('7')->setRowHeight(50);

@@ -141,7 +141,7 @@ class SmartcardInvoiceExport
         $countryIso3 = self::extractCountryIso3($batch->getVendor());
         $humansisInvoiceNo = $batch->getInvoiceNo();
         $vendor = sprintf('%03d', $batch->getVendor()->getId());
-        $date = $batch->getRedeemedAt()->format('y');
+        $date = $batch->getInvoicedAt()->format('y');
         $worksheet->setCellValue('B2', 'Temporary Invoice No.');
         $worksheet->setCellValue('B3', "{$countryIso3}EV{$date}{$humansisInvoiceNo}");
         self::setSmallHeadline($worksheet, 'B2:B3');
@@ -192,7 +192,7 @@ class SmartcardInvoiceExport
             $worksheet->getStyle("E$row1")->getAlignment()->setWrapText(true);
         }
 
-        $worksheet->setCellValue("I$row1", $batch->getRedeemedAt()->format(self::DATE_FORMAT));
+        $worksheet->setCellValue("I$row1", $batch->getInvoicedAt()->format(self::DATE_FORMAT));
         self::undertranslatedSmallHeadline($worksheet, $translator, "Invoice Date", "H", $row1);
         // style
         $worksheet->getRowDimension("$row1")->setRowHeight(25);

@@ -16,7 +16,7 @@ use UserBundle\Entity\User;
  * Smartcard purchase batch for redemption feature.
  *
  * @ORM\Table(name="smartcard_redemption_batch")
- * @ORM\Entity(repositoryClass="\VoucherBundle\Repository\SmartcardRedemptionBatchRepository")
+ * @ORM\Entity(repositoryClass="\VoucherBundle\Repository\SmartcardInvoiceRepository")
  */
 class Invoice implements JsonSerializable
 {
@@ -43,7 +43,7 @@ class Invoice implements JsonSerializable
      *
      * @ORM\Column(name="redeemed_at", type="datetime", nullable=false)
      */
-    private $redeemedAt;
+    private $invoicedAt;
 
     /**
      * @var User
@@ -51,7 +51,7 @@ class Invoice implements JsonSerializable
      * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User")
      * @ORM\JoinColumn(name="redeemed_by", nullable=false)
      */
-    private $redeemedBy;
+    private $invoicedBy;
 
     /**
      * @var mixed
@@ -129,8 +129,8 @@ class Invoice implements JsonSerializable
     {
         $this->vendor = $vendor;
         $this->project = $project;
-        $this->redeemedAt = $redeemedAt;
-        $this->redeemedBy = $redeemedBy;
+        $this->invoicedAt = $redeemedAt;
+        $this->invoicedBy = $redeemedBy;
         $this->value = $value;
         $this->currency = $currency;
         $this->purchases = new ArrayCollection($purchases);
@@ -160,33 +160,33 @@ class Invoice implements JsonSerializable
     /**
      * @return DateTimeInterface
      */
-    public function getRedeemedAt(): DateTimeInterface
+    public function getInvoicedAt(): DateTimeInterface
     {
-        return $this->redeemedAt;
+        return $this->invoicedAt;
     }
 
     /**
-     * @param DateTimeInterface $redeemedAt
+     * @param DateTimeInterface $invoicedAt
      */
-    public function setRedeemedAt(DateTimeInterface $redeemedAt): void
+    public function setInvoicedAt(DateTimeInterface $invoicedAt): void
     {
-        $this->redeemedAt = $redeemedAt;
+        $this->invoicedAt = $invoicedAt;
     }
 
     /**
      * @return User
      */
-    public function getRedeemedBy(): User
+    public function getInvoicedBy(): User
     {
-        return $this->redeemedBy;
+        return $this->invoicedBy;
     }
 
     /**
-     * @param User $redeemedBy
+     * @param User $invoicedBy
      */
-    public function setRedeemedBy(User $redeemedBy): void
+    public function setInvoicedBy(User $invoicedBy): void
     {
-        $this->redeemedBy = $redeemedBy;
+        $this->invoicedBy = $invoicedBy;
     }
 
     /**
@@ -265,8 +265,8 @@ class Invoice implements JsonSerializable
     {
         return [
             'id' => $this->id,
-            'datetime' => $this->redeemedAt->format('U'),
-            'date' => $this->redeemedAt->format('d-m-Y H:i'),
+            'datetime' => $this->invoicedAt->format('U'),
+            'date' => $this->invoicedAt->format('d-m-Y H:i'),
             'count' => $this->purchases->count(),
             'value' => (float) $this->value,
             'currency' => $this->currency,

@@ -9,11 +9,11 @@ use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
 
 /**
- * Class SmartcardRedemptionBatchRepository.
+ * Class SmartcardInvoiceRepository.
  *
  * @method Invoice find($id)
  */
-class SmartcardRedemptionBatchRepository extends EntityRepository
+class SmartcardInvoiceRepository extends EntityRepository
 {
     /**
      * @param Vendor     $vendor
