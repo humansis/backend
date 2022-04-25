@@ -1,12 +1,11 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
-namespace NewApiBundle\Mapper;
+namespace NewApiBundle\Mapper\Smartcard;
 
 use NewApiBundle\Entity\SmartcardPurchasedItem;
 use NewApiBundle\Serializer\MapperInterface;
 
-class SmartcardPurchasedItemMapper implements MapperInterface
+class PurchasedItemMapper implements MapperInterface
 {
     /** @var SmartcardPurchasedItem */
     private $object;

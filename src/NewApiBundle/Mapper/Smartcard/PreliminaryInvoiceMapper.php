@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Mapper;
+namespace NewApiBundle\Mapper\Smartcard;
 
 use NewApiBundle\Serializer\MapperInterface;
 use VoucherBundle\DTO\PreliminaryInvoice;
 
-class SmartcardPreliminaryInvoiceMapper implements MapperInterface
+class PreliminaryInvoiceMapper implements MapperInterface
 {
     /** @var PreliminaryInvoice */
     private $object;

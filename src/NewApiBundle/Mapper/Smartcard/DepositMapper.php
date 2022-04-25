@@ -1,13 +1,12 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
-namespace NewApiBundle\Mapper;
+namespace NewApiBundle\Mapper\Smartcard;
 
 use NewApiBundle\Component\Smartcard\EmptySmartcardDeposit;
 use NewApiBundle\Serializer\MapperInterface;
 use VoucherBundle\Entity\SmartcardDeposit;
 
-class SmartcardDepositMapper implements MapperInterface
+class DepositMapper implements MapperInterface
 {
     /** @var SmartcardDeposit|EmptySmartcardDeposit */
     private $object;
