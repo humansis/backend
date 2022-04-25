@@ -91,8 +91,8 @@ class AppKernel extends Kernel
 
     protected function configureRoutes(\Symfony\Component\Routing\RouteCollectionBuilder $routes)
     {
-        $routes->import($this->getRootDir().'/config/routing'.self::CONFIG_EXTS);
-        $environmentRoutingConfig = $this->getRootDir().'/config/routing/'.$this->getEnvironment().'/routing'.self::CONFIG_EXTS;
+        $routes->import($this->getRootDir().'/config/routing.yml');
+        $environmentRoutingConfig = $this->getRootDir().'/config/routing/'.$this->getEnvironment().'/routing.yml';
         if (is_file($environmentRoutingConfig)) {
             $routes->import($environmentRoutingConfig);
         }
