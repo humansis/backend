@@ -71,27 +71,36 @@ class PhoneInputType implements InputTypeInterface
     }
 
     /**
-     * @return string
+     * @return string|null
+     * @throws \NewApiBundle\Enum\EnumValueNoFoundException
      */
-    public function getType()
+    public function getType(): ?string
     {
+        if (!$this->type) {
+            return null;
+        }
+
         return PhoneTypes::valueFromAPI($this->type);
     }
 
     /**
-     * @param string $type
+     * @param string|null $type
      */
-    public function setType($type)
+    public function setType(?string $type)
     {
         $this->type = $type;
     }
 
     /**
      * @return boolean
+     * @throws \NewApiBundle\Enum\EnumValueNoFoundException
      */
     public function getProxy()
     {
-        if (empty($this->proxy)) return false;
+        if (empty($this->proxy)) {
+            return false;
+        }
+
         return VariableBool::valueFromAPI($this->proxy);
     }
 
