@@ -180,9 +180,9 @@ class BookletService
      *
      * @return array
      */
-    public function findProtected()
+    public function findProtected($countryISO3)
     {
-        return $this->em->getRepository(Booklet::class)->getProtectedBooklets();
+        return $this->em->getRepository(Booklet::class)->getProtectedBooklets($countryISO3);
     }
 
     /**

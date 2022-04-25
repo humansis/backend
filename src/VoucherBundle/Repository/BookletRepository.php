@@ -52,12 +52,12 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
     }
 
     // We dont care about this function and probably we should remove it from controller, test, service and repo (it has nothing related in the front)
-    public function getProtectedBooklets()
+    public function getProtectedBooklets($countryISO3)
     {
         $qb = $this->createQueryBuilder('b');
-        $q = $qb->where('b.password IS NOT NULL');
-        
-        
+        $q = $qb->where('b.password IS NOT NULL')
+            ->andWhere('b.countryISO3 = :country')
+            ->setParameter('country', $countryISO3);
         return $q->getQuery()->getResult();
     }
 

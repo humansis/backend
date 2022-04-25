@@ -29,7 +29,7 @@ class Booklet implements ExportableInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullBooklet", "ValidatedAssistance"})
+     * @SymfonyGroups({"FullBooklet", "ValidatedAssistance", "ProtectedBooklet"})
      */
     private $id;
 
@@ -45,7 +45,7 @@ class Booklet implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="code", type="string", length=255, unique=true)
-     * @SymfonyGroups({"FullBooklet", "ValidatedAssistance"})
+     * @SymfonyGroups({"FullBooklet", "ValidatedAssistance", "ProtectedBooklet"})
      */
     private $code;
 
@@ -77,7 +77,7 @@ class Booklet implements ExportableInterface
      * @var string|null
      *
      * @ORM\Column(name="password", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullBooklet"})
+     * @SymfonyGroups({"FullBooklet", "ProtectedBooklet"})
      */
     public $password;
 

@@ -43,6 +43,8 @@ services:
             - '@VoucherBundle\Utils\BookletGenerator'
         public: true
 
+    VoucherBundle\Utils\BookletService: '@voucher.booklet_service'
+
     voucher.voucher_service:
         class: VoucherBundle\Utils\VoucherService
         arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
