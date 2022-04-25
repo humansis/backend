@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 namespace CommonBundle\DataFixtures;
 
@@ -6,7 +6,10 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use VoucherBundle\Entity\SmartcardPurchase;
-use VoucherBundle\InputType\SmartcardRedemtionBatch;
+use VoucherBundle\Entity\Vendor;
+use VoucherBundle\Entity\Voucher;
+use VoucherBundle\InputType\SmartcardInvoice;
+use VoucherBundle\InputType\VoucherRedemptionBatch;
 use VoucherBundle\Utils\SmartcardService;
 
 class SmartcardRedemptionFixtures extends Fixture implements DependentFixtureInterface
@@ -52,7 +55,7 @@ class SmartcardRedemptionFixtures extends Fixture implements DependentFixtureInt
         }
 
         foreach ($purchaseIds as $projectId => $ids) {
-            $batch = new SmartcardRedemtionBatch();
+            $batch = new SmartcardInvoice();
             $batch->setPurchases(array_slice($ids, 1, 5));
             $this->smartcardService->redeem(
                 $this->getReference(VendorFixtures::REF_VENDOR_KHM),
@@ -71,7 +74,7 @@ class SmartcardRedemptionFixtures extends Fixture implements DependentFixtureInt
         }
 
         foreach ($purchaseIds as $projectId => $ids) {
-            $batch = new SmartcardRedemtionBatch();
+            $batch = new SmartcardInvoice();
             $batch->setPurchases(array_slice($ids, 1, 5));
             $this->smartcardService->redeem(
                 $this->getReference(VendorFixtures::REF_VENDOR_SYR),

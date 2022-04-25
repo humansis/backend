@@ -57,7 +57,7 @@ class SmartcardPurchaseRepository extends EntityRepository
      *
      * @throws NonUniqueResultException
      */
-    public function countPurchasesToRedeem(Vendor $vendor): array
+    public function countPreliminaryInvoices(Vendor $vendor): array
     {
         $purchasePreAggregation = "SELECT
             sp.id AS purchaseId,

@@ -5,7 +5,7 @@ namespace VoucherBundle\InputType;
 use CommonBundle\InputType\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class SmartcardRedemtionBatch implements InputTypeInterface
+class SmartcardInvoice implements InputTypeInterface
 {
     /**
      * @var int[]

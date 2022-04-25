@@ -14,8 +14,9 @@ use VoucherBundle\Controller\SmartcardController;
 use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
+use VoucherBundle\Utils\SmartcardService;
 
-class SmartcardRedemptionBatchController extends AbstractWebAppController
+class InvoiceController extends AbstractWebAppController
 {
     /**
      * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/exports")
@@ -32,15 +33,15 @@ class SmartcardRedemptionBatchController extends AbstractWebAppController
 
     /**
      * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/legacy-exports")
-     * @ParamConverter("redemptionBatch", class="Invoice")
+     * @ParamConverter("invoice", class="Invoice")
      *
-     * @param Invoice $redemptionBatch
+     * @param Invoice $invoice
      *
      * @return JsonResponse
      */
-    public function legacyExport(Invoice $redemptionBatch): Response
+    public function legacyExport(Invoice $invoice): Response
     {
-        return $this->forward(SmartcardController::class.'::exportLegacy', ['batch' => $redemptionBatch]);
+        return $this->forward(SmartcardController::class.'::exportLegacy', ['batch' => $invoice]);
     }
 
     /**
@@ -51,12 +52,12 @@ class SmartcardRedemptionBatchController extends AbstractWebAppController
      *
      * @return JsonResponse
      */
-    public function batches(Vendor $vendor, Pagination $pagination): JsonResponse
+    public function invoices(Vendor $vendor, Pagination $pagination): JsonResponse
     {
-        $batches = $this->getDoctrine()->getRepository(Invoice::class)
+        $invoices = $this->getDoctrine()->getRepository(Invoice::class)
             ->findByVendor($vendor, $pagination);
 
-        return $this->json($batches);
+        return $this->json($invoices);
     }
 
     /**
@@ -67,25 +68,27 @@ class SmartcardRedemptionBatchController extends AbstractWebAppController
      *
      * @return JsonResponse
      */
-    public function batchesForVendorApp(Vendor $vendor, Pagination $pagination): Response
+    public function invoicesForVendorApp(Vendor $vendor, Pagination $pagination): Response
     {
-        return $this->forward(self::class.'::batches', ['vendor' => $vendor, 'pagination' => $pagination]);
+        return $this->forward(self::class.'::invoices', ['vendor' => $vendor, 'pagination' => $pagination]);
     }
 
     /**
      * @Rest\Post("/web-app/v1/vendors/{id}/smartcard-redemption-batches")
      *
-     * @param Vendor $vendor
+     * @param Vendor                                  $vendor
+     * @param SmartcardRedemptionBatchCreateInputType $inputType
+     * @param SmartcardService                        $smartcardService
      *
      * @return JsonResponse
      */
-    public function create(Vendor $vendor, SmartcardRedemptionBatchCreateInputType $inputType): JsonResponse
+    public function create(Vendor $vendor, SmartcardRedemptionBatchCreateInputType $inputType, SmartcardService $smartcardService): JsonResponse
     {
         //backward compatibility
-        $newBatch = new \VoucherBundle\InputType\SmartcardRedemtionBatch();
-        $newBatch->setPurchases($inputType->getPurchaseIds());
+        $newInvoice = new \VoucherBundle\InputType\SmartcardInvoice();
+        $newInvoice->setPurchases($inputType->getPurchaseIds());
 
-        $redemptionBath = $this->get('smartcard_service')->redeem($vendor, $newBatch, $this->getUser());
+        $redemptionBath = $smartcardService->redeem($vendor, $newInvoice, $this->getUser());
 
         return $this->json($redemptionBath);
     }
@@ -97,10 +100,10 @@ class SmartcardRedemptionBatchController extends AbstractWebAppController
      *
      * @return JsonResponse
      */
-    public function candidates(Vendor $vendor): JsonResponse
+    public function preliminaryInvoices(Vendor $vendor): JsonResponse
     {
         $candidates = $this->getDoctrine()->getRepository(SmartcardPurchase::class)
-            ->countPurchasesToRedeem($vendor);
+            ->countPreliminaryInvoices($vendor);
 
         return $this->json(new Paginator($candidates));
     }
@@ -113,9 +116,9 @@ class SmartcardRedemptionBatchController extends AbstractWebAppController
      *
      * @return JsonResponse
      */
-    public function candidatesForVendorAppDeprecated(Vendor $vendor): Response
+    public function preliminariesForVendorAppDeprecated(Vendor $vendor): Response
     {
-        return $this->forward(self::class.'::candidates', ['vendor' => $vendor]);
+        return $this->forward(self::class.'::preliminaryInvoices', ['vendor' => $vendor]);
     }
 
     /**
@@ -125,10 +128,10 @@ class SmartcardRedemptionBatchController extends AbstractWebAppController
      *
      * @return JsonResponse
      */
-    public function candidatesForVendorApp(Vendor $vendor): Response
+    public function preliminariesForVendorApp(Vendor $vendor): Response
     {
         $candidates = $this->getDoctrine()->getRepository(SmartcardPurchase::class)
-            ->countPurchasesToRedeem($vendor);
+            ->countPreliminaryInvoices($vendor);
 
         return $this->json($candidates, 200, [], ['version' => 3]);
     }

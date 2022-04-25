@@ -19,7 +19,7 @@ class SmartcardPurchaseService
 
     public function getBy(Vendor $vendor, Project $project, string $currency)
     {
-        $candidates = $this->repository->countPurchasesToRedeem($vendor);
+        $candidates = $this->repository->countPreliminaryInvoices($vendor);
         foreach ($candidates as $candidate) {
             if ($candidate->getProjectId() === $project->getId() && $candidate->getCurrency() === $currency) {
                 return $this->repository->findBy(['id' => $candidate->getPurchasesIds()]);

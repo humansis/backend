@@ -31,7 +31,7 @@ use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
 use VoucherBundle\InputType\SmartcardPurchaseDeprecated as SmartcardPurchaseDeprecatedInput;
 use VoucherBundle\Model\PurchaseService;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
-use VoucherBundle\InputType\SmartcardRedemtionBatch as RedemptionBatchInput;
+use VoucherBundle\InputType\SmartcardInvoice as RedemptionBatchInput;
 
 class SmartcardService
 {
@@ -336,7 +336,7 @@ class SmartcardService
 
     public function getRedemptionCandidates(Vendor $vendor): array
     {
-        return $this->em->getRepository(SmartcardPurchase::class)->countPurchasesToRedeem($vendor);
+        return $this->em->getRepository(SmartcardPurchase::class)->countPreliminaryInvoices($vendor);
     }
 
     /**

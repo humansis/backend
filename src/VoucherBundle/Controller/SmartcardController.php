@@ -35,7 +35,7 @@ use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Enum\SmartcardStates;
 use VoucherBundle\InputType\SmartcardPurchaseDeprecated as SmartcardPurchaseDeprecatedInput;
 use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
-use VoucherBundle\InputType\SmartcardRedemtionBatch as RedemptionBatchInput;
+use VoucherBundle\InputType\SmartcardInvoice as RedemptionBatchInput;
 use VoucherBundle\Mapper\SmartcardMapper;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
 
@@ -630,7 +630,7 @@ class SmartcardController extends Controller
     {
         /** @var SmartcardPurchaseRepository $repository */
         $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardPurchase::class);
-        $summaries = $repository->countPurchasesToRedeem($vendor);
+        $summaries = $repository->countPreliminaryInvoices($vendor);
 
         return $this->json($summaries);
     }

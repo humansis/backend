@@ -17,7 +17,7 @@ use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Enum\SmartcardStates;
-use VoucherBundle\InputType\SmartcardRedemtionBatch;
+use VoucherBundle\InputType\SmartcardInvoice;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
 
 class SmartcardControllerTest extends BMSServiceTestCase
@@ -544,7 +544,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $purchase->setCreatedAt(\DateTime::createFromFormat('Y-m-d', '2000-01-03'));
         $p3 = $purchaseService->purchaseSmartcard($smartcard, $purchase);
 
-        $redemptionBatch = new SmartcardRedemtionBatch();
+        $redemptionBatch = new SmartcardInvoice();
         $redemptionBatch->setPurchases([$p2->getId(), $p3->getId()]);
 
         $smartcardService->redeem($vendor, $redemptionBatch, $user);
@@ -653,7 +653,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         /** @var SmartcardPurchaseRepository $repository */
         $repository = $this->em->getRepository(SmartcardPurchase::class);
-        $summary = $repository->countPurchasesToRedeem($vendor)[0];
+        $summary = $repository->countPreliminaryInvoices($vendor)[0];
 
         $this->assertCount(count($summary->getPurchasesIds()), $batchCandidate['purchases_ids'], 'There is wrong count number in batch to redeem');
         $this->assertEquals($summary->getValue(), $batchCandidate['value'], 'There is wrong value of batch to redeem');
@@ -681,7 +681,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             }
         }
 
-        $preliminaryInvoices = $repository->countPurchasesToRedeem($vendor);
+        $preliminaryInvoices = $repository->countPreliminaryInvoices($vendor);
         $this->assertIsArray($preliminaryInvoices);
         $this->assertGreaterThan(0, count($preliminaryInvoices), "Too little redemption preliminaryInvoices");
         /** @var PreliminaryInvoice $preliminaryInvoice */

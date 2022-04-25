@@ -18,7 +18,7 @@ use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\InputType\SmartcardPurchase;
-use VoucherBundle\InputType\SmartcardRedemtionBatch;
+use VoucherBundle\InputType\SmartcardInvoice;
 use VoucherBundle\Utils\SmartcardService;
 
 class SmartcardServiceTest extends KernelTestCase
@@ -257,7 +257,7 @@ class SmartcardServiceTest extends KernelTestCase
         }
         // redeem test
         foreach ($preliminaryInvoices as $preliminaryInvoice) {
-            $batchRequest = new SmartcardRedemtionBatch();
+            $batchRequest = new SmartcardInvoice();
             $batchRequest->setPurchases($preliminaryInvoice->getPurchasesIds());
 
             $batch = $this->smartcardService->redeem($this->vendor, $batchRequest, $admin);
