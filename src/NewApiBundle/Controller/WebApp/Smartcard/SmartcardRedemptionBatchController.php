@@ -12,33 +12,33 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use VoucherBundle\Controller\SmartcardController;
 use VoucherBundle\Entity\SmartcardPurchase;
-use VoucherBundle\Entity\SmartcardRedemptionBatch;
+use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
 
 class SmartcardRedemptionBatchController extends AbstractWebAppController
 {
     /**
      * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/exports")
-     * @ParamConverter("redemptionBatch", class="VoucherBundle\Entity\SmartcardRedemptionBatch")
+     * @ParamConverter("redemptionBatch", class="Invoice")
      *
-     * @param SmartcardRedemptionBatch $redemptionBatch
+     * @param Invoice $redemptionBatch
      *
      * @return JsonResponse
      */
-    public function export(SmartcardRedemptionBatch $redemptionBatch): Response
+    public function export(Invoice $redemptionBatch): Response
     {
         return $this->forward(SmartcardController::class.'::export', ['batch' => $redemptionBatch]);
     }
 
     /**
      * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/legacy-exports")
-     * @ParamConverter("redemptionBatch", class="VoucherBundle\Entity\SmartcardRedemptionBatch")
+     * @ParamConverter("redemptionBatch", class="Invoice")
      *
-     * @param SmartcardRedemptionBatch $redemptionBatch
+     * @param Invoice $redemptionBatch
      *
      * @return JsonResponse
      */
-    public function legacyExport(SmartcardRedemptionBatch $redemptionBatch): Response
+    public function legacyExport(Invoice $redemptionBatch): Response
     {
         return $this->forward(SmartcardController::class.'::exportLegacy', ['batch' => $redemptionBatch]);
     }
@@ -53,7 +53,7 @@ class SmartcardRedemptionBatchController extends AbstractWebAppController
      */
     public function batches(Vendor $vendor, Pagination $pagination): JsonResponse
     {
-        $batches = $this->getDoctrine()->getRepository(SmartcardRedemptionBatch::class)
+        $batches = $this->getDoctrine()->getRepository(Invoice::class)
             ->findByVendor($vendor, $pagination);
 
         return $this->json($batches);

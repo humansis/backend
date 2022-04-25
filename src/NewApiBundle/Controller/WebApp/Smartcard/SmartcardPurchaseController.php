@@ -11,7 +11,7 @@ use ProjectBundle\Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use VoucherBundle\Entity\SmartcardPurchase;
-use VoucherBundle\Entity\SmartcardRedemptionBatch;
+use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
 
 class SmartcardPurchaseController extends AbstractWebAppController
@@ -43,14 +43,14 @@ class SmartcardPurchaseController extends AbstractWebAppController
 
     /**
      * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/smartcard-purchases")
-     * @ParamConverter("redemptionBatch", class="VoucherBundle\Entity\SmartcardRedemptionBatch")
+     * @ParamConverter("redemptionBatch", class="Invoice")
      *
-     * @param SmartcardRedemptionBatch $redemptionBatch
-     * @param Pagination               $pagination
+     * @param Invoice    $redemptionBatch
+     * @param Pagination $pagination
      *
      * @return JsonResponse
      */
-    public function purchasesByRedemptionBatch(SmartcardRedemptionBatch $redemptionBatch, Pagination $pagination): JsonResponse
+    public function purchasesByRedemptionBatch(Invoice $redemptionBatch, Pagination $pagination): JsonResponse
     {
         $purchases = $this->getDoctrine()->getRepository(SmartcardPurchase::class)
             ->findByBatch($redemptionBatch, $pagination);

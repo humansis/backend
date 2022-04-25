@@ -24,7 +24,7 @@ use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
-use VoucherBundle\Entity\SmartcardRedemptionBatch;
+use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Enum\SmartcardStates;
 use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
@@ -344,10 +344,10 @@ class SmartcardService
      * @param RedemptionBatchInput $inputBatch
      * @param User                 $redeemedBy
      *
-     * @return SmartcardRedemptionBatch
+     * @return Invoice
      * @throws \InvalidArgumentException
      */
-    public function redeem(Vendor $vendor, RedemptionBatchInput $inputBatch, User $redeemedBy): SmartcardRedemptionBatch
+    public function redeem(Vendor $vendor, RedemptionBatchInput $inputBatch, User $redeemedBy): Invoice
     {
         /** @var SmartcardPurchaseRepository $repository */
         $repository = $this->em->getRepository(SmartcardPurchase::class);
@@ -389,7 +389,7 @@ class SmartcardService
         /** @var Project|null $project */
         $project = $projectRepository->find($projectId);
 
-        $redemptionBath = new SmartcardRedemptionBatch(
+        $redemptionBath = new Invoice(
             $vendor,
             $project,
             new \DateTime(),

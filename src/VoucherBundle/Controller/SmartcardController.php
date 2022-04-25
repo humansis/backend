@@ -30,7 +30,7 @@ use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
-use VoucherBundle\Entity\SmartcardRedemptionBatch;
+use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Enum\SmartcardStates;
 use VoucherBundle\InputType\SmartcardPurchaseDeprecated as SmartcardPurchaseDeprecatedInput;
@@ -666,7 +666,7 @@ class SmartcardController extends Controller
         }
 
         /** @var SmartcardPurchaseRepository $repository */
-        $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardRedemptionBatch::class);
+        $repository = $this->getDoctrine()->getManager()->getRepository(Invoice::class);
         $summaryBatches = $repository->findBy([
             'vendor' => $vendor,
         ]);
@@ -684,11 +684,11 @@ class SmartcardController extends Controller
      *
      * @SWG\Response(response=200)
      *
-     * @param SmartcardRedemptionBatch $batch
+     * @param Invoice $batch
      *
      * @return Response
      */
-    public function getBatchesDetails(SmartcardRedemptionBatch $batch): Response
+    public function getBatchesDetails(Invoice $batch): Response
     {
         return $this->json($batch);
     }
@@ -707,11 +707,11 @@ class SmartcardController extends Controller
      *     description="All vendor purchases",
      * )
      *
-     * @param SmartcardRedemptionBatch $batch
+     * @param Invoice $batch
      *
      * @return Response
      */
-    public function getRedeemBatchesDetails(SmartcardRedemptionBatch $batch): Response
+    public function getRedeemBatchesDetails(Invoice $batch): Response
     {
         /** @var SmartcardPurchaseRepository $repository */
         $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardPurchase::class);
@@ -776,13 +776,13 @@ class SmartcardController extends Controller
      *     description="invalid redeemed batch"
      * )
      *
-     * @param SmartcardRedemptionBatch $batch
+     * @param Invoice $batch
      *
      * @return Response
      *
      * @throws
      */
-    public function exportLegacy(SmartcardRedemptionBatch $batch): Response
+    public function exportLegacy(Invoice $batch): Response
     {
         // todo find organisation by relation to smartcard
         $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
@@ -816,12 +816,12 @@ class SmartcardController extends Controller
      *     description="invalid redeemed batch"
      * )
      *
-     * @param SmartcardRedemptionBatch $batch
+     * @param Invoice $batch
      *
      * @return Response
      *
      */
-    public function export(SmartcardRedemptionBatch $batch): Response
+    public function export(Invoice $batch): Response
     {
         $country = $this->countries->getCountry($batch->getProject()->getIso3());
 

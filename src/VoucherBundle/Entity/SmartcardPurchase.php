@@ -10,6 +10,7 @@ use DistributionBundle\Entity\Assistance;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -20,16 +21,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class SmartcardPurchase
 {
-    /**
-     * @var int
-     *
-     * @ORM\Id
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @SymfonyGroups({"FullSmartcard"})
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var Smartcard
@@ -70,9 +62,9 @@ class SmartcardPurchase
     private $createdAt;
 
     /**
-     * @var SmartcardRedemptionBatch
+     * @var Invoice
      *
-     * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\SmartcardRedemptionBatch", inversedBy="purchases", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Invoice", inversedBy="purchases", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
      */
     private $redemptionBatch;
@@ -107,16 +99,6 @@ class SmartcardPurchase
         $entity->assistance = $assistance;
 
         return $entity;
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**
@@ -181,17 +163,17 @@ class SmartcardPurchase
     }
 
     /**
-     * @return SmartcardRedemptionBatch|null
+     * @return Invoice|null
      */
-    public function getRedemptionBatch(): ?SmartcardRedemptionBatch
+    public function getRedemptionBatch(): ?Invoice
     {
         return $this->redemptionBatch;
     }
 
     /**
-     * @param SmartcardRedemptionBatch $redemptionBatch
+     * @param Invoice $redemptionBatch
      */
-    public function setRedemptionBatch(SmartcardRedemptionBatch $redemptionBatch): void
+    public function setRedemptionBatch(Invoice $redemptionBatch): void
     {
         $this->redemptionBatch = $redemptionBatch;
     }

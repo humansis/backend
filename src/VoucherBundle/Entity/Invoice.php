@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace VoucherBundle\Entity;
 
@@ -10,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use ProjectBundle\Entity\Project;
 use UserBundle\Entity\User;
 
@@ -19,16 +18,9 @@ use UserBundle\Entity\User;
  * @ORM\Table(name="smartcard_redemption_batch")
  * @ORM\Entity(repositoryClass="\VoucherBundle\Repository\SmartcardRedemptionBatchRepository")
  */
-class SmartcardRedemptionBatch implements JsonSerializable
+class Invoice implements JsonSerializable
 {
-    /**
-     * @var int
-     *
-     * @ORM\Id
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var Vendor
@@ -121,7 +113,7 @@ class SmartcardRedemptionBatch implements JsonSerializable
      * @param string       $currency
      * @param string|null  $contractNo
      * @param string|null  $vendorNo
-     * @param iterable     $purchases
+     * @param array        $purchases
      */
     public function __construct(
         Vendor $vendor,
@@ -132,7 +124,7 @@ class SmartcardRedemptionBatch implements JsonSerializable
         string $currency,
         ?string $contractNo,
         ?string $vendorNo,
-        iterable $purchases
+        array $purchases
     )
     {
         $this->vendor = $vendor;
@@ -147,16 +139,6 @@ class SmartcardRedemptionBatch implements JsonSerializable
 
         $this->projectInvoiceAddressLocal = $project->getProjectInvoiceAddressLocal();
         $this->projectInvoiceAddressEnglish = $project->getProjectInvoiceAddressEnglish();
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

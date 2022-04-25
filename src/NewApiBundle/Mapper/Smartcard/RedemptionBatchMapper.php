@@ -3,11 +3,11 @@
 namespace NewApiBundle\Mapper\Smartcard;
 
 use NewApiBundle\Serializer\MapperInterface;
-use VoucherBundle\Entity\SmartcardRedemptionBatch;
+use VoucherBundle\Entity\Invoice;
 
 class RedemptionBatchMapper implements MapperInterface
 {
-    /** @var SmartcardRedemptionBatch */
+    /** @var Invoice */
     private $object;
 
     /**
@@ -15,7 +15,7 @@ class RedemptionBatchMapper implements MapperInterface
      */
     public function supports(object $object, $format = null, array $context = null): bool
     {
-        return $object instanceof SmartcardRedemptionBatch && isset($context[self::NEW_API]) && true === $context[self::NEW_API];
+        return $object instanceof Invoice && isset($context[self::NEW_API]) && true === $context[self::NEW_API];
     }
 
     /**
@@ -23,13 +23,13 @@ class RedemptionBatchMapper implements MapperInterface
      */
     public function populate(object $object)
     {
-        if ($object instanceof SmartcardRedemptionBatch) {
+        if ($object instanceof Invoice) {
             $this->object = $object;
 
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.SmartcardRedemptionBatch::class.', '.get_class($object).' given.');
+        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Invoice::class.', '.get_class($object).' given.');
     }
 
     public function getId(): int

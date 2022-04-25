@@ -17,7 +17,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Translation\TranslatorInterface;
 use UserBundle\Entity\User;
-use VoucherBundle\Entity\SmartcardRedemptionBatch;
+use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
 
@@ -52,7 +52,7 @@ class SmartcardInvoiceExport
         $this->purchaseRepository = $purchaseRepository;
     }
 
-    public function export(SmartcardRedemptionBatch $batch, Organization $organization, User $user, string $language)
+    public function export(Invoice $batch, Organization $organization, User $user, string $language)
     {
         $countryIso3 = self::extractCountryIso3($batch->getVendor());
 
@@ -108,7 +108,7 @@ class SmartcardInvoiceExport
             ->setVertical(Alignment::VERTICAL_CENTER);
     }
 
-    private static function buildHeader(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, SmartcardRedemptionBatch $batch, LocationMapper $locationMapper): int
+    private static function buildHeader(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $batch, LocationMapper $locationMapper): int
     {
         self::buildHeaderFirstLineBoxes($worksheet, $translator, $organization, $batch);
 
@@ -124,14 +124,14 @@ class SmartcardInvoiceExport
     /**
      * Line with Boxes with invoice No. and logos
      *
-     * @param Worksheet                $worksheet
-     * @param TranslatorInterface      $translator
-     * @param Organization             $organization
-     * @param SmartcardRedemptionBatch $batch
+     * @param Worksheet           $worksheet
+     * @param TranslatorInterface $translator
+     * @param Organization        $organization
+     * @param Invoice             $batch
      *
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
-    private static function buildHeaderFirstLineBoxes(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, SmartcardRedemptionBatch $batch): void
+    private static function buildHeaderFirstLineBoxes(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $batch): void
     {
         $worksheet->getRowDimension(2)->setRowHeight(24.02);
         $worksheet->getRowDimension(3)->setRowHeight(19.70);
@@ -173,7 +173,7 @@ class SmartcardInvoiceExport
             ->setHorizontal(Alignment::HORIZONTAL_CENTER);
     }
 
-    private static function buildHeaderSecondLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, SmartcardRedemptionBatch $batch, LocationMapper $locationMapper, int $row1): void
+    private static function buildHeaderSecondLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $batch, LocationMapper $locationMapper, int $row1): void
     {
         $row2 = $row1 + 1;
 
@@ -208,7 +208,7 @@ class SmartcardInvoiceExport
         self::setSmallBorder($worksheet, "I$row1:J$row2");
     }
 
-    private static function buildHeaderThirdLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, SmartcardRedemptionBatch $batch, int $row1): void
+    private static function buildHeaderThirdLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $batch, int $row1): void
     {
         $row2 = $row1 + 1;
         
@@ -234,7 +234,7 @@ class SmartcardInvoiceExport
             ->setBorderStyle(Border::BORDER_THIN);
     }
 
-    private static function buildHeaderFourthLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, SmartcardRedemptionBatch $batch, int $row1): void
+    private static function buildHeaderFourthLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $batch, int $row1): void
     {
         $row2 = $row1+1;
         $row3 = $row1+2;
@@ -398,7 +398,7 @@ class SmartcardInvoiceExport
     }
 
 
-    private static function buildAnnex(Worksheet $worksheet, TranslatorInterface $translator, SmartcardPurchaseRepository $purchaseRepository, SmartcardRedemptionBatch $batch, int $lineStart): int
+    private static function buildAnnex(Worksheet $worksheet, TranslatorInterface $translator, SmartcardPurchaseRepository $purchaseRepository, Invoice $batch, int $lineStart): int
     {
         // header
         $worksheet->mergeCells("C$lineStart:E$lineStart");

@@ -14,7 +14,7 @@ use VoucherBundle\DTO\PurchaseDetail;
 use VoucherBundle\DTO\PreliminaryInvoice;
 use VoucherBundle\DTO\PurchaseSummary;
 use VoucherBundle\Entity\SmartcardPurchase;
-use VoucherBundle\Entity\SmartcardRedemptionBatch;
+use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
 
 /**
@@ -137,7 +137,7 @@ class SmartcardPurchaseRepository extends EntityRepository
         }
     }
 
-    public function countPurchasesRecordsByBatch(SmartcardRedemptionBatch $batch): array
+    public function countPurchasesRecordsByBatch(Invoice $batch): array
     {
         $qb = $this->createQueryBuilder('p')
             ->select('prod.name as name, pr.currency as currency, SUM(pr.value) as value, SUM(pr.quantity) as quantity, prod.unit as unit, MAX(category.type) as categoryType')
@@ -152,7 +152,7 @@ class SmartcardPurchaseRepository extends EntityRepository
         return $qb->getQuery()->getArrayResult();
     }
 
-    public function sumPurchasesRecordsByCategoryType(SmartcardRedemptionBatch $batch, $productCategoryType): ?string
+    public function sumPurchasesRecordsByCategoryType(Invoice $batch, $productCategoryType): ?string
     {
         $qb = $this->createQueryBuilder('p')
             ->select('SUM(pr.value) as value')
@@ -178,11 +178,11 @@ class SmartcardPurchaseRepository extends EntityRepository
     }
 
     /**
-     * @param SmartcardRedemptionBatch $batch
+     * @param Invoice $batch
      *
      * @return PurchaseDetail[]
      */
-    public function getDetailsByBatch(SmartcardRedemptionBatch $batch): array
+    public function getDetailsByBatch(Invoice $batch): array
     {
         $qb = $this->createQueryBuilder('p')
             ->select(
@@ -221,12 +221,12 @@ class SmartcardPurchaseRepository extends EntityRepository
     }
 
     /**
-     * @param SmartcardRedemptionBatch $redemptionBatch
-     * @param Pagination|null          $pagination
+     * @param Invoice         $redemptionBatch
+     * @param Pagination|null $pagination
      *
      * @return Paginator|SmartcardPurchase[]
      */
-    public function findByBatch(SmartcardRedemptionBatch $redemptionBatch, ?Pagination $pagination = null)
+    public function findByBatch(Invoice $redemptionBatch, ?Pagination $pagination = null)
     {
         $qbr = $this->createQueryBuilder('sp')
             ->andWhere('sp.redemptionBatch = :redemptionBatch')

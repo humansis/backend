@@ -6,7 +6,6 @@ namespace DistributionBundle\Export;
 
 use CommonBundle\Entity\Organization;
 use CommonBundle\Mapper\LocationMapper;
-use CommonBundle\Utils\StringUtils;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -19,7 +18,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Translation\TranslatorInterface;
 use UserBundle\Entity\User;
-use VoucherBundle\Entity\SmartcardRedemptionBatch;
+use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
 
 class SmartcardInvoiceLegacyExport
@@ -42,7 +41,7 @@ class SmartcardInvoiceLegacyExport
         $this->locationMapper = $locationMapper;
     }
 
-    public function export(SmartcardRedemptionBatch $batch, Organization $organization, User $user)
+    public function export(Invoice $batch, Organization $organization, User $user)
     {
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
@@ -90,7 +89,7 @@ class SmartcardInvoiceLegacyExport
             ->setVertical(Alignment::VERTICAL_CENTER);
     }
 
-    private static function buildHeader(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, SmartcardRedemptionBatch $batch, LocationMapper $locationMapper): int
+    private static function buildHeader(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $batch, LocationMapper $locationMapper): int
     {
         self::buildHeaderFirstLineBoxes($worksheet, $translator, $organization, $batch);
 
@@ -108,14 +107,14 @@ class SmartcardInvoiceLegacyExport
     /**
      * Line with Boxes with invoice No. and logos
      *
-     * @param Worksheet                $worksheet
-     * @param TranslatorInterface      $translator
-     * @param Organization             $organization
-     * @param SmartcardRedemptionBatch $batch
+     * @param Worksheet           $worksheet
+     * @param TranslatorInterface $translator
+     * @param Organization        $organization
+     * @param Invoice             $batch
      *
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
-    private static function buildHeaderFirstLineBoxes(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, SmartcardRedemptionBatch $batch): void
+    private static function buildHeaderFirstLineBoxes(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $batch): void
     {
         $worksheet->getRowDimension('2')->setRowHeight(24.02);
         $worksheet->getRowDimension('3')->setRowHeight(19.70);
@@ -165,7 +164,7 @@ class SmartcardInvoiceLegacyExport
         }
     }
 
-    private static function buildHeaderSecondLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, SmartcardRedemptionBatch $batch, LocationMapper $locationMapper): void
+    private static function buildHeaderSecondLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $batch, LocationMapper $locationMapper): void
     {
         // structure
         $worksheet->mergeCells('C7:D7');
@@ -187,7 +186,7 @@ class SmartcardInvoiceLegacyExport
         self::setImportantFilledInfo($worksheet, 'I7:J7');
     }
 
-    private static function buildHeaderThirdLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, SmartcardRedemptionBatch $batch): void
+    private static function buildHeaderThirdLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $batch): void
     {
         // structure
         $worksheet->mergeCells('C8:G8');
@@ -204,7 +203,7 @@ class SmartcardInvoiceLegacyExport
         self::setSmallHeadline($worksheet, 'H8');
     }
 
-    private static function buildHeaderFourthLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, SmartcardRedemptionBatch $batch): void
+    private static function buildHeaderFourthLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $batch): void
     {
         // structure
         $worksheet->mergeCells('B9:B10');
@@ -236,7 +235,7 @@ class SmartcardInvoiceLegacyExport
         self::setImportantFilledInfo($worksheet, 'J10');
     }
 
-    private static function buildBodyHeader(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, SmartcardRedemptionBatch $batch): void
+    private static function buildBodyHeader(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $batch): void
     {
         // structure
         $worksheet->mergeCells('B13:G13');
@@ -257,7 +256,7 @@ class SmartcardInvoiceLegacyExport
         self::setSmallBorder($worksheet,'B13:J13');
     }
 
-    private static function buildBody(Worksheet $worksheet, TranslatorInterface $translator, SmartcardRedemptionBatch $batch, int $lineStart): int
+    private static function buildBody(Worksheet $worksheet, TranslatorInterface $translator, Invoice $batch, int $lineStart): int
     {
         // ----------------------- Food items
         // structure
@@ -323,7 +322,7 @@ class SmartcardInvoiceLegacyExport
     }
 
 
-    private static function buildAnnex(Worksheet $worksheet, TranslatorInterface $translator, SmartcardRedemptionBatch $batch, int $lineStart): int
+    private static function buildAnnex(Worksheet $worksheet, TranslatorInterface $translator, Invoice $batch, int $lineStart): int
     {
         // header
         $worksheet->setCellValue('B'.$lineStart, $translator->trans('annex', [], 'invoice'));

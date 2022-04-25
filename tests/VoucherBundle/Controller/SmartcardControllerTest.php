@@ -14,7 +14,7 @@ use VoucherBundle\DTO\PreliminaryInvoice;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
-use VoucherBundle\Entity\SmartcardRedemptionBatch;
+use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Enum\SmartcardStates;
 use VoucherBundle\InputType\SmartcardRedemtionBatch;
@@ -578,7 +578,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $vendor = $this->em->getRepository(Vendor::class)->findOneBy([], ['id' => 'asc']);
-        $batch = $this->em->getRepository(SmartcardRedemptionBatch::class)->findOneBy([
+        $batch = $this->em->getRepository(Invoice::class)->findOneBy([
             'vendor' => $vendor,
         ], [
             'redeemedAt' => 'asc',

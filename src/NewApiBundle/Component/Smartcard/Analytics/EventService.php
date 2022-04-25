@@ -12,7 +12,7 @@ use NewApiBundle\Repository\SynchronizationBatchRepository;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
-use VoucherBundle\Entity\SmartcardRedemptionBatch;
+use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
 use VoucherBundle\Repository\SmartcardRedemptionBatchRepository;
@@ -40,7 +40,7 @@ class EventService
         $this->smartcardRepository = $entityManager->getRepository(Smartcard::class);
         $this->depositSyncRepository = $entityManager->getRepository(SynchronizationBatch\Deposits::class);
         $this->purchaseSyncRepository = $entityManager->getRepository(SynchronizationBatch\Purchases::class);
-        $this->redemptionBatchRepository = $entityManager->getRepository(SmartcardRedemptionBatch::class);
+        $this->redemptionBatchRepository = $entityManager->getRepository(Invoice::class);
     }
 
     public function getBeneficiaryEvents(Beneficiary $beneficiary): array

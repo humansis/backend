@@ -5,13 +5,13 @@ namespace VoucherBundle\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Request\Pagination;
-use VoucherBundle\Entity\SmartcardRedemptionBatch;
+use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
 
 /**
  * Class SmartcardRedemptionBatchRepository.
  *
- * @method SmartcardRedemptionBatch find($id)
+ * @method Invoice find($id)
  */
 class SmartcardRedemptionBatchRepository extends EntityRepository
 {
@@ -19,7 +19,7 @@ class SmartcardRedemptionBatchRepository extends EntityRepository
      * @param Vendor     $vendor
      * @param Pagination $pagination
      *
-     * @return Paginator|SmartcardRedemptionBatch[]
+     * @return Paginator|Invoice[]
      */
     public function findByVendor(Vendor $vendor, ?Pagination $pagination = null)
     {

@@ -13,7 +13,7 @@ use NewApiBundle\Entity\SynchronizationBatch;
 use NewApiBundle\Enum\SourceType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use VoucherBundle\Entity\Smartcard;
-use VoucherBundle\Entity\SmartcardRedemptionBatch;
+use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
 use VoucherBundle\Repository\SmartcardRedemptionBatchRepository;
