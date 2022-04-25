@@ -84,9 +84,6 @@ class AppKernel extends Kernel
         }
         $loader->load($confDir.'/services'.self::CONFIG_EXTS, 'glob');
         $loader->load($confDir.'/services_'.$this->environment.self::CONFIG_EXTS, 'glob');
-
-        $containerBuilder->setParameter('container.autowiring.strict_mode', true);
-        $containerBuilder->setParameter('container.dumper.inline_class_loader', true);
     }
 
 
@@ -94,8 +91,8 @@ class AppKernel extends Kernel
 
     protected function configureRoutes(\Symfony\Component\Routing\RouteCollectionBuilder $routes)
     {
-        $routes->import($this->getRootDir().'/config/routing.yml');
-        $environmentRoutingConfig = $this->getRootDir().'/config/routing/'.$this->getEnvironment().'/routing.yml';
+        $routes->import($this->getRootDir().'/config/routing'.self::CONFIG_EXTS);
+        $environmentRoutingConfig = $this->getRootDir().'/config/routing/'.$this->getEnvironment().'/routing'.self::CONFIG_EXTS;
         if (is_file($environmentRoutingConfig)) {
             $routes->import($environmentRoutingConfig);
         }
