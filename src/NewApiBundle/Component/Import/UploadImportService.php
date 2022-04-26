@@ -1,11 +1,11 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import;
 
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use NewApiBundle\Component\Import\DBAL\InsertQueryCollection;
+use NewApiBundle\Component\Import\Integrity;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
 use Symfony\Component\Filesystem\Filesystem;
@@ -30,13 +30,21 @@ class UploadImportService
     /** @var ImportFileValidator */
     private $importFileValidator;
 
-    public function __construct(EntityManagerInterface $em, string $uploadDirectory, ImportFileValidator $importFileValidator)
+    /** @var Integrity\DuplicityService */
+    private $integrityDuplicityService;
+
+    public function __construct(EntityManagerInterface     $em,
+                                string                     $uploadDirectory,
+                                ImportFileValidator        $importFileValidator,
+                                Integrity\DuplicityService $integrityDuplicityService
+    )
     {
         $this->parser = new ImportParser();
         $this->em = $em;
         $this->sqlCollection = new InsertQueryCollection($em);
         $this->uploadDirectory = $uploadDirectory;
         $this->importFileValidator = $importFileValidator;
+        $this->integrityDuplicityService = $integrityDuplicityService;
     }
 
     /**
@@ -75,6 +83,8 @@ class UploadImportService
             $importFile->setIsLoaded(true);
 
             $this->em->flush();
+
+            $this->integrityDuplicityService->buildIdentityTable($importFile->getImport());
 
             $fs = new Filesystem();
             $fs->remove($fileToImport->getRealPath());

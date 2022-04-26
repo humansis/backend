@@ -1,4 +1,5 @@
 parameters:
         import.invalidFilesDirectory: '%kernel.project_dir%/var/imports/invalid'
         import.uploadedFilesDirectory: '%kernel.project_dir%/var/imports/uploaded'
+        cache.import_duplicity_hashmap: '%kernel.project_dir%/var/imports/identities-hashmap-import-<<importId>>.json'
         import.maxFileSizeToLoad: 1 #in MB

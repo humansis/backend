@@ -240,6 +240,12 @@ services:
 
     NewApiBundle\Component\Import\Integrity\ImportLineFactory:
 
+    NewApiBundle\Component\Import\Integrity\DuplicityService:
+        public: true
+        arguments:
+            - '@NewApiBundle\Component\Import\Integrity\ImportLineFactory'
+            - '%cache.import_duplicity_hashmap%'
+
     NewApiBundle\Component\Import\ImportService:
         public: true
         arguments:
@@ -256,6 +262,7 @@ services:
             - '@doctrine.orm.entity_manager'
             - '%import.uploadedFilesDirectory%'
             - '@NewApiBundle\Component\Import\ImportFileValidator'
+            - '@NewApiBundle\Component\Import\Integrity\DuplicityService'
         public: true
 
     NewApiBundle\Component\Import\IntegrityChecker:

@@ -5,6 +5,7 @@ namespace Tests\NewApiBundle\Component\Import;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use NewApiBundle\Component\Import\ImportFileValidator;
+use NewApiBundle\Component\Import\Integrity\DuplicityService;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\HouseholdAssets;
@@ -90,7 +91,8 @@ class ImportDuplicityTest extends KernelTestCase
         $this->uploadService = new UploadImportService(
             $this->entityManager,
             $kernel->getContainer()->getParameter('import.uploadedFilesDirectory'),
-            $kernel->getContainer()->get(ImportFileValidator::class)
+            $kernel->getContainer()->get(ImportFileValidator::class),
+            $kernel->getContainer()->get(DuplicityService::class)
         );
         $this->projectService = $kernel->getContainer()->get('project.project_service');
 
