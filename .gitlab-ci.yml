@@ -1,10 +1,5 @@
 image: artifactory.quanti.cz/docker/mysql-ssh
 
-include:
-  - project: 'humansis/gitlab-ci-templates'
-    ref: 'slack'
-    file: '.slack-template.yml'
-
 variables:
   CHANNEL: "#pin_deployment"
   USERNAME: "PIN Deploy"
@@ -17,33 +12,15 @@ stages:
   - static_analysis
   - test
   - backup_db
-  # - backup_code
-  - report_starting
   - deploy_dev
   - deploy_test
-  - deploy_test_new
   - deploy_stage
   - deploy_demo
   - deploy_prod
-  - report_finished
+  - badge
   - upload_db
 
-.prepare_ssh: &prepare_ssh
-  before_script:
-    - mkdir -p ~/.ssh
-    - echo "${SSH_PRIVATE_KEY}" | tr -d '\r' > ~/.ssh/id_rsa
-    - chmod 600 ~/.ssh/id_rsa
-    - ssh-keyscan -p 22 ${HOSTNAME} >> ~/.ssh/known_hosts
-    - >-
-      cat <<EOF > ~/.ssh/config
-
-      Host ${HOSTNAME}
-        PasswordAuthentication no
-        PreferredAuthentications publickey
-      EOF
-
 .prepare_ssh_aws: &prepare_ssh_aws
-  before_script:
     - mkdir -p ~/.ssh
     - echo "${SSH_PRIVATE_KEY}" | tr -d '\r' > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
@@ -51,9 +28,30 @@ stages:
     - aws configure set aws_secret_access_key ${deploy_aws_secret_access_key}
     - aws configure set default.region eu-central-1
 
-.remove_key: &remove_key
+.deploy:
+  image: artifactory.quanti.cz/docker/alpine-ssh-git:dind
+  before_script: *prepare_ssh_aws
+  script:
+    - ./ci/build-docker.sh
+    - ./ci/upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
+    - ./ci/report-slack.sh start ${ENVIRONMENT}
+    - ./ci/deploy-docker.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
+    - echo "Current import batch size is $IMPORT_BATCH_SIZE"
   after_script:
     - rm -rf ~/.ssh/id_rsa
+    - ./ci/report-slack.sh ${CI_JOB_STATUS} ${ENVIRONMENT}
+  tags:
+    - dind
+
+static_analysis:
+  image: php:7.4-fpm
+  stage: static_analysis
+  script:
+    - apt-get update
+    - apt install -y curl git unzip
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    - php /usr/local/bin/composer install -o --ignore-platform-reqs --no-scripts
+    - php -d memory_limit=-1 vendor/bin/phpstan analyse -l 1 src/
 
 test:
   stage: test
@@ -76,6 +74,7 @@ test:
     - php bin/console doctrine:database:create --env=test || true
     - php bin/console doctrine:migrations:migrate -n --env=test
     - php bin/console doctrine:fixtures:load -n --env=dev
+    - echo "Current import batch size is $IMPORT_BATCH_SIZE"
   script:
     - ./vendor/bin/phpunit
   except:
@@ -84,22 +83,6 @@ test:
     key: $CI_COMMIT_REF_SLUG
     paths:
       - vendor/
-
-backup-db:
-  stage: backup_db
-  variables:
-    RDS_HOSTNAME: ${RDS_HOSTNAME_PROD}
-  script:
-    - mysqldump --quick --skip-lock-tables --single-transaction --set-gtid-purged=OFF -h ${RDS_HOSTNAME} -u ${RDS_USERNAME_PROD} -p"${RDS_PASSWORD_PROD}" ${RDS_DB_NAME_PROD} | pv > db.sql
-    - export DB_NAME=backup_$(date '+%Y_%m_%d')_${CI_PIPELINE_ID}
-    - sed -i -e 's/DEFINER[ ]=[ ][^*]**/*/' db.sql
-    - mysql -h ${RDS_HOSTNAME} -u ${RDS_USERNAME_PROD} -p"${RDS_PASSWORD_PROD}" -e "CREATE DATABASE ${DB_NAME} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
-    - pv --bytes --eta --progress db.sql | mysql -h ${RDS_HOSTNAME} -u ${RDS_USERNAME_PROD} -p"${RDS_PASSWORD_PROD}" ${DB_NAME}
-  after_script:
-    - rm db.sql
-  only:
-    - tags
-  when: manual
 
 aws-db-snapshot:
   stage: backup_db
@@ -118,127 +101,129 @@ aws-db-snapshot:
   only:
     - tags
 
-# backup-code:
-#   stage: backup_code
-#   variables:
-#     HOSTNAME: api-old.humansis.org
-#   <<: *prepare_ssh
-#   script:
-#     - ssh ubuntu@${HOSTNAME} "cd /var/www/html/; tar czf backup_$(date '+%Y-%m-%d').tar.gz --exclude=bms_api/var/logs bms_api/"
-#   <<: *remove_key
-#   only:
-#     - tags
-
-deploy dev:
+deploy dev1:
   stage: deploy_dev
-  image: artifactory.quanti.cz/docker-local/alpine-ssh-git:dind
   environment:
-    name: dev
-    url: https://apidev.humansis.org
+    name: dev1
+    url: https://apidev1.humansis.org
   variables:
-    HOSTNAME: apidev.humansis.org
-    ENVIRONMENT: dev
+    ENVIRONMENT: dev1
     CLEAN_DATABASE: "true"
     LOAD_FIXTURES: dev
     CACHE_CLEAR_MODE: aggressive
-  <<: *prepare_ssh_aws
-  script:
-    - ./build-docker.sh
-    - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
-    - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
-  <<: *remove_key
-  only:
-    - branches
+  extends: .deploy
   when: manual
-  tags:
-    - dind
 
-deploy test:
-  stage: deploy_test
-  image: artifactory.quanti.cz/docker-local/alpine-ssh-git:dind
+deploy dev2:
+  stage: deploy_dev
   environment:
-    name: test-new
-    url: https://api-test.humansis.org
+    name: dev2
+    url: https://apidev2.humansis.org
   variables:
-    HOSTNAME: api-test.humansis.org
+    ENVIRONMENT: dev2
+    CLEAN_DATABASE: "true"
+    LOAD_FIXTURES: dev
+    CACHE_CLEAR_MODE: aggressive
+  extends: .deploy
+  when: manual
+
+deploy dev3:
+  stage: deploy_dev
+  environment:
+    name: dev3
+    url: https://apidev3.humansis.org
+  variables:
+    ENVIRONMENT: dev3
+    CLEAN_DATABASE: "true"
+    LOAD_FIXTURES: dev
+    CACHE_CLEAR_MODE: aggressive
+  extends: .deploy
+  when: manual
+
+deploy test - keep db:
+  stage: deploy_test
+  environment:
+    name: test
+    url: https://apitest.humansis.org
+  variables:
     ENVIRONMENT: test
     CLEAN_DATABASE: "false"
     LOAD_FIXTURES: "false"
     CACHE_CLEAR_MODE: aggressive
-  <<: *prepare_ssh_aws
-  script:
-    - ./build-docker.sh
-    - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
-    - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
-  <<: *remove_key
+  extends: .deploy
   only:
     - /^develop$/
   except:
     - tags
-  tags:
-    - dind
+  when: manual
 
-report starting:
-  stage: report_starting
-  extends: .slack_starting_deploy_report
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
-    - if: '$CI_COMMIT_REF_NAME =~ /^release\/.*$/'
-      when: on_success
-    - if: '$CI_COMMIT_TAG =~ /^v.*$/'
-      when: on_success
-    - when: never
+deploy test - clean fixtures:
+  stage: deploy_test
+  image: artifactory.quanti.cz/docker/alpine-ssh-git:dind
+  environment:
+    name: test
+    url: https://apitest.humansis.org
+  variables:
+    ENVIRONMENT: test
+    CLEAN_DATABASE: "true"
+    LOAD_FIXTURES: "test"
+    CACHE_CLEAR_MODE: aggressive
+  extends: .deploy
+  only:
+    - /^develop$/
+  except:
+    - tags
+  when: manual
+
+deploy test - anonymized db:
+  stage: deploy_test
+  image: artifactory.quanti.cz/docker/alpine-ssh-git:dind
+  environment:
+    name: test
+    url: https://apitest.humansis.org
+  variables:
+    ENVIRONMENT: test
+    CLEAN_DATABASE: "database"
+    LOAD_FIXTURES: "false"
+    CACHE_CLEAR_MODE: aggressive
+  extends: .deploy
+  only:
+    - /^develop$/
+  except:
+    - tags
+  when: manual
 
 deploy stage:
   stage: deploy_stage
-  image: artifactory.quanti.cz/docker-local/alpine-ssh-git:dind
   environment:
     name: stage
     url: https://apistage.humansis.org
   variables:
-    HOSTNAME: apistage.humansis.org
     ENVIRONMENT: stage
     CLEAN_DATABASE: "false"
     LOAD_FIXTURES: "false"
     CACHE_CLEAR_MODE: aggressive
-  <<: *prepare_ssh_aws
-  script:
-    - ./build-docker.sh
-    - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
-    - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
-  <<: *remove_key
+  extends: .deploy
   only:
     - /^release\/.*$/
   except:
     - tags
-  tags:
-    - dind
 
 deploy demo:
   stage: deploy_demo
-  image: artifactory.quanti.cz/docker-local/alpine-ssh-git:dind
   environment:
     name: demo
     url: https://apidemo.humansis.org
   variables:
-    HOSTNAME: apidemo.humansis.org
     ENVIRONMENT: demo
     CLEAN_DATABASE: "true"
     LOAD_FIXTURES: "test"
     CACHE_CLEAR_MODE: aggressive
-  <<: *prepare_ssh_aws
-  script:
-    - ./build-docker.sh
-    - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
-    - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
-  <<: *remove_key
+  extends: .deploy
   only:
     - /^release\/.*$/
     - /^v.*$/
   when: manual
-  tags:
-    - dind
 
 deploy prod:
   stage: deploy_prod
@@ -246,15 +231,11 @@ deploy prod:
     name: production
     url: https://api.humansis.org
   variables:
-    HOSTNAME: api-old.humansis.org
-    ENVIRONMENT: prod
+    ENVIRONMENT: production
     CLEAN_DATABASE: "false"
     LOAD_FIXTURES: "false"
     CACHE_CLEAR_MODE: aggressive
-  <<: *prepare_ssh
-  script:
-    - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
-  <<: *remove_key
+  extends: .deploy
   only:
     - /^v.*$/
   except:
@@ -262,56 +243,17 @@ deploy prod:
   when: manual
   allow_failure: false
 
-deploy PROD new:
-  stage: deploy_prod
-  image: artifactory.quanti.cz/docker-local/alpine-ssh-git:dind
-  environment:
-    name: prod
-    url: https://api.humansis.org
-  variables:
-    HOSTNAME: api.humansis.org
-    ENVIRONMENT: prod
-    CLEAN_DATABASE: "false"
-    LOAD_FIXTURES: "false"
-    CACHE_CLEAR_MODE: aggressive
-  <<: *prepare_ssh_aws
+make badge:
+  stage: badge
+  image: artifactory.quanti.cz/docker-local/alpine-jq-curl
   script:
-    - ./build-docker.sh
-    - ./upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
-    - ./deploy-new.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
-  <<: *remove_key
+    - version=$(echo $CI_COMMIT_TAG | tr -d 'v')
+    - version_badge_id=$(curl --header "PRIVATE-TOKEN:${BADGE_API_TOKEN}" https://${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/badges | jq -c 'map(select(.name | contains("version")))[0].id')
+    - curl --request PUT --header "PRIVATE-TOKEN:${BADGE_API_TOKEN}" --data "image_url=https://img.shields.io/badge/version-${version}-blue" https://${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/badges/${version_badge_id}
   only:
     - /^v.*$/
   except:
     - branches
-  when: manual
-  allow_failure: false
-  tags:
-    - dind
-
-report success:
-  stage: report_finished
-  extends: .slack_successful_deploy_report
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
-    - if: '$CI_COMMIT_REF_NAME =~ /^release\/.*$/'
-      when: on_success
-    - if: '$CI_COMMIT_TAG =~ /^v.*$/'
-      when: on_success
-    - when: never
-
-report failure:
-  stage: report_finished
-  extends: .slack_failed_deploy_report
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
-    - if: '$CI_COMMIT_REF_NAME =~ /^release\/.*$/'
-      when: on_failure
-    - if: '$CI_COMMIT_TAG =~ /^v.*$/'
-      when: on_failure
-    - when: never
 
 deploy prod db to stage:
   stage: upload_db
@@ -319,112 +261,19 @@ deploy prod db to stage:
   variables:
     HOSTNAME: apistage.humansis.org
     DATABASE_NAME: proddb
-  <<: *prepare_ssh_aws
+  before_script: *prepare_ssh_aws
   script:
-    - mysqldump --quick --skip-lock-tables --single-transaction --set-gtid-purged=OFF -h ${RDS_HOSTNAME_PROD} -u ${RDS_USERNAME_PROD} -p"${RDS_PASSWORD_PROD}" ${RDS_DB_NAME_PROD} | pv > db.sql
-    - mysql -h ${RDS_HOSTNAME_STAGE} -u ${RDS_USERNAME_STAGE} -p"${RDS_PASSWORD_STAGE}" -e "DROP DATABASE ${DATABASE_NAME}"
+    - mysqldump --quick --skip-lock-tables --single-transaction --set-gtid-purged=OFF -h ${DUMP_DB_HOSTNAME} -u ${DUMP_USER} -p"${DUMP_USER_PW}" ${DUMP_DB_NAME} > db.sql
+    - mysql -h ${UPLOAD_DB_HOSTNAME} -u ${DB_DEPLOY_USER} -p"${DB_DEPLOY_USER_PASSWORD}" -e "DROP DATABASE ${DATABASE_NAME}"
     - sed -i -e 's/DEFINER[ ]*=[ ]*[^*]*\*/\*/' db.sql
-    - mysql -h ${RDS_HOSTNAME_STAGE} -u ${RDS_USERNAME_STAGE} -p"${RDS_PASSWORD_STAGE}" -e "CREATE DATABASE ${DATABASE_NAME} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
-    - pv --bytes --eta --progress db.sql | mysql -h ${RDS_HOSTNAME_STAGE} -u ${RDS_USERNAME_STAGE} -p"${RDS_PASSWORD_STAGE}" ${DATABASE_NAME}
-    - ./change_stage_db.sh
+    - mysql -h ${UPLOAD_DB_HOSTNAME} -u ${DB_DEPLOY_USER} -p"${DB_DEPLOY_USER_PASSWORD}" -e "CREATE DATABASE ${DATABASE_NAME} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+    - mysql -h ${UPLOAD_DB_HOSTNAME} -u ${DB_DEPLOY_USER} -p"${DB_DEPLOY_USER_PASSWORD}" ${DATABASE_NAME}
+    - ./ci/change-stage-db.sh
   after_script:
     - rm db.sql
     - rm -rf ~/.ssh/id_rsa
   only:
     - /^release\/.*$/
-    - vs/fix-db-upload
   except:
     - tags
   when: manual
-
-###############################################
-### DEPLOY DCA
-#############################################
-
-deploy test DCA fixtures:
-  stage: deploy_test
-  environment:
-    name: dca-test
-    url: https://api.testdca.humansis.org
-  variables:
-    HOSTNAME: api.testdca.humansis.org
-    ENVIRONMENT: testdca
-    CLEAN_DATABASE: "true"
-    LOAD_FIXTURES: dev
-    CACHE_CLEAR_MODE: aggressive
-  <<: *prepare_ssh
-  script:
-    - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
-  <<: *remove_key
-  only:
-    - dca_master
-  when: manual
-
-deploy test DCA keep DB:
-  stage: deploy_test
-  environment:
-    name: dca-test
-    url: https://api.testdca.humansis.org
-  variables:
-    HOSTNAME: api.testdca.humansis.org
-    ENVIRONMENT: testdca
-    CLEAN_DATABASE: "false"
-    LOAD_FIXTURES: "false"
-    CACHE_CLEAR_MODE: aggressive
-  <<: *prepare_ssh
-  script:
-    - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
-  <<: *remove_key
-  only:
-    - dca_master
-  when: manual
-
-deploy test DCA prod DB:
-  stage: deploy_test
-  environment:
-    name: dca-test
-    url: https://api.testdca.humansis.org
-  variables:
-    HOSTNAME: api.testdca.humansis.org
-    ENVIRONMENT: testdca
-    CLEAN_DATABASE: "true"
-    LOAD_FIXTURES: dev
-    CACHE_CLEAR_MODE: aggressive
-  <<: *prepare_ssh
-  script:
-    - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
-  <<: *remove_key
-  only:
-    - dca_master
-  when: manual
-
-deploy prod DCA:
-  stage: deploy_prod
-  environment:
-    name: dca-prod
-    url: https://api.dca.humansis.org
-  variables:
-    HOSTNAME: api.dca.humansis.org
-    ENVIRONMENT: proddca
-    CLEAN_DATABASE: "false"
-    LOAD_FIXTURES: "false"
-    CACHE_CLEAR_MODE: aggressive
-  <<: *prepare_ssh
-  script:
-    - ./deploy.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
-  <<: *remove_key
-  only:
-    - /^dca-v.*$/
-  except:
-    - branches
-  when: manual
-
-static_analysis:
-  image: php:7.4-fpm
-  stage: static_analysis
-  script:
-    - apt-get update
-    - apt install -y curl git unzip
-    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-    - php /usr/local/bin/composer install -o --ignore-platform-reqs --no-scripts
-    - php -d memory_limit=-1 vendor/bin/phpstan analyse -l 1 src/

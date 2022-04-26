@@ -9,7 +9,7 @@ use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 /**
  * Information about duplicity between queue record and beneficiary.
  *
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="\NewApiBundle\Repository\ImportBeneficiaryDuplicityRepository")
  */
 class ImportBeneficiaryDuplicity
 {

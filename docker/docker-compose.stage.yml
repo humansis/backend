@@ -1,0 +1,39 @@
+version: '3.7'
+
+networks:
+    backend:
+        external: false
+    pma:
+        external: false
+
+services:
+    php:
+        image: artifactory.quanti.cz/docker/humansis-php:stage
+        volumes:
+            - /opt/humansis/var:/var/www/html/var
+            - /var/cache/humansis:/var/www/html/var/cache
+            - /opt/humansis/parameters.yml:/var/www/html/app/config/parameters.yml:ro
+            - /opt/humansis/jwt:/var/www/html/app/config/jwt:ro
+        networks:
+            - backend
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        ports:
+            - 8081:80
+        networks:
+            - pma
+        volumes:
+            - /opt/overrides/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
+        environment:
+            PMA_HOST: %env(RDS_HOSTNAME)%
+            PMA_ABSOLUTE_URI: https://apistage.humansis.org/pma_yzixy37h/
+
+    nginx:
+        image: artifactory.quanti.cz/docker/humansis-nginx:stage
+        ports:
+            - 8087:80
+        depends_on:
+            - php
+        networks:
+            - backend

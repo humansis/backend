@@ -3,6 +3,7 @@
 namespace VoucherBundle\Controller;
 
 
+use Symfony\Component\HttpKernel\Profiler\Profiler;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -11,9 +12,11 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use UserBundle\Utils\UserService;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Booklet;
 use UserBundle\Entity\User;
+use VoucherBundle\Utils\VendorService;
 
 /**
  * Class VendorController
@@ -28,6 +31,20 @@ use UserBundle\Entity\User;
  */
 class VendorController extends Controller
 {
+
+    private $userService;
+    private $vendorService;
+
+    /**
+     * @param UserService $userService
+     * @param VendorService $vendorService
+     */
+    public function __construct(UserService $userService,VendorService $vendorService)
+    {
+        $this->userService = $userService;
+        $this->vendorService = $vendorService;
+    }
+
     /**
      * Create a new Vendor. You must have called getSalt before use this one
      *
@@ -65,7 +82,7 @@ class VendorController extends Controller
         $vendorData = $request->request->all();
 
         try {
-            $return = $this->get('voucher.vendor_service')->createFromArray($vendorData['__country'], $vendorData);
+            $return = $this->vendorService->createFromArray($vendorData['__country'], $vendorData);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -106,7 +123,7 @@ class VendorController extends Controller
     public function getAllAction(Request $request)
     {
         try {
-            $vendors = $this->get('voucher.vendor_service')->findAll($request->get('__country'));
+            $vendors = $this->vendorService->findAll($request->get('__country'));
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -216,7 +233,7 @@ class VendorController extends Controller
         $vendorData = $request->request->all();
 
         try {
-            $newVendor = $this->get('voucher.vendor_service')->updateFromArray($vendorData['__country'], $vendor, $vendorData);
+            $newVendor = $this->vendorService->updateFromArray($vendorData['__country'], $vendor, $vendorData);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -251,7 +268,7 @@ class VendorController extends Controller
     public function archiveAction(Vendor $vendor)
     {
         try {
-            $archivedVendor = $this->get('voucher.vendor_service')->archiveVendor($vendor);
+            $archivedVendor = $this->vendorService->archiveVendor($vendor);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -280,7 +297,7 @@ class VendorController extends Controller
     public function deleteAction(Vendor $vendor)
     {
         try {
-            $isSuccess = $this->get('voucher.vendor_service')->deleteFromDatabase($vendor);
+            $isSuccess = $this->vendorService->deleteFromDatabase($vendor);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -330,17 +347,23 @@ class VendorController extends Controller
      *     description="Bad credentials (username: myUsername)"
      * )
      *
-     * @param Request $request
+     * @param Request       $request
+     * @param Profiler|null $profiler
+     *
      * @return Response
      */
-    public function vendorLoginAction(Request $request): Response
+    public function vendorLoginAction(Request $request, ?Profiler $profiler): Response
     {
+        if (null !== $profiler) {
+            $profiler->disable();
+        }
+
         $username = $request->request->get('username');
         $saltedPassword = $request->request->get('salted_password');
         
         try {
-            $user = $this->container->get('user.user_service')->login($username, $saltedPassword);
-            $vendor = $this->container->get('voucher.vendor_service')->login($user);
+            $user = $this->userService->login($username, $saltedPassword);
+            $vendor = $this->vendorService->getVendorByUser($user);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_FORBIDDEN);
         }
@@ -374,7 +397,7 @@ class VendorController extends Controller
     public function printInvoiceAction(Vendor $vendor)
     {
         try {
-            return $this->get('voucher.vendor_service')->printInvoice($vendor);
+            return $this->vendorService->printInvoice($vendor);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

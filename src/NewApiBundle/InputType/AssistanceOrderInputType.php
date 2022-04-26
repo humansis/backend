@@ -13,6 +13,7 @@ class AssistanceOrderInputType extends AbstractSortInputType
     const SORT_BY_PROJECT = 'project';
     const SORT_BY_MODALITY_TYPE = 'modalityType';
     const SORT_BY_DATE = 'dateDistribution';
+    const SORT_BY_DATE_EXPIRATION = 'dateExpiration';
     const SORT_BY_TARGET = 'target';
     const SORT_BY_NUMBER_OF_BENEFICIARIES = 'bnfCount';
     const SORT_BY_VALUE = 'value';
@@ -28,6 +29,7 @@ class AssistanceOrderInputType extends AbstractSortInputType
             self::SORT_BY_PROJECT,
             self::SORT_BY_MODALITY_TYPE,
             self::SORT_BY_DATE,
+            self::SORT_BY_DATE_EXPIRATION,
             self::SORT_BY_TARGET,
             self::SORT_BY_NUMBER_OF_BENEFICIARIES,
             self::SORT_BY_VALUE,

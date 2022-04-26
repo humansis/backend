@@ -1,10 +1,11 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\NationalId;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Component\Import\Identity\NationalIdHashSet;
 use NewApiBundle\Component\Import\Integrity\ImportLine;
 use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
 use NewApiBundle\Entity\Import;
@@ -64,12 +65,39 @@ class IdentityChecker
             throw new \BadMethodCallException('Unable to execute checker. Import is not ready to check.');
         }
 
-        foreach ($this->queueRepository->getItemsToIdentityCheck($import, $batchSize) as $i => $item) {
-            $this->checkOne($item);
+        $IDsToFind = new NationalIdHashSet();
+        $items = $this->queueRepository->getItemsToIdentityCheck($import, $batchSize);
+        foreach ($items as $i => $item) {
+            $this->extractItemIDs($item, $IDsToFind);
+        }
 
-            if ($i % 500 === 0) {
-                $this->entityManager->flush();
+        $bnfDuplicityCandidates = $this->entityManager->getRepository(Beneficiary::class)->findIdentitiesByNationalIds(
+            $import->getCountryIso3(),
+            $IDsToFind
+        );
+
+        /** @var Beneficiary $candidate */
+        foreach ($bnfDuplicityCandidates as $candidate) {
+            foreach ($candidate->getPerson()->getNationalIds() as $currentNationalId) {
+                $IDsToFind->forItems($currentNationalId, function (ImportQueue $item, int $index, NationalId $nationalId) use ($import, $candidate) {
+                    $item->addDuplicity($index, $candidate, [['ID Type'=>$nationalId->getIdType(), 'ID Number'=>$nationalId->getIdNumber()]]);
+                    $this->logImportInfo($import,
+                        "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$candidate->getId()}");
+                });
             }
+        }
+
+        foreach ($items as $item) {
+            if (count($item->getHouseholdDuplicities()) > 0) {
+                $this->logImportWarning($item->getImport(), "Found duplicity!");
+                $this->importQueueStateMachine->apply($item, ImportQueueTransitions::IDENTITY_CANDIDATE);
+            } else {
+                $this->logImportDebug($item->getImport(), "Duplicity check OK");
+                $this->importQueueStateMachine->apply($item, ImportQueueTransitions::UNIQUE_CANDIDATE);
+            }
+
+            $item->setIdentityCheckedAt(new \DateTime());
+            $this->entityManager->persist($item);
         }
 
         $this->entityManager->flush();
@@ -87,6 +115,16 @@ class IdentityChecker
         } else {
             $this->logImportDebug($item->getImport(), "Duplicity check OK");
             $this->importQueueStateMachine->apply($item, ImportQueueTransitions::UNIQUE_CANDIDATE);
+        }
+    }
+
+    private function extractItemIDs(ImportQueue $item, NationalIdHashSet $hashSet): void
+    {
+        $index = 0;
+        foreach ($this->importLineFactory->createAll($item) as $line) {
+            if (empty($line->idType) || empty($line->idNumber)) continue;
+            $hashSet->add($item, $index, (string) $line->idType, (string) $line->idNumber);
+            $index++;
         }
     }
 

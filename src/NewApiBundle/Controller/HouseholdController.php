@@ -116,9 +116,10 @@ class HouseholdController extends AbstractController
      */
     public function create(HouseholdCreateInputType $inputType): JsonResponse
     {
-        $object = $this->get('beneficiary.household_service')->create($inputType);
+        $household = $this->get('beneficiary.household_service')->create($inputType);
+        $this->getDoctrine()->getManager()->flush();
 
-        return $this->json($object);
+        return $this->json($household);
     }
 
     /**
@@ -132,6 +133,7 @@ class HouseholdController extends AbstractController
     public function update(Household $household, HouseholdUpdateInputType $inputType): JsonResponse
     {
         $object = $this->get('beneficiary.household_service')->update($household, $inputType);
+        $this->getDoctrine()->getManager()->flush();
 
         return $this->json($object);
     }

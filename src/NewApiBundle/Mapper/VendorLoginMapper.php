@@ -45,6 +45,11 @@ class VendorLoginMapper implements MapperInterface
         return $this->object->getUser()->getId();
     }
 
+    public function getVendorId(): int
+    {
+        return $this->object->getId();
+    }
+
     public function getUsername(): string
     {
         return $this->object->getUser()->getUsername();

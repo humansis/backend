@@ -48,6 +48,12 @@ class ResponseListener
         //Request
         $requestAll = $request->request->all();
 
+        //do not log any login requests
+        //TODO this is nasty... whole mechanism of logging to "log" table should be rewritten or abandoned
+        if (str_contains($url, 'login')) {
+            $requestAll = '';
+        }
+
         //Fake POST urls
         $isFakePost = preg_match('/.*\/households\/get\/.*/', $url) ||
             preg_match('/.*\/export/', $url) ||

@@ -3,13 +3,16 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import;
 
+use NewApiBundle\Component\Import\CellError\ErrorTypes;
+use NewApiBundle\Component\Import\Exception\InvalidFormulaException;
 use NewApiBundle\Component\Import\Exception\InvalidImportException;
 use NewApiBundle\Enum\EnumValueNoFoundException;
+use NewApiBundle\Enum\HouseholdHead;
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Symfony\Component\HttpFoundation\File\File;
-use NewApiBundle\Enum\HouseholdHead;
 
 class ImportParser
 {
@@ -84,6 +87,7 @@ class ImportParser
      * @param Worksheet $worksheet
      *
      * @return array
+     * @throws InvalidFormulaException
      */
     private function getHeaders(Worksheet $worksheet): array
     {
@@ -116,16 +120,36 @@ class ImportParser
         $stop = true;
 
         for ($c = 1; $c <= count($headers); $c++) {
+            $cellError = null;
             $cell = $worksheet->getCellByColumnAndRow($c, $r, false);
-            $value = self::value($cell);
+            try {
+                $value = self::value($cell);
+            } catch (InvalidFormulaException $e) {
+                $value = $e->getFormula();
+                $cellError = ErrorTypes::FORMULA_ERROR;
+            }
 
             $header = $headers[$c];
-            $row[$header] = $cell ? [
-                CellParameters::VALUE => $value,
-                CellParameters::DATA_TYPE => $cell->getDataType(),
-                CellParameters::NUMBER_FORMAT => $cell->getStyle()->getNumberFormat()->getFormatCode(),
-            ] : null;
+            if ($cell) {
+                $dataType = $cell->getDataType();
 
+                // convert formula type to string|number type
+                if ($dataType === DataType::TYPE_FORMULA && !$cellError) {
+                    $dataType = is_numeric($value) ? DataType::TYPE_NUMERIC : DataType::TYPE_STRING;
+                }
+                $valueData = [
+                    CellParameters::VALUE => $value,
+                    CellParameters::DATA_TYPE => $dataType,
+                    CellParameters::NUMBER_FORMAT => $cell->getStyle()->getNumberFormat()->getFormatCode(),
+                ];
+                if ($cellError) {
+                    $valueData[CellParameters::ERRORS] = $cellError;
+                }
+            } else {
+                $valueData = null;
+            }
+
+            $row[$header] = $valueData;
             $stop &= empty($value);
         }
 
@@ -140,11 +164,28 @@ class ImportParser
      * @param Cell|null $cell
      *
      * @return mixed
+     * @throws InvalidFormulaException
      */
     private static function value(?Cell $cell)
     {
         if ($cell) {
-            return is_string($cell->getValue()) ? trim($cell->getValue()) : $cell->getValue();
+            try {
+                $calculatedValue = $cell->getCalculatedValue();
+                if (is_string($calculatedValue)) {
+                    $value = trim($calculatedValue);
+
+                    // prevent bad formatted spreadsheet cell starting with apostrophe
+                    if (strpos($value, '\'') === 0) {
+                        $value = substr_replace($value, '', 0, 1);
+                    }
+                } else {
+                    $value = $calculatedValue;
+                }
+            } catch (\PhpOffice\PhpSpreadsheet\Calculation\Exception $exception) {
+                throw new InvalidFormulaException($cell->getValue(), "Bad formula at cell {$cell->getColumn()}{$cell->getRow()}");
+            }
+
+            return $value;
         }
 
         return null;

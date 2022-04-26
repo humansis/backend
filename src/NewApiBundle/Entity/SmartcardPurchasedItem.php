@@ -85,13 +85,6 @@ class SmartcardPurchasedItem
     private $vendor;
 
     /**
-     * @var \DateTimeInterface|null
-     *
-     * @ORM\Column(name="date_distribution", type="datetime", nullable=true)
-     */
-    private $dateDistribution;
-
-    /**
      * @var \DateTimeInterface
      *
      * @ORM\Column(name="date_purchase", type="datetime")
@@ -184,14 +177,6 @@ class SmartcardPurchasedItem
     public function getVendor(): Vendor
     {
         return $this->vendor;
-    }
-
-    /**
-     * @return \DateTimeInterface|null
-     */
-    public function getDateDistribution(): ?\DateTimeInterface
-    {
-        return $this->dateDistribution;
     }
 
     /**

@@ -9,8 +9,9 @@ COPY --chown=symfony:symfony web/ /var/www/html/web
 COPY --chown=symfony:symfony tests/ /var/www/html/tests
 COPY --chown=symfony:symfony composer.json /var/www/html/
 COPY --chown=symfony:symfony composer.lock /var/www/html/
-COPY --chown=symfony:symfony clean_database.sh /var/www/html/
+COPY --chown=symfony:symfony ci/clean-database.sh /var/www/html/
 COPY --chown=symfony:symfony docker/$ENV/php/php.ini /usr/local/etc/php/conf.d/99-overrides.ini
 
-RUN composer install && \
+# TODO: add --no-dev after composer.json is fixed
+RUN composer install --optimize-autoloader && \
   rm -rf var/cache/*

@@ -30,6 +30,7 @@ class AuthControllerTest extends BMSServiceTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $this->assertTrue(gettype($responseBody) == 'array');
         $this->assertArrayHasKey('id', $responseBody);
+        $this->assertArrayHasKey('vendorId', $responseBody);
         $this->assertArrayHasKey('username', $responseBody);
         $this->assertArrayHasKey('token', $responseBody);
         $this->assertArrayHasKey('countryISO3', $responseBody);

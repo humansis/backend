@@ -49,3 +49,6 @@ monolog:
 
 #swiftmailer:
 #    delivery_addresses: ['me@example.com']
+
+services:
+    Symfony\Component\HttpKernel\Profiler\Profiler: '@profiler'

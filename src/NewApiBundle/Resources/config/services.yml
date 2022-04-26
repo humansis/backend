@@ -66,6 +66,7 @@ services:
     NewApiBundle\Controller\:
         resource: '../../Controller'
         public: true
+        autowire: true
         tags: [ 'app.controller' ]
 
     NewApiBundle\Command\:
@@ -79,6 +80,10 @@ services:
     NewApiBundle\Mapper\:
         resource: '../../Mapper'
         tags: [ 'app.mapper' ]
+
+    Happyr\Validator\Constraint\EntityExistValidator:
+        arguments: [ '@doctrine.orm.entity_manager' ]
+        tags: [ 'validator.constraint_validator' ]
 
     NewApiBundle\Mapper\AssistanceMapper:
         arguments:
@@ -117,6 +122,12 @@ services:
         arguments:
             - '@lexik_jwt_authentication.jwt_manager'
             - '@user.user_service'
+
+    NewApiBundle\Controller\OfflineApp\AssistanceController:
+        arguments:
+            - '@assistance.repository'
+            - '@BeneficiaryBundle\Mapper\AssistanceMapper'
+            - '@serializer'
 
     NewApiBundle\Controller\AssistanceController:
         arguments:
