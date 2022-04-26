@@ -199,8 +199,6 @@ class BookletControllerTest extends BMSServiceTestCase
         } else {
             $this->markTestIncomplete("You currently don't have any deactivated booklets in your database.");
         }
-
-        $this->em->remove($booklet);
         return $booklets;
     }
 
