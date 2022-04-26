@@ -207,7 +207,6 @@ class AssistanceService
      */
     public function validateDistribution(Assistance $assistance)
     {
-        $this->cache->delete(CacheTarget::assistanceId($assistance->getId()));
         try {
             $assistance->setValidated(true)
                 ->setUpdatedOn(new DateTime());
@@ -223,7 +222,6 @@ class AssistanceService
      */
     public function unvalidateDistribution(Assistance $assistance): void
     {
-        $this->cache->delete(CacheTarget::assistanceId($assistance->getId()));
         if ($this->hasDistributionStarted($assistance)) {
             throw new InvalidArgumentException('Unable to unvalidate the assistance. Assistance is already started.');
         }
@@ -255,7 +253,6 @@ class AssistanceService
      */
     public function setCommoditiesToNewBeneficiaries(Assistance $assistance, iterable $beneficiaries): Assistance
     {
-        $this->cache->delete(CacheTarget::assistanceId($assistance->getId()));
         $commodities = $assistance->getCommodities();
         foreach ($commodities as $commodity) {
             if ($commodity->getModalityType()->isGeneralRelief()) {
@@ -511,7 +508,7 @@ class AssistanceService
      *
      * @throws Exception
      */
-    private function saveReceivers(Assistance $assistance, array $listReceivers)
+    public function saveReceivers(Assistance $assistance, array $listReceivers)
     {
         foreach ($listReceivers['finalArray'] as $receiver => $scores) {
             /** @var Beneficiary $beneficiary */
@@ -568,7 +565,6 @@ class AssistanceService
     {
         if (!empty($assistance)) {
             $assistance->setArchived(1);
-            $this->cache->delete(CacheTarget::assistanceId($assistance->getId()));
         }
 
         $this->em->persist($assistance);
@@ -583,7 +579,6 @@ class AssistanceService
      */
     public function complete(Assistance $assistance)
     {
-        $this->cache->delete(CacheTarget::assistanceId($assistance->getId()));
         if (!empty($assistance)) {
                 $assistance->setCompleted()
                                 ->setUpdatedOn(new DateTime);
@@ -930,7 +925,6 @@ class AssistanceService
         // Checks if the distribution is completed
         $generalReliefItem = $this->em->getRepository(GeneralReliefItem::class)->find(array_pop($griIds));
         $assistance = $generalReliefItem->getAssistanceBeneficiary()->getAssistance();
-        $this->cache->delete(CacheTarget::assistanceId($assistance->getId()));
         $numberIncomplete = $this->em->getRepository(GeneralReliefItem::class)->countNonDistributed($assistance);
 
         return array($successArray, $errorArray, $numberIncomplete);
@@ -996,7 +990,6 @@ class AssistanceService
      */
     public function delete(Assistance $assistance)
     {
-        $this->cache->delete(CacheTarget::assistanceId($assistance->getId()));
         if ($assistance->getValidated()) { //TODO also completed? to discuss
             $this->archived($assistance);
 

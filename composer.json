@@ -40,12 +40,10 @@
 		"friendsofsymfony/user-bundle": "^2.1",
 		"google/apiclient": "^2.2",
 		"graylog2/gelf-php": "^1.7",
-		"happyr/entity-exists-validation-constraint": "^1.0",
 		"incenteev/composer-parameter-handler": "^2.0",
 		"jrk/levenshtein-bundle": "dev-master",
 		"knplabs/knp-gaufrette-bundle": "^0.5.3",
 		"league/flysystem": "^2.3",
-		"league/flysystem-aws-s3-v3": "^2.0",
 		"lexik/jwt-authentication-bundle": "^2.11",
 		"mpdf/mpdf": "^7.1",
 		"nelmio/api-doc-bundle": "^3.0",
@@ -68,7 +66,8 @@
 		"symfony/templating": "^4.4",
 		"symfony/workflow": "^4.4",
 		"tecnickcom/tcpdf": "^6.2",
-		"twig/twig": "^1.0||^2.0"
+		"twig/twig": "^1.0||^2.0",
+		"league/flysystem-aws-s3-v3": "^2.0"
 	},
 	"require-dev": {
 		"doctrine/coding-standard": "^5.0",

@@ -24,39 +24,7 @@ services:
         alias: monolog.logger
         public: true
 
-    CommonBundle\Repository\LocationRepository:
-        class: Doctrine\ORM\EntityRepository
-        factory: ['@doctrine.orm.default_entity_manager', getRepository]
-        arguments:
-            - CommonBundle\Entity\Location
-
-    CommonBundle\Repository\Adm1Repository:
-        class: Doctrine\ORM\EntityRepository
-        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
-        arguments:
-            - CommonBundle\Entity\Adm1
-
-    CommonBundle\Repository\Adm2Repository:
-        class: Doctrine\ORM\EntityRepository
-        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
-        arguments:
-            - CommonBundle\Entity\Adm2
-
-    CommonBundle\Repository\Adm3Repository:
-        class: Doctrine\ORM\EntityRepository
-        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
-        arguments:
-            - CommonBundle\Entity\Adm3
-
-    CommonBundle\Repository\Adm4Repository:
-        class: Doctrine\ORM\EntityRepository
-        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
-        arguments:
-            - CommonBundle\Entity\Adm4
-
-
-
-    #######################################################################################
+#######################################################################################
 ##                                       CRUD                                        ##
 #######################################################################################
 
@@ -174,7 +142,6 @@ services:
             - "@fos_user.user_manager"
             - "@security.encoder_factory"
             - "@kernel"
-            - "@user.user_service"
         tags:
             - { name: doctrine.fixture.orm }
 

@@ -16,7 +16,6 @@ use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\InputType\Helper\EnumsBuilder;
 use NewApiBundle\Request\InputTypeInterface;
-use NewApiBundle\Utils\DateTime\Iso8601Converter;
 use NewApiBundle\Validator\Constraints\Country;
 use NewApiBundle\Validator\Constraints\Iso8601;
 use ProjectBundle\Enum\Livelihood;
@@ -478,12 +477,17 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
 
 
     /**
-     * @return \DateTimeInterface|null
+     * @return \DateTime|null
+     * @throws \Exception
      */
-    public function getSupportDateReceived(): ?\DateTimeInterface
+    public function getSupportDateReceived()
     {
         if (!$this->supportDateReceived) return null;
-        return Iso8601Converter::toDateTime($this->supportDateReceived) ?: null;
+        $iso = \DateTime::createFromFormat(\DateTimeInterface::ISO8601, $this->supportDateReceived);
+        if ($iso) return $iso;
+        $date = \DateTime::createFromFormat('Y-m-d', $this->supportDateReceived);
+        if ($date) return $date;
+        return null;
     }
 
     /**

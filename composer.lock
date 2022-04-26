@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1d23dd689227d7c3ad6e72089aa75b42",
+    "content-hash": "14d6140aa12269d13e86629303cb72dc",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -2706,57 +2706,6 @@
                 "url"
             ],
             "time": "2021-03-21T16:25:00+00:00"
-        },
-        {
-            "name": "happyr/entity-exists-validation-constraint",
-            "version": "1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Happyr/entity-exists-validation-constraint.git",
-                "reference": "6d962856db6be4b979a61d8d24484736cdfe4dff"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Happyr/entity-exists-validation-constraint/zipball/6d962856db6be4b979a61d8d24484736cdfe4dff",
-                "reference": "6d962856db6be4b979a61d8d24484736cdfe4dff",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/orm": "^2.4",
-                "php": "^7.2 || ^8.0",
-                "symfony/validator": "^3.4 || ^4.4 || ^5.0 || ^6.0"
-            },
-            "require-dev": {
-                "symfony/phpunit-bridge": "^5.3"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Happyr\\Validator\\Constraint\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Radoje Albijanic",
-                    "email": "radoje.albijanic@gmail.com"
-                },
-                {
-                    "name": "Tobias Nyholm",
-                    "email": "tobias.nyholm@gmail.com"
-                }
-            ],
-            "description": "Verify that your entity exists",
-            "funding": [
-                {
-                    "url": "https://github.com/Nyholm",
-                    "type": "github"
-                }
-            ],
-            "time": "2021-07-15T18:44:26+00:00"
         },
         {
             "name": "incenteev/composer-parameter-handler",
@@ -8853,7 +8802,6 @@
                     "type": "github"
                 }
             ],
-            "abandoned": true,
             "time": "2020-11-30T07:30:19+00:00"
         },
         {

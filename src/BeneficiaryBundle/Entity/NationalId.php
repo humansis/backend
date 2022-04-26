@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 namespace BeneficiaryBundle\Entity;
 
@@ -8,6 +8,7 @@ use NewApiBundle\Entity\Helper\EnumTrait;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\NationalIdType;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * NationalId

@@ -8,7 +8,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
-use DistributionBundle\Entity\AssistanceBeneficiary;
+use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Entity\ReliefPackage;
@@ -19,37 +19,16 @@ use VoucherBundle\Enum\SmartcardStates;
 
 class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
 {
-    /**
-     * @param AssistanceBeneficiary   $assistanceBeneficiary
-     * @param string|null             $reliefPackageStatus
-     * @param \DateTimeInterface|null $beforeDate
-     *
-     * @return ReliefPackage|null
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     */
-    public function findForSmartcardByAssistanceBeneficiary(
-        AssistanceBeneficiary $assistanceBeneficiary,
-        ?string               $reliefPackageStatus = null,
-        ?\DateTimeInterface   $beforeDate = null
-    ): ?ReliefPackage {
+    public function findForSmartcardByAssistanceBeneficiary(Assistance $assistance, Beneficiary $beneficiary): ?ReliefPackage
+    {
         $qb = $this->createQueryBuilder('rp')
+            ->join('rp.assistanceBeneficiary', 'ab', Join::WITH, 'ab.removed = 0')
+            ->andWhere('ab.assistance = :assistance')
+            ->andWhere('ab.beneficiary = :beneficiary')
             ->andWhere('rp.modalityType = :smartcardModality')
-            ->andWhere('rp.assistanceBeneficiary = :ab')
-            ->setParameter('smartcardModality', ModalityType::SMART_CARD)
-            ->setParameter('ab', $assistanceBeneficiary);
-        if ($reliefPackageStatus) {
-            $qb->andWhere('rp.state = :state')
-                ->setParameter('state', $reliefPackageStatus);
-        }
-
-        if ($beforeDate) {
-            $qb->andWhere('rp.createdAt < :before')
-                ->setParameter('before', $beforeDate)
-                ->orderBy('rp.createdAt', 'DESC');
-        } else {
-            $qb->orderBy('rp.id', 'DESC');
-        }
-        $qb->setMaxResults(1);
+            ->setParameter('assistance', $assistance)
+            ->setParameter('beneficiary', $beneficiary)
+            ->setParameter('smartcardModality', ModalityType::SMART_CARD);
 
         return $qb->getQuery()->getOneOrNullResult();
     }

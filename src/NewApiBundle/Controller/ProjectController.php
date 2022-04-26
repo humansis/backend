@@ -14,7 +14,6 @@ use NewApiBundle\InputType\ProjectOrderInputType;
 use NewApiBundle\InputType\ProjectUpdateInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
-use ProjectBundle\Repository\ProjectRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,16 +23,6 @@ use UserBundle\Entity\User;
 
 class ProjectController extends AbstractController
 {
-    /**
-     * @var ProjectRepository
-     */
-    private $projectRepository;
-
-    public function __construct(ProjectRepository $projectRepository)
-    {
-        $this->projectRepository = $projectRepository;
-    }
-
     /**
      * @Rest\Get("/web-app/v1/projects/{id}/summaries")
      *
@@ -80,7 +69,7 @@ class ProjectController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/projects/{id}")
-     * @Cache(lastModified="project.getLastModifiedAtIncludingBeneficiaries()", public=true)
+     * @Cache(lastModified="project.getLastModifiedAt()", public=true)
      *
      * @param Project $project
      *
@@ -112,7 +101,7 @@ class ProjectController extends AbstractController
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $projects = $this->projectRepository->findByParams($this->getUser(), $countryIso3, $filter, $orderBy, $pagination);
+        $projects = $this->getDoctrine()->getRepository(Project::class)->findByParams($this->getUser(), $countryIso3, $filter, $orderBy, $pagination);
 
         return $this->json($projects);
     }
@@ -186,13 +175,13 @@ class ProjectController extends AbstractController
                 return $item->getId();
             }, $user->getCountries()->toArray());
 
-            $data = $this->projectRepository->findByCountries($countries);
+            $data = $this->getDoctrine()->getRepository(Project::class)->findByCountries($countries);
 
             return $this->json(new Paginator($data));
         }
 
         // user without related projects should have access to all projects
-        $data = $this->projectRepository->findBy(['archived' => false]);
+        $data = $this->getDoctrine()->getRepository(Project::class)->findBy(['archived' => false]);
 
         return $this->json(new Paginator($data));
     }

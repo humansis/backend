@@ -49,11 +49,3 @@ services:
         class: ProjectBundle\Mapper\SectorMapper
         arguments: []
         public: true
-
-    ProjectBundle\Repository\ProjectRepository:
-        factory: ['@doctrine.orm.default_entity_manager', getRepository]
-        calls:
-            - injectSecurity: [ "@security.authorization_checker"]
-        arguments:
-            - ProjectBundle\Entity\Project
-        public: true

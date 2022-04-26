@@ -10,6 +10,7 @@ use \DateTime;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\DBAL\PersonGenderEnum;
+use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\AssistanceByProjectOfflineAppFilterInputType;
 use NewApiBundle\InputType\AssistanceFilterInputType;
 use NewApiBundle\InputType\AssistanceOrderInputType;
@@ -252,9 +253,6 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                     case AssistanceOrderInputType::SORT_BY_DATE:
                         $qb->orderBy('dd.dateDistribution', $direction);
                         break;
-                    case AssistanceOrderInputType::SORT_BY_DATE_EXPIRATION:
-                        $qb->orderBy('dd.dateExpiration', $direction);
-                        break;
                     case AssistanceOrderInputType::SORT_BY_NAME:
                         $qb->orderBy('dd.name', $direction);
                         break;
@@ -295,10 +293,8 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('dd.validated = 1')
             ->andWhere('dd.project = :project')
             ->andWhere('p.iso3 = :iso3')
-            ->andWhere('dd.targetType IN (:targetTypes)')
             ->setParameter('project', $project)
-            ->setParameter('iso3', $iso3)
-            ->setParameter('targetTypes', [AssistanceTargetType::HOUSEHOLD, AssistanceTargetType::INDIVIDUAL]);
+            ->setParameter('iso3', $iso3);
 
         if ($filter->hasType()) {
             $qbr->andWhere('dd.assistanceType = :type')

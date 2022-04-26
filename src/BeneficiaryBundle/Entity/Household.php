@@ -225,7 +225,7 @@ class Household extends AbstractBeneficiary
     }
 
     /**
-     * @return string[]
+     * @return int[]
      */
     public function getAssets(): array
     {

@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType\FilterFragment;
 use Symfony\Component\Validator\Constraints as Assert;
-use Happyr\Validator\Constraint\EntityExist;
 
 trait AssistanceFilterTrait
 {
@@ -11,8 +10,7 @@ trait AssistanceFilterTrait
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *         @Assert\Type("int", groups={"Strict"}),
-     *         @EntityExist(entity="\DistributionBundle\Entity\Assistance", groups={"Strict"})
+     *         @Assert\Type("int", groups={"Strict"})
      *     },
      *     groups={"Strict"}
      * )

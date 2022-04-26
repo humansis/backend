@@ -167,7 +167,7 @@ class HouseholdDecoratorBuilder
 
         for ($i=0; $i<$count; $i++) {
             $beneficiary = new BeneficiaryInputType();
-            $beneficiary->setDateOfBirth($today->modify("-$age year")->format(\DateTimeInterface::ISO8601));
+            $beneficiary->setDateOfBirth($today->modify("-$age year")->format('d-m-Y'));
             $beneficiary->setGender($gender);
             $beneficiary->setIsHead(false);
             yield $beneficiary;

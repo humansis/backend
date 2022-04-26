@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType\FilterFragment;
 use Symfony\Component\Validator\Constraints as Assert;
-use Happyr\Validator\Constraint\EntityExist;
 
 trait VendorFilterTrait
 {
@@ -11,8 +10,7 @@ trait VendorFilterTrait
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *         @Assert\Type("int", groups={"Strict"}),
-     *         @EntityExist(entity="\VoucherBundle\Entity\Vendor", groups={"Strict"})
+     *         @Assert\Type("int", groups={"Strict"})
      *     },
      *     groups={"Strict"}
      * )
@@ -30,7 +28,7 @@ trait VendorFilterTrait
     /**
      * @return int[]
      */
-    public function getVendors(): ?array
+    public function getVendors()
     {
         return $this->vendors;
     }

@@ -128,7 +128,6 @@ class HouseholdServiceTest extends KernelTestCase
 
         $household = $this->householdService->create($createData);
         $this->entityManager->flush();
-
         $this->assertNotNull($household);
         $this->assertNotNull($household->getId());
         $this->assertEquals('12.123456', $household->getLongitude());
@@ -285,7 +284,6 @@ class HouseholdServiceTest extends KernelTestCase
 
         $this->validator->validate($updateData);
         $household = $this->householdService->update($household, $updateData);
-        $this->entityManager->flush();
 
         $this->assertNotNull($household);
         $this->assertNotNull($household->getId());
@@ -376,7 +374,6 @@ class HouseholdServiceTest extends KernelTestCase
         $householdCreateInputType->addBeneficiary($beneficiaryInputType);
 
         $household = $this->householdService->create($householdCreateInputType);
-        $this->entityManager->flush();
 
         $this->assertEquals(ResidencyStatus::RETURNEE, $household->getBeneficiaries()->first()->getResidencyStatus());
 
@@ -392,7 +389,7 @@ class HouseholdServiceTest extends KernelTestCase
         $householdUpdateInputType->setResidenceAddress($addressData);
 
         $this->householdService->update($household, $householdUpdateInputType);
-        $this->entityManager->flush();
+
         $this->entityManager->refresh($household);
 
         $this->assertEquals(1, $household->getBeneficiaries()->count());

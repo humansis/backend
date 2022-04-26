@@ -58,8 +58,7 @@ class ProjectController extends Controller
     /**
      * Get projects.
      *
-     * @deprecated This old endpoint will be dropped
-     *
+     * @Rest\Get("/offline-app/v1/projects")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_READ')")
      *
      * @SWG\Tag(name="Projects")

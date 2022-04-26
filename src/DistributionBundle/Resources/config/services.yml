@@ -108,13 +108,6 @@ services:
         arguments:
             - DistributionBundle\Entity\AssistanceBeneficiary
 
-    assistance.repository:
-        class: DistributionBundle\Repository\AssistanceRepository
-        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
-        arguments:
-            - DistributionBundle\Entity\Assistance
-        public: true
-
 #######################################################################################
 ##                                       CSV                                         ##
 #######################################################################################

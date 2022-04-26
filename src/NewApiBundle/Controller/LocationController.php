@@ -10,11 +10,6 @@ use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
 use CommonBundle\Entity\Location;
 use CommonBundle\Pagination\Paginator;
-use CommonBundle\Repository\Adm1Repository;
-use CommonBundle\Repository\Adm2Repository;
-use CommonBundle\Repository\Adm3Repository;
-use CommonBundle\Repository\Adm4Repository;
-use CommonBundle\Repository\LocationRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Enum\RoleType;
@@ -36,46 +31,9 @@ class LocationController extends AbstractController
     /** @var Countries */
     private $countries;
 
-    /**
-     * @var LocationRepository
-     */
-    private $locationRepository;
-
-    /**
-     * @var Adm2Repository
-     */
-    private $adm2Repository;
-
-    /**
-     * @var Adm1Repository
-     */
-    private $adm1Repository;
-
-    /**
-     * @var Adm3Repository
-     */
-    private $adm3Repository;
-
-    /**
-     * @var Adm4Repository
-     */
-    private $adm4Repository;
-
-    public function __construct(
-        Countries $countries,
-        LocationRepository $locationRepository,
-        Adm1Repository $adm1Repository,
-        Adm2Repository $adm2Repository,
-        Adm3Repository $adm3Repository,
-        Adm4Repository $adm4Repository
-    )
+    public function __construct(Countries $countries)
     {
         $this->countries = $countries;
-        $this->locationRepository = $locationRepository;
-        $this->adm2Repository = $adm2Repository;
-        $this->adm1Repository = $adm1Repository;
-        $this->adm3Repository = $adm3Repository;
-        $this->adm4Repository = $adm4Repository;
     }
 
     /**
@@ -206,11 +164,9 @@ class LocationController extends AbstractController
     public function adm1List(Request $request, AdmFilterInputType $inputType): JsonResponse
     {
         if ($inputType->hasIds()) {
-            $data = $this->adm1Repository->findByFilter($inputType);
-
-            return $this->json($data);
+            $data = $this->getDoctrine()->getRepository(Adm1::class)->findByFilter($inputType);
         } elseif ($request->headers->has('country')) {
-            $data = $this->adm1Repository->findByCountry($request->headers->get('country'));
+            $data = $this->getDoctrine()->getRepository(Adm1::class)->findByCountry($request->headers->get('country'));
         } else {
             throw new BadRequestHttpException('Missing header attribute country');
         }
@@ -227,7 +183,7 @@ class LocationController extends AbstractController
      */
     public function adm2ListByAdm1(Adm1 $adm1): JsonResponse
     {
-        $data = $this->adm2Repository->findByAdm1($adm1);
+        $data = $this->getDoctrine()->getRepository(Adm2::class)->findByAdm1($adm1);
 
         return $this->json(new Paginator($data));
     }
@@ -241,9 +197,9 @@ class LocationController extends AbstractController
      */
     public function adm2List(AdmFilterInputType $inputType): JsonResponse
     {
-        $data = $this->adm2Repository->findByFilter($inputType);
+        $data = $this->getDoctrine()->getRepository(Adm2::class)->findByFilter($inputType);
 
-        return $this->json($data);
+        return $this->json(new Paginator($data));
     }
 
     /**
@@ -255,7 +211,7 @@ class LocationController extends AbstractController
      */
     public function adm3ListByAdm2(Adm2 $adm2): JsonResponse
     {
-        $data = $this->adm3Repository->findByAdm2($adm2);
+        $data = $this->getDoctrine()->getRepository(Adm3::class)->findByAdm2($adm2);
 
         return $this->json(new Paginator($data));
     }
@@ -269,9 +225,9 @@ class LocationController extends AbstractController
      */
     public function adm3List(AdmFilterInputType $inputType): JsonResponse
     {
-        $data = $this->adm3Repository->findByFilter($inputType);
+        $data = $this->getDoctrine()->getRepository(Adm3::class)->findByFilter($inputType);
 
-        return $this->json($data);
+        return $this->json(new Paginator($data));
     }
 
     /**
@@ -283,7 +239,7 @@ class LocationController extends AbstractController
      */
     public function adm4ListByAdm3(Adm3 $adm3): JsonResponse
     {
-        $data = $this->adm4Repository->findByAdm3($adm3);
+        $data = $this->getDoctrine()->getRepository(Adm4::class)->findByAdm3($adm3);
 
         return $this->json(new Paginator($data));
     }
@@ -297,9 +253,9 @@ class LocationController extends AbstractController
      */
     public function adm4List(AdmFilterInputType $inputType): JsonResponse
     {
-        $data = $this->adm4Repository->findByFilter($inputType);
+        $data = $this->getDoctrine()->getRepository(Adm4::class)->findByFilter($inputType);
 
-        return $this->json($data);
+        return $this->json(new Paginator($data));
     }
 
     /**
@@ -323,7 +279,7 @@ class LocationController extends AbstractController
      */
     public function locations(LocationFilterInputType $filter)
     {
-        $locations = $this->locationRepository->findByParams($filter);
+        $locations = $this->getDoctrine()->getRepository(Location::class)->findByParams($filter);
 
         return $this->json($locations);
     }

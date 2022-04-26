@@ -3,7 +3,7 @@
 namespace BeneficiaryBundle\Mapper;
 
 use BeneficiaryBundle\Entity\AbstractBeneficiary;
-use BeneficiaryBundle\Repository\BeneficiaryRepository;
+use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\SelectionCriteria;
@@ -27,25 +27,17 @@ class AssistanceMapper
     private $distributionBNFRepo;
 
     /**
-     * @var BeneficiaryRepository
-     */
-    private $beneficiaryRepository;
-
-    /**
      * AssistanceMapper constructor.
      *
-     * @param BeneficiaryMapper               $beneficiaryMapper
+     * @param BeneficiaryMapper                 $beneficiaryMapper
      * @param AssistanceBeneficiaryRepository $distributionBNFRepo
-     * @param BeneficiaryRepository           $beneficiaryRepository
      */
     public function __construct(
         BeneficiaryMapper $beneficiaryMapper,
-        AssistanceBeneficiaryRepository $distributionBNFRepo,
-        BeneficiaryRepository $beneficiaryRepository
+        AssistanceBeneficiaryRepository $distributionBNFRepo
     ) {
         $this->beneficiaryMapper = $beneficiaryMapper;
         $this->distributionBNFRepo = $distributionBNFRepo;
-        $this->beneficiaryRepository = $beneficiaryRepository;
     }
 
     public function toMinimalArray(?Assistance $assistance): ?array
@@ -152,11 +144,16 @@ class AssistanceMapper
         if (!$assistance) {
             return null;
         }
-
-        $bnfs = $this->beneficiaryRepository->findByAssistance($assistance, null, null, null, [
-            BeneficiaryRepository::BNF_ASSISTANCE_CONTEXT_REMOVED => 0,
-            BeneficiaryRepository::BNF_ASSISTANCE_CONTEXT_ARCHIVED => 0,
-        ]);
+        /** @var AbstractBeneficiary[] $bnfs */
+        $bnfs = [];
+        foreach ($assistance->getDistributionBeneficiaries() as $db) {
+            if ($db->getBeneficiary() instanceof Beneficiary
+                && !$db->getRemoved()
+                && !$db->getBeneficiary()->getArchived()
+            ) {
+                $bnfs[] = $db->getBeneficiary();
+            }
+        }
 
         $isFoodEnabled = in_array(ProductCategoryType::FOOD, $assistance->getAllowedProductCategoryTypes());
         $isNonFoodEnabled = in_array(ProductCategoryType::NONFOOD, $assistance->getAllowedProductCategoryTypes());

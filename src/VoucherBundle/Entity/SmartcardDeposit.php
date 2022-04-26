@@ -4,9 +4,12 @@ namespace VoucherBundle\Entity;
 
 use DateTime;
 use DateTimeInterface;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Enum\ModalityType;
+use NewApiBundle\Enum\ReliefPackageState;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 use UserBundle\Entity\User;
@@ -84,34 +87,18 @@ class SmartcardDeposit
      */
     private $balance;
 
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="suspicious", type="boolean", options={"default": false})
-     */
-    private $suspicious;
-
-    /**
-     * @var array|null
-     *
-     * @ORM\Column(name="message", type="simple_array", nullable=true, options={"default": null})
-     */
-    private $message;
-
     protected function __construct()
     {
     }
 
     public static function create(
-        Smartcard         $smartcard,
-        User              $distributedBy,
-        ReliefPackage     $reliefPackage,
-                          $value,
-                          $balance,
-        DateTimeInterface $distributedAt,
-        bool              $suspicious = false,
-        ?array            $message = null
-    ): SmartcardDeposit {
+        Smartcard             $smartcard,
+        User                  $distributedBy,
+        ReliefPackage         $reliefPackage,
+                              $value,
+                              $balance,
+        DateTimeInterface     $distributedAt
+    ) {
         $entity = new self();
         $entity->distributedBy = $distributedBy;
         $entity->distributedAt = $distributedAt;
@@ -119,8 +106,6 @@ class SmartcardDeposit
         $entity->value = $value;
         $entity->balance = $balance;
         $entity->smartcard = $smartcard;
-        $entity->suspicious = $suspicious;
-        $entity->message = $message;
 
         $smartcard->addDeposit($entity);
 
@@ -194,37 +179,4 @@ class SmartcardDeposit
     {
         $this->distributedAt = $distributedAt;
     }
-
-    /**
-     * @return bool
-     */
-    public function isSuspicious(): bool
-    {
-        return $this->suspicious;
-    }
-
-    /**
-     * @param bool $suspicious
-     */
-    public function setSuspicious(bool $suspicious): void
-    {
-        $this->suspicious = $suspicious;
-    }
-
-    /**
-     * @return array|null
-     */
-    public function getMessage(): ?array
-    {
-        return $this->message;
-    }
-
-    /**
-     * @param array|null $message
-     */
-    public function setMessage(?array $message): void
-    {
-        $this->message = $message;
-    }
-
 }

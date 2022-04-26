@@ -1,5 +1,5 @@
-[![Build status](https://gitlab-public.quanti.cz/humansis/web-platform/backend/badges/develop/pipeline.svg)](https://gitlab-public.quanti.cz/humansis/web-platform/backend/-/commits/develop)
-[![version](https://img.shields.io/badge/version-3.3.3-blue)](https://gitlab-public.quanti.cz/humansis/web-platform/backend/)
+[![Build Status](https://travis-ci.com/humansis/api.svg?branch=develop)](https://travis-ci.com/humansis/api)
+[![GitHub version](https://badge.fury.io/gh/humansis%2Fapi.svg)](https://badge.fury.io/gh/humansis%2Fapi)
 
 HUMANSIS
 ==============
@@ -99,14 +99,12 @@ END
 git clone https://gitlab-public.quanti.cz/humansis/web-platform/backend customdir
 cd customdir
 cp docker-compose.yml.dist docker-compose.yml
-cp app/config/parameters.yml.dist app/config/parameters.yml
 ```
 
 Open `docker-compose.yml` and add:
 ```
 php:
     environment:
-        ENVIRONMENT: dev
         XDEBUG_CONFIG: 'remote_host=172.17.0.1'
         PHP_IDE_CONFIG: 'serverName=humansis.local'
         AWS_ACCESS_KEY: 'aaa'
@@ -163,7 +161,7 @@ php:
 - OK
 
 #### PhpStorm Code Style
-Code style file humansis.xml is located in root directory
+Code style file humansis.xml is located in root directory 
 
 #### Makefile
 Docker and others already described commands are accessible from Makefile

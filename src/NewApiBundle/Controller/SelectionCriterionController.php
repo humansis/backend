@@ -16,6 +16,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
+/**
+ * @Cache(expires="+5 days", public=true)
+ */
 class SelectionCriterionController extends AbstractController
 {
     /** @var FieldDbTransformer */
@@ -28,7 +31,6 @@ class SelectionCriterionController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/selection-criteria/targets")
-     * @Cache(expires="+5 days", public=true)
      *
      * @return JsonResponse
      */
@@ -91,7 +93,6 @@ class SelectionCriterionController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/assistances/{id}/selection-criteria")
      * @ParamConverter("assistance")
-     * @Cache(expires="+5 days", public=true)
      *
      * @return JsonResponse
      */

@@ -23,22 +23,12 @@ class ImportStatisticsValueObject
     /**
      * @var integer
      */
-    private $amountIdentityDuplicities = 0;
+    private $amountDuplicities = 0;
 
     /**
      * @var integer
      */
-    private $amountIdentityDuplicitiesResolved = 0;
-
-    /**
-     * @var integer
-     */
-    private $amountSimilarityDuplicities = 0;
-
-    /**
-     * @var integer
-     */
-    private $amountSimilarityDuplicitiesResolved = 0;
+    private $amountDuplicitiesResolved = 0;
 
     /**
      * @var integer
@@ -101,33 +91,33 @@ class ImportStatisticsValueObject
     /**
      * @return int
      */
-    public function getAmountIdentityDuplicities(): int
+    public function getAmountDuplicities(): int
     {
-        return $this->amountIdentityDuplicities;
+        return $this->amountDuplicities;
     }
 
     /**
-     * @param int $amountIdentityDuplicities
+     * @param int $amountDuplicities
      */
-    public function setAmountIdentityDuplicities(int $amountIdentityDuplicities): void
+    public function setAmountDuplicities(int $amountDuplicities): void
     {
-        $this->amountIdentityDuplicities = $amountIdentityDuplicities;
+        $this->amountDuplicities = $amountDuplicities;
     }
 
     /**
      * @return int
      */
-    public function getAmountIdentityDuplicitiesResolved(): int
+    public function getAmountDuplicitiesResolved(): int
     {
-        return $this->amountIdentityDuplicitiesResolved;
+        return $this->amountDuplicitiesResolved;
     }
 
     /**
-     * @param int $amountIdentityDuplicitiesResolved
+     * @param int $amountDuplicitiesResolved
      */
-    public function setAmountIdentityDuplicitiesResolved(int $amountIdentityDuplicitiesResolved): void
+    public function setAmountDuplicitiesResolved(int $amountDuplicitiesResolved): void
     {
-        $this->amountIdentityDuplicitiesResolved = $amountIdentityDuplicitiesResolved;
+        $this->amountDuplicitiesResolved = $amountDuplicitiesResolved;
     }
 
     /**
@@ -160,37 +150,5 @@ class ImportStatisticsValueObject
     public function setStatus(string $status): void
     {
         $this->status = $status;
-    }
-
-    /**
-     * @return int
-     */
-    public function getAmountSimilarityDuplicities(): int
-    {
-        return $this->amountSimilarityDuplicities;
-    }
-
-    /**
-     * @param int $amountSimilarityDuplicities
-     */
-    public function setAmountSimilarityDuplicities(int $amountSimilarityDuplicities): void
-    {
-        $this->amountSimilarityDuplicities = $amountSimilarityDuplicities;
-    }
-
-    /**
-     * @return int
-     */
-    public function getAmountSimilarityDuplicitiesResolved(): int
-    {
-        return $this->amountSimilarityDuplicitiesResolved;
-    }
-
-    /**
-     * @param int $amountSimilarityDuplicitiesResolved
-     */
-    public function setAmountSimilarityDuplicitiesResolved(int $amountSimilarityDuplicitiesResolved): void
-    {
-        $this->amountSimilarityDuplicitiesResolved = $amountSimilarityDuplicitiesResolved;
     }
 }

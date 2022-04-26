@@ -64,10 +64,6 @@ class SmartcardDepositController extends AbstractOfflineAppController
      * @param Request $request
      *
      * @return Response
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Psr\Cache\InvalidArgumentException
      */
     public function deposit(Request $request): Response
     {
@@ -78,6 +74,7 @@ class SmartcardDepositController extends AbstractOfflineAppController
                 $request->request->getInt('assistanceId'),
                 $request->request->get('value'),
                 $request->request->get('balanceBefore'),
+                $request->request->get('balanceAfter'),
                 \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
                 $this->getUser()
             );

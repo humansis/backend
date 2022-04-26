@@ -12,7 +12,6 @@ use ProjectBundle\Entity\Project;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Security\Core\Role\RoleHierarchyInterface;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validation;
@@ -70,35 +69,19 @@ class UserService
     private $container;
 
     /**
-     * @var RoleHierarchyInterface
-     */
-    private $roleHierarchy;
-
-    /**
      * UserService constructor.
-     *
-     * @param string                 $googleClient
-     * @param string                 $humanitarianSecret
      * @param EntityManagerInterface $entityManager
-     * @param ValidatorInterface     $validator
-     * @param ContainerInterface     $container
-     * @param RoleHierarchyInterface $roleHierarchy
+     * @param ValidatorInterface $validator
+     * @param ContainerInterface $container
      */
-    public function __construct(
-        string                 $googleClient,
-        string                 $humanitarianSecret,
-        EntityManagerInterface $entityManager,
-        ValidatorInterface     $validator,
-        ContainerInterface     $container,
-        RoleHierarchyInterface $roleHierarchy
-    ) {
+    public function __construct(string $googleClient, string $humanitarianSecret, EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
+    {
         $this->googleClient = $googleClient;
         $this->humanitarianSecret = $humanitarianSecret;
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
         $this->email = $this->container->getParameter('email');
-        $this->roleHierarchy = $roleHierarchy;
     }
 
     /**
@@ -912,23 +895,6 @@ class UserService
     {
         $this->em->remove($user);
         $this->em->flush();
-    }
-
-    /**
-     * @param User   $user
-     * @param string $role
-     *
-     * @return bool
-     */
-    public function isGranted(User $user, string $role): bool
-    {
-        foreach ($this->roleHierarchy->getReachableRoleNames($user->getRoles()) as $reachableRole) {
-            if ($reachableRole === $role) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**

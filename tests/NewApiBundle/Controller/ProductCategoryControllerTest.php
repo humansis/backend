@@ -182,14 +182,4 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
         $this->assertEquals($expectedFilteredCategories, $result['totalCount']);
 
     }
-
-    public function testListFilteredByNonExistentVendor()
-    {
-        $this->request('GET', '/api/basic/vendor-app/v1/product-categories?sort[]=name.asc&filter[vendors][]=0');
-
-        $this->assertTrue(
-            $this->client->getResponse()->isClientError(),
-            'Request should failed by NotFound error: '.$this->client->getResponse()->getContent()
-        );
-    }
 }

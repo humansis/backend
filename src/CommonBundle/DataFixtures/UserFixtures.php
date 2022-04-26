@@ -6,7 +6,6 @@ namespace CommonBundle\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use FOS\UserBundle\Doctrine\UserManager;
-use NewApiBundle\Enum\RoleType;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\HttpKernel\Kernel;
@@ -15,7 +14,6 @@ use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
 use Doctrine\Persistence\ObjectManager;
 use UserBundle\Entity\UserProject;
-use UserBundle\Utils\UserService;
 
 /**
  * @see VendorFixtures for check vendor username(s) is same
@@ -35,17 +33,11 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     /** @var EncoderFactoryInterface $encoderFactory */
     private $encoderFactory;
 
-    /**
-     * @var UserService
-     */
-    private $userService;
-
-    public function __construct(UserManager $manager, EncoderFactoryInterface $encoderFactory, Kernel $kernel, UserService $userService)
+    public function __construct(UserManager $manager, EncoderFactoryInterface $encoderFactory, Kernel $kernel)
     {
         $this->manager = $manager;
         $this->encoderFactory = $encoderFactory;
         $this->kernel = $kernel;
-        $this->userService = $userService;
     }
 
     private $defaultCountries = ["KHM", "SYR", "UKR", "ETH", "MNG", "ARM", "ZMB"];
@@ -164,9 +156,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         }
 
         $this->makeAccessRights($manager, $instance, $countries);
-        if (!$this->userService->isGranted($instance, RoleType::ADMIN)) {
-            $this->makeProjectConnections($manager, $instance, $countries);
-        }
+        $this->makeProjectConnections($manager, $instance, $countries);
         $manager->persist($instance);
         $manager->flush();
 

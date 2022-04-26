@@ -1,0 +1,45 @@
+language: php
+php:
+  - '7.3.23'
+
+# Allows use container-based infrastructure
+sudo: false
+
+addons:
+  apt:
+    packages:
+      - pv
+
+# Start mysql service
+services:
+  - mysql
+
+# Cache composer packages so "composer install" is faster
+cache:
+  directories:
+    - $HOME/.composer/cache/files
+
+# Define an environment variable
+env:
+  global:
+    - secure: "o0qJ2yM4PkCwa8zSiAdpZIiJgWPGBl/Fz/EqmfwacMvfJZIZODV+TIvvcnqJNr4aWbeh+1DQqeE4UTvpWA8OR0A25ZRo0o6k0MHVhtqSzc7AFDknLvQVq7LUeM3I3vvX6s8U1RyCgngvtOUBTKqtauJPPQgLG0eCt6EZUTy3lsDFPZdzmxNqW/lkELnI7ewCETQAUwWRIf/CBLnpCawG+Pjz4A4IMOJKMi7ILS+AmDkCWHhrifx16NHS3edDENAuRdLQ6GTnHFvcdhIm7Rc8OKmW5mphMCXMUJYG62vPnGlytoW2WYDBH3RShBJN1o91PAW9FlNHQlzpQb43ADkyx86Bz7UviVZT/xro4jFMcOrCG4oTb4dWeRbMAsS85t7GHZ0FDBLmjCtNJyeLxY4h9KNCVZxrLOVL53zV8IvFUTmCbZV46iOzdJTgBFGqZu+Al3BIV4TYjOdoCw2Bn4QgTUCrcFHTBaenqWcbV92d/Jnt0Z4Z33+t7EtjTSCTMTKl58qfw4WkVMOy7VvnAAO+zZwtr9FAnDqNJy9/EQ7WZ9JfhsH5mKcVg7s+HUmEL+OpxFxotZeEDUSJJD/nQEaatYbPuW9abAmqOVJ+0KYxleGBZ1/Dd07eDl71du1KSE/FqZfUB2An3u6ucNCotendQi9BbD8GkTJVvjUkHYCUoKA="
+  jobs:
+    - SYMFONY_VERSION="4.4.*" DB=db_test
+
+# Update composer
+before_install:
+  - composer self-update
+
+jobs:
+  include:
+    - stage: test
+      if: (NOT branch =~ /^release\/.*$/) AND tag IS NOT present
+      install:
+        - echo "extension=apcu.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+        - cp app/config/parameters.yml.travis app/config/parameters.yml
+        - composer install
+        - php bin/console doctrine:database:create --env=test
+        - php bin/console doctrine:migrations:migrate -n --env=test
+        - php bin/console doctrine:fixtures:load -n --env=dev
+      script: ./vendor/bin/phpunit
+      fast_finish: true

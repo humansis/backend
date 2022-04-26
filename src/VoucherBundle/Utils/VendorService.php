@@ -5,7 +5,6 @@ namespace VoucherBundle\Utils;
 use CommonBundle\Entity\Location;
 use CommonBundle\Entity\Logs;
 use CommonBundle\Utils\LocationService;
-use Couchbase\DocumentNotFoundException;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
@@ -24,7 +23,6 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validation;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Vendor;
@@ -295,16 +293,16 @@ class VendorService
     }
 
     /**
-     * @param User $user
-     * @return Vendor
-     * @throws NotFoundHttpException
-     */
-    public function getVendorByUser(User $user): Vendor
+       * @param User $user
+       * @throws \Exception
+       */
+    public function login(User $user)
     {
         $vendor = $this->em->getRepository(Vendor::class)->findOneByUser($user);
         if (!$vendor) {
-            throw new NotFoundHttpException("Vendor bind to user (Username: {$user->getUsername()}, ID: {$user->getId()}) does not exists.");
+            throw new \Exception('You cannot log if you are not a vendor', Response::HTTP_BAD_REQUEST);
         }
+
         return $vendor;
     }
 
