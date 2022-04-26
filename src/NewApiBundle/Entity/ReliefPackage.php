@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace NewApiBundle\Entity;
 
@@ -8,26 +7,20 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
 use NewApiBundle\Entity\Helper\CreatedAt;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
 use VoucherBundle\Entity\SmartcardDeposit;
 
 /**
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ReliefPackageRepository")
+ * @ORM\Table(name="assistance_relief_package")
  * @ORM\HasLifecycleCallbacks
  */
 class ReliefPackage
 {
+    use StandardizedPrimaryKey;
     use CreatedAt;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
 
     /**
      * @var string
@@ -117,14 +110,6 @@ class ReliefPackage
         $this->unit = $unit;
         $this->state = $state;
         $this->amountDistributed = (string) $amountDistributed;
-    }
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
     }
 
     /**
