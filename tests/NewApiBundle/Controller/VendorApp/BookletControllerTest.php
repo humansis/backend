@@ -29,6 +29,7 @@ class BookletControllerTest extends BMSServiceTestCase
     public function testGetProtectedBooklet()
     {
 
+        $this->markTestSkipped('Support for JWT in test environment needs to be done first');
         $this->request('GET', '/api/jwt/vendor-app/v2/protected-booklets', [], [], ['Country' => 'KHM']);
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

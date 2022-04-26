@@ -181,22 +181,26 @@ class BookletControllerTest extends BMSServiceTestCase
      */
     public function testGetProtectedBooklets()
     {
-        $booklet = $this->em->getRepository(Booklet::class)->findOneBy(['password' => 'secret-password'], ['id' => 'asc']);
+        $password = 'secret-password';
+        $booklet = $this->em->getRepository(Booklet::class)->findOneBy(['password' => $password], ['id' => 'asc']);
 
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $crawler = $this->request('GET', '/api/wsse/protected-booklets');
-        $booklets = json_decode($this->client->getResponse()->getContent(), true);
+        $this->request('GET', '/api/wsse/protected-booklets');
+        $response = $this->client->getResponse();
+        $this->assertTrue($response->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $booklets = json_decode($response->getContent(), true);
 
         if (!empty($booklets)) {
-            $this->assertEquals($booklets[0][$booklet->getCode()], 'secret-password');
+            $this->assertEquals($booklets[0][$booklet->getCode()], $password);
         } else {
             $this->markTestIncomplete("You currently don't have any deactivated booklets in your database.");
         }
 
+        $this->em->remove($booklet);
         return $booklets;
     }
 
