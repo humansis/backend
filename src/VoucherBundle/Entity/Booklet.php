@@ -2,6 +2,7 @@
 
 namespace VoucherBundle\Entity;
 
+use DateTimeImmutable;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -9,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
 use ProjectBundle\Entity\Project;
+use UserBundle\Entity\User;
 
 /**
  * Booklet
@@ -100,6 +102,19 @@ class Booklet implements ExportableInterface
      * @SymfonyGroups({"FullBooklet"})
      */
     private $countryISO3;
+
+    /**
+     * @var null|DateTimeImmutable
+     * @ORM\Column(name="beneficiary_assigned_at", type="datetime_immutable", nullable=true)
+     */
+    protected $beneficiaryAssignedAt = null;
+
+    /**
+     * @var null|User
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User")
+     * @ORM\JoinColumn(name="beneficiary_assigned_by")
+     */
+    protected $beneficiaryAssignedBy = null;
 
     public static function statuses(): array
     {
@@ -312,9 +327,11 @@ class Booklet implements ExportableInterface
         return $this->distribution_beneficiary;
     }
 
-    public function setAssistanceBeneficiary(AssistanceBeneficiary $assistanceBeneficiary): self
+    public function setAssistanceBeneficiary(AssistanceBeneficiary $assistanceBeneficiary, ?User $user): self
     {
         $this->distribution_beneficiary = $assistanceBeneficiary;
+        $this->beneficiaryAssignedAt = new \DateTimeImmutable();
+        $this->beneficiaryAssignedBy = $user;
 
         return $this;
     }
@@ -417,5 +434,37 @@ class Booklet implements ExportableInterface
     public function getCountryISO3()
     {
         return $this->countryISO3;
+    }
+
+    /**
+     * @return DateTimeImmutable|null
+     */
+    public function getBeneficiaryAssignedAt(): ?DateTimeImmutable
+    {
+        return $this->beneficiaryAssignedAt;
+    }
+
+    /**
+     * @param DateTimeImmutable|null $beneficiaryAssignedAt
+     */
+    public function setBeneficiaryAssignedAt(?DateTimeImmutable $beneficiaryAssignedAt): void
+    {
+        $this->beneficiaryAssignedAt = $beneficiaryAssignedAt;
+    }
+
+    /**
+     * @return User|null
+     */
+    public function getBeneficiaryAssignedBy(): ?User
+    {
+        return $this->beneficiaryAssignedBy;
+    }
+
+    /**
+     * @param User|null $beneficiaryAssignedBy
+     */
+    public function setBeneficiaryAssignedBy(?User $beneficiaryAssignedBy): void
+    {
+        $this->beneficiaryAssignedBy = $beneficiaryAssignedBy;
     }
 }

@@ -41,6 +41,7 @@ services:
             - '@validator'
             - '@service_container'
             - '@VoucherBundle\Utils\BookletGenerator'
+            - '@Symfony\Component\Security\Core\Security'
         public: true
 
     voucher.voucher_service:

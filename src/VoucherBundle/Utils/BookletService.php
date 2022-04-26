@@ -11,6 +11,7 @@ use NewApiBundle\InputType\BookletBatchCreateInputType;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Voucher;
@@ -32,17 +33,29 @@ class BookletService
     private $generator;
 
     /**
+     * @var Security
+     */
+    private $security;
+
+    /**
      * @param EntityManagerInterface $entityManager
      * @param ValidatorInterface     $validator
      * @param ContainerInterface     $container
      * @param BookletGenerator       $generator
+     * @param Security               $security
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container, BookletGenerator $generator)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        ValidatorInterface     $validator,
+        ContainerInterface     $container,
+        BookletGenerator $generator,
+        Security         $security
+    ) {
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
         $this->generator = $generator;
+        $this->security = $security;
     }
 
     /**
@@ -370,7 +383,7 @@ class BookletService
             throw new \InvalidArgumentException('Beneficiary with id '.$abstractBeneficiary->getId().' does not belong to assistance with id '.$assistance->getId());
         }
 
-        $booklet->setAssistanceBeneficiary($assistanceBeneficiary)
+        $booklet->setAssistanceBeneficiary($assistanceBeneficiary, $this->security->getUser())
             ->setStatus(Booklet::DISTRIBUTED);
         $this->em->persist($booklet);
 

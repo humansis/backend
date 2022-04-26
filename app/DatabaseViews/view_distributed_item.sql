@@ -22,7 +22,7 @@ SELECT
         WHEN sd.id  IS NOT NULL THEN DATE_FORMAT(sd.distributed_at, "%Y-%m-%dT%TZ")
         WHEN t.id   IS NOT NULL THEN DATE_FORMAT(t.pickup_date, "%Y-%m-%dT%TZ")
         WHEN gri.id IS NOT NULL THEN DATE_FORMAT(gri.distributedAt, "%Y-%m-%dT%TZ")
-        WHEN b.id   IS NOT NULL THEN DATE_FORMAT(b.used_at, "%Y-%m-%dT%TZ")
+        WHEN b.id   IS NOT NULL THEN DATE_FORMAT(b.assigned_at, "%Y-%m-%dT%TZ")
         END AS date_distribution,
     CASE
         WHEN sd.id IS NOT NULL THEN s.code
@@ -62,7 +62,7 @@ FROM distribution_beneficiary db
         b.id,
         b.code,
         b.distribution_beneficiary_id,
-        MAX(vp.used_at) AS used_at,
+        MAX(b.beneficiary_assigned_at) AS assigned_at,
         SUM(vpr.value) AS value
     FROM booklet b
              JOIN voucher v ON v.booklet_id=b.id

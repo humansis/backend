@@ -280,29 +280,6 @@ class AssistanceBeneficiary
         return $this->booklets;
     }
 
-    public function addBooklet(Booklet $booklet): self
-    {
-        if (!$this->booklets->contains($booklet)) {
-            $this->booklets[] = $booklet;
-            $booklet->setAssistanceBeneficiary($this);
-        }
-
-        return $this;
-    }
-
-    public function removeBooklet(Booklet $booklet): self
-    {
-        if ($this->booklets->contains($booklet)) {
-            $this->booklets->removeElement($booklet);
-            // set the owning side to null (unless already changed)
-            if ($booklet->getAssistanceBeneficiary() === $this) {
-                $booklet->setAssistanceBeneficiary(null);
-            }
-        }
-
-        return $this;
-    }
-
     /**
      * Get the value of Transaction.
      *
