@@ -8,7 +8,7 @@ networks:
 
 services:
     php:
-        image: artifactory.quanti.cz/docker/humansis-php:prod
+        image: artifactory.quanti.cz/docker/humansis-php:production
         volumes:
             - /opt/humansis/var:/var/www/html/var
             - /var/cache/humansis:/var/www/html/var/cache
@@ -30,7 +30,7 @@ services:
             PMA_ABSOLUTE_URI: https://api.humansis.org/pma_yzixy37h/
 
     nginx:
-        image: artifactory.quanti.cz/docker/humansis-nginx:prod
+        image: artifactory.quanti.cz/docker/humansis-nginx:production
         ports:
             - 8087:80
         depends_on:
