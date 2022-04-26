@@ -8,6 +8,7 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ModalityType;
+use NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\User;
 use VoucherBundle\DTO\PreliminaryInvoice;
@@ -651,9 +652,9 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $batchCandidate = $batchCandidates[0];
         $this->assertIsArray($batchCandidate);
 
-        /** @var SmartcardPurchaseRepository $repository */
-        $repository = $this->em->getRepository(SmartcardPurchase::class);
-        $summary = $repository->countPreliminaryInvoices($vendor)[0];
+        /** @var PreliminaryInvoiceRepository $repository */
+        $repository = $this->em->getRepository(PreliminaryInvoice::class);
+        $summary = $repository->findOneBy(['vendor'=>$vendor]);
 
         $this->assertCount(count($summary->getPurchasesIds()), $batchCandidate['purchases_ids'], 'There is wrong count number in batch to redeem');
         $this->assertEquals($summary->getValue(), $batchCandidate['value'], 'There is wrong value of batch to redeem');
@@ -681,7 +682,8 @@ class SmartcardControllerTest extends BMSServiceTestCase
             }
         }
 
-        $preliminaryInvoices = $repository->countPreliminaryInvoices($vendor);
+        $preliminaryInvoices = $this->em->getRepository(\NewApiBundle\Entity\Smartcard\PreliminaryInvoice::class)
+            ->findBy(['vendor'=>$vendor]);
         $this->assertIsArray($preliminaryInvoices);
         $this->assertGreaterThan(0, count($preliminaryInvoices), "Too little redemption preliminaryInvoices");
         /** @var PreliminaryInvoice $preliminaryInvoice */

@@ -15,6 +15,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Controller\AbstractController;
+use NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Swagger\Annotations as SWG;
@@ -626,11 +627,9 @@ class SmartcardController extends Controller
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function getPurchasesToRedeemSummary(Vendor $vendor): Response
+    public function getPurchasesToRedeemSummary(Vendor $vendor, PreliminaryInvoiceRepository $preliminaryInvoiceRepository): Response
     {
-        /** @var SmartcardPurchaseRepository $repository */
-        $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardPurchase::class);
-        $summaries = $repository->countPreliminaryInvoices($vendor);
+        $summaries = $preliminaryInvoiceRepository->findBy(['vendor' => $vendor]);
 
         return $this->json($summaries);
     }

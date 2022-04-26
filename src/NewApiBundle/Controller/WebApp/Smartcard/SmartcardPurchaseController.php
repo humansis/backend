@@ -69,7 +69,7 @@ class SmartcardPurchaseController extends AbstractWebAppController
      *
      * @return JsonResponse
      */
-    public function purchasesByRedemptionBatchCandidate(Vendor $vendor, Project $project, string $currency): JsonResponse
+    public function purchasesByPreliminaryInvoiceCandidate(Vendor $vendor, Project $project, string $currency): JsonResponse
     {
         $purchases = $this->smartcardPurchaseService->getBy($vendor, $project, $currency);
 

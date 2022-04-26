@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 namespace VoucherBundle\Utils;
 
@@ -9,6 +9,8 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use Doctrine\ORM\EntityManager;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Entity\Smartcard\PreliminaryInvoice;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\InputType\SmartcardPurchaseInputType;
@@ -336,7 +338,7 @@ class SmartcardService
 
     public function getRedemptionCandidates(Vendor $vendor): array
     {
-        return $this->em->getRepository(SmartcardPurchase::class)->countPreliminaryInvoices($vendor);
+        return $this->em->getRepository(PreliminaryInvoice::class)->findBy(['vendor' => $vendor]);
     }
 
     /**
