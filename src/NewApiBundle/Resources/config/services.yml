@@ -238,7 +238,7 @@ services:
         public: true
         arguments:
             - '@NewApiBundle\Component\Import\Integrity\ImportLineFactory'
-            - "%kernel.project_dir%/var/imports/identities-hashmap-import-{IMPORT_ID}.json"
+            - '%cache.import_duplicity_hashmap%'
 
     NewApiBundle\Component\Import\ImportService:
         public: true
