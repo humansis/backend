@@ -11,8 +11,8 @@ use NewApiBundle\Entity;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\InputType\Import;
+use NewApiBundle\Repository\ImportBeneficiaryDuplicityRepository;
 use NewApiBundle\Repository\ImportQueueRepository;
-use NewApiBundle\Workflow\ImportTransitions;
 use ProjectBundle\Entity\Project;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -80,11 +80,13 @@ class ImportService
     public function create(string $countryIso3, Import\CreateInputType $inputType, User $user): Entity\Import
     {
         if (empty($inputType->getProjects())) {
-            //TODO remove after FE part of PIN-2820 will be implemented
             $project = $this->em->getRepository(Project::class)->find($inputType->getProjectId());
 
             if (!$project instanceof Project) {
-                throw new InvalidArgumentException('Project with ID '.$inputType->getProjectId().' not found');
+                throw new BadRequestHttpException('Project with ID '.$inputType->getProjectId().' not found');
+            }
+            if ($project->getIso3() !== $countryIso3) {
+                throw new BadRequestHttpException("Project is in {$project->getIso3()} but you works in $countryIso3");
             }
 
             $projects = [$project];
@@ -153,15 +155,18 @@ class ImportService
     {
         $statistics = new ImportStatisticsValueObject();
 
-        /** @var ImportQueueRepository $repository */
-        $repository = $this->em->getRepository(Entity\ImportQueue::class);
+        /** @var ImportQueueRepository $importQueueRepository */
+        $importQueueRepository = $this->em->getRepository(Entity\ImportQueue::class);
 
-        $statistics->setTotalEntries($repository->count(['import'=>$import]));
-        $statistics->setAmountIntegrityCorrect($repository->getTotalByImportAndStatus($import, ImportQueueState::VALID));
-        $statistics->setAmountIntegrityFailed($repository->getTotalByImportAndStatus($import, ImportQueueState::INVALID));
-        $statistics->setAmountDuplicities($repository->getTotalByImportAndStatus($import, ImportQueueState::IDENTITY_CANDIDATE));
-        $statistics->setAmountDuplicitiesResolved($repository->getTotalReadyForSave($import));
-        $statistics->setAmountEntriesToImport($repository->getTotalReadyForSave($import));
+        /** @var ImportBeneficiaryDuplicityRepository $importBeneficiaryDuplicityRepository */
+        $importBeneficiaryDuplicityRepository = $this->em->getRepository(Entity\ImportBeneficiaryDuplicity::class);
+
+        $statistics->setTotalEntries($importQueueRepository->count(['import'=>$import]));
+        $statistics->setAmountIntegrityCorrect($importQueueRepository->getTotalByImportAndStatus($import, ImportQueueState::VALID));
+        $statistics->setAmountIntegrityFailed($importQueueRepository->getTotalByImportAndStatus($import, ImportQueueState::INVALID));
+        $statistics->setAmountIdentityDuplicities($importBeneficiaryDuplicityRepository->getTotalByImport($import));
+        $statistics->setAmountIdentityDuplicitiesResolved($importQueueRepository->getTotalResolvedDuplicities($import));
+        $statistics->setAmountEntriesToImport($importQueueRepository->getTotalReadyForSave($import));
         $statistics->setStatus($import->getState());
 
         return $statistics;
@@ -204,7 +209,7 @@ class ImportService
             /** @var Entity\ImportHouseholdDuplicity $duplicity */
             $duplicity = $duplicities[0];
             if ($this->importQueueStateMachine->can($importQueue, $inputType->getStatus())) {
-                $this->duplicityResolver->resolve($importQueue, $duplicity->getId(), $inputType->getStatus(), $user);
+                $this->duplicityResolver->resolve($importQueue, $duplicity->getTheirs()->getId(), $inputType->getStatus(), $user);
                 $this->em->flush();
             } else {
                 foreach ($this->importQueueStateMachine->buildTransitionBlockerList($importQueue, $inputType->getStatus()) as $block) {

@@ -54,27 +54,31 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
 
         /** @var Location $location */
         foreach ($lowestLevelLocation as $key => $location) {
-            $currentLevel = $level - 1;
-
-            $currentLevelLocation = $location;
-
-            while ($currentLevel > 0) {
-                $parent = $currentLevelLocation->getParentLocation();
-
-                if ($parent->getEnumNormalizedName() !== $adms[$currentLevel - 1]) {
-                    unset($lowestLevelLocation[$key]);
-                }
-
-                $currentLevelLocation = $parent;
-                $currentLevel--;
+            if ($this->isLocationEqualAdmPath($location, $adms)) {
+                return $location;
             }
         }
+        return null;
+    }
 
-        if (empty($lowestLevelLocation)) {
-            return null;
-        } else {
-            return current($lowestLevelLocation);
+    /**
+     * It will iterate through location path and check if all parts of location are equal to ADMs array
+     * @param Location $location
+     * @param array    $adms
+     *
+     * @return bool
+     */
+    private function isLocationEqualAdmPath(Location $location, array $adms): bool {
+        $parentLevel = count($adms) - 2;
+        $currentLevelLocation = $location;
+        while(($parent = $currentLevelLocation->getParentLocation()) && $parentLevel > 0) {
+            if ($parent->getEnumNormalizedName() !== $adms[$parentLevel]) {
+                return false;
+            }
+            $currentLevelLocation = $parent;
+            $parentLevel--;
         }
+        return true;
     }
 
     public function getByNames(string $countryIso3, ?string $adm1, ?string $adm2, ?string $adm3, ?string $adm4): ?Location
@@ -225,6 +229,27 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
                 AND $pathAlias.lvl <= $locationCurrentAlias.lvl)");
     }
 
+    /**
+     * @param Location $location
+     *
+     * @return Location[]
+     */
+    public function getChildrenLocations(Location $location): array
+    {
+        $qb = $this->createQueryBuilder('l');
+        $qb->andWhere(
+            $qb->expr()->lte('l.rgt', ':currentRgt'),
+            $qb->expr()->gte('l.lft', ':currentLft'),
+            $qb->expr()->gte('l.lvl', ':currentLvl')
+        )
+            ->setParameters([
+                'currentRgt' => $location->getRgt(),
+                'currentLft' => $location->getLft(),
+                'currentLvl' => $location->getLvl(),
+            ]);
+
+        return $qb->getQuery()->getResult();
+    }
 
     /**
      * @param LocationFilterInputType $filter

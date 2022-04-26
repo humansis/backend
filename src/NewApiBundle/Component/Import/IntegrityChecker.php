@@ -145,7 +145,7 @@ class IntegrityChecker
             if ($item->hasViolations($index)) continue; // don't do complex checking if there are simple errors
 
             $beneficiary = $this->beneficiaryDecoratorBuilder->buildBeneficiaryInputType($hhm);
-            $violations = $this->validator->validate($beneficiary, null, ["BeneficiaryInputType", "Strict"]);
+            $violations = $this->validator->validate($beneficiary, null, ["Default", "BeneficiaryInputType", "Strict"]);
 
             foreach ($violations as $violation) {
                 $item->addViolation($index, $this->buildNormalizedErrorMessage($violation));
@@ -155,7 +155,7 @@ class IntegrityChecker
 
         if (!$item->hasViolations()) { // don't do complex checking if there are simple errors
             $household = $this->householdDecoratorBuilder->buildHouseholdInputType($item);
-            $violations = $this->validator->validate($household, null, ["HouseholdCreateInputType", "Strict"]);
+            $violations = $this->validator->validate($household, null, ["Default", "HouseholdCreateInputType", "Strict"]);
             foreach ($violations as $violation) {
                 $item->addViolation(0, $this->buildNormalizedErrorMessage($violation));
             }

@@ -10,6 +10,8 @@ use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportQueueTransitions;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -19,6 +21,8 @@ use Symfony\Component\Workflow\WorkflowInterface;
 
 class ImportInvalidFileService
 {
+    private const FORMULA_ERROR_CELL_VALUE = 'INVALID VALUE: formulas are not supported, please fill a value';
+
     /**
      * @var ImportQueueRepository
      */
@@ -127,7 +131,16 @@ class ImportInvalidFileService
                     if (isset($row[$column])) {
                         $cellValue = $row[$column][CellParameters::VALUE];
 
-                        $cell->setValueExplicit($cellValue, $row[$column][CellParameters::DATA_TYPE]);
+                        // in case of formula error => convert to string and fill cell with default message
+                        if ($row[$column][CellParameters::DATA_TYPE] === DataType::TYPE_FORMULA && array_key_exists(CellParameters::ERRORS,
+                                $row[$column])) {
+                            $dataType = DataType::TYPE_STRING;
+                            $cellValue = self::FORMULA_ERROR_CELL_VALUE;
+                        } else {
+                            $dataType = $row[$column][CellParameters::DATA_TYPE];
+                        }
+
+                        $cell->setValueExplicit($cellValue, $dataType);
                         $cell->getStyle()->getNumberFormat()->setFormatCode($row[$column][CellParameters::NUMBER_FORMAT]);
                     }
 

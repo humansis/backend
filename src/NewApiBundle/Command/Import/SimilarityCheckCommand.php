@@ -60,7 +60,7 @@ class SimilarityCheckCommand extends AbstractImportQueueCommand
                     $this->logImportDebug($import, "Similarity check found no duplicities");
                 } else {
                     $statistics = $this->importService->getStatistics($import);
-                    $this->logImportInfo($import, "Similarity check found {$statistics->getAmountDuplicities()} duplicities");
+                    $this->logImportInfo($import, "Similarity check found {$statistics->getAmountIdentityDuplicities()} duplicities");
                 }
             } catch (Throwable $e) {
                 $this->logImportError($import, 'Unknown Exception in similarity check occurred. Exception message: '.$e->getMessage());

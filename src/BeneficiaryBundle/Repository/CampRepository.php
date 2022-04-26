@@ -19,7 +19,7 @@ class CampRepository extends \Doctrine\ORM\EntityRepository
 
         if (!is_null($filterInputType)) {
             if ($filterInputType->hasIds()) {
-                $qb->andWhere('c.id = :ids')
+                $qb->andWhere('c.id IN (:ids)')
                     ->setParameter('ids', $filterInputType->getIds());
             }
         }

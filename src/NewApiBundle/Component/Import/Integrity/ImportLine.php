@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Component\Import\CellError\CellError;
 use NewApiBundle\Component\Import\CellParameters;
 use NewApiBundle\Component\Import\Utils\ImportDateConverter;
 use NewApiBundle\Enum\EnumTrait;
@@ -14,6 +15,7 @@ use NewApiBundle\Validator\Constraints\ImportDate;
 use Symfony\Component\Validator\Constraints as Assert;
 use NewApiBundle\Validator\Constraints\Enum;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class ImportLine
 {
@@ -192,7 +194,7 @@ class ImportLine
     public $typePhone2;
 
     /**
-     * @Assert\Type("string", groups={"household", "member"})
+     * @Assert\Type("scalar", groups={"household", "member"})
      */
     public $prefixPhone2;
 
@@ -328,6 +330,9 @@ class ImportLine
     /** @var string[] */
     private $excelDateTimeFormatProperties = [];
 
+    /** @var CellError[] */
+    private $errors = [];
+
     public function __construct(array $content, string $countryIso3, EntityManagerInterface $entityManager)
     {
         $this->countryIso3 = $countryIso3;
@@ -352,6 +357,10 @@ class ImportLine
                 } else {
                     $this->$property = $value;
                 }
+
+                if (isset($content[$header][CellParameters::ERRORS])) {
+                    $this->errors[] = new CellError($content[$header][CellParameters::ERRORS], $property, $value);
+                }
             }
         }
 
@@ -363,6 +372,39 @@ class ImportLine
         }
     }
 
+    /**
+     * @param ExecutionContextInterface $context
+     *
+     * @return void
+     * @Assert\Callback(groups={"household", "member"})
+     */
+    public function violateCellErrors(ExecutionContextInterface $context): void
+    {
+        foreach ($this->errors as $error) {
+            $context->buildViolation($error->getType())
+                ->atPath($error->getProperty())
+                ->setInvalidValue($error->getValue())
+                ->addViolation();
+        }
+    }
+
+    /**
+     * @Assert\IsTrue(message="Prefix should not be blank if phone number is filled", payload={"propertyPath"="prefixPhone1"}, groups={"household", "member"})
+     */
+    public function isPrefixPhone1Valid(): bool
+    {
+        return !$this->numberPhone1 || $this->prefixPhone1;
+    }
+
+    /**
+     * @Assert\IsTrue(message="Prefix should not be blank if phone number is filled", payload={"propertyPath"="prefixPhone2"}, groups={"household", "member"})
+     */
+    public function isPrefixPhone2Valid(): bool
+    {
+        return !$this->numberPhone2 || $this->prefixPhone2;
+    }
+
+    
     /**
      * @Assert\IsTrue(message="Camp must have defined both Tent number and Camp name", payload={"propertyPath"="campName"}, groups={"household", "member"})
      */

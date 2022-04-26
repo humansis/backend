@@ -32,4 +32,5 @@ trait LocationFilterTrait
     {
         return $this->locations;
     }
+
 }

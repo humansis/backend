@@ -2,6 +2,7 @@
 
 namespace BeneficiaryBundle\Entity;
 
+use CommonBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
@@ -182,7 +183,7 @@ class HouseholdLocation
      *
      * @param \BeneficiaryBundle\Entity\Household|null $household
      *
-     * @return Phone
+     * @return HouseholdLocation
      */
     public function setHousehold(\BeneficiaryBundle\Entity\Household $household = null)
     {
@@ -204,9 +205,9 @@ class HouseholdLocation
      /**
      * Get the nested location of the household.
      *
-     * @return \BeneficiaryBundle\Entity\Location|null
+     * @return Location|null
      */
-    public function getLocation()
+    public function getLocation(): Location
     {
         if ($this->getType() === self::LOCATION_TYPE_CAMP) {
             return $this->getCampAddress()->getCamp()->getLocation();
