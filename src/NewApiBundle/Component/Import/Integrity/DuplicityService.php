@@ -4,11 +4,10 @@ namespace NewApiBundle\Component\Import\Integrity;
 
 use NewApiBundle\Entity\Import;
 use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
+use NewApiBundle\Utils\FileSystem\PathConstructor;
 
 class DuplicityService
 {
-    const IMPORT_PLACEHOLDER = '{IMPORT_ID}';
-
     /** @var ImportLineFactory */
     private $lineFactory;
 
@@ -66,6 +65,6 @@ class DuplicityService
 
     private function getFileName(Import $import): string
     {
-        return str_replace(self::IMPORT_PLACEHOLDER, $import->getId() ?? 'NULL', $this->cacheFilePath);
+        return PathConstructor::construct($this->cacheFilePath, ['importId' => $import->getId()]);
     }
 }
