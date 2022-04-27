@@ -15,6 +15,7 @@ export ec2_user="ec2-user"
 if [[ $1 == "production" ]]; then
   EC2_ASG=prod-asg
   mv docker/docker-compose.prod.yml docker-compose.yml
+  sed -i -e "s|production|${CI_COMMIT_TAG}|g" docker-compose.yml
 elif [[ $1 == "demo" ]]; then
   EC2_ASG=demo-asg
   mv docker/docker-compose.demo.yml docker-compose.yml
