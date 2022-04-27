@@ -5,11 +5,15 @@ namespace Tests\NewApiBundle\Controller;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use NewApiBundle\Component\Country\Countries;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\UserProject;
 
 class LocationControllerTest extends BMSServiceTestCase
 {
+    /** @var Countries */
+    private $countries;
+
     public function setUp()
     {
         // Configuration of BMSServiceTest
@@ -18,6 +22,7 @@ class LocationControllerTest extends BMSServiceTestCase
 
         // Get a Client instance for simulate a browser
         $this->client = self::$container->get('test.client');
+        $this->countries = self::$container->get(Countries::class);
     }
 
     public function testGetCountries()
@@ -52,7 +57,7 @@ class LocationControllerTest extends BMSServiceTestCase
             'Request failed: '.$this->client->getResponse()->getContent()
         );
 
-        $allCountries = self::$container->getParameter('app.countries');
+        $allCountries = $this->countries->getAll();
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -76,7 +81,7 @@ class LocationControllerTest extends BMSServiceTestCase
 
         $numberOfCountries = 0;
         $projects = [];
-        $allCountries = self::$container->getParameter('app.countries');
+        $allCountries = $this->countries->getAll();
         $user = $this->getTestUser(self::USER_TESTER_VENDOR);
 
         /** @var UserProject $userProject */
@@ -85,7 +90,7 @@ class LocationControllerTest extends BMSServiceTestCase
         }
 
         foreach($allCountries as $country){
-            if(in_array($country['iso3'], $projects)){
+            if(in_array($country->getIso3(), $projects)){
                 $numberOfCountries++;
             }
         }
