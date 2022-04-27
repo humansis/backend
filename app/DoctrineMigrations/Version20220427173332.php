@@ -44,7 +44,7 @@ final class Version20220427173332 extends AbstractMigration
                             ;
         ");
         // connect transactions and packages
-        $this->addSql('UPDATE transaction t SET relief_package_id=(SELECT id FROM assistance_relief_package WHERE assistance_beneficiary_id=t.distribution_beneficiary_id);');
+        $this->addSql('UPDATE transaction t SET relief_package_id=(SELECT id FROM assistance_relief_package WHERE assistance_beneficiary_id=t.distribution_beneficiary_id LIMIT 1);');
         // start distribution of packages which started sending
         $this->addSql('UPDATE assistance_relief_package rp SET state=\'Distribution in progress\' WHERE
                 EXISTS (SELECT id FROM transaction WHERE relief_package_id=rp.id) AND rp.modality_type=\'Mobile Money\';');
