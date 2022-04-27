@@ -20,13 +20,13 @@ use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Enum\RoleType;
 use NewApiBundle\InputType\AdmFilterInputType;
 use NewApiBundle\InputType\LocationFilterInputType;
+use ProjectBundle\Repository\ProjectRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
-use UserBundle\Entity\UserProject;
 
 /**
  * @Cache(expires="+5 days", public=true)
@@ -61,13 +61,19 @@ class LocationController extends AbstractController
      */
     private $adm4Repository;
 
+    /**
+     * @var ProjectRepository
+     */
+    private $projectRepository;
+
     public function __construct(
         Countries $countries,
         LocationRepository $locationRepository,
         Adm1Repository $adm1Repository,
         Adm2Repository $adm2Repository,
         Adm3Repository $adm3Repository,
-        Adm4Repository $adm4Repository
+        Adm4Repository $adm4Repository,
+        ProjectRepository $projectRepository
     )
     {
         $this->countries = $countries;
@@ -76,6 +82,7 @@ class LocationController extends AbstractController
         $this->adm1Repository = $adm1Repository;
         $this->adm3Repository = $adm3Repository;
         $this->adm4Repository = $adm4Repository;
+        $this->projectRepository = $projectRepository;
     }
 
     /**
@@ -120,10 +127,8 @@ class LocationController extends AbstractController
                 }
             }
         } else {
-
-            /** @var UserProject $userProject */
-            foreach ($user->getProjects() as $userProject) {
-                $country = $this->countries->getCountry($userProject->getProject()->getIso3());
+            foreach($this->projectRepository->getProjectCountriesByUser($user) as $countryIso3){
+                $country = $this->countries->getCountry($countryIso3['iso3']);
                 if ($country) {
                     $data[] = $country;
                 }
