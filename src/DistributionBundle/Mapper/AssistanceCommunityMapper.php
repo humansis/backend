@@ -15,8 +15,8 @@ class AssistanceCommunityMapper extends AssistanceBeneficiaryMapper
     /** @var CommunityMapper */
     private $communityMapper;
 
-    public function __construct(BookletMapper $bookletMapper, CommunityMapper $communityMapper) {
-        parent::__construct($bookletMapper, null);
+    public function __construct(CommunityMapper $communityMapper) {
+        parent::__construct(null);
         $this->communityMapper = $communityMapper;
     }
 

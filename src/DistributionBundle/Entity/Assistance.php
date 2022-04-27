@@ -900,24 +900,13 @@ class Assistance implements ExportableInterface
 
     public function getCommoditySentAmountFromBeneficiary(Commodity $commodity, AssistanceBeneficiary $assistanceBeneficiary): int
     {
-        $modalityType = $this->getCommodities()[0]->getModalityType()->getName();
-        if ($modalityType === 'QR Code Voucher') {
-            $booklets = $assistanceBeneficiary->getBooklets();
-            foreach ($booklets as $booklet) {
-                if ($booklet->getStatus() === 1 || $booklet->getStatus() === 2) {
-                    return $booklet->getTotalValue();
-                }
+        $sent = 0;
+        foreach ($assistanceBeneficiary->getReliefPackages() as $package) {
+            if ($package->getModalityType() == $commodity->getModalityType()) {
+                $sent += floatval($package->getAmountDistributed());
             }
-        } else {
-            $sent = 0;
-            foreach ($assistanceBeneficiary->getReliefPackages() as $package) {
-                if ($package->getModalityType() == $commodity->getModalityType()) {
-                    $sent += floatval($package->getAmountDistributed());
-                }
-            }
-            return floor($sent);
         }
-        return 0;
+        return floor($sent);
     }
 
     /**

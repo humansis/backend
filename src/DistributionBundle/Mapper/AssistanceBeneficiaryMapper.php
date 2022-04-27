@@ -14,23 +14,17 @@ use VoucherBundle\Mapper\BookletMapper;
 
 class AssistanceBeneficiaryMapper
 {
-    /** @var BookletMapper */
-    private $bookletMapper;
-
     /** @var BeneficiaryMapper */
     private $beneficiaryMapper;
 
     /**
      * AssistanceBeneficiaryMapper constructor.
      *
-     * @param BookletMapper           $bookletMapper
      * @param BeneficiaryMapper|null  $beneficiaryMapper
      */
     public function __construct(
-        BookletMapper $bookletMapper,
         ?BeneficiaryMapper $beneficiaryMapper
     ) {
-        $this->bookletMapper = $bookletMapper;
         $this->beneficiaryMapper = $beneficiaryMapper;
     }
 
@@ -91,7 +85,7 @@ class AssistanceBeneficiaryMapper
         $serializedAB = [
             'id' => $assistanceBeneficiary->getId(),
             'transactions' => [], // TODO: remove after PIN-3249
-            'booklets' => $this->bookletMapper->toValidateDistributionGroups($assistanceBeneficiary->getBooklets()),
+            'booklets' => [], // TODO: remove after PIN-3249
             'general_reliefs' => [], // TODO: remove after PIN-3249
             'smartcard_distributed' => $assistanceBeneficiary->getSmartcardDistributed(),
             'smartcard_distributed_at' => null,

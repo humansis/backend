@@ -58,6 +58,7 @@ class AssistanceBeneficiary
 
     /**
      * @var Collection|Booklet[]
+     * @deprecated you shouldn't know about booklets here
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Booklet", mappedBy="distribution_beneficiary", cascade={"persist", "remove"})
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
@@ -103,16 +104,6 @@ class AssistanceBeneficiary
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      */
     private $removed = 0;
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
@@ -361,11 +352,6 @@ class AssistanceBeneficiary
      */
     public function hasDistributionStarted(): bool
     {
-        foreach ($this->getBooklets() as $booklet) {
-            if (Booklet::UNASSIGNED !== $booklet->getStatus()) {
-                return true;
-            }
-        }
         foreach ($this->getReliefPackages() as $reliefPackage) {
             if ($reliefPackage->getState() !== ReliefPackageState::TO_DISTRIBUTE
                 || $reliefPackage->getAmountDistributed() > 0
