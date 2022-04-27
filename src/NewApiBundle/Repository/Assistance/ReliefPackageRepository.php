@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace NewApiBundle\Repository;
+namespace NewApiBundle\Repository\Assistance;
 
 
 use BeneficiaryBundle\Entity\Beneficiary;

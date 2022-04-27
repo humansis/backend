@@ -13,7 +13,7 @@ use NewApiBundle\Enum\ReliefPackageState;
 use VoucherBundle\Entity\SmartcardDeposit;
 
 /**
- * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ReliefPackageRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\Assistance\ReliefPackageRepository")
  * @ORM\Table(name="assistance_relief_package")
  * @ORM\HasLifecycleCallbacks
  */
