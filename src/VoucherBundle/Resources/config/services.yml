@@ -72,7 +72,7 @@ services:
             - '@logger'
             - '@cache.app'
             - '@=service("doctrine.orm.entity_manager").getRepository("DistributionBundle:AssistanceBeneficiary")'
-            - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:ReliefPackage")'
+            - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:Assistance\\ReliefPackage")'
         public: true
 
     VoucherBundle\Mapper\SmartcardMapper:
