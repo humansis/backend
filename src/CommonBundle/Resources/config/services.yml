@@ -186,7 +186,7 @@ services:
         public: true
         arguments:
             - "@kernel"
-            - "%app.countries%"
+            - '@NewApiBundle\Component\Country\Countries'
             - "@voucher.booklet_service"
         tags:
             - { name: doctrine.fixture.orm }
@@ -211,7 +211,7 @@ services:
         public: true
         arguments:
             - "@=service('kernel').getEnvironment()"
-            - "%app.countries%"
+            - '@NewApiBundle\Component\Country\Countries'
             - "@beneficiary.institution_service"
         tags:
             - { name: doctrine.fixture.orm }
@@ -220,7 +220,7 @@ services:
         public: true
         arguments:
             - "@=service('kernel').getEnvironment()"
-            - "%app.countries%"
+            - '@NewApiBundle\Component\Country\Countries'
             - "@beneficiary.community_service"
         tags:
             - { name: doctrine.fixture.orm }
@@ -229,7 +229,7 @@ services:
         public: true
         arguments:
             - "@kernel"
-            - "%app.countries%"
+            - '@NewApiBundle\Component\Country\Countries'
             - "@distribution.assistance_service"
         tags:
             - { name: doctrine.fixture.orm }
@@ -238,7 +238,7 @@ services:
         public: true
         arguments:
             - "@kernel"
-            - "%app.countries%"
+            - '@NewApiBundle\Component\Country\Countries'
             - "@distribution.assistance_service"
         tags:
             - { name: doctrine.fixture.orm }
@@ -323,7 +323,7 @@ services:
     CommonBundle\DataFixtures\ProductFixtures:
         public: true
         arguments:
-            - "%app.countries%"
+            - '@NewApiBundle\Component\Country\Countries'
         tags:
             - { name: doctrine.fixture.orm }
 
@@ -331,7 +331,7 @@ services:
         public: true
         arguments:
             - "@kernel"
-            - "%app.countries%"
+            - '@NewApiBundle\Component\Country\Countries'
         tags:
             - { name: doctrine.fixture.orm }
 

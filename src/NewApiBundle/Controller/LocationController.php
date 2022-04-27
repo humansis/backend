@@ -104,32 +104,27 @@ class LocationController extends AbstractController
      */
     public function userCountries(User $user): JsonResponse
     {
-        $allCountries = $this->getParameter('app.countries');
         $userRoles = $user->getRoles();
         $data = [];
 
         if (in_array(RoleType::ADMIN, $userRoles)) {
 
-            return $this->json(new Paginator($allCountries));
+            return $this->json(new Paginator($this->countries->getAll()));
         } elseif (in_array(RoleType::COUNTRY_MANAGER, $userRoles) || in_array(RoleType::REGIONAL_MANAGER, $userRoles)) {
 
             /** @var UserCountry $userCountry */
             foreach ($user->getCountries() as $userCountry) {
-                foreach ($allCountries as $country) {
-                    if ($country['iso3'] === $userCountry->getIso3()) {
-                        $data[] = $country;
-                    }
+                $country = $this->countries->getCountry($userCountry->getIso3());
+                if ($country) {
+                    $data[] = $country;
                 }
             }
         } else {
-            $projects = [];
 
             /** @var UserProject $userProject */
             foreach ($user->getProjects() as $userProject) {
-                $projects[] = $userProject->getProject()->getIso3();
-            }
-            foreach ($allCountries as $country) {
-                if (in_array($country['iso3'], $projects)) {
+                $country = $this->countries->getCountry($userProject->getProject()->getIso3());
+                if ($country) {
                     $data[] = $country;
                 }
             }

@@ -12,6 +12,7 @@ use CommonBundle\InputType\RequestConverter;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Enum\NationalIdType;
 use ProjectBundle\Entity\Project;
 
@@ -101,7 +102,7 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
     /** @var string */
     private $environment;
 
-    /** @var array */
+    /** @var Countries */
     private $countries;
 
     /** @var CommunityService */
@@ -109,10 +110,12 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
 
     /**
      * CommunityFixture constructor.
-     * @param string $environment
+     *
+     * @param string           $environment
+     * @param Countries        $countries
      * @param CommunityService $communityService
      */
-    public function __construct(string $environment, array $countries, CommunityService $communityService)
+    public function __construct(string $environment, Countries $countries, CommunityService $communityService)
     {
         $this->countries = $countries;
         $this->environment = $environment;
@@ -126,8 +129,8 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
             echo "Cannot run on production environment";
             return;
         }
-        foreach ($this->countries as $COUNTRY) {
-            $projects = $manager->getRepository(Project::class)->findBy(['iso3' => $COUNTRY['iso3']], ['id' => 'asc']);
+        foreach ($this->countries->getAll() as $COUNTRY) {
+            $projects = $manager->getRepository(Project::class)->findBy(['iso3' => $COUNTRY->getIso3()], ['id' => 'asc']);
             $projectIds = array_map(function (Project $project) {
                 return $project->getId();
             }, $projects);
@@ -135,7 +138,7 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
                 $communityTypeData['projects'] = $projectIds;
                 $communityType = RequestConverter::normalizeInputType($communityTypeData, NewCommunityType::class);
 
-                $institution = $this->communityService->createDeprecated(new Country($COUNTRY['iso3']), $communityType);
+                $institution = $this->communityService->createDeprecated(new Country($COUNTRY->getIso3()), $communityType);
                 $manager->persist($institution);
             }
         }
