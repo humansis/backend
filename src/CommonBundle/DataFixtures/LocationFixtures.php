@@ -6,6 +6,10 @@ use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
+use CommonBundle\Repository\Adm1Repository;
+use CommonBundle\Repository\Adm2Repository;
+use CommonBundle\Repository\Adm3Repository;
+use CommonBundle\Repository\Adm4Repository;
 use CommonBundle\Utils\AdmsImporter;
 use CommonBundle\Utils\LocationImporter;
 use CommonBundle\Utils\LocationService;
@@ -26,10 +30,40 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
     /** @var LocationService */
     private $locationService;
 
-    public function __construct(Kernel $kernel, LocationService $locationService)
-    {
+    /**
+     * @var Adm1Repository
+     */
+    private $adm1Repository;
+
+    /**
+     * @var Adm2Repository
+     */
+    private $adm2Repository;
+
+    /**
+     * @var Adm3Repository
+     */
+    private $adm3Repository;
+
+    /**
+     * @var Adm4Repository
+     */
+    private $adm4Repository;
+
+    public function __construct(
+        Kernel          $kernel,
+        LocationService $locationService,
+        Adm1Repository  $adm1Repository,
+        Adm2Repository  $adm2Repository,
+        Adm3Repository  $adm3Repository,
+        Adm4Repository  $adm4Repository
+    ) {
         $this->env = $kernel->getEnvironment();
         $this->locationService = $locationService;
+        $this->adm1Repository = $adm1Repository;
+        $this->adm2Repository = $adm2Repository;
+        $this->adm3Repository = $adm3Repository;
+        $this->adm4Repository = $adm4Repository;
     }
 
     /**
@@ -48,7 +82,8 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
 
             $filepath = realpath($directory.'/'.$file);
 
-            $admImported = new AdmsImporter($manager, $filepath);
+            $admImported = new AdmsImporter($manager, $filepath, $this->adm1Repository, $this->adm2Repository, $this->adm3Repository,
+                $this->adm4Repository);
 
             $limit = self::LIMIT;
             echo "FILE PART($limit) IMPORT ADMX: $filepath \n";

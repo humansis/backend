@@ -8,6 +8,10 @@ use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use CommonBundle\Entity\Adm4;
+use CommonBundle\Repository\Adm1Repository;
+use CommonBundle\Repository\Adm2Repository;
+use CommonBundle\Repository\Adm3Repository;
+use CommonBundle\Repository\Adm4Repository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
@@ -34,15 +38,49 @@ class AdmsImporter
     private $omittedLocations = 0;
 
     /**
+     * @var Adm1Repository
+     */
+    private $adm1Repository;
+
+    /**
+     * @var Adm2Repository
+     */
+    private $adm2Repository;
+
+    /**
+     * @var Adm3Repository
+     */
+    private $adm3Repository;
+
+    /**
+     * @var Adm4Repository
+     */
+    private $adm4Repository;
+
+    /**
      * LocationService constructor.
      *
-     * @param ObjectManager $entityManager
-     * @param string        $file
+     * @param ObjectManager  $entityManager
+     * @param string         $file
+     * @param Adm1Repository $adm1Repository
+     * @param Adm2Repository $adm2Repository
+     * @param Adm3Repository $adm3Repository
+     * @param Adm4Repository $adm4Repository
      */
-    public function __construct(ObjectManager $entityManager, string $file)
-    {
+    public function __construct(
+        ObjectManager  $entityManager,
+        string         $file,
+        Adm1Repository $adm1Repository,
+        Adm2Repository $adm2Repository,
+        Adm3Repository $adm3Repository,
+        Adm4Repository $adm4Repository
+    ) {
         $this->em = $entityManager;
         $this->file = $file;
+        $this->adm1Repository = $adm1Repository;
+        $this->adm2Repository = $adm2Repository;
+        $this->adm3Repository = $adm3Repository;
+        $this->adm4Repository = $adm4Repository;
     }
 
     /**
@@ -137,7 +175,7 @@ class AdmsImporter
 
     private function buildAdm1(string $name, string $code, string $iso3): Adm1
     {
-        $adm1 = $this->em->getRepository(Adm1::class)->findOneByCode($code);
+        $adm1 = $this->adm1Repository->findByIsoAndCode($iso3, $code);
         if (!$adm1) {
             $adm1 = (new Adm1())
                 ->setCountryISO3($iso3)
@@ -153,9 +191,17 @@ class AdmsImporter
         return $adm1;
     }
 
+    /**
+     * @param string $name
+     * @param string $code
+     * @param Adm1   $adm1
+     *
+     * @return Adm2
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     private function buildAdm2(string $name, string $code, Adm1 $adm1): Adm2
     {
-        $adm2 = $this->em->getRepository(Adm2::class)->findOneByCode($code);
+        $adm2 = $this->adm2Repository->findByAdm1AndCode($adm1, $code);
         if (!$adm2) {
             $adm2 = (new Adm2())
                 ->setAdm1($adm1)
@@ -171,9 +217,17 @@ class AdmsImporter
         return $adm2;
     }
 
+    /**
+     * @param string $name
+     * @param string $code
+     * @param Adm2   $adm2
+     *
+     * @return Adm3
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     private function buildAdm3(string $name, string $code, Adm2 $adm2): Adm3
     {
-        $adm3 = $this->em->getRepository(Adm3::class)->findOneByCode($code);
+        $adm3 = $this->adm3Repository->findByAdm2AndCode($adm2, $code);
         if (!$adm3) {
             $adm3 = (new Adm3())
                 ->setAdm2($adm2)
@@ -191,7 +245,7 @@ class AdmsImporter
 
     private function buildAdm4(string $name, string $code, Adm3 $adm3): Adm4
     {
-        $adm4 = $this->em->getRepository(Adm4::class)->findOneByCode($code);
+        $adm4 = $this->adm4Repository->findByAdm3AndCode($adm3, $code);
         if (!$adm4) {
             $adm4 = (new Adm4())
                 ->setAdm3($adm3)

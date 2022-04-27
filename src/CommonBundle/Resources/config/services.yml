@@ -9,6 +9,12 @@ services:
         public: true
         tags:
             - { name: 'console.command' }
+        arguments:
+            - '@doctrine.orm.default_entity_manager'
+            - '@CommonBundle\Repository\Adm1Repository'
+            - '@CommonBundle\Repository\Adm2Repository'
+            - '@CommonBundle\Repository\Adm3Repository'
+            - '@CommonBundle\Repository\Adm4Repository'
 
     CommonBundle\Command\AdmCSV2XMLCommand:
         public: true
@@ -139,6 +145,10 @@ services:
         arguments:
             - "@kernel"
             - "@location_service"
+            - '@CommonBundle\Repository\Adm1Repository'
+            - '@CommonBundle\Repository\Adm2Repository'
+            - '@CommonBundle\Repository\Adm3Repository'
+            - '@CommonBundle\Repository\Adm4Repository'
         tags:
             - { name: doctrine.fixture.orm }
 
