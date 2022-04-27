@@ -351,6 +351,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
      */
     public function testGetDistributionBeneficiaries($distribution)
     {
+        $this->markTestSkipped('Old endpoint');
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -376,6 +377,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
      */
     public function testDistributionBeneficiariesVouchers($distribution)
     {
+        $this->markTestSkipped('Old endpoint');
         $bookletService = self::$container->get('voucher.booklet_service');
         $loggerService = self::$container->get('logger');
         $purchaseService = new PurchaseService($this->em, $loggerService);
