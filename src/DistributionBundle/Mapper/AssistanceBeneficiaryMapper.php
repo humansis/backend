@@ -17,9 +17,6 @@ class AssistanceBeneficiaryMapper
     /** @var BookletMapper */
     private $bookletMapper;
 
-    /** @var TransactionMapper */
-    private $transactionMapper;
-
     /** @var BeneficiaryMapper */
     private $beneficiaryMapper;
 
@@ -27,16 +24,13 @@ class AssistanceBeneficiaryMapper
      * AssistanceBeneficiaryMapper constructor.
      *
      * @param BookletMapper           $bookletMapper
-     * @param TransactionMapper       $transactionMapper
      * @param BeneficiaryMapper|null  $beneficiaryMapper
      */
     public function __construct(
         BookletMapper $bookletMapper,
-        TransactionMapper $transactionMapper,
         ?BeneficiaryMapper $beneficiaryMapper
     ) {
         $this->bookletMapper = $bookletMapper;
-        $this->transactionMapper = $transactionMapper;
         $this->beneficiaryMapper = $beneficiaryMapper;
     }
 
@@ -94,20 +88,9 @@ class AssistanceBeneficiaryMapper
             return null;
         }
 
-        // send only successful transactions or all failed
-        $transactions = [];
-        foreach ($assistanceBeneficiary->getTransactions() as $transaction) {
-            if (Transaction::SUCCESS === $transaction->getTransactionStatus()) {
-                $transactions[] = $transaction;
-            }
-        }
-        if (empty($transactions) && !empty($assistanceBeneficiary->getTransactions())) {
-            $transactions = $assistanceBeneficiary->getTransactions();
-        }
-
         $serializedAB = [
             'id' => $assistanceBeneficiary->getId(),
-            'transactions' => $this->transactionMapper->toValidateDistributionGroups($transactions),
+            'transactions' => [], // TODO: remove after PIN-3249
             'booklets' => $this->bookletMapper->toValidateDistributionGroups($assistanceBeneficiary->getBooklets()),
             'general_reliefs' => [], // TODO: remove after PIN-3249
             'smartcard_distributed' => $assistanceBeneficiary->getSmartcardDistributed(),

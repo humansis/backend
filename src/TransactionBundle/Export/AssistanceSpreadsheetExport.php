@@ -443,17 +443,6 @@ class AssistanceSpreadsheetExport
     {
         $result = [];
 
-        foreach ($assistanceBeneficiary->getTransactions() as $transaction) {
-            if ($transaction->getDateSent()) {
-                foreach ($assistanceBeneficiary->getAssistance()->getCommodities() as $commodity) {
-                    if ('Mobile Money' == $commodity->getModalityType()->getName()) {
-                        $result[] = $commodity->getModalityType()->getName().': '.$transaction->getAmountSent();
-                        break;
-                    }
-                }
-            }
-        }
-
         foreach ($assistanceBeneficiary->getSmartcardDeposits() as $deposit) {
             $result[] = 'Smartcard deposit: '.$deposit->getValue().' '.$deposit->getSmartcard()->getCurrency();
         }

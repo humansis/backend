@@ -30,8 +30,6 @@ class AssistanceBeneficiaryMapper extends AbstractAssistanceBeneficiaryMapper
 
     public function getTransactionIds(): array
     {
-        return array_map(function (Transaction $transaction) {
-            return $transaction->getId();
-        }, $this->object->getTransactions()->toArray());
+        return []; // TODO: remove after PIN-3249
     }
 }

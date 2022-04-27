@@ -48,6 +48,7 @@ class AssistanceBeneficiary
 
     /**
      * @var Collection|Transaction[]
+     * @deprecated you shouldn't know about transaction here
      *
      * @ORM\OneToMany(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
@@ -207,6 +208,7 @@ class AssistanceBeneficiary
 
     /**
      * Get the value of Transaction.
+     * @deprecated you shouldn't know about transaction here
      *
      * @return Collection|Transaction[]
      */
@@ -365,12 +367,9 @@ class AssistanceBeneficiary
             }
         }
         foreach ($this->getReliefPackages() as $reliefPackage) {
-            if ($reliefPackage->getState() !== ReliefPackageState::TO_DISTRIBUTE) {
-                return true;
-            }
-        }
-        foreach ($this->getTransactions() as $transaction) {
-            if (Transaction::SUCCESS === $transaction->getTransactionStatus()) {
+            if ($reliefPackage->getState() !== ReliefPackageState::TO_DISTRIBUTE
+                || $reliefPackage->getAmountDistributed() > 0
+            ) {
                 return true;
             }
         }
