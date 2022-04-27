@@ -5,7 +5,7 @@ namespace Tests\NewApiBundle\Controller\OfflineApp;
 use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
-use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ModalityType;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\User;

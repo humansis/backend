@@ -7,7 +7,7 @@ framework:
         arguments:
           - 'state'
       supports:
-        - NewApiBundle\Entity\ReliefPackage
+        - NewApiBundle\Entity\Assistance\ReliefPackage
       initial_marking: !php/const NewApiBundle\Enum\ReliefPackageState::TO_DISTRIBUTE
       places:
         - !php/const NewApiBundle\Enum\ReliefPackageState::TO_DISTRIBUTE

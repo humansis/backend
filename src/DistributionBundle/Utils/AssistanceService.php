@@ -32,7 +32,7 @@ use Doctrine\ORM\ORMException;
 use Exception;
 use InvalidArgumentException;
 use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
-use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\AssistanceStatistics;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Enum\PersonGender;

@@ -8,7 +8,7 @@ use DateTimeInterface;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use Doctrine\ORM\EntityManager;
-use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\InputType\SmartcardPurchaseInputType;

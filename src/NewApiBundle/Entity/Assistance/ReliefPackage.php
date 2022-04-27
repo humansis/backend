@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Entity;
+namespace NewApiBundle\Entity\Assistance;
 
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Common\Collections\Collection;

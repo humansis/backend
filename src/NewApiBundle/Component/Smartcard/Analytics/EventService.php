@@ -6,7 +6,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManagerInterface;
-use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\SynchronizationBatch;
 use NewApiBundle\Repository\SynchronizationBatchRepository;
 use VoucherBundle\Entity\Smartcard;

@@ -12,7 +12,7 @@ use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use InvalidArgumentException;
-use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;

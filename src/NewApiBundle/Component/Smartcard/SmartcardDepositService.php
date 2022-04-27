@@ -5,7 +5,7 @@ namespace NewApiBundle\Component\Smartcard;
 
 use CommonBundle\InputType\RequestConverter;
 use Doctrine\ORM\EntityManager;
-use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\SynchronizationBatch\Deposits;
 use NewApiBundle\InputType\SynchronizationBatch\CreateDepositInputType;
 use NewApiBundle\Workflow\ReliefPackageTransitions;

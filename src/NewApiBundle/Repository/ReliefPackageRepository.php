@@ -11,7 +11,7 @@ use CommonBundle\Entity\Adm3;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
 use VoucherBundle\Entity\Vendor;
