@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use NewApiBundle\Enum\ReliefPackageState;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Serializer\Annotation\MaxDepth as SymfonyMaxDepth;
 
@@ -23,15 +25,7 @@ use VoucherBundle\Entity\SmartcardDeposit;
  */
 class AssistanceBeneficiary
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullAssistanceBeneficiary", "FullAssistance", "SmallAssistance", "ValidatedAssistance", "FullBooklet"})
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var Assistance
@@ -70,14 +64,6 @@ class AssistanceBeneficiary
     private $booklets;
 
     /**
-     * @var GeneralReliefItem
-     *
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\GeneralReliefItem", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
-     */
-    private $generalReliefs;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="content", type="json", nullable=true)
@@ -95,7 +81,6 @@ class AssistanceBeneficiary
     public function __construct()
     {
         $this->booklets = new ArrayCollection();
-        $this->generalReliefs = new ArrayCollection();
         $this->transactions = new ArrayCollection();
         $this->reliefPackages = new ArrayCollection();
     }
@@ -304,44 +289,6 @@ class AssistanceBeneficiary
     }
 
     /**
-     * Get the value of Transaction.
-     *
-     * @return GeneralReliefItem
-     */
-    public function getGeneralReliefs()
-    {
-        return $this->generalReliefs;
-    }
-
-    /**
-     * Add a GeneralReliefItem.
-     *
-     * @param GeneralReliefItem $generalRelief
-     *
-     * @return self
-     */
-    public function addGeneralRelief(GeneralReliefItem $generalRelief)
-    {
-        $this->generalReliefs[] = $generalRelief;
-
-        return $this;
-    }
-
-    /**
-     * Remove a GeneralReliefItem.
-     *
-     * @param GeneralReliefItem $generalRelief
-     *
-     * @return self
-     */
-    public function removeGeneralRelief(GeneralReliefItem $generalRelief)
-    {
-        $this->generalReliefs->removeElement($generalRelief);
-
-        return $this;
-    }
-
-    /**
      * Set justification.
      *
      * @param string $justification
@@ -417,8 +364,8 @@ class AssistanceBeneficiary
                 return true;
             }
         }
-        foreach ($this->getGeneralReliefs() as $item) {
-            if (null !== $item->getDistributedAt()) {
+        foreach ($this->getReliefPackages() as $reliefPackage) {
+            if ($reliefPackage->getState() !== ReliefPackageState::TO_DISTRIBUTE) {
                 return true;
             }
         }

@@ -47,16 +47,6 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         return $q->getQuery()->getSingleScalarResult();
     }
 
-    public function getByGRI(GeneralReliefItem $gri)
-    {
-        $qb = $this->createQueryBuilder("db");
-        $q = $qb->leftJoin("db.generalReliefs", "gr")
-            ->where("gr.id = :gri")
-            ->setParameter('gri', $gri->getId());
-
-        return $q->getQuery()->getOneOrNullResult();
-    }
-
     public function findAssignable(Assistance $assistance)
     {
         $qb = $this->createQueryBuilder("db");

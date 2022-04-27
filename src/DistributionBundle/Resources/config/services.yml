@@ -73,26 +73,23 @@ services:
 
     DistributionBundle\Mapper\AssistanceBeneficiaryMapper:
         arguments:
-            - "@VoucherBundle\\Mapper\\BookletMapper"
-            - "@DistributionBundle\\Mapper\\GeneralReliefItemMapper"
-            - "@TransactionBundle\\Mapper\\TransactionMapper"
-            - "@BeneficiaryBundle\\Mapper\\BeneficiaryMapper"
+            - '@VoucherBundle\Mapper\BookletMapper'
+            - '@TransactionBundle\Mapper\TransactionMapper'
+            - '@BeneficiaryBundle\Mapper\BeneficiaryMapper'
         public: true
 
     DistributionBundle\Mapper\AssistanceCommunityMapper:
         arguments:
-            - "@VoucherBundle\\Mapper\\BookletMapper"
-            - "@DistributionBundle\\Mapper\\GeneralReliefItemMapper"
-            - "@TransactionBundle\\Mapper\\TransactionMapper"
-            - "@BeneficiaryBundle\\Mapper\\CommunityMapper"
+            - '@VoucherBundle\Mapper\BookletMapper'
+            - '@TransactionBundle\Mapper\TransactionMapper'
+            - '@BeneficiaryBundle\Mapper\CommunityMapper'
         public: true
 
     DistributionBundle\Mapper\AssistanceInstitutionMapper:
         arguments:
-            - "@VoucherBundle\\Mapper\\BookletMapper"
-            - "@DistributionBundle\\Mapper\\GeneralReliefItemMapper"
-            - "@TransactionBundle\\Mapper\\TransactionMapper"
-            - "@BeneficiaryBundle\\Mapper\\InstitutionMapper"
+            - '@VoucherBundle\Mapper\BookletMapper'
+            - '@TransactionBundle\Mapper\TransactionMapper'
+            - '@BeneficiaryBundle\Mapper\InstitutionMapper'
         public: true
 
     DistributionBundle\Mapper\CampMapper:

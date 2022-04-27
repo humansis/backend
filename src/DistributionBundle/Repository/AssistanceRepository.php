@@ -10,6 +10,7 @@ use \DateTime;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\DBAL\PersonGenderEnum;
+use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\InputType\AssistanceByProjectOfflineAppFilterInputType;
 use NewApiBundle\InputType\AssistanceFilterInputType;
 use NewApiBundle\InputType\AssistanceOrderInputType;
@@ -174,7 +175,9 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                 } else if ($modalityType === 'QR Code Voucher') {
                     $qb->innerJoin('db.booklets', 'b', Join::WITH, 'b.status = 1 OR b.status = 2');
                 } else {
-                    $qb->innerJoin('db.generalReliefs', 'gr', Join::WITH, 'gr.distributedAt IS NOT NULL');
+                    $qb->innerJoin('db.reliefPackages', 'rp', Join::WITH, 'rp.state = :undistributedState')
+                        ->setParameter('undistributedState', ReliefPackageState::TO_DISTRIBUTE)
+                    ;
                 }
         return $qb->getQuery()->getSingleScalarResult();
     }

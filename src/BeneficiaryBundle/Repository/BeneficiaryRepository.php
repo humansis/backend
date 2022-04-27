@@ -19,6 +19,7 @@ use NewApiBundle\DBAL\PersonGenderEnum;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\PersonGender;
+use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\Request\Pagination;
@@ -411,7 +412,8 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         } else if ($modalityType === 'QR Code Voucher') {
             $qb->innerJoin('db.booklets', 'bo', Join::WITH, 'bo.status = 1 OR bo.status = 2');
         } else {
-            $qb->innerJoin('db.generalReliefs', 'gr', Join::WITH, 'gr.distributedAt IS NOT NULL');
+            $qb->innerJoin('db.reliefPackages', 'rp', Join::WITH, 'rp.state = :distributed')
+                ->setParameter('distributed', ReliefPackageState::DISTRIBUTED);
         }
 
         return $qb->getQuery()->getSingleScalarResult();
@@ -539,8 +541,10 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             ->leftJoin('b.assistanceBeneficiary', 'db')
             ->leftJoin('db.booklets', 'bk')
             ->leftJoin('db.transactions', 't')
-            ->leftJoin('db.generalReliefs', 'gri')
-            ->andWhere('t.transactionStatus = 1 OR gri.distributedAt IS NOT NULL OR bk.id IS NOT NULL');
+            ->leftJoin('db.reliefPackages', 'rp')
+            ->andWhere('t.transactionStatus = 1 OR rp.state = :distributed OR bk.id IS NOT NULL')
+            ->setParameter('distributed', ReliefPackageState::DISTRIBUTED)
+        ;
 
         return $qb->getQuery()->getSingleScalarResult();
     }

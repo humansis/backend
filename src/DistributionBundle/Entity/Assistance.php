@@ -898,7 +898,7 @@ class Assistance implements ExportableInterface
         return round($percentage * 100) / 100;
     }
 
-    public function getCommoditySentAmountFromBeneficiary($commodity, $assistanceBeneficiary)
+    public function getCommoditySentAmountFromBeneficiary(Commodity $commodity, AssistanceBeneficiary $assistanceBeneficiary): int
     {
         $modalityType = $this->getCommodities()[0]->getModalityType()->getName();
         if ($modalityType === 'Mobile Money') {
@@ -917,19 +917,15 @@ class Assistance implements ExportableInterface
                 }
             }
         } else {
-            $commodityIndex = null;
-            foreach ($this->getCommodities() as $index => $commodityInList) {
-                if ($commodityInList->getId() === $commodity->getId()) {
-                    $commodityIndex = $index;
+            $sent = 0;
+            foreach ($assistanceBeneficiary->getReliefPackages() as $package) {
+                if ($package->getModalityType() == $commodity->getModalityType()) {
+                    $sent += floatval($package->getAmountDistributed());
                 }
             }
-            if (!$assistanceBeneficiary->getGeneralReliefs() || null == $commodityIndex) {
-                return 0;
-            }
-            $correspondingGeneralRelief = $assistanceBeneficiary->getGeneralReliefs()[$commodityIndex];
-
-            return ($correspondingGeneralRelief && $correspondingGeneralRelief->getDistributedAt() ? $commodity->getValue() : 0);
+            return floor($sent);
         }
+        return 0;
     }
 
     /**

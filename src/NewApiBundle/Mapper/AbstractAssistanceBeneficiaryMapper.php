@@ -46,9 +46,7 @@ abstract class AbstractAssistanceBeneficiaryMapper implements MapperInterface
 
     public function getGeneralReliefItemIds(): array
     {
-        return array_map(function (GeneralReliefItem $generalReliefItem) {
-            return $generalReliefItem->getId();
-        }, $this->object->getGeneralReliefs()->toArray());
+        return []; // TODO: remove after PIN-3249
     }
 
     public function getBookletIds(): array

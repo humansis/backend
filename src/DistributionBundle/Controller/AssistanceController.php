@@ -1050,17 +1050,7 @@ class AssistanceController extends Controller
      */
     public function editGeneralReliefNotesAction(Request $request)
     {
-        $generalReliefs = $request->request->get('generalReliefs');
-        try {
-            foreach ($generalReliefs as $generalRelief) {
-                $this->get('distribution.assistance_service')
-                ->editGeneralReliefItemNotes($generalRelief['id'], $generalRelief['notes']);
-            }
-        } catch (\Exception $e) {
-            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
-
-        return new Response(null, Response::HTTP_NO_CONTENT);
+        return new Response("Old endpoint", Response::HTTP_VERSION_NOT_SUPPORTED);
     }
 
     /**

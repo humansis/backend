@@ -7,6 +7,9 @@ namespace DistributionBundle\Mapper;
 use DistributionBundle\Entity\GeneralReliefItem;
 use Symfony\Component\Serializer\Serializer;
 
+/**
+ * @deprecated GRI is deprecated
+ */
 class GeneralReliefItemMapper
 {
     /** @var Serializer */

@@ -233,11 +233,6 @@ class AssistanceService
             ->setUpdatedOn(null);
 
         foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
-            /** @var AssistanceBeneficiary $assistanceBeneficiary */
-            foreach ($assistanceBeneficiary->getGeneralReliefs() as $gri) {
-                $this->em->remove($gri);
-            }
-
             foreach ($assistanceBeneficiary->getReliefPackages() as $package) {
                 $this->em->remove($package);
             }
@@ -1031,7 +1026,7 @@ class AssistanceService
         }
         foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
             /** @var AssistanceBeneficiary $assistanceBeneficiary */
-            foreach ($assistanceBeneficiary->getGeneralReliefs() as $relief) {
+            foreach ($assistanceBeneficiary->getReliefPackages() as $relief) {
                 $this->em->remove($relief);
             }
             foreach ($assistanceBeneficiary->getTransactions() as $transaction) {
@@ -1172,32 +1167,21 @@ class AssistanceService
     {
         $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findByAssistance($assistance);
 
-        $generalreliefs = array();
+        /** @var ReliefPackage[] $packages */
+        $packages = array();
         $exportableTable = array();
         foreach ($distributionBeneficiaries as $db) {
-            $generalrelief = $this->em->getRepository(GeneralReliefItem::class)->findOneByAssistanceBeneficiary($db);
+            $relief = $this->em->getRepository(ReliefPackage::class)->findOneByAssistanceBeneficiary($db);
 
-            if ($generalrelief) {
-                array_push($generalreliefs, $generalrelief);
+            if ($relief) {
+                array_push($packages, $relief);
             }
         }
 
-        foreach ($generalreliefs as $generalrelief) {
-            $beneficiary = $generalrelief->getAssistanceBeneficiary()->getBeneficiary();
-            $commodityNames = implode(', ',
-                array_map(
-                    function($commodity) { return  $commodity->getModalityType()->getName(); },
-                    $assistance->getCommodities()->toArray()
-                )
-            );
-
-
-            $commodityValues = implode(', ',
-                array_map(
-                    function($commodity) { return  $commodity->getValue() . ' ' . $commodity->getUnit(); },
-                    $assistance->getCommodities()->toArray()
-                )
-            );
+        foreach ($packages as $relief) {
+            $beneficiary = $relief->getAssistanceBeneficiary()->getBeneficiary();
+            $commodityNames = $relief->getModalityType();
+            $commodityValues = $relief->getAmountToDistribute() . ' ' . $relief->getUnit();
 
             $commonFields = $beneficiary->getCommonExportFields();
 
@@ -1205,15 +1189,15 @@ class AssistanceService
                 array_merge($commonFields, array(
                     "Commodity" => $commodityNames,
                     "Value" => $commodityValues,
-                    "Distributed At" => $generalrelief->getDistributedAt(),
-                    "Notes Distribution" => $generalrelief->getNotes(),
-                    "Removed" => $generalrelief->getAssistanceBeneficiary()->getRemoved() ? 'Yes' : 'No',
-                    "Justification for adding/removing" => $generalrelief->getAssistanceBeneficiary()->getJustification(),
+                    "Distributed At" => $relief->getLastModifiedAt(),
+                    "Notes Distribution" => $relief->getNotes(),
+                    "Removed" => $relief->getAssistanceBeneficiary()->getRemoved() ? 'Yes' : 'No',
+                    "Justification for adding/removing" => $relief->getAssistanceBeneficiary()->getJustification(),
                 ))
             );
         }
 
-        return $this->container->get('export_csv_service')->export($exportableTable, 'generalrelief', $type);
+        return $this->container->get('export_csv_service')->export($exportableTable, 'relief', $type);
     }
 
     /**

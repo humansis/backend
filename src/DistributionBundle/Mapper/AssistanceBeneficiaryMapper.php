@@ -17,9 +17,6 @@ class AssistanceBeneficiaryMapper
     /** @var BookletMapper */
     private $bookletMapper;
 
-    /** @var GeneralReliefItemMapper */
-    private $generalReliefItemMapper;
-
     /** @var TransactionMapper */
     private $transactionMapper;
 
@@ -30,18 +27,15 @@ class AssistanceBeneficiaryMapper
      * AssistanceBeneficiaryMapper constructor.
      *
      * @param BookletMapper           $bookletMapper
-     * @param GeneralReliefItemMapper $generalReliefItemMapper
      * @param TransactionMapper       $transactionMapper
      * @param BeneficiaryMapper|null  $beneficiaryMapper
      */
     public function __construct(
         BookletMapper $bookletMapper,
-        GeneralReliefItemMapper $generalReliefItemMapper,
         TransactionMapper $transactionMapper,
         ?BeneficiaryMapper $beneficiaryMapper
     ) {
         $this->bookletMapper = $bookletMapper;
-        $this->generalReliefItemMapper = $generalReliefItemMapper;
         $this->transactionMapper = $transactionMapper;
         $this->beneficiaryMapper = $beneficiaryMapper;
     }
@@ -115,7 +109,7 @@ class AssistanceBeneficiaryMapper
             'id' => $assistanceBeneficiary->getId(),
             'transactions' => $this->transactionMapper->toValidateDistributionGroups($transactions),
             'booklets' => $this->bookletMapper->toValidateDistributionGroups($assistanceBeneficiary->getBooklets()),
-            'general_reliefs' => $this->generalReliefItemMapper->toValidateDistributionGroups($assistanceBeneficiary->getGeneralReliefs()),
+            'general_reliefs' => [], // TODO: remove after PIN-3249
             'smartcard_distributed' => $assistanceBeneficiary->getSmartcardDistributed(),
             'smartcard_distributed_at' => null,
             'justification' => $assistanceBeneficiary->getJustification(),
