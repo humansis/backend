@@ -4,11 +4,14 @@ namespace DistributionBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use DistributionBundle\Entity\AssistanceBeneficiary;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 
 /**
  * GeneralReliefItem
+ * @deprecated don't use, it is replaced by ReliefPackage
+ * @see ReliefPackage
  *
  * @ORM\Table(name="general_relief_item")
  * @ORM\Entity(repositoryClass="DistributionBundle\Repository\GeneralReliefItemRepository")
