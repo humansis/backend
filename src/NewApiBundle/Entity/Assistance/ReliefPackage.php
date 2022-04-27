@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
 use NewApiBundle\Entity\Helper\CreatedAt;
+use NewApiBundle\Entity\Helper\LastModifiedAt;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
@@ -21,6 +22,7 @@ class ReliefPackage
 {
     use StandardizedPrimaryKey;
     use CreatedAt;
+    use LastModifiedAt; // it means when it was distributed or changed in other way
 
     /**
      * @var string
@@ -65,6 +67,13 @@ class ReliefPackage
      * @ORM\Column(name="unit", type="string", nullable=false)
      */
     private $unit;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="notes", type="string", length=255, nullable=true)
+     */
+    private $notes;
 
     /**
      * @var Collection|SmartcardDeposit[]
@@ -215,6 +224,22 @@ class ReliefPackage
     public function addAmountOfDistributed($amountDistributed): void
     {
         $this->setAmountDistributed((string) ((float) $this->amountDistributed + (float) $amountDistributed));
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getNotes(): ?string
+    {
+        return $this->notes;
+    }
+
+    /**
+     * @param string|null $notes
+     */
+    public function setNotes(?string $notes): void
+    {
+        $this->notes = $notes;
     }
 
     /**
