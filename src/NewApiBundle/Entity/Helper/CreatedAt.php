@@ -9,6 +9,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use RuntimeException;
 
+/**
+ * Describes time when the information was made and stored In contrast with ExecutedAt which describes when event really happened in real world.
+ */
 trait CreatedAt
 {
     /**
