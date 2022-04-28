@@ -15,6 +15,7 @@ services:
             - '@CommonBundle\Repository\Adm2Repository'
             - '@CommonBundle\Repository\Adm3Repository'
             - '@CommonBundle\Repository\Adm4Repository'
+            - '@CommonBundle\Repository\LocationRepository'
 
     CommonBundle\Command\AdmCSV2XMLCommand:
         public: true
@@ -149,6 +150,7 @@ services:
             - '@CommonBundle\Repository\Adm2Repository'
             - '@CommonBundle\Repository\Adm3Repository'
             - '@CommonBundle\Repository\Adm4Repository'
+            - '@CommonBundle\Repository\LocationRepository'
         tags:
             - { name: doctrine.fixture.orm }
 

@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace CommonBundle\Utils;
 
-use CommonBundle\Entity\Adm1;
-use CommonBundle\Entity\Adm2;
-use CommonBundle\Entity\Adm3;
-use CommonBundle\Entity\Adm4;
 use CommonBundle\Entity\Location;
+use CommonBundle\Repository\LocationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
@@ -31,15 +28,22 @@ class LocationImporter
     private $omittedLocations = 0;
 
     /**
+     * @var LocationRepository
+     */
+    private $locationRepository;
+
+    /**
      * LocationService constructor.
      *
-     * @param ObjectManager $entityManager
-     * @param string        $file
+     * @param ObjectManager      $entityManager
+     * @param string             $file
+     * @param LocationRepository $locationRepository
      */
-    public function __construct(ObjectManager $entityManager, string $file)
+    public function __construct(ObjectManager $entityManager, string $file, LocationRepository $locationRepository)
     {
         $this->em = $entityManager;
         $this->file = $file;
+        $this->locationRepository = $locationRepository;
     }
 
     /**
@@ -137,7 +141,7 @@ class LocationImporter
     private function buildLocation(string $name, string $code, string $iso3, int $level, ?Location $parentLocation = null): Location
     {
         /** @var Location[] $locations */
-        $locations = $this->em->getRepository(Location::class)->findBy(['code' => $code]);
+        $locations = $this->locationRepository->findBy(['countryISO3' => $iso3, 'code' => $code]);
         if (count($locations) > 1) {
             $location = $locations[0];
             $this->omittedLocations++;

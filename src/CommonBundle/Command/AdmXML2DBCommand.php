@@ -2,25 +2,21 @@
 
 namespace CommonBundle\Command;
 
-use CommonBundle\DataFixtures\LocationFixtures;
 use CommonBundle\Repository\Adm1Repository;
 use CommonBundle\Repository\Adm2Repository;
 use CommonBundle\Repository\Adm3Repository;
 use CommonBundle\Repository\Adm4Repository;
+use CommonBundle\Repository\LocationRepository;
 use CommonBundle\Utils\AdmsImporter;
 use CommonBundle\Utils\LocationImporter;
-use CommonBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
-use SimpleXMLElement;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
 class AdmXML2DBCommand extends ContainerAwareCommand
@@ -51,24 +47,32 @@ class AdmXML2DBCommand extends ContainerAwareCommand
     private $adm4Repository;
 
     /**
+     * @var LocationRepository
+     */
+    private $locationRepository;
+
+    /**
      * @param EntityManagerInterface $entityManager
      * @param Adm1Repository         $adm1Repository
      * @param Adm2Repository         $adm2Repository
      * @param Adm3Repository         $adm3Repository
      * @param Adm4Repository         $adm4Repository
+     * @param LocationRepository     $locationRepository
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         Adm1Repository         $adm1Repository,
         Adm2Repository         $adm2Repository,
         Adm3Repository         $adm3Repository,
-        Adm4Repository         $adm4Repository
+        Adm4Repository         $adm4Repository,
+        LocationRepository     $locationRepository
     ) {
         $this->entityManager = $entityManager;
         $this->adm1Repository = $adm1Repository;
         $this->adm2Repository = $adm2Repository;
         $this->adm3Repository = $adm3Repository;
         $this->adm4Repository = $adm4Repository;
+        $this->locationRepository = $locationRepository;
 
         parent::__construct();
     }
@@ -120,7 +124,7 @@ class AdmXML2DBCommand extends ContainerAwareCommand
             $this->importLocations($input, $output, $importer);
 
             // LOCATION IMPORT
-            $importer = new LocationImporter($this->getContainer()->get('doctrine.orm.default_entity_manager'), $countryFile);
+            $importer = new LocationImporter($this->entityManager, $countryFile, $this->locationRepository);
             $this->importLocations($input, $output, $importer);
         }
 
