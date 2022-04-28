@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\Integrity;
 use NewApiBundle\Component\Import\Finishing;
 use NewApiBundle\Component\Import\Finishing\BeneficiaryDecoratorBuilder;
+use NewApiBundle\Component\Import\Integrity\DuplicityService;
 use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
@@ -18,9 +19,7 @@ use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
-use NewApiBundle\Workflow\WorkflowTool;
 use Symfony\Component\Validator\ConstraintViolationInterface;
-use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 
@@ -50,12 +49,16 @@ class IntegrityChecker
     /** @var WorkflowInterface */
     private $importQueueStateMachine;
 
+    /** @var DuplicityService */
+    private $duplicityService;
+
     public function __construct(
         ValidatorInterface                    $validator,
         EntityManagerInterface                $entityManager,
         WorkflowInterface                     $importStateMachine,
         WorkflowInterface                     $importQueueStateMachine,
         Integrity\ImportLineFactory           $importLineFactory,
+        Integrity\DuplicityService            $duplicityService,
         Finishing\HouseholdDecoratorBuilder   $householdDecoratorBuilder,
         Finishing\BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder
     ) {
@@ -65,6 +68,7 @@ class IntegrityChecker
         $this->importStateMachine = $importStateMachine;
         $this->importQueueStateMachine = $importQueueStateMachine;
         $this->importLineFactory = $importLineFactory;
+        $this->duplicityService = $duplicityService;
         $this->householdDecoratorBuilder = $householdDecoratorBuilder;
         $this->beneficiaryDecoratorBuilder = $beneficiaryDecoratorBuilder;
     }
@@ -147,6 +151,15 @@ class IntegrityChecker
             $beneficiary = $this->beneficiaryDecoratorBuilder->buildBeneficiaryInputType($hhm);
             $violations = $this->validator->validate($beneficiary, null, ["Default", "BeneficiaryInputType", "Strict"]);
 
+            $cards = $beneficiary->getNationalIdCards();
+            if (count($cards) > 0) {
+                $idCard = $cards[0];
+                $nationalIdCount = $this->duplicityService->getIdentityCount($item->getImport(), $idCard);
+                if ($nationalIdCount > 1) {
+                    $item->addViolation($index, ['violation' => 'This line has ID duplicity!', 'value' => $idCard->getType().": ".$idCard->getNumber()]);
+                }
+            }
+
             foreach ($violations as $violation) {
                 $item->addViolation($index, $this->buildNormalizedErrorMessage($violation));
             }
@@ -181,7 +194,7 @@ class IntegrityChecker
         return $queueSize == 0;
     }
 
-    public function buildErrorMessage(ConstraintViolationInterface $violation)
+    private function buildErrorMessage(ConstraintViolationInterface $violation)
     {
         $property = $violation->getConstraint()->payload['propertyPath'] ?? $violation->getPropertyPath();
 
@@ -196,7 +209,7 @@ class IntegrityChecker
         return ['column' => ucfirst($mapping[$property]), 'violation' => $violation->getMessage(), 'value' => $violation->getInvalidValue()];
     }
 
-    public function buildNormalizedErrorMessage(ConstraintViolationInterface $violation)
+    private function buildNormalizedErrorMessage(ConstraintViolationInterface $violation)
     {
         $property = $violation->getConstraint()->payload['propertyPath'] ?? $violation->getPropertyPath();
 

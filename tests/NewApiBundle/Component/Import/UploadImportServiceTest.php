@@ -5,6 +5,7 @@ namespace Tests\NewApiBundle\Component\Import;
 
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\ImportFileValidator;
+use NewApiBundle\Component\Import\Integrity\DuplicityService;
 use NewApiBundle\Component\Import\UploadImportService;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Enum\ImportQueueState;
@@ -33,7 +34,8 @@ class UploadImportServiceTest extends KernelTestCase
         $this->uploadService = new UploadImportService(
             $this->entityManager,
             $kernel->getContainer()->getParameter('import.uploadedFilesDirectory'),
-            $kernel->getContainer()->get(ImportFileValidator::class)
+            $kernel->getContainer()->get(ImportFileValidator::class),
+            $kernel->getContainer()->get(DuplicityService::class)
         );
     }
 

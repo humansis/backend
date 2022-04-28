@@ -188,6 +188,203 @@ class ImportFinishServiceTest extends KernelTestCase
     }
   }
 ]';
+    const TEST_WRONG_QUEUE_ITEM = '[
+  {
+    "Adm1": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Adm2": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Adm3": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Adm4": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Head": {
+      "value": "true",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "ID Number": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "ID Type": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "F 0 - 2": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "F 2 - 5": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "F 6 - 17": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "F 18 - 59": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "F 60+": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "M 0 - 2": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "M 2 - 5": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "M 6 - 17": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "M 18 - 59": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "M 60+": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Assets": {
+      "value": "some wrong value, another wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Gender": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Debt Level": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Livelihood": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Date of birth": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Proxy phone 1": null,
+    "Proxy phone 2": null,
+    "Residency status": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Food Consumption Score": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Support Received Types": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Vulnerability criteria": {
+      "value": "some wrong value",
+      "dataType": "s",
+      "numberFormat": "General"
+    }
+  }
+]';
+    const TEST_MINIMAL_QUEUE_ITEM = '[
+  {
+    "Local given name": {
+      "value": "John",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Residency status": {
+      "value": "Resident",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Local family name": {
+      "value": "Smith",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Adm1": {
+      "value": "Banteay Meanchey",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Address number": {
+      "value": 123,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "Address street": {
+      "value": "Fake St",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Address number": {
+      "value": 123,
+      "dataType": "n",
+      "numberFormat": "General"
+    },
+    "Address postcode": {
+      "value": "000 00",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Gender": {
+      "value": "male",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Head": {
+      "value": "true",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "Date of birth": {
+      "value": "01-01-2000",
+      "dataType": "s",
+      "numberFormat": "General"
+    },
+    "ID Number": null,
+    "ID Type": null
+  }
+]';
 
     /** @var EntityManagerInterface */
     private $entityManager;

@@ -5,6 +5,7 @@ namespace BeneficiaryBundle\Utils;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use CommonBundle\Utils\ExportService;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Component\Import\ImportTemplate;
 use NewApiBundle\Enum\NationalIdType;
 
 class HouseholdExportCSVService
@@ -296,24 +297,32 @@ class HouseholdExportCSVService
     ];
 
     private const MAPPING_HELP_HXL = [
+        ImportTemplate::ROW_NAME_STATUS => '',
+        ImportTemplate::ROW_NAME_MESSAGES => '',
         '  ' => '',
         '' => '     -->',
         ' ' => 'Do not remove this line.',
     ];
 
     private const MAPPING_HELP_HOUSEHOLD_HEAD = [
+        ImportTemplate::ROW_NAME_STATUS => '',
+        ImportTemplate::ROW_NAME_MESSAGES => '',
         '  ' => '[Head]',
         '' => '     -->',
         ' ' => 'This Example line and the Type Helper line below must not be removed.',
     ];
 
     private const MAPPING_HELP_HOUSEHOLD_MEMBER = [
+        ImportTemplate::ROW_NAME_STATUS => '',
+        ImportTemplate::ROW_NAME_MESSAGES => '',
         '  ' => '[Member]',
         '' => '     -->',
         ' ' => "'*' means that the property is needed -- An adm must be filled among Adm1/Adm2/Adm3/Adm4.",
     ];
 
     private const MAPPING_HELP_DETAILS = [
+        ImportTemplate::ROW_NAME_STATUS => '',
+        ImportTemplate::ROW_NAME_MESSAGES => '',
         '  ' => '',
         '' => '     -->',
         ' ' => "'*' means that the property is needed -- An adm must be filled among Adm1/Adm2/Adm3/Adm4.",

@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import;
 
@@ -14,6 +13,7 @@ use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Filesystem\Filesystem;
@@ -110,9 +110,7 @@ class ImportInvalidFileService
     private function writeEntries(Spreadsheet $template, array $entries, array $header)
     {
         $sheet = $template->getActiveSheet();
-
         $currentRow = ImportTemplate::FIRST_ENTRY_ROW;
-        $currentColumn = 1;
 
         /** @var ImportQueue $entry */
         foreach ($entries as $entry) {
@@ -124,46 +122,9 @@ class ImportInvalidFileService
 
             foreach ($entry->getContent() as $i => $row) {
                 $invalidColumns = $this->parseInvalidColumns($messages, $i);
+                $violations = $this->parseViolations($messages, $i);
 
-                foreach ($header as $column) {
-                    $cell = $sheet->getCellByColumnAndRow($currentColumn, $currentRow);
-
-                    if (isset($row[$column])) {
-                        $cellValue = $row[$column][CellParameters::VALUE];
-
-                        // in case of formula error => convert to string and fill cell with default message
-                        if ($row[$column][CellParameters::DATA_TYPE] === DataType::TYPE_FORMULA && array_key_exists(CellParameters::ERRORS,
-                                $row[$column])) {
-                            $dataType = DataType::TYPE_STRING;
-                            $cellValue = self::FORMULA_ERROR_CELL_VALUE;
-                        } else {
-                            $dataType = $row[$column][CellParameters::DATA_TYPE];
-                        }
-
-                        $cell->setValueExplicit($cellValue, $dataType);
-                        $cell->getStyle()->getNumberFormat()->setFormatCode($row[$column][CellParameters::NUMBER_FORMAT]);
-                    }
-
-                    if (count($invalidColumns) === 0) {
-                        $cell->getStyle()
-                            ->getFill()
-                            ->setFillType(Fill::FILL_SOLID)
-                            ->getStartColor()
-                            ->setRGB('CCFF99');
-                    } else {
-                        if (in_array($column, $invalidColumns)) {
-                            $cell->getStyle()
-                                ->getFill()
-                                ->setFillType(Fill::FILL_SOLID)
-                                ->getStartColor()
-                                ->setRGB('ffff00');
-                        }
-                    }
-
-                    ++$currentColumn;
-                }
-
-                $currentColumn = 1;
+                $this->writeRow($sheet, $header, $row, $invalidColumns, $currentRow, $violations);
                 ++$currentRow;
             }
 
@@ -193,6 +154,17 @@ class ImportInvalidFileService
         }, $messages[$rowNumber]);
     }
 
+    private function parseViolations(array $messages, $rowNumber): array
+    {
+        if (!isset($messages[$rowNumber])) {
+            return [];
+        }
+
+        return array_map(function (array $messages) {
+            return $messages['column'].": ".$messages['violation'];
+        }, $messages[$rowNumber]);
+    }
+
     public function removeInvalidFiles(Import $import): void
     {
         $fs = new Filesystem();
@@ -204,5 +176,73 @@ class ImportInvalidFileService
         };
 
         $this->em->flush();
+    }
+
+    /**
+     * @param Worksheet $sheet
+     * @param array     $header
+     * @param array     $row
+     * @param array     $invalidColumns
+     * @param int       $currentRow
+     * @param array     $validationViolations
+     *
+     * @throws Exception
+     */
+    private function writeRow(
+        Worksheet $sheet,
+        array     $header,
+        array     $row,
+        array     $invalidColumns,
+        int       $currentRow,
+        array     $validationViolations
+    ): void {
+        $errorIsElsewhereInHousehold = empty($validationViolations);
+        if ($errorIsElsewhereInHousehold) {
+            $validationViolations = ['Member is OK, error is in other beneficiary'];
+        }
+
+        $currentColumn = 1;
+        foreach ($header as $column) {
+            $cell = $sheet->getCellByColumnAndRow($currentColumn, $currentRow);
+
+            if (isset($row[$column])) {
+                $cellValue = $row[$column][CellParameters::VALUE];
+
+                // in case of formula error => convert to string and fill cell with default message
+                if ($row[$column][CellParameters::DATA_TYPE] === DataType::TYPE_FORMULA && array_key_exists(CellParameters::ERRORS,
+                        $row[$column])) {
+                    $dataType = DataType::TYPE_STRING;
+                    $cellValue = self::FORMULA_ERROR_CELL_VALUE;
+                } else {
+                    $dataType = $row[$column][CellParameters::DATA_TYPE];
+                }
+
+                $cell->setValueExplicit($cellValue, $dataType);
+                $cell->getStyle()->getNumberFormat()->setFormatCode($row[$column][CellParameters::NUMBER_FORMAT]);
+            }
+            if ($column === ImportTemplate::ROW_NAME_STATUS) {
+                $cell->setValue($errorIsElsewhereInHousehold ? 'ERROR in Household' : 'ERROR');
+            } else if ($column === ImportTemplate::ROW_NAME_MESSAGES) {
+                $cell->setValue(implode("\n", $validationViolations));
+            }
+
+            if (count($invalidColumns) === 0) {
+                $cell->getStyle()
+                    ->getFill()
+                    ->setFillType(Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setRGB('CCFF99');
+            } else {
+                if (in_array($column, $invalidColumns)) {
+                    $cell->getStyle()
+                        ->getFill()
+                        ->setFillType(Fill::FILL_SOLID)
+                        ->getStartColor()
+                        ->setRGB('ffff00');
+                }
+            }
+
+            ++$currentColumn;
+        }
     }
 }

@@ -1,11 +1,11 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import;
 
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
+use NewApiBundle\Component\Import\Integrity;
 use NewApiBundle\Component\Import\ValueObject\ImportStatisticsValueObject;
 use NewApiBundle\Entity;
 use NewApiBundle\Enum\ImportQueueState;
@@ -52,17 +52,21 @@ class ImportService
     /** @var DuplicityResolver */
     private $duplicityResolver;
 
+    /** @var Integrity\DuplicityService */
+    private $integrityDuplicityService;
+
     public function __construct(
-        EntityManagerInterface $em,
-        HouseholdService $householdService,
-        LoggerInterface $importLogger,
-        IntegrityChecker $integrityChecker,
-        ImportInvalidFileService $importInvalidFileService,
-        IdentityChecker $identityChecker,
-        SimilarityChecker $similarityChecker,
-        WorkflowInterface $importStateMachine,
-        WorkflowInterface $importQueueStateMachine,
-        DuplicityResolver $duplicityResolver
+        EntityManagerInterface     $em,
+        HouseholdService           $householdService,
+        LoggerInterface            $importLogger,
+        IntegrityChecker           $integrityChecker,
+        ImportInvalidFileService   $importInvalidFileService,
+        IdentityChecker            $identityChecker,
+        SimilarityChecker          $similarityChecker,
+        WorkflowInterface          $importStateMachine,
+        WorkflowInterface          $importQueueStateMachine,
+        DuplicityResolver          $duplicityResolver,
+        Integrity\DuplicityService $integrityDuplicityService
     )
     {
         $this->em = $em;
@@ -75,16 +79,19 @@ class ImportService
         $this->importStateMachine = $importStateMachine;
         $this->importQueueStateMachine = $importQueueStateMachine;
         $this->duplicityResolver = $duplicityResolver;
+        $this->integrityDuplicityService = $integrityDuplicityService;
     }
 
     public function create(string $countryIso3, Import\CreateInputType $inputType, User $user): Entity\Import
     {
         if (empty($inputType->getProjects())) {
-            //TODO remove after FE part of PIN-2820 will be implemented
             $project = $this->em->getRepository(Project::class)->find($inputType->getProjectId());
 
             if (!$project instanceof Project) {
-                throw new InvalidArgumentException('Project with ID '.$inputType->getProjectId().' not found');
+                throw new BadRequestHttpException('Project with ID '.$inputType->getProjectId().' not found');
+            }
+            if ($project->getIso3() !== $countryIso3) {
+                throw new BadRequestHttpException("Project is in {$project->getIso3()} but you works in $countryIso3");
             }
 
             $projects = [$project];
@@ -143,8 +150,11 @@ class ImportService
 
     public function removeFile(Entity\ImportFile $importFile)
     {
+        $import = $importFile->getImport();
         $this->em->remove($importFile);
         $this->em->flush();
+
+        $this->integrityDuplicityService->buildIdentityTable($import);
 
         $this->logImportInfo($importFile->getImport(), "Removed file '{$importFile->getFilename()}'");
     }

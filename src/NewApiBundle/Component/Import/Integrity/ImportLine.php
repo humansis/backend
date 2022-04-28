@@ -7,7 +7,6 @@ use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\CellError\CellError;
-use NewApiBundle\Component\Import\CellError\ErrorTypes;
 use NewApiBundle\Component\Import\CellParameters;
 use NewApiBundle\Component\Import\Utils\ImportDateConverter;
 use NewApiBundle\Enum\EnumTrait;
@@ -390,27 +389,11 @@ class ImportLine
     }
 
     /**
-     * @Assert\IsTrue(message="Phone type should not be blank if phone number is filled", payload={"propertyPath"="typePhone1"}, groups={"household", "member"})
-     */
-    public function isTypePhone1Valid(): bool
-    {
-        return !$this->numberPhone1 || $this->typePhone1;
-    }
-
-    /**
      * @Assert\IsTrue(message="Prefix should not be blank if phone number is filled", payload={"propertyPath"="prefixPhone1"}, groups={"household", "member"})
      */
     public function isPrefixPhone1Valid(): bool
     {
         return !$this->numberPhone1 || $this->prefixPhone1;
-    }
-
-    /**
-     * @Assert\IsTrue(message="Phone type should not be blank if phone number is filled", payload={"propertyPath"="typePhone2"}, groups={"household", "member"})
-     */
-    public function isPhoneType2Valid(): bool
-    {
-        return !$this->numberPhone2 || $this->typePhone2;
     }
 
     /**

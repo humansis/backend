@@ -209,7 +209,7 @@ deploy stage:
   except:
     - tags
 
-deploy demo:
+deploy demo  - clean fixtures:
   stage: deploy_demo
   environment:
     name: demo
@@ -224,6 +224,40 @@ deploy demo:
     - /^release\/.*$/
     - /^v.*$/
   when: manual
+
+deploy demo  - keep db:
+  stage: deploy_demo
+  environment:
+    name: demo
+    url: https://apidemo.humansis.org
+  variables:
+    ENVIRONMENT: demo
+    CLEAN_DATABASE: "false"
+    LOAD_FIXTURES: "false"
+    CACHE_CLEAR_MODE: aggressive
+  extends: .deploy
+  only:
+    - /^release\/.*$/
+    - /^v.*$/
+  when: manual
+
+deploy test - anonymized db:
+  stage: deploy_demo
+  image: artifactory.quanti.cz/docker/alpine-ssh-git:dind
+  environment:
+    name: demo
+    url: https://apidemo.humansis.org
+  variables:
+    ENVIRONMENT: demo
+    CLEAN_DATABASE: "database"
+    LOAD_FIXTURES: "false"
+    CACHE_CLEAR_MODE: aggressive
+  extends: .deploy
+  only:
+    - /^release\/.*$/
+    - /^v.*$/
+  when: manual
+
 
 deploy prod:
   stage: deploy_prod
