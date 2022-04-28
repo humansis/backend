@@ -377,6 +377,8 @@ services:
         arguments:
             - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:SmartcardPurchasedItem")'
 
+    NewApiBundle\Export\AssistanceBankReportExport:
+
     workflow.import.integrity_subscriber:
         class: NewApiBundle\Event\Subscriber\Import\IntegritySubscriber
         arguments:

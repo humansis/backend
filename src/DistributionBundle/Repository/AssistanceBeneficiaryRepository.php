@@ -10,6 +10,7 @@ use DistributionBundle\Entity\GeneralReliefItem;
 use DistributionBundle\Entity\Assistance;
 use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Enum\AssistanceTargetType;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use InvalidArgumentException;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
@@ -430,5 +431,25 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         }
 
         return new Paginator($qb);
+    }
+
+    public function getAssistanceBeneficiaryRelief($assistance) {
+        $qb = $this->createQueryBuilder('db')
+            ->select("person.localGivenName")
+            ->addSelect("relief.amountToDistribute")
+            ->addSelect("person.localFamilyName")
+            ->addSelect("person.localParentsName")
+            ->addSelect("national.idNumber")
+            ->addSelect("CONCAT(phone.prefix, phone.number) AS phoneNumber")
+            ->leftJoin('db.beneficiary', 'ab')
+            ->innerJoin(Beneficiary::class, 'bnf', Join::WITH, 'bnf.id = ab.id')
+            ->leftJoin('bnf.person', 'person')
+            ->leftJoin('person.nationalIds', 'national')
+            ->leftJoin('person.phones', 'phone')
+            ->leftJoin('db.reliefPackages', 'relief')
+            ->andWhere('db.assistance = :assistance')
+            ->setParameter('assistance', $assistance);
+        die($qb->getQuery()->getSQL());
+        return $qb->getQuery()->getArrayResult();
     }
 }
