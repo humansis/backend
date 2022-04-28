@@ -5,6 +5,7 @@ namespace NewApiBundle\Mapper;
 
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\GeneralReliefItem;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Serializer\MapperInterface;
 use VoucherBundle\Entity\Booklet;
 
@@ -54,5 +55,12 @@ abstract class AbstractAssistanceBeneficiaryMapper implements MapperInterface
         return array_map(function (Booklet $booklet) {
             return $booklet->getId();
         }, $this->object->getBooklets()->toArray());
+    }
+
+    public function getReliefPackageIds(): array
+    {
+        return array_map(function (ReliefPackage $reliefPackage) {
+            return $reliefPackage->getId();
+        }, $this->object->getReliefPackages()->toArray());
     }
 }
