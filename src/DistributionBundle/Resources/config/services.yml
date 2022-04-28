@@ -26,12 +26,9 @@ services:
             - '@validator'
             - '@location_service'
             - '@distribution.commodity_service'
-            - '@distribution.configuration_loader'
             - '@distribution.criteria_assistance_service'
             - '@transformer.selection_criterion_field'
-            - '%distribution.retriever%'
             - '@service_container'
-            - '@workflow.registry'
 
     distribution.assistance_beneficiary_service:
         class: DistributionBundle\Utils\AssistanceBeneficiaryService

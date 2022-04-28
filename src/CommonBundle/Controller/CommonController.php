@@ -2,6 +2,7 @@
 
 namespace CommonBundle\Controller;
 
+use DistributionBundle\Repository\AssistanceRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use BeneficiaryBundle\Entity\Household;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -54,7 +55,7 @@ class CommonController extends Controller
 
             $total_beneficiary_served = $this->get('beneficiary.beneficiary_service')->countAllServed($country);
 
-            $total_completed_distributions = $this->get('distribution.assistance_service')->countCompleted($country);
+            $total_completed_distributions = $this->get(AssistanceRepository::class)->countCompleted($country);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

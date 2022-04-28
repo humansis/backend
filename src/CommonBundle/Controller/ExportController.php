@@ -6,6 +6,7 @@ use CommonBundle\Entity\Organization;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Export\SmartcardExport;
+use DistributionBundle\Repository\AssistanceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
@@ -105,7 +106,7 @@ class ExportController extends Controller
                     $request->query->get('voucherDistribution') ??
                     $request->query->get('generalreliefDistribution') ??
                     $request->query->get('beneficiariesInDistribution');
-                $distribution = $this->get('distribution.assistance_service')->findOneById($idDistribution);
+                $distribution = $this->get(AssistanceRepository::class)->find($idDistribution);
                 // todo find organisation by relation to distribution
                 $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
                 if ($type === 'pdf') {

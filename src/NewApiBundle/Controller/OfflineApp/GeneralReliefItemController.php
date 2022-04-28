@@ -25,11 +25,9 @@ class GeneralReliefItemController extends AbstractOfflineAppController
      *
      * @return JsonResponse
      */
-    public function patch(GeneralReliefItem $object, GeneralReliefPatchInputType $inputType): JsonResponse
+    public function patch(GeneralReliefItem $object, GeneralReliefPatchInputType $inputType): Response
     {
-        $this->get('distribution.assistance_service')->patchGeneralReliefItem($object, $inputType);
-
-        return $this->json($object, Response::HTTP_OK, [], [MapperInterface::OFFLINE_APP => false]);
+        return new Response('Removed due Relief package migration', Response::HTTP_UPGRADE_REQUIRED);
     }
 
     /**

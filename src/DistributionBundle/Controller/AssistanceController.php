@@ -10,6 +10,7 @@ use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Mapper\AssistanceBeneficiaryMapper;
 use DistributionBundle\Mapper\AssistanceCommunityMapper;
 use DistributionBundle\Mapper\AssistanceInstitutionMapper;
+use DistributionBundle\Repository\AssistanceRepository;
 use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use DistributionBundle\Utils\AssistanceService;
 use DistributionBundle\Utils\DistributionCSVService;
@@ -189,7 +190,7 @@ class AssistanceController extends Controller
 
     /**
      * Create a distribution.
-     *
+     * @deprecated old endpoint
      * @Rest\Put("/distributions", name="add_distribution")
      * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR') or is_granted('ROLE_DISTRIBUTION_CREATE')")
      *
@@ -331,7 +332,7 @@ class AssistanceController extends Controller
     {
         $country = $request->request->get('__country');
         try {
-            $distributions = $this->get('distribution.assistance_service')->getActiveDistributions($country);
+            $distributions = $this->get(AssistanceRepository::class)->getActiveByCountry($country);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -1071,24 +1072,7 @@ class AssistanceController extends Controller
      */
     public function setGeneralReliefItemsAsDistributedAction(Request $request)
     {
-        $griIds = $request->request->get('ids');
-
-        try {
-            $response = $this->get('distribution.assistance_service')
-                ->setGeneralReliefItemsAsDistributed($griIds);
-        } catch (\Exception $e) {
-            $this->container->get('logger')->error('exception', [$e->getMessage()]);
-            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
-        
-        $json = $this->get('serializer')
-            ->serialize(
-                $response,
-                'json',
-                ['groups' => ["ValidatedAssistance"], 'datetime_format' => 'd-m-Y H:m:i']
-            );
-
-        return new Response($json, Response::HTTP_OK);
+        return new Response('Old endpoint', Response::HTTP_VERSION_NOT_SUPPORTED);
     }
 
     /**

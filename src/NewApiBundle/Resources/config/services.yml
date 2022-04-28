@@ -95,8 +95,6 @@ services:
         tags: [ 'validator.constraint_validator' ]
 
     NewApiBundle\Mapper\AssistanceMapper:
-        arguments:
-            - '@distribution.assistance_service'
         tags: [ 'app.mapper' ]
 
     NewApiBundle\Mapper\AssistanceOfflineAppMapper:

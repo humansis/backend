@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Mapper;
 
 use DistributionBundle\Entity;
+use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Component\Assistance\Domain;
 use DistributionBundle\Utils\AssistanceService;
 use NewApiBundle\Serializer\MapperInterface;
@@ -12,13 +13,18 @@ class AssistanceMapper implements MapperInterface
 {
     /** @var Entity\Assistance */
     private $object;
+    /** @var Domain\Assistance */
+    private $domainObject;
 
-    /** @var AssistanceService */
-    private $service;
+    /** @var AssistanceFactory */
+    private $factory;
 
-    public function __construct(AssistanceService $service)
+    /**
+     * @param AssistanceFactory $factory
+     */
+    public function __construct(AssistanceFactory $factory)
     {
-        $this->service = $service;
+        $this->factory = $factory;
     }
 
     /**
@@ -39,12 +45,14 @@ class AssistanceMapper implements MapperInterface
     {
         if ($object instanceof Entity\Assistance) {
             $this->object = $object;
+            $this->domainObject = $this->factory->hydrate($object);
 
             return;
         }
 
         if ($object instanceof Domain\Assistance) {
             $this->object = $object->getAssistanceRoot();
+            $this->domainObject = $object;
 
             return;
         }
@@ -163,7 +171,7 @@ class AssistanceMapper implements MapperInterface
 
     public function getDistributionStarted(): bool
     {
-        return $this->service->hasDistributionStarted($this->object);
+        return $this->domainObject->hasDistributionStarted();
     }
 
     public function getDeletable(): bool

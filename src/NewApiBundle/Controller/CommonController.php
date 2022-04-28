@@ -6,6 +6,7 @@ namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Pagination\Paginator;
+use DistributionBundle\Repository\AssistanceRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Country\Countries;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -59,7 +60,7 @@ class CommonController extends AbstractController
                     $result[] = ['code' => $code, 'value' => $this->get('beneficiary.beneficiary_service')->countAllServed($countryIso3)];
                     break;
                 case 'completed_assistances':
-                    $result[] = ['code' => $code, 'value' => $this->get('distribution.assistance_service')->countCompleted($countryIso3)];
+                    $result[] = ['code' => $code, 'value' => $this->get(AssistanceRepository::class)->countCompleted($countryIso3)];
                     break;
                 default:
                     throw new BadRequestHttpException('Invalid query parameter code.'.$code);
