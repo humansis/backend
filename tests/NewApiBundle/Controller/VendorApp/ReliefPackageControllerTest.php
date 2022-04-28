@@ -6,6 +6,7 @@ namespace Tests\NewApiBundle\Controller\VendorApp;
 use DistributionBundle\Entity\Assistance;
 use Exception;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\Enum\ReliefPackageState;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Vendor;
@@ -29,23 +30,26 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
     {
         $reliefPackage = $this->em->getRepository(ReliefPackage::class)->findOneBy([], ['id' => 'asc']);
         $reliefPackage->setAmountDistributed("0.00");
+        $reliefPackage->setState(ReliefPackageState::TO_DISTRIBUTE);
 
-        /** @var Assistance $assitance */
+        /** @var Assistance $assistance */
         $assistance = $reliefPackage->getAssistanceBeneficiary()->getAssistance();
         $assistance->setRemoteDistributionAllowed(true);
+        $assistance->setDateExpiration(null);
 
         $user = new User();
-        $user->setUsername(__METHOD__)
-            ->setUsernameCanonical(__METHOD__)
-            ->setEmail(__METHOD__)
-            ->setEmailCanonical(__METHOD__)
-            ->setEnabled(false)
+        $username = __METHOD__.random_int(100, 10000);
+        $user->setUsername($username)
+            ->setUsernameCanonical($username)
+            ->setEmail($username)
+            ->setEmailCanonical($username)
+            ->setEnabled(true)
             ->setSalt('')
             ->setPassword('');
 
         $vendor = new Vendor();
         $vendor
-            ->setName(__METHOD__)
+            ->setName($username)
             ->setShop('shop')
             ->setAddressNumber('13')
             ->setAddressStreet('Main street')
@@ -61,6 +65,7 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         $vendor->setCanSellCashback(true);
         $vendor->setCanDoRemoteDistributions(true);
 
+        $this->em->persist($assistance);
         $this->em->persist($user);
         $this->em->persist($vendor);
         $this->em->flush();
