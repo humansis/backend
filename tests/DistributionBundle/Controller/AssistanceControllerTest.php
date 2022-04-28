@@ -185,6 +185,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
      */
     public function testValidate($distribution)
     {
+        $this->markTestSkipped('Old endpoint');
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);

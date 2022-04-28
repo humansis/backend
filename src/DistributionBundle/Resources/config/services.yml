@@ -73,22 +73,16 @@ services:
 
     DistributionBundle\Mapper\AssistanceBeneficiaryMapper:
         arguments:
-            - '@VoucherBundle\Mapper\BookletMapper'
-            - '@TransactionBundle\Mapper\TransactionMapper'
             - '@BeneficiaryBundle\Mapper\BeneficiaryMapper'
         public: true
 
     DistributionBundle\Mapper\AssistanceCommunityMapper:
         arguments:
-            - '@VoucherBundle\Mapper\BookletMapper'
-            - '@TransactionBundle\Mapper\TransactionMapper'
             - '@BeneficiaryBundle\Mapper\CommunityMapper'
         public: true
 
     DistributionBundle\Mapper\AssistanceInstitutionMapper:
         arguments:
-            - '@VoucherBundle\Mapper\BookletMapper'
-            - '@TransactionBundle\Mapper\TransactionMapper'
             - '@BeneficiaryBundle\Mapper\InstitutionMapper'
         public: true
 
