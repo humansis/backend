@@ -68,7 +68,7 @@ class Assistance
 
     public function getStatistics(?string $countryIso3 = null): array
     {
-        $key = CacheTarget::assistanceId($this->assistanceRoot->getId());
+        $key = CacheTarget::assistanceId($this->assistanceRoot->getId() ?? 'new');
 
         return $this->cache->get($key, function (ItemInterface $item) use ($countryIso3) {
             try{
@@ -304,6 +304,7 @@ class Assistance
 
     private function cleanCache(): void
     {
+        if (!$this->assistanceRoot->getId()) return; // not persisted yet
         try {
             $this->cache->delete(CacheTarget::assistanceId($this->assistanceRoot->getId()));
         } catch (InvalidArgumentException $e) {
