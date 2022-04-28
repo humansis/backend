@@ -253,17 +253,8 @@ class AssistanceService
         $this->cache->delete(CacheTarget::assistanceId($assistance->getId()));
         $commodities = $assistance->getCommodities();
         foreach ($commodities as $commodity) {
-            if ($commodity->getModalityType()->isGeneralRelief()) {
-                foreach ($beneficiaries as $beneficiary) {
-                    $generalRelief = new GeneralReliefItem();
-                    $generalRelief->setAssistanceBeneficiary($beneficiary);
-                    $this->em->persist($generalRelief);
-                }
-            }
-            if ($commodity->getModalityType()->getName() === \NewApiBundle\Enum\ModalityType::SMART_CARD) {
-                foreach ($beneficiaries as $beneficiary) {
-                    $this->createReliefPackage($beneficiary, $commodity);
-                }
+            foreach ($beneficiaries as $beneficiary) {
+                $this->createReliefPackage($beneficiary, $commodity);
             }
         }
         $this->em->flush();
