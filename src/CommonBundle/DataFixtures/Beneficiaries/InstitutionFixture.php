@@ -14,6 +14,7 @@ use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Enum\NationalIdType;
 use ProjectBundle\Entity\Project;
+use ProjectBundle\Repository\ProjectRepository;
 
 class InstitutionFixture extends Fixture implements DependentFixtureInterface
 {
@@ -112,17 +113,28 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
     private $countries;
 
     /**
+     * @var ProjectRepository
+     */
+    private $projectRepository;
+
+    /**
      * InstitutionFixture constructor.
      *
      * @param string             $environment
      * @param Countries          $countries
      * @param InstitutionService $institutionService
+     * @param ProjectRepository  $projectRepository
      */
-    public function __construct(string $environment, Countries $countries, InstitutionService $institutionService)
-    {
+    public function __construct(
+        string             $environment,
+        Countries          $countries,
+        InstitutionService $institutionService,
+        ProjectRepository  $projectRepository
+    ) {
         $this->environment = $environment;
         $this->institutionService = $institutionService;
         $this->countries = $countries;
+        $this->projectRepository = $projectRepository;
     }
 
     public function load(ObjectManager $manager)
@@ -132,7 +144,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
             return;
         }
         foreach ($this->countries->getAll() as $COUNTRY) {
-            $projects = $manager->getRepository(Project::class)->findBy(['iso3' => $COUNTRY->getIso3()], ['id' => 'asc']);
+            $projects = $this->projectRepository->findBy(['iso3' => $COUNTRY->getIso3()], ['id' => 'asc']);
             $projectIds = array_map(function (Project $project) {
                 return $project->getId();
             }, $projects);

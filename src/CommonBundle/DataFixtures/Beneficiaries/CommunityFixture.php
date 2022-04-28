@@ -1,10 +1,8 @@
 <?php
 namespace CommonBundle\DataFixtures\Beneficiaries;
 
-use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\InputType\NewCommunityType;
 use BeneficiaryBundle\Utils\CommunityService;
-use CommonBundle\Controller\CountryController;
 use CommonBundle\DataFixtures\LocationFixtures;
 use CommonBundle\DataFixtures\ProjectFixtures;
 use CommonBundle\InputType\Country;
@@ -15,6 +13,7 @@ use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Enum\NationalIdType;
 use ProjectBundle\Entity\Project;
+use ProjectBundle\Repository\ProjectRepository;
 
 class CommunityFixture extends Fixture implements DependentFixtureInterface
 {
@@ -109,17 +108,28 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
     private $communityService;
 
     /**
+     * @var ProjectRepository
+     */
+    private $projectRepository;
+
+    /**
      * CommunityFixture constructor.
      *
-     * @param string           $environment
-     * @param Countries        $countries
-     * @param CommunityService $communityService
+     * @param string            $environment
+     * @param Countries         $countries
+     * @param CommunityService  $communityService
+     * @param ProjectRepository $projectRepository
      */
-    public function __construct(string $environment, Countries $countries, CommunityService $communityService)
-    {
+    public function __construct(
+        string            $environment,
+        Countries         $countries,
+        CommunityService  $communityService,
+        ProjectRepository $projectRepository
+    ) {
         $this->countries = $countries;
         $this->environment = $environment;
         $this->communityService = $communityService;
+        $this->projectRepository = $projectRepository;
     }
 
 
@@ -130,7 +140,7 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
             return;
         }
         foreach ($this->countries->getAll() as $COUNTRY) {
-            $projects = $manager->getRepository(Project::class)->findBy(['iso3' => $COUNTRY->getIso3()], ['id' => 'asc']);
+            $projects = $this->projectRepository->findBy(['iso3' => $COUNTRY->getIso3()], ['id' => 'asc']);
             $projectIds = array_map(function (Project $project) {
                 return $project->getId();
             }, $projects);

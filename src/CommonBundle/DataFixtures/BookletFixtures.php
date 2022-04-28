@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace CommonBundle\DataFixtures;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use DistributionBundle\Entity\Assistance;
+use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Exception;
 use NewApiBundle\Component\Country\Countries;
-use ProjectBundle\Entity\Project;
+use ProjectBundle\Repository\ProjectRepository;
 use Symfony\Component\HttpKernel\Kernel;
 use VoucherBundle\Utils\BookletService;
 
@@ -32,11 +31,28 @@ class BookletFixtures extends Fixture implements FixtureGroupInterface, Dependen
     /** @var Countries */
     private $countries;
 
-    public function __construct(Kernel $kernel, Countries $countries, BookletService $bookletService)
-    {
+    /**
+     * @var ProjectRepository
+     */
+    private $projectRepository;
+
+    /**
+     * @var BeneficiaryRepository
+     */
+    private $beneficiaryRepository;
+
+    public function __construct(
+        Kernel                $kernel,
+        Countries             $countries,
+        BookletService        $bookletService,
+        ProjectRepository     $projectRepository,
+        BeneficiaryRepository $beneficiaryRepository
+    ) {
         $this->kernel = $kernel;
         $this->bookletService = $bookletService;
         $this->countries = $countries;
+        $this->projectRepository = $projectRepository;
+        $this->beneficiaryRepository = $beneficiaryRepository;
     }
 
     /**
@@ -53,8 +69,8 @@ class BookletFixtures extends Fixture implements FixtureGroupInterface, Dependen
         }
 
         foreach ($this->countries->getAll() as $country) {
-            $recipientCount = $manager->getRepository(Beneficiary::class)->countAllInCountry($country->getIso3());
-            $project = $manager->getRepository(Project::class)->findOneBy(['iso3' => $country->getIso3()], ['id' => 'asc']);
+            $recipientCount = $this->beneficiaryRepository->countAllInCountry($country->getIso3());
+            $project = $this->projectRepository->findOneBy(['iso3' => $country->getIso3()], ['id' => 'asc']);
 
             $count = 200;
             echo "{$country->getIso3()}: $count bnf: ";
