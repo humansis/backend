@@ -7,6 +7,7 @@ use DistributionBundle\Entity\Assistance;
 use Exception;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use Tests\BMSServiceTestCase;
+use UserBundle\Entity\User;
 use VoucherBundle\Entity\Vendor;
 
 class ReliefPackageControllerTest extends BMSServiceTestCase
@@ -26,10 +27,6 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
 
     public function testListReliefPackagesSimple()
     {
-        $vendor = $this->em->getRepository(Vendor::class)->findOneBy([], ['id' => 'asc']);
-
-        $originalLocation = $vendor->getLocation();
-
         $reliefPackage = $this->em->getRepository(ReliefPackage::class)->findOneBy([], ['id' => 'asc']);
         $reliefPackage->setAmountDistributed("0.00");
 
@@ -37,9 +34,37 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         $assistance = $reliefPackage->getAssistanceBeneficiary()->getAssistance();
         $assistance->setRemoteDistributionAllowed(true);
 
-        $vendor->setLocation($reliefPackage->getAssistanceBeneficiary()->getAssistance()->getLocation());
+        $user = new User();
+        $user->setUsername(__METHOD__)
+            ->setUsernameCanonical(__METHOD__)
+            ->setEmail(__METHOD__)
+            ->setEmailCanonical(__METHOD__)
+            ->setEnabled(false)
+            ->setSalt('')
+            ->setPassword('');
 
+        $vendor = new Vendor();
+        $vendor
+            ->setName(__METHOD__)
+            ->setShop('shop')
+            ->setAddressNumber('13')
+            ->setAddressStreet('Main street')
+            ->setAddressPostcode('12345')
+            ->setArchived(false)
+            ->setUser($user)
+            ->setVendorNo('SYR'.sprintf('%07d', random_int(100, 10000)))
+            ->setContractNo('SYRSP'.sprintf('%06d', random_int(100, 10000)))
+        ;
+        $vendor->setLocation($reliefPackage->getAssistanceBeneficiary()->getAssistance()->getLocation());
+        $vendor->setCanSellCashback(true);
+        $vendor->setCanSellNonFood(true);
+        $vendor->setCanSellCashback(true);
+        $vendor->setCanDoRemoteDistributions(true);
+
+        $this->em->persist($user);
+        $this->em->persist($vendor);
         $this->em->flush();
+        $this->em->refresh($vendor);
 
         $this->request('GET', "/api/basic/vendor-app/v1/vendors/{$vendor->getId()}/relief-packages");
 
@@ -66,7 +91,6 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
             ]
         }', $this->client->getResponse()->getContent());
 
-        $vendor->setLocation($originalLocation);
         $this->em->flush();
     }
 }
