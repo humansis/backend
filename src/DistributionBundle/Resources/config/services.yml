@@ -44,8 +44,10 @@ services:
             - '@workflow.registry'
 
     distribution.criteria_assistance_service:
-        class: DistributionBundle\Utils\CriteriaAssistanceService
+        alias: DistributionBundle\Utils\CriteriaAssistanceService
         public: true
+
+    DistributionBundle\Utils\CriteriaAssistanceService:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@distribution.configuration_loader'
@@ -100,10 +102,18 @@ services:
             - DistributionBundle\Entity\AssistanceBeneficiary
 
     assistance.repository:
-        class: DistributionBundle\Repository\AssistanceRepository
+        alias: DistributionBundle\Repository\AssistanceRepository
+        public: true
+
+    DistributionBundle\Repository\AssistanceRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - DistributionBundle\Entity\Assistance
+
+    DistributionBundle\Repository\ModalityTypeRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - DistributionBundle\Entity\ModalityType
         public: true
 
 #######################################################################################

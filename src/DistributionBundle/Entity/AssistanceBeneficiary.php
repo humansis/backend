@@ -75,7 +75,7 @@ class AssistanceBeneficiary
     /**
      * @var Collection|ReliefPackage[]
      *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\Assistance\ReliefPackage", mappedBy="assistanceBeneficiary")
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\Assistance\ReliefPackage", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="relief_package_id")
      */
     private $reliefPackages;
@@ -374,4 +374,30 @@ class AssistanceBeneficiary
     {
         return $this->reliefPackages;
     }
+
+    /**
+     * @param string                $modalityName
+     * @param string                $unit
+     * @param                       $value
+     */
+    public function setCommodityToDistribute(string $modalityName, string $unit, $value): void
+    {
+        foreach ($this->reliefPackages as $package) {
+            if ($package->getState() !== ReliefPackageState::TO_DISTRIBUTE) {
+                continue; // we can't change closed or started packages
+            }
+            if ($package->getModalityType() === $modalityName && $package->getUnit() === $unit) {
+                $package->setAmountToDistribute($value);
+                return;
+            }
+        }
+        $reliefPackage = new ReliefPackage(
+            $this,
+            $modalityName,
+            $value,
+            $unit
+        );
+        $this->reliefPackages->add($reliefPackage);
+    }
+
 }

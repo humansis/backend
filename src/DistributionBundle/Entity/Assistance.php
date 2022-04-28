@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
@@ -85,8 +86,6 @@ class Assistance implements ExportableInterface
      * @var Location
      *
      * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
-     *
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
     private $location;
 
@@ -146,7 +145,7 @@ class Assistance implements ExportableInterface
     private $commodities;
 
     /**
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", mappedBy="assistance")
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", mappedBy="assistance", cascade={"persist"})
      *
      * @SymfonyGroups({"FullAssistance", "FullProject"})
      */
@@ -333,11 +332,11 @@ class Assistance implements ExportableInterface
     /**
      * Set updatedOn.
      *
-     * @param \DateTime $updatedOn
+     * @param \DateTimeInterface $updatedOn
      *
      * @return Assistance
      */
-    public function setUpdatedOn($updatedOn)
+    public function setUpdatedOn(\DateTimeInterface $updatedOn)
     {
         $this->updatedOn = $updatedOn;
 

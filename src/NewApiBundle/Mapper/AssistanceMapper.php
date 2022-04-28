@@ -3,13 +3,14 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
-use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Entity;
+use NewApiBundle\Component\Assistance\Domain;
 use DistributionBundle\Utils\AssistanceService;
 use NewApiBundle\Serializer\MapperInterface;
 
 class AssistanceMapper implements MapperInterface
 {
-    /** @var Assistance */
+    /** @var Entity\Assistance */
     private $object;
 
     /** @var AssistanceService */
@@ -25,7 +26,10 @@ class AssistanceMapper implements MapperInterface
      */
     public function supports(object $object, $format = null, array $context = null): bool
     {
-        return $object instanceof Assistance && isset($context[self::NEW_API]) && true === $context[self::NEW_API] && !isset($context['offline-app']);
+        return ($object instanceof Entity\Assistance || $object instanceof Domain\Assistance)
+            && isset($context[self::NEW_API])
+            && true === $context[self::NEW_API]
+            && !isset($context['offline-app']);
     }
 
     /**
@@ -33,13 +37,19 @@ class AssistanceMapper implements MapperInterface
      */
     public function populate(object $object)
     {
-        if ($object instanceof Assistance) {
+        if ($object instanceof Entity\Assistance) {
             $this->object = $object;
 
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Assistance::class.', '.get_class($object).' given.');
+        if ($object instanceof Domain\Assistance) {
+            $this->object = $object->getAssistanceRoot();
+
+            return;
+        }
+
+        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Entity\Assistance::class.', '.get_class($object).' given.');
     }
 
     public function getId(): int

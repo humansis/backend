@@ -14,6 +14,7 @@ use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use DistributionBundle\Utils\AssistanceService;
 use DistributionBundle\Utils\DistributionCSVService;
 
+use NewApiBundle\Component\Assistance\AssistanceFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -172,11 +173,9 @@ class AssistanceController extends Controller
      *
      * @return Response
      */
-    public function validateAction(Assistance $assistance)
+    public function validateAction(Assistance $assistance, AssistanceFactory $factory)
     {
-        /** @var AssistanceService $distributionService */
-        $distributionService = $this->get('distribution.assistance_service');
-        $assistance = $distributionService->validateDistribution($assistance);
+        $factory->hydrate($assistance)->validate()->save();
 
         $json = $this->get('serializer')
             ->serialize(
@@ -654,22 +653,19 @@ class AssistanceController extends Controller
      *     description="BAD_REQUEST"
      * )
      *
-     * @param Assistance $distribution
+     * @param Assistance        $distribution
+     * @param AssistanceFactory $factory
      *
      * @return Response
      */
-    public function archiveAction(Assistance $distribution)
+    public function archiveAction(Assistance $distribution, AssistanceFactory $factory)
     {
         try {
-            $archivedDistribution = $this->get('distribution.assistance_service')
-                ->archived($distribution);
+            $factory->hydrate($distribution)->archive()->save();
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        $json = $this->get('serializer')
-            ->serialize($archivedDistribution, 'json');
-
-        return new Response($json, Response::HTTP_OK);
+        return new Response('Archived', Response::HTTP_OK);
     }
 
     /**
@@ -694,16 +690,15 @@ class AssistanceController extends Controller
     *
     * @return Response
     */
-    public function completeAction(Assistance $distribution)
+    public function completeAction(Assistance $distribution, AssistanceFactory $factory)
     {
         try {
-            $completedDistribution = $this->get('distribution.assistance_service')
-                ->complete($distribution);
+            $factory->hydrate($distribution)->complete()->save();
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         $json = $this->get('serializer')
-            ->serialize($completedDistribution, 'json');
+            ->serialize($distribution, 'json');
 
         return new Response($json, Response::HTTP_OK);
     }

@@ -31,6 +31,7 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         $originalLocation = $vendor->getLocation();
 
         $reliefPackage = $this->em->getRepository(ReliefPackage::class)->findOneBy([], ['id' => 'asc']);
+        $reliefPackage->setAmountDistributed("0.00");
 
         /** @var Assistance $assitance */
         $assistance = $reliefPackage->getAssistanceBeneficiary()->getAssistance();

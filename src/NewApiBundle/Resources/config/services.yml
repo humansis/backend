@@ -74,6 +74,15 @@ services:
         public: true
         tags: [ 'console.command' ]
 
+    NewApiBundle\Component\Assistance\AssistanceFactory:
+        arguments:
+
+
+    NewApiBundle\Component\Assistance\AssistanceQuery:
+
+    Symfony\Component\Serializer\SerializerInterface:
+        alias: serializer
+
     NewApiBundle\Serializer\MapperNormalizer:
         tags: [ 'serializer.normalizer' ]
 
@@ -122,6 +131,11 @@ services:
         arguments:
             - '@lexik_jwt_authentication.jwt_manager'
             - '@user.user_service'
+
+    NewApiBundle\Repository\AssistanceStatisticsRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\AssistanceStatistics
 
     NewApiBundle\Controller\OfflineApp\AssistanceController:
         arguments:
@@ -217,7 +231,9 @@ services:
             - [ '@generator.beneficiary', '@generator.household', '@generator.household_head' ]
 
     transformer.selection_criterion_field:
-        class: NewApiBundle\Component\SelectionCriteria\FieldDbTransformer
+        alias: NewApiBundle\Component\SelectionCriteria\FieldDbTransformer
+
+    NewApiBundle\Component\SelectionCriteria\FieldDbTransformer:
         arguments:
             - "@=service('doctrine.orm.entity_manager').getRepository('BeneficiaryBundle:CountrySpecific')"
             - "@=service('doctrine.orm.entity_manager').getRepository('BeneficiaryBundle:VulnerabilityCriterion')"

@@ -31,6 +31,7 @@ use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\ORMException;
 use Exception;
 use InvalidArgumentException;
+use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\AssistanceStatistics;
@@ -103,6 +104,9 @@ class AssistanceService
     /** @var AssistanceRepository */
     private $assistanceRepository;
 
+    /** @var AssistanceFactory */
+    private $assistanceFactory;
+
     /**
      * AssistanceService constructor.
      *
@@ -118,22 +122,24 @@ class AssistanceService
      * @param ContainerInterface        $container
      * @param Registry                  $workflowRegistry
      * @param FilesystemAdapter         $cache
+     * @param AssistanceFactory         $assistanceFactory
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct(
-        EntityManagerInterface $entityManager,
-        Serializer $serializer,
-        ValidatorInterface $validator,
-        LocationService $locationService,
-        CommodityService $commodityService,
-        ConfigurationLoader $configurationLoader,
+        EntityManagerInterface    $entityManager,
+        Serializer                $serializer,
+        ValidatorInterface        $validator,
+        LocationService           $locationService,
+        CommodityService          $commodityService,
+        ConfigurationLoader       $configurationLoader,
         CriteriaAssistanceService $criteriaAssistanceService,
-        FieldDbTransformer $fieldDbTransformer,
-        string $classRetrieverString,
-        ContainerInterface $container,
-        Registry $workflowRegistry,
-        CacheInterface $cache
+        FieldDbTransformer        $fieldDbTransformer,
+        string                    $classRetrieverString,
+        ContainerInterface        $container,
+        Registry                  $workflowRegistry,
+        CacheInterface            $cache,
+        AssistanceFactory         $assistanceFactory
     ) {
         $this->em = $entityManager;
         $this->serializer = $serializer;
@@ -156,9 +162,11 @@ class AssistanceService
 
         $this->assistanceStatisticRepository = $this->em->getRepository(AssistanceStatistics::class);
         $this->assistanceRepository = $this->em->getRepository(Assistance::class);
+        $this->assistanceFactory = $assistanceFactory;
     }
 
     /**
+     * @deprecated use Assistance::getStatistic instead
      * @param Assistance|int $assistance
      * @param string|null    $countryIso3
      *
@@ -201,24 +209,18 @@ class AssistanceService
     }
 
     /**
-     * @param Assistance $assistance
-     * @return Assistance
-     * @throws Exception
+     * @param Assistance $assistanceRoot
+     *
+     * @deprecated use Assistance::validate instead
      */
-    public function validateDistribution(Assistance $assistance)
+    public function validateDistribution(Assistance $assistanceRoot)
     {
-        $this->cache->delete(CacheTarget::assistanceId($assistance->getId()));
-        try {
-            $assistance->setValidated(true)
-                ->setUpdatedOn(new DateTime());
-            $beneficiaries = $assistance->getDistributionBeneficiaries();
-            return $this->setCommoditiesToNewBeneficiaries($assistance, $beneficiaries);
-        } catch (Exception $e) {
-            throw $e;
-        }
+        $assistance = $this->assistanceFactory->hydrate($assistanceRoot);
+        $assistance->validate()->save();
     }
 
     /**
+     * @deprecated use Assistance::unvalidate instead
      * @param Assistance $assistance
      */
     public function unvalidateDistribution(Assistance $assistance): void
@@ -274,6 +276,7 @@ class AssistanceService
         $this->em->persist($reliefPackage);
     }
 
+    // TODO: presunout do ABNF
     public function findByCriteria(AssistanceCreateInputType $inputType, Pagination $pagination)
     {
         $project = $this->em->getRepository(Project::class)->find($inputType->getProjectId());
@@ -333,6 +336,13 @@ class AssistanceService
         return new Paginator($list, $count);
     }
 
+    /**
+     * @deprecated use AssistanceFactory::create instead
+     * @param AssistanceCreateInputType $inputType
+     *
+     * @return Assistance
+     * @throws EntityNotFoundException
+     */
     public function create(AssistanceCreateInputType $inputType)
     {
         $distributionArray = $this->mapping($inputType);
@@ -351,6 +361,7 @@ class AssistanceService
     }
 
     /**
+     * @deprecated use AssistanceFactory::create instead
      * Create a distribution
      *
      * @param $countryISO3
@@ -473,6 +484,7 @@ class AssistanceService
     }
 
     /**
+     * @deprecated dont use at all
      * @param array   $criteria
      * @param         $countryISO3
      * @param Project $project
@@ -547,6 +559,7 @@ class AssistanceService
     }
 
     /**
+     * @deprecated use Assistance::archive instead
      * @param Assistance $assistance
      * @return null|object|string
      */
@@ -564,6 +577,7 @@ class AssistanceService
     }
 
     /**
+     * @deprecated use Assistance::complete instead
      * @param Assistance $assistance
      * @return null|object|string
      */
@@ -978,44 +992,33 @@ class AssistanceService
     }
 
     /**
-     * @param Assistance $assistance
+     * @param Assistance $assistanceEntity
      */
-    public function delete(Assistance $assistance)
+    public function delete(Assistance $assistanceEntity)
     {
-        $this->cache->delete(CacheTarget::assistanceId($assistance->getId()));
-        if ($assistance->getValidated()) { //TODO also completed? to discuss
-            $this->archived($assistance);
-
-            /** @var AssistanceBeneficiary $assistanceBeneficiary */
-            foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
-                /** @var ReliefPackage $reliefPackage */
-                foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
-                    $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
-
-                    if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::CANCEL)) {
-                        $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::CANCEL);
-                    }
-                }
-            }
+        $this->cache->delete(CacheTarget::assistanceId($assistanceEntity->getId()));
+        if ($assistanceEntity->getValidated()) { //TODO also completed? to discuss
+            $assistance = $this->assistanceFactory->hydrate($assistanceEntity);
+            $assistance->archive()->save();
 
             return;
         }
 
         /** @var AssistanceBeneficiary $assistanceBeneficiary */
-        foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+        foreach ($assistanceEntity->getDistributionBeneficiaries() as $assistanceBeneficiary) {
             /** @var ReliefPackage $reliefPackage */
             foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
                 $this->em->remove($reliefPackage);
             }
         }
 
-        foreach ($assistance->getCommodities() as $commodity) {
+        foreach ($assistanceEntity->getCommodities() as $commodity) {
             $this->em->remove($commodity);
         }
-        foreach ($assistance->getSelectionCriteria() as $criterion) {
+        foreach ($assistanceEntity->getSelectionCriteria() as $criterion) {
             $this->em->remove($criterion);
         }
-        foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+        foreach ($assistanceEntity->getDistributionBeneficiaries() as $assistanceBeneficiary) {
             /** @var AssistanceBeneficiary $assistanceBeneficiary */
             foreach ($assistanceBeneficiary->getReliefPackages() as $relief) {
                 $this->em->remove($relief);
@@ -1041,7 +1044,7 @@ class AssistanceService
             $this->em->remove($assistanceBeneficiary);
         }
 
-        $this->em->remove($assistance);
+        $this->em->remove($assistanceEntity);
         $this->em->flush();
     }
 
@@ -1065,7 +1068,7 @@ class AssistanceService
         }
     }
 
-    public function mapping(AssistanceCreateInputType $inputType): array
+    private function mapping(AssistanceCreateInputType $inputType): array
     {
         /** @var Location $location */
         $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
@@ -1264,16 +1267,17 @@ class AssistanceService
     }
 
     /**
+     * @deprecated use Assistance::hasDistributionStarted instead
      * Check if possible to revert validate state of assistance
      *
-     * @param Assistance $assistance
+     * @param Assistance $assistanceRoot
      *
      * @return bool
-     * @throws \Psr\Cache\InvalidArgumentException
      */
-    public function hasDistributionStarted(Assistance $assistance): bool
+    public function hasDistributionStarted(Assistance $assistanceRoot): bool
     {
-        $statistics = $this->getStatisticByAssistance($assistance);
+        $assistance = $this->assistanceFactory->hydrate($assistanceRoot);
+        $statistics = $assistance->getStatistics();
 
         return $statistics['amountDistributed'] > 0;
     }

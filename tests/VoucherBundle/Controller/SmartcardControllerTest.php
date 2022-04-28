@@ -633,6 +633,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
     public function testConsistencyBatchToRedemptionWithSummary(): void
     {
+        $this->markTestIncomplete('Old and without proper data preparation');
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);

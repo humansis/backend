@@ -8,6 +8,7 @@ use NewApiBundle\Enum\SelectionCriteriaField;
 use NewApiBundle\InputType\Assistance\CommodityInputType;
 use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
 use NewApiBundle\Request\InputTypeInterface;
+use NewApiBundle\Utils\DateTime\Iso8601Converter;
 use NewApiBundle\Validator\Constraints\Country;
 use NewApiBundle\Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -247,7 +248,7 @@ class AssistanceCreateInputType implements InputTypeInterface
      */
     public function getDateDistribution()
     {
-        return $this->dateDistribution;
+        return Iso8601Converter::toDateTime($this->dateDistribution);
     }
 
     /**
@@ -263,7 +264,7 @@ class AssistanceCreateInputType implements InputTypeInterface
      */
     public function getDateExpiration()
     {
-        return $this->dateExpiration;
+        return $this->dateExpiration ? Iso8601Converter::toDateTime($this->dateExpiration) : null;
     }
 
     /**

@@ -51,9 +51,11 @@ services:
         public: true
 
     beneficiary.repository:
-        class: BeneficiaryBundle\Repository\BeneficiaryRepository
-        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        alias: BeneficiaryBundle\Repository\BeneficiaryRepository
         public: true
+
+    BeneficiaryBundle\Repository\BeneficiaryRepository:
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
         arguments:
             - BeneficiaryBundle\Entity\Beneficiary
 
@@ -61,6 +63,16 @@ services:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - BeneficiaryBundle\Entity\CountrySpecific
+
+    BeneficiaryBundle\Repository\CommunityRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - BeneficiaryBundle\Entity\Community
+
+    BeneficiaryBundle\Repository\InstitutionRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - BeneficiaryBundle\Entity\Institution
 
     BeneficiaryBundle\Mapper\CommunityMapper:
         arguments:
