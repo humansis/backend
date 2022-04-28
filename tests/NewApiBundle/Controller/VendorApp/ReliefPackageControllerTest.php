@@ -6,6 +6,7 @@ namespace Tests\NewApiBundle\Controller\VendorApp;
 use DistributionBundle\Entity\Assistance;
 use Exception;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\User;
@@ -28,9 +29,11 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
 
     public function testListReliefPackagesSimple()
     {
-        $reliefPackage = $this->em->getRepository(ReliefPackage::class)->findOneBy([], ['id' => 'asc']);
+        $reliefPackage = $this->em->getRepository(ReliefPackage::class)->findOneBy([
+            'modalityType' => ModalityType::SMART_CARD,
+            'state' => ReliefPackageState::TO_DISTRIBUTE,
+        ], ['id' => 'asc']);
         $reliefPackage->setAmountDistributed("0.00");
-        $reliefPackage->setState(ReliefPackageState::TO_DISTRIBUTE);
 
         /** @var Assistance $assistance */
         $assistance = $reliefPackage->getAssistanceBeneficiary()->getAssistance();
