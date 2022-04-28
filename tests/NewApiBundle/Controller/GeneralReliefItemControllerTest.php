@@ -62,7 +62,7 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
     public function testPatch()
     {
         /** @var GeneralReliefItem $item */
-        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy(['distributedAt' => null], ['id' => 'asc'])[0];
+        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findOneBy(['distributedAt' => null], ['id' => 'asc']);
 
         if (!$item) {
             $this->markTestIncomplete('Missing test data: GRI');
