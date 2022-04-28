@@ -3,11 +3,11 @@
 namespace NewApiBundle\Component\Assistance\Domain;
 
 use BeneficiaryBundle\Entity\AbstractBeneficiary;
-use CommonBundle\Entity\Location;
 use DistributionBundle\Entity;
 use DistributionBundle\Entity\AssistanceBeneficiary;
-use DistributionBundle\Entity\Commodity;
+use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use DistributionBundle\Repository\ModalityTypeRepository;
+use DistributionBundle\Utils\Exception\RemoveBeneficiaryWithReliefException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NoResultException;
@@ -19,7 +19,6 @@ use NewApiBundle\Workflow\ReliefPackageTransitions;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Workflow\Registry;
-use Symfony\Component\Workflow\WorkflowInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
@@ -33,26 +32,30 @@ class Assistance
     private $modalityTypeRepository;
     /** @var AssistanceStatisticsRepository */
     private $assistanceStatisticRepository;
+    /** @var AssistanceBeneficiaryRepository */
+    private $targetRepository;
     /** @var EntityManagerInterface */
     private $entityManager;
     /** @var Registry $workflowRegistry */
     private $workflowRegistry;
 
     /**
-     * @param Entity\Assistance              $assistanceEntity
-     * @param CacheInterface                 $cache
-     * @param ModalityTypeRepository         $modalityTypeRepository
-     * @param AssistanceStatisticsRepository $assistanceStatisticRepository
-     * @param EntityManagerInterface         $entityManager
-     * @param Registry                       $workflowRegistry
+     * @param Entity\Assistance               $assistanceEntity
+     * @param CacheInterface                  $cache
+     * @param ModalityTypeRepository          $modalityTypeRepository
+     * @param AssistanceStatisticsRepository  $assistanceStatisticRepository
+     * @param EntityManagerInterface          $entityManager
+     * @param Registry                        $workflowRegistry
+     * @param AssistanceBeneficiaryRepository $targetRepository
      */
     public function __construct(
-        Entity\Assistance                    $assistanceEntity,
-        CacheInterface                       $cache,
-        ModalityTypeRepository               $modalityTypeRepository,
-        AssistanceStatisticsRepository       $assistanceStatisticRepository,
-        EntityManagerInterface               $entityManager,
-        Registry $workflowRegistry
+        Entity\Assistance                                              $assistanceEntity,
+        CacheInterface                                                 $cache,
+        ModalityTypeRepository                                         $modalityTypeRepository,
+        AssistanceStatisticsRepository                                 $assistanceStatisticRepository,
+        EntityManagerInterface                                         $entityManager,
+        Registry                                                       $workflowRegistry,
+        AssistanceBeneficiaryRepository $targetRepository
     ) {
         $this->assistanceRoot = $assistanceEntity;
         $this->cache = $cache;
@@ -60,6 +63,7 @@ class Assistance
         $this->assistanceStatisticRepository = $assistanceStatisticRepository;
         $this->entityManager = $entityManager;
         $this->workflowRegistry = $workflowRegistry;
+        $this->targetRepository = $targetRepository;
     }
 
     public function getStatistics(?string $countryIso3 = null): array
@@ -177,7 +181,7 @@ class Assistance
             $commodityValues[$commodity->getModalityType()->getName()][$commodity->getUnit()] += $commodity->getValue();
         }
 
-        foreach ($targets ?? $this->assistanceRoot->getDistributionBeneficiaries() as $target) {
+        foreach ($targets ?? $this->getTargets() as $target) {
             foreach ($commodityValues as $modalityName => $values) {
                 foreach ($values as $unit => $value) {
                         $target->setCommodityToDistribute($modalityName, $unit, $value);
@@ -186,10 +190,13 @@ class Assistance
         }
     }
 
-    private function expireUnusedReliefPackages(): void
+    /**
+     * @param array|null $targets
+     */
+    private function expireUnusedReliefPackages(?array $targets = null): void
     {
         /** @var AssistanceBeneficiary $assistanceBeneficiary */
-        foreach ($this->assistanceRoot->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+        foreach ($targets ?? $this->getTargets() as $assistanceBeneficiary) {
             /** @var ReliefPackage $reliefPackage */
             foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
 
@@ -207,10 +214,18 @@ class Assistance
         return $this->assistanceRoot;
     }
 
-    private function cancelUnusedReliefPackages(): void
+    /**
+     * @return AssistanceBeneficiary[]
+     */
+    public function getTargets(): iterable
+    {
+        return $this->assistanceRoot->getDistributionBeneficiaries();
+    }
+
+    private function cancelUnusedReliefPackages(?array $targets = null): void
     {
         /** @var AssistanceBeneficiary $assistanceBeneficiary */
-        foreach ($this->assistanceRoot->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+        foreach ($targets ?? $this->getTargets() as $assistanceBeneficiary) {
             /** @var ReliefPackage $reliefPackage */
             foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
 
@@ -225,21 +240,56 @@ class Assistance
 
     /**
      * @param AbstractBeneficiary $beneficiary
+     * @param string|null         $justification
      * @param array|null          $vulnerabilityScore TODO: replace by class or serializable interface
      *
      * @return Assistance
      */
-    public function addBeneficiary(AbstractBeneficiary $beneficiary, ?array $vulnerabilityScore = null): self
+    public function addBeneficiary(AbstractBeneficiary $beneficiary, ?string $justification = null, ?array $vulnerabilityScore = null): self
     {
-        $target = (new AssistanceBeneficiary())
-            ->setAssistance($this->assistanceRoot)
-            ->setBeneficiary($beneficiary)
-            ->setRemoved(false);
-        if (!empty($vulnerabilityScore)) {
-            $target->setVulnerabilityScores(json_encode($vulnerabilityScore));
+        $target = $this->targetRepository->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $this->assistanceRoot]);
+        if (null === $target) {
+            $target = (new AssistanceBeneficiary())
+                ->setAssistance($this->assistanceRoot)
+                ->setBeneficiary($beneficiary)
+                ->setRemoved(false);
+            $this->assistanceRoot->addAssistanceBeneficiary($target);
+            if (!empty($vulnerabilityScore)) {
+                $target->setVulnerabilityScores(json_encode($vulnerabilityScore));
+            }
+        } else {
+            $target->setRemoved(false);
         }
-        $this->assistanceRoot->addAssistanceBeneficiary($target);
+
+        if (!empty($justification)) {
+            $target->setJustification($justification);
+        }
         $this->recountReliefPackages([$target]);
+        $this->assistanceRoot->setUpdatedOn(new \DateTime());
+        $this->cleanCache();
+
+        return $this;
+    }
+
+    /**
+     * @param AbstractBeneficiary $beneficiary
+     * @param string         $justification
+     *
+     * @return $this
+     */
+    public function removeBeneficiary(AbstractBeneficiary $beneficiary, string $justification): self
+    {
+        $target = $this->targetRepository->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $this->assistanceRoot]);
+        if ($target === null) return $this;
+
+        if ($target->hasDistributionStarted()) {
+            throw new RemoveBeneficiaryWithReliefException($target->getBeneficiary());
+        }
+        $target->setRemoved(true)
+            ->setJustification($justification);
+        $this->cancelUnusedReliefPackages([$target]);
+        $this->assistanceRoot->setUpdatedOn(new \DateTime());
+        $this->cleanCache();
 
         return $this;
     }

@@ -7,8 +7,10 @@ use BeneficiaryBundle\Repository\CommunityRepository;
 use BeneficiaryBundle\Repository\InstitutionRepository;
 use CommonBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
+use DateTimeInterface;
 use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Enum\AssistanceTargetType;
+use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use DistributionBundle\Repository\ModalityTypeRepository;
 use DistributionBundle\Utils\CriteriaAssistanceService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -65,35 +67,40 @@ class AssistanceFactory
     /** @var Registry */
     private $workflowRegistry;
 
+    /** @var AssistanceBeneficiaryRepository */
+    private $targetRepository;
+
     /**
-     * @param CacheInterface                 $cache
-     * @param CriteriaAssistanceService      $criteriaAssistanceService
-     * @param FieldDbTransformer             $fieldDbTransformer
-     * @param SerializerInterface            $serializer
-     * @param ModalityTypeRepository         $modalityTypeRepository
-     * @param LocationRepository             $locationRepository
-     * @param ProjectRepository              $projectRepository
-     * @param CommunityRepository            $communityRepository
-     * @param InstitutionRepository          $institutionRepository
-     * @param BeneficiaryRepository          $beneficiaryRepository
-     * @param AssistanceStatisticsRepository $assistanceStatisticRepository
-     * @param EntityManagerInterface         $entityManager
-     * @param Registry                       $workflowRegistry
+     * @param CacheInterface                  $cache
+     * @param CriteriaAssistanceService       $criteriaAssistanceService
+     * @param FieldDbTransformer              $fieldDbTransformer
+     * @param SerializerInterface             $serializer
+     * @param ModalityTypeRepository          $modalityTypeRepository
+     * @param LocationRepository              $locationRepository
+     * @param ProjectRepository               $projectRepository
+     * @param CommunityRepository             $communityRepository
+     * @param InstitutionRepository           $institutionRepository
+     * @param BeneficiaryRepository           $beneficiaryRepository
+     * @param AssistanceStatisticsRepository  $assistanceStatisticRepository
+     * @param EntityManagerInterface          $entityManager
+     * @param Registry                        $workflowRegistry
+     * @param AssistanceBeneficiaryRepository $targetRepository
      */
     public function __construct(
-        CacheInterface                 $cache,
-        CriteriaAssistanceService      $criteriaAssistanceService,
-        FieldDbTransformer             $fieldDbTransformer,
-        SerializerInterface            $serializer,
-        ModalityTypeRepository         $modalityTypeRepository,
-        LocationRepository             $locationRepository,
-        ProjectRepository              $projectRepository,
-        CommunityRepository            $communityRepository,
-        InstitutionRepository          $institutionRepository,
-        BeneficiaryRepository          $beneficiaryRepository,
-        AssistanceStatisticsRepository $assistanceStatisticRepository,
-        EntityManagerInterface         $entityManager,
-        Registry                       $workflowRegistry
+        CacheInterface                                                 $cache,
+        CriteriaAssistanceService                                      $criteriaAssistanceService,
+        FieldDbTransformer                                             $fieldDbTransformer,
+        SerializerInterface                                            $serializer,
+        ModalityTypeRepository                                         $modalityTypeRepository,
+        LocationRepository                                             $locationRepository,
+        ProjectRepository                                              $projectRepository,
+        CommunityRepository                                            $communityRepository,
+        InstitutionRepository                                          $institutionRepository,
+        BeneficiaryRepository                                          $beneficiaryRepository,
+        AssistanceStatisticsRepository                                 $assistanceStatisticRepository,
+        EntityManagerInterface                                         $entityManager,
+        Registry                                                       $workflowRegistry,
+        AssistanceBeneficiaryRepository $targetRepository
     ) {
         $this->cache = $cache;
         $this->criteriaAssistanceService = $criteriaAssistanceService;
@@ -108,6 +115,7 @@ class AssistanceFactory
         $this->assistanceStatisticRepository = $assistanceStatisticRepository;
         $this->entityManager = $entityManager;
         $this->workflowRegistry = $workflowRegistry;
+        $this->targetRepository = $targetRepository;
     }
 
     public function create(AssistanceCreateInputType $inputType): Domain\Assistance
@@ -179,7 +187,7 @@ class AssistanceFactory
                 );
                 foreach ($beneficiaryIds['finalArray'] as $beneficiaryId => $vulnerabilityScore) {
                     $individualOrHHH = $this->beneficiaryRepository->find($beneficiaryId);
-                    $assistance->addBeneficiary($individualOrHHH, $vulnerabilityScore);
+                    $assistance->addBeneficiary($individualOrHHH, null, $vulnerabilityScore);
                 }
                 break;
         }
@@ -187,7 +195,7 @@ class AssistanceFactory
         return $assistance;
     }
 
-    private static function generateName(Location $location, ?\DateTimeInterface $date = null): string
+    private static function generateName(Location $location, ?DateTimeInterface $date = null): string
     {
         $adm = '';
         if ($location->getAdm4()) {
@@ -215,7 +223,8 @@ class AssistanceFactory
             $this->modalityTypeRepository,
             $this->assistanceStatisticRepository,
             $this->entityManager,
-            $this->workflowRegistry
+            $this->workflowRegistry,
+            $this->targetRepository
         );
     }
 

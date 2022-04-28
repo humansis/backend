@@ -35,10 +35,7 @@ services:
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@serializer'
-            - '@validator'
             - '@service_container'
-            - '@workflow.registry'
 
     distribution.criteria_assistance_service:
         alias: DistributionBundle\Utils\CriteriaAssistanceService

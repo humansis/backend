@@ -257,18 +257,7 @@ class AssistanceController extends Controller
      */
     public function addBeneficiaryAction(Request $request, Assistance $assistance)
     {
-        $mapper = $this->get(AssistanceBeneficiaryMapper::class);
-        $data = $request->request->all();
-
-        try {
-            /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
-            $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
-            $assistanceBeneficiaries = $assistanceBeneficiaryService->addBeneficiaries($assistance, $data);
-        } catch (\Exception $exception) {
-            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
-
-        return $this->json($mapper->toMinimalArrays($assistanceBeneficiaries));
+        return new Response('Old endpoint', Response::HTTP_VERSION_NOT_SUPPORTED);
     }
 
     /**
@@ -284,30 +273,28 @@ class AssistanceController extends Controller
      *     description="Return if the beneficiary specified has been remove"
      * )
      *
-     * @param Request $request
-     * @param Assistance $distribution
-     * @param Beneficiary $beneficiary
+     * @param Request           $request
+     * @param Assistance        $distribution
+     * @param AssistanceFactory $factory
+     * @param Beneficiary       $beneficiary
      *
      * @return Response
      */
-    public function removeOneBeneficiaryAction(Request $request, Assistance $distribution, AbstractBeneficiary $beneficiary)
-    {
+    public function removeOneBeneficiaryAction(
+        Request $request,
+        Assistance $distribution,
+        AssistanceFactory $factory,
+        AbstractBeneficiary $beneficiary
+    ): Response {
         $deletionData = $request->request->all();
 
         if (true === $distribution->getCompleted() || true === $distribution->getArchived()) {
             throw new BadRequestHttpException("Beneficiary can't be removed from closed or archived assistance");
         }
 
-        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
-        $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
+        $factory->hydrate($distribution)->removeBeneficiary($beneficiary, $deletionData['justification']);
 
-        try {
-            $return = $assistanceBeneficiaryService->removeBeneficiaryInDistribution($distribution, $beneficiary, $deletionData);
-        } catch (\InvalidArgumentException $e) {
-            throw new BadRequestHttpException($e->getMessage(), $e);
-        }
-
-        return new Response(json_encode($return));
+        return new Response();
     }
 
     /**
