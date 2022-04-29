@@ -169,7 +169,6 @@ class IntegrityCheckerTest extends KernelTestCase
 
     public function testAllDuplicitiesIdentified()
     {
-        $this->markTestSkipped('removed due error in hotfix, should be returned to check self duplicities in import files');
         $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'iso3' => 'KHM'], null, 1)[0];
         $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
 

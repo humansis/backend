@@ -151,7 +151,6 @@ class IntegrityChecker
             $beneficiary = $this->beneficiaryDecoratorBuilder->buildBeneficiaryInputType($hhm);
             $violations = $this->validator->validate($beneficiary, null, ["Default", "BeneficiaryInputType", "Strict"]);
 
-            /* removed due error in hotfix, should be returned to check self duplicities in import files
             $cards = $beneficiary->getNationalIdCards();
             if (count($cards) > 0) {
                 $idCard = $cards[0];
@@ -160,7 +159,6 @@ class IntegrityChecker
                     $item->addViolation($index, ['violation' => 'This line has ID duplicity!', 'value' => $idCard->getType().": ".$idCard->getNumber()]);
                 }
             }
-            */
 
             foreach ($violations as $violation) {
                 $item->addViolation($index, $this->buildNormalizedErrorMessage($violation));
