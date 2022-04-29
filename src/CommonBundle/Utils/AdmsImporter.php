@@ -37,6 +37,9 @@ class AdmsImporter
     /** @var int */
     private $omittedLocations = 0;
 
+    /** @var string */
+    private $iso3;
+
     /**
      * @var Adm1Repository
      */
@@ -81,6 +84,8 @@ class AdmsImporter
         $this->adm2Repository = $adm2Repository;
         $this->adm3Repository = $adm3Repository;
         $this->adm4Repository = $adm4Repository;
+
+        $this->iso3 = strtoupper(pathinfo($this->file, PATHINFO_FILENAME));
     }
 
     /**
@@ -106,12 +111,20 @@ class AdmsImporter
     }
 
     /**
+     * @return string
+     */
+    public function getIso3(): string
+    {
+        return $this->iso3;
+    }
+
+    /**
      * @return iterable
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function importLocations(): iterable
     {
         $this->em->getConnection()->getConfiguration()->setSQLLogger(null);
-        $iso3 = strtoupper(pathinfo($this->file, PATHINFO_FILENAME));
 
         $xml = new \XMLReader();
         if (false === $xml->open($this->file)) {
@@ -136,7 +149,7 @@ class AdmsImporter
 
             $adm = null;
             if ('adm1' === $xml->name) {
-                $adm = $adm1 = $this->buildAdm1($name, $code, $iso3);
+                $adm = $adm1 = $this->buildAdm1($name, $code, $this->iso3);
             } elseif ('adm2' === $xml->name) {
                 $adm = $adm2 = $this->buildAdm2($name, $code, $adm1);
             } elseif ('adm3' === $xml->name) {

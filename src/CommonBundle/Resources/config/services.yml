@@ -144,13 +144,12 @@ services:
     CommonBundle\DataFixtures\LocationFixtures:
         public: true
         arguments:
-            - "@kernel"
-            - "@location_service"
             - '@CommonBundle\Repository\Adm1Repository'
             - '@CommonBundle\Repository\Adm2Repository'
             - '@CommonBundle\Repository\Adm3Repository'
             - '@CommonBundle\Repository\Adm4Repository'
             - '@CommonBundle\Repository\LocationRepository'
+            - '@NewApiBundle\Component\Country\Countries'
         tags:
             - { name: doctrine.fixture.orm }
 

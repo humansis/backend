@@ -9,22 +9,15 @@ use CommonBundle\Repository\Adm4Repository;
 use CommonBundle\Repository\LocationRepository;
 use CommonBundle\Utils\AdmsImporter;
 use CommonBundle\Utils\LocationImporter;
-use CommonBundle\Utils\LocationService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
-use Symfony\Component\HttpKernel\Kernel;
+use NewApiBundle\Component\Country\Countries;
 
 class LocationFixtures extends Fixture implements FixtureGroupInterface
 {
     // maximum imported lines per file (due to performace on dev env)
     const LIMIT = 10;
-
-    /** @var string */
-    private $env;
-
-    /** @var LocationService */
-    private $locationService;
 
     /**
      * @var Adm1Repository
@@ -51,22 +44,25 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
      */
     private $locationRepository;
 
+    /**
+     * @var Countries
+     */
+    private $countries;
+
     public function __construct(
-        Kernel             $kernel,
-        LocationService    $locationService,
         Adm1Repository     $adm1Repository,
         Adm2Repository     $adm2Repository,
         Adm3Repository     $adm3Repository,
         Adm4Repository     $adm4Repository,
-        LocationRepository $locationRepository
+        LocationRepository $locationRepository,
+        Countries          $countries
     ) {
-        $this->env = $kernel->getEnvironment();
-        $this->locationService = $locationService;
         $this->adm1Repository = $adm1Repository;
         $this->adm2Repository = $adm2Repository;
         $this->adm3Repository = $adm3Repository;
         $this->adm4Repository = $adm4Repository;
         $this->locationRepository = $locationRepository;
+        $this->countries = $countries;
     }
 
     /**
@@ -87,6 +83,12 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
 
             $admImported = new AdmsImporter($manager, $filepath, $this->adm1Repository, $this->adm2Repository, $this->adm3Repository,
                 $this->adm4Repository);
+
+            $country = $this->countries->getCountry($admImported->getIso3());
+            if(!$country || $country->isArchived()){
+                echo 'Skip non-existing or archived country ' . $admImported->getIso3();
+                continue;
+            }
 
             $limit = self::LIMIT;
             echo "FILE PART($limit) IMPORT ADMX: $filepath \n";

@@ -21,6 +21,9 @@ class LocationImporter
     /** @var int|null */
     private $limit;
 
+    /** @var string */
+    private $iso3;
+
     /** @var int */
     private $importedLocations = 0;
 
@@ -44,6 +47,7 @@ class LocationImporter
         $this->em = $entityManager;
         $this->file = $file;
         $this->locationRepository = $locationRepository;
+        $this->iso3 = strtoupper(pathinfo($this->file, PATHINFO_FILENAME));
     }
 
     /**
@@ -69,12 +73,20 @@ class LocationImporter
     }
 
     /**
+     * @return string
+     */
+    public function getIso3(): string
+    {
+        return $this->iso3;
+    }
+
+    /**
      * @return iterable
+     * @throws \Doctrine\DBAL\Exception
      */
     public function importLocations(): iterable
     {
         $this->em->getConnection()->getConfiguration()->setSQLLogger(null);
-        $iso3 = strtoupper(pathinfo($this->file, PATHINFO_FILENAME));
 
         $xml = new \XMLReader();
         if (false === $xml->open($this->file)) {
@@ -99,13 +111,13 @@ class LocationImporter
 
             $adm = null;
             if ('adm1' === $xml->name) {
-                $adm = $adm1 = $this->buildLocation($name, $code, $iso3, 1);
+                $adm = $adm1 = $this->buildLocation($name, $code, $this->iso3, 1);
             } elseif ('adm2' === $xml->name) {
-                $adm = $adm2 = $this->buildLocation($name, $code, $iso3, 2, $adm1);
+                $adm = $adm2 = $this->buildLocation($name, $code, $this->iso3, 2, $adm1);
             } elseif ('adm3' === $xml->name) {
-                $adm = $adm3 = $this->buildLocation($name, $code, $iso3, 3, $adm2);
+                $adm = $adm3 = $this->buildLocation($name, $code, $this->iso3, 3, $adm2);
             } elseif ('adm4' === $xml->name) {
-                $adm = $this->buildLocation($name, $code, $iso3, 4, $adm3);
+                $adm = $this->buildLocation($name, $code, $this->iso3, 4, $adm3);
             }
             if ($adm && $adm->getName() != $name) {
                 yield [
