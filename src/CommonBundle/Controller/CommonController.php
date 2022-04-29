@@ -2,7 +2,9 @@
 
 namespace CommonBundle\Controller;
 
+use BeneficiaryBundle\Utils\BeneficiaryService;
 use DistributionBundle\Repository\AssistanceRepository;
+use ProjectBundle\Utils\ProjectService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use BeneficiaryBundle\Entity\Household;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -40,22 +42,31 @@ class CommonController extends Controller
      *     response=400,
      *     description="HTTP_BAD_REQUEST"
      * )
-     * @param Request $request
+     * @param Request              $request
+     * @param AssistanceRepository $assistanceRepository
+     * @param BeneficiaryService   $beneficiaryService
+     * @param ProjectService       $projectService
+     *
      * @return Response
      */
-    public function getSummaryAction(Request $request)
+    public function getSummaryAction(
+        Request $request,
+        AssistanceRepository $assistanceRepository,
+        BeneficiaryService $beneficiaryService,
+        ProjectService $projectService
+    )
     {
         $country = $request->request->get('__country');
         
         try {
-            $total_beneficiaries = $this->get('beneficiary.beneficiary_service')->countAll($country);
-            $active_projects = $this->get('project.project_service')->countActive($country);
+            $total_beneficiaries = $beneficiaryService->countAll($country);
+            $active_projects = $projectService->countActive($country);
             $enrolled_households = $this->getDoctrine()->getRepository(Household::class)
                 ->countUnarchivedByCountryProjects($country);
 
-            $total_beneficiary_served = $this->get('beneficiary.beneficiary_service')->countAllServed($country);
+            $total_beneficiary_served = $beneficiaryService->countAllServed($country);
 
-            $total_completed_distributions = $this->get(AssistanceRepository::class)->countCompleted($country);
+            $total_completed_distributions = $assistanceRepository->countCompleted($country);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

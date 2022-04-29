@@ -315,11 +315,11 @@ class AssistanceController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function getAllAction(Request $request)
+    public function getAllAction(Request $request, AssistanceRepository $assistanceRepository)
     {
         $country = $request->request->get('__country');
         try {
-            $distributions = $this->get(AssistanceRepository::class)->getActiveByCountry($country);
+            $distributions = $assistanceRepository->getActiveByCountry($country);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
