@@ -140,8 +140,8 @@ class LocationImporter
 
     private function buildLocation(string $name, string $code, string $iso3, int $level, ?Location $parentLocation = null): Location
     {
-        /** @var Location[] $locations */
-        $locations = $this->locationRepository->findBy(['countryISO3' => $iso3, 'code' => $code]);
+        $locations = $this->locationRepository->findLocationsByCode($code, $iso3, [LocationRepository::SEARCH_CONTEXT_NULLABLE_ISO3 => true]);
+
         if (count($locations) > 1) {
             $location = $locations[0];
             $this->omittedLocations++;
