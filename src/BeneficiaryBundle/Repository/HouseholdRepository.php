@@ -197,9 +197,8 @@ class HouseholdRepository extends AbstractCriteriaRepository
             ->leftJoin('b.person', 'per')
             ->leftJoin('per.nationalIds', 'ni')
             ->leftJoin('per.referral', 'r')
-            ->leftJoin('hh.beneficiaries', 'head')
+            ->leftJoin('hh.beneficiaries', 'head', Join::WITH, 'head.status = 1')
             ->leftJoin('head.person', 'headper')
-            ->andWhere('head.status = 1')
             ->andWhere('hh.archived = 0')
             ->andWhere('adm1.countryISO3 = :iso3')
             ->setParameter('iso3', $iso3);
