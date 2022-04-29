@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace VoucherBundle\Utils;
 
@@ -8,11 +8,11 @@ use DateTimeInterface;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use Doctrine\ORM\EntityManager;
-use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\InputType\SmartcardPurchaseInputType;
-use NewApiBundle\Repository\ReliefPackageRepository;
+use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Repository\ProjectRepository;

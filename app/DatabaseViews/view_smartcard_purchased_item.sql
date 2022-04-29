@@ -27,9 +27,9 @@ FROM smartcard_purchase_record spr
                 LIMIT 1
             )
          LEFT JOIN distribution_beneficiary db ON db.assistance_id = sp.assistance_id AND db.beneficiary_id = b.id
-         LEFT JOIN relief_package rp ON rp.id = (
+         LEFT JOIN assistance_relief_package rp ON rp.id = (
                 SELECT reliefPackage.id
-                FROM relief_package reliefPackage
+                FROM assistance_relief_package reliefPackage
                 WHERE reliefPackage.assistance_beneficiary_id = db.id
                 LIMIT 1
             )

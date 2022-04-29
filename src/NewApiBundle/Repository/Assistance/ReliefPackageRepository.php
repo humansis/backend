@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace NewApiBundle\Repository;
+namespace NewApiBundle\Repository\Assistance;
 
 
 use BeneficiaryBundle\Entity\Beneficiary;
@@ -11,7 +11,7 @@ use CommonBundle\Entity\Adm3;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
 use VoucherBundle\Entity\Vendor;

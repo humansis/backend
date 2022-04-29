@@ -5,7 +5,7 @@ namespace Tests\NewApiBundle\Controller\VendorApp;
 
 use DistributionBundle\Entity\Assistance;
 use Exception;
-use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
 use Tests\BMSServiceTestCase;
 use VoucherBundle\Entity\Vendor;
 

@@ -47,7 +47,7 @@ FROM (
                   LEFT JOIN distribution_beneficiary db on a.id = db.assistance_id
                   LEFT JOIN commodity c ON db.assistance_id=c.assistance_id
              -- smartcards
-                  LEFT JOIN relief_package pack ON pack.assistance_beneficiary_id=db.id
+                  LEFT JOIN assistance_relief_package pack ON pack.assistance_beneficiary_id=db.id
                   LEFT JOIN smartcard_deposit sd ON sd.relief_package_id=pack.id
              -- mobile money
                   LEFT JOIN transaction t ON t.distribution_beneficiary_id=db.id AND t.transaction_status=1

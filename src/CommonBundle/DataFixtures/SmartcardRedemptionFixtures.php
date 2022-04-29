@@ -1,18 +1,13 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace CommonBundle\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use UserBundle\Entity\User;
 use VoucherBundle\Entity\SmartcardPurchase;
-use VoucherBundle\Entity\Vendor;
-use VoucherBundle\Entity\Voucher;
 use VoucherBundle\InputType\SmartcardRedemtionBatch;
-use VoucherBundle\InputType\VoucherRedemptionBatch;
 use VoucherBundle\Utils\SmartcardService;
-use VoucherBundle\Utils\VoucherService;
 
 class SmartcardRedemptionFixtures extends Fixture implements DependentFixtureInterface
 {

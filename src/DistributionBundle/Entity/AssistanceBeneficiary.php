@@ -7,7 +7,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Serializer\Annotation\MaxDepth as SymfonyMaxDepth;
 
@@ -87,7 +87,7 @@ class AssistanceBeneficiary
     /**
      * @var Collection|ReliefPackage[]
      *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ReliefPackage", mappedBy="assistanceBeneficiary")
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\Assistance\ReliefPackage", mappedBy="assistanceBeneficiary")
      * @ORM\JoinColumn(name="relief_package_id")
      */
     private $reliefPackages;
