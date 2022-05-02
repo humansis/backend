@@ -18,8 +18,10 @@ services:
 #######################################################################################
 
     distribution.assistance_service:
-        class: DistributionBundle\Utils\AssistanceService
+        alias: DistributionBundle\Utils\AssistanceService
         public: true
+
+    DistributionBundle\Utils\AssistanceService:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@serializer'
