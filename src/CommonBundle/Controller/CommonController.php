@@ -54,8 +54,7 @@ class CommonController extends Controller
         AssistanceRepository $assistanceRepository,
         BeneficiaryService $beneficiaryService,
         ProjectService $projectService
-    )
-    {
+    ): Response {
         $country = $request->request->get('__country');
         
         try {
@@ -97,7 +96,7 @@ class CommonController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function getLogs(Request $request)
+    public function getLogs(Request $request): Response
     {
         try {
             $logs = $this->get('log_service')->getLogs();
@@ -139,7 +138,7 @@ class CommonController extends Controller
      *
      * @return JsonResponse
      */
-    public function masterKeyOfflineApp()
+    public function masterKeyOfflineApp(): JsonResponse
     {
         return $this->json([
             'MASTER_KEY' => $this->getParameter('mobile_app_master_key'),
@@ -177,7 +176,7 @@ class CommonController extends Controller
      *
      * @return JsonResponse
      */
-    public function masterKeyVendorApp()
+    public function masterKeyVendorApp(): JsonResponse
     {
         return $this->masterKeyOfflineApp();
     }
