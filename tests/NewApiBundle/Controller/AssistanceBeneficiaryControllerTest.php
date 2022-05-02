@@ -64,10 +64,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
                     "beneficiaryId": "*",
                     "removed": "*",
                     "justification": "*",
-                    "generalReliefItemIds": "*",
-                    "transactionIds": "*",
-                    "smartcardDepositIds": "*",
-                    "bookletIds": "*"
+                    "reliefPackageIds": "*"
                 }
             ]}', $this->client->getResponse()->getContent());
     }
@@ -106,10 +103,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
                     "institutionId": "*",
                     "removed": "*",
                     "justification": "*",
-                    "generalReliefItemIds": "*",
-                    "transactionIds": "*",
-                    "smartcardDepositIds": "*",
-                    "bookletIds": "*"
+                    "reliefPackageIds": "*"
                 }
             ]}', $this->client->getResponse()->getContent());
     }
@@ -148,10 +142,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
                     "communityId": "*",
                     "removed": "*",
                     "justification": "*",
-                    "generalReliefItemIds": "*",
-                    "transactionIds": "*",
-                    "smartcardDepositIds": "*",
-                    "bookletIds": "*"
+                    "reliefPackageIds": "*"
                 }
             ]}', $this->client->getResponse()->getContent());
     }

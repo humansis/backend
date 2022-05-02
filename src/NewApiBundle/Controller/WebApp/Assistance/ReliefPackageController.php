@@ -35,7 +35,7 @@ class ReliefPackageController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/assistances/relief-packages/{id}")
-     * @Cache(lastModified="package.getLastModifiedAt()", public=true)
+     * @ Cache(lastModified="package.getLastModifiedAt()", public=true)
      *
      * @param ReliefPackage $package
      * @param Request       $request

@@ -102,10 +102,9 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
     {
         $qb = $this->createQueryBuilder('rp')
             ->join('rp.assistanceBeneficiary', 'ab', Join::WITH, 'ab.removed = 0')
-            ->join('ab.assistance', 'a')
             ->join('ab.beneficiary', 'abstB',Join::WITH, 'abstB.archived = 0')
-            ->andWhere('IDENTITY(a) = :assistance')
-            ->setParameter('assistance', $assistance)
+            ->andWhere('IDENTITY(ab.assistance) = :assistance')
+            ->setParameter('assistance', $assistance->getId())
         ;
 
         return new Paginator($qb);

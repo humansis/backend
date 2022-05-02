@@ -56,15 +56,14 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
             "data": [
                 {
                     "id": "*",
-                    "assistanceId": "*",
-                    "beneficiaryId": "*",
+                    "state": "*",
+                    "modalityType": "*",
                     "amountToDistribute": "*",
+                    "amountDistributed": "*",
                     "unit": "*",
-                    "smartCardSerialNumber": "*",
-                    "foodLimit": "*",
-                    "nonfoodLimit": "*",
-                    "cashbackLimit": "*",
-                    "expirationDate": "*"
+                    "createdAt": "*",
+                    "distributedAt": "*",
+                    "lastModifiedAt": "*"
                 }
             ]
         }', $this->client->getResponse()->getContent());
