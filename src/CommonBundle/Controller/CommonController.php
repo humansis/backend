@@ -27,6 +27,24 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class CommonController extends Controller
 {
+    /** @var AssistanceRepository */
+    private $assistanceRepository;
+    /** @var BeneficiaryService */
+    private $beneficiaryService;
+    /** @var ProjectService */
+    private $projectService;
+
+    /**
+     * @param AssistanceRepository $assistanceRepository
+     * @param BeneficiaryService   $beneficiaryService
+     * @param ProjectService       $projectService
+     */
+    public function __construct(AssistanceRepository $assistanceRepository, BeneficiaryService $beneficiaryService, ProjectService $projectService)
+    {
+        $this->assistanceRepository = $assistanceRepository;
+        $this->beneficiaryService = $beneficiaryService;
+        $this->projectService = $projectService;
+    }
 
     /**
      * @Rest\Get("/summary", name="get_summary")
@@ -43,29 +61,23 @@ class CommonController extends Controller
      *     description="HTTP_BAD_REQUEST"
      * )
      * @param Request              $request
-     * @param AssistanceRepository $assistanceRepository
      * @param BeneficiaryService   $beneficiaryService
      * @param ProjectService       $projectService
      *
      * @return Response
      */
-    public function getSummaryAction(
-        Request $request,
-        AssistanceRepository $assistanceRepository,
-        BeneficiaryService $beneficiaryService,
-        ProjectService $projectService
-    ): Response {
+    public function getSummaryAction(Request $request): Response {
         $country = $request->request->get('__country');
         
         try {
-            $total_beneficiaries = $beneficiaryService->countAll($country);
-            $active_projects = $projectService->countActive($country);
+            $total_beneficiaries = $this->beneficiaryService->countAll($country);
+            $active_projects = $this->projectService->countActive($country);
             $enrolled_households = $this->getDoctrine()->getRepository(Household::class)
                 ->countUnarchivedByCountryProjects($country);
 
-            $total_beneficiary_served = $beneficiaryService->countAllServed($country);
+            $total_beneficiary_served = $this->beneficiaryService->countAllServed($country);
 
-            $total_completed_distributions = $assistanceRepository->countCompleted($country);
+            $total_completed_distributions = $this->assistanceRepository->countCompleted($country);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
