@@ -52,7 +52,7 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         );
 
         $this->assertJsonFragment('{
-            "totalCount": "'.$packageCount.'",
+            "totalCount": '.$packageCount.',
             "data": [
                 {
                     "id": "*",

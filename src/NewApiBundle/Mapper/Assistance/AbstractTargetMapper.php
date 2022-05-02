@@ -47,8 +47,8 @@ abstract class AbstractTargetMapper implements MapperInterface
 
     public function getReliefPackageIds(): array
     {
-        return array_map(function (ReliefPackage $reliefPackage) {
-            return $reliefPackage->getId();
+        return array_map(function (ReliefPackage $package) {
+            return $package->getId();
         }, $this->object->getReliefPackages()->toArray());
     }
 }
