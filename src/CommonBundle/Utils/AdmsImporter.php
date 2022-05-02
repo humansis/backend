@@ -190,8 +190,7 @@ class AdmsImporter
     {
         $adm1 = $this->adm1Repository->findByIsoAndCode($iso3, $code);
         if (!$adm1) {
-            $adm1 = (new Adm1())
-                ->setCountryISO3($iso3)
+            $adm1 = (new Adm1($iso3))
                 ->setName($name)
                 ->setCode($code);
 
@@ -216,8 +215,7 @@ class AdmsImporter
     {
         $adm2 = $this->adm2Repository->findByAdm1AndCode($adm1, $code);
         if (!$adm2) {
-            $adm2 = (new Adm2())
-                ->setAdm1($adm1)
+            $adm2 = (new Adm2($adm1))
                 ->setName($name)
                 ->setCode($code);
 
@@ -242,8 +240,7 @@ class AdmsImporter
     {
         $adm3 = $this->adm3Repository->findByAdm2AndCode($adm2, $code);
         if (!$adm3) {
-            $adm3 = (new Adm3())
-                ->setAdm2($adm2)
+            $adm3 = (new Adm3($adm2))
                 ->setName($name)
                 ->setCode($code);
 
@@ -260,8 +257,7 @@ class AdmsImporter
     {
         $adm4 = $this->adm4Repository->findByAdm3AndCode($adm3, $code);
         if (!$adm4) {
-            $adm4 = (new Adm4())
-                ->setAdm3($adm3)
+            $adm4 = (new Adm4($adm3))
                 ->setName($name)
                 ->setCode($code);
 

@@ -20,8 +20,6 @@ use NewApiBundle\InputType\LocationFilterInputType;
 class LocationRepository extends \Doctrine\ORM\EntityRepository
 {
 
-    public const SEARCH_CONTEXT_NULLABLE_ISO3 = 'nullableIso3';
-
     /**
      * @param $country
      * @return Location[]
@@ -295,17 +293,13 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
      *
      * @return Location[]
      */
-    public function findLocationsByCode(string $code, ?string $iso3 = null, ?array $context = null): array
+    public function findLocationsByCode(string $code, ?string $iso3 = null): array
     {
         $qb = $this->createQueryBuilder('l');
         $qb->andWhere('l.code = :code')
             ->setParameter('code', $code);
         if ($iso3) {
-            if ($context && array_key_exists(self::SEARCH_CONTEXT_NULLABLE_ISO3, $context) && $context[self::SEARCH_CONTEXT_NULLABLE_ISO3] === true) {
-                $qb->andWhere('l.countryISO3 = :iso3 OR l.countryISO3 IS NULL');
-            } else {
-                $qb->andWhere('l.countryISO3 = :iso3');
-            }
+            $qb->andWhere('l.countryISO3 = :iso3');
             $qb->setParameter('iso3', $iso3);
         }
 

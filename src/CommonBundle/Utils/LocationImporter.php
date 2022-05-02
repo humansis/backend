@@ -152,7 +152,7 @@ class LocationImporter
 
     private function buildLocation(string $name, string $code, string $iso3, int $level, ?Location $parentLocation = null): Location
     {
-        $locations = $this->locationRepository->findLocationsByCode($code, $iso3, [LocationRepository::SEARCH_CONTEXT_NULLABLE_ISO3 => true]);
+        $locations = $this->locationRepository->findLocationsByCode($code, $iso3);
 
         if (count($locations) > 1) {
             $location = $locations[0];
@@ -168,8 +168,7 @@ class LocationImporter
             $this->em->persist($location);
             $this->importedLocations++;
         } elseif (!isset($locations[0])) {
-            $location = new Location();
-            $location->setCountryISO3($iso3);
+            $location = new Location($iso3);
             $location->setName($name);
             $location->setCode($code);
             $location->setParentLocation($parentLocation);
