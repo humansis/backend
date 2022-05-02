@@ -8,6 +8,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
+use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -93,6 +94,19 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('a.remoteDistributionAllowed = true')
             ->setParameter('state', ReliefPackageState::TO_DISTRIBUTE)
             ->setParameter('currentDate', new \DateTime());
+
+        return new Paginator($qb);
+    }
+
+    public function findByAssistance(Assistance $assistance): Paginator
+    {
+        $qb = $this->createQueryBuilder('rp')
+            ->join('rp.assistanceBeneficiary', 'ab', Join::WITH, 'ab.removed = 0')
+            ->join('ab.assistance', 'a')
+            ->join('ab.beneficiary', 'abstB',Join::WITH, 'abstB.archived = 0')
+            ->andWhere('IDENTITY(a) = :assistance')
+            ->setParameter('assistance', $assistance)
+        ;
 
         return new Paginator($qb);
     }

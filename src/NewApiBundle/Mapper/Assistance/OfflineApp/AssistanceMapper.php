@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace NewApiBundle\Mapper;
+namespace NewApiBundle\Mapper\Assistance\OfflineApp;
 
 use DistributionBundle\Entity\Assistance;
 use NewApiBundle\Repository\AssistanceStatisticsRepository;
 use NewApiBundle\Serializer\MapperInterface;
 
-class AssistanceOfflineAppMapper implements MapperInterface
+class AssistanceMapper implements MapperInterface
 {
     /** @var Assistance */
     private $object;

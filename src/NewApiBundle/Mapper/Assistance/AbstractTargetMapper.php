@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace NewApiBundle\Mapper;
+namespace NewApiBundle\Mapper\Assistance;
 
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\GeneralReliefItem;
@@ -9,7 +9,7 @@ use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Serializer\MapperInterface;
 use VoucherBundle\Entity\Booklet;
 
-abstract class AbstractAssistanceBeneficiaryMapper implements MapperInterface
+abstract class AbstractTargetMapper implements MapperInterface
 {
     /** @var AssistanceBeneficiary */
     protected $object;
@@ -43,18 +43,6 @@ abstract class AbstractAssistanceBeneficiaryMapper implements MapperInterface
     public function getJustification(): ?string
     {
         return $this->object->getJustification();
-    }
-
-    public function getGeneralReliefItemIds(): array
-    {
-        return []; // TODO: remove after PIN-3249
-    }
-
-    public function getBookletIds(): array
-    {
-        return array_map(function (Booklet $booklet) {
-            return $booklet->getId();
-        }, $this->object->getBooklets()->toArray());
     }
 
     public function getReliefPackageIds(): array

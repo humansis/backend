@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace NewApiBundle\Mapper;
+namespace NewApiBundle\Mapper\Assistance;
 
 use DistributionBundle\Entity;
 use NewApiBundle\Component\Assistance\AssistanceFactory;

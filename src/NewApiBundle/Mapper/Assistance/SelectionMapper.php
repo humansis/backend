@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace NewApiBundle\Mapper;
+namespace NewApiBundle\Mapper\Assistance;
 
 use DistributionBundle\Entity\AssistanceSelection;
 use NewApiBundle\Serializer\MapperInterface;
 
-class AssistanceSelectionMapper implements MapperInterface
+class SelectionMapper implements MapperInterface
 {
     /** @var AssistanceSelection */
     private $object;

@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace NewApiBundle\Mapper;
+namespace NewApiBundle\Mapper\Assistance;
 
 use BeneficiaryBundle\Entity\Institution;
 use TransactionBundle\Entity\Transaction;
 use VoucherBundle\Entity\SmartcardDeposit;
 
-class AssistanceInstitutionMapper extends AbstractAssistanceBeneficiaryMapper
+class TargetInstitutionMapper extends AbstractTargetMapper
 {
     public function supports(object $object, $format = null, array $context = null): bool
     {
@@ -17,17 +17,5 @@ class AssistanceInstitutionMapper extends AbstractAssistanceBeneficiaryMapper
     public function getInstitutionId(): int
     {
         return $this->object->getBeneficiary()->getId();
-    }
-
-    public function getTransactionIds(): array
-    {
-        return []; // TODO: remove after PIN-3249
-    }
-
-    public function getSmartcardDepositIds(): array
-    {
-        return array_map(function (SmartcardDeposit $smartcardDeposit) {
-            return $smartcardDeposit->getId();
-        }, $this->object->getSmartcardDeposits()->toArray());
     }
 }
