@@ -4,14 +4,14 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller\WebApp\Assistance;
 
 use DistributionBundle\Entity\Assistance;
-use NewApiBundle\Controller\AbstractController;
+use NewApiBundle\Controller\WebApp\AbstractWebAppController;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
-class ReliefPackageController extends AbstractController
+class ReliefPackageController extends AbstractWebAppController
 {
     /**
      * @Rest\Get("/web-app/v1/assistances/{id}/relief-packages")
