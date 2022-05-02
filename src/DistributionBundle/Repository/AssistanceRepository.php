@@ -83,7 +83,8 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function countCompleted(string $countryISO3) {
+    public function countCompleted(string $countryISO3): int
+    {
         $qb = $this->createQueryBuilder('dd');
         $qb->select('COUNT(dd)')
             ->leftJoin("dd.location", "l");
@@ -91,7 +92,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
         $locationRepository->whereCountry($qb, $countryISO3);
         $qb->andWhere("dd.completed = 1");
 
-        return $qb->getQuery()->getSingleScalarResult();
+        return intval($qb->getQuery()->getSingleScalarResult());
 
     }
 
