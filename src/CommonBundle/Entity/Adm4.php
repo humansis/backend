@@ -58,9 +58,10 @@ class Adm4
     private $code;
 
 
-    public function __construct()
+    public function __construct(Adm3 $adm3)
     {
-        $this->location = new Location();
+        $this->adm3 = $adm3;
+        $this->location = new Location($adm3->getAdm2()->getAdm1()->getCountryISO3());
         $this->location->setLvl(4);
     }
 

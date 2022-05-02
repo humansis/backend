@@ -2,7 +2,6 @@
 namespace CommonBundle\DataFixtures\Beneficiaries;
 
 use BeneficiaryBundle\Entity\Institution;
-use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\InputType\NewInstitutionType;
 use BeneficiaryBundle\Utils\InstitutionService;
 use CommonBundle\DataFixtures\LocationFixtures;
@@ -12,8 +11,10 @@ use CommonBundle\InputType\RequestConverter;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Enum\NationalIdType;
 use ProjectBundle\Entity\Project;
+use ProjectBundle\Repository\ProjectRepository;
 
 class InstitutionFixture extends Fixture implements DependentFixtureInterface
 {
@@ -108,22 +109,32 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
     private $environment;
     /** @var InstitutionService */
     private $institutionService;
-    /** @var array */
-    private $countries = [];
+    /** @var Countries */
+    private $countries;
+
+    /**
+     * @var ProjectRepository
+     */
+    private $projectRepository;
 
     /**
      * InstitutionFixture constructor.
-     * @param string $environment
+     *
+     * @param string             $environment
+     * @param Countries          $countries
      * @param InstitutionService $institutionService
+     * @param ProjectRepository  $projectRepository
      */
-    public function __construct(string $environment, array $countries, InstitutionService $institutionService)
-    {
+    public function __construct(
+        string             $environment,
+        Countries          $countries,
+        InstitutionService $institutionService,
+        ProjectRepository  $projectRepository
+    ) {
         $this->environment = $environment;
         $this->institutionService = $institutionService;
-
-        foreach ($countries as $country) {
-            $this->countries[$country['iso3']] = $country;
-        }
+        $this->countries = $countries;
+        $this->projectRepository = $projectRepository;
     }
 
     public function load(ObjectManager $manager)
@@ -132,8 +143,8 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
             echo "Cannot run on production environment";
             return;
         }
-        foreach ($this->countries as $COUNTRY) {
-            $projects = $manager->getRepository(Project::class)->findBy(['iso3' => $COUNTRY['iso3']], ['id' => 'asc']);
+        foreach ($this->countries->getAll() as $COUNTRY) {
+            $projects = $this->projectRepository->findBy(['iso3' => $COUNTRY->getIso3()], ['id' => 'asc']);
             $projectIds = array_map(function (Project $project) {
                 return $project->getId();
             }, $projects);
@@ -141,7 +152,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
                 $institutionTypeData['projects'] = $projectIds;
                 $institutionType = RequestConverter::normalizeInputType($institutionTypeData, NewInstitutionType::class);
 
-                $institution = $this->institutionService->createDeprecated(new Country($COUNTRY['iso3']), $institutionType);
+                $institution = $this->institutionService->createDeprecated(new Country($COUNTRY->getIso3()), $institutionType);
                 $manager->persist($institution);
             }
         }

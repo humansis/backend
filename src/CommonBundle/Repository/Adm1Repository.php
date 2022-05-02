@@ -3,6 +3,8 @@
 namespace CommonBundle\Repository;
 
 
+use CommonBundle\Entity\Adm1;
+
 /**
  * Adm1Repository
  *
@@ -14,6 +16,17 @@ class Adm1Repository extends AdmBaseRepository
     public function findByCountry(string $iso3): array
     {
         return $this->findBy(['countryISO3' => $iso3], ['name' => 'ASC']);
+    }
+
+    /**
+     * @param string $countryIso3Code
+     * @param string $code
+     *
+     * @return Adm1|null
+     */
+    public function findByIsoAndCode(string $countryIso3Code, string $code): ?Adm1
+    {
+        return $this->findOneBy(['countryISO3' => $countryIso3Code, 'code' => $code]);
     }
 
 }

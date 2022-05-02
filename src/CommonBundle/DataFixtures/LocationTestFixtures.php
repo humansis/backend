@@ -71,8 +71,7 @@ class LocationTestFixtures extends Fixture implements FixtureGroupInterface
 
     private function createAdm1(ObjectManager $manager, string $country, array $names = []) {
         foreach ($names as $name) {
-            $adm1 = new Adm1();
-            $adm1->setCountryISO3($country)
+            $adm1 = (new Adm1($country))
                 ->setCode(sprintf('%.2s%03d', $country, ++$this->counter))
                 ->setName($name);
             $manager->persist($adm1);
@@ -83,8 +82,7 @@ class LocationTestFixtures extends Fixture implements FixtureGroupInterface
 
     private function createAdm2(ObjectManager $manager, string $country, Adm1 $adm1, array $names = []) {
         foreach ($names as $name) {
-            $adm2 = new Adm2();
-            $adm2->setAdm1($adm1)
+            $adm2 = (new Adm2($adm1))
                 ->setCode(sprintf('%.2s%06d', $adm1->getCountryISO3(), ++$this->counter))
                 ->setName($name);
             $manager->persist($adm2);
@@ -95,8 +93,7 @@ class LocationTestFixtures extends Fixture implements FixtureGroupInterface
 
     private function createAdm3(ObjectManager $manager, string $country, Adm2 $adm2, array $names = []) {
         foreach ($names as $name) {
-            $adm3 = new Adm3();
-            $adm3->setAdm2($adm2)
+            $adm3 = (new Adm3($adm2))
                 ->setCode(sprintf('%.2s%09d', $adm2->getAdm1()->getCountryISO3(), ++$this->counter))
                 ->setName($name);
             $manager->persist($adm3);
@@ -107,8 +104,7 @@ class LocationTestFixtures extends Fixture implements FixtureGroupInterface
 
     private function createAdm4(ObjectManager $manager, Adm3 $adm3, array $names = []) {
         foreach ($names as $name) {
-            $adm4 = new Adm4();
-            $adm4->setAdm3($adm3)
+            $adm4 = (new Adm4($adm3))
                 ->setCode(sprintf('%.2s%012d', $adm3->getAdm2()->getAdm1()->getCountryISO3(), ++$this->counter))
                 ->setName($name);
             $manager->persist($adm4);

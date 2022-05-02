@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace CommonBundle\DataFixtures;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use DistributionBundle\Entity\Assistance;
+use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Exception;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Component\Country\Countries;
+use ProjectBundle\Repository\ProjectRepository;
 use Symfony\Component\HttpKernel\Kernel;
 use VoucherBundle\Utils\BookletService;
 
@@ -28,16 +28,31 @@ class BookletFixtures extends Fixture implements FixtureGroupInterface, Dependen
     /** @var BookletService */
     private $bookletService;
 
-    private $countries = [];
+    /** @var Countries */
+    private $countries;
 
-    public function __construct(Kernel $kernel, array $countries, BookletService $bookletService)
-    {
+    /**
+     * @var ProjectRepository
+     */
+    private $projectRepository;
+
+    /**
+     * @var BeneficiaryRepository
+     */
+    private $beneficiaryRepository;
+
+    public function __construct(
+        Kernel                $kernel,
+        Countries             $countries,
+        BookletService        $bookletService,
+        ProjectRepository     $projectRepository,
+        BeneficiaryRepository $beneficiaryRepository
+    ) {
         $this->kernel = $kernel;
         $this->bookletService = $bookletService;
-
-        foreach ($countries as $country) {
-            $this->countries[$country['iso3']] = $country;
-        }
+        $this->countries = $countries;
+        $this->projectRepository = $projectRepository;
+        $this->beneficiaryRepository = $beneficiaryRepository;
     }
 
     /**
@@ -53,23 +68,22 @@ class BookletFixtures extends Fixture implements FixtureGroupInterface, Dependen
             return;
         }
 
-        foreach ($this->countries as $country) {
-            $recipientCount = $manager->getRepository(Beneficiary::class)->countAllInCountry($country['iso3']);
-            $project = $manager->getRepository(Project::class)->findOneBy(['iso3' => $country['iso3']], ['id' => 'asc']);
-            $voucherAssistanceCount = count($manager->getRepository(Assistance::class)->getActiveByCountry($country['iso3']));
+        foreach ($this->countries->getAll() as $country) {
+            $recipientCount = $this->beneficiaryRepository->countAllInCountry($country->getIso3());
+            $project = $this->projectRepository->findOneBy(['iso3' => $country->getIso3()], ['id' => 'asc']);
 
             $count = 200;
-            echo "{$country['iso3']}: $count bnf: ";
+            echo "{$country->getIso3()}: $count bnf: ";
             $data = $this->defaultBooklet;
-            $data['__country'] = $country['iso3'];
-            $data['currency'] = $country['currency'];
+            $data['__country'] = $country->getIso3();
+            $data['currency'] = $country->getCurrency();
             $data['number_booklets'] = $count;
             $data['project_id'] = $project->getId();
             if ($recipientCount < 1) {
                 echo "omitted\n";
                 continue;
             }
-            $this->bookletService->create($country['iso3'], $data);
+            $this->bookletService->create($country->getIso3(), $data);
             echo "generated\n";
         }
     }

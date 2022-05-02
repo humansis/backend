@@ -33,37 +33,49 @@ parameters:
           iso3: KHM
           currency: KHR
           adms: [ Province, District, Commune, Village ]
+          archived: false
 
         - name: Syria
           iso3: SYR
           currency: SYP
           adms: [ Governorate, District, Sub-District, Village/Neighbourhood ]
-          language: ar # remove in 3.0
+          archived: false
 
         - name: Ukraine
           iso3: UKR
           currency: UAH
           adms: [ Region, District, Community, Settlement ]
+          archived: false
+
+        - name: Ukraine
+          iso3: UA1
+          currency: UAH
+          adms: [ Region, District, Community, Settlement ]
+          archived: true
 
         - name: Ethiopia
           iso3: ETH
           currency: ETB
           adms: [ Region, Zone, Woreda, Village ]
+          archived: false
 
         - name: Mongolia
           iso3: MNG
           currency: MNT
           adms: [ Province, District, Commune, Village ]
+          archived: false
 
         - name: Armenia
           iso3: ARM
           currency: AMD
           adms: [ Province, District, Commune, Village ]
+          archived: false
 
         - name: Zambia
           iso3: ZMB
           currency: ZMW
           adms: [ Region, District, Ward, Constituency ]
+          archived: false
 
 framework:
     #esi: ~

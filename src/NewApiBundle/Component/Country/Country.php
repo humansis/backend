@@ -13,28 +13,35 @@ class Country
 
     private $adms = [];
 
+    /** @var bool */
+    private $archived;
+
     public function __construct(array $data)
     {
         if (!isset($data['iso3'])) {
             throw new \InvalidArgumentException("Invalid argument 1. It must contains attribute 'iso3'.");
         }
         if (!isset($data['name'])) {
-            throw new \InvalidArgumentException("Invalid argument 1. It must contains attribute 'name'.");
+            throw new \InvalidArgumentException("Invalid argument 2. It must contains attribute 'name'.");
         }
         if (!isset($data['currency'])) {
-            throw new \InvalidArgumentException("Invalid argument 1. It must contains attribute 'currency'.");
+            throw new \InvalidArgumentException("Invalid argument 3. It must contains attribute 'currency'.");
         }
         if (!isset($data['adms'])) {
-            throw new \InvalidArgumentException("Invalid argument 1. It must contains attribute 'adms'.");
+            throw new \InvalidArgumentException("Invalid argument 4. It must contains attribute 'adms'.");
         }
         if (4 !== count($data['adms'])) {
-            throw new \InvalidArgumentException("Invalid argument 1. Attribute 'adms' does not contains complete list of names.");
+            throw new \InvalidArgumentException("Invalid argument 4. Attribute 'adms' does not contains complete list of names.");
+        }
+        if (!isset($data['archived'])) {
+            throw new \InvalidArgumentException("Invalid argument 5. It must contains attribute 'archived'.");
         }
 
         $this->iso3 = $data['iso3'];
         $this->name = $data['name'];
         $this->currency = $data['currency'];
         $this->adms = $data['adms'];
+        $this->archived = $data['archived'];
     }
 
     public function getIso3(): string
@@ -72,4 +79,8 @@ class Country
         return $this->adms[3];
     }
 
+    public function isArchived(): bool
+    {
+        return $this->archived;
+    }
 }
