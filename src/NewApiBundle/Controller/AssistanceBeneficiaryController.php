@@ -8,6 +8,7 @@ use BeneficiaryBundle\Repository\CommunityRepository;
 use BeneficiaryBundle\Repository\InstitutionRepository;
 use DistributionBundle\Entity;
 use DistributionBundle\Enum\AssistanceTargetType;
+use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use Doctrine\ORM\EntityRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InvalidArgumentException;
@@ -30,6 +31,19 @@ use Symfony\Component\HttpFoundation\Response;
 class AssistanceBeneficiaryController extends AbstractController
 {
     /**
+     * @var AssistanceBeneficiaryRepository
+     */
+    private $assistanceBeneficiaryRepository;
+
+    /**
+     * @param AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository
+     */
+    public function __construct(AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository)
+    {
+        $this->assistanceBeneficiaryRepository = $assistanceBeneficiaryRepository;
+    }
+
+    /**
      * @Rest\Get("/web-app/v1/assistances/{id}/assistances-beneficiaries")
      *
      * @param Entity\Assistance          $assistance
@@ -49,7 +63,7 @@ class AssistanceBeneficiaryController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        $assistanceBeneficiaries = $this->getDoctrine()->getRepository(Entity\AssistanceBeneficiary::class)->findBeneficiariesByAssistance($assistance,
+        $assistanceBeneficiaries = $this->assistanceBeneficiaryRepository->findBeneficiariesByAssistance($assistance,
             $filter, $orderBy, $pagination);
 
         return $this->json($assistanceBeneficiaries);
@@ -75,7 +89,7 @@ class AssistanceBeneficiaryController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        $assistanceInstitutions = $this->getDoctrine()->getRepository(Entity\AssistanceBeneficiary::class)->findInstitutionsByAssistance($assistance,
+        $assistanceInstitutions = $this->assistanceBeneficiaryRepository->findInstitutionsByAssistance($assistance,
             $filter, $orderBy, $pagination);
 
         return $this->json($assistanceInstitutions);
@@ -101,7 +115,7 @@ class AssistanceBeneficiaryController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        $assistanceCommunities = $this->getDoctrine()->getRepository(Entity\AssistanceBeneficiary::class)->findCommunitiesByAssistance($assistance,
+        $assistanceCommunities = $this->assistanceBeneficiaryRepository->findCommunitiesByAssistance($assistance,
             $filter, $orderBy, $pagination);
 
         return $this->json($assistanceCommunities);

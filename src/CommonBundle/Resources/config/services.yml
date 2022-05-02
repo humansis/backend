@@ -2,6 +2,7 @@ services:
 
     CommonBundle\Controller\:
         resource: '../../Controller'
+        autowire: true
         public: true
         tags: [ 'app.controller' ]
 
