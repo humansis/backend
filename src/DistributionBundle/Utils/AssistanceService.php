@@ -142,38 +142,6 @@ class AssistanceService
         $assistance->validate()->save();
     }
 
-    /**
-     * @param Assistance $assistance
-     * @param AssistanceBeneficiary[] $beneficiaries
-     * @return Assistance
-     * @throws Exception
-     */
-    public function setCommoditiesToNewBeneficiaries(Assistance $assistance, iterable $beneficiaries): Assistance
-    {
-        $this->cache->delete(CacheTarget::assistanceId($assistance->getId()));
-        $commodities = $assistance->getCommodities();
-        foreach ($commodities as $commodity) {
-            foreach ($beneficiaries as $beneficiary) {
-                $this->createReliefPackage($beneficiary, $commodity);
-            }
-        }
-        $this->em->flush();
-
-        return $assistance;
-    }
-
-    private function createReliefPackage(AssistanceBeneficiary $assistanceBeneficiary, Commodity $commodity): void
-    {
-        $reliefPackage = new ReliefPackage(
-            $assistanceBeneficiary,
-            $commodity->getModalityType()->getName(),
-            $commodity->getValue(),
-            $commodity->getUnit()
-        );
-
-        $this->em->persist($reliefPackage);
-    }
-
     // TODO: presunout do ABNF
     public function findByCriteria(AssistanceCreateInputType $inputType, Pagination $pagination)
     {
