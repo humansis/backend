@@ -22,7 +22,7 @@ class ReliefPackage
 {
     use StandardizedPrimaryKey;
     use CreatedAt;
-    use LastModifiedAt; // it means when it was distributed or changed in other way
+    use LastModifiedAt;
 
     /**
      * @var string
@@ -83,6 +83,13 @@ class ReliefPackage
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardDeposit", mappedBy="reliefPackage")
      */
     private $smartcardDeposits;
+
+    /**
+     * @var \DateTime|null
+     *
+     * @ORM\Column(name="distributedAt", type="datetime", nullable=true)
+     */
+    private $distributedAt;
 
     /**
      * @param AssistanceBeneficiary $assistanceBeneficiary
@@ -257,4 +264,21 @@ class ReliefPackage
     {
         $this->state = $state;
     }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getDistributedAt(): ?\DateTime
+    {
+        return $this->distributedAt;
+    }
+
+    /**
+     * @param \DateTime|null $distributedAt
+     */
+    public function setDistributedAt(?\DateTime $distributedAt): void
+    {
+        $this->distributedAt = $distributedAt;
+    }
+
 }
