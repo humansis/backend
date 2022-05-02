@@ -48,32 +48,20 @@ class AssistanceBankReportExport
         if (!in_array($filetype, ['ods', 'xlsx', 'csv'], true)) {
             throw new \InvalidArgumentException('Invalid file type. Expected one of ods, xlsx, csv. '.$filetype.' given.');
         }
-
-
-        foreach ( $this->assistanceBeneficiaryRepository->getAssistanceBeneficiaryRelief($assistance) as $bnf) {
-            die(json_encode($bnf));
-        }
-
         $filename = sys_get_temp_dir().'/bank-report.'.$filetype;
-
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
-
-        $this->build($worksheet);
-
+        $this->build($worksheet, $this->assistanceBeneficiaryRepository->getAssistanceBeneficiaryRelief($assistance));
         $writer = IOFactory::createWriter($spreadsheet, ucfirst($filetype));
         $writer->save($filename);
-
         return $filename;
     }
 
-    private function build(Worksheet $worksheet): void
+    private function build(Worksheet $worksheet, $distributions): void
     {
         $this->setupColumnHeaders($worksheet);
         $this->createColumnHeaders($worksheet);
-        $this->generateRows($worksheet);
-
-
+        $this->generateRows($worksheet, $distributions);
     }
 
     private function setupColumnHeaders(Worksheet $worksheet) {
@@ -103,8 +91,6 @@ class AssistanceBankReportExport
     }
 
     private function createColumnHeaders(Worksheet $worksheet) {
-        $dateFormatter = new \IntlDateFormatter($this->translator->getLocale(), \IntlDateFormatter::SHORT, \IntlDateFormatter::NONE);
-
         $worksheet->setCellValue('A1', $this->translator->trans('Ordinal number'));
         $worksheet->setCellValue('B1', $this->translator->trans('Recipient’s surname (Local family name)'));
         $worksheet->setCellValue('C1', $this->translator->trans('Recipient’s name (Local given name)'));
@@ -115,40 +101,24 @@ class AssistanceBankReportExport
         $worksheet->setCellValue('H1', $this->translator->trans('Remittance purpose'));
         $worksheet->setCellValue('I1', $this->translator->trans('Remittance amount'));
         $worksheet->setCellValue('J1', $this->translator->trans('Recipient’s mobile telephone number'));
-
     }
 
-    private function generateRows(Worksheet $worksheet) {
+    private function generateRows(Worksheet $worksheet, $distributions) {
         $i = 1;
-        /**
-        foreach ($this->repository->findByParams($country->getIso3(), $filter) as $purchasedItem) {
 
-
-        $i++;
-        $worksheet->setCellValue('A'.$i, $purchasedItem->getHousehold()->getId());
-        $worksheet->setCellValue('B'.$i, $beneficiary->getId());
-        $worksheet->setCellValue('C'.$i, $beneficiary->getPerson()->getLocalGivenName());
-        $worksheet->setCellValue('D'.$i, $beneficiary->getPerson()->getLocalFamilyName());
-        $worksheet->setCellValue('E'.$i, self::nationalId($beneficiary) ?? $this->translator->trans('N/A'));
-        $worksheet->setCellValue('F'.$i, self::phone($beneficiary) ?? $this->translator->trans('N/A'));
-        $worksheet->setCellValue('G'.$i, $purchasedItem->getProject()->getName());
-        $worksheet->setCellValue('H'.$i, $assistance->getName());
-        $worksheet->setCellValue('I'.$i, self::adms($assistance)[0]);
-        $worksheet->setCellValue('J'.$i, self::adms($assistance)[1]);
-        $worksheet->setCellValue('K'.$i, self::adms($assistance)[2]);
-        $worksheet->setCellValue('L'.$i, self::adms($assistance)[3]);
-        $worksheet->setCellValue('M'.$i, $datetime ? $dateFormatter->format($datetime) : $this->translator->trans('N/A'));
-        $worksheet->setCellValue('N'.$i, $purchasedItem->getSmartcardCode() ?? $this->translator->trans('N/A'));
-        $worksheet->setCellValue('O'.$i, $purchasedItem->getProduct()->getName());
-        $worksheet->setCellValue('P'.$i, $purchasedItem->getProduct()->getUnit());
-        $worksheet->setCellValue('Q'.$i, $purchasedItem->getValue());
-        $worksheet->setCellValue('R'.$i, $purchasedItem->getCurrency());
-        $worksheet->setCellValue('S'.$i, $purchasedItem->getVendor()->getName() ?? $this->translator->trans('N/A'));
-        $worksheet->setCellValue('T'.$i, $purchasedItem->getVendor()->getId());
-        $worksheet->setCellValue('U'.$i, $purchasedItem->getVendor()->getVendorNo() ?? $this->translator->trans('N/A'));
-        $worksheet->setCellValue('V'.$i, $purchasedItem->getInvoiceNumber() ?? $this->translator->trans('N/A'));
+        foreach ( $distributions as $distribution) {
+            $worksheet->setCellValue('A'.$i, $distribution['distributionId']);
+            $worksheet->setCellValue('B'.$i, $distribution['localFamilyName']);
+            $worksheet->setCellValue('C'.$i, $distribution['localGivenName']);
+            $worksheet->setCellValue('D'.$i, $distribution['localParentsName']);
+            $worksheet->setCellValue('E'.$i, $distribution['localParentsName']);
+            $worksheet->setCellValue('F'.$i, $distribution['idType']);
+            $worksheet->setCellValue('G'.$i, $distribution['idNumber']);
+            $worksheet->setCellValue('H'.$i, 'Благодійна допомога');
+            $worksheet->setCellValue('I'.$i, $distribution['amountToDistribute']);
+            $worksheet->setCellValue('J'.$i, $distribution['phoneNumber']);
+            $i++;
         }
-         * */
     }
 
 }

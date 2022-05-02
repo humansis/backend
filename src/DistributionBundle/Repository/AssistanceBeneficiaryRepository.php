@@ -433,14 +433,23 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         return new Paginator($qb);
     }
 
-    public function getAssistanceBeneficiaryRelief($assistance) {
+    public function getAssistanceBeneficiaryRelief(Assistance $assistance) {
+        $distributions = $this->getAssistanceBeneficiaryDistributionAmounts($assistance);
+        $beneficiaryInfo = $this->getAssistanceBeneficiaryInformation($assistance);
+
+        foreach($distributions as  $id => $distribution) {
+            $distributions[$id] = array_merge($distribution, $beneficiaryInfo[$distribution['personId']]);
+        }
+        return $distributions;
+
+    }
+
+    private function getAssistanceBeneficiaryInformation(Assistance $assistance) {
         $qb = $this->createQueryBuilder('db')
-            ->select("person.localGivenName")
-            ->addSelect("relief.amountToDistribute")
-            ->addSelect("person.localFamilyName")
-            ->addSelect("person.localParentsName")
-            ->addSelect("national.idNumber")
-            ->addSelect("CONCAT(phone.prefix, phone.number) AS phoneNumber")
+            ->select("person.id as personId")
+            ->addSelect("ANY_VALUE(national.idNumber) as idNumber")
+            ->addSelect("ANY_VALUE(national.idType) as idType")
+            ->addSelect("ANY_VALUE(CONCAT(phone.prefix, phone.number)) AS phoneNumber")
             ->leftJoin('db.beneficiary', 'ab')
             ->innerJoin(Beneficiary::class, 'bnf', Join::WITH, 'bnf.id = ab.id')
             ->leftJoin('bnf.person', 'person')
@@ -448,8 +457,34 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
             ->leftJoin('person.phones', 'phone')
             ->leftJoin('db.reliefPackages', 'relief')
             ->andWhere('db.assistance = :assistance')
+            ->groupBy('person.id')
+            ->orderBy('person.localFamilyName')
             ->setParameter('assistance', $assistance);
-        die($qb->getQuery()->getSQL());
-        return $qb->getQuery()->getArrayResult();
+
+        $result = $qb->getQuery()->getResult();
+        $personInfo = [];
+        foreach ($result as $row) {
+            $personInfo[$row['personId']] = $row;
+        }
+        return $personInfo;
+    }
+
+    private function getAssistanceBeneficiaryDistributionAmounts(Assistance $assistance) {
+        $qb = $this->createQueryBuilder('db')
+            ->select("CONCAT(IDENTITY(db.assistance),'-', bnf.id) as distributionId")
+            ->addSelect("person.id as personId")
+            ->addSelect("person.localGivenName")
+            ->addSelect("SUM(relief.amountToDistribute) as amountToDistribute")
+            ->addSelect("person.localFamilyName")
+            ->addSelect("person.localParentsName")
+            ->leftJoin('db.beneficiary', 'ab')
+            ->innerJoin(Beneficiary::class, 'bnf', Join::WITH, 'bnf.id = ab.id')
+            ->leftJoin('bnf.person', 'person')
+            ->leftJoin('db.reliefPackages', 'relief')
+            ->andWhere('db.assistance = :assistance')
+            ->groupBy('ab.id')
+            ->orderBy('person.localFamilyName')
+            ->setParameter('assistance', $assistance);
+        return $qb->getQuery()->getResult();
     }
 }
