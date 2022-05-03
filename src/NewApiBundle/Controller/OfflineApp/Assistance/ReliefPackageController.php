@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace NewApiBundle\Controller\WebApp\Assistance;
+namespace NewApiBundle\Controller\OfflineApp\Assistance;
 
 use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Controller\OfflineApp\AbstractOfflineAppController;
 use NewApiBundle\Controller\WebApp\AbstractWebAppController;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -11,10 +12,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
-class ReliefPackageController extends AbstractWebAppController
+class ReliefPackageController extends AbstractOfflineAppController
 {
     /**
-     * @Rest\Get("/web-app/v1/assistances/{id}/relief-packages")
+     * @Rest\Get("/offline-app/v1/assistances/{id}/relief-packages")
      *
      * @param Assistance $assistance
      * @param Request    $request
@@ -34,7 +35,7 @@ class ReliefPackageController extends AbstractWebAppController
     }
 
     /**
-     * @Rest\Get("/web-app/v1/assistances/relief-packages/{id}")
+     * @Rest\Get("/offline-app/v1/assistances/relief-packages/{id}")
      * @Cache(lastModified="package.getLastModifiedAt()", public=true)
      *
      * @param ReliefPackage $package
