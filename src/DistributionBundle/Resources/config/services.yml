@@ -26,26 +26,22 @@ services:
             - '@validator'
             - '@location_service'
             - '@distribution.commodity_service'
-            - '@distribution.configuration_loader'
             - '@distribution.criteria_assistance_service'
             - '@transformer.selection_criterion_field'
-            - '%distribution.retriever%'
             - '@service_container'
-            - '@workflow.registry'
 
     distribution.assistance_beneficiary_service:
         class: DistributionBundle\Utils\AssistanceBeneficiaryService
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@serializer'
-            - '@validator'
             - '@service_container'
-            - '@workflow.registry'
 
     distribution.criteria_assistance_service:
-        class: DistributionBundle\Utils\CriteriaAssistanceService
+        alias: DistributionBundle\Utils\CriteriaAssistanceService
         public: true
+
+    DistributionBundle\Utils\CriteriaAssistanceService:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@distribution.configuration_loader'
@@ -73,26 +69,17 @@ services:
 
     DistributionBundle\Mapper\AssistanceBeneficiaryMapper:
         arguments:
-            - "@VoucherBundle\\Mapper\\BookletMapper"
-            - "@DistributionBundle\\Mapper\\GeneralReliefItemMapper"
-            - "@TransactionBundle\\Mapper\\TransactionMapper"
-            - "@BeneficiaryBundle\\Mapper\\BeneficiaryMapper"
+            - '@BeneficiaryBundle\Mapper\BeneficiaryMapper'
         public: true
 
     DistributionBundle\Mapper\AssistanceCommunityMapper:
         arguments:
-            - "@VoucherBundle\\Mapper\\BookletMapper"
-            - "@DistributionBundle\\Mapper\\GeneralReliefItemMapper"
-            - "@TransactionBundle\\Mapper\\TransactionMapper"
-            - "@BeneficiaryBundle\\Mapper\\CommunityMapper"
+            - '@BeneficiaryBundle\Mapper\CommunityMapper'
         public: true
 
     DistributionBundle\Mapper\AssistanceInstitutionMapper:
         arguments:
-            - "@VoucherBundle\\Mapper\\BookletMapper"
-            - "@DistributionBundle\\Mapper\\GeneralReliefItemMapper"
-            - "@TransactionBundle\\Mapper\\TransactionMapper"
-            - "@BeneficiaryBundle\\Mapper\\InstitutionMapper"
+            - '@BeneficiaryBundle\Mapper\InstitutionMapper'
         public: true
 
     DistributionBundle\Mapper\CampMapper:
@@ -109,10 +96,18 @@ services:
             - DistributionBundle\Entity\AssistanceBeneficiary
 
     assistance.repository:
-        class: DistributionBundle\Repository\AssistanceRepository
+        alias: DistributionBundle\Repository\AssistanceRepository
+        public: true
+
+    DistributionBundle\Repository\AssistanceRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - DistributionBundle\Entity\Assistance
+
+    DistributionBundle\Repository\ModalityTypeRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - DistributionBundle\Entity\ModalityType
         public: true
 
 #######################################################################################

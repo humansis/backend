@@ -72,16 +72,7 @@ class AssistanceBeneficiaryExpandedOfflineAppMapper implements MapperInterface
 
     public function getGeneralReliefItems(): array
     {
-        $reliefItems = [];
-        /** @var GeneralReliefItem $generalRelief */
-        foreach ($this->object->getGeneralReliefs() as $generalRelief) {
-            $reliefItem = [];
-            $reliefItem['id'] = $generalRelief->getId();
-            $reliefItem['distributedAt'] = $generalRelief->getDistributedAt();
-            $reliefItems[] = $reliefItem;
-        }
-
-        return $reliefItems;
+        return []; // TODO: remove after PIN-3249
     }
 
     public function getBooklets(): array

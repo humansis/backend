@@ -11,6 +11,8 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Repository\AssistanceRepository;
 use DistributionBundle\Utils\AssistanceService;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\Assistance\AssistanceFactory;
+use NewApiBundle\Component\Assistance\AssistanceQuery;
 use NewApiBundle\Entity\AssistanceStatistics;
 use NewApiBundle\Exception\ConstraintViolationException;
 use NewApiBundle\Export\VulnerabilityScoreExport;
@@ -43,22 +45,10 @@ class AssistanceController extends AbstractController
     /** @var AssistanceService */
     private $assistanceService;
 
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
-     * @var NormalizerInterface
-     */
-    private $normalizer;
-
-    public function __construct(VulnerabilityScoreExport $vulnerabilityScoreExport, AssistanceService $assistanceService, SerializerInterface $serializer, NormalizerInterface $normalizer)
+    public function __construct(VulnerabilityScoreExport $vulnerabilityScoreExport, AssistanceService $assistanceService)
     {
         $this->vulnerabilityScoreExport = $vulnerabilityScoreExport;
         $this->assistanceService = $assistanceService;
-        $this->serializer = $serializer;
-        $this->normalizer = $normalizer;
     }
 
     /**
@@ -66,11 +56,11 @@ class AssistanceController extends AbstractController
      *
      * @param Request                             $request
      * @param AssistanceStatisticsFilterInputType $filter
+     * @param AssistanceQuery                     $assistanceQuery
      *
      * @return JsonResponse
-     * @throws InvalidArgumentException
      */
-    public function statistics(Request $request, AssistanceStatisticsFilterInputType $filter): JsonResponse
+    public function statistics(Request $request, AssistanceStatisticsFilterInputType $filter, AssistanceQuery $assistanceQuery): JsonResponse
     {
         $countryIso3 = $request->headers->get('country', false);
         if (!$countryIso3) {
@@ -80,7 +70,7 @@ class AssistanceController extends AbstractController
         $statistics = [];
         if($filter->hasIds()){
             foreach($filter->getIds() as $key => $id){
-                $statistics[] = $this->assistanceService->getStatisticByAssistance($id, $countryIso3);
+                $statistics[] = $assistanceQuery->find($id)->getStatistics($countryIso3);
             }
         } else {
 
@@ -97,14 +87,14 @@ class AssistanceController extends AbstractController
      * @Rest\Get("/web-app/v1/assistances/{id}/statistics")
      * @ParamConverter("assistance", options={"mapping": {"id": "id"}})
      *
-     * @param Assistance $assistance
+     * @param Assistance        $assistance
+     * @param AssistanceFactory $factory
      *
      * @return JsonResponse
-     * @throws InvalidArgumentException
      */
-    public function assistanceStatistics(Assistance $assistance): JsonResponse
+    public function assistanceStatistics(Assistance $assistance, AssistanceFactory $factory): JsonResponse
     {
-        $statistics = $this->assistanceService->getStatisticByAssistance($assistance);
+        $statistics = $factory->hydrate($assistance)->getStatistics();
 
         return $this->json($statistics);
     }
@@ -140,14 +130,17 @@ class AssistanceController extends AbstractController
      * @Rest\Post("/web-app/v1/assistances")
      *
      * @param AssistanceCreateInputType $inputType
+     * @param AssistanceFactory         $factory
      *
      * @return JsonResponse
+     * @throws \Doctrine\ORM\EntityNotFoundException
      */
-    public function create(AssistanceCreateInputType $inputType): JsonResponse
+    public function create(AssistanceCreateInputType $inputType, AssistanceFactory $factory): JsonResponse
     {
-        $assistance = $this->get('distribution.assistance_service')->create($inputType);
+        $assistance = $factory->create($inputType);
+        $assistance->save();
 
-        return $this->json($assistance);
+        return $this->json($assistance->getAssistanceRoot());
     }
 
     /**
@@ -169,22 +162,25 @@ class AssistanceController extends AbstractController
     /**
      * @Rest\Patch("/web-app/v1/assistances/{id}")
      *
-     * @param Assistance $assistance
+     * @param Request           $request
+     * @param Assistance        $assistanceRoot
+     * @param AssistanceFactory $factory
      *
      * @return JsonResponse
      */
-    public function update(Request $request, Assistance $assistance): JsonResponse
+    public function update(Request $request, Assistance $assistanceRoot, AssistanceFactory $factory): JsonResponse
     {
+        $assistance = $factory->hydrate($assistanceRoot);
         if ($request->request->has('validated')) {
             if ($request->request->get('validated', true)) {
-                $this->get('distribution.assistance_service')->validateDistribution($assistance);
+                $assistance->validate()->save();
             } else {
-                $this->get('distribution.assistance_service')->unvalidateDistribution($assistance);
+                $assistance->unvalidate()->save();
             }
         }
 
         if ($request->request->get('completed', false)) {
-            $this->get('distribution.assistance_service')->complete($assistance);
+            $assistance->complete()->save();
         }
 
         //TODO think about better input validation for PATCH method
@@ -202,7 +198,7 @@ class AssistanceController extends AbstractController
                 ));
             }
 
-            $this->assistanceService->updateDateDistribution($assistance, $date);
+            $this->assistanceService->updateDateDistribution($assistanceRoot, $date);
         }
 
         if ($request->request->has('dateExpiration')) {
@@ -219,7 +215,7 @@ class AssistanceController extends AbstractController
                 ));
             }
 
-            $this->assistanceService->updateDateExpiration($assistance, $date);
+            $this->assistanceService->updateDateExpiration($assistanceRoot, $date);
         }
 
         return $this->json($assistance);

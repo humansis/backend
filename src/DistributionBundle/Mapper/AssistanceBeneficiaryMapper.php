@@ -14,35 +14,17 @@ use VoucherBundle\Mapper\BookletMapper;
 
 class AssistanceBeneficiaryMapper
 {
-    /** @var BookletMapper */
-    private $bookletMapper;
-
-    /** @var GeneralReliefItemMapper */
-    private $generalReliefItemMapper;
-
-    /** @var TransactionMapper */
-    private $transactionMapper;
-
     /** @var BeneficiaryMapper */
     private $beneficiaryMapper;
 
     /**
      * AssistanceBeneficiaryMapper constructor.
      *
-     * @param BookletMapper           $bookletMapper
-     * @param GeneralReliefItemMapper $generalReliefItemMapper
-     * @param TransactionMapper       $transactionMapper
      * @param BeneficiaryMapper|null  $beneficiaryMapper
      */
     public function __construct(
-        BookletMapper $bookletMapper,
-        GeneralReliefItemMapper $generalReliefItemMapper,
-        TransactionMapper $transactionMapper,
         ?BeneficiaryMapper $beneficiaryMapper
     ) {
-        $this->bookletMapper = $bookletMapper;
-        $this->generalReliefItemMapper = $generalReliefItemMapper;
-        $this->transactionMapper = $transactionMapper;
         $this->beneficiaryMapper = $beneficiaryMapper;
     }
 
@@ -100,22 +82,11 @@ class AssistanceBeneficiaryMapper
             return null;
         }
 
-        // send only successful transactions or all failed
-        $transactions = [];
-        foreach ($assistanceBeneficiary->getTransactions() as $transaction) {
-            if (Transaction::SUCCESS === $transaction->getTransactionStatus()) {
-                $transactions[] = $transaction;
-            }
-        }
-        if (empty($transactions) && !empty($assistanceBeneficiary->getTransactions())) {
-            $transactions = $assistanceBeneficiary->getTransactions();
-        }
-
         $serializedAB = [
             'id' => $assistanceBeneficiary->getId(),
-            'transactions' => $this->transactionMapper->toValidateDistributionGroups($transactions),
-            'booklets' => $this->bookletMapper->toValidateDistributionGroups($assistanceBeneficiary->getBooklets()),
-            'general_reliefs' => $this->generalReliefItemMapper->toValidateDistributionGroups($assistanceBeneficiary->getGeneralReliefs()),
+            'transactions' => [], // TODO: remove after PIN-3249
+            'booklets' => [], // TODO: remove after PIN-3249
+            'general_reliefs' => [], // TODO: remove after PIN-3249
             'smartcard_distributed' => $assistanceBeneficiary->getSmartcardDistributed(),
             'smartcard_distributed_at' => null,
             'justification' => $assistanceBeneficiary->getJustification(),

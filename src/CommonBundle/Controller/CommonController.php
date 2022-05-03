@@ -2,6 +2,9 @@
 
 namespace CommonBundle\Controller;
 
+use BeneficiaryBundle\Utils\BeneficiaryService;
+use DistributionBundle\Repository\AssistanceRepository;
+use ProjectBundle\Utils\ProjectService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use BeneficiaryBundle\Entity\Household;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -24,6 +27,24 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class CommonController extends Controller
 {
+    /** @var AssistanceRepository */
+    private $assistanceRepository;
+    /** @var BeneficiaryService */
+    private $beneficiaryService;
+    /** @var ProjectService */
+    private $projectService;
+
+    /**
+     * @param AssistanceRepository $assistanceRepository
+     * @param BeneficiaryService   $beneficiaryService
+     * @param ProjectService       $projectService
+     */
+    public function __construct(AssistanceRepository $assistanceRepository, BeneficiaryService $beneficiaryService, ProjectService $projectService)
+    {
+        $this->assistanceRepository = $assistanceRepository;
+        $this->beneficiaryService = $beneficiaryService;
+        $this->projectService = $projectService;
+    }
 
     /**
      * @Rest\Get("/summary", name="get_summary")
@@ -39,22 +60,24 @@ class CommonController extends Controller
      *     response=400,
      *     description="HTTP_BAD_REQUEST"
      * )
-     * @param Request $request
+     * @param Request              $request
+     * @param BeneficiaryService   $beneficiaryService
+     * @param ProjectService       $projectService
+     *
      * @return Response
      */
-    public function getSummaryAction(Request $request)
-    {
+    public function getSummaryAction(Request $request): Response {
         $country = $request->request->get('__country');
         
         try {
-            $total_beneficiaries = $this->get('beneficiary.beneficiary_service')->countAll($country);
-            $active_projects = $this->get('project.project_service')->countActive($country);
+            $total_beneficiaries = $this->beneficiaryService->countAll($country);
+            $active_projects = $this->projectService->countActive($country);
             $enrolled_households = $this->getDoctrine()->getRepository(Household::class)
                 ->countUnarchivedByCountryProjects($country);
 
-            $total_beneficiary_served = $this->get('beneficiary.beneficiary_service')->countAllServed($country);
+            $total_beneficiary_served = $this->beneficiaryService->countAllServed($country);
 
-            $total_completed_distributions = $this->get('distribution.assistance_service')->countCompleted($country);
+            $total_completed_distributions = $this->assistanceRepository->countCompleted($country);
         } catch (\Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -85,7 +108,7 @@ class CommonController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function getLogs(Request $request)
+    public function getLogs(Request $request): Response
     {
         try {
             $logs = $this->get('log_service')->getLogs();
@@ -127,7 +150,7 @@ class CommonController extends Controller
      *
      * @return JsonResponse
      */
-    public function masterKeyOfflineApp()
+    public function masterKeyOfflineApp(): JsonResponse
     {
         return $this->json([
             'MASTER_KEY' => $this->getParameter('mobile_app_master_key'),
@@ -165,7 +188,7 @@ class CommonController extends Controller
      *
      * @return JsonResponse
      */
-    public function masterKeyVendorApp()
+    public function masterKeyVendorApp(): JsonResponse
     {
         return $this->masterKeyOfflineApp();
     }

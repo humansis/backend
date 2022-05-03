@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
 use NewApiBundle\Entity\Helper\CreatedAt;
+use NewApiBundle\Entity\Helper\LastModifiedAt;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
@@ -21,6 +22,7 @@ class ReliefPackage
 {
     use StandardizedPrimaryKey;
     use CreatedAt;
+    use LastModifiedAt;
 
     /**
      * @var string
@@ -67,6 +69,13 @@ class ReliefPackage
     private $unit;
 
     /**
+     * @var string|null
+     *
+     * @ORM\Column(name="notes", type="string", length=255, nullable=true)
+     */
+    private $notes;
+
+    /**
      * @var Collection|SmartcardDeposit[]
      *
      * There should be only one deposit at this moment. One-to-many prepared for partial distribution
@@ -74,6 +83,13 @@ class ReliefPackage
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardDeposit", mappedBy="reliefPackage")
      */
     private $smartcardDeposits;
+
+    /**
+     * @var \DateTime|null
+     *
+     * @ORM\Column(name="distributedAt", type="datetime", nullable=true)
+     */
+    private $distributedAt;
 
     /**
      * @param AssistanceBeneficiary $assistanceBeneficiary
@@ -218,6 +234,22 @@ class ReliefPackage
     }
 
     /**
+     * @return string|null
+     */
+    public function getNotes(): ?string
+    {
+        return $this->notes;
+    }
+
+    /**
+     * @param string|null $notes
+     */
+    public function setNotes(?string $notes): void
+    {
+        $this->notes = $notes;
+    }
+
+    /**
      * @return Collection|SmartcardDeposit[]
      */
     public function getSmartcardDeposits()
@@ -232,4 +264,21 @@ class ReliefPackage
     {
         $this->state = $state;
     }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getDistributedAt(): ?\DateTime
+    {
+        return $this->distributedAt;
+    }
+
+    /**
+     * @param \DateTime|null $distributedAt
+     */
+    public function setDistributedAt(?\DateTime $distributedAt): void
+    {
+        $this->distributedAt = $distributedAt;
+    }
+
 }
