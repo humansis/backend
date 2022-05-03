@@ -28,15 +28,15 @@ elif [[ $1 == "test" ]]; then
 elif [[ $1 == "dev1" ]]; then
   EC2_ASG=dev-asg
   mv docker/docker-compose.dev.yml docker-compose.yml
-  sed -i -e "s|dev|dev1|g" docker-compose.yml
+  sed -i -e "s|humansis-php:dev|humansis-php:dev1|g" docker-compose.yml
 elif [[ $1 == "dev2" ]]; then
   EC2_ASG=dev2-asg
   mv docker/docker-compose.dev.yml docker-compose.yml
-  sed -i -e "s|dev|dev2|g" docker-compose.yml
+  sed -i -e "s|humansis-php:dev|humansis-php:dev2|g" docker-compose.yml
 elif [[ $1 == "dev3" ]]; then
   EC2_ASG=dev3-asg
   mv docker/docker-compose.dev.yml docker-compose.yml
-  sed -i -e "s|dev|dev3|g" docker-compose.yml
+  sed -i -e "s|humansis-php:dev|humansis-php:dev3|g" docker-compose.yml
 else
   echo "Wrong environment parameter. Options are: [dev1, dev2, dev3, test, stage, demo, production]"
   exit 1
