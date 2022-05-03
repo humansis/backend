@@ -28,6 +28,7 @@ services:
         volumes:
             - /opt/overrides/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
         environment:
+            # CAREFUL: "%env(RDS_HOSTNAME)%" token is replaced in deployment script ci/apply-env-config.sh!
             PMA_HOST: %env(RDS_HOSTNAME)%
             PMA_ABSOLUTE_URI: https://apidemo.humansis.org/pma_yzixy37h/
 
