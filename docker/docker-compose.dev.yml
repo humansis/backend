@@ -8,7 +8,7 @@ networks:
 
 services:
     php:
-        image: artifactory.quanti.cz/docker/humansis-php:dev
+        image: artifactory.quanti.cz/docker/humansis-php:__DEV__
         volumes:
             - /opt/humansis/var:/var/www/html/var
             - /var/cache/humansis:/var/www/html/var/cache
@@ -16,6 +16,8 @@ services:
             - /opt/humansis/jwt:/var/www/html/app/config/jwt:ro
         networks:
             - backend
+        environment:
+            ENVIRONMENT: dev
 
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
@@ -26,12 +28,11 @@ services:
         volumes:
             - /opt/overrides/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
         environment:
-            ENVIRONMENT: dev
             PMA_HOST: %env(RDS_HOSTNAME)%
-            PMA_ABSOLUTE_URI: https://apidev.humansis.org/pma_yzixy37h/
+            PMA_ABSOLUTE_URI: https://api__DEV__.humansis.org/pma_yzixy37h/
 
     nginx:
-        image: artifactory.quanti.cz/docker/humansis-nginx:dev
+        image: artifactory.quanti.cz/docker/humansis-nginx:__DEV__
         ports:
             - 8087:80
         depends_on:
