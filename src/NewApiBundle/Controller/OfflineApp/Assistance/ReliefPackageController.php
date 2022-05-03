@@ -5,8 +5,8 @@ namespace NewApiBundle\Controller\OfflineApp\Assistance;
 
 use DistributionBundle\Entity\Assistance;
 use NewApiBundle\Controller\OfflineApp\AbstractOfflineAppController;
-use NewApiBundle\Controller\WebApp\AbstractWebAppController;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\InputType\Assistance\ReliefPackageFilterInputType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,14 +17,15 @@ class ReliefPackageController extends AbstractOfflineAppController
     /**
      * @Rest\Get("/offline-app/v1/assistances/{id}/relief-packages")
      *
-     * @param Assistance $assistance
-     * @param Request    $request
+     * @param Assistance                   $assistance
+     * @param Request                      $request
+     * @param ReliefPackageFilterInputType $filter
      *
      * @return JsonResponse
      */
-    public function packages(Assistance $assistance, Request $request): JsonResponse
+    public function packages(Assistance $assistance, Request $request, ReliefPackageFilterInputType $filter): JsonResponse
     {
-        $reliefPackages = $this->getDoctrine()->getRepository(ReliefPackage::class)->findByAssistance($assistance);
+        $reliefPackages = $this->getDoctrine()->getRepository(ReliefPackage::class)->findByAssistance($assistance, $filter);
 
         $response = $this->json($reliefPackages);
         $response->setEtag(md5($response->getContent()));

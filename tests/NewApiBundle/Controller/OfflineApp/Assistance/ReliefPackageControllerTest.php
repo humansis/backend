@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\NewApiBundle\Controller\WebApp\Assistance;
+namespace Tests\NewApiBundle\Controller\OfflineApp\Assistance;
 
 use DistributionBundle\Entity\Assistance;
 use Exception;
@@ -28,7 +28,7 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
     {
         $reliefPackage = $this->em->getRepository(ReliefPackage::class)->findOneBy([], ['id' => 'asc']);
 
-        $this->request('GET', "/api/basic/web-app/v1/assistances/relief-packages/{$reliefPackage->getId()}");
+        $this->request('GET', "/api/basic/offline-app/v1/assistances/relief-packages/{$reliefPackage->getId()}");
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -44,7 +44,7 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         $assistance = $reliefPackage->getAssistanceBeneficiary()->getAssistance();
         $packageCount = count($this->em->getRepository(ReliefPackage::class)->findByAssistance($assistance));
 
-        $this->request('GET', "/api/basic/web-app/v1/assistances/{$assistance->getId()}/relief-packages");
+        $this->request('GET', "/api/basic/offline-app/v1/assistances/{$assistance->getId()}/relief-packages");
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

@@ -15,6 +15,7 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
+use NewApiBundle\InputType\Assistance\ReliefPackageFilterInputType;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Enum\SmartcardStates;
 
@@ -98,7 +99,13 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
         return new Paginator($qb);
     }
 
-    public function findByAssistance(Assistance $assistance): Paginator
+    /**
+     * @param Assistance                        $assistance
+     * @param ReliefPackageFilterInputType|null $filter
+     *
+     * @return Paginator
+     */
+    public function findByAssistance(Assistance $assistance, ?ReliefPackageFilterInputType $filter = null): Paginator
     {
         $qb = $this->createQueryBuilder('rp')
             ->join('rp.assistanceBeneficiary', 'ab', Join::WITH, 'ab.removed = 0')
@@ -106,6 +113,10 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('IDENTITY(ab.assistance) = :assistance')
             ->setParameter('assistance', $assistance->getId())
         ;
+        if ($filter && $filter->hasIds()) {
+            $qb->andWhere('rp.id IN :ids')
+                ->setParameter('ids', $filter->getIds());
+        }
 
         return new Paginator($qb);
     }
