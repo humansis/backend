@@ -8,6 +8,7 @@ networks:
 
 services:
     php:
+        # CAREFUL: "production" token is replaced in deployment script ci/deploy-docker.sh!
         image: artifactory.quanti.cz/docker/humansis-php:production
         volumes:
             - /opt/humansis/var:/var/www/html/var
@@ -28,10 +29,12 @@ services:
         volumes:
             - /opt/overrides/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
         environment:
+            # CAREFUL: "%env(RDS_HOSTNAME)%" token is replaced in deployment script ci/apply-env-config.sh!
             PMA_HOST: %env(RDS_HOSTNAME)%
             PMA_ABSOLUTE_URI: https://api.humansis.org/pma_yzixy37h/
 
     nginx:
+        # CAREFUL: "production" token is replaced in deployment script ci/deploy-docker.sh!
         image: artifactory.quanti.cz/docker/humansis-nginx:production
         ports:
             - 8087:80
