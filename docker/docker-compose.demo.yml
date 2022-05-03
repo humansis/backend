@@ -16,6 +16,8 @@ services:
             - /opt/humansis/jwt:/var/www/html/app/config/jwt:ro
         networks:
             - backend
+        environment:
+            ENVIRONMENT: demo
 
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
@@ -26,7 +28,6 @@ services:
         volumes:
             - /opt/overrides/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
         environment:
-            ENVIRONMENT: demo
             PMA_HOST: %env(RDS_HOSTNAME)%
             PMA_ABSOLUTE_URI: https://apidemo.humansis.org/pma_yzixy37h/
 
