@@ -1,15 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace NewApiBundle\Mapper;
+namespace NewApiBundle\Mapper\Assistance\OfflineApp;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\GeneralReliefItem;
+use NewApiBundle\Mapper\MapperContextTrait;
 use NewApiBundle\Serializer\MapperInterface;
 use VoucherBundle\Entity\Voucher;
 
-class AssistanceBeneficiaryExpandedOfflineAppMapper implements MapperInterface
+class TargetExpandedMapper implements MapperInterface
 {
     use MapperContextTrait;
 
@@ -68,11 +69,6 @@ class AssistanceBeneficiaryExpandedOfflineAppMapper implements MapperInterface
     public function getCurrentSmartcardSerialNumber(): ?string
     {
         return $this->object->getBeneficiary()->getSmartcardSerialNumber();
-    }
-
-    public function getGeneralReliefItems(): array
-    {
-        return []; // TODO: remove after PIN-3249
     }
 
     public function getBooklets(): array

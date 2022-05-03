@@ -1,28 +1,23 @@
 <?php
 declare(strict_types=1);
 
-namespace NewApiBundle\Mapper;
+namespace NewApiBundle\Mapper\Assistance;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use TransactionBundle\Entity\Transaction;
+use VoucherBundle\Entity\SmartcardDeposit;
 
-class AssistanceBeneficiaryOfflineAppMapper extends AbstractAssistanceBeneficiaryMapper
+class TargetBeneficiaryMapper extends AbstractTargetMapper
 {
-    use MapperContextTrait;
-
     public function supports(object $object, $format = null, array $context = null): bool
     {
         return parent::supports($object, $format, $context) &&
             $object->getBeneficiary() instanceof Beneficiary &&
-            $this->isOfflineApp($context);
+            !isset($context['offline-app']);
     }
 
     public function getBeneficiaryId(): int
     {
         return $this->object->getBeneficiary()->getId();
-    }
-
-    public function getLastSmartcardDepositId(): ?int
-    {
-        return $this->object->getSmartcardDeposits()->last() ? $this->object->getSmartcardDeposits()->last()->getId() : null;
     }
 }

@@ -94,10 +94,10 @@ services:
         arguments: [ '@doctrine.orm.entity_manager' ]
         tags: [ 'validator.constraint_validator' ]
 
-    NewApiBundle\Mapper\AssistanceMapper:
+    NewApiBundle\Mapper\Assistance\AssistanceMapper:
         tags: [ 'app.mapper' ]
 
-    NewApiBundle\Mapper\AssistanceOfflineAppMapper:
+    NewApiBundle\Mapper\Assistance\OfflineApp\AssistanceMapper:
         arguments: [ "@=service('doctrine.orm.entity_manager').getRepository('NewApiBundle:AssistanceStatistics')" ]
         tags: [ 'app.mapper' ]
 

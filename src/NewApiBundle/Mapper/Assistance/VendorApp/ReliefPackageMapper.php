@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace NewApiBundle\Mapper;
+namespace NewApiBundle\Mapper\Assistance\VendorApp;
 
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ProductCategoryType;
 use NewApiBundle\Serializer\MapperInterface;
 
-class ReliefPackageVendorMapper implements MapperInterface
+class ReliefPackageMapper implements MapperInterface
 {
     /** @var ReliefPackage */
     private $object;
@@ -17,7 +17,9 @@ class ReliefPackageVendorMapper implements MapperInterface
      */
     public function supports(object $object, $format = null, array $context = null): bool
     {
-        return $object instanceof ReliefPackage && isset($context[self::VENDOR_APP]) && true === $context[self::VENDOR_APP];
+        return $object instanceof ReliefPackage
+            && isset($context[self::VENDOR_APP])
+            && true === $context[self::VENDOR_APP];
     }
 
     /**

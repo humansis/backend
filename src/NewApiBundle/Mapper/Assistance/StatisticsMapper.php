@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace NewApiBundle\Mapper;
+namespace NewApiBundle\Mapper\Assistance;
 
 use NewApiBundle\Entity\AssistanceStatistics;
 use NewApiBundle\Serializer\MapperInterface;
 
-class AssistanceStatisticsMapper implements MapperInterface
+class StatisticsMapper implements MapperInterface
 {
     /** @var AssistanceStatistics */
     private $object;
