@@ -145,6 +145,7 @@ doctrine:
             enum_household_assets: NewApiBundle\DBAL\HouseholdAssetsEnum
             enum_person_gender: NewApiBundle\DBAL\PersonGenderEnum
             enum_national_id_type: NewApiBundle\DBAL\NationalIdTypeEnum
+            enum_assitance_commodity_division: NewApiBundle\DBAL\AssistanceCommodityDivisionEnum
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware

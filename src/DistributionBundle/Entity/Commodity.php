@@ -3,7 +3,12 @@
 namespace DistributionBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
+use NewApiBundle\DBAL\AssistanceCommodityDivisionEnum;
+use NewApiBundle\Enum\PersonGender;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+use NewApiBundle\Entity\Helper\EnumTrait;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * Commodity
@@ -13,14 +18,8 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class Commodity
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
+    use EnumTrait;
 
     /**
      * @var ModalityType
@@ -56,6 +55,13 @@ class Commodity
      * @ORM\Column(name="description", type="string",length=511, nullable=true)
      */
     private $description;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="division", type="enum_assitance_commodity_division", nullable=true)
+     */
+    private $division;
 
     /**
      * Get id.
@@ -185,5 +191,23 @@ class Commodity
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDivision(): ?string
+    {
+        return $this->division;
+    }
+
+    /**
+     * @param string|null $division
+     */
+    public function setDivision(?string $division): void
+    {
+        self::validateValue('division', CommodityDivision::class, $division, true);
+
+        $this->division = CommodityDivision::valueFromAPI($division);
     }
 }

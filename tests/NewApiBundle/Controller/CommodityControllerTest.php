@@ -46,14 +46,16 @@ class CommodityControllerTest extends BMSServiceTestCase
                     "modalityType": "*",
                     "unit": "*",
                     "value": "*",
-                    "description": "*"
+                    "description": "*",
+                    "division": "*"
                 },
                 {
                     "id": '.$commodity2->getId().',
                     "modalityType": "*",
                     "unit": "*",
                     "value": "*",
-                    "description": "*"
+                    "description": "*",
+                    "division": "*"
                 }
             ]}', $this->client->getResponse()->getContent());
     }
@@ -81,7 +83,8 @@ class CommodityControllerTest extends BMSServiceTestCase
                     "modalityType": "*",
                     "unit": "*",
                     "value": "*",
-                    "description": "*"
+                    "description": "*",
+                    "division": "*"
                 }
             ]}', $this->client->getResponse()->getContent());
     }
