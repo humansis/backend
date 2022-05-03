@@ -36,7 +36,7 @@ class ReliefPackageMapper implements MapperInterface
         throw new \InvalidArgumentException('Invalid argument. It should be instance of '.ReliefPackage::class.', '.get_class($object).' given.');
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->object->getId();
     }
@@ -53,8 +53,7 @@ class ReliefPackageMapper implements MapperInterface
 
     public function getNotes(): string
     {
-        return "";
-        // return $this->object->getAssistanceBeneficiary()->getNotes();
+        return $this->object->getNotes() ?? '';
     }
 
     public function getAmountDistributed(): string
@@ -79,14 +78,12 @@ class ReliefPackageMapper implements MapperInterface
 
     public function getLastModifiedAt(): string
     {
-        return "";
-        // return $this->object->getLastModifiedAt()->format(\DateTimeInterface::ISO8601);
+        return $this->object->getLastModifiedAt()->format(\DateTimeInterface::ISO8601);
     }
 
     public function getDistributedAt(): ?string
     {
-        $distributionDate = null;
-        // $distributionDate = $this->object->getDistributedAt();
+        $distributionDate = $this->object->getDistributedAt();
 
         return $distributionDate ? $distributionDate->format(\DateTimeInterface::ISO8601) : null;
     }
