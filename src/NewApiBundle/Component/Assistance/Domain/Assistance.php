@@ -11,6 +11,7 @@ use DistributionBundle\Utils\Exception\RemoveBeneficiaryWithReliefException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NoResultException;
+use NewApiBundle\Component\Assistance\DTO\CommoditySummary;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\InputType\Assistance\CommodityInputType;
@@ -310,6 +311,30 @@ class Assistance
         } catch (InvalidArgumentException $e) {
             // TODO: log but ignore
         }
+    }
+
+    /**
+     * @return CommoditySummary[]
+     */
+    public function getCommoditiesSummary(): array
+    {
+        $flatArray = [];
+        $commodities = [];
+        foreach ($this->getTargets() as $target) {
+            foreach ($target->getReliefPackages() as $package) {
+                if (!isset($commodities[$package->getModalityType()])) {
+                    $commodities[$package->getModalityType()] = [];
+                }
+                if (!isset($commodities[$package->getModalityType()][$package->getUnit()])) {
+                    $commodities[$package->getModalityType()][$package->getUnit()] = new CommoditySummary($package->getModalityType(), $package->getUnit());
+                    $flatArray[] = $commodities[$package->getModalityType()][$package->getUnit()];
+                }
+                /** @var CommoditySummary $summary */
+                $summary = $commodities[$package->getModalityType()][$package->getUnit()];
+                $summary->addAmount(floatval($package->getAmountToDistribute()));
+            }
+        }
+        return array_values($flatArray);
     }
 
 }
