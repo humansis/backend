@@ -4,16 +4,17 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller\WebApp\Assistance;
 
 use DistributionBundle\Entity\Assistance;
+use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Controller\WebApp\AbstractWebAppController;
-use NewApiBundle\Workflow\ReliefPackageTransitions;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
-use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
+use NewApiBundle\InputType\Assistance\DistributeReliefPackagesInputType;
 use NewApiBundle\InputType\Assistance\ReliefPackageFilterInputType;
+use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
+use NewApiBundle\Workflow\ReliefPackageTransitions;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\Workflow\Registry;
 
 class ReliefPackageController extends AbstractWebAppController
@@ -60,11 +61,11 @@ class ReliefPackageController extends AbstractWebAppController
 
     /**
      * @Rest\Patch("/web-app/v1/assistances/relief-packages/distribute")
-     * @ParamConverter(class="NewApiBundle\InputType\Assistance\DistributeReliefPackagesInputType", name="packages", converter="array_input_type_converter")
+     * @ParamConverter(class="NewApiBundle\InputType\Assistance\DistributeReliefPackagesInputType[]", name="packages", converter="input_type_converter")
      *
-     * @param array                   $packages
-     * @param ReliefPackageRepository $repository
-     * @param Registry                $registry
+     * @param DistributeReliefPackagesInputType[] $packages
+     * @param ReliefPackageRepository             $repository
+     * @param Registry                            $registry
      *
      * @return JsonResponse
      */

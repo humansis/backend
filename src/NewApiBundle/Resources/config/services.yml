@@ -199,9 +199,9 @@ services:
         resource: '../../Request/ParamConverter'
         tags: [ 'request.param_converter' ]
 
-    NewApiBundle\Request\ParamConverter\InputTypeArrayConverter:
+    NewApiBundle\Request\ParamConverter\InputTypeConverter:
         tags:
-            - { name: 'request.param_converter', converter: 'array_input_type_converter' }
+            - { name: 'request.param_converter', converter: 'input_type_converter' }
 
     NewApiBundle\Listener\AcceptHeaderListener:
         arguments: [ '%app.locales%' ]
