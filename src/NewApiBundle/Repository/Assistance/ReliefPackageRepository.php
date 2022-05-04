@@ -114,7 +114,7 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('assistance', $assistance->getId())
         ;
         if ($filter && $filter->hasIds()) {
-            $qb->andWhere('rp.id IN :ids')
+            $qb->andWhere('rp.id IN (:ids)')
                 ->setParameter('ids', $filter->getIds());
         }
 

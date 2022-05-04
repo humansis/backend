@@ -14,7 +14,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use Symfony\Component\Workflow\WorkflowInterface;
+use Symfony\Component\Workflow\Registry;
 
 class ReliefPackageController extends AbstractWebAppController
 {
@@ -64,10 +64,11 @@ class ReliefPackageController extends AbstractWebAppController
      *
      * @param array                   $packages
      * @param ReliefPackageRepository $repository
+     * @param Registry                $registry
      *
      * @return JsonResponse
      */
-    public function distributePackages(array $packages, ReliefPackageRepository $repository, WorkflowInterface $reliefPackageWorkflow): JsonResponse
+    public function distributePackages(array $packages, ReliefPackageRepository $repository, Registry $registry): JsonResponse
     {
         foreach ($packages as $packageUpdate) {
             /** @var ReliefPackage $package */
@@ -78,6 +79,7 @@ class ReliefPackageController extends AbstractWebAppController
                 $package->addAmountOfDistributed($packageUpdate->getAmountDistributed());
             }
 
+            $reliefPackageWorkflow = $registry->get($package);
             if ($reliefPackageWorkflow->can($package, ReliefPackageTransitions::DISTRIBUTE)) {
                 $reliefPackageWorkflow->apply($package, ReliefPackageTransitions::DISTRIBUTE);
             }
