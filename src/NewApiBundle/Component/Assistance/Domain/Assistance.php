@@ -318,7 +318,6 @@ class Assistance
      */
     public function getCommoditiesSummary(): array
     {
-        $flatArray = [];
         $commodities = [];
         foreach ($this->getTargets() as $target) {
             foreach ($target->getReliefPackages() as $package) {
@@ -326,15 +325,18 @@ class Assistance
                     $commodities[$package->getModalityType()] = [];
                 }
                 if (!isset($commodities[$package->getModalityType()][$package->getUnit()])) {
-                    $commodities[$package->getModalityType()][$package->getUnit()] = new CommoditySummary($package->getModalityType(), $package->getUnit());
-                    $flatArray[] = $commodities[$package->getModalityType()][$package->getUnit()];
+                    $commodities[$package->getModalityType()][$package->getUnit()] = 0;
                 }
-                /** @var CommoditySummary $summary */
-                $summary = $commodities[$package->getModalityType()][$package->getUnit()];
-                $summary->addAmount(floatval($package->getAmountToDistribute()));
+                $commodities[$package->getModalityType()][$package->getUnit()] += floatval($package->getAmountToDistribute());
             }
         }
-        return array_values($flatArray);
+        $summaries = [];
+        foreach ($commodities as $modalityType => $values) {
+            foreach ($values as $unit => $amount) {
+                $summaries[] = new CommoditySummary($modalityType, $unit, $amount);
+            }
+        }
+        return $summaries;
     }
 
 }

@@ -14,16 +14,13 @@ class CommoditySummary
     /**
      * @param string $modalityType
      * @param string $unit
+     * @param float  $amount
      */
-    public function __construct(string $modalityType, string $unit)
+    public function __construct(string $modalityType, string $unit, float $amount = 0)
     {
         $this->modalityType = $modalityType;
         $this->unit = $unit;
-    }
-
-    public function addAmount(float $amount): void
-    {
-        $this->amount += $amount;
+        $this->amount = $amount;
     }
 
     /**
