@@ -53,7 +53,9 @@ class DuplicityService
 
         if (isset($identities[$identity])) {
             // TODO: count subduplicity
-            return count($identities[$identity]);
+
+            // COUNT RECURSIVE could not get exact results but should be faster than iteration
+            return count($identities[$identity], COUNT_RECURSIVE) - 1;
         }
         return 0;
     }

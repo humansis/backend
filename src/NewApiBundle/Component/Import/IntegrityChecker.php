@@ -16,6 +16,7 @@ use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
+use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
@@ -124,13 +125,11 @@ class IntegrityChecker
      */
     private function validateItem(ImportQueue $item): void
     {
-        $iso3 = $item->getImport()->getCountryIso3();
-
         $householdLine = $this->importLineFactory->create($item, 0);
         $violations = $this->validator->validate($householdLine, null, ["household"]);
 
         foreach ($violations as $violation) {
-            $item->addViolation(0, $this->buildErrorMessage($violation));
+            $item->addViolation($this->buildErrorMessage($violation, 0));
         }
 
         $index = 1;
@@ -139,38 +138,37 @@ class IntegrityChecker
             $violations = $this->validator->validate($hhm, null, ["member"]);
 
             foreach ($violations as $violation) {
-                $item->addViolation($index, $this->buildErrorMessage($violation));
+                $item->addViolation($this->buildErrorMessage($violation, $index));
             }
             $index++;
         }
 
-        $index = 0;
+        $index = -1;
         foreach ($this->importLineFactory->createAll($item) as $hhm) {
-            if ($item->hasViolations($index)) continue; // don't do complex checking if there are simple errors
+            $index++;
+            if ($item->hasViolations($index)) {
+                if (!$item->hasColumnViolation($index, HouseholdExportCSVService::ID_NUMBER) && !$item->hasColumnViolation($index,
+                        HouseholdExportCSVService::ID_TYPE)) {
+                    $beneficiary = $this->beneficiaryDecoratorBuilder->buildBeneficiaryIdentityInputType($hhm);
+                    $this->checkFileDuplicity($item, $index, $beneficiary);
+                }
+                continue; // don't do complex checking if there are simple errors
+            }
 
             $beneficiary = $this->beneficiaryDecoratorBuilder->buildBeneficiaryInputType($hhm);
             $violations = $this->validator->validate($beneficiary, null, ["Default", "BeneficiaryInputType", "Strict"]);
-
-            $cards = $beneficiary->getNationalIdCards();
-            if (count($cards) > 0) {
-                $idCard = $cards[0];
-                $nationalIdCount = $this->duplicityService->getIdentityCount($item->getImport(), $idCard);
-                if ($nationalIdCount > 1) {
-                    $item->addViolation($index, ['violation' => 'This line has ID duplicity!', 'value' => $idCard->getType().": ".$idCard->getNumber()]);
-                }
-            }
+            $this->checkFileDuplicity($item, $index, $beneficiary);
 
             foreach ($violations as $violation) {
-                $item->addViolation($index, $this->buildNormalizedErrorMessage($violation));
+                $item->addViolation($this->buildNormalizedErrorMessage($violation, $index));
             }
-            $index++;
         }
 
         if (!$item->hasViolations()) { // don't do complex checking if there are simple errors
             $household = $this->householdDecoratorBuilder->buildHouseholdInputType($item);
             $violations = $this->validator->validate($household, null, ["Default", "HouseholdCreateInputType", "Strict"]);
             foreach ($violations as $violation) {
-                $item->addViolation(0, $this->buildNormalizedErrorMessage($violation));
+                $item->addViolation($this->buildNormalizedErrorMessage($violation, 0));
             }
         }
     }
@@ -194,7 +192,7 @@ class IntegrityChecker
         return $queueSize == 0;
     }
 
-    private function buildErrorMessage(ConstraintViolationInterface $violation)
+    private function buildErrorMessage(ConstraintViolationInterface $violation, int $lineIndex): Integrity\QueueViolation
     {
         $property = $violation->getConstraint()->payload['propertyPath'] ?? $violation->getPropertyPath();
 
@@ -206,14 +204,14 @@ class IntegrityChecker
             }
         }
 
-        return ['column' => ucfirst($mapping[$property]), 'violation' => $violation->getMessage(), 'value' => $violation->getInvalidValue()];
+        return Integrity\QueueViolation::create($lineIndex, $mapping[$property], $violation->getMessage(), $violation->getInvalidValue());
     }
 
-    private function buildNormalizedErrorMessage(ConstraintViolationInterface $violation)
+    private function buildNormalizedErrorMessage(ConstraintViolationInterface $violation, int $lineIndex): Integrity\QueueViolation
     {
         $property = $violation->getConstraint()->payload['propertyPath'] ?? $violation->getPropertyPath();
 
-        return ['column' => ucfirst($property), 'violation' => $violation->getMessage(), 'value' => $violation->getInvalidValue()];
+        return Integrity\QueueViolation::create($lineIndex, $property, $violation->getMessage(), $violation->getInvalidValue());
     }
 
     /**
@@ -227,5 +225,29 @@ class IntegrityChecker
                 'import' => $import,
                 'structureViolations' => null,
             ]));
+    }
+
+    /**
+     * @param ImportQueue          $importQueue
+     * @param int                  $index
+     * @param BeneficiaryInputType $beneficiaryInputType
+     *
+     * @return void
+     */
+    private function checkFileDuplicity(ImportQueue $importQueue, int $index, BeneficiaryInputType $beneficiaryInputType): void
+    {
+        $cards = $beneficiaryInputType->getNationalIdCards();
+        if (count($cards) > 0) {
+            $idCard = $cards[0];
+            $nationalIdCount = $this->duplicityService->getIdentityCount($importQueue->getImport(), $idCard);
+            if ($nationalIdCount > 1) {
+                $importQueue->addViolation(Integrity\QueueViolation::create($index, HouseholdExportCSVService::ID_TYPE,
+                    'This line has ID duplicity!',
+                    sprintf('%s: %s', $idCard->getType(), $idCard->getNumber())));
+                $importQueue->addViolation(Integrity\QueueViolation::create($index, HouseholdExportCSVService::ID_NUMBER,
+                    'This line has ID duplicity!',
+                    sprintf('%s: %s', $idCard->getType(), $idCard->getNumber())));
+            }
+        }
     }
 }
