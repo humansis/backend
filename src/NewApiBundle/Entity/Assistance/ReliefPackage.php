@@ -233,6 +233,12 @@ class ReliefPackage
         $this->setAmountDistributed((string) ((float) $this->amountDistributed + (float) $amountDistributed));
     }
 
+    public function distributeRest(): void
+    {
+        $amountDistributed = floatval($this->getAmountToDistribute()) - floatval($this->getAmountDistributed());
+        $this->addAmountOfDistributed($amountDistributed);
+    }
+
     /**
      * @return string|null
      */

@@ -68,4 +68,36 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
             ]
         }', $this->client->getResponse()->getContent());
     }
+
+    public function testFilteredList()
+    {
+        $reliefPackage = $this->em->getRepository(ReliefPackage::class)->findOneBy([], ['id' => 'asc']);
+
+        /** @var Assistance $assitance */
+        $assistance = $reliefPackage->getAssistanceBeneficiary()->getAssistance();
+
+        $this->request('GET', "/api/basic/web-app/v1/assistances/{$assistance->getId()}/relief-packages?filter[id][]=".$reliefPackage->getId());
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        $this->assertJsonFragment('{
+            "totalCount": 1,
+            "data": [
+                {
+                    "id": '.$reliefPackage->getId().',
+                    "state": "*",
+                    "modalityType": "*",
+                    "amountToDistribute": "*",
+                    "amountDistributed": "*",
+                    "unit": "*",
+                    "createdAt": "*",
+                    "distributedAt": "*",
+                    "lastModifiedAt": "*"
+                }
+            ]
+        }', $this->client->getResponse()->getContent());
+    }
 }

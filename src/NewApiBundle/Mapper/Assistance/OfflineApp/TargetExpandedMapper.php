@@ -71,6 +71,11 @@ class TargetExpandedMapper implements MapperInterface
         return $this->object->getBeneficiary()->getSmartcardSerialNumber();
     }
 
+    public function getReliefPackages(): iterable
+    {
+        return $this->object->getReliefPackages();
+    }
+
     public function getBooklets(): array
     {
         $booklets = [];

@@ -130,6 +130,11 @@ services:
             - '@lexik_jwt_authentication.jwt_manager'
             - '@user.user_service'
 
+    NewApiBundle\Repository\Assistance\ReliefPackageRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\Assistance\ReliefPackage
+
     NewApiBundle\Repository\AssistanceStatisticsRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
@@ -193,6 +198,10 @@ services:
     NewApiBundle\Request\ParamConverter\:
         resource: '../../Request/ParamConverter'
         tags: [ 'request.param_converter' ]
+
+    NewApiBundle\Request\ParamConverter\InputTypeConverter:
+        tags:
+            - { name: 'request.param_converter', converter: 'input_type_converter' }
 
     NewApiBundle\Listener\AcceptHeaderListener:
         arguments: [ '%app.locales%' ]
