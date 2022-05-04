@@ -5,12 +5,16 @@ namespace NewApiBundle\Controller\WebApp\Assistance;
 
 use DistributionBundle\Entity\Assistance;
 use NewApiBundle\Controller\WebApp\AbstractWebAppController;
+use NewApiBundle\Workflow\ReliefPackageTransitions;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
 use NewApiBundle\InputType\Assistance\ReliefPackageFilterInputType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 class ReliefPackageController extends AbstractWebAppController
 {
@@ -52,5 +56,34 @@ class ReliefPackageController extends AbstractWebAppController
         $response->isNotModified($request);
 
         return $response;
+    }
+
+    /**
+     * @Rest\Patch("/web-app/v1/assistances/relief-packages/distribute")
+     * @ParamConverter(class="NewApiBundle\InputType\Assistance\DistributeReliefPackagesInputType", name="packages", converter="array_input_type_converter")
+     *
+     * @param array                   $packages
+     * @param ReliefPackageRepository $repository
+     *
+     * @return JsonResponse
+     */
+    public function distributePackages(array $packages, ReliefPackageRepository $repository, WorkflowInterface $reliefPackageWorkflow): JsonResponse
+    {
+        foreach ($packages as $packageUpdate) {
+            /** @var ReliefPackage $package */
+            $package = $repository->find($packageUpdate->getId());
+            if ($packageUpdate->getAmountDistributed() === null) {
+                $package->distributeRest();
+            } else {
+                $package->addAmountOfDistributed($packageUpdate->getAmountDistributed());
+            }
+
+            if ($reliefPackageWorkflow->can($package, ReliefPackageTransitions::DISTRIBUTE)) {
+                $reliefPackageWorkflow->apply($package, ReliefPackageTransitions::DISTRIBUTE);
+            }
+
+            $repository->save($package);
+        }
+        return $this->json(true);
     }
 }

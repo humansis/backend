@@ -6,6 +6,7 @@ namespace Tests\NewApiBundle\Controller\OfflineApp\Assistance;
 use DistributionBundle\Entity\Assistance;
 use Exception;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\Enum\ReliefPackageState;
 use Tests\BMSServiceTestCase;
 use VoucherBundle\Entity\Vendor;
 
@@ -24,80 +25,34 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         $this->client = self::$container->get('test.client');
     }
 
-    public function testGetOne()
+    public function testReliefPackageDistribution(): void
     {
-        $reliefPackage = $this->em->getRepository(ReliefPackage::class)->findOneBy([], ['id' => 'asc']);
+        /** @var ReliefPackage[] $reliefPackages */
+        $reliefPackages = $this->em->getRepository(ReliefPackage::class)->findBy([
+            'state' => ReliefPackageState::TO_DISTRIBUTE,
+            'amountDistributed' => 0,
+        ], ['id' => 'asc'], 3);
 
-        $this->request('GET', "/api/basic/offline-app/v1/assistances/relief-packages/{$reliefPackage->getId()}");
+        $distributionRequest = [];
+        foreach ($reliefPackages as $package) {
+            $distributionRequest[] = [
+                'id' => $package->getId(),
+                'dateDistributed' => (new \DateTime())->format(\DateTimeInterface::ISO8601),
+                'amountDistributed' => null,
+            ];
+        }
 
+        $this->request('PATCH', "/api/basic/offline-app/v1/assistances/relief-packages/distribute", $distributionRequest);
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
-    }
-
-    public function testListReliefPackagesSimple()
-    {
-        $reliefPackage = $this->em->getRepository(ReliefPackage::class)->findOneBy([], ['id' => 'asc']);
-
-        /** @var Assistance $assitance */
-        $assistance = $reliefPackage->getAssistanceBeneficiary()->getAssistance();
-        $packageCount = count($this->em->getRepository(ReliefPackage::class)->findByAssistance($assistance));
-
-        $this->request('GET', "/api/basic/offline-app/v1/assistances/{$assistance->getId()}/relief-packages");
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: '.json_decode($this->client->getResponse()->getContent(), true)['debug'][0]['message']
         );
 
-        $this->assertJsonFragment('{
-            "totalCount": '.$packageCount.',
-            "data": [
-                {
-                    "id": "*",
-                    "state": "*",
-                    "modalityType": "*",
-                    "amountToDistribute": "*",
-                    "amountDistributed": "*",
-                    "unit": "*",
-                    "createdAt": "*",
-                    "distributedAt": "*",
-                    "lastModifiedAt": "*"
-                }
-            ]
-        }', $this->client->getResponse()->getContent());
-    }
+        foreach ($reliefPackages as $package) {
+            $this->em->refresh($package);
+            $this->assertEquals(ReliefPackageState::DISTRIBUTED, $package->getState());
+            $this->assertEquals($package->getAmountToDistribute(), $package->getAmountDistributed());
+        }
 
-    public function testFilteredList()
-    {
-        $reliefPackage = $this->em->getRepository(ReliefPackage::class)->findOneBy([], ['id' => 'asc']);
-
-        /** @var Assistance $assitance */
-        $assistance = $reliefPackage->getAssistanceBeneficiary()->getAssistance();
-
-        $this->request('GET', "/api/basic/web-app/v1/assistances/{$assistance->getId()}/relief-packages?filter[id][]=".$reliefPackage->getId());
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
-
-        $this->assertJsonFragment('{
-            "totalCount": 1,
-            "data": [
-                {
-                    "id": '.$reliefPackage->getId().',
-                    "state": "*",
-                    "modalityType": "*",
-                    "amountToDistribute": "*",
-                    "amountDistributed": "*",
-                    "unit": "*",
-                    "createdAt": "*",
-                    "distributedAt": "*",
-                    "lastModifiedAt": "*"
-                }
-            ]
-        }', $this->client->getResponse()->getContent());
     }
 }

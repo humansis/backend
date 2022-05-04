@@ -120,4 +120,10 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
 
         return new Paginator($qb);
     }
+
+    public function save(ReliefPackage $package): void
+    {
+        $this->_em->persist($package);
+        $this->_em->flush();
+    }
 }
