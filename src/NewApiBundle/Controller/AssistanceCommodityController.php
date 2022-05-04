@@ -6,6 +6,8 @@ use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\Commodity;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\Assistance\AssistanceFactory;
+use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\CommodityFilterInputType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -39,5 +41,21 @@ class AssistanceCommodityController extends AbstractController
         }
 
         return $this->json(new Paginator($assistance->getCommodities()));
+    }
+
+    /**
+     * @Rest\Post("/web-app/v1/assistances/commodities")
+     *
+     * @param AssistanceCreateInputType $inputType
+     * @param AssistanceFactory         $factory
+     *
+     * @return JsonResponse
+     * @throws \Doctrine\ORM\EntityNotFoundException
+     */
+    public function create(AssistanceCreateInputType $inputType, AssistanceFactory $factory): JsonResponse
+    {
+        $assistance = $factory->create($inputType);
+
+        return $this->json(new Paginator($assistance->getCommoditiesSummary()));
     }
 }
