@@ -51,13 +51,15 @@ final class Version20220427173332 extends AbstractMigration
         // count sent money
         $this->addSql('UPDATE assistance_relief_package rp
                             SET amount_distributed=(
-                                SELECT SUM(t.amount_sent)
-                                FROM transaction t
-                                WHERE assistance_beneficiary_id=t.distribution_beneficiary_id AND t.pickup_date IS NOT NULL AND t.transaction_status=\'Success\'
+                                COALESCE((SELECT SUM(t.amount_sent)
+                                    FROM transaction t
+                                    WHERE assistance_beneficiary_id=t.distribution_beneficiary_id AND t.pickup_date IS NOT NULL AND
+                                          t.transaction_status=1), 0)
                             )
                             WHERE rp.modality_type=\'Mobile Money\';');
         // set last update date
         $this->addSql('UPDATE assistance_relief_package rp
+                            INNER JOIN transaction t2 on rp.id = t2.relief_package_id
                             SET modified_at=(
                                 SELECT MAX(t.date_sent)
                                 FROM transaction t
@@ -65,6 +67,7 @@ final class Version20220427173332 extends AbstractMigration
                             )
                             WHERE rp.modality_type=\'Mobile Money\';');
         $this->addSql('UPDATE assistance_relief_package rp
+                            INNER JOIN transaction t2 on rp.id = t2.relief_package_id
                             SET modified_at=(
                                 SELECT MAX(t.pickup_date)
                                 FROM transaction t
