@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Mapper\AssistanceMapper;
 use DistributionBundle\Entity\AssistanceBeneficiary;
+use DistributionBundle\Entity\GeneralReliefItem;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Mapper\AssistanceBeneficiaryMapper;
 use DistributionBundle\Mapper\AssistanceCommunityMapper;
@@ -16,6 +17,7 @@ use DistributionBundle\Utils\AssistanceService;
 use DistributionBundle\Utils\DistributionCSVService;
 
 use NewApiBundle\Component\Assistance\AssistanceFactory;
+use NewApiBundle\Enum\CacheTarget;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -1077,10 +1079,35 @@ class AssistanceController extends Controller
      * @param  Request  $request
      * @return Response
      *
-     * @deprecated see for PATCH /offline-app/v2/general-relief-items/{id}
+     * @deprecated remove, replaced by ReliefPackages
      */
     public function offlineSetGeneralReliefItemsAsDistributedAction(Request $request)
     {
-        return $this->setGeneralReliefItemsAsDistributedAction($request);
+        $griIds = $request->request->get('ids');
+
+        try {
+            foreach ($griIds as $griId) {
+                $gri = $this->getDoctrine()->getManager()
+                    ->getRepository(GeneralReliefItem::class)->find($griId);
+
+                if ($gri instanceof GeneralReliefItem) {
+                    $gri->setDistributedAt(new \DateTime());
+                    foreach ($gri->getAssistanceBeneficiary()->getReliefPackages() as $package) {
+                        $package->distributeRest();
+                        $this->getDoctrine()->getManager()->persist($package);
+                    }
+                    $this->getDoctrine()->getManager()->persist($gri);
+
+                    $assistance = $gri->getAssistanceBeneficiary()->getAssistance();
+                    $this->container->get('cache.app')->delete(CacheTarget::assistanceId($assistance->getId()));
+                }
+            }
+            $this->getDoctrine()->getManager()->flush();
+        } catch (\Exception $e) {
+            $this->container->get('logger')->error('exception', [$e->getMessage()]);
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        return $this->json('OK');
     }
 }
