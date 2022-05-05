@@ -377,6 +377,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var Location $location */
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
+        /** @var ModalityType $modalityType */
+        $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Cash'], ['id' => 'asc'])[0];
+
         $this->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
             'projectId' => $project->getId(),
@@ -387,6 +390,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'type' => AssistanceType::ACTIVITY,
             'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
+            'commodities' => [
+                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+            ],
             'selectionCriteria' => [
                 [
                     'group' => 1,
@@ -435,6 +441,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var Community $community */
         $community = self::$container->get('doctrine')->getRepository(Community::class)->findBy([], ['id' => 'asc'])[0];
 
+        /** @var ModalityType $modalityType */
+        $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Cash'], ['id' => 'asc'])[0];
+
+
         $this->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
             'projectId' => $project->getId(),
@@ -444,6 +454,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'subsector' => \ProjectBundle\DBAL\SubSectorEnum::CONSTRUCTION,
             'type' => AssistanceType::ACTIVITY,
             'target' => \DistributionBundle\Enum\AssistanceTargetType::COMMUNITY,
+            'commodities' => [
+                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+            ],
             'communities' => [$community->getId()],
             'description' => 'test construction activity',
             'householdsTargeted' => 10,
