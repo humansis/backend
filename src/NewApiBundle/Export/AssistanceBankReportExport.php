@@ -3,21 +3,10 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Export;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Phone;
+
 use BeneficiaryBundle\Repository\CountrySpecificRepository;
-use CommonBundle\Entity\Adm1;
-use CommonBundle\Entity\Adm2;
-use CommonBundle\Entity\Adm3;
-use CommonBundle\Entity\Adm4;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
-use NewApiBundle\Component\Country\Countries;
-use NewApiBundle\Component\Country\Country;
-use NewApiBundle\Enum\NationalIdType;
-use NewApiBundle\InputType\SmartcardPurchasedItemFilterInputType;
-use NewApiBundle\Repository\SmartcardPurchasedItemRepository;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
