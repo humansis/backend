@@ -51,23 +51,16 @@ class AssistanceController extends AbstractController
     /** @var AssistanceBankReportExport */
     private $assistanceBankReportExport;
 
-    /**
-     * @var SerializerInterface
-     */
+    /** @var SerializerInterface */
     private $serializer;
 
-    /**
-     * @var NormalizerInterface
-     */
-    private $normalizer;
 
-    public function __construct(VulnerabilityScoreExport $vulnerabilityScoreExport, AssistanceService $assistanceService, AssistanceBankReportExport $assistanceBankReportExport, SerializerInterface $serializer, NormalizerInterface $normalizer)
+    public function __construct(VulnerabilityScoreExport $vulnerabilityScoreExport, AssistanceService $assistanceService, AssistanceBankReportExport $assistanceBankReportExport, SerializerInterface $serializer)
     {
         $this->vulnerabilityScoreExport = $vulnerabilityScoreExport;
         $this->assistanceService = $assistanceService;
         $this->assistanceBankReportExport = $assistanceBankReportExport;
         $this->serializer = $serializer;
-        $this->normalizer = $normalizer;
     }
 
     /**

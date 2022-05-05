@@ -21,14 +21,10 @@ class AssistanceBankReportExport
     /** @var TranslatorInterface */
     private $translator;
 
-    /**
-     * @var AssistanceBeneficiaryRepository
-     */
+    /** @var AssistanceBeneficiaryRepository */
     private $assistanceBeneficiaryRepository;
 
-    /**
-     * @var CountrySpecificRepository
-     */
+    /** @var CountrySpecificRepository */
     private $countrySpecificRepository;
 
 
