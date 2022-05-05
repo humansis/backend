@@ -89,6 +89,7 @@ class AssistanceCreateInputType implements InputTypeInterface
     /**
      * @Assert\Type("array")
      * @Assert\Valid
+     * @Assert\Count(min="1")
      */
     private $commodities = [];
 
