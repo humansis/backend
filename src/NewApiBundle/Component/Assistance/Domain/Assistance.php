@@ -3,15 +3,20 @@
 namespace NewApiBundle\Component\Assistance\Domain;
 
 use BeneficiaryBundle\Entity\AbstractBeneficiary;
+use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Entity;
 use DistributionBundle\Entity\AssistanceBeneficiary;
+use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use DistributionBundle\Repository\ModalityTypeRepository;
 use DistributionBundle\Utils\Exception\RemoveBeneficiaryWithReliefException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NoResultException;
+use NewApiBundle\Component\Assistance\CommodityAssignBuilder;
 use NewApiBundle\Component\Assistance\DTO\CommoditySummary;
+use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\InputType\Assistance\CommodityInputType;
@@ -170,22 +175,56 @@ class Assistance
      */
     private function recountReliefPackages(?array $targets = null): void
     {
-        // sum same commodities into single package
-        $commodityValues = [];
+        $modalityUnits = [];
+        $commodityBuilder = new CommodityAssignBuilder();
         foreach ($this->assistanceRoot->getCommodities() as $commodity) {
-            if (!isset($commodityValues[$commodity->getModalityType()->getName()])) {
-                $commodityValues[$commodity->getModalityType()->getName()] = [];
+            $modality = $commodity->getModalityType()->getName();
+            $unit = $commodity->getUnit();
+
+            if (!isset($modalityUnits[$modality])) {
+                $modalityUnits[$modality] = [];
             }
-            if (!isset($commodityValues[$commodity->getModalityType()->getName()][$commodity->getUnit()])) {
-                $commodityValues[$commodity->getModalityType()->getName()][$commodity->getUnit()] = 0;
+            if (!in_array($unit, $modalityUnits[$commodity->getModalityType()->getName()])) {
+                $modalityUnits[$commodity->getModalityType()->getName()][] = $commodity->getUnit();
             }
-            $commodityValues[$commodity->getModalityType()->getName()][$commodity->getUnit()] += $commodity->getValue();
+            if ($commodity->getDivision() !== null) {
+                if ($this->assistanceRoot->getTargetType() !== AssistanceTargetType::HOUSEHOLD) {
+                    throw new \LogicException(sprintf("'%s' division is meaningful only for %s assistance, not for %s.",
+                        CommodityDivision::PER_HOUSEHOLD,
+                        AssistanceTargetType::HOUSEHOLD,
+                        $this->assistanceRoot->getTargetType()
+                    ));
+                }
+            }
+            switch ($commodity->getDivision()) {
+                case CommodityDivision::PER_HOUSEHOLD_MEMBER:
+                    $commodityBuilder->addCommodityCallback($modality, $unit, function (AssistanceBeneficiary $target) use ($commodity) {
+                        /** @var Household $household */
+                        $household = $target->getBeneficiary();
+
+                        // fallback for HH assistances directed to HHHs
+                        if ($household instanceof Beneficiary) {
+                            $household = $household->getHousehold();
+                        }
+                        return $commodity->getValue() * count($household->getBeneficiaries());
+                    });
+                    break;
+                case CommodityDivision::PER_HOUSEHOLD:
+                default:
+                    $commodityBuilder->addCommodityValue($modality, $unit, $commodity->getValue());
+                    break;
+            }
         }
 
-        foreach ($targets ?? $this->getTargets() as $target) {
-            foreach ($commodityValues as $modalityName => $values) {
-                foreach ($values as $unit => $value) {
-                        $target->setCommodityToDistribute($modalityName, $unit, $value);
+
+        foreach ($modalityUnits as $modalityName => $units) {
+            foreach ($units as $unit) {
+                foreach ($targets ?? $this->getTargets() as $target) {
+                    $target->setCommodityToDistribute(
+                        $modalityName,
+                        $unit,
+                        $commodityBuilder->getValue($target, $modalityName, $unit)
+                    );
                 }
             }
         }
