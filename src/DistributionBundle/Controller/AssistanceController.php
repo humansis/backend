@@ -1086,24 +1086,7 @@ class AssistanceController extends Controller
      */
     public function setGeneralReliefItemsAsDistributedAction(Request $request)
     {
-        $griIds = $request->request->get('ids');
-
-        try {
-            $response = $this->get('distribution.assistance_service')
-                ->setGeneralReliefItemsAsDistributed($griIds);
-        } catch (\Exception $e) {
-            $this->container->get('logger')->error('exception', [$e->getMessage()]);
-            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
-        
-        $json = $this->get('serializer')
-            ->serialize(
-                $response,
-                'json',
-                ['groups' => ["ValidatedAssistance"], 'datetime_format' => 'd-m-Y H:m:i']
-            );
-
-        return new Response($json, Response::HTTP_OK);
+        return new Response('Break endpoint to test PIN-3295, dont merge to develop and master', Response::HTTP_NOT_FOUND);
     }
 
     /**
