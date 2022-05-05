@@ -157,6 +157,7 @@ class Assistance
         $commodity->setDescription($commodityInputType->getDescription());
         $commodity->setValue($commodityInputType->getValue());
         $commodity->setUnit($commodityInputType->getUnit());
+        $commodity->setDivision($commodityInputType->getDivision());
         $this->assistanceRoot->addCommodity($commodity);
         $this->recountReliefPackages();
 

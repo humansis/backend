@@ -10,6 +10,7 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Enum\AssistanceType;
 use Exception;
+use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 use NewApiBundle\Enum\BeneficiaryType;
 use NewApiBundle\Enum\ProductCategoryType;
 use ProjectBundle\Entity\Project;
@@ -132,10 +133,15 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
             'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
             'type' => AssistanceType::DISTRIBUTION,
-            'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
+            'target' => \DistributionBundle\Enum\AssistanceTargetType::HOUSEHOLD,
             'threshold' => 1,
             'commodities' => [
-                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+                [
+                    'modalityType' => $modalityType->getName(),
+                    'unit' => 'CZK',
+                    'value' => 1000,
+                    'division' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+                ],
             ],
             'selectionCriteria' => [
                 [

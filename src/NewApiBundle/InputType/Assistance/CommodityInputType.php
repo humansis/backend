@@ -6,6 +6,7 @@ namespace NewApiBundle\InputType\Assistance;
 
 use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use NewApiBundle\Validator\Constraints\Enum;
 
 class CommodityInputType implements InputTypeInterface
 {
@@ -35,6 +36,12 @@ class CommodityInputType implements InputTypeInterface
      * @Assert\Length(max="511")
      */
     private $description;
+
+    /**
+     * @Assert\Type("string")
+     * @Enum(enumClass="NewApiBundle\Component\Assistance\Enum\CommodityDivision")
+     */
+    private $division;
 
     /**
      * @return string
@@ -98,5 +105,21 @@ class CommodityInputType implements InputTypeInterface
     public function setDescription($description)
     {
         $this->description = $description;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDivision()
+    {
+        return $this->division;
+    }
+
+    /**
+     * @param string|null $division
+     */
+    public function setDivision($division)
+    {
+        $this->division = $division;
     }
 }
