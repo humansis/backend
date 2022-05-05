@@ -596,6 +596,7 @@ class Assistance implements ExportableInterface
      */
     public function addCommodity(\DistributionBundle\Entity\Commodity $commodity)
     {
+        $commodity->setAssistance($this);
         $this->commodities[] = $commodity;
 
         return $this;
