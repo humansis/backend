@@ -187,18 +187,7 @@ class Assistance
             if (!in_array($unit, $modalityUnits[$commodity->getModalityType()->getName()])) {
                 $modalityUnits[$commodity->getModalityType()->getName()][] = $commodity->getUnit();
             }
-            if ($commodity->getDivision() === null){
-                $commodityBuilder->addCommodityValue($modality, $unit, $commodity->getValue());
-            } else if ($commodity->getDivision() == CommodityDivision::PER_HOUSEHOLD) {
-                if ($this->assistanceRoot->getTargetType() !== AssistanceTargetType::HOUSEHOLD) {
-                    throw new \LogicException(sprintf("'%s' division is meaningful only for %s assistance, not for %s.",
-                        CommodityDivision::PER_HOUSEHOLD,
-                                AssistanceTargetType::HOUSEHOLD,
-                                $this->assistanceRoot->getTargetType()
-                    ));
-                }
-                $commodityBuilder->addCommodityValue($modality, $unit, $commodity->getValue());
-            } else if ($commodity->getDivision() == CommodityDivision::PER_HOUSEHOLD_MEMBER) {
+            if ($commodity->getDivision() !== null) {
                 if ($this->assistanceRoot->getTargetType() !== AssistanceTargetType::HOUSEHOLD) {
                     throw new \LogicException(sprintf("'%s' division is meaningful only for %s assistance, not for %s.",
                         CommodityDivision::PER_HOUSEHOLD,
@@ -206,16 +195,24 @@ class Assistance
                         $this->assistanceRoot->getTargetType()
                     ));
                 }
-                $commodityBuilder->addCommodityCallback($modality, $unit, function (AssistanceBeneficiary $target) use ($commodity) {
-                    /** @var Household $household */
-                    $household = $target->getBeneficiary();
+            }
+            switch ($commodity->getDivision()) {
+                case CommodityDivision::PER_HOUSEHOLD_MEMBER:
+                    $commodityBuilder->addCommodityCallback($modality, $unit, function (AssistanceBeneficiary $target) use ($commodity) {
+                        /** @var Household $household */
+                        $household = $target->getBeneficiary();
 
-                    // fallback for HH assistances directed to HHHs
-                    if ($household instanceof Beneficiary) {
-                        $household = $household->getHousehold();
-                    }
-                    return $commodity->getValue() * count($household->getBeneficiaries());
-                });
+                        // fallback for HH assistances directed to HHHs
+                        if ($household instanceof Beneficiary) {
+                            $household = $household->getHousehold();
+                        }
+                        return $commodity->getValue() * count($household->getBeneficiaries());
+                    });
+                    break;
+                case CommodityDivision::PER_HOUSEHOLD:
+                default:
+                    $commodityBuilder->addCommodityValue($modality, $unit, $commodity->getValue());
+                    break;
             }
         }
 
