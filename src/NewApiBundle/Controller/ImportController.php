@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 use UserBundle\Entity\User;
 
@@ -225,22 +226,39 @@ class ImportController extends AbstractController
         if (empty($files)) {
             throw new \InvalidArgumentException('Missing at least one upload file.');
         }
+        $this->checkImportFileSizes($files);
 
         /** @var User $user */
         $user = $this->getUser();
 
         $importFiles = [];
+
         foreach ($files as $file) {
-            $fileSize = $file->getSize();
-
             $importFiles[] = $uploadedFile = $this->uploadImportService->uploadFile($import, $file, $user);
-
-            if ($fileSize < $this->maxFileSizeToLoad * 1024 * 1024 && empty($uploadedFile->getStructureViolations())) {
+            if (empty($uploadedFile->getStructureViolations())) {
                 $this->uploadImportService->load($uploadedFile);
             }
         }
 
         return $this->json(new Paginator($importFiles));
+    }
+
+    /**
+     * @param UploadedFile[] $files
+     *
+     * @throws \Doctrine\DBAL\ConnectionException
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     */
+    private function checkImportFileSizes(array $files) {
+        foreach ($files as $file) {
+            $fileSize = $file->getSize();
+            $fileMaxSize = $this->maxFileSizeToLoad * 1024 * 1024;
+            if ($fileSize > $fileMaxSize) {
+                $mbMaxFileSize = round($fileMaxSize/(1024*1024),2);
+                $mbFileSize = round($fileSize/(1024*1024),2);
+                throw new HttpException(400,"File reached maximum file size! Maximum file size is {$mbMaxFileSize} MB but your file size is {$mbFileSize} MB");
+            }
+        }
     }
 
     /**
