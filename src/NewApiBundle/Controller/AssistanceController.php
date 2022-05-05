@@ -35,6 +35,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolation;
@@ -264,15 +265,20 @@ class AssistanceController extends AbstractController
     public function bankReportExports(Assistance $assistance, Request $request): Response
     {
         $type = $request->query->get('type');
-        $filename = $this->assistanceBankReportExport->export($assistance, $type);
-        try {
-            $response = new BinaryFileResponse($filename);
-            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
-            $response->deleteFileAfterSend(true);
-            return  $response;
-        } catch (\Exception $exception) {
-            return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+        if ($assistance->getValidated()) {
+            $filename = $this->assistanceBankReportExport->export($assistance, $type);
+            try {
+                $response = new BinaryFileResponse($filename);
+                $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
+                $response->deleteFileAfterSend(true);
+                return  $response;
+            } catch (\Exception $exception) {
+                return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+            }
+        } else {
+            throw new HttpException(400, 'Cannot download bank report for assistance which is not validated.');
         }
+
     }
 
     /**

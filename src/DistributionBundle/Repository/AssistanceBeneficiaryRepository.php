@@ -4,6 +4,7 @@ namespace DistributionBundle\Repository;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;
+use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\Institution;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\GeneralReliefItem;
@@ -433,12 +434,17 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         return new Paginator($qb);
     }
 
-    public function getAssistanceBeneficiaryRelief(Assistance $assistance) {
-        $distributions = $this->getAssistanceBeneficiaryDistributionAmounts($assistance);
-        $beneficiaryInfo = $this->getAssistanceBeneficiaryInformation($assistance);
-
+    public function getAssistanceBeneficiaryRelief(Assistance $assistance, ?CountrySpecific $countrySpecific) {
+        $distributions = $this->getAssistanceBeneficiaryDistributionAmounts($assistance, $countrySpecific);
+        $beneficiariesInfo = $this->getAssistanceBeneficiaryInformation($assistance);
         foreach($distributions as  $id => $distribution) {
-            $distributions[$id] = array_merge($distribution, $beneficiaryInfo[$distribution['personId']]);
+            $personId = $distribution['personId'];
+            $beneficiaryInfo = key_exists($personId, $beneficiariesInfo) ?  $beneficiariesInfo[$personId] : [
+                'idNumber' => null,
+                'idType' => null,
+                'phoneNumber' => null,
+            ];
+            $distributions[$id] = array_merge($distribution,$beneficiaryInfo);
         }
         return $distributions;
 
@@ -469,7 +475,7 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         return $personInfo;
     }
 
-    private function getAssistanceBeneficiaryDistributionAmounts(Assistance $assistance) {
+    private function getAssistanceBeneficiaryDistributionAmounts(Assistance $assistance, ?CountrySpecific $countrySpecific) {
         $qb = $this->createQueryBuilder('db')
             ->select("CONCAT(IDENTITY(db.assistance),'-', bnf.id) as distributionId")
             ->addSelect("person.id as personId")
@@ -477,14 +483,20 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
             ->addSelect("SUM(relief.amountToDistribute) as amountToDistribute")
             ->addSelect("person.localFamilyName")
             ->addSelect("person.localParentsName")
+            ->addSelect("ANY_VALUE(countrySpecificAnswer.answer) AS countrySpecificValue")
             ->leftJoin('db.beneficiary', 'ab')
             ->innerJoin(Beneficiary::class, 'bnf', Join::WITH, 'bnf.id = ab.id')
             ->leftJoin('bnf.person', 'person')
             ->leftJoin('db.reliefPackages', 'relief')
+            ->leftJoin('bnf.household', 'household')
+            ->leftJoin('household.countrySpecificAnswers', 'countrySpecificAnswer', Join::WITH, 'IDENTITY(countrySpecificAnswer.countrySpecific) = :countrySpecificId')
             ->andWhere('db.assistance = :assistance')
+            ->andWhere('db.removed = :removed')
             ->groupBy('ab.id')
             ->orderBy('person.localFamilyName')
-            ->setParameter('assistance', $assistance);
+            ->setParameter('assistance', $assistance)
+            ->setParameter('countrySpecificId',  $countrySpecific ? $countrySpecific->getId() : null)
+            ->setParameter('removed', false);
         return $qb->getQuery()->getResult();
     }
 }

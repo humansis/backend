@@ -6,6 +6,7 @@ namespace NewApiBundle\Export;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
+use BeneficiaryBundle\Repository\CountrySpecificRepository;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
@@ -26,6 +27,7 @@ use Symfony\Component\Translation\TranslatorInterface;
 class AssistanceBankReportExport
 {
 
+    const COUNTRY_SPECIFIC_FIELD = 'TIN';
 
     /** @var TranslatorInterface */
     private $translator;
@@ -35,12 +37,18 @@ class AssistanceBankReportExport
      */
     private $assistanceBeneficiaryRepository;
 
+    /**
+     * @var CountrySpecificRepository
+     */
+    private $countrySpecificRepository;
 
 
-    public function __construct(AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository, TranslatorInterface $translator)
+
+    public function __construct(AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository, CountrySpecificRepository $countrySpecificRepository,  TranslatorInterface $translator)
     {
         $this->translator = $translator;
         $this->assistanceBeneficiaryRepository = $assistanceBeneficiaryRepository;
+        $this->countrySpecificRepository = $countrySpecificRepository;
     }
 
     public function export(Assistance $assistance, string $filetype): string
@@ -51,7 +59,8 @@ class AssistanceBankReportExport
         $filename = sys_get_temp_dir().'/bank-report.'.$filetype;
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
-        $this->build($worksheet, $this->assistanceBeneficiaryRepository->getAssistanceBeneficiaryRelief($assistance));
+        $countrySpecific = $this->countrySpecificRepository->findOneBy(['fieldString' => self::COUNTRY_SPECIFIC_FIELD]);
+        $this->build($worksheet, $this->assistanceBeneficiaryRepository->getAssistanceBeneficiaryRelief($assistance, $countrySpecific));
         $writer = IOFactory::createWriter($spreadsheet, ucfirst($filetype));
         $writer->save($filename);
         return $filename;
@@ -107,17 +116,18 @@ class AssistanceBankReportExport
         $i = 1;
 
         foreach ( $distributions as $distribution) {
+            $i++;
             $worksheet->setCellValue('A'.$i, $distribution['distributionId']);
             $worksheet->setCellValue('B'.$i, $distribution['localFamilyName']);
             $worksheet->setCellValue('C'.$i, $distribution['localGivenName']);
             $worksheet->setCellValue('D'.$i, $distribution['localParentsName']);
-            $worksheet->setCellValue('E'.$i, $distribution['localParentsName']);
+            $worksheet->setCellValue('E'.$i, $distribution['countrySpecificValue']);
             $worksheet->setCellValue('F'.$i, $distribution['idType']);
             $worksheet->setCellValue('G'.$i, $distribution['idNumber']);
             $worksheet->setCellValue('H'.$i, 'Благодійна допомога');
             $worksheet->setCellValue('I'.$i, $distribution['amountToDistribute']);
             $worksheet->setCellValue('J'.$i, $distribution['phoneNumber']);
-            $i++;
+
         }
     }
 
