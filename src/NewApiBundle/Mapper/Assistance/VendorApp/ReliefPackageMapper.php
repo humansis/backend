@@ -51,6 +51,11 @@ class ReliefPackageMapper implements MapperInterface
         return $this->object->getAssistanceBeneficiary()->getBeneficiary()->getId();
     }
 
+    public function getAmountDistributed(): string
+    {
+        return $this->object->getAmountDistributed();
+    }
+
     public function getAmountToDistribute(): string
     {
         return $this->object->getAmountToDistribute();

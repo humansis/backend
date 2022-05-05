@@ -64,16 +64,6 @@ class Commodity
     private $division;
 
     /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
      * Set unit.
      *
      * @param string $unit
