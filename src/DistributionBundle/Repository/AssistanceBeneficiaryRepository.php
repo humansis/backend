@@ -434,22 +434,33 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         return new Paginator($qb);
     }
 
-    public function getAssistanceBeneficiaryRelief(Assistance $assistance, ?CountrySpecific $countrySpecific) {
-        $distributions = $this->getAssistanceBeneficiaryDistributionAmounts($assistance, $countrySpecific);
+    /**
+     * @param Assistance           $assistance
+     * @param CountrySpecific|null $countrySpecific
+     *
+     * @return float|int|mixed|string
+     */
+    public function getBeneficiaryReliefCompilation(Assistance $assistance, ?CountrySpecific $countrySpecific) {
+        $beneficiaryReliefData = $this->getAssistanceBeneficiaryReliefAmounts($assistance, $countrySpecific);
         $beneficiariesInfo = $this->getAssistanceBeneficiaryInformation($assistance);
-        foreach($distributions as  $id => $distribution) {
-            $personId = $distribution['personId'];
+        foreach($beneficiaryReliefData as  $id => $relief) {
+            $personId = $relief['personId'];
             $beneficiaryInfo = key_exists($personId, $beneficiariesInfo) ?  $beneficiariesInfo[$personId] : [
                 'idNumber' => null,
                 'idType' => null,
                 'phoneNumber' => null,
             ];
-            $distributions[$id] = array_merge($distribution,$beneficiaryInfo);
+            $beneficiaryReliefData[$id] = array_merge($relief,$beneficiaryInfo);
         }
-        return $distributions;
+        return $beneficiaryReliefData;
 
     }
 
+    /**
+     * @param Assistance $assistance
+     *
+     * @return array
+     */
     private function getAssistanceBeneficiaryInformation(Assistance $assistance) {
         $qb = $this->createQueryBuilder('db')
             ->select("person.id as personId")
@@ -475,7 +486,13 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         return $personInfo;
     }
 
-    private function getAssistanceBeneficiaryDistributionAmounts(Assistance $assistance, ?CountrySpecific $countrySpecific) {
+    /**
+     * @param Assistance           $assistance
+     * @param CountrySpecific|null $countrySpecific
+     *
+     * @return float|int|mixed|string
+     */
+    private function getAssistanceBeneficiaryReliefAmounts(Assistance $assistance, ?CountrySpecific $countrySpecific) {
         $qb = $this->createQueryBuilder('db')
             ->select("CONCAT(IDENTITY(db.assistance),'-', bnf.id) as distributionId")
             ->addSelect("person.id as personId")

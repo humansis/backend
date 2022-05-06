@@ -45,7 +45,7 @@ class AssistanceBankReportExport
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
         $countrySpecific = $this->countrySpecificRepository->findOneBy(['fieldString' => self::COUNTRY_SPECIFIC_FIELD]);
-        $this->build($worksheet, $this->assistanceBeneficiaryRepository->getAssistanceBeneficiaryRelief($assistance, $countrySpecific));
+        $this->build($worksheet, $this->assistanceBeneficiaryRepository->getBeneficiaryReliefCompilation($assistance, $countrySpecific));
         $writer = IOFactory::createWriter($spreadsheet, ucfirst($filetype));
         $writer->save($filename);
         return $filename;
