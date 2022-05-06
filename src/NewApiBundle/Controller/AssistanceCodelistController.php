@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use CommonBundle\Pagination\Paginator;
+use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 use NewApiBundle\Component\Codelist\CodeLists;
 use NewApiBundle\InputType\AssistanceTargetFilterInputType;
 use NewApiBundle\InputType\AssistanceTypeFilterInputType;
@@ -82,5 +84,17 @@ class AssistanceCodelistController extends AbstractController
         $assistanceTypes = CodeLists::mapEnum($data);
 
         return $this->json(new Paginator($assistanceTypes));
+    }
+
+    /**
+     * @Rest\Get("/web-app/v1/assistances/commodity/divisions")
+     *
+     * @return JsonResponse
+     */
+    public function getCommodityDivision(): JsonResponse
+    {
+        $targets = CodeLists::mapEnum(CommodityDivision::values());
+
+        return $this->json(new Paginator($targets));
     }
 }

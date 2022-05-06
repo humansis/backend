@@ -198,6 +198,6 @@ class Commodity
     {
         self::validateValue('division', CommodityDivision::class, $division, true);
 
-        $this->division = CommodityDivision::valueFromAPI($division);
+        $this->division = $division ? CommodityDivision::valueFromAPI($division) : null;
     }
 }
