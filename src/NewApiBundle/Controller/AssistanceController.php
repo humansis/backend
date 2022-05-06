@@ -257,7 +257,7 @@ class AssistanceController extends AbstractController
      */
     public function bankReportExports(Assistance $assistance, Request $request): Response
     {
-        $type = $request->query->get('type');
+        $type = $request->query->get('type', 'csv');
         if ($assistance->getValidated()) {
             $filename = $this->assistanceBankReportExport->export($assistance, $type);
             try {
