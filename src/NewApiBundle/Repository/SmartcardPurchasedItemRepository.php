@@ -128,10 +128,10 @@ class SmartcardPurchasedItemRepository  extends EntityRepository
             }
         }
 
-        if ($pagination) {
+        // if ($pagination) {
             $qbr->setMaxResults($pagination->getLimit())
                 ->setFirstResult($pagination->getOffset());
-        }
+        // }
 
         $qbr->addOrderBy('pi.datePurchase', 'DESC');
 
