@@ -125,6 +125,7 @@ class PurchasedItemController extends AbstractController
      * @param Request                               $request
      * @param SmartcardPurchasedItemFilterInputType $filterInputType
      * @param PurchasedItemOrderInputType           $order
+     * @param SmartcardPurchasedItemRepository      $purchasedItemRepository
      * @param Pagination                            $pagination
      *
      * @return JsonResponse
@@ -133,6 +134,7 @@ class PurchasedItemController extends AbstractController
         Request $request,
         SmartcardPurchasedItemFilterInputType $filterInputType,
         PurchasedItemOrderInputType $order,
+        SmartcardPurchasedItemRepository $purchasedItemRepository,
         Pagination $pagination
     ): JsonResponse
     {
@@ -140,10 +142,7 @@ class PurchasedItemController extends AbstractController
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        /** @var SmartcardPurchasedItemRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(SmartcardPurchasedItem::class);
-
-        $data = $repository->findByParams($request->headers->get('country'), $filterInputType, $order, $pagination);
+        $data = $purchasedItemRepository->findByParams($request->headers->get('country'), $filterInputType, $order, $pagination);
 
         return $this->json($data);
     }
