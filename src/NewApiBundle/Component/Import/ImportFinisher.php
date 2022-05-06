@@ -30,7 +30,7 @@ class ImportFinisher
 {
     use ImportLoggerTrait;
 
-    const LOCK_BATCH = 10;
+    const LOCK_BATCH = 100;
 
     /**
      * @var EntityManagerInterface
@@ -122,14 +122,18 @@ class ImportFinisher
             ->processItems(function(ImportQueue $item) use ($import) {
                 switch ($item->getState()) {
                     case ImportQueueState::TO_CREATE:
+                        $this->logger->error('Creating');
+
                         $this->finishCreationQueue($item, $import);
                         break;
                     case ImportQueueState::TO_UPDATE:
+                        $this->logger->error('Updating');
                         $this->finishUpdateQueue($item, $import);
                         break;
                     case ImportQueueState::TO_IGNORE:
                     case ImportQueueState::TO_LINK:
                         /** @var ImportHouseholdDuplicity $acceptedDuplicity */
+                        $this->logger->error('Linking');
                         $acceptedDuplicity = $item->getAcceptedDuplicity();
                         if (null == $acceptedDuplicity) {
                             return;
@@ -142,10 +146,23 @@ class ImportFinisher
                         break;
                 }
 
+                /**
+                $this->logger->error('Inserts '. count($this->em->getUnitOfWork()->getScheduledEntityInsertions()));
+                $this->logger->error('Updates '. count($this->em->getUnitOfWork()->getScheduledEntityUpdates()));
+                $this->logger->error('Deletes '. count($this->em->getUnitOfWork()->getScheduledEntityDeletions()));
+                $this->logger->error('Collection updates '. count($this->em->getUnitOfWork()->getScheduledCollectionUpdates()));
+                $this->logger->error('Collection deletes '. count($this->em->getUnitOfWork()->getScheduledCollectionDeletions()));
+                $this->logger->error('Collection deletes '. count($this->em->getUnitOfWork()->get()));
+                 * */
+                $this->logger->error('Size of work '. $this->em->getUnitOfWork()->size());
                 $this->em->persist($item);
-            });
 
+            }, $this->logger);
+
+        $this->logger->error('Persisting');
+        $this->logger->error('Updates '. count($this->em->getUnitOfWork()->getScheduledEntityInsertions()));
         $this->em->flush();
+        $this->logger->error('Flushing 1');
 
         if ($this->importStateMachine->can($import, ImportTransitions::FINISH)) {
             $this->importStateMachine->apply($import, ImportTransitions::FINISH);
@@ -154,18 +171,13 @@ class ImportFinisher
         }
 
         $this->em->flush();
+        $this->logger->error('Flushing end');
     }
 
     private function lockImportQueue(Import $import, $state, string $code, int $count)
     {
-        $unlocked = $this->queueRepository->findUnlocked($import, $state, $count);
-
-        /** @var ImportQueue $item */
-        foreach ($unlocked as $item) {
-            $item->lock($code);
-        }
-
-        $this->em->flush();
+        $this->queueRepository->lockUnlockedItems($import, $state, $count, $code);
+        //$this->em->flush();
     }
 
     /**

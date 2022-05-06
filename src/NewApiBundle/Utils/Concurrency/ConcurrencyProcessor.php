@@ -79,7 +79,7 @@ class ConcurrencyProcessor
      * @param callable $processItemCallback
      *
      */
-    public function processItems(callable $processItemCallback): void
+    public function processItems(callable $processItemCallback, $logger): void
     {
         $allItemCountCallback = $this->countAllCallback;
         $lockItemsCallback = $this->lockBatchCallback;
@@ -90,14 +90,18 @@ class ConcurrencyProcessor
             return;
         }
 
-        $totalItemsToProcess = $itemCount > $this->maxResultsToProcess ? $this->maxResultsToProcess : $itemCount;
-        $rounds = ceil($totalItemsToProcess / $this->batchSize);
 
+        $totalItemsToProcess = $itemCount > $this->maxResultsToProcess ? $this->maxResultsToProcess : $itemCount;
+        $logger->error('Number of records to process: '. $totalItemsToProcess);
+        $rounds = ceil($totalItemsToProcess / $this->batchSize);
+        $logger->error('Rounds: '. $rounds);
         for ($i = 0; $i < $rounds; $i++) {
             $runCode = uniqid();
+            $logger->error('Code '. $runCode);
             $lockItemsCallback($runCode, $this->batchSize);
-
+            $logger->error('Items locked '. $runCode . ' ' . $this->batchSize);
             $itemsToProceed = $getBatchCallback($runCode, $this->batchSize);
+            $logger->error('Items to proceed '. count($itemsToProceed));
             foreach ($itemsToProceed as $item) {
                 try {
                     $processItemCallback($item);
@@ -105,6 +109,7 @@ class ConcurrencyProcessor
                     $item->unlock();
                 }
             }
+            $logger->error('Done '. count($itemsToProceed));
         }
     }
 }
