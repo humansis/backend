@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 use UserBundle\Entity\User;
 
@@ -256,7 +256,7 @@ class ImportController extends AbstractController
             if ($fileSize > $fileMaxSize) {
                 $mbMaxFileSize = round($fileMaxSize/(1024*1024),2);
                 $mbFileSize = round($fileSize/(1024*1024),2);
-                throw new HttpException(400,"File reached maximum file size! Maximum file size is {$mbMaxFileSize} MB but your file size is {$mbFileSize} MB");
+                throw new BadRequestHttpException("File reached maximum file size! Maximum file size is {$mbMaxFileSize} MB but your file size is {$mbFileSize} MB");
             }
         }
     }
