@@ -2,8 +2,7 @@
 
 namespace Tests\NewApiBundle\Controller;
 
-use CommonBundle\Entity\Location;
-use Doctrine\ORM\EntityManagerInterface;
+use CommonBundle\Repository\LocationRepository;
 use Exception;
 use NewApiBundle\Component\Country\Countries;
 use Tests\BMSServiceTestCase;
@@ -14,6 +13,9 @@ class LocationControllerTest extends BMSServiceTestCase
     /** @var Countries */
     private $countries;
 
+    /** @var LocationRepository */
+    private $locationRepository;
+
     public function setUp()
     {
         // Configuration of BMSServiceTest
@@ -23,6 +25,7 @@ class LocationControllerTest extends BMSServiceTestCase
         // Get a Client instance for simulate a browser
         $this->client = self::$container->get('test.client');
         $this->countries = self::$container->get(Countries::class);
+        $this->locationRepository = self::$container->get(LocationRepository::class);
     }
 
     public function testGetCountries()
@@ -155,7 +158,12 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetListOfAdm1Filtered()
     {
-        $this->request('GET', '/api/basic/web-app/v1/adm1?filter[id][]=1');
+        $location = $this->locationRepository->findOneBy(['countryISO3' => $this->iso3, 'lvl' => 1]);
+        if (!$location) {
+            $this->markTestSkipped('There is no such location to test');
+        }
+
+        $this->request('GET', '/api/basic/web-app/v1/adm1?filter[id][]='.$location->getAdm1()->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -223,7 +231,12 @@ class LocationControllerTest extends BMSServiceTestCase
 
     public function testGetListOfAdm2Filtered()
     {
-        $this->request('GET', '/api/basic/web-app/v1/adm2?filter[id][]=1');
+        $location = $this->locationRepository->findOneBy(['countryISO3' => $this->iso3, 'lvl' => 2]);
+        if (!$location) {
+            $this->markTestSkipped('There is no such location to test');
+        }
+
+        $this->request('GET', '/api/basic/web-app/v1/adm2?filter[id][]='.$location->getAdm2()->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -291,7 +304,12 @@ class LocationControllerTest extends BMSServiceTestCase
 
     public function testGetListOfAdm3Filtered()
     {
-        $this->request('GET', '/api/basic/web-app/v1/adm3?filter[id][]=1');
+        $location = $this->locationRepository->findOneBy(['countryISO3' => $this->iso3, 'lvl' => 3]);
+        if (!$location) {
+            $this->markTestSkipped('There is no such location to test');
+        }
+
+        $this->request('GET', '/api/basic/web-app/v1/adm3?filter[id][]='.$location->getAdm3()->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -359,7 +377,12 @@ class LocationControllerTest extends BMSServiceTestCase
 
     public function testGetListOfAdm4Filtered()
     {
-        $this->request('GET', '/api/basic/web-app/v1/adm4?filter[id][]=1');
+        $location = $this->locationRepository->findOneBy(['countryISO3' => $this->iso3, 'lvl' => 4]);
+        if (!$location) {
+            $this->markTestSkipped('There is no such location to test');
+        }
+
+        $this->request('GET', '/api/basic/web-app/v1/adm4?filter[id][]='.$location->getAdm4()->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -404,9 +427,7 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetLocations()
     {
-        /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $location = $em->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
+        $location = $this->locationRepository->findBy(['countryISO3' => 'KHM'], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/locations?filter[id][]='.$location->getId());
 
