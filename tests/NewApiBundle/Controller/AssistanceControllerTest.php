@@ -9,6 +9,7 @@ use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Enum\AssistanceType;
+use DistributionBundle\Repository\AssistanceRepository;
 use Exception;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 use NewApiBundle\Enum\BeneficiaryType;
@@ -639,6 +640,40 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertTrue(
             $this->client->getResponse()->getStatusCode() === 400,
             'Request should fail because for remote distribution should be only valid smartcard'
+        );
+    }
+
+    public function testBankReportExportsSuccess() {
+
+        /** @var AssistanceRepository $assistanceRepository */
+        $assistanceRepository = self::$container->get('doctrine')->getRepository(Assistance::class);
+
+        $assistance = $assistanceRepository->findOneBy(['validated' => true]);
+        $id = $assistance->getId();
+
+        $this->request('GET', "/api/basic/web-app/v1/assistances/$id/bank-report/exports", [
+            'type' => 'csv'
+        ]);
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+    }
+
+    public function testBankReportExportsNotValidated() {
+
+        /** @var AssistanceRepository $assistanceRepository */
+        $assistanceRepository = self::$container->get('doctrine')->getRepository(Assistance::class);
+
+        $assistance = $assistanceRepository->findOneBy(['validated' => false]);
+        $id = $assistance->getId();
+
+        $this->request('GET', "/api/basic/web-app/v1/assistances/$id/bank-report/exports", [
+            'type' => 'csv'
+        ]);
+        $this->assertFalse(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
         );
     }
 }

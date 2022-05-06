@@ -4,12 +4,14 @@ namespace DistributionBundle\Repository;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;
+use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\Institution;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\GeneralReliefItem;
 use DistributionBundle\Entity\Assistance;
 use BeneficiaryBundle\Entity\Household;
 use DistributionBundle\Enum\AssistanceTargetType;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use InvalidArgumentException;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
@@ -430,5 +432,88 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         }
 
         return new Paginator($qb);
+    }
+
+    /**
+     * @param Assistance           $assistance
+     * @param CountrySpecific|null $countrySpecific
+     *
+     * @return float|int|mixed|string
+     */
+    public function getBeneficiaryReliefCompilation(Assistance $assistance, ?CountrySpecific $countrySpecific) {
+        $beneficiaryReliefData = $this->getAssistanceBeneficiaryReliefAmounts($assistance, $countrySpecific);
+        $beneficiariesInfo = $this->getAssistanceBeneficiaryInformation($assistance);
+        foreach($beneficiaryReliefData as  $id => $relief) {
+            $personId = $relief['personId'];
+            $beneficiaryInfo = key_exists($personId, $beneficiariesInfo) ?  $beneficiariesInfo[$personId] : [
+                'idNumber' => null,
+                'idType' => null,
+                'phoneNumber' => null,
+            ];
+            $beneficiaryReliefData[$id] = array_merge($relief,$beneficiaryInfo);
+        }
+        return $beneficiaryReliefData;
+
+    }
+
+    /**
+     * @param Assistance $assistance
+     *
+     * @return array
+     */
+    private function getAssistanceBeneficiaryInformation(Assistance $assistance) {
+        $qb = $this->createQueryBuilder('db')
+            ->select("person.id as personId")
+            ->addSelect("ANY_VALUE(national.idNumber) as idNumber")
+            ->addSelect("ANY_VALUE(national.idType) as idType")
+            ->addSelect("ANY_VALUE(CONCAT(phone.prefix, phone.number)) AS phoneNumber")
+            ->leftJoin('db.beneficiary', 'ab')
+            ->innerJoin(Beneficiary::class, 'bnf', Join::WITH, 'bnf.id = ab.id')
+            ->leftJoin('bnf.person', 'person')
+            ->leftJoin('person.nationalIds', 'national')
+            ->leftJoin('person.phones', 'phone')
+            ->leftJoin('db.reliefPackages', 'relief')
+            ->andWhere('db.assistance = :assistance')
+            ->groupBy('person.id')
+            ->orderBy('person.localFamilyName')
+            ->setParameter('assistance', $assistance);
+
+        $result = $qb->getQuery()->getResult();
+        $personInfo = [];
+        foreach ($result as $row) {
+            $personInfo[$row['personId']] = $row;
+        }
+        return $personInfo;
+    }
+
+    /**
+     * @param Assistance           $assistance
+     * @param CountrySpecific|null $countrySpecific
+     *
+     * @return float|int|mixed|string
+     */
+    private function getAssistanceBeneficiaryReliefAmounts(Assistance $assistance, ?CountrySpecific $countrySpecific) {
+        $qb = $this->createQueryBuilder('db')
+            ->select("CONCAT(IDENTITY(db.assistance),'-', bnf.id) as distributionId")
+            ->addSelect("person.id as personId")
+            ->addSelect("person.localGivenName")
+            ->addSelect("SUM(relief.amountToDistribute) as amountToDistribute")
+            ->addSelect("person.localFamilyName")
+            ->addSelect("person.localParentsName")
+            ->addSelect("ANY_VALUE(countrySpecificAnswer.answer) AS countrySpecificValue")
+            ->leftJoin('db.beneficiary', 'ab')
+            ->innerJoin(Beneficiary::class, 'bnf', Join::WITH, 'bnf.id = ab.id')
+            ->leftJoin('bnf.person', 'person')
+            ->leftJoin('db.reliefPackages', 'relief')
+            ->leftJoin('bnf.household', 'household')
+            ->leftJoin('household.countrySpecificAnswers', 'countrySpecificAnswer', Join::WITH, 'IDENTITY(countrySpecificAnswer.countrySpecific) = :countrySpecificId')
+            ->andWhere('db.assistance = :assistance')
+            ->andWhere('db.removed = :removed')
+            ->groupBy('ab.id')
+            ->orderBy('person.localFamilyName')
+            ->setParameter('assistance', $assistance)
+            ->setParameter('countrySpecificId',  $countrySpecific ? $countrySpecific->getId() : null)
+            ->setParameter('removed', false);
+        return $qb->getQuery()->getResult();
     }
 }

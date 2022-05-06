@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use CommonBundle\Controller\ExportController;
+use CommonBundle\Entity\Organization;
 use CommonBundle\Pagination\Paginator;
 use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
@@ -15,6 +16,7 @@ use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Component\Assistance\AssistanceQuery;
 use NewApiBundle\Entity\AssistanceStatistics;
 use NewApiBundle\Exception\ConstraintViolationException;
+use NewApiBundle\Export\AssistanceBankReportExport;
 use NewApiBundle\Export\VulnerabilityScoreExport;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\AssistanceFilterInputType;
@@ -32,7 +34,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
+use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolation;
@@ -45,10 +48,19 @@ class AssistanceController extends AbstractController
     /** @var AssistanceService */
     private $assistanceService;
 
-    public function __construct(VulnerabilityScoreExport $vulnerabilityScoreExport, AssistanceService $assistanceService)
+    /** @var AssistanceBankReportExport */
+    private $assistanceBankReportExport;
+
+    /** @var SerializerInterface */
+    private $serializer;
+
+
+    public function __construct(VulnerabilityScoreExport $vulnerabilityScoreExport, AssistanceService $assistanceService, AssistanceBankReportExport $assistanceBankReportExport, SerializerInterface $serializer)
     {
         $this->vulnerabilityScoreExport = $vulnerabilityScoreExport;
         $this->assistanceService = $assistanceService;
+        $this->assistanceBankReportExport = $assistanceBankReportExport;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -233,6 +245,33 @@ class AssistanceController extends AbstractController
         $this->get('distribution.assistance_service')->delete($assistance);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Rest\Get("/web-app/v1/assistances/{id}/bank-report/exports")
+     *
+     * @param Assistance $assistance
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function bankReportExports(Assistance $assistance, Request $request): Response
+    {
+        $type = $request->query->get('type');
+        if ($assistance->getValidated()) {
+            $filename = $this->assistanceBankReportExport->export($assistance, $type);
+            try {
+                $response = new BinaryFileResponse($filename);
+                $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
+                $response->deleteFileAfterSend(true);
+                return  $response;
+            } catch (\Exception $exception) {
+                return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+            }
+        } else {
+            throw new HttpException(400, 'Cannot download bank report for assistance which is not validated.');
+        }
+
     }
 
     /**
