@@ -81,6 +81,16 @@ services:
         volumes:
             - ./docker/dev/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
 
+    adminer:
+        image: adminer
+        restart: always
+        ports:
+            - 8082:8080
+        networks:
+            - pma
+        environment:
+            ADMINER_DESIGN: 'pepa-linha-dark'
+
     nginx:
         image: nginx
         ports:
