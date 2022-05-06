@@ -158,6 +158,7 @@ doctrine:
                  quarter: DoctrineExtensions\Query\Mysql\Quarter
                  month: DoctrineExtensions\Query\Mysql\Month
                  year: DoctrineExtensions\Query\Mysql\Year
+                 any_value: DoctrineExtensions\Query\Mysql\AnyValue
 
             numeric_functions:
                 levenshtein:        Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinFunction
