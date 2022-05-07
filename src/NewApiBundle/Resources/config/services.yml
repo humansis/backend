@@ -150,6 +150,11 @@ services:
         arguments:
             - NewApiBundle\Entity\AssistanceStatistics
 
+    NewApiBundle\Repository\ImportQueueRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\ImportQueue
+
     NewApiBundle\Controller\OfflineApp\AssistanceController:
         arguments:
             - '@assistance.repository'
@@ -289,6 +294,9 @@ services:
             - '@NewApiBundle\Component\Import\ImportInvalidFileService'
             - '@NewApiBundle\Component\Import\IdentityChecker'
             - '@NewApiBundle\Component\Import\SimilarityChecker'
+
+    NewApiBundle\Component\Import\Message\ItemBatchHandler:
+        tags: [ 'messenger.message_handler' ]
 
     NewApiBundle\Component\Import\UploadImportService:
         arguments:
