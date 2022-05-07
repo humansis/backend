@@ -294,6 +294,9 @@ services:
             - '@NewApiBundle\Component\Import\IdentityChecker'
             - '@NewApiBundle\Component\Import\SimilarityChecker'
 
+    NewApiBundle\Component\Import\Message\ItemBatchHandler:
+        tags: [ 'messenger.message_handler' ]
+
     NewApiBundle\Component\Import\UploadImportService:
         arguments:
             - '@doctrine.orm.entity_manager'

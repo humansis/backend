@@ -68,7 +68,7 @@ class SimilarityChecker
     /**
      * @param ImportQueue $item
      */
-    protected function checkOne(ImportQueue $item): void
+    public function checkOne(ImportQueue $item): void
     {
         // similarity check missing, it will be implemented later
         $item->setSimilarityCheckedAt(new \DateTime());

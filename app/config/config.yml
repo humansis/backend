@@ -132,7 +132,21 @@ framework:
     assets: ~
     php_errors:
         log: true
-
+    messenger:
+        serializer:
+            default_serializer: messenger.transport.symfony_serializer
+            symfony_serializer:
+                format: json
+                context: { }
+        transports:
+            #        async: "%env(MESSENGER_TRANSPORT_DSN)%"
+            import:
+                dsn: 'doctrine://default'
+                options:
+                    queue_name: import_items
+            sync: 'sync://'
+        routing:
+            'NewApiBundle\Component\Import\Message\ItemBatch': import
 
 sensio_framework_extra:
     router:
@@ -155,7 +169,8 @@ doctrine:
         server_version: '8.0'
         mapping_types:
             enum: string
-        schema_filter: ~^(?!view_)~ # support views with prefix "view_"
+        schema_filter: '~^(?!view_)~' # support views with prefix "view_"
+#            - '~^(?!messenger_messages)~'
         types:
             enum_source_type: NewApiBundle\DBAL\SourceEnum
             enum_assistance_type: DistributionBundle\DBAL\AssistanceTypeEnum
