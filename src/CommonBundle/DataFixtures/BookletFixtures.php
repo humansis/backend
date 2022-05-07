@@ -18,9 +18,9 @@ use VoucherBundle\Utils\BookletService;
 class BookletFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
 {
     private $defaultBooklet = [
-        "number_booklets" => 3,
+        "number_booklets" => 2,
         "individual_values" => [200, 400, 1000],
-        "number_vouchers" => 3,
+        "number_vouchers" => 2,
     ];
 
     private $kernel;
@@ -72,7 +72,7 @@ class BookletFixtures extends Fixture implements FixtureGroupInterface, Dependen
             $recipientCount = $this->beneficiaryRepository->countAllInCountry($country->getIso3());
             $project = $this->projectRepository->findOneBy(['iso3' => $country->getIso3()], ['id' => 'asc']);
 
-            $count = 200;
+            $count = 50;
             echo "{$country->getIso3()}: $count bnf: ";
             $data = $this->defaultBooklet;
             $data['__country'] = $country->getIso3();
