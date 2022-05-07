@@ -4,6 +4,9 @@ framework:
         storage_id: session.storage.mock_file
     profiler:
         collect: false
+    messenger:
+        routing:
+            'NewApiBundle\Component\Import\Message\ItemBatch': sync
 
 swiftmailer:
     disable_delivery: true

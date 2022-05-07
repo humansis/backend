@@ -50,7 +50,6 @@ class SimilarityCheckCommand extends AbstractImportQueueCommand
         foreach ($imports as $import) {
             try {
                 $this->tryTransitions($import, [
-                    ImportTransitions::REDO_SIMILARITY,
                     ImportTransitions::FAIL_SIMILARITY,
                     ImportTransitions::COMPLETE_SIMILARITY
                 ]);

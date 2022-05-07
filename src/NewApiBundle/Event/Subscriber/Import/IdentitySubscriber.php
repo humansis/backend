@@ -3,14 +3,21 @@
 namespace NewApiBundle\Event\Subscriber\Import;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\Persistence\ObjectRepository;
 use NewApiBundle\Component\Import\IdentityChecker;
+use NewApiBundle\Component\Import\Message\ItemBatch;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
+use NewApiBundle\Enum\ImportState;
+use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportTransitions;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Event\CompletedEvent;
 use Symfony\Component\Workflow\Event\EnteredEvent;
+use Symfony\Component\Workflow\Event\EnterEvent;
 use Symfony\Component\Workflow\Event\GuardEvent;
 use Symfony\Component\Workflow\TransitionBlocker;
 
@@ -28,21 +35,35 @@ class IdentitySubscriber implements EventSubscriberInterface
     private $identityChecker;
 
     /**
+     * @var EntityRepository|ObjectRepository|ImportQueueRepository
+     */
+    private $queueRepository;
+
+    /** @var MessageBusInterface */
+    private $messageBus;
+
+    /**
      * @var int
      */
     private $batchSize;
 
-    public function __construct(EntityManagerInterface $entityManager, IdentityChecker $identityChecker, int $batchSize)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        IdentityChecker        $identityChecker,
+        int                    $batchSize,
+        MessageBusInterface    $messageBus
+    ) {
         $this->entityManager = $entityManager;
         $this->identityChecker = $identityChecker;
         $this->batchSize = $batchSize;
+        $this->messageBus = $messageBus;
+        $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
-            // 'workflow.import.guard.'.ImportTransitions::CHECK_IDENTITY => ['guardAnyValidItems'],
+            'workflow.import.entered.'.ImportTransitions::CHECK_IDENTITY => ['fillQueue'],
             'workflow.import.guard.'.ImportTransitions::REDO_IDENTITY => ['guardAnyValidItems'],
             'workflow.import.guard.'.ImportTransitions::COMPLETE_IDENTITY => ['guardNoSuspiciousItem'],
             'workflow.import.guard.'.ImportTransitions::FAIL_IDENTITY => ['guardAnySuspiciousItem'],
@@ -50,6 +71,16 @@ class IdentitySubscriber implements EventSubscriberInterface
             // 'workflow.import.entered.'.ImportTransitions::CHECK_IDENTITY => ['checkIdentity'],
             'workflow.import.completed.'.ImportTransitions::REDO_IDENTITY => ['checkIdentity'],
         ];
+    }
+
+    public function fillQueue(EnteredEvent $event): void
+    {
+        /** @var Import $import */
+        $import = $event->getSubject();
+
+        foreach ($this->queueRepository->findByImport($import) as $item) {
+            $this->messageBus->dispatch(new ItemBatch(ImportState::IDENTITY_CHECKING, [$item->getId()]));
+        }
     }
 
     /**
