@@ -7,14 +7,17 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectRepository;
 use NewApiBundle\Component\Import\ImportInvalidFileService;
 use NewApiBundle\Component\Import\IntegrityChecker;
+use NewApiBundle\Component\Import\Message\IntegrityBatch;
+use NewApiBundle\Component\Import\Message\ItemBatch;
 use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportTransitions;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Event\CompletedEvent;
-use Symfony\Component\Workflow\Event\EnteredEvent;
+use Symfony\Component\Workflow\Event\EnterEvent;
 use Symfony\Component\Workflow\Event\Event;
 use Symfony\Component\Workflow\Event\GuardEvent;
 use Symfony\Component\Workflow\TransitionBlocker;
@@ -41,6 +44,9 @@ class IntegritySubscriber implements EventSubscriberInterface
      */
     private $importInvalidFileService;
 
+    /** @var MessageBusInterface */
+    private $messageBus;
+
     /**
      * @var int
      */
@@ -50,18 +56,21 @@ class IntegritySubscriber implements EventSubscriberInterface
         EntityManagerInterface   $entityManager,
         IntegrityChecker         $integrityChecker,
         ImportInvalidFileService $importInvalidFileService,
-        int                      $batchSize
+        int                      $batchSize,
+        MessageBusInterface      $messageBus
     ) {
         $this->entityManager = $entityManager;
         $this->integrityChecker = $integrityChecker;
         $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
         $this->importInvalidFileService = $importInvalidFileService;
         $this->batchSize = $batchSize;
+        $this->messageBus = $messageBus;
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
+            'workflow.import.enter.'.ImportTransitions::CHECK_INTEGRITY => ['fillQueue'],
             'workflow.import.guard.'.ImportTransitions::COMPLETE_INTEGRITY => [
                 ['guardNothingLeft', -10],
                 ['guardNoItemsFailed', 10],
@@ -76,6 +85,16 @@ class IntegritySubscriber implements EventSubscriberInterface
             'workflow.import.completed.'.ImportTransitions::REDO_INTEGRITY => ['checkIntegrity'],
             'workflow.import.entered.'.ImportTransitions::FAIL_INTEGRITY => ['generateFile'],
         ];
+    }
+
+    public function fillQueue(EnterEvent $event): void
+    {
+        /** @var Import $import */
+        $import = $event->getSubject();
+
+        foreach ($this->queueRepository->findByImport($import) as $item) {
+            $this->messageBus->dispatch(new ItemBatch(ImportState::INTEGRITY_CHECKING, [$item->getId()]));
+        }
     }
 
     /**

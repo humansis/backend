@@ -101,7 +101,7 @@ class IntegrityChecker
     /**
      * @param ImportQueue $item
      */
-    protected function checkOne(ImportQueue $item): void
+    public function checkOne(ImportQueue $item): void
     {
         if (in_array($item->getState(), [ImportQueueState::INVALID, ImportQueueState::VALID])) {
             return; // there is nothing to check
