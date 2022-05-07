@@ -151,7 +151,6 @@ class ImportController extends AbstractController
                 'import' => $import->getId(),
             ]);
             $application->run($command, $output);
-            $application->run($command, $output);
         }
         if ($import->getState() === ImportState::IDENTITY_CHECKING) {
             $command = new ArrayInput([
@@ -159,14 +158,12 @@ class ImportController extends AbstractController
                 'import' => $import->getId(),
             ]);
             $application->run($command, $output);
-            $application->run($command, $output);
         }
         if ($import->getState() === ImportState::SIMILARITY_CHECKING) {
             $command = new ArrayInput([
                 'command' => 'app:import:similarity',
                 'import' => $import->getId(),
             ]);
-            $application->run($command, $output);
             $application->run($command, $output);
         }
         if ($import->getState() === ImportState::IMPORTING && $import->getImportQueue()->count() <= ImportService::ASAP_LIMIT) {
