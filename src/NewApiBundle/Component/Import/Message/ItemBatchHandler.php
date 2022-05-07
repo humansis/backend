@@ -51,18 +51,22 @@ class ItemBatchHandler implements MessageHandlerInterface
                 }
                 break;
             case ImportState::IDENTITY_CHECKING:
-                // $items = $this->queueRepository->findBy([
-                //     'id' => $batch->getQueueItemIds(),
-                //     'state' => ImportQueueState::VALID,
-                // ]);
-                // foreach ($items as $item) {
-                //     $this->identityChecker->checkOne($item);
-                // }
+                $items = $this->queueRepository->findBy([
+                    'id' => $batch->getQueueItemIds(),
+                    'state' => ImportQueueState::VALID,
+                ]);
+                $queueByImport = [];
+                foreach ($items as $item) {
+                    $queueByImport[$item->getImport()->getId()][] = $item;
+                }
+                foreach ($queueByImport as $items) {
+                    $this->identityChecker->checkBatch($items[0]->getImport(), $items);
+                }
                 break;
             case ImportState::SIMILARITY_CHECKING:
                 $items = $this->queueRepository->findBy([
                     'id' => $batch->getQueueItemIds(),
-                    'state' => ImportQueueState::NEW,
+                    'state' => ImportQueueState::UNIQUE_CANDIDATE,
                 ]);
                 foreach ($items as $item) {
                     $this->similarityChecker->checkOne($item);
