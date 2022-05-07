@@ -13,9 +13,6 @@ trait CliTrait
     {
         $this->importService->updateStatus($import, ImportState::INTEGRITY_CHECKING);
         $this->assertEquals(ImportState::INTEGRITY_CHECKING, $import->getState());
-        for ($i=0; $i<$commandCallCount; $i++) {
-            $this->cli('app:import:integrity', $import);
-        }
         $this->cli('app:import:integrity', $import);
         if ($shouldEndCorrect) {
             $this->assertEquals(ImportState::INTEGRITY_CHECK_CORRECT, $import->getState());
@@ -28,9 +25,6 @@ trait CliTrait
     {
         $this->importService->updateStatus($import, ImportState::IDENTITY_CHECKING);
         $this->assertEquals(ImportState::IDENTITY_CHECKING, $import->getState());
-        for ($i=0; $i<$commandCallCount; $i++) {
-            $this->cli('app:import:identity', $import);
-        }
         $this->cli('app:import:identity', $import);
         if ($shouldEndCorrect) {
             $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
@@ -43,9 +37,6 @@ trait CliTrait
     {
         $this->importService->updateStatus($import, ImportState::SIMILARITY_CHECKING);
         $this->assertEquals(ImportState::SIMILARITY_CHECKING, $import->getState());
-        for ($i=0; $i<$commandCallCount; $i++) {
-            $this->cli('app:import:similarity', $import);
-        }
         $this->cli('app:import:similarity', $import);
         if ($shouldEndCorrect) {
             $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
