@@ -54,7 +54,6 @@ class IdentityCheckCommand extends AbstractImportQueueCommand
 
             try {
                 $this->tryTransitions($import, [
-                    ImportTransitions::REDO_IDENTITY,
                     ImportTransitions::FAIL_IDENTITY,
                     ImportTransitions::COMPLETE_IDENTITY
                 ]);

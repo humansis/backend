@@ -63,8 +63,23 @@ class IdentityChecker
             throw new \BadMethodCallException('Unable to execute checker. Import is not ready to check.');
         }
 
-        $IDsToFind = new NationalIdHashSet();
         $items = $this->queueRepository->getItemsToIdentityCheck($import, $batchSize);
+        $this->checkBatch($import, $items);
+    }
+
+    /**
+     * @param Import   $import
+     * @param ImportQueue[] $batch
+     *
+     * @throws \NewApiBundle\Enum\EnumValueNoFoundException
+     */
+    public function checkBatch(Import $import, iterable $items)
+    {
+        if (ImportState::IDENTITY_CHECKING !== $import->getState()) {
+            throw new \BadMethodCallException('Unable to execute checker. Import is not ready to check.');
+        }
+
+        $IDsToFind = new NationalIdHashSet();
         foreach ($items as $i => $item) {
             $this->extractItemIDs($item, $IDsToFind);
         }
