@@ -32,4 +32,4 @@ monolog:
 
 nelmio_cors:
     defaults:
-        allow_origin: ['https://pin.humansis.org']
+        allow_origin: ['https://pin.humansis.org', 'https://prod-pin.humansis.org']
