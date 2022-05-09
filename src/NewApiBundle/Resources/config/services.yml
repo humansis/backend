@@ -441,8 +441,3 @@ services:
             - '%logs.fieldAppPath%'
             - '%logs.lifetime%'
 
-    NewApiBundle\Component\Http\Request:
-        arguments:
-            - '@NewApiBundle\Component\Country\Countries'
-            - '@request_stack'
-        public: true

@@ -23,6 +23,8 @@ use NewApiBundle\InputType\LocationFilterInputType;
 use ProjectBundle\Repository\ProjectRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
 
@@ -64,11 +66,6 @@ class LocationController extends AbstractController
      */
     private $projectRepository;
 
-    /**
-     * @var \NewApiBundle\Component\Http\Request
-     */
-    private $request;
-
     public function __construct(
         Countries $countries,
         LocationRepository $locationRepository,
@@ -76,8 +73,7 @@ class LocationController extends AbstractController
         Adm2Repository $adm2Repository,
         Adm3Repository $adm3Repository,
         Adm4Repository $adm4Repository,
-        ProjectRepository $projectRepository,
-        \NewApiBundle\Component\Http\Request $request
+        ProjectRepository $projectRepository
     )
     {
         $this->countries = $countries;
@@ -87,7 +83,6 @@ class LocationController extends AbstractController
         $this->adm3Repository = $adm3Repository;
         $this->adm4Repository = $adm4Repository;
         $this->projectRepository = $projectRepository;
-        $this->request = $request;
     }
 
     /**
@@ -204,14 +199,19 @@ class LocationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/adm1")
      *
+     * @param Request            $request
      * @param AdmFilterInputType $inputType
      *
      * @return JsonResponse
      */
-    public function adm1List(AdmFilterInputType $inputType): JsonResponse
+    public function adm1List(Request $request, AdmFilterInputType $inputType): JsonResponse
     {
-        $country = $this->request->getCountry();
-        $data = $this->adm1Repository->findByFilter($inputType, $country);
+        $countryIso3 = $request->headers->get('country', false);
+        if (!$countryIso3) {
+            throw new BadRequestHttpException('Missing country header');
+        }
+
+        $data = $this->adm1Repository->findByFilter($inputType, $countryIso3);
 
         return $this->json($data);
     }
@@ -233,14 +233,19 @@ class LocationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/adm2")
      *
+     * @param Request            $request
      * @param AdmFilterInputType $inputType
      *
      * @return JsonResponse
      */
-    public function adm2List(AdmFilterInputType $inputType): JsonResponse
+    public function adm2List(Request $request, AdmFilterInputType $inputType): JsonResponse
     {
-        $country = $this->request->getCountry();
-        $data = $this->adm2Repository->findByFilter($inputType, $country);
+        $countryIso3 = $request->headers->get('country', false);
+        if (!$countryIso3) {
+            throw new BadRequestHttpException('Missing country header');
+        }
+
+        $data = $this->adm2Repository->findByFilter($inputType, $countryIso3);
 
         return $this->json($data);
     }
@@ -262,14 +267,19 @@ class LocationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/adm3")
      *
+     * @param Request            $request
      * @param AdmFilterInputType $inputType
      *
      * @return JsonResponse
      */
-    public function adm3List(AdmFilterInputType $inputType): JsonResponse
+    public function adm3List(Request $request, AdmFilterInputType $inputType): JsonResponse
     {
-        $country = $this->request->getCountry();
-        $data = $this->adm3Repository->findByFilter($inputType, $country);
+        $countryIso3 = $request->headers->get('country', false);
+        if (!$countryIso3) {
+            throw new BadRequestHttpException('Missing country header');
+        }
+
+        $data = $this->adm3Repository->findByFilter($inputType, $countryIso3);
 
         return $this->json($data);
     }
@@ -291,14 +301,19 @@ class LocationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/adm4")
      *
+     * @param Request            $request
      * @param AdmFilterInputType $inputType
      *
      * @return JsonResponse
      */
-    public function adm4List(AdmFilterInputType $inputType): JsonResponse
+    public function adm4List(Request $request, AdmFilterInputType $inputType): JsonResponse
     {
-        $country = $this->request->getCountry();
-        $data = $this->adm4Repository->findByFilter($inputType, $country);
+        $countryIso3 = $request->headers->get('country', false);
+        if (!$countryIso3) {
+            throw new BadRequestHttpException('Missing country header');
+        }
+
+        $data = $this->adm4Repository->findByFilter($inputType, $countryIso3);
 
         return $this->json($data);
     }
@@ -318,14 +333,19 @@ class LocationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/locations")
      *
+     * @param Request                 $request
      * @param LocationFilterInputType $filter
      *
      * @return JsonResponse
      */
-    public function locations(LocationFilterInputType $filter): JsonResponse
+    public function locations(Request $request, LocationFilterInputType $filter): JsonResponse
     {
-        $country = $this->request->getCountry();
-        $locations = $this->locationRepository->findByParams($filter, $country);
+        $countryIso3 = $request->headers->get('country', false);
+        if (!$countryIso3) {
+            throw new BadRequestHttpException('Missing country header');
+        }
+
+        $locations = $this->locationRepository->findByParams($filter, $countryIso3);
 
         return $this->json($locations);
     }
