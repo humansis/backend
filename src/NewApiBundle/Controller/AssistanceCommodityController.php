@@ -5,6 +5,7 @@ namespace NewApiBundle\Controller;
 use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\Commodity;
+use DistributionBundle\Repository\AssistanceRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\InputType\AssistanceCreateInputType;
@@ -48,14 +49,17 @@ class AssistanceCommodityController extends AbstractController
      *
      * @param AssistanceCreateInputType $inputType
      * @param AssistanceFactory         $factory
+     * @param AssistanceRepository      $repository
      *
      * @return JsonResponse
      * @throws \Doctrine\ORM\EntityNotFoundException
      */
-    public function create(AssistanceCreateInputType $inputType, AssistanceFactory $factory): JsonResponse
+    public function create(AssistanceCreateInputType $inputType, AssistanceFactory $factory, AssistanceRepository $repository): JsonResponse
     {
         $assistance = $factory->create($inputType);
+        $commoditiesSummary = $assistance->getCommoditiesSummary();
+        $this->getDoctrine()->getManager()->clear();
 
-        return $this->json(new Paginator($assistance->getCommoditiesSummary()));
+        return $this->json(new Paginator($commoditiesSummary));
     }
 }
