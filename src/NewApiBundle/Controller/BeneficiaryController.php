@@ -16,6 +16,7 @@ use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\BenefciaryPatchInputType;
 use NewApiBundle\InputType\BeneficiaryExportFilterInputType;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
+use NewApiBundle\InputType\BeneficiarySelectedFilterInputType;
 use NewApiBundle\InputType\NationalIdFilterInputType;
 use NewApiBundle\InputType\PhoneFilterInputType;
 use NewApiBundle\Request\Pagination;
@@ -260,17 +261,25 @@ class BeneficiaryController extends AbstractController
      * @Rest\Get("/web-app/v1/projects/{id}/targets/{target}/beneficiaries")
      *
      * @param Project $project
-     * @param string  $target
+     * @param string $target
+     * @param BeneficiarySelectedFilterInputType $filter
      *
      * @return JsonResponse
      */
-    public function getBeneficiaries(Project $project, string $target): JsonResponse
+    public function getBeneficiaries(Project $project, string $target, BeneficiarySelectedFilterInputType $filter): JsonResponse
     {
         if (!in_array($target, AssistanceTargetType::values())){
             throw $this->createNotFoundException('Invalid target. Allowed are '.implode(', ', AssistanceTargetType::values()));
         }
 
-        $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->getAllOfProject($project->getId(), $target);
+        $assistanceId = $filter->getId();
+        if ($assistanceId) {
+            $excludedAssistance = $this->getDoctrine()->getRepository(Assistance::class)->find($assistanceId);
+            $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->getNotSelectedBeneficiariesOfProject($project->getId(), $target, $excludedAssistance);
+        } else {
+            $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->getAllOfProject($project->getId(), $target);
+        }
+
 
         return $this->json(new Paginator($beneficiaries));
     }

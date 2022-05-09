@@ -72,6 +72,32 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $q->getQuery()->getResult();
     }
 
+    public function getNotSelectedBeneficiariesOfProject(int $project, string $target, $excludedAssistance){
+        $excludedAssistanceDQL = "SELECT ben.id FROM DistributionBundle\Entity\AssistanceBeneficiary db LEFT JOIN db.beneficiary ab INNER JOIN BeneficiaryBundle\Entity\Beneficiary ben WITH ben.id = ab.id WHERE db.assistance = :assistance";
+
+        $qb = $this->createQueryBuilder('b');
+        if (AssistanceTargetType::HOUSEHOLD === $target) {
+            $q = $qb->leftJoin('b.household', 'hh')
+                ->where(':project MEMBER OF hh.projects')
+                ->andWhere('b.status = 1')
+                ->andWhere('b.archived = 0')
+                ->andWhere($qb->expr()->notIn('b.id', $excludedAssistanceDQL))
+                ->setParameter('project', $project)
+                ->setParameter('assistance', $excludedAssistance);
+        } elseif (AssistanceTargetType::INDIVIDUAL === $target) {
+            $q = $qb->leftJoin('b.household', 'hh')
+                ->andWhere(':project MEMBER OF hh.projects')
+                ->andWhere('b.archived = 0')
+                ->andWhere($qb->expr()->notIn('b.id', $excludedAssistanceDQL))
+                ->setParameter('project', $project)
+                ->setParameter('assistance', $excludedAssistance);
+        } else {
+            return [];
+        }
+
+        return $q->getQuery()->getResult();
+    }
+
     public function findByUnarchived(array $byArray)
     {
         $qb = $this->createQueryBuilder('b');
