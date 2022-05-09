@@ -253,16 +253,39 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
 
     /**
      * @param LocationFilterInputType $filter
+     * @param string|null             $iso3
      *
      * @return Paginator
      */
-    public function findByParams(LocationFilterInputType $filter): Paginator
+    public function findByParams(LocationFilterInputType $filter, ?string $iso3 = null): Paginator
     {
         $qbr = $this->createQueryBuilder('l');
 
+        if ($iso3) {
+            $qbr->andWhere('l.countryISO3 = :iso3')
+                ->setParameter('iso3', $iso3);
+        }
         if ($filter->hasIds()) {
             $qbr->andWhere('l.id IN (:ids)')
                 ->setParameter('ids', $filter->getIds());
+        }
+        if ($filter->hasFulltext()) {
+            $orX = $qbr->expr()->orX();
+            $orX
+                ->add($qbr->expr()->eq('l.id', ':id'))
+                ->add($qbr->expr()->like('l.name', ':fulltext'))
+                ->add($qbr->expr()->like('l.code', ':fulltext'));
+            $qbr->andWhere($orX);
+            $qbr->setParameter('id', $filter->getFulltext());
+            $qbr->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+        }
+        if($filter->hasLevel()){
+            $qbr->andWhere('l.lvl = :level')
+                ->setParameter('level', $filter->getLevel());
+        }
+        if($filter->hasParent()){
+            $qbr->andWhere('l.parentLocation = :parent')
+                ->setParameter('parent', $filter->getParent());
         }
 
         return new Paginator($qbr);
