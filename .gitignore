@@ -1,9 +1,7 @@
 /.web-server-pid
-/app/config/parameters.yml
 /app/config/jwt/*
 /docker-compose.yml
 /build/
-/phpunit.xml
 /var/*
 !/var/cache
 /var/cache/*
@@ -34,9 +32,6 @@ phpcs.xml
 
 # IDE
 /.idea/
-
-# Docker
-/docker-compose.yml
 
 #Visual Studio
 .vscode*

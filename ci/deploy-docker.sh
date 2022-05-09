@@ -15,6 +15,8 @@ export ec2_user="ec2-user"
 if [[ $1 == "production" ]]; then
   EC2_ASG=prod-asg
   mv docker/docker-compose.prod.yml docker-compose.yml
+  # CAREFUL: replaces tokens in docker-compose.yml
+  sed -i -e "s|production|${CI_COMMIT_TAG}|g" docker-compose.yml
 elif [[ $1 == "demo" ]]; then
   EC2_ASG=demo-asg
   mv docker/docker-compose.demo.yml docker-compose.yml
@@ -27,20 +29,24 @@ elif [[ $1 == "test" ]]; then
 elif [[ $1 == "dev1" ]]; then
   EC2_ASG=dev-asg
   mv docker/docker-compose.dev.yml docker-compose.yml
-  sed -i -e "s|dev|dev1|g" docker-compose.yml
+  # CAREFUL: replaces tokens in docker-compose.yml
+  sed -i -e "s|__DEV__|dev1|g" docker-compose.yml
 elif [[ $1 == "dev2" ]]; then
   EC2_ASG=dev2-asg
   mv docker/docker-compose.dev.yml docker-compose.yml
-  sed -i -e "s|dev|dev2|g" docker-compose.yml
+  # CAREFUL: replaces tokens in docker-compose.yml
+  sed -i -e "s|__DEV__|dev2|g" docker-compose.yml
 elif [[ $1 == "dev3" ]]; then
   EC2_ASG=dev3-asg
   mv docker/docker-compose.dev.yml docker-compose.yml
-  sed -i -e "s|dev|dev3|g" docker-compose.yml
+  # CAREFUL: replaces tokens in docker-compose.yml
+  sed -i -e "s|__DEV__|dev3|g" docker-compose.yml
 else
   echo "Wrong environment parameter. Options are: [dev1, dev2, dev3, test, stage, demo, production]"
   exit 1
 fi
 
+# CAREFUL: replaces tokens in docker-compose.yml
 ./ci/apply-env-config.sh ${RDS_HOSTNAME} ${RDS_DB_NAME} ${RDS_USERNAME} ${RDS_PASSWORD} ${MOBILE_KEY} ${MOBILE_APP_VERSION} ${MOBILE_APP_ID} ${JWT_PASSPHRASE} ${GELF_SERVER_NAME}
 
 echo "...done"

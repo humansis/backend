@@ -3,6 +3,8 @@
 namespace CommonBundle\Repository;
 
 use CommonBundle\Entity\Adm1;
+use CommonBundle\Entity\Adm2;
+use Doctrine\ORM\Query\Expr\Join;
 
 /**
  * Adm2Repository
@@ -15,6 +17,24 @@ class Adm2Repository extends AdmBaseRepository
     public function findByAdm1(Adm1 $adm1): array
     {
         return $this->findBy(['adm1' => $adm1], ['name' => 'ASC']);
+    }
+
+    /**
+     * @param Adm1   $adm1
+     * @param string $code
+     *
+     * @return Adm2|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function findByAdm1AndCode(Adm1 $adm1, string $code): ?Adm2
+    {
+        return $this->createQueryBuilder('adm2')
+            ->leftJoin('adm2.adm1', 'adm1', Join::WITH, 'adm1.id = :adm1')
+            ->where('adm2.code = :code')
+            ->setParameter('adm1', $adm1->getId())
+            ->setParameter('code', $code)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
 }

@@ -285,4 +285,24 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
                 SELECT DISTINCT loc_id FROM loc', [$locationId])
             ->fetchFirstColumn();
     }
+
+    /**
+     * @param string      $code
+     * @param string|null $iso3
+     * @param array|null  $context
+     *
+     * @return Location[]
+     */
+    public function findLocationsByCode(string $code, ?string $iso3 = null): array
+    {
+        $qb = $this->createQueryBuilder('l');
+        $qb->andWhere('l.code = :code')
+            ->setParameter('code', $code);
+        if ($iso3) {
+            $qb->andWhere('l.countryISO3 = :iso3');
+            $qb->setParameter('iso3', $iso3);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

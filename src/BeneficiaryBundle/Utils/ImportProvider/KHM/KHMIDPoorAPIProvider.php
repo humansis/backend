@@ -395,6 +395,7 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
      */
     private function saveAdm4(array $village, string $locationCode)
     {
+        /** @var Adm3 $adm3 */
         $adm3 = $this->em->getRepository(Adm3::class)->findOneBy(['code' => $locationCode]);
         if ($adm3 == null) {
             throw new \Exception("Adm3 was not found.");
@@ -402,9 +403,8 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
         
         $adm4 = $this->em->getRepository(Adm4::class)->findOneBy(['name' => $village['VillageName'], 'adm3' => $adm3]);
         if (!$adm4) {
-            $adm4 = new Adm4();
+            $adm4 = new Adm4($adm3);
             $adm4->setName($village['VillageName'])
-                ->setAdm3($adm3)
                 ->setCode('KH' . $village['VillageCode']);
             $this->em->persist($adm4);
             $this->em->flush();

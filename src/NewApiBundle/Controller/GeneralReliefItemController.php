@@ -11,6 +11,7 @@ use NewApiBundle\InputType\GeneralReliefPatchInputType;
 use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class GeneralReliefItemController extends AbstractController
@@ -35,11 +36,9 @@ class GeneralReliefItemController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function patchV2(GeneralReliefItem $object, GeneralReliefPatchInputType $inputType): JsonResponse
+    public function patchV2(GeneralReliefItem $object, GeneralReliefPatchInputType $inputType): Response
     {
-        $this->get('distribution.assistance_service')->patchGeneralReliefItem($object, $inputType);
-
-        return $this->json($object);
+        return new Response('Removed due Relief package migration', Response::HTTP_UPGRADE_REQUIRED);
     }
 
     /**
@@ -51,18 +50,9 @@ class GeneralReliefItemController extends AbstractController
      * @return JsonResponse
      * @deprecated Use self::patchV2() instead
      */
-    public function patch(Request $request, GeneralReliefItem $object): JsonResponse
+    public function patch(Request $request, GeneralReliefItem $object): Response
     {
-        if ($request->request->get('distributed', false)) {
-            $this->get('distribution.assistance_service')->setGeneralReliefItemsAsDistributed([$object->getId()]);
-        }
-
-        if ($request->request->has('notes')) {
-            $this->get('distribution.assistance_service')->editGeneralReliefItemNotes($object->getId(),
-                $request->request->get('editGeneralReliefItemNotes'));
-        }
-
-        return $this->json($object);
+        return new Response('Old endpoint', Response::HTTP_VERSION_NOT_SUPPORTED);
     }
 
     /**

@@ -3,6 +3,8 @@
 namespace TransactionBundle\Entity;
 
 use DistributionBundle\Entity\AssistanceBeneficiary;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use UserBundle\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 // use Symfony\Component\Serializer\Annotation as JMS_Type;
@@ -10,6 +12,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Transaction
+ * @deprecated Mobile money transaction needs to be completely rewrite
  *
  * @ORM\Table(name="transaction")
  * @ORM\Entity(repositoryClass="TransactionBundle\Repository\TransactionRepository")
@@ -35,17 +38,15 @@ class Transaction
         ];
     }
 
+    use StandardizedPrimaryKey;
+
     /**
-     * @var int
+     * @var ReliefPackage|null
      *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @SymfonyGroups({"ValidatedAssistance"})
-     *
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Assistance\ReliefPackage")
+     * @ORM\JoinColumn(name="relief_package_id")
      */
-    private $id;
+    private $reliefPackage;
     
     /**
      * @var string
@@ -143,15 +144,25 @@ class Transaction
     }
 
     /**
-     * Get the value of Id
-     *
-     * @return int
+     * @return ReliefPackage|null
      */
-    public function getId()
+    public function getReliefPackage(): ?ReliefPackage
     {
-        return $this->id;
+        return $this->reliefPackage;
     }
- 
+
+    /**
+     * @param ReliefPackage|null $reliefPackage
+     *
+     * @return Transaction
+     */
+    public function setReliefPackage(?ReliefPackage $reliefPackage): Transaction
+    {
+        $this->reliefPackage = $reliefPackage;
+
+        return $this;
+    }
+
     /**
      * Get the value of Transaction Id
      *

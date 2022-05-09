@@ -15,10 +15,8 @@ class AssistanceInstitutionMapper extends AssistanceBeneficiaryMapper
     /** @var InstitutionMapper */
     private $institutionMapper;
 
-    public function __construct(BookletMapper $bookletMapper, GeneralReliefItemMapper $generalReliefItemMapper, TransactionMapper $transactionMapper,
-                                InstitutionMapper $institutionMapper
-    ) {
-        parent::__construct($bookletMapper, $generalReliefItemMapper, $transactionMapper, null);
+    public function __construct(InstitutionMapper $institutionMapper) {
+        parent::__construct( null);
         $this->institutionMapper = $institutionMapper;
     }
 

@@ -46,7 +46,7 @@ FROM distribution_beneficiary db
          JOIN modality_type mt ON mt.id=c.modality_type_id
 
     -- smartcards
-         LEFT JOIN relief_package pack ON pack.assistance_beneficiary_id=db.id
+         LEFT JOIN assistance_relief_package pack ON pack.assistance_beneficiary_id=db.id
          LEFT JOIN smartcard_deposit sd ON sd.relief_package_id=pack.id
          LEFT JOIN smartcard s ON s.id=sd.smartcard_id
 

@@ -6,7 +6,7 @@ use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\CreatedAt;
-use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 use UserBundle\Entity\User;
@@ -63,7 +63,7 @@ class SmartcardDeposit
     /**
      * @var ReliefPackage|null
      *
-     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ReliefPackage", inversedBy="smartcardDeposits")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Assistance\ReliefPackage", inversedBy="smartcardDeposits")
      * @ORM\JoinColumn(name="relief_package_id")
      */
     private $reliefPackage;

@@ -1,12 +1,16 @@
 imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
-    - { resource: services.yml }
     - { resource: ../../src/NewApiBundle/Resources/config/workflow.yml }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
+    container:
+        autowiring:
+            strict_mode: true
+        dumper:
+            inline_class_loader: true
     locale: en
     email: support@humansis.org
 
@@ -29,46 +33,55 @@ parameters:
           iso3: KHM
           currency: KHR
           adms: [ Province, District, Commune, Village ]
+          archived: false
 
         - name: Syria
           iso3: SYR
           currency: SYP
           adms: [ Governorate, District, Sub-District, Village/Neighbourhood ]
-          language: ar # remove in 3.0
+          archived: false
 
         - name: Ukraine
           iso3: UKR
           currency: UAH
           adms: [ Region, District, Community, Settlement ]
+          archived: false
+
+        - name: Ukraine
+          iso3: UA1
+          currency: UAH
+          adms: [ Region, District, Community, Settlement ]
+          archived: true
 
         - name: Ethiopia
           iso3: ETH
           currency: ETB
           adms: [ Region, Zone, Woreda, Village ]
+          archived: false
 
         - name: Mongolia
           iso3: MNG
           currency: MNT
           adms: [ Province, District, Commune, Village ]
+          archived: false
 
         - name: Armenia
           iso3: ARM
           currency: AMD
           adms: [ Province, District, Commune, Village ]
+          archived: false
 
         - name: Zambia
           iso3: ZMB
           currency: ZMW
           adms: [ Region, District, Ward, Constituency ]
+          archived: false
 
 framework:
     #esi: ~
     translator:
         fallbacks: ['%locale%']
     secret: '%secret%'
-    router:
-        resource: '%kernel.project_dir%/app/config/routing.yml'
-        strict_requirements: ~
     form: ~
     csrf_protection: ~
     validation: { enable_annotations: true }
@@ -132,6 +145,7 @@ doctrine:
             enum_household_assets: NewApiBundle\DBAL\HouseholdAssetsEnum
             enum_person_gender: NewApiBundle\DBAL\PersonGenderEnum
             enum_national_id_type: NewApiBundle\DBAL\NationalIdTypeEnum
+            enum_assitance_commodity_division: NewApiBundle\DBAL\AssistanceCommodityDivisionEnum
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
@@ -144,6 +158,7 @@ doctrine:
                  quarter: DoctrineExtensions\Query\Mysql\Quarter
                  month: DoctrineExtensions\Query\Mysql\Month
                  year: DoctrineExtensions\Query\Mysql\Year
+                 any_value: DoctrineExtensions\Query\Mysql\AnyValue
 
             numeric_functions:
                 levenshtein:        Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinFunction

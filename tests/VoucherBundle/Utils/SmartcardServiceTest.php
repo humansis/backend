@@ -8,7 +8,7 @@ use CommonBundle\Entity\Adm2;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Persistence\ObjectManager;
-use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ModalityType;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use UserBundle\Entity\User;

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller\VendorApp;
 
-use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations as Rest;

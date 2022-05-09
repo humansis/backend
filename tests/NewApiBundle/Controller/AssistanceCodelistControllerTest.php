@@ -7,6 +7,7 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use Exception;
+use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 use ProjectBundle\DBAL\SubSectorEnum;
 use Tests\BMSServiceTestCase;
 
@@ -61,5 +62,26 @@ class AssistanceCodelistControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
         $this->assertIsArray($result['data']);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetCommodityDivisions()
+    {
+        $this->request('GET', '/api/basic/web-app/v1/assistances/commodity/divisions');
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertIsArray($result['data']);
+
+        $this->assertEquals(array_column($result['data'], 'code'), CommodityDivision::values());
     }
 }

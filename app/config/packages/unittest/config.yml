@@ -1,0 +1,18 @@
+framework:
+    test: ~
+    session:
+        storage_id: session.storage.mock_file
+    profiler:
+        collect: false
+
+swiftmailer:
+    disable_delivery: true
+
+monolog:
+    channels: [ 'import', 'exception' ]
+    handlers:
+        import:
+            type: stream
+            path: '%kernel.logs_dir%/imports.log'
+            level: debug
+            channels: [import]

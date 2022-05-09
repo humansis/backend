@@ -6,6 +6,7 @@ namespace CommonBundle\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Entity\ProductCategory;
 use NewApiBundle\Enum\ProductCategoryType;
 use VoucherBundle\Entity\Product;
@@ -28,14 +29,14 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
 
     ];
 
-    private $countries = [];
+    /**
+     * @var Countries
+     */
+    private $countries;
 
-    public function __construct(array $countries)
+    public function __construct(Countries $countries)
     {
-        $this->countries = [];
-        foreach ($countries as $country) {
-            $this->countries[$country['iso3']] = $country;
-        }
+        $this->countries = $countries;
     }
 
     /**
@@ -63,9 +64,9 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
                 $product->setCountryISO3($datum[5]);
                 $manager->persist($product);
             } else {
-                foreach ($this->countries as $country) {
+                foreach ($this->countries->getAll() as $country) {
                     $p = clone $product;
-                    $p->setCountryISO3($country['iso3']);
+                    $p->setCountryISO3($country->getIso3());
                     $manager->persist($p);
                 }
             }

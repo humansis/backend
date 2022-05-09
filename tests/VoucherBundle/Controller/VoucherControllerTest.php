@@ -200,6 +200,7 @@ class VoucherControllerTest extends BMSServiceTestCase
 
     public function testValidBatchRedemption(): array
     {
+        $this->markTestSkipped('Voucher are suspended');
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);

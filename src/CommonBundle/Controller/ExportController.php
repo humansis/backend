@@ -6,6 +6,8 @@ use CommonBundle\Entity\Organization;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Export\SmartcardExport;
+use DistributionBundle\Repository\AssistanceRepository;
+use DistributionBundle\Utils\AssistanceService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
@@ -55,7 +57,11 @@ class ExportController extends Controller
      *
      * @deprecated export action must be refactorized. Please make own export action instead.
      */
-    public function exportAction(Request $request)
+    public function exportAction(
+        Request $request,
+        AssistanceRepository $assistanceRepository,
+        AssistanceService $assistanceService
+    )
     {
         try {
             set_time_limit(600);
@@ -65,15 +71,15 @@ class ExportController extends Controller
             if ($request->query->get('distributions')) {
                 $idProject = $request->query->get('distributions');
                 if ($type === 'pdf') {
-                    return $this->get('distribution.assistance_service')->exportToPdf($idProject);
+                    return $assistanceService->exportToPdf($idProject);
                 }
-                $filename = $this->get('distribution.assistance_service')->exportToCsv($idProject, $type);
+                $filename = $assistanceService->exportToCsv($idProject, $type);
             } elseif ($request->query->get('officialDistributions')) {
                 $idProject = $request->query->get('officialDistributions');
                 if ($type === 'pdf') {
-                    return $this->get('distribution.assistance_service')->exportToPdf($idProject);
+                    return $assistanceService->exportToPdf($idProject);
                 }
-                $filename = $this->get('distribution.assistance_service')->exportToOfficialCsv($idProject, $type);
+                $filename = $assistanceService->exportToOfficialCsv($idProject, $type);
             } elseif ($request->query->get('beneficiaries')) {
                 $countryIso3 = $request->request->get("__country");
                 $filters = $request->request->get('filters');
@@ -105,7 +111,7 @@ class ExportController extends Controller
                     $request->query->get('voucherDistribution') ??
                     $request->query->get('generalreliefDistribution') ??
                     $request->query->get('beneficiariesInDistribution');
-                $distribution = $this->get('distribution.assistance_service')->findOneById($idDistribution);
+                $distribution = $assistanceRepository->find($idDistribution);
                 // todo find organisation by relation to distribution
                 $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
                 if ($type === 'pdf') {
@@ -121,13 +127,13 @@ class ExportController extends Controller
                         // no change
                     }
                     if ($request->query->has('voucherDistribution')) {
-                        $filename = $this->get('distribution.assistance_service')->exportVouchersDistributionToCsv($distribution, $type);
+                        $filename = $assistanceService->exportVouchersDistributionToCsv($distribution, $type);
                     }
                     if ($request->query->has('generalreliefDistribution')) {
-                        $filename = $this->get('distribution.assistance_service')->exportGeneralReliefDistributionToCsv($distribution, 'xlsx');
+                        $filename = $assistanceService->exportGeneralReliefDistributionToCsv($distribution, 'xlsx');
                     }
                     if ($request->query->has('beneficiariesInDistribution')) {
-                        $filename = $this->get('distribution.assistance_service')->exportToCsvBeneficiariesInDistribution($distribution, $type);
+                        $filename = $assistanceService->exportToCsvBeneficiariesInDistribution($distribution, $type);
                     }
                 }
             } elseif ($request->query->get('bookletCodes')) {

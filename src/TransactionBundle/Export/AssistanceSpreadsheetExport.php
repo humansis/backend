@@ -13,7 +13,9 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Entity\GeneralReliefItem;
 use InvalidArgumentException;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\NationalIdType;
+use NewApiBundle\Enum\ReliefPackageState;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -441,29 +443,15 @@ class AssistanceSpreadsheetExport
     {
         $result = [];
 
-        foreach ($assistanceBeneficiary->getTransactions() as $transaction) {
-            if ($transaction->getDateSent()) {
-                foreach ($assistanceBeneficiary->getAssistance()->getCommodities() as $commodity) {
-                    if ('Mobile Money' == $commodity->getModalityType()->getName()) {
-                        $result[] = $commodity->getModalityType()->getName().': '.$transaction->getAmountSent();
-                        break;
-                    }
-                }
-            }
-        }
-
         foreach ($assistanceBeneficiary->getSmartcardDeposits() as $deposit) {
             $result[] = 'Smartcard deposit: '.$deposit->getValue().' '.$deposit->getSmartcard()->getCurrency();
         }
 
-        foreach ($assistanceBeneficiary->getGeneralReliefs() as $relief) {
-            /** @var GeneralReliefItem $relief */
-            if ($relief->getDistributedAt()) {
-                foreach ($assistanceBeneficiary->getAssistance()->getCommodities() as $commodity) {
-                    /** @var Commodity $commodity */
-                    $result[] = $commodity->getModalityType()->getName().', '.$commodity->getValue().' '.$commodity->getUnit();
-                    break;
-                }
+        foreach ($assistanceBeneficiary->getReliefPackages() as $relief) {
+            /** @var ReliefPackage $relief */
+            if ($relief->getState() !== ReliefPackageState::TO_DISTRIBUTE) {
+                $result[] = $relief->getModalityType().', '.$relief->getAmountToDistribute().' '.$relief->getUnit();
+                break;
             }
         }
 

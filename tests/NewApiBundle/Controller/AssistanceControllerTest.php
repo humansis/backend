@@ -9,7 +9,10 @@ use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Enum\AssistanceType;
+use DistributionBundle\Repository\AssistanceRepository;
 use Exception;
+use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
+use NewApiBundle\Enum\BeneficiaryType;
 use NewApiBundle\Enum\ProductCategoryType;
 use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
@@ -131,10 +134,15 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
             'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
             'type' => AssistanceType::DISTRIBUTION,
-            'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
+            'target' => \DistributionBundle\Enum\AssistanceTargetType::HOUSEHOLD,
             'threshold' => 1,
             'commodities' => [
-                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+                [
+                    'modalityType' => $modalityType->getName(),
+                    'unit' => 'CZK',
+                    'value' => 1000,
+                    'division' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+                ],
             ],
             'selectionCriteria' => [
                 [
@@ -182,6 +190,82 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $contentArray = json_decode($this->client->getResponse()->getContent(), true);
 
         return $contentArray['id'];
+    }
+
+    public function testCommodityCountOfCreatedAssistance()
+    {
+        /** @var Project $project */
+        $project = self::$container->get('doctrine')->getRepository(Project::class)->findOneBy([], ['id' => 'asc']);
+
+        /** @var Location $location */
+        $location = self::$container->get('doctrine')->getRepository(Location::class)->findOneBy([], ['id' => 'asc']);
+
+        if (null === $project || null === $location) {
+            $this->markTestSkipped('There needs to be at least one project and location in system for completing this test');
+        }
+
+        /** @var ModalityType $smartcardModalityType */
+        $smartcardModalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findOneBy(['name' => 'Smartcard'], ['id' => 'asc']);
+        $cashModalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findOneBy(['name' => 'Cash'], ['id' => 'asc']);
+
+        $this->request('POST', '/api/basic/web-app/v1/assistances/commodities', [
+            'iso3' => 'KHM',
+            'projectId' => $project->getId(),
+            'locationId' => $location->getId(),
+            'dateDistribution' => '2021-03-10T13:45:32.988Z',
+            'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
+            'type' => AssistanceType::DISTRIBUTION,
+            'target' => \DistributionBundle\Enum\AssistanceTargetType::HOUSEHOLD,
+            'threshold' => 1,
+            'commodities' => [
+                ['modalityType' => $smartcardModalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+                ['modalityType' => $smartcardModalityType->getName(), 'unit' => 'CZK', 'value' => 2000],
+                ['modalityType' => $smartcardModalityType->getName(), 'unit' => 'USD', 'value' => 4000],
+                ['modalityType' => $cashModalityType->getName(), 'unit' => 'CZK', 'value' => 100],
+                ['modalityType' => $cashModalityType->getName(), 'unit' => 'CZK', 'value' => 200],
+                ['modalityType' => $cashModalityType->getName(), 'unit' => 'USD', 'value' => 400],
+            ],
+            'selectionCriteria' => [
+                [
+                    'group' => 1,
+                    'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::BENEFICIARY,
+                    'field' => 'dateOfBirth',
+                    'condition' => '<',
+                    'weight' => 1,
+                    'value' => '2020-01-01',
+                ],
+            ],
+            'foodLimit' => 10.99,
+            'nonFoodLimit' => null,
+            'cashbackLimit' => 1024,
+            'remoteDistributionAllowed' => false,
+            'allowedProductCategoryTypes' => [ProductCategoryType::CASHBACK, ProductCategoryType::NONFOOD],
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+
+        $this->assertJsonFragment('{
+            "totalCount": 4, 
+            "data": [
+                {
+                "modalityType": "*",
+                "unit": "*",
+                "value": "*"
+                }
+             ]
+        }', $this->client->getResponse()->getContent(),
+        );
+        $contentArray = json_decode($this->client->getResponse()->getContent(), true);
+        foreach ($contentArray['data'] as $summary) {
+            $this->assertTrue(in_array($summary['modalityType'], [\NewApiBundle\Enum\ModalityType::SMART_CARD, \NewApiBundle\Enum\ModalityType::CASH]));
+            $this->assertTrue(in_array($summary['unit'], ['CZK', 'USD']));
+            $this->assertGreaterThan(0, $summary['value']);
+        }
     }
 
     /**
@@ -300,6 +384,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var Location $location */
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
+        /** @var ModalityType $modalityType */
+        $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Cash'], ['id' => 'asc'])[0];
+
         $this->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
             'projectId' => $project->getId(),
@@ -310,6 +397,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'type' => AssistanceType::ACTIVITY,
             'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
+            'commodities' => [
+                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+            ],
             'selectionCriteria' => [
                 [
                     'group' => 1,
@@ -358,6 +448,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var Community $community */
         $community = self::$container->get('doctrine')->getRepository(Community::class)->findBy([], ['id' => 'asc'])[0];
 
+        /** @var ModalityType $modalityType */
+        $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Cash'], ['id' => 'asc'])[0];
+
+
         $this->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
             'projectId' => $project->getId(),
@@ -367,6 +461,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'subsector' => \ProjectBundle\DBAL\SubSectorEnum::CONSTRUCTION,
             'type' => AssistanceType::ACTIVITY,
             'target' => \DistributionBundle\Enum\AssistanceTargetType::COMMUNITY,
+            'commodities' => [
+                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+            ],
             'communities' => [$community->getId()],
             'description' => 'test construction activity',
             'householdsTargeted' => 10,
@@ -543,6 +640,40 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertTrue(
             $this->client->getResponse()->getStatusCode() === 400,
             'Request should fail because for remote distribution should be only valid smartcard'
+        );
+    }
+
+    public function testBankReportExportsSuccess() {
+
+        /** @var AssistanceRepository $assistanceRepository */
+        $assistanceRepository = self::$container->get('doctrine')->getRepository(Assistance::class);
+
+        $assistance = $assistanceRepository->findOneBy(['validated' => true]);
+        $id = $assistance->getId();
+
+        $this->request('GET', "/api/basic/web-app/v1/assistances/$id/bank-report/exports", [
+            'type' => 'csv'
+        ]);
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+    }
+
+    public function testBankReportExportsNotValidated() {
+
+        /** @var AssistanceRepository $assistanceRepository */
+        $assistanceRepository = self::$container->get('doctrine')->getRepository(Assistance::class);
+
+        $assistance = $assistanceRepository->findOneBy(['validated' => false]);
+        $id = $assistance->getId();
+
+        $this->request('GET', "/api/basic/web-app/v1/assistances/$id/bank-report/exports", [
+            'type' => 'csv'
+        ]);
+        $this->assertFalse(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
         );
     }
 }

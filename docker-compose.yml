@@ -1,0 +1,104 @@
+version: '3.7'
+
+volumes:
+    mysqldata:
+
+networks:
+    backend:
+        external: false
+    database:
+        external: false
+    pma:
+        external: false
+
+services:
+    db:
+        image: mysql:8.0
+        command:
+            - '--character-set-server=utf8mb4'
+            - '--collation-server=utf8mb4_unicode_ci'
+            - '--log_bin_trust_function_creators=1'
+            - '--cte_max_recursion_depth=100000'
+            - '--default-authentication-plugin=mysql_native_password'
+        volumes:
+            - mysqldata:/var/lib/mysql
+        networks:
+            - database
+            - pma
+        environment:
+            MYSQL_ROOT_PASSWORD: 'fg!s%qdsfv'
+            MYSQL_DATABASE: bmstest
+            MYSQL_USER: bms_user
+            MYSQL_PASSWORD: aA123
+        ports:
+            - "3306:3306"
+
+    php:
+        build:
+            dockerfile: docker/dev/php/Dockerfile
+            context: .
+        depends_on:
+            - db
+        volumes:
+            - .:/var/www/html
+            - ./docker/dev/php/php.ini:/usr/local/etc/php/conf.d/99-overrides.ini
+        networks:
+            - backend
+            - database
+        environment:
+            ENVIRONMENT: local
+            XDEBUG_CONFIG: 'remote_host=172.17.0.1'
+            PHP_IDE_CONFIG: 'serverName=humansis.local'
+            AWS_ACCESS_KEY: 'aaa'
+            AWS_SECRET_KEY: 'aaa'
+            AWS_LOGS_ACCESS_KEY: 'aaa'
+            AWS_LOGS_SECRET_KEY: 'aaa'
+            SES_USERNAME: 'aaa'
+            SES_PASSWORD: 'aaa'
+            RDS_HOSTNAME: db
+            RDS_PORT: 3306
+            RDS_DB_NAME: bmstest
+            RDS_USERNAME: bms_user
+            RDS_PASSWORD: aA123
+            HID_SECRET: xxx
+            GOOGLE_CLIENT: xxx
+            MOBILE_MASTER_KEY: xxx
+            MOBILE_MASTER_KEY_VERSION: xxx
+            JWT_PASSPHRASE: xxx
+            GELF_SERVER_NAME: xxx
+            GELF_HOST: xxx
+            GELF_PORT: 9999
+            MOBILE_APP_VERSION: xxx
+            MOBILE_APP_ID: xxx
+            IMPORT_BATCH_SIZE: 100
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        ports:
+            - 8081:80
+        networks:
+            - pma
+        volumes:
+            - ./docker/dev/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
+
+    adminer:
+        image: adminer
+        restart: always
+        ports:
+            - 8082:8080
+        networks:
+            - pma
+        environment:
+            ADMINER_DESIGN: 'pepa-linha-dark'
+
+    nginx:
+        image: nginx
+        ports:
+            - 8087:80
+        depends_on:
+            - php
+        volumes:
+            - .:/var/www/html
+            - ./docker/dev/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+        networks:
+            - backend

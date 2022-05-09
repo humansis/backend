@@ -6,14 +6,18 @@ use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Mapper\AssistanceMapper;
 use DistributionBundle\Entity\AssistanceBeneficiary;
+use DistributionBundle\Entity\GeneralReliefItem;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Mapper\AssistanceBeneficiaryMapper;
 use DistributionBundle\Mapper\AssistanceCommunityMapper;
 use DistributionBundle\Mapper\AssistanceInstitutionMapper;
+use DistributionBundle\Repository\AssistanceRepository;
 use DistributionBundle\Utils\AssistanceBeneficiaryService;
 use DistributionBundle\Utils\AssistanceService;
 use DistributionBundle\Utils\DistributionCSVService;
 
+use NewApiBundle\Component\Assistance\AssistanceFactory;
+use NewApiBundle\Enum\CacheTarget;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -172,11 +176,9 @@ class AssistanceController extends Controller
      *
      * @return Response
      */
-    public function validateAction(Assistance $assistance)
+    public function validateAction(Assistance $assistance, AssistanceFactory $factory)
     {
-        /** @var AssistanceService $distributionService */
-        $distributionService = $this->get('distribution.assistance_service');
-        $assistance = $distributionService->validateDistribution($assistance);
+        $factory->hydrate($assistance)->validate()->save();
 
         $json = $this->get('serializer')
             ->serialize(
@@ -190,7 +192,7 @@ class AssistanceController extends Controller
 
     /**
      * Create a distribution.
-     *
+     * @deprecated old endpoint
      * @Rest\Put("/distributions", name="add_distribution")
      * @Security("is_granted('ROLE_DISTRIBUTIONS_DIRECTOR') or is_granted('ROLE_DISTRIBUTION_CREATE')")
      *
@@ -257,18 +259,7 @@ class AssistanceController extends Controller
      */
     public function addBeneficiaryAction(Request $request, Assistance $assistance)
     {
-        $mapper = $this->get(AssistanceBeneficiaryMapper::class);
-        $data = $request->request->all();
-
-        try {
-            /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
-            $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
-            $assistanceBeneficiaries = $assistanceBeneficiaryService->addBeneficiaries($assistance, $data);
-        } catch (\Exception $exception) {
-            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
-
-        return $this->json($mapper->toMinimalArrays($assistanceBeneficiaries));
+        return new Response('Old endpoint', Response::HTTP_VERSION_NOT_SUPPORTED);
     }
 
     /**
@@ -284,30 +275,28 @@ class AssistanceController extends Controller
      *     description="Return if the beneficiary specified has been remove"
      * )
      *
-     * @param Request $request
-     * @param Assistance $distribution
-     * @param Beneficiary $beneficiary
+     * @param Request           $request
+     * @param Assistance        $distribution
+     * @param AssistanceFactory $factory
+     * @param Beneficiary       $beneficiary
      *
      * @return Response
      */
-    public function removeOneBeneficiaryAction(Request $request, Assistance $distribution, AbstractBeneficiary $beneficiary)
-    {
+    public function removeOneBeneficiaryAction(
+        Request $request,
+        Assistance $distribution,
+        AssistanceFactory $factory,
+        AbstractBeneficiary $beneficiary
+    ): Response {
         $deletionData = $request->request->all();
 
         if (true === $distribution->getCompleted() || true === $distribution->getArchived()) {
             throw new BadRequestHttpException("Beneficiary can't be removed from closed or archived assistance");
         }
 
-        /** @var AssistanceBeneficiaryService $assistanceBeneficiaryService */
-        $assistanceBeneficiaryService = $this->get('distribution.assistance_beneficiary_service');
+        $factory->hydrate($distribution)->removeBeneficiary($beneficiary, $deletionData['justification']);
 
-        try {
-            $return = $assistanceBeneficiaryService->removeBeneficiaryInDistribution($distribution, $beneficiary, $deletionData);
-        } catch (\InvalidArgumentException $e) {
-            throw new BadRequestHttpException($e->getMessage(), $e);
-        }
-
-        return new Response(json_encode($return));
+        return new Response();
     }
 
     /**
@@ -328,11 +317,11 @@ class AssistanceController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function getAllAction(Request $request)
+    public function getAllAction(Request $request, AssistanceRepository $assistanceRepository)
     {
         $country = $request->request->get('__country');
         try {
-            $distributions = $this->get('distribution.assistance_service')->getActiveDistributions($country);
+            $distributions = $assistanceRepository->getActiveByCountry($country);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -654,22 +643,19 @@ class AssistanceController extends Controller
      *     description="BAD_REQUEST"
      * )
      *
-     * @param Assistance $distribution
+     * @param Assistance        $distribution
+     * @param AssistanceFactory $factory
      *
      * @return Response
      */
-    public function archiveAction(Assistance $distribution)
+    public function archiveAction(Assistance $distribution, AssistanceFactory $factory)
     {
         try {
-            $archivedDistribution = $this->get('distribution.assistance_service')
-                ->archived($distribution);
+            $factory->hydrate($distribution)->archive()->save();
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        $json = $this->get('serializer')
-            ->serialize($archivedDistribution, 'json');
-
-        return new Response($json, Response::HTTP_OK);
+        return new Response('Archived', Response::HTTP_OK);
     }
 
     /**
@@ -694,16 +680,15 @@ class AssistanceController extends Controller
     *
     * @return Response
     */
-    public function completeAction(Assistance $distribution)
+    public function completeAction(Assistance $distribution, AssistanceFactory $factory)
     {
         try {
-            $completedDistribution = $this->get('distribution.assistance_service')
-                ->complete($distribution);
+            $factory->hydrate($distribution)->complete()->save();
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         $json = $this->get('serializer')
-            ->serialize($completedDistribution, 'json');
+            ->serialize($distribution, 'json');
 
         return new Response($json, Response::HTTP_OK);
     }
@@ -1050,17 +1035,7 @@ class AssistanceController extends Controller
      */
     public function editGeneralReliefNotesAction(Request $request)
     {
-        $generalReliefs = $request->request->get('generalReliefs');
-        try {
-            foreach ($generalReliefs as $generalRelief) {
-                $this->get('distribution.assistance_service')
-                ->editGeneralReliefItemNotes($generalRelief['id'], $generalRelief['notes']);
-            }
-        } catch (\Exception $e) {
-            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
-
-        return new Response(null, Response::HTTP_NO_CONTENT);
+        return new Response("Old endpoint", Response::HTTP_VERSION_NOT_SUPPORTED);
     }
 
     /**
@@ -1086,24 +1061,7 @@ class AssistanceController extends Controller
      */
     public function setGeneralReliefItemsAsDistributedAction(Request $request)
     {
-        $griIds = $request->request->get('ids');
-
-        try {
-            $response = $this->get('distribution.assistance_service')
-                ->setGeneralReliefItemsAsDistributed($griIds);
-        } catch (\Exception $e) {
-            $this->container->get('logger')->error('exception', [$e->getMessage()]);
-            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
-        
-        $json = $this->get('serializer')
-            ->serialize(
-                $response,
-                'json',
-                ['groups' => ["ValidatedAssistance"], 'datetime_format' => 'd-m-Y H:m:i']
-            );
-
-        return new Response($json, Response::HTTP_OK);
+        return new Response('Old endpoint', Response::HTTP_VERSION_NOT_SUPPORTED);
     }
 
     /**
@@ -1121,10 +1079,35 @@ class AssistanceController extends Controller
      * @param  Request  $request
      * @return Response
      *
-     * @deprecated see for PATCH /offline-app/v2/general-relief-items/{id}
+     * @deprecated remove, replaced by ReliefPackages
      */
     public function offlineSetGeneralReliefItemsAsDistributedAction(Request $request)
     {
-        return $this->setGeneralReliefItemsAsDistributedAction($request);
+        $griIds = $request->request->get('ids');
+
+        try {
+            foreach ($griIds as $griId) {
+                $gri = $this->getDoctrine()->getManager()
+                    ->getRepository(GeneralReliefItem::class)->find($griId);
+
+                if ($gri instanceof GeneralReliefItem) {
+                    $gri->setDistributedAt(new \DateTime());
+                    foreach ($gri->getAssistanceBeneficiary()->getReliefPackages() as $package) {
+                        $package->distributeRest();
+                        $this->getDoctrine()->getManager()->persist($package);
+                    }
+                    $this->getDoctrine()->getManager()->persist($gri);
+
+                    $assistance = $gri->getAssistanceBeneficiary()->getAssistance();
+                    $this->container->get('cache.app')->delete(CacheTarget::assistanceId($assistance->getId()));
+                }
+            }
+            $this->getDoctrine()->getManager()->flush();
+        } catch (\Exception $e) {
+            $this->container->get('logger')->error('exception', [$e->getMessage()]);
+            return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        return $this->json('OK');
     }
 }

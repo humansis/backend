@@ -7,7 +7,7 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ModalityType;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Product;

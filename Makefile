@@ -40,7 +40,8 @@ cron-launch: ## Start the cron service
 	docker-compose exec php bash cron-launch
 
 test: ## Run phpunit tests
-	docker-compose exec php bash -c 'vendor/bin/phpunit'
+	docker-compose exec php bash -c 'php -d memory_limit=-1 vendor/bin/phpstan analyse -l 1 src/'
+	docker-compose exec php bash -c 'php -d memory_limit=-1 vendor/bin/phpunit'
 
 cache: ## Remove cache
 	docker-compose exec php bash -c 'rm -rf var/cache'

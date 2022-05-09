@@ -7,7 +7,9 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use NewApiBundle\Enum\ReliefPackageState;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Serializer\Annotation\MaxDepth as SymfonyMaxDepth;
 
@@ -23,15 +25,7 @@ use VoucherBundle\Entity\SmartcardDeposit;
  */
 class AssistanceBeneficiary
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullAssistanceBeneficiary", "FullAssistance", "SmallAssistance", "ValidatedAssistance", "FullBooklet"})
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var Assistance
@@ -54,6 +48,7 @@ class AssistanceBeneficiary
 
     /**
      * @var Collection|Transaction[]
+     * @deprecated you shouldn't know about transaction here
      *
      * @ORM\OneToMany(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
@@ -63,19 +58,12 @@ class AssistanceBeneficiary
 
     /**
      * @var Collection|Booklet[]
+     * @deprecated you shouldn't know about booklets here
      *
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Booklet", mappedBy="distribution_beneficiary", cascade={"persist", "remove"})
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      */
     private $booklets;
-
-    /**
-     * @var GeneralReliefItem
-     *
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\GeneralReliefItem", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
-     */
-    private $generalReliefs;
 
     /**
      * @var string
@@ -87,7 +75,7 @@ class AssistanceBeneficiary
     /**
      * @var Collection|ReliefPackage[]
      *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ReliefPackage", mappedBy="assistanceBeneficiary")
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\Assistance\ReliefPackage", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="relief_package_id")
      */
     private $reliefPackages;
@@ -95,7 +83,6 @@ class AssistanceBeneficiary
     public function __construct()
     {
         $this->booklets = new ArrayCollection();
-        $this->generalReliefs = new ArrayCollection();
         $this->transactions = new ArrayCollection();
         $this->reliefPackages = new ArrayCollection();
     }
@@ -117,16 +104,6 @@ class AssistanceBeneficiary
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      */
     private $removed = 0;
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
@@ -222,6 +199,7 @@ class AssistanceBeneficiary
 
     /**
      * Get the value of Transaction.
+     * @deprecated you shouldn't know about transaction here
      *
      * @return Collection|Transaction[]
      */
@@ -304,44 +282,6 @@ class AssistanceBeneficiary
     }
 
     /**
-     * Get the value of Transaction.
-     *
-     * @return GeneralReliefItem
-     */
-    public function getGeneralReliefs()
-    {
-        return $this->generalReliefs;
-    }
-
-    /**
-     * Add a GeneralReliefItem.
-     *
-     * @param GeneralReliefItem $generalRelief
-     *
-     * @return self
-     */
-    public function addGeneralRelief(GeneralReliefItem $generalRelief)
-    {
-        $this->generalReliefs[] = $generalRelief;
-
-        return $this;
-    }
-
-    /**
-     * Remove a GeneralReliefItem.
-     *
-     * @param GeneralReliefItem $generalRelief
-     *
-     * @return self
-     */
-    public function removeGeneralRelief(GeneralReliefItem $generalRelief)
-    {
-        $this->generalReliefs->removeElement($generalRelief);
-
-        return $this;
-    }
-
-    /**
      * Set justification.
      *
      * @param string $justification
@@ -412,18 +352,10 @@ class AssistanceBeneficiary
      */
     public function hasDistributionStarted(): bool
     {
-        foreach ($this->getBooklets() as $booklet) {
-            if (Booklet::UNASSIGNED !== $booklet->getStatus()) {
-                return true;
-            }
-        }
-        foreach ($this->getGeneralReliefs() as $item) {
-            if (null !== $item->getDistributedAt()) {
-                return true;
-            }
-        }
-        foreach ($this->getTransactions() as $transaction) {
-            if (Transaction::SUCCESS === $transaction->getTransactionStatus()) {
+        foreach ($this->getReliefPackages() as $reliefPackage) {
+            if ($reliefPackage->getState() !== ReliefPackageState::TO_DISTRIBUTE
+                || $reliefPackage->getAmountDistributed() > 0
+            ) {
                 return true;
             }
         }
@@ -442,4 +374,30 @@ class AssistanceBeneficiary
     {
         return $this->reliefPackages;
     }
+
+    /**
+     * @param string                $modalityName
+     * @param string                $unit
+     * @param                       $value
+     */
+    public function setCommodityToDistribute(string $modalityName, string $unit, $value): void
+    {
+        foreach ($this->reliefPackages as $package) {
+            if ($package->getState() !== ReliefPackageState::TO_DISTRIBUTE) {
+                continue; // we can't change closed or started packages
+            }
+            if ($package->getModalityType() === $modalityName && $package->getUnit() === $unit) {
+                $package->setAmountToDistribute($value);
+                return;
+            }
+        }
+        $reliefPackage = new ReliefPackage(
+            $this,
+            $modalityName,
+            $value,
+            $unit
+        );
+        $this->reliefPackages->add($reliefPackage);
+    }
+
 }

@@ -57,4 +57,9 @@ class CommodityMapper implements MapperInterface
     {
         return $this->object->getDescription();
     }
+
+    public function getDivision(): ?string
+    {
+        return $this->object->getDivision();
+    }
 }
