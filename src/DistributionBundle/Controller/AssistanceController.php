@@ -172,13 +172,15 @@ class AssistanceController extends Controller
      *     @Model(type=Assistance::class)
      * )
      *
-     * @param Assistance $assistance
+     * @param Assistance           $assistance
+     * @param AssistanceFactory    $factory
+     * @param AssistanceRepository $repository
      *
      * @return Response
      */
-    public function validateAction(Assistance $assistance, AssistanceFactory $factory)
+    public function validateAction(Assistance $assistance, AssistanceFactory $factory, AssistanceRepository $repository)
     {
-        $factory->hydrate($assistance)->validate()->save();
+        $repository->save($factory->hydrate($assistance)->validate());
 
         $json = $this->get('serializer')
             ->serialize(
@@ -643,15 +645,16 @@ class AssistanceController extends Controller
      *     description="BAD_REQUEST"
      * )
      *
-     * @param Assistance        $distribution
-     * @param AssistanceFactory $factory
+     * @param Assistance           $distribution
+     * @param AssistanceFactory    $factory
+     * @param AssistanceRepository $repository
      *
      * @return Response
      */
-    public function archiveAction(Assistance $distribution, AssistanceFactory $factory)
+    public function archiveAction(Assistance $distribution, AssistanceFactory $factory, AssistanceRepository $repository)
     {
         try {
-            $factory->hydrate($distribution)->archive()->save();
+            $repository->save($factory->hydrate($distribution)->archive());
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -659,31 +662,33 @@ class AssistanceController extends Controller
     }
 
     /**
-    * Complete a distribution.
-    *
-    * @Rest\Post("/distributions/{id}/complete", name="completed_project")
-    * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
-    *
-    * @SWG\Tag(name="Distributions")
-    *
-    * @SWG\Response(
-    *     response=200,
-    *     description="OK"
-    * )
-    *
-    * @SWG\Response(
-    *     response=400,
-    *     description="BAD_REQUEST"
-    * )
-    *
-    * @param Assistance $distribution
-    *
-    * @return Response
-    */
-    public function completeAction(Assistance $distribution, AssistanceFactory $factory)
+     * Complete a distribution.
+     *
+     * @Rest\Post("/distributions/{id}/complete", name="completed_project")
+     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE')")
+     *
+     * @SWG\Tag(name="Distributions")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="OK"
+     * )
+     *
+     * @SWG\Response(
+     *     response=400,
+     *     description="BAD_REQUEST"
+     * )
+     *
+     * @param Assistance           $distribution
+     * @param AssistanceFactory    $factory
+     * @param AssistanceRepository $repository
+     *
+     * @return Response
+     */
+    public function completeAction(Assistance $distribution, AssistanceFactory $factory, AssistanceRepository $repository)
     {
         try {
-            $factory->hydrate($distribution)->complete()->save();
+            $repository->save($factory->hydrate($distribution)->complete());
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }

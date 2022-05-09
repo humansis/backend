@@ -443,4 +443,10 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
 
         return new Paginator($qb);
     }
+
+    public function save(\NewApiBundle\Component\Assistance\Domain\Assistance $assistance): void
+    {
+        $this->_em->persist($assistance->getAssistanceRoot());
+        $this->_em->flush();
+    }
 }

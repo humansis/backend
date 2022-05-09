@@ -139,7 +139,8 @@ class AssistanceService
     public function validateDistribution(Assistance $assistanceRoot)
     {
         $assistance = $this->assistanceFactory->hydrate($assistanceRoot);
-        $assistance->validate()->save();
+        $assistance->validate();
+        $this->em->getRepository(Assistance::class)->save($assistance);
     }
 
     // TODO: presunout do ABNF
@@ -626,8 +627,8 @@ class AssistanceService
         $this->cache->delete(CacheTarget::assistanceId($assistanceEntity->getId()));
         if ($assistanceEntity->getValidated()) { //TODO also completed? to discuss
             $assistance = $this->assistanceFactory->hydrate($assistanceEntity);
-            $assistance->archive()->save();
-
+            $assistance->archive();
+            $this->em->getRepository(Assistance::class)->save($assistance);
             return;
         }
 
