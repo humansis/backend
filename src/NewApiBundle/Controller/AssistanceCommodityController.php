@@ -49,12 +49,11 @@ class AssistanceCommodityController extends AbstractController
      *
      * @param AssistanceCreateInputType $inputType
      * @param AssistanceFactory         $factory
-     * @param AssistanceRepository      $repository
      *
      * @return JsonResponse
      * @throws \Doctrine\ORM\EntityNotFoundException
      */
-    public function create(AssistanceCreateInputType $inputType, AssistanceFactory $factory, AssistanceRepository $repository): JsonResponse
+    public function create(AssistanceCreateInputType $inputType, AssistanceFactory $factory): JsonResponse
     {
         $assistance = $factory->create($inputType);
         $commoditiesSummary = $assistance->getCommoditiesSummary();
