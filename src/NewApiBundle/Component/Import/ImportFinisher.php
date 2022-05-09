@@ -3,7 +3,16 @@
 namespace NewApiBundle\Component\Import;
 
 use BadMethodCallException;
+use BeneficiaryBundle\Entity\AbstractBeneficiary;
+use BeneficiaryBundle\Entity\Address;
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\HouseholdActivity;
+use BeneficiaryBundle\Entity\HouseholdLocation;
+use BeneficiaryBundle\Entity\NationalId;
+use BeneficiaryBundle\Entity\Person;
+use BeneficiaryBundle\Entity\Phone;
+use BeneficiaryBundle\Entity\Profile;
+use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
@@ -12,10 +21,13 @@ use InvalidArgumentException;
 use NewApiBundle\Component\Import\Finishing\HouseholdDecoratorBuilder;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiary;
+use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Entity\ImportQueueDuplicity;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
+use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Utils\Concurrency\ConcurrencyProcessor;
 use NewApiBundle\Workflow\ImportQueueTransitions;
@@ -119,21 +131,31 @@ class ImportFinisher
                     'lockedBy' => $runCode,
                 ]);
             })
+            ->setBatchCleanupCallback(function() {
+                $this->em->flush();
+                $this->em->clear(ImportBeneficiary::class);
+                $this->em->clear(VulnerabilityCriterion::class);
+                $this->em->clear(HouseholdLocation::class);
+                $this->em->clear(HouseholdActivity::class);
+                $this->em->clear(Address::class);
+                $this->em->clear(Phone::class);
+                $this->em->clear(NationalId::class);
+                $this->em->clear(ImportQueue::class);
+                $this->em->clear(AbstractBeneficiary::class);
+                $this->em->clear(Profile::class);
+                $this->em->clear(Person::class);
+            })
             ->processItems(function(ImportQueue $item) use ($import) {
                 switch ($item->getState()) {
                     case ImportQueueState::TO_CREATE:
-                        $this->logger->error('Creating');
-
                         $this->finishCreationQueue($item, $import);
                         break;
                     case ImportQueueState::TO_UPDATE:
-                        $this->logger->error('Updating');
                         $this->finishUpdateQueue($item, $import);
                         break;
                     case ImportQueueState::TO_IGNORE:
                     case ImportQueueState::TO_LINK:
                         /** @var ImportHouseholdDuplicity $acceptedDuplicity */
-                        $this->logger->error('Linking');
                         $acceptedDuplicity = $item->getAcceptedDuplicity();
                         if (null == $acceptedDuplicity) {
                             return;
@@ -145,25 +167,10 @@ class ImportFinisher
                         $this->importQueueStateMachine->apply($item, ImportQueueTransitions::LINK);
                         break;
                 }
-
-                /**
-                $this->logger->error('Inserts '. count($this->em->getUnitOfWork()->getScheduledEntityInsertions()));
-                $this->logger->error('Updates '. count($this->em->getUnitOfWork()->getScheduledEntityUpdates()));
-                $this->logger->error('Deletes '. count($this->em->getUnitOfWork()->getScheduledEntityDeletions()));
-                $this->logger->error('Collection updates '. count($this->em->getUnitOfWork()->getScheduledCollectionUpdates()));
-                $this->logger->error('Collection deletes '. count($this->em->getUnitOfWork()->getScheduledCollectionDeletions()));
-                $this->logger->error('Collection deletes '. count($this->em->getUnitOfWork()->get()));
-                 * */
-                $this->logger->error('Size of work '. $this->em->getUnitOfWork()->size());
                 $this->em->persist($item);
 
-            }, $this->logger);
-
-        $this->logger->error('Persisting');
-        $this->logger->error('Updates '. count($this->em->getUnitOfWork()->getScheduledEntityInsertions()));
+            });
         $this->em->flush();
-        $this->logger->error('Flushing 1');
-
         if ($this->importStateMachine->can($import, ImportTransitions::FINISH)) {
             $this->importStateMachine->apply($import, ImportTransitions::FINISH);
 
@@ -171,13 +178,11 @@ class ImportFinisher
         }
 
         $this->em->flush();
-        $this->logger->error('Flushing end');
     }
 
     private function lockImportQueue(Import $import, $state, string $code, int $count)
     {
         $this->queueRepository->lockUnlockedItems($import, $state, $count, $code);
-        //$this->em->flush();
     }
 
     /**
@@ -279,5 +284,6 @@ class ImportFinisher
         foreach ($import->getProjects() as $project) {
             $household->addProject($project);
         }
+        $this->em->persist($household);
     }
 }

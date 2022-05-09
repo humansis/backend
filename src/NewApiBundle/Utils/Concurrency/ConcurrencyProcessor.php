@@ -12,6 +12,8 @@ class ConcurrencyProcessor
     private $lockBatchCallback;
     /** @var callable */
     private $batchItemsCallback;
+    /** @var callable */
+    private $batchCleanupCallback;
     /** @var int */
     private $maxResultsToProcess;
 
@@ -64,6 +66,19 @@ class ConcurrencyProcessor
     }
 
     /**
+     * @param callable $batchCleanupCallback
+     *
+     * @return ConcurrencyProcessor
+     */
+    public function setBatchCleanupCallback(callable $batchCleanupCallback): ConcurrencyProcessor
+    {
+        $this->batchCleanupCallback = $batchCleanupCallback;
+        return $this;
+    }
+
+
+
+    /**
      * @param int $maxResultsToProcess
      *
      * @return ConcurrencyProcessor
@@ -79,11 +94,12 @@ class ConcurrencyProcessor
      * @param callable $processItemCallback
      *
      */
-    public function processItems(callable $processItemCallback, $logger): void
+    public function processItems(callable $processItemCallback): void
     {
         $allItemCountCallback = $this->countAllCallback;
         $lockItemsCallback = $this->lockBatchCallback;
         $getBatchCallback = $this->batchItemsCallback;
+        $batchCleanupCallback = $this->batchCleanupCallback ?? function () {};
         $itemCount = $allItemCountCallback();
 
         if ($itemCount === 0) {
@@ -92,16 +108,11 @@ class ConcurrencyProcessor
 
 
         $totalItemsToProcess = $itemCount > $this->maxResultsToProcess ? $this->maxResultsToProcess : $itemCount;
-        $logger->error('Number of records to process: '. $totalItemsToProcess);
         $rounds = ceil($totalItemsToProcess / $this->batchSize);
-        $logger->error('Rounds: '. $rounds);
         for ($i = 0; $i < $rounds; $i++) {
             $runCode = uniqid();
-            $logger->error('Code '. $runCode);
             $lockItemsCallback($runCode, $this->batchSize);
-            $logger->error('Items locked '. $runCode . ' ' . $this->batchSize);
             $itemsToProceed = $getBatchCallback($runCode, $this->batchSize);
-            $logger->error('Items to proceed '. count($itemsToProceed));
             foreach ($itemsToProceed as $item) {
                 try {
                     $processItemCallback($item);
@@ -109,7 +120,7 @@ class ConcurrencyProcessor
                     $item->unlock();
                 }
             }
-            $logger->error('Done '. count($itemsToProceed));
+            $batchCleanupCallback();
         }
     }
 }
