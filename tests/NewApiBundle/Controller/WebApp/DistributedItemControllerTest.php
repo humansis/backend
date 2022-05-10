@@ -28,49 +28,49 @@ class DistributedItemControllerTest extends BMSServiceTestCase
 
     public function testList()
     {
-        // $itemCount = $this->em->createQueryBuilder()
-        //     ->select('count(i.id)')
-        //     ->from(DistributedItem::class, 'i')
-        //     ->innerJoin('i.project', 'p')
-        //     ->where('p.iso3 = :country')
-        //     ->setParameter('country', 'SYR')
-        //     ->getQuery()
-        //     ->setMaxResults(1)
-        //     ->getSingleScalarResult();
-        // $this->assertGreaterThan(0, $itemCount, "There must be some testing data for /web-app/v1/distributed-items");
-        //
-        // $size = min($itemCount, 5);
-        //
-        // $this->request('GET', "/api/basic/web-app/v1/distributed-items?size=$size&page=1", [], [], [
-        //     'country' => 'SYR'
-        // ]);
-        //
-        // $this->assertTrue(
-        //     $this->client->getResponse()->isSuccessful(),
-        //     'Request failed: '.$this->client->getResponse()->getContent()
-        // );
-        // $this->assertJsonFragment('{
-        //     "totalCount": "*",
-        //     "data": [
-        //         {
-        //         "projectId": "*",
-        //         "beneficiaryId": "*",
-        //         "assistanceId": "*",
-        //         "dateDistribution": "*",
-        //         "commodityId": "*",
-        //         "amount": "*",
-        //         "locationId": "*",
-        //         "adm1Id": "*",
-        //         "adm2Id": "*",
-        //         "adm3Id": "*",
-        //         "adm4Id": "*",
-        //         "carrierNumber": "*",
-        //         "type": "*",
-        //         "modalityType": "*",
-        //         "fieldOfficerId": "*"
-        //         }
-        //     ]
-        // }', $this->client->getResponse()->getContent());
+        $itemCount = $this->em->createQueryBuilder()
+            ->select('count(i.id)')
+            ->from(DistributedItem::class, 'i')
+            ->innerJoin('i.project', 'p')
+            ->where('p.iso3 = :country')
+            ->setParameter('country', 'SYR')
+            ->getQuery()
+            ->setMaxResults(1)
+            ->getSingleScalarResult();
+        $this->assertGreaterThan(0, $itemCount, "There must be some testing data for /web-app/v1/distributed-items");
+
+        $size = min($itemCount, 5);
+
+        $this->request('GET', "/api/basic/web-app/v1/distributed-items?size=$size&page=1", [], [], [
+            'country' => 'SYR'
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertJsonFragment('{
+            "totalCount": "*",
+            "data": [
+                {
+                "projectId": "*",
+                "beneficiaryId": "*",
+                "assistanceId": "*",
+                "dateDistribution": "*",
+                "commodityId": "*",
+                "amount": "*",
+                "locationId": "*",
+                "adm1Id": "*",
+                "adm2Id": "*",
+                "adm3Id": "*",
+                "adm4Id": "*",
+                "carrierNumber": "*",
+                "type": "*",
+                "modalityType": "*",
+                "fieldOfficerId": "*"
+                }
+            ]
+        }', $this->client->getResponse()->getContent());
     }
 
     public function modalityTypeGenerator(): iterable
@@ -113,10 +113,6 @@ class DistributedItemControllerTest extends BMSServiceTestCase
 
         $this->assertNotNull($assistance, "There must be some testing assistances with modality $modalityType for /web-app/v1/distributed-items");
 
-        echo "[{$assistance->getProject()->getIso3()}] Ass#{$assistance->getId()}: targetCount=";
-        echo count($assistance->getDistributionBeneficiaries());
-        echo "\n";
-
         $this->request('GET', "/api/basic/web-app/v1/distributed-items?filter[assistances][]=".$assistance->getId(), [], [], [
             'HTTP_COUNTRY' => $assistance->getProject()->getIso3(),
         ]);
@@ -125,10 +121,27 @@ class DistributedItemControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed'.$this->client->getResponse()->getContent()
         );
-        // var_dump($this->client->getResponse()->getContent());
+
         $items = json_decode($this->client->getResponse()->getContent());
         echo $items->totalCount;
-        echo "\n";
 
+        $beneficiaryAmounts = [];
+        foreach ($items->data as $distributedItem) {
+            $this->assertEquals($assistance->getProject()->getId(), $distributedItem->projectId);
+            $this->assertEquals($assistance->getId(), $distributedItem->assistanceId);
+            $beneficiaryAmounts[$distributedItem->beneficiaryId] = $distributedItem->amount;
+        }
+
+        foreach($assistance->getCommodities() as $commodity) {
+            echo $commodity->getValue().' '.$commodity->getUnit(). ' '.$commodity->getModalityType()->getName()."\n";
+        }
+
+        foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
+            $toDistribute = 0;
+            foreach ($assistanceBeneficiary->getReliefPackages() as $package) {
+                $toDistribute += floatval($package->getAmountDistributed());
+            }
+            $this->assertEquals($toDistribute, $beneficiaryAmounts[$assistanceBeneficiary->getBeneficiary()->getId()]);
+        }
     }
 }
