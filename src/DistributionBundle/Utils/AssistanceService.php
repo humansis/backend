@@ -411,7 +411,7 @@ class AssistanceService
      */
     public function exportToCsv(int $projectId, string $type)
     {
-        $exportableTable = $this->em->getRepository(Assistance::class)->findBy(['project' => $projectId]);
+        $exportableTable = $this->assistanceRepository->findBy(['project' => $projectId]);
         return $this->container->get('export_csv_service')->export($exportableTable, 'distributions', $type);
     }
 
@@ -428,7 +428,7 @@ class AssistanceService
             throw new NotFoundHttpException("Project #$projectId missing");
         }
 
-        $assistances = $this->em->getRepository(Assistance::class)->findBy(['project' => $projectId, 'archived' => 0]);
+        $assistances = $this->assistanceRepository->findBy(['project' => $projectId, 'archived' => 0]);
         $exportableTable = [];
 
         $donors = implode(', ',
@@ -458,7 +458,7 @@ class AssistanceService
             $noFamilies = $assistance->getTargetType() === AssistanceTargetType::INDIVIDUAL ? ($maleTotal + $femaleTotal) : ($maleHHH + $femaleHHH);
             $familySize = $assistance->getTargetType() === AssistanceTargetType::HOUSEHOLD && $noFamilies ? ($maleTotal + $femaleTotal) / $noFamilies : null;
             $modalityType = $assistance->getCommodities()[0]->getModalityType()->getName();
-            $beneficiaryServed =  $this->em->getRepository(Assistance::class)->getNoServed($assistance->getId(), $modalityType);
+            $beneficiaryServed =  $this->assistanceRepository->getNoServed($assistance->getId(), $modalityType);
 
             $commodityNames = implode(', ',
                     array_map(
@@ -592,7 +592,7 @@ class AssistanceService
      */
     public function exportToPdf(int $projectId)
     {
-        $exportableTable = $this->em->getRepository(Assistance::class)->findBy(['project' => $projectId, 'archived' => false]);
+        $exportableTable = $this->assistanceRepository->findBy(['project' => $projectId, 'archived' => false]);
         $project = $this->em->getRepository(Project::class)->find($projectId);
 
         try {
@@ -622,7 +622,7 @@ class AssistanceService
         if ($assistanceEntity->getValidated()) { //TODO also completed? to discuss
             $assistance = $this->assistanceFactory->hydrate($assistanceEntity);
             $assistance->archive();
-            $this->em->getRepository(Assistance::class)->save($assistance);
+            $this->assistanceRepository->save($assistance);
             return;
         }
 
