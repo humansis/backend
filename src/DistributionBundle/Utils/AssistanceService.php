@@ -296,7 +296,8 @@ class AssistanceService
                         PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true
                     ]);
                     $criterion->setGroupNumber($i);
-                    $this->criteriaAssistanceService->save($distribution, $criterion, false);
+                    $this->criteriaAssistanceService->save($distribution, $criterion);
+                    $this->em->persist($criterion);
                     $criteria[$i][$j] = $criterionArray;
                 }
             }

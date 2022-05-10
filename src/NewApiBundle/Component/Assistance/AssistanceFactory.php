@@ -231,7 +231,7 @@ class AssistanceFactory
                     PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
                 ]);
                 $criterion->setGroupNumber($i);
-                $this->criteriaAssistanceService->save($assistance, $criterion, false);
+                $this->criteriaAssistanceService->save($assistance, $criterion);
                 $criteria[$i][$j] = $criterionArray;
             }
         }

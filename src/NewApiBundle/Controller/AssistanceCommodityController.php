@@ -55,10 +55,6 @@ class AssistanceCommodityController extends AbstractController
      */
     public function create(AssistanceCreateInputType $inputType, AssistanceFactory $factory): JsonResponse
     {
-        $assistance = $factory->create($inputType);
-        $commoditiesSummary = $assistance->getCommoditiesSummary();
-        $this->getDoctrine()->getManager()->clear();
-
-        return $this->json(new Paginator($commoditiesSummary));
+        return $this->json(new Paginator($factory->create($inputType)->getCommoditiesSummary()));
     }
 }
