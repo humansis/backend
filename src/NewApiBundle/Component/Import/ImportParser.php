@@ -16,16 +16,6 @@ use Symfony\Component\HttpFoundation\File\File;
 
 class ImportParser
 {
-    private const OLD_HEADER_ROW = 1; // header definition is at row #1
-    private const OLD_HEADER_COLUMN = 1; // header definition starts at column #1
-    private const OLD_CONTENT_ROW = 6; // content starts at row #6
-    private const OLD_CONTENT_COLUMN = 1; // content starts at column #1
-
-    private const V2_HEADER_ROW = 5; // header definition is at row #5
-    private const V2_HEADER_COLUMN = 3; // header definition starts at column #3
-    private const V2_CONTENT_ROW = 6; // content starts at row #6
-    private const V2_CONTENT_COLUMN = 3; // content starts at column #3
-
     private const VERSION_1 = 1;
     private const VERSION_2 = 2;
     private const VERSION_COLUMN = 1;
@@ -38,17 +28,17 @@ class ImportParser
 
     private $versionCustomizedValues = [
         self::VERSION_1 => [
-            self::HEADER_ROW => self::OLD_HEADER_ROW,
-            self::HEADER_COLUMN => self::OLD_HEADER_COLUMN,
-            self::CONTENT_ROW => self::OLD_CONTENT_ROW,
-            self::CONTENT_COLUMN => self::OLD_CONTENT_COLUMN,
+            self::HEADER_ROW => 1, //header is at row #1
+            self::HEADER_COLUMN => 1, //header starts at column #1
+            self::CONTENT_ROW => 6, //content starts at row #6
+            self::CONTENT_COLUMN => 1, //content starts at column #1
         ],
 
         self::VERSION_2 => [
-            self::HEADER_ROW => self::V2_HEADER_ROW,
-            self::HEADER_COLUMN => self::V2_HEADER_COLUMN,
-            self::CONTENT_ROW => self::V2_CONTENT_ROW,
-            self::CONTENT_COLUMN => self::V2_CONTENT_COLUMN,
+            self::HEADER_ROW => 5, //header is at row #5
+            self::HEADER_COLUMN => 3, //header starts at column #3
+            self::CONTENT_ROW => 6, //content starts at row #6
+            self::CONTENT_COLUMN => 3, //content starts at column #3
         ]
     ];
 
