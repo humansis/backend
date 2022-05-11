@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller\OfflineApp\Assistance;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Controller\OfflineApp\AbstractOfflineAppController;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\InputType\Assistance\DistributeReliefPackagesInputType;
@@ -22,11 +23,16 @@ class ReliefPackageController extends AbstractOfflineAppController
      * @param DistributeReliefPackagesInputType[] $packages
      * @param ReliefPackageRepository             $repository
      * @param Registry                            $registry
+     * @param AssistanceFactory                   $assistanceFactory
      *
      * @return JsonResponse
      */
-    public function distributePackages(array $packages, ReliefPackageRepository $repository, Registry $registry): JsonResponse
-    {
+    public function distributePackages(
+        array                   $packages,
+        ReliefPackageRepository $repository,
+        Registry                $registry,
+        AssistanceFactory       $assistanceFactory
+    ): JsonResponse {
         foreach ($packages as $packageUpdate) {
             /** @var ReliefPackage $package */
             $package = $repository->find($packageUpdate->getId());
@@ -42,7 +48,10 @@ class ReliefPackageController extends AbstractOfflineAppController
             }
 
             $repository->save($package);
+            $assistance = $assistanceFactory->hydrate($package->getAssistanceBeneficiary()->getAssistance());
+            $assistance->cleanCache();
         }
+
         return $this->json(true);
     }
 }

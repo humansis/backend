@@ -5,6 +5,7 @@ namespace NewApiBundle\Controller\WebApp\Assistance;
 
 use DistributionBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Controller\WebApp\AbstractWebAppController;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\InputType\Assistance\DistributeReliefPackagesInputType;
@@ -16,6 +17,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Workflow\Registry;
+use Symfony\Contracts\Cache\CacheInterface;
 
 class ReliefPackageController extends AbstractWebAppController
 {
@@ -66,11 +68,16 @@ class ReliefPackageController extends AbstractWebAppController
      * @param DistributeReliefPackagesInputType[] $packages
      * @param ReliefPackageRepository             $repository
      * @param Registry                            $registry
+     * @param AssistanceFactory                   $assistanceFactory
      *
      * @return JsonResponse
      */
-    public function distributePackages(array $packages, ReliefPackageRepository $repository, Registry $registry): JsonResponse
-    {
+    public function distributePackages(
+        array                   $packages,
+        ReliefPackageRepository $repository,
+        Registry                $registry,
+        AssistanceFactory       $assistanceFactory
+    ): JsonResponse {
         foreach ($packages as $packageUpdate) {
             /** @var ReliefPackage $package */
             $package = $repository->find($packageUpdate->getId());
@@ -86,7 +93,10 @@ class ReliefPackageController extends AbstractWebAppController
             }
 
             $repository->save($package);
+            $assistance = $assistanceFactory->hydrate($package->getAssistanceBeneficiary()->getAssistance());
+            $assistance->cleanCache();
         }
+
         return $this->json(true);
     }
 }

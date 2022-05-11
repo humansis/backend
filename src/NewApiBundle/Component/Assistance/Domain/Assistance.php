@@ -229,6 +229,8 @@ class Assistance
                 }
             }
         }
+
+        $this->cleanCache();
     }
 
     /**
@@ -343,7 +345,7 @@ class Assistance
         return $this;
     }
 
-    private function cleanCache(): void
+    public function cleanCache(): void
     {
         if (!$this->assistanceRoot->getId()) return; // not persisted yet
         try {
