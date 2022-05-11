@@ -270,11 +270,11 @@ class BeneficiaryController extends AbstractController
      * @return JsonResponse
      */
     public function getBeneficiaries(Project $project,
-                                     string $target,
-                                     BeneficiarySelectedFilterInputType $filter,
-                                     BeneficiaryRepository $beneficiaryRepository,
-                                     AssistanceRepository $assistanceRepository): JsonResponse
-    {
+        string $target,
+        BeneficiarySelectedFilterInputType $filter,
+        BeneficiaryRepository $beneficiaryRepository,
+        AssistanceRepository $assistanceRepository
+    ): JsonResponse {
         if (!in_array($target, AssistanceTargetType::values())){
             throw $this->createNotFoundException('Invalid target. Allowed are '.implode(', ', AssistanceTargetType::values()));
         }
