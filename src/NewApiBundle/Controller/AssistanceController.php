@@ -143,14 +143,15 @@ class AssistanceController extends AbstractController
      *
      * @param AssistanceCreateInputType $inputType
      * @param AssistanceFactory         $factory
+     * @param AssistanceRepository      $repository
      *
      * @return JsonResponse
      * @throws \Doctrine\ORM\EntityNotFoundException
      */
-    public function create(AssistanceCreateInputType $inputType, AssistanceFactory $factory): JsonResponse
+    public function create(AssistanceCreateInputType $inputType, AssistanceFactory $factory, AssistanceRepository $repository): JsonResponse
     {
         $assistance = $factory->create($inputType);
-        $assistance->save();
+        $repository->save($assistance);
 
         return $this->json($assistance->getAssistanceRoot());
     }
@@ -174,25 +175,26 @@ class AssistanceController extends AbstractController
     /**
      * @Rest\Patch("/web-app/v1/assistances/{id}")
      *
-     * @param Request           $request
-     * @param Assistance        $assistanceRoot
-     * @param AssistanceFactory $factory
+     * @param Request              $request
+     * @param Assistance           $assistanceRoot
+     * @param AssistanceFactory    $factory
+     * @param AssistanceRepository $repository
      *
      * @return JsonResponse
      */
-    public function update(Request $request, Assistance $assistanceRoot, AssistanceFactory $factory): JsonResponse
+    public function update(Request $request, Assistance $assistanceRoot, AssistanceFactory $factory, AssistanceRepository $repository): JsonResponse
     {
         $assistance = $factory->hydrate($assistanceRoot);
         if ($request->request->has('validated')) {
             if ($request->request->get('validated', true)) {
-                $assistance->validate()->save();
+                $assistance->validate();
             } else {
-                $assistance->unvalidate()->save();
+                $assistance->unvalidate();
             }
         }
 
         if ($request->request->get('completed', false)) {
-            $assistance->complete()->save();
+            $assistance->complete();
         }
 
         //TODO think about better input validation for PATCH method
@@ -229,6 +231,7 @@ class AssistanceController extends AbstractController
 
             $this->assistanceService->updateDateExpiration($assistanceRoot, $date);
         }
+        $repository->save($assistance);
 
         return $this->json($assistance);
     }

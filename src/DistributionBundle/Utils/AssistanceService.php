@@ -6,7 +6,6 @@ use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Institution;
-use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Exception\CsvParserException;
 use CommonBundle\Entity\Location;
 use CommonBundle\Pagination\Paginator;
@@ -14,45 +13,35 @@ use CommonBundle\Utils\LocationService;
 use DateTime;
 use DateTimeInterface;
 use DistributionBundle\DTO\VulnerabilityScore;
-use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\Commodity;
-use DistributionBundle\Entity\GeneralReliefItem;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Repository\AssistanceRepository;
-use DistributionBundle\Utils\Retriever\AbstractRetriever;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\ORMException;
 use Exception;
-use InvalidArgumentException;
 use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
-use NewApiBundle\Entity\AssistanceStatistics;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\AssistanceCreateInputType;
-use NewApiBundle\InputType\GeneralReliefPatchInputType;
-use NewApiBundle\Repository\AssistanceStatisticsRepository;
 use NewApiBundle\Request\Pagination;
-use NewApiBundle\Workflow\ReliefPackageTransitions;
+use ProjectBundle\Entity\Project;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
-use ProjectBundle\Entity\Project;
-use Psr\Container\ContainerInterface;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\Cache\ItemInterface;
 use VoucherBundle\Entity\Voucher;
 
 /**
@@ -92,6 +81,9 @@ class AssistanceService
     /** @var AssistanceFactory */
     private $assistanceFactory;
 
+    /** @var AssistanceRepository */
+    private $assistanceRepository;
+
     /**
      * AssistanceService constructor.
      *
@@ -105,7 +97,7 @@ class AssistanceService
      * @param ContainerInterface        $container
      * @param FilesystemAdapter         $cache
      * @param AssistanceFactory         $assistanceFactory
-     *
+     * @param AssistanceRepository      $assistanceRepository
      */
     public function __construct(
         EntityManagerInterface    $entityManager,
@@ -117,7 +109,8 @@ class AssistanceService
         FieldDbTransformer        $fieldDbTransformer,
         ContainerInterface        $container,
         CacheInterface            $cache,
-        AssistanceFactory         $assistanceFactory
+        AssistanceFactory         $assistanceFactory,
+        AssistanceRepository      $assistanceRepository
     ) {
         $this->em = $entityManager;
         $this->serializer = $serializer;
@@ -129,6 +122,7 @@ class AssistanceService
         $this->container = $container;
         $this->cache = $cache;
         $this->assistanceFactory = $assistanceFactory;
+        $this->assistanceRepository = $assistanceRepository;
     }
 
     /**
@@ -139,7 +133,8 @@ class AssistanceService
     public function validateDistribution(Assistance $assistanceRoot)
     {
         $assistance = $this->assistanceFactory->hydrate($assistanceRoot);
-        $assistance->validate()->save();
+        $assistance->validate();
+        $this->assistanceRepository->save($assistance);
     }
 
     // TODO: presunout do ABNF
@@ -301,7 +296,8 @@ class AssistanceService
                         PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true
                     ]);
                     $criterion->setGroupNumber($i);
-                    $this->criteriaAssistanceService->save($distribution, $criterion, false);
+                    $this->criteriaAssistanceService->save($distribution, $criterion);
+                    $this->em->persist($criterion);
                     $criteria[$i][$j] = $criterionArray;
                 }
             }
@@ -416,7 +412,7 @@ class AssistanceService
      */
     public function exportToCsv(int $projectId, string $type)
     {
-        $exportableTable = $this->em->getRepository(Assistance::class)->findBy(['project' => $projectId]);
+        $exportableTable = $this->assistanceRepository->findBy(['project' => $projectId]);
         return $this->container->get('export_csv_service')->export($exportableTable, 'distributions', $type);
     }
 
@@ -433,7 +429,7 @@ class AssistanceService
             throw new NotFoundHttpException("Project #$projectId missing");
         }
 
-        $assistances = $this->em->getRepository(Assistance::class)->findBy(['project' => $projectId, 'archived' => 0]);
+        $assistances = $this->assistanceRepository->findBy(['project' => $projectId, 'archived' => 0]);
         $exportableTable = [];
 
         $donors = implode(', ',
@@ -463,7 +459,7 @@ class AssistanceService
             $noFamilies = $assistance->getTargetType() === AssistanceTargetType::INDIVIDUAL ? ($maleTotal + $femaleTotal) : ($maleHHH + $femaleHHH);
             $familySize = $assistance->getTargetType() === AssistanceTargetType::HOUSEHOLD && $noFamilies ? ($maleTotal + $femaleTotal) / $noFamilies : null;
             $modalityType = $assistance->getCommodities()[0]->getModalityType()->getName();
-            $beneficiaryServed =  $this->em->getRepository(Assistance::class)->getNoServed($assistance->getId(), $modalityType);
+            $beneficiaryServed =  $this->assistanceRepository->getNoServed($assistance->getId(), $modalityType);
 
             $commodityNames = implode(', ',
                     array_map(
@@ -597,7 +593,7 @@ class AssistanceService
      */
     public function exportToPdf(int $projectId)
     {
-        $exportableTable = $this->em->getRepository(Assistance::class)->findBy(['project' => $projectId, 'archived' => false]);
+        $exportableTable = $this->assistanceRepository->findBy(['project' => $projectId, 'archived' => false]);
         $project = $this->em->getRepository(Project::class)->find($projectId);
 
         try {
@@ -626,8 +622,8 @@ class AssistanceService
         $this->cache->delete(CacheTarget::assistanceId($assistanceEntity->getId()));
         if ($assistanceEntity->getValidated()) { //TODO also completed? to discuss
             $assistance = $this->assistanceFactory->hydrate($assistanceEntity);
-            $assistance->archive()->save();
-
+            $assistance->archive();
+            $this->assistanceRepository->save($assistance);
             return;
         }
 

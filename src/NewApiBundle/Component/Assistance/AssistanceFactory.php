@@ -61,9 +61,6 @@ class AssistanceFactory
     /** @var AssistanceStatisticsRepository */
     private $assistanceStatisticRepository;
 
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
     /** @var Registry */
     private $workflowRegistry;
 
@@ -82,7 +79,6 @@ class AssistanceFactory
      * @param InstitutionRepository           $institutionRepository
      * @param BeneficiaryRepository           $beneficiaryRepository
      * @param AssistanceStatisticsRepository  $assistanceStatisticRepository
-     * @param EntityManagerInterface          $entityManager
      * @param Registry                        $workflowRegistry
      * @param AssistanceBeneficiaryRepository $targetRepository
      */
@@ -98,7 +94,6 @@ class AssistanceFactory
         InstitutionRepository                                          $institutionRepository,
         BeneficiaryRepository                                          $beneficiaryRepository,
         AssistanceStatisticsRepository                                 $assistanceStatisticRepository,
-        EntityManagerInterface                                         $entityManager,
         Registry                                                       $workflowRegistry,
         AssistanceBeneficiaryRepository $targetRepository
     ) {
@@ -113,7 +108,6 @@ class AssistanceFactory
         $this->institutionRepository = $institutionRepository;
         $this->beneficiaryRepository = $beneficiaryRepository;
         $this->assistanceStatisticRepository = $assistanceStatisticRepository;
-        $this->entityManager = $entityManager;
         $this->workflowRegistry = $workflowRegistry;
         $this->targetRepository = $targetRepository;
     }
@@ -222,7 +216,6 @@ class AssistanceFactory
             $this->cache,
             $this->modalityTypeRepository,
             $this->assistanceStatisticRepository,
-            $this->entityManager,
             $this->workflowRegistry,
             $this->targetRepository
         );
@@ -238,7 +231,7 @@ class AssistanceFactory
                     PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
                 ]);
                 $criterion->setGroupNumber($i);
-                $this->criteriaAssistanceService->save($assistance, $criterion, false);
+                $this->criteriaAssistanceService->save($assistance, $criterion);
                 $criteria[$i][$j] = $criterionArray;
             }
         }
