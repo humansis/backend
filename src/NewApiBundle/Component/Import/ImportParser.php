@@ -16,8 +16,18 @@ use Symfony\Component\HttpFoundation\File\File;
 
 class ImportParser
 {
-    private const HEADER_ROW = 1; // header definition is at row #1
-    private const CONTENT_ROW = 6; // content starts at row #5
+    private const OLD_HEADER_ROW = 1; // header definition is at row #1
+    private const OLD_HEADER_COLUMN = 1; // header definition starts at column #1
+    private const OLD_CONTENT_ROW = 6; // content starts at row #6
+    private const OLD_CONTENT_COLUMN = 1; // content starts at column #1
+
+    private const NEW_HEADER_ROW = 5; // header definition is at row #5
+    private const NEW_HEADER_COLUMN = 3; // header definition starts at column #3
+    private const NEW_CONTENT_ROW = 6; // content starts at row #6
+    private const NEW_CONTENT_COLUMN = 3; // content starts at column #3
+
+    private const VERSION_COLUMN = 1;
+    private const VERSION_ROW = 4;
 
     /**
      * @param File $file
@@ -29,15 +39,15 @@ class ImportParser
     public function parse(File $file)
     {
         $reader = IOFactory::createReaderForFile($file->getRealPath());
-
         $worksheet = $reader->load($file->getRealPath())->getActiveSheet();
-
-        $headers = $this->getHeaders($worksheet);
+        $headers = $this->getHeader($worksheet);
 
         $list = [];
         $household = [];
-        for ($r = self::CONTENT_ROW; ; $r++) {
-            $row = $this->getRow($worksheet, $headers, $r);
+        $startContentRow = $this->getStartContentRow($worksheet);
+
+        for ($r = $startContentRow; ; $r++) {
+            $row = $this->getContentRow($worksheet, $headers, $r);
             if (-1 === $row) {
                 break;
             }
@@ -80,7 +90,7 @@ class ImportParser
 
         $worksheet = $reader->load($file->getRealPath())->getActiveSheet();
 
-        return $this->getHeaders($worksheet);
+        return $this->getHeader($worksheet);
     }
 
     /**
@@ -89,19 +99,22 @@ class ImportParser
      * @return array
      * @throws InvalidFormulaException
      */
-    private function getHeaders(Worksheet $worksheet): array
+    private function getHeader(Worksheet $worksheet): array
     {
+        $startHeaderRow = $this->getStartHeaderRow($worksheet);
+        $startHeaderColumn = $this->getStartHeaderColumn($worksheet);
+
         $headers = [];
 
-        for ($i = self::HEADER_ROW; ; $i++) {
-            $cell = $worksheet->getCellByColumnAndRow($i, 1, false);
+        for ($headerColumn = $startHeaderColumn; ; $headerColumn++) {
+            $cell = $worksheet->getCellByColumnAndRow($headerColumn, $startHeaderRow, false);
             $value = self::value($cell);
 
             if (empty($value)) {
                 break;
             }
 
-            $headers[$i] = $value;
+            $headers[$headerColumn] = $value;
         }
 
         return $headers;
@@ -114,12 +127,13 @@ class ImportParser
      *
      * @return array|int -1 if end of file, data of row otherwise
      */
-    private function getRow(Worksheet $worksheet, array $headers, int $r)
+    private function getContentRow(Worksheet $worksheet, array $headers, int $r)
     {
         $row = [];
         $stop = true;
+        $startContentColumn = $this->getStartContentColumn($worksheet);
 
-        for ($c = 1; $c <= count($headers); $c++) {
+        for ($c = $startContentColumn; $c <= count($headers); $c++) {
             $cellError = null;
             $cell = $worksheet->getCellByColumnAndRow($c, $r, false);
             try {
@@ -160,7 +174,78 @@ class ImportParser
         return $row;
     }
 
-    /**
+    private function getTemplateVersion($worksheet): int
+    {
+        $versionRawValue = $worksheet->getCellByColumnAndRow(self::VERSION_COLUMN, self::VERSION_ROW, false);
+
+        switch ($versionRawValue) {
+            case "2.0":
+                $version = 2;
+                break;
+            default:
+                $version = 1;
+        }
+
+        return $version;
+    }
+
+    private function getStartContentColumn($worksheet): int
+    {
+        switch($this->getTemplateVersion($worksheet)) {
+            case 2:
+                $column = self::NEW_CONTENT_COLUMN;
+                break;
+
+            default:
+                $column = self::OLD_CONTENT_COLUMN;
+        }
+
+        return $column;
+    }
+
+    private function getStartContentRow($worksheet): int
+    {
+        switch($this->getTemplateVersion($worksheet)) {
+            case 2:
+                $row = self::NEW_CONTENT_ROW;
+                break;
+
+            default:
+                $row = self::OLD_CONTENT_ROW;
+        }
+
+        return $row;
+    }
+
+    private function getStartHeaderColumn($worksheet): int
+    {
+        switch($this->getTemplateVersion($worksheet)) {
+            case 2:
+                $column = self::NEW_HEADER_COLUMN;
+                break;
+
+            default:
+                $column = self::OLD_HEADER_COLUMN;
+        }
+
+        return $column;
+    }
+
+    private function getStartHeaderRow($worksheet): int
+    {
+        switch($this->getTemplateVersion($worksheet)) {
+            case 2:
+                $row = self::NEW_HEADER_ROW;
+                break;
+
+            default:
+                $row = self::OLD_HEADER_ROW;
+        }
+
+        return $row;
+    }
+
+        /**
      * @param Cell|null $cell
      *
      * @return mixed
