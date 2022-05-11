@@ -9,19 +9,26 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class BeneficiarySelectedFilterInputType extends AbstractFilterInputType
 {
+    private const EXCLUDE_ASSISTANCE = "excludeAssistance";
+
     /**
      * @Assert\Type("int")
      * @Assert\Positive()
      */
     protected $excludeAssistance;
 
-    public function getId()
+    public function getExcludeAssistance()
     {
         return $this->excludeAssistance;
     }
 
-    public function setId($id)
+    public function setExcludeAssistance($id)
     {
         $this->excludeAssistance = $id;
+    }
+
+    public function hasExcludeAssistance(): bool
+    {
+        return $this->has(self::EXCLUDE_ASSISTANCE);
     }
 }
