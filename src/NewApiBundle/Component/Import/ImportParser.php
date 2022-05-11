@@ -21,13 +21,36 @@ class ImportParser
     private const OLD_CONTENT_ROW = 6; // content starts at row #6
     private const OLD_CONTENT_COLUMN = 1; // content starts at column #1
 
-    private const NEW_HEADER_ROW = 5; // header definition is at row #5
-    private const NEW_HEADER_COLUMN = 3; // header definition starts at column #3
-    private const NEW_CONTENT_ROW = 6; // content starts at row #6
-    private const NEW_CONTENT_COLUMN = 3; // content starts at column #3
+    private const V2_HEADER_ROW = 5; // header definition is at row #5
+    private const V2_HEADER_COLUMN = 3; // header definition starts at column #3
+    private const V2_CONTENT_ROW = 6; // content starts at row #6
+    private const V2_CONTENT_COLUMN = 3; // content starts at column #3
 
+    private const VERSION_1 = 1;
+    private const VERSION_2 = 2;
     private const VERSION_COLUMN = 1;
     private const VERSION_ROW = 4;
+
+    private const HEADER_ROW = 0;
+    private const HEADER_COLUMN = 1;
+    private const CONTENT_ROW = 2;
+    private const CONTENT_COLUMN = 3;
+
+    private $versionCustomizedValues = [
+        self::VERSION_1 => [
+            self::HEADER_ROW => self::OLD_HEADER_ROW,
+            self::HEADER_COLUMN => self::OLD_HEADER_COLUMN,
+            self::CONTENT_ROW => self::OLD_CONTENT_ROW,
+            self::CONTENT_COLUMN => self::OLD_CONTENT_COLUMN,
+        ],
+
+        self::VERSION_2 => [
+            self::HEADER_ROW => self::V2_HEADER_ROW,
+            self::HEADER_COLUMN => self::V2_HEADER_COLUMN,
+            self::CONTENT_ROW => self::V2_CONTENT_ROW,
+            self::CONTENT_COLUMN => self::V2_CONTENT_COLUMN,
+        ]
+    ];
 
     /**
      * @param File $file
@@ -35,8 +58,9 @@ class ImportParser
      * @return array
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      * @throws InvalidImportException
+     * @throws InvalidFormulaException
      */
-    public function parse(File $file)
+    public function parse(File $file): array
     {
         $reader = IOFactory::createReaderForFile($file->getRealPath());
         $worksheet = $reader->load($file->getRealPath())->getActiveSheet();
@@ -81,7 +105,7 @@ class ImportParser
      * @param File $file
      *
      * @return array
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception|InvalidFormulaException
      */
     public function parseHeadersOnly(File $file): array
     {
@@ -180,10 +204,10 @@ class ImportParser
 
         switch ($versionRawValue) {
             case "2.0":
-                $version = 2;
+                $version = self::VERSION_2;
                 break;
             default:
-                $version = 1;
+                $version = self::VERSION_1;
         }
 
         return $version;
@@ -191,58 +215,26 @@ class ImportParser
 
     private function getStartContentColumn($worksheet): int
     {
-        switch($this->getTemplateVersion($worksheet)) {
-            case 2:
-                $column = self::NEW_CONTENT_COLUMN;
-                break;
-
-            default:
-                $column = self::OLD_CONTENT_COLUMN;
-        }
-
-        return $column;
+        $version = $this->getTemplateVersion($worksheet);
+        return $this->versionCustomizedValues[$version][self::CONTENT_COLUMN];
     }
 
     private function getStartContentRow($worksheet): int
     {
-        switch($this->getTemplateVersion($worksheet)) {
-            case 2:
-                $row = self::NEW_CONTENT_ROW;
-                break;
-
-            default:
-                $row = self::OLD_CONTENT_ROW;
-        }
-
-        return $row;
+        $version = $this->getTemplateVersion($worksheet);
+        return $this->versionCustomizedValues[$version][self::CONTENT_ROW];
     }
 
     private function getStartHeaderColumn($worksheet): int
     {
-        switch($this->getTemplateVersion($worksheet)) {
-            case 2:
-                $column = self::NEW_HEADER_COLUMN;
-                break;
-
-            default:
-                $column = self::OLD_HEADER_COLUMN;
-        }
-
-        return $column;
+        $version = $this->getTemplateVersion($worksheet);
+        return $this->versionCustomizedValues[$version][self::HEADER_COLUMN];
     }
 
     private function getStartHeaderRow($worksheet): int
     {
-        switch($this->getTemplateVersion($worksheet)) {
-            case 2:
-                $row = self::NEW_HEADER_ROW;
-                break;
-
-            default:
-                $row = self::OLD_HEADER_ROW;
-        }
-
-        return $row;
+        $version = $this->getTemplateVersion($worksheet);
+        return $this->versionCustomizedValues[$version][self::HEADER_ROW];
     }
 
         /**
