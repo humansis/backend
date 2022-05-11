@@ -63,8 +63,11 @@ class ExportService
      *
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
-    public function export($exportableTable, string $name, string $type)
-    {
+    public function export(
+        $exportableTable,
+        string $name,
+        string $type
+    ) {
         if (0 === count($exportableTable)) {
             throw new \InvalidArgumentException('No data to export');
         }
