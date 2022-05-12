@@ -14,6 +14,7 @@ use Exception;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 use NewApiBundle\Enum\BeneficiaryType;
 use NewApiBundle\Enum\ProductCategoryType;
+use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
 
@@ -647,8 +648,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         /** @var AssistanceRepository $assistanceRepository */
         $assistanceRepository = self::$container->get('doctrine')->getRepository(Assistance::class);
-
-        $assistance = $assistanceRepository->findOneBy(['validated' => true]);
+        $assistance = $assistanceRepository->findOneBy(['validated' => true, 'assistanceType' => AssistanceType::DISTRIBUTION, 'subSector' => SubSectorEnum::MULTI_PURPOSE_CASH_ASSISTANCE]);
         $id = $assistance->getId();
 
         $this->request('GET', "/api/basic/web-app/v1/assistances/$id/bank-report/exports", [
