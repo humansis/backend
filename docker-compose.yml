@@ -89,7 +89,7 @@ services:
         networks:
             - pma
         environment:
-            ADMINER_DESIGN: 'pepa-linha-dark'
+            ADMINER_DESIGN: 'pepa-linha'
 
     nginx:
         image: nginx
