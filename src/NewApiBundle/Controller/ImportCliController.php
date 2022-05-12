@@ -30,24 +30,6 @@ class ImportCliController extends AbstractController
 
         $output = new BufferedOutput();
         switch ($import->getState()) {
-            case ImportState::INTEGRITY_CHECKING:
-                $application->run(new ArrayInput([
-                    'command' => 'app:import:integrity',
-                    'import' => $import->getId(),
-                ]), $output);
-                break;
-            case ImportState::IDENTITY_CHECKING:
-                $application->run(new ArrayInput([
-                    'command' => 'app:import:identity',
-                    'import' => $import->getId(),
-                ]), $output);
-                break;
-            case ImportState::SIMILARITY_CHECKING:
-                $application->run(new ArrayInput([
-                    'command' => 'app:import:similarity',
-                    'import' => $import->getId(),
-                ]), $output);
-                break;
             case ImportState::IMPORTING:
                 $application->run(new ArrayInput([
                     'command' => 'app:import:finish',

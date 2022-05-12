@@ -7,6 +7,7 @@ framework:
     messenger:
         routing:
             'NewApiBundle\Component\Import\Message\ItemBatch': sync
+            'NewApiBundle\Component\Import\Message\ImportCheck': sync
 
 swiftmailer:
     disable_delivery: true

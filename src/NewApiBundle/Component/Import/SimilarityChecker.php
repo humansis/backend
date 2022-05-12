@@ -75,6 +75,7 @@ class SimilarityChecker
         $this->importQueueStateMachine->apply($item, ImportQueueTransitions::TO_CREATE);
 
         $this->entityManager->persist($item);
+        $this->entityManager->flush();
     }
 
     /**
