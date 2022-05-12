@@ -5,17 +5,20 @@ namespace NewApiBundle\Controller;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
+use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use CommonBundle\Controller\ExportController;
 use CommonBundle\Entity\Organization;
 use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Enum\AssistanceTargetType;
+use DistributionBundle\Repository\AssistanceRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\BenefciaryPatchInputType;
 use NewApiBundle\InputType\BeneficiaryExportFilterInputType;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
+use NewApiBundle\InputType\BeneficiarySelectedFilterInputType;
 use NewApiBundle\InputType\NationalIdFilterInputType;
 use NewApiBundle\InputType\PhoneFilterInputType;
 use NewApiBundle\Request\Pagination;
@@ -33,8 +36,7 @@ class BeneficiaryController extends AbstractController
      * @Rest\Post("/web-app/v1/assistances/beneficiaries")
      *
      * @param AssistanceCreateInputType $inputType
-     * @param Pagination $paginationF
-     *
+     * @param Pagination $pagination
      * @return JsonResponse
      */
     public function precalculateBeneficiaries(AssistanceCreateInputType $inputType, Pagination $pagination): JsonResponse
@@ -260,17 +262,32 @@ class BeneficiaryController extends AbstractController
      * @Rest\Get("/web-app/v1/projects/{id}/targets/{target}/beneficiaries")
      *
      * @param Project $project
-     * @param string  $target
+     * @param string $target
+     * @param BeneficiarySelectedFilterInputType $filter
+     * @param BeneficiaryRepository $beneficiaryRepository
+     * @param AssistanceRepository $assistanceRepository
      *
      * @return JsonResponse
      */
-    public function getBeneficiaries(Project $project, string $target): JsonResponse
-    {
+    public function getBeneficiaries(Project $project,
+        string $target,
+        BeneficiarySelectedFilterInputType $filter,
+        BeneficiaryRepository $beneficiaryRepository,
+        AssistanceRepository $assistanceRepository
+    ): JsonResponse {
         if (!in_array($target, AssistanceTargetType::values())){
             throw $this->createNotFoundException('Invalid target. Allowed are '.implode(', ', AssistanceTargetType::values()));
         }
 
-        $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->getAllOfProject($project->getId(), $target);
+        if ($filter->hasExcludeAssistance()) {
+            $assistanceId = $filter->getExcludeAssistance();
+            /** @var Assistance $excludedAssistance */
+            $excludedAssistance = $assistanceRepository->find($assistanceId);
+            $beneficiaries = $beneficiaryRepository->getNotSelectedBeneficiariesOfProject($project, $target, $excludedAssistance);
+        } else {
+            $beneficiaries = $beneficiaryRepository->getAllOfProject($project, $target);
+        }
+
 
         return $this->json(new Paginator($beneficiaries));
     }

@@ -169,8 +169,8 @@ class AssistanceBeneficiaryService
      * @param string $target
      * @return array
      */
-    public function getAllBeneficiariesInProject(Project $project, string $target)
+    public function getAllBeneficiariesInProject(Project $project, string $target): array
     {
-        return $this->em->getRepository(Beneficiary::class)->getAllOfProject($project->getId(), $target);
+        return $this->em->getRepository(Beneficiary::class)->getAllOfProject($project, $target);
     }
 }
