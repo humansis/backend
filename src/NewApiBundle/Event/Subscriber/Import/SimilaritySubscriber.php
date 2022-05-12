@@ -5,6 +5,7 @@ namespace NewApiBundle\Event\Subscriber\Import;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectRepository;
+use NewApiBundle\Component\Import\Message\ImportCheck;
 use NewApiBundle\Component\Import\Message\ItemBatch;
 use NewApiBundle\Component\Import\SimilarityChecker;
 use NewApiBundle\Entity\Import;
@@ -61,7 +62,7 @@ class SimilaritySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.import.enter.'.ImportTransitions::CHECK_SIMILARITY => ['fillQueue'],
+            'workflow.import.entered.'.ImportState::SIMILARITY_CHECKING => ['fillQueue'],
             'workflow.import.guard.'.ImportTransitions::COMPLETE_SIMILARITY => [
                 ['guardNothingLeft', -10],
                 ['guardIfImportHasNotSuspiciousItems', 0],
@@ -77,7 +78,7 @@ class SimilaritySubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function fillQueue(EnterEvent $event): void
+    public function fillQueue(EnteredEvent $event): void
     {
         /** @var Import $import */
         $import = $event->getSubject();
@@ -85,6 +86,7 @@ class SimilaritySubscriber implements EventSubscriberInterface
         foreach ($this->queueRepository->findByImport($import) as $item) {
             $this->messageBus->dispatch(new ItemBatch(ImportState::SIMILARITY_CHECKING, [$item->getId()]));
         }
+        $this->messageBus->dispatch(new ImportCheck(ImportState::SIMILARITY_CHECKING, $import->getId()));
     }
 
     public function guardNothingLeft(GuardEvent $guardEvent): void

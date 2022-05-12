@@ -115,6 +115,7 @@ framework:
                     queue_name: import_items
             sync: 'sync://'
         routing:
+            'NewApiBundle\Component\Import\Message\ImportCheck': import
             'NewApiBundle\Component\Import\Message\ItemBatch': import
 
 sensio_framework_extra:
