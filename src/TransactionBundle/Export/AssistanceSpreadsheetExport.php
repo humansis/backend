@@ -82,6 +82,7 @@ class AssistanceSpreadsheetExport
         $worksheet->getColumnDimension('I')->setWidth(15.888);
         $worksheet->getColumnDimension('J')->setWidth(19.888);
         $worksheet->getColumnDimension('K')->setWidth(21.032);
+        $worksheet->getColumnDimension('L')->setWidth(30.032);
 
         $worksheet->getStyle('A1:K10000')->applyFromArray($style);
     }
@@ -330,8 +331,12 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('I19')->setValue('Proxy ID No.');
         $worksheet->getCell('J19')->setValue('Distributed Item(s), Unit, Amount per beneficiary');
         $worksheet->getCell('K19')->setValue('Signature');
-        $worksheet->getStyle('B19:K19')->applyFromArray($rowStyle);
-        $worksheet->getStyle('B19:K19')->getFont()->setBold(true);
+        $worksheet->getCell('L19')->setValue('Justification');
+        $worksheet->getStyle('B19:L19')->applyFromArray($rowStyle);
+        $worksheet->getStyle('B19:L19')->getFont()->setBold(true);
+        $worksheet->getStyle('B19:L20')->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+            ->setVertical(Alignment::VERTICAL_CENTER);
         $worksheet->getRowDimension(19)->setRowHeight(42.00);
 
         $worksheet->setCellValue('B20', $this->translator->trans('No.'));
@@ -344,20 +349,21 @@ class AssistanceSpreadsheetExport
         $worksheet->setCellValue('I20', $this->translator->trans('Proxy ID No.'));
         $worksheet->setCellValue('J20', $this->translator->trans('Distributed Item(s), Unit, Amount per beneficiary'));
         $worksheet->setCellValue('K20', $this->translator->trans('Signature'));
-        $worksheet->getStyle('B20:K20')->applyFromArray($rowStyle);
-        $worksheet->getStyle('B20:K20')->getFont()->setItalic(true);
+        $worksheet->setCellValue('L20', $this->translator->trans('Justification'));
+        $worksheet->getStyle('B20:L20')->applyFromArray($rowStyle);
+        $worksheet->getStyle('B20:L20')->getFont()->setItalic(true);
         $worksheet->getRowDimension(20)->setRowHeight(42.00);
 
-        $worksheet->getStyle('B19:K19')->getBorders()
+        $worksheet->getStyle('B19:L19')->getBorders()
             ->getTop()
             ->setBorderStyle(Border::BORDER_THICK);
-        $worksheet->getStyle('B20:K20')->getBorders()
+        $worksheet->getStyle('B20:L20')->getBorders()
             ->getBottom()
             ->setBorderStyle(Border::BORDER_THICK);
-        $worksheet->getStyle('B19:K20')->getBorders()
+        $worksheet->getStyle('B19:L20')->getBorders()
             ->getLeft()
             ->setBorderStyle(Border::BORDER_THICK);
-        $worksheet->getStyle('B19:K20')->getBorders()
+        $worksheet->getStyle('B19:L20')->getBorders()
             ->getRight()
             ->setBorderStyle(Border::BORDER_THICK);
 
@@ -375,6 +381,12 @@ class AssistanceSpreadsheetExport
                 $person = $bnf->getPerson();
             }
 
+            if ($distributionBeneficiary->getRemoved()) {
+                $worksheet->getStyle("B$idx:K$idx")->getFont()->setStrikethrough(true);
+                $worksheet->getStyle("K$idx")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()->setRGB('999999');
+            }
+
             $worksheet->setCellValue('B'.$idx, $no);
             $worksheet->setCellValue('C'.$idx, $person->getLocalGivenName());
             $worksheet->setCellValue('D'.$idx, $person->getLocalFamilyName());
@@ -383,12 +395,13 @@ class AssistanceSpreadsheetExport
             $worksheet->setCellValue('G'.$idx, null);
             $worksheet->setCellValue('H'.$idx, null);
             $worksheet->setCellValue('I'.$idx, self::getProxyPhone($person));
-            $worksheet->setCellValue('J'.$idx, self::getDistributedItems($distributionBeneficiary));
-            $worksheet->getStyle('B'.$idx.':K'.$idx)->applyFromArray($rowStyle);
+            $worksheet->setCellValue('J'.$idx, $distributionBeneficiary->getRemoved() ? '' : self::getDistributedItems($distributionBeneficiary));
+            $worksheet->setCellValue('L'.$idx, $distributionBeneficiary->getJustification());
+            $worksheet->getStyle('B'.$idx.':L'.$idx)->applyFromArray($rowStyle);
             $worksheet->getRowDimension($idx)->setRowHeight(42.00);
 
             if (1 === $no % 2) {
-                $worksheet->getStyle('B'.$idx.':K'.$idx)->applyFromArray($oddRowStyle);
+                $worksheet->getStyle('B'.$idx.':L'.$idx)->applyFromArray($oddRowStyle);
             }
 
             ++$idx;
