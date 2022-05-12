@@ -10,7 +10,8 @@ class ImportTemplate
 {
     public const FIRST_ENTRY_ROW = 6;
     public const ROW_NAME_STATUS = 'Humansis data';
-    public const ROW_NAME_MESSAGES = 'Humansis commentary';
+    public const ROW_NAME_MESSAGES = 'Humansis comment';
+    public const TEMPLATE_VERSION = "2.0";
 
     /**
      * @var HouseholdExportCSVService
