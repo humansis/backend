@@ -9,12 +9,14 @@ use CommonBundle\Entity\Organization;
 use CommonBundle\Pagination\Paginator;
 use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Repository\AssistanceRepository;
 use DistributionBundle\Utils\AssistanceService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Component\Assistance\AssistanceQuery;
 use NewApiBundle\Entity\AssistanceStatistics;
+use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Exception\ConstraintViolationException;
 use NewApiBundle\Export\AssistanceBankReportExport;
 use NewApiBundle\Export\VulnerabilityScoreExport;
@@ -25,6 +27,7 @@ use NewApiBundle\InputType\AssistanceStatisticsFilterInputType;
 use NewApiBundle\InputType\ProjectsAssistanceFilterInputType;
 use NewApiBundle\Request\Pagination;
 use NewApiBundle\Utils\DateTime\Iso8601Converter;
+use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
 use Psr\Cache\InvalidArgumentException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -261,18 +264,26 @@ class AssistanceController extends AbstractController
     public function bankReportExports(Assistance $assistance, Request $request): Response
     {
         $type = $request->query->get('type', 'csv');
-        if ($assistance->getValidated()) {
-            $filename = $this->assistanceBankReportExport->export($assistance, $type);
-            try {
-                $response = new BinaryFileResponse($filename);
-                $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
-                $response->deleteFileAfterSend(true);
-                return  $response;
-            } catch (\Exception $exception) {
-                return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
-            }
-        } else {
-            throw new HttpException(400, 'Cannot download bank report for assistance which is not validated.');
+        if (!$assistance->getValidated()) {
+            throw new BadRequestHttpException('Cannot download bank report for assistance which is not validated.');
+        }
+        if ($assistance->getAssistanceType() !== AssistanceType::DISTRIBUTION) {
+            throw new BadRequestHttpException('Bank export is allowed only for Distribution type of assistance.');
+        }
+        if ($assistance->getSubSector() !== SubSectorEnum::MULTI_PURPOSE_CASH_ASSISTANCE) {
+            throw new BadRequestHttpException('Bank export is allowed only for subsector Multi purpose cash assistance.');
+        }
+        if (!$assistance->hasModalityTypeCommodity(ModalityType::CASH)) {
+            throw new BadRequestHttpException('Bank export is allowed only for assistance with Cash commodity.');
+        }
+        $filename = $this->assistanceBankReportExport->export($assistance, $type);
+        try {
+            $response = new BinaryFileResponse($filename);
+            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
+            $response->deleteFileAfterSend(true);
+            return  $response;
+        } catch (\Exception $exception) {
+            return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
 
     }

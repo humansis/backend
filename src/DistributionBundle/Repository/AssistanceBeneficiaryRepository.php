@@ -498,6 +498,7 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
             ->addSelect("person.id as personId")
             ->addSelect("person.localGivenName")
             ->addSelect("SUM(relief.amountToDistribute) as amountToDistribute")
+            ->addSelect("ANY_VALUE(relief.unit) as currency")
             ->addSelect("person.localFamilyName")
             ->addSelect("person.localParentsName")
             ->addSelect("ANY_VALUE(countrySpecificAnswer.answer) AS countrySpecificValue")
@@ -509,11 +510,13 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
             ->leftJoin('household.countrySpecificAnswers', 'countrySpecificAnswer', Join::WITH, 'IDENTITY(countrySpecificAnswer.countrySpecific) = :countrySpecificId')
             ->andWhere('db.assistance = :assistance')
             ->andWhere('db.removed = :removed')
+            ->andWhere('relief.modalityType = :modalityType')
             ->groupBy('ab.id')
             ->orderBy('person.localFamilyName')
             ->setParameter('assistance', $assistance)
             ->setParameter('countrySpecificId',  $countrySpecific ? $countrySpecific->getId() : null)
-            ->setParameter('removed', false);
+            ->setParameter('removed', false)
+            ->setParameter('modalityType', 'Cash');
         return $qb->getQuery()->getResult();
     }
 }
