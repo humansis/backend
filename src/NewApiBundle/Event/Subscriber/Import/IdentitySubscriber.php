@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectRepository;
 use NewApiBundle\Component\Import\IdentityChecker;
+use NewApiBundle\Component\Import\Message\ImportCheck;
 use NewApiBundle\Component\Import\Message\ItemBatch;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
@@ -81,6 +82,8 @@ class IdentitySubscriber implements EventSubscriberInterface
         foreach ($this->queueRepository->findByImport($import) as $item) {
             $this->messageBus->dispatch(new ItemBatch(ImportState::IDENTITY_CHECKING, [$item->getId()]));
         }
+
+        $this->messageBus->dispatch(new ImportCheck(ImportState::IDENTITY_CHECKING, $import->getId()));
     }
 
     /**

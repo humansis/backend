@@ -2,15 +2,20 @@
 
 namespace NewApiBundle\Component\Import\Message;
 use NewApiBundle\Component\Import\IdentityChecker;
+use NewApiBundle\Component\Import\ImportLoggerTrait;
+use NewApiBundle\Component\Import\ImportQueueLoggerTrait;
 use NewApiBundle\Component\Import\IntegrityChecker;
 use NewApiBundle\Component\Import\SimilarityChecker;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 class ItemBatchHandler implements MessageHandlerInterface
 {
+    use ImportQueueLoggerTrait;
+
     /** @var ImportQueueRepository */
     private $queueRepository;
     /** @var IntegrityChecker */
@@ -21,17 +26,20 @@ class ItemBatchHandler implements MessageHandlerInterface
     private $similarityChecker;
 
     /**
+     * @param LoggerInterface       $importLogger
      * @param ImportQueueRepository $queueRepository
      * @param IntegrityChecker      $integrityChecker
      * @param IdentityChecker       $identityChecker
      * @param SimilarityChecker     $similarityChecker
      */
     public function __construct(
+        LoggerInterface       $importLogger,
         ImportQueueRepository $queueRepository,
         IntegrityChecker      $integrityChecker,
         IdentityChecker       $identityChecker,
         SimilarityChecker     $similarityChecker
     ) {
+        $this->logger = $importLogger;
         $this->queueRepository = $queueRepository;
         $this->integrityChecker = $integrityChecker;
         $this->identityChecker = $identityChecker;
@@ -47,6 +55,7 @@ class ItemBatchHandler implements MessageHandlerInterface
                     'state' => ImportQueueState::NEW,
                 ]);
                 foreach ($items as $item) {
+                    $this->logQueueInfo($item, "Integrity check");
                     $this->integrityChecker->checkOne($item);
                 }
                 break;
@@ -57,6 +66,7 @@ class ItemBatchHandler implements MessageHandlerInterface
                 ]);
                 $queueByImport = [];
                 foreach ($items as $item) {
+                    $this->logQueueInfo($item, "Identity check");
                     $queueByImport[$item->getImport()->getId()][] = $item;
                 }
                 foreach ($queueByImport as $items) {
@@ -69,6 +79,7 @@ class ItemBatchHandler implements MessageHandlerInterface
                     'state' => ImportQueueState::UNIQUE_CANDIDATE,
                 ]);
                 foreach ($items as $item) {
+                    $this->logQueueInfo($item, "Similarity check");
                     $this->similarityChecker->checkOne($item);
                 }
                 break;

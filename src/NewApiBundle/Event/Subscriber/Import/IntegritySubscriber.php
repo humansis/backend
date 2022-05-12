@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectRepository;
 use NewApiBundle\Component\Import\ImportInvalidFileService;
 use NewApiBundle\Component\Import\IntegrityChecker;
+use NewApiBundle\Component\Import\Message\ImportCheck;
 use NewApiBundle\Component\Import\Message\IntegrityBatch;
 use NewApiBundle\Component\Import\Message\ItemBatch;
 use NewApiBundle\Entity\Import;
@@ -17,6 +18,7 @@ use NewApiBundle\Workflow\ImportTransitions;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Event\CompletedEvent;
+use Symfony\Component\Workflow\Event\EnteredEvent;
 use Symfony\Component\Workflow\Event\EnterEvent;
 use Symfony\Component\Workflow\Event\Event;
 use Symfony\Component\Workflow\Event\GuardEvent;
@@ -70,7 +72,7 @@ class IntegritySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.import.enter.'.ImportTransitions::CHECK_INTEGRITY => ['fillQueue'],
+            'workflow.import.entered.'.ImportState::INTEGRITY_CHECKING => ['fillQueue'],
             'workflow.import.guard.'.ImportTransitions::COMPLETE_INTEGRITY => [
                 ['guardNothingLeft', -10],
                 ['guardNoItemsFailed', 10],
@@ -87,7 +89,7 @@ class IntegritySubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function fillQueue(EnterEvent $event): void
+    public function fillQueue(EnteredEvent $event): void
     {
         /** @var Import $import */
         $import = $event->getSubject();
@@ -95,6 +97,7 @@ class IntegritySubscriber implements EventSubscriberInterface
         foreach ($this->queueRepository->findByImport($import) as $item) {
             $this->messageBus->dispatch(new ItemBatch(ImportState::INTEGRITY_CHECKING, [$item->getId()]));
         }
+        $this->messageBus->dispatch(new ImportCheck(ImportState::INTEGRITY_CHECKING, $import->getId()));
     }
 
     /**

@@ -522,7 +522,7 @@ class ImportTest extends KernelTestCase
 
         $this->entityManager->refresh($firstImport);
         $this->entityManager->refresh($secondImport);
-        $this->assertEquals(ImportState::IDENTITY_CHECKING, $import->getState());
+        $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
 
         $firstImportBeneficiary = $firstImport->getImportBeneficiaries()[0]->getBeneficiary();
         $this->assertEquals(1, $firstImport->getImportBeneficiaries()->count());
