@@ -68,15 +68,13 @@ class ReliefPackageController extends AbstractWebAppController
      * @param DistributeReliefPackagesInputType[] $packages
      * @param ReliefPackageRepository             $repository
      * @param Registry                            $registry
-     * @param AssistanceFactory                   $assistanceFactory
      *
      * @return JsonResponse
      */
     public function distributePackages(
         array                   $packages,
         ReliefPackageRepository $repository,
-        Registry                $registry,
-        AssistanceFactory       $assistanceFactory
+        Registry                $registry
     ): JsonResponse {
         foreach ($packages as $packageUpdate) {
             /** @var ReliefPackage $package */
@@ -87,14 +85,15 @@ class ReliefPackageController extends AbstractWebAppController
                 $package->addAmountOfDistributed($packageUpdate->getAmountDistributed());
             }
 
+            // Assistance statistic cache is invalidated by workflow transition
+            // for partially distribution process of invalidation cache should be changed
+
             $reliefPackageWorkflow = $registry->get($package);
             if ($reliefPackageWorkflow->can($package, ReliefPackageTransitions::DISTRIBUTE)) {
                 $reliefPackageWorkflow->apply($package, ReliefPackageTransitions::DISTRIBUTE);
             }
 
             $repository->save($package);
-            $assistance = $assistanceFactory->hydrate($package->getAssistanceBeneficiary()->getAssistance());
-            $assistance->cleanCache();
         }
 
         return $this->json(true);
