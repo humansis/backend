@@ -423,6 +423,11 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
+    workflow.reliefPackage.subscriber:
+        class: NewApiBundle\Event\Subscriber\ReliefPackage\ReliefPackage
+        tags:
+            - { name: kernel.event_subscriber }
+
     NewApiBundle\Factory\AwsStorageFactory:
         public: true
 

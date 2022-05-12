@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller\OfflineApp\Assistance;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Controller\OfflineApp\AbstractOfflineAppController;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\InputType\Assistance\DistributeReliefPackagesInputType;
@@ -25,8 +26,11 @@ class ReliefPackageController extends AbstractOfflineAppController
      *
      * @return JsonResponse
      */
-    public function distributePackages(array $packages, ReliefPackageRepository $repository, Registry $registry): JsonResponse
-    {
+    public function distributePackages(
+        array                   $packages,
+        ReliefPackageRepository $repository,
+        Registry                $registry
+    ): JsonResponse {
         foreach ($packages as $packageUpdate) {
             /** @var ReliefPackage $package */
             $package = $repository->find($packageUpdate->getId());
@@ -36,6 +40,9 @@ class ReliefPackageController extends AbstractOfflineAppController
                 $package->addAmountOfDistributed($packageUpdate->getAmountDistributed());
             }
 
+            // Assistance statistic cache is invalidated by workflow transition
+            // for partially distribution process of invalidation cache should be changed
+
             $reliefPackageWorkflow = $registry->get($package);
             if ($reliefPackageWorkflow->can($package, ReliefPackageTransitions::DISTRIBUTE)) {
                 $reliefPackageWorkflow->apply($package, ReliefPackageTransitions::DISTRIBUTE);
@@ -43,6 +50,7 @@ class ReliefPackageController extends AbstractOfflineAppController
 
             $repository->save($package);
         }
+
         return $this->json(true);
     }
 }
