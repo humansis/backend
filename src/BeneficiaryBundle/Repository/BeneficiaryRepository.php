@@ -46,25 +46,60 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     /**
      * Get all beneficiaries in a selected project.
      *
-     * @param int    $project
+     * @param Project $project
      * @param string $target
      *
      * @return mixed
      */
-    public function getAllOfProject(int $project, string $target)
+    public function getAllOfProject(Project $project, string $target)
     {
+        $projectId = $project->getId();
         $qb = $this->createQueryBuilder('b');
         if (AssistanceTargetType::HOUSEHOLD === $target) {
             $q = $qb->leftJoin('b.household', 'hh')
                 ->where(':project MEMBER OF hh.projects')
                 ->andWhere('b.status = 1')
                 ->andWhere('b.archived = 0')
-                ->setParameter('project', $project);
+                ->setParameter('project', $projectId);
         } elseif (AssistanceTargetType::INDIVIDUAL === $target) {
             $q = $qb->leftJoin('b.household', 'hh')
                 ->andWhere(':project MEMBER OF hh.projects')
                 ->andWhere('b.archived = 0')
-                ->setParameter('project', $project);
+                ->setParameter('project', $projectId);
+        } else {
+            return [];
+        }
+
+        return $q->getQuery()->getResult();
+    }
+
+    /**
+     * @param Project $project
+     * @param string $target
+     * @param Assistance $excludedAssistance
+     *
+     * @return array|float|int|mixed|string
+     */
+    public function getNotSelectedBeneficiariesOfProject(Project $project, string $target, Assistance $excludedAssistance){
+        $excludedAssistanceDQL = "SELECT ben.id FROM DistributionBundle\Entity\AssistanceBeneficiary db LEFT JOIN db.beneficiary ab INNER JOIN BeneficiaryBundle\Entity\Beneficiary ben WITH ben.id = ab.id WHERE db.assistance = :assistance";
+        $projectId = $project->getId();
+
+        $qb = $this->createQueryBuilder('b');
+        if (AssistanceTargetType::HOUSEHOLD === $target) {
+            $q = $qb->leftJoin('b.household', 'hh')
+                ->where(':project MEMBER OF hh.projects')
+                ->andWhere('b.status = 1')
+                ->andWhere('b.archived = 0')
+                ->andWhere($qb->expr()->notIn('b.id', $excludedAssistanceDQL))
+                ->setParameter('project', $projectId)
+                ->setParameter('assistance', $excludedAssistance);
+        } elseif (AssistanceTargetType::INDIVIDUAL === $target) {
+            $q = $qb->leftJoin('b.household', 'hh')
+                ->andWhere(':project MEMBER OF hh.projects')
+                ->andWhere('b.archived = 0')
+                ->andWhere($qb->expr()->notIn('b.id', $excludedAssistanceDQL))
+                ->setParameter('project', $projectId)
+                ->setParameter('assistance', $excludedAssistance);
         } else {
             return [];
         }
