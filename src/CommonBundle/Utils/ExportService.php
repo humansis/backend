@@ -80,7 +80,7 @@ class ExportService
         $spreadsheet->setActiveSheetIndex(0);
         $worksheet = $spreadsheet->getActiveSheet();
 
-        $tableHeaders = $this->getHeaders($rows);
+        $tableHeaders = $this->getHeader($rows);
         $generator = new ExcelColumnsGenerator();
 
         $rowIndex = 1;
@@ -168,7 +168,7 @@ class ExportService
      *
      * @return array list of all headers of exported table
      */
-    private function getHeaders($exportableTable)
+    private function getHeader($exportableTable)
     {
         $headers = [];
 
