@@ -135,6 +135,16 @@ services:
         arguments:
             - NewApiBundle\Entity\Assistance\ReliefPackage
 
+    NewApiBundle\Repository\SmartcardPurchasedItemRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\SmartcardPurchasedItem
+
+    NewApiBundle\Repository\DistributedItemRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\DistributedItem
+
     NewApiBundle\Repository\AssistanceStatisticsRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
