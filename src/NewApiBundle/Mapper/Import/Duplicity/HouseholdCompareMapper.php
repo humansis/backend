@@ -5,6 +5,7 @@ namespace NewApiBundle\Mapper\Import\Duplicity;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Repository\CountrySpecificRepository;
+use CommonBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
 use NewApiBundle\Component\Import\Finishing\HouseholdDecoratorBuilder;
 use NewApiBundle\Component\Import\ValueObject\HouseholdCompare;
@@ -128,33 +129,31 @@ class HouseholdCompareMapper implements MapperInterface
         return $this->compareScalarValue($this->object->getCurrent()->getCopingStrategiesIndex(), $this->object->getImported()->getCopingStrategiesIndex());
     }
     // householdLocations
-    public function geLocations(): ?array
+    public function getLocation(): ?array
     {
-        $currentLocations = [];
         /** @var HouseholdLocation $householdLocation */
-        foreach ($this->object->getCurrent()->getHouseholdLocations() as $householdLocation) {
-            $currentLocations[] = $this->serializeLocation($householdLocation);
-        }
-        $importLocations = [];
+        $householdLocation = $this->object->getCurrent()->getHouseholdLocations()->first();
+        $currentLocation = $householdLocation ? $this->serializeLocation($householdLocation) : null;
+
+        $importLocation = null;
         if ($this->object->getImported()->getTemporarySettlementAddress()) {
             $locationName = $this->locationRepository->find($this->object->getImported()->getTemporarySettlementAddress()->getLocationId());
-            $importLocations[] = HouseholdLocation::LOCATION_TYPE_SETTLEMENT.": ".
+            $importLocation = HouseholdLocation::LOCATION_TYPE_SETTLEMENT.": ".
                 implode(' ', [
                 $this->object->getImported()->getTemporarySettlementAddress()->getStreet(),
                 $this->object->getImported()->getTemporarySettlementAddress()->getNumber(),
                 $this->object->getImported()->getTemporarySettlementAddress()->getPostcode(),
                 $locationName,
             ]);
-        }
-        if ($this->object->getImported()->getCampAddress()) {
+        } else if ($this->object->getImported()->getCampAddress()) {
             $locationName = $this->locationRepository->find($this->object->getImported()->getCampAddress()->getCamp()->getLocationId());
-            $importLocations[] = HouseholdLocation::LOCATION_TYPE_CAMP.": ".implode(' ', [
+            $importLocation = HouseholdLocation::LOCATION_TYPE_CAMP.": ".implode(' ', [
                     $this->object->getImported()->getCampAddress()->getCamp()->getName(),
                     $this->object->getImported()->getCampAddress()->getTentNumber(),
                     $locationName,
                 ]);
         }
-        return $this->compareLists($currentLocations, $importLocations);
+        return $this->compareScalarValue($currentLocation, $importLocation);
     }
     private function serializeLocation(HouseholdLocation $householdLocation): ?string
     {
@@ -169,6 +168,94 @@ class HouseholdCompareMapper implements MapperInterface
 
         ]);
         return $householdLocation->getType().": ".$address;
+    }
+    public function getAdms(): ?array
+    {
+        /** @var HouseholdLocation $householdLocation */
+        $householdLocation = $this->object->getCurrent()->getHouseholdLocations()->first();
+        $currentLocation = $householdLocation ? $this->serializeADMs($householdLocation->getLocation()) : null;
+
+        $importLocation = null;
+        if ($this->object->getImported()->getTemporarySettlementAddress()) {
+            $location = $this->locationRepository->find($this->object->getImported()->getTemporarySettlementAddress()->getLocationId());
+            $importLocation = $this->serializeADMs($location);
+        } else if ($this->object->getImported()->getCampAddress()) {
+            $location = $this->locationRepository->find($this->object->getImported()->getCampAddress()->getCamp()->getLocationId());
+            $importLocation = $this->serializeADMs($location);
+        }
+        return $this->compareScalarValue($currentLocation, $importLocation);
+    }
+    private function serializeADMs(Location $location): string
+    {
+        $DELIMITER = ', ';
+        if ($location->getParentLocation() !== null) {
+            return $this->serializeADMs($location->getParentLocation()).$DELIMITER.$location->getName();
+        }
+        return $location->getName();
+    }
+    public function getAdm1(): ?array
+    {
+        /** @var HouseholdLocation $householdLocation */
+        $householdLocation = $this->object->getCurrent()->getHouseholdLocations()->first();
+        $currentLocation = $householdLocation ? $householdLocation->getLocation()->getAdm1Name() : null;
+
+        $importLocation = null;
+        if ($this->object->getImported()->getTemporarySettlementAddress()) {
+            $location = $this->locationRepository->find($this->object->getImported()->getTemporarySettlementAddress()->getLocationId());
+            $importLocation = $location->getAdm1Name();
+        } else if ($this->object->getImported()->getCampAddress()) {
+            $location = $this->locationRepository->find($this->object->getImported()->getCampAddress()->getCamp()->getLocationId());
+            $importLocation = $location->getAdm1Name();
+        }
+        return $this->compareScalarValue($currentLocation, $importLocation);
+    }
+    public function getAdm2(): ?array
+    {
+        /** @var HouseholdLocation $householdLocation */
+        $householdLocation = $this->object->getCurrent()->getHouseholdLocations()->first();
+        $currentLocation = $householdLocation ? $householdLocation->getLocation()->getAdm2Name() : null;
+
+        $importLocation = null;
+        if ($this->object->getImported()->getTemporarySettlementAddress()) {
+            $location = $this->locationRepository->find($this->object->getImported()->getTemporarySettlementAddress()->getLocationId());
+            $importLocation = $location->getAdm2Name();
+        } else if ($this->object->getImported()->getCampAddress()) {
+            $location = $this->locationRepository->find($this->object->getImported()->getCampAddress()->getCamp()->getLocationId());
+            $importLocation = $location->getAdm2Name();
+        }
+        return $this->compareScalarValue($currentLocation, $importLocation);
+    }
+    public function getAdm3(): ?array
+    {
+        /** @var HouseholdLocation $householdLocation */
+        $householdLocation = $this->object->getCurrent()->getHouseholdLocations()->first();
+        $currentLocation = $householdLocation ? $householdLocation->getLocation()->getAdm3Name() : null;
+
+        $importLocation = null;
+        if ($this->object->getImported()->getTemporarySettlementAddress()) {
+            $location = $this->locationRepository->find($this->object->getImported()->getTemporarySettlementAddress()->getLocationId());
+            $importLocation = $location->getAdm3Name();
+        } else if ($this->object->getImported()->getCampAddress()) {
+            $location = $this->locationRepository->find($this->object->getImported()->getCampAddress()->getCamp()->getLocationId());
+            $importLocation = $location->getAdm3Name();
+        }
+        return $this->compareScalarValue($currentLocation, $importLocation);
+    }
+    public function getAdm4(): ?array
+    {
+        /** @var HouseholdLocation $householdLocation */
+        $householdLocation = $this->object->getCurrent()->getHouseholdLocations()->first();
+        $currentLocation = $householdLocation ? $householdLocation->getLocation()->getAdm4Name() : null;
+
+        $importLocation = null;
+        if ($this->object->getImported()->getTemporarySettlementAddress()) {
+            $location = $this->locationRepository->find($this->object->getImported()->getTemporarySettlementAddress()->getLocationId());
+            $importLocation = $location->getAdm4Name();
+        } else if ($this->object->getImported()->getCampAddress()) {
+            $location = $this->locationRepository->find($this->object->getImported()->getCampAddress()->getCamp()->getLocationId());
+            $importLocation = $location->getAdm4Name();
+        }
+        return $this->compareScalarValue($currentLocation, $importLocation);
     }
 
     // debtLevel
