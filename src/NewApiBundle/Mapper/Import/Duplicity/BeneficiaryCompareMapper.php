@@ -114,19 +114,20 @@ class BeneficiaryCompareMapper implements MapperInterface
         );
     }
 
-    public function getPhones(): ?array
+    public function getPhone1(): ?array
     {
-        $databasePhones = [];
-        foreach ($this->object->getBeneficiary()->getPerson()->getPhones() as $phone) {
-            $databasePhones[] = trim($phone->getPrefix().$phone->getNumber());
-        }
-        $importPhones = [];
-        $importPhones[] = trim($this->object->getImportLine()->prefixPhone1.$this->object->getImportLine()->numberPhone1);
-        $importPhones[] = trim($this->object->getImportLine()->prefixPhone2.$this->object->getImportLine()->numberPhone2);
-        $importPhones = array_filter($importPhones, function ($number) {
-            return !empty($number);
-        });
-        return $this->compareLists($databasePhones, $importPhones);
+        $phone = $this->object->getBeneficiary()->getPerson()->getPhones()->get(0);
+        $databasePhone = $phone ? trim($phone->getPrefix().$phone->getNumber()) : null;
+        $importPhone = trim($this->object->getImportLine()->prefixPhone1.$this->object->getImportLine()->numberPhone1);
+        return $this->compareScalarValue($databasePhone, !empty($importPhone) ? $importPhone : null);
+    }
+
+    public function getPhone2(): ?array
+    {
+        $phone = $this->object->getBeneficiary()->getPerson()->getPhones()->get(1);
+        $databasePhone = $phone ? trim($phone->getPrefix().$phone->getNumber()) : null;
+        $importPhone = trim($this->object->getImportLine()->prefixPhone2.$this->object->getImportLine()->numberPhone2);
+        return $this->compareScalarValue($databasePhone, !empty($importPhone) ? $importPhone : null);
     }
 
     public function getVulnerability(): ?array
