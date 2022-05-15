@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace TransactionBundle\Export;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Community;
+use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Person;
 use CommonBundle\Entity\Organization;
@@ -312,15 +315,6 @@ class AssistanceSpreadsheetExport
             ],
         ];
 
-        $oddRowStyle = [
-            'fill' => [
-                'fillType' => Fill::FILL_SOLID,
-            ],
-            'startColor' => [
-                'argb' => 'F2F2F2',
-            ],
-        ];
-
         $worksheet->getCell('B19')->setValue('No.');
         $worksheet->getCell('C19')->setValue('First Name');
         $worksheet->getCell('D19')->setValue('Second Name');
@@ -331,12 +325,8 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('I19')->setValue('Proxy ID No.');
         $worksheet->getCell('J19')->setValue('Distributed Item(s), Unit, Amount per beneficiary');
         $worksheet->getCell('K19')->setValue('Signature');
-        $worksheet->getCell('L19')->setValue('Justification');
-        $worksheet->getStyle('B19:L19')->applyFromArray($rowStyle);
-        $worksheet->getStyle('B19:L19')->getFont()->setBold(true);
-        $worksheet->getStyle('B19:L20')->getAlignment()
-            ->setHorizontal(Alignment::HORIZONTAL_CENTER)
-            ->setVertical(Alignment::VERTICAL_CENTER);
+        $worksheet->getStyle('B19:K19')->applyFromArray($rowStyle);
+        $worksheet->getStyle('B19:K19')->getFont()->setBold(true);
         $worksheet->getRowDimension(19)->setRowHeight(42.00);
 
         $worksheet->setCellValue('B20', $this->translator->trans('No.'));
@@ -349,64 +339,72 @@ class AssistanceSpreadsheetExport
         $worksheet->setCellValue('I20', $this->translator->trans('Proxy ID No.'));
         $worksheet->setCellValue('J20', $this->translator->trans('Distributed Item(s), Unit, Amount per beneficiary'));
         $worksheet->setCellValue('K20', $this->translator->trans('Signature'));
-        $worksheet->setCellValue('L20', $this->translator->trans('Justification'));
-        $worksheet->getStyle('B20:L20')->applyFromArray($rowStyle);
-        $worksheet->getStyle('B20:L20')->getFont()->setItalic(true);
+        $worksheet->getStyle('B20:K20')->applyFromArray($rowStyle);
+        $worksheet->getStyle('B20:K20')->getFont()->setItalic(true);
         $worksheet->getRowDimension(20)->setRowHeight(42.00);
 
-        $worksheet->getStyle('B19:L19')->getBorders()
+        $worksheet->getStyle('B19:K19')->getBorders()
             ->getTop()
             ->setBorderStyle(Border::BORDER_THICK);
-        $worksheet->getStyle('B20:L20')->getBorders()
+        $worksheet->getStyle('B20:K20')->getBorders()
             ->getBottom()
             ->setBorderStyle(Border::BORDER_THICK);
-        $worksheet->getStyle('B19:L20')->getBorders()
+        $worksheet->getStyle('B19:K20')->getBorders()
             ->getLeft()
             ->setBorderStyle(Border::BORDER_THICK);
-        $worksheet->getStyle('B19:L20')->getBorders()
+        $worksheet->getStyle('B19:K20')->getBorders()
             ->getRight()
             ->setBorderStyle(Border::BORDER_THICK);
 
-        $idx = 21;
-        $no = 1;
-        foreach ($assistance->getDistributionBeneficiaries() as $distributionBeneficiary) {
-            $bnf = $distributionBeneficiary->getBeneficiary();
-            if ($bnf instanceof \BeneficiaryBundle\Entity\Household) {
-                $person = $bnf->getHouseholdHead()->getPerson();
-            } elseif ($bnf instanceof \BeneficiaryBundle\Entity\Community) {
-                $person = $bnf->getContact();
-            } elseif ($bnf instanceof \BeneficiaryBundle\Entity\Institution) {
-                $person = $bnf->getContact();
-            } else {
-                $person = $bnf->getPerson();
-            }
-
-            if ($distributionBeneficiary->getRemoved()) {
-                $worksheet->getStyle("B$idx:K$idx")->getFont()->setStrikethrough(true);
-                $worksheet->getStyle("K$idx")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                    ->getStartColor()->setRGB('999999');
-            }
-
-            $worksheet->setCellValue('B'.$idx, $no);
-            $worksheet->setCellValue('C'.$idx, $person->getLocalGivenName());
-            $worksheet->setCellValue('D'.$idx, $person->getLocalFamilyName());
-            $worksheet->setCellValue('E'.$idx, self::getNationalId($person));
-            $worksheet->setCellValue('F'.$idx, self::getPhone($person));
-            $worksheet->setCellValue('G'.$idx, null);
-            $worksheet->setCellValue('H'.$idx, null);
-            $worksheet->setCellValue('I'.$idx, self::getProxyPhone($person));
-            $worksheet->setCellValue('J'.$idx, $distributionBeneficiary->getRemoved() ? '' : self::getDistributedItems($distributionBeneficiary));
-            $worksheet->setCellValue('L'.$idx, $distributionBeneficiary->getJustification());
-            $worksheet->getStyle('B'.$idx.':L'.$idx)->applyFromArray($rowStyle);
-            $worksheet->getRowDimension($idx)->setRowHeight(42.00);
-
-            if (1 === $no % 2) {
-                $worksheet->getStyle('B'.$idx.':L'.$idx)->applyFromArray($oddRowStyle);
-            }
-
-            ++$idx;
-            ++$no;
+        $rowNumber = 21;
+        foreach ($assistance->getDistributionBeneficiaries() as  $id => $distributionBeneficiary) {
+            $rowNumber = $this->createBeneficiaryRow($worksheet, $distributionBeneficiary, $rowNumber, $id+1, $rowStyle);
         }
+    }
+
+    private function createBeneficiaryRow(Worksheet $worksheet, AssistanceBeneficiary $distributionBeneficiary, $rowNumber, $id, $rowStyle) {
+        $bnf = $distributionBeneficiary->getBeneficiary();
+        if ($bnf instanceof Household) {
+            $person = $bnf->getHouseholdHead()->getPerson();
+        } elseif ($bnf instanceof Community) {
+            $person = $bnf->getContact();
+        } elseif ($bnf instanceof Institution) {
+            $person = $bnf->getContact();
+        } else {
+            $person = $bnf->getPerson();
+        }
+
+        if ($distributionBeneficiary->getRemoved()) {
+            $worksheet->getStyle("B$rowNumber:K$rowNumber")->getFont()->setStrikethrough(true);
+            $worksheet->getStyle("K$rowNumber")->getFill()->setFillType(Fill::FILL_SOLID)
+                ->getStartColor()->setRGB('d9d9d9');
+        }
+
+        $worksheet->setCellValue('B'.$rowNumber, $id);
+        $worksheet->setCellValue('C'.$rowNumber, $person->getLocalGivenName());
+        $worksheet->setCellValue('D'.$rowNumber, $person->getLocalFamilyName());
+        $worksheet->setCellValue('E'.$rowNumber, self::getNationalId($person));
+        $worksheet->setCellValue('F'.$rowNumber, self::getPhone($person));
+        $worksheet->setCellValue('G'.$rowNumber, null);
+        $worksheet->setCellValue('H'.$rowNumber, null);
+        $worksheet->setCellValue('I'.$rowNumber, self::getProxyPhone($person));
+        $worksheet->setCellValue('J'.$rowNumber, $distributionBeneficiary->getRemoved() ? '' : self::getDistributedItems($distributionBeneficiary));
+        $worksheet->getStyle('B'.$rowNumber.':K'.$rowNumber)->applyFromArray($rowStyle);
+        $worksheet->getRowDimension($rowNumber)->setRowHeight(42.00);
+
+        $nextRowNumber = $rowNumber + 1;
+
+        if ($distributionBeneficiary->getJustification()) {
+            $worksheet->getStyle('B'.$nextRowNumber.':K'.$nextRowNumber)
+                ->applyFromArray($rowStyle)
+                ->getFill()->setFillType(Fill::FILL_SOLID)
+                ->getStartColor()->setRGB('d9d9d9');
+            $worksheet->setCellValue('B'.$nextRowNumber, $id);
+            $worksheet->mergeCells("C{$nextRowNumber}:J{$nextRowNumber}");
+            $worksheet->setCellValue('C'.$nextRowNumber, $distributionBeneficiary->getJustification());
+            ++$nextRowNumber;
+        }
+        return $nextRowNumber;
     }
 
     private static function getProjectsAndDonors(Assistance $assistance): string
