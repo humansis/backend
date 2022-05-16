@@ -433,8 +433,7 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
-    workflow.reliefPackage.subscriber:
-        class: NewApiBundle\Event\Subscriber\ReliefPackage\ReliefPackage
+    NewApiBundle\Component\Assistance\ReliefPackageSubscriber:
         tags:
             - { name: kernel.event_subscriber }
 
