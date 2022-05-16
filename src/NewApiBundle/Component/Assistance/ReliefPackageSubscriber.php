@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Event\Subscriber\ReliefPackage;
+namespace NewApiBundle\Component\Assistance;
 
 use NewApiBundle\Entity;
 use NewApiBundle\Enum\CacheTarget;
@@ -11,7 +11,7 @@ use Symfony\Component\Workflow\Event\EnteredEvent;
 use Symfony\Component\Workflow\Event\Event;
 use Symfony\Contracts\Cache\CacheInterface;
 
-class ReliefPackage implements EventSubscriberInterface
+class ReliefPackageSubscriber implements EventSubscriberInterface
 {
     /**
      * @var CacheInterface
