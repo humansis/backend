@@ -63,38 +63,56 @@ class ExportService
      *
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
-    public function export($exportableTable, string $name, string $type)
-    {
+    public function export(
+        $exportableTable,
+        string $name,
+        string $type,
+        bool $headerDown = false
+    ) {
         if (0 === count($exportableTable)) {
             throw new \InvalidArgumentException('No data to export');
         }
 
         $rows = $this->normalize($exportableTable);
 
-        $rowIndex = 1;
-
         $spreadsheet = new Spreadsheet();
         $spreadsheet->createSheet();
         $spreadsheet->setActiveSheetIndex(0);
         $worksheet = $spreadsheet->getActiveSheet();
 
-        $tableHeaders = $this->getHeaders($rows);
-
+        $tableHeaders = $this->getHeader($rows);
         $generator = new ExcelColumnsGenerator();
 
+        $rowIndex = 1;
+        if ($headerDown === false) {
+            $this->generateHeader($worksheet, $tableHeaders, $generator, $rowIndex);
+            $rowIndex = 2;
+            $this->generateData($worksheet, $tableHeaders, $generator, $rowIndex, $rows);
+        } else {
+            $this->generateData($worksheet, $tableHeaders, $generator, $rowIndex, $rows);
+            $this->generateHeader($worksheet, $tableHeaders, $generator, $rowIndex);
+        }
+
+        return $this->generateFile($spreadsheet, $name, $type);
+    }
+
+    private function generateHeader($worksheet, $tableHeaders, $generator, $rowIndex)
+    {
+        $generator->reset();
         foreach ($tableHeaders as $i => $value) {
             $worksheet->setCellValue($generator->getNext().$rowIndex, $value);
         }
+    }
 
+    private function generateData($worksheet, $tableHeaders, $generator, &$rowIndex, $rows)
+    {
         foreach ($rows as $key => $value) {
-            ++$rowIndex;
             $generator->reset();
             foreach ($tableHeaders as $i => $header) {
                 $worksheet->setCellValue($generator->getNext().$rowIndex, $value[$header] ?? null);
             }
+            ++$rowIndex;
         }
-
-        return $this->generateFile($spreadsheet, $name, $type);
     }
 
     /**
@@ -150,7 +168,7 @@ class ExportService
      *
      * @return array list of all headers of exported table
      */
-    private function getHeaders($exportableTable)
+    private function getHeader($exportableTable)
     {
         $headers = [];
 

@@ -5,7 +5,6 @@ namespace CommonBundle\Controller;
 use CommonBundle\Entity\Organization;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Enum\AssistanceTargetType;
-use DistributionBundle\Export\SmartcardExport;
 use DistributionBundle\Repository\AssistanceRepository;
 use DistributionBundle\Utils\AssistanceService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -17,7 +16,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
-use TransactionBundle\Export\TransactionExport;
 
 /**
  * Class ExportController
@@ -35,6 +33,22 @@ class ExportController extends Controller
     /** @var int maximum count of exported entities */
     const EXPORT_LIMIT = 10000;
     const EXPORT_LIMIT_CSV = 20000;
+
+    /**
+     * @var AssistanceRepository
+     */
+    private $assistanceRepository;
+
+    /**
+     * @var AssistanceService
+     */
+    private $assistanceService;
+
+    public function __construct(AssistanceRepository $assistanceRepository, AssistanceService $assistanceService)
+    {
+        $this->assistanceRepository = $assistanceRepository;
+        $this->assistanceService = $assistanceService;
+    }
 
     /**
      * @Rest\Post("/export", name="export_data")
@@ -57,11 +71,7 @@ class ExportController extends Controller
      *
      * @deprecated export action must be refactorized. Please make own export action instead.
      */
-    public function exportAction(
-        Request $request,
-        AssistanceRepository $assistanceRepository,
-        AssistanceService $assistanceService
-    )
+    public function exportAction(Request $request)
     {
         try {
             set_time_limit(600);
@@ -71,15 +81,15 @@ class ExportController extends Controller
             if ($request->query->get('distributions')) {
                 $idProject = $request->query->get('distributions');
                 if ($type === 'pdf') {
-                    return $assistanceService->exportToPdf($idProject);
+                    return $this->assistanceService->exportToPdf($idProject);
                 }
-                $filename = $assistanceService->exportToCsv($idProject, $type);
+                $filename = $this->assistanceService->exportToCsv($idProject, $type);
             } elseif ($request->query->get('officialDistributions')) {
                 $idProject = $request->query->get('officialDistributions');
                 if ($type === 'pdf') {
-                    return $assistanceService->exportToPdf($idProject);
+                    return $this->assistanceService->exportToPdf($idProject);
                 }
-                $filename = $assistanceService->exportToOfficialCsv($idProject, $type);
+                $filename = $this->assistanceService->exportToOfficialCsv($idProject, $type);
             } elseif ($request->query->get('beneficiaries')) {
                 $countryIso3 = $request->request->get("__country");
                 $filters = $request->request->get('filters');
@@ -111,7 +121,7 @@ class ExportController extends Controller
                     $request->query->get('voucherDistribution') ??
                     $request->query->get('generalreliefDistribution') ??
                     $request->query->get('beneficiariesInDistribution');
-                $distribution = $assistanceRepository->find($idDistribution);
+                $distribution = $this->assistanceRepository->find($idDistribution);
                 // todo find organisation by relation to distribution
                 $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
                 if ($type === 'pdf') {
@@ -127,13 +137,13 @@ class ExportController extends Controller
                         // no change
                     }
                     if ($request->query->has('voucherDistribution')) {
-                        $filename = $assistanceService->exportVouchersDistributionToCsv($distribution, $type);
+                        $filename = $this->assistanceService->exportVouchersDistributionToCsv($distribution, $type);
                     }
                     if ($request->query->has('generalreliefDistribution')) {
-                        $filename = $assistanceService->exportGeneralReliefDistributionToCsv($distribution, 'xlsx');
+                        $filename = $this->assistanceService->exportGeneralReliefDistributionToCsv($distribution, 'xlsx');
                     }
                     if ($request->query->has('beneficiariesInDistribution')) {
-                        $filename = $assistanceService->exportToCsvBeneficiariesInDistribution($distribution, $type);
+                        $filename = $this->assistanceService->exportToCsvBeneficiariesInDistribution($distribution, $type);
                     }
                 }
             } elseif ($request->query->get('bookletCodes')) {
