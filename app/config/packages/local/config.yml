@@ -47,3 +47,7 @@ monolog:
 
 services:
     Symfony\Component\HttpKernel\Profiler\Profiler: '@profiler'
+
+nelmio_cors:
+    defaults:
+        allow_origin: ['http://localhost:8080']
