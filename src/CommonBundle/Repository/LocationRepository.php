@@ -236,8 +236,21 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
      */
     public function getChildrenLocations(Location $location): array
     {
+        return $this->getChildrenLocationsQueryBuilder($location)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param Location $location
+     *
+     * @return QueryBuilder
+     */
+    public function getChildrenLocationsQueryBuilder(Location $location): QueryBuilder
+    {
         $qb = $this->createQueryBuilder('l');
-        $qb->andWhere(
+
+        return $qb->andWhere(
             $qb->expr()->lte('l.rgt', ':currentRgt'),
             $qb->expr()->gte('l.lft', ':currentLft'),
             $qb->expr()->gte('l.lvl', ':currentLvl')
@@ -247,8 +260,6 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
                 'currentLft' => $location->getLft(),
                 'currentLvl' => $location->getLvl(),
             ]);
-
-        return $qb->getQuery()->getResult();
     }
 
     /**
