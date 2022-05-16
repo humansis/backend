@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\File\File;
 class ImportParser
 {
     private const VERSION_1 = 1; //internal versions marking
-    private const VERSION_1_SRC = ""; //version within source datasheet - not relevant for version 1, versioning starts from version 2
+    private const VERSION_1_SRC = ""; //version within source datasheet (not relevant for version 1, versioning starts from version 2)
 
     private const VERSION_2 = 2; //internal versions marking
     private const VERSION_2_SRC = "2.0"; //version within source datasheet
@@ -30,7 +30,7 @@ class ImportParser
     private const CONTENT_ROW = 2;
     private const CONTENT_COLUMN = 3;
 
-    private $versionCustomizedValues = [
+    private $versionCustomValues = [
         self::VERSION_1 => [
             self::HEADER_ROW => 1, //header is at row #1
             self::HEADER_COLUMN => 1, //header starts at column #1
@@ -210,25 +210,25 @@ class ImportParser
     private function getStartContentColumn($worksheet): int
     {
         $version = $this->getTemplateVersion($worksheet);
-        return $this->versionCustomizedValues[$version][self::CONTENT_COLUMN];
+        return $this->versionCustomValues[$version][self::CONTENT_COLUMN];
     }
 
     private function getStartContentRow($worksheet): int
     {
         $version = $this->getTemplateVersion($worksheet);
-        return $this->versionCustomizedValues[$version][self::CONTENT_ROW];
+        return $this->versionCustomValues[$version][self::CONTENT_ROW];
     }
 
     private function getStartHeaderColumn($worksheet): int
     {
         $version = $this->getTemplateVersion($worksheet);
-        return $this->versionCustomizedValues[$version][self::HEADER_COLUMN];
+        return $this->versionCustomValues[$version][self::HEADER_COLUMN];
     }
 
     private function getStartHeaderRow($worksheet): int
     {
         $version = $this->getTemplateVersion($worksheet);
-        return $this->versionCustomizedValues[$version][self::HEADER_ROW];
+        return $this->versionCustomValues[$version][self::HEADER_ROW];
     }
 
         /**
