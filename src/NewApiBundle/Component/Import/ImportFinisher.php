@@ -133,17 +133,6 @@ class ImportFinisher
             })
             ->setBatchCleanupCallback(function() {
                 $this->em->flush();
-                $this->em->clear(ImportBeneficiary::class);
-                $this->em->clear(VulnerabilityCriterion::class);
-                $this->em->clear(HouseholdLocation::class);
-                $this->em->clear(HouseholdActivity::class);
-                $this->em->clear(Address::class);
-                $this->em->clear(Phone::class);
-                $this->em->clear(NationalId::class);
-                $this->em->clear(ImportQueue::class);
-                $this->em->clear(AbstractBeneficiary::class);
-                $this->em->clear(Profile::class);
-                $this->em->clear(Person::class);
             })
             ->processItems(function(ImportQueue $item) use ($import) {
                 switch ($item->getState()) {
