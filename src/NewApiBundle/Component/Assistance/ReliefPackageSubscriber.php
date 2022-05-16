@@ -1,14 +1,17 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Event\Subscriber\ReliefPackage;
+namespace NewApiBundle\Component\Assistance;
 
+use NewApiBundle\Entity;
 use NewApiBundle\Enum\CacheTarget;
+use NewApiBundle\Enum\ReliefPackageState;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Workflow\Event\EnteredEvent;
 use Symfony\Component\Workflow\Event\Event;
 use Symfony\Contracts\Cache\CacheInterface;
 
-class ReliefPackage implements EventSubscriberInterface
+class ReliefPackageSubscriber implements EventSubscriberInterface
 {
     /**
      * @var CacheInterface
@@ -23,8 +26,17 @@ class ReliefPackage implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
+            // every successful change state
             'workflow.reliefPackage.entered' => ['clearAssistanceStatisticCache'],
+            'workflow.reliefPackage.entered.'.ReliefPackageState::DISTRIBUTED => ['markAsDistributed'],
         ];
+    }
+
+    public function markAsDistributed(EnteredEvent $event)
+    {
+        /** @var Entity\Assistance\ReliefPackage $reliefPackage */
+        $reliefPackage = $event->getSubject();
+        $reliefPackage->setDistributedAt(new \DateTimeImmutable());
     }
 
     /**
@@ -34,7 +46,7 @@ class ReliefPackage implements EventSubscriberInterface
      */
     public function clearAssistanceStatisticCache(Event $event): void
     {
-        /** @var \NewApiBundle\Entity\Assistance\ReliefPackage $reliefPackage */
+        /** @var Entity\Assistance\ReliefPackage $reliefPackage */
         $reliefPackage = $event->getSubject();
         try {
             $this->cache->delete(CacheTarget::assistanceId($reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId()));
