@@ -51,7 +51,7 @@ static_analysis:
     - apt install -y curl git unzip
     - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
     - php /usr/local/bin/composer install -o --ignore-platform-reqs --no-scripts
-    - php -d memory_limit=-1 vendor/bin/phpstan analyse -l 1 src/
+    - php -d memory_limit=-1 vendor/bin/phpstan analyse --configuration=phpstan.conf.neon -l 8 src/ tests/
 
 test:
   stage: test
