@@ -16,8 +16,35 @@ use Symfony\Component\HttpFoundation\File\File;
 
 class ImportParser
 {
-    private const HEADER_ROW = 1; // header definition is at row #1
-    private const CONTENT_ROW = 6; // content starts at row #5
+    private const VERSION_1 = 1; //internal versions marking
+    private const VERSION_1_SRC = ""; //version within source datasheet (not relevant for version 1, versioning starts from version 2)
+
+    private const VERSION_2 = 2; //internal versions marking
+    private const VERSION_2_SRC = "2.0"; //version within source datasheet
+
+    private const VERSION_COLUMN = 1; //position in the source datasheet (xls, ...)
+    private const VERSION_ROW = 4; //position in the source datasheet (xls, ...)
+
+    private const HEADER_ROW = 0;
+    private const HEADER_COLUMN = 1;
+    private const CONTENT_ROW = 2;
+    private const CONTENT_COLUMN = 3;
+
+    private $versionCustomValues = [
+        self::VERSION_1 => [
+            self::HEADER_ROW => 1, //header is at row #1
+            self::HEADER_COLUMN => 1, //header starts at column #1
+            self::CONTENT_ROW => 6, //content starts at row #6
+            self::CONTENT_COLUMN => 1, //content starts at column #1
+        ],
+
+        self::VERSION_2 => [
+            self::HEADER_ROW => 5, //header is at row #5
+            self::HEADER_COLUMN => 1, //header starts at column #3
+            self::CONTENT_ROW => 6, //content starts at row #6
+            self::CONTENT_COLUMN => 1, //content starts at column #3
+        ]
+    ];
 
     /**
      * @param File $file
@@ -25,19 +52,20 @@ class ImportParser
      * @return array
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      * @throws InvalidImportException
+     * @throws InvalidFormulaException
      */
-    public function parse(File $file)
+    public function parse(File $file): array
     {
         $reader = IOFactory::createReaderForFile($file->getRealPath());
-
         $worksheet = $reader->load($file->getRealPath())->getActiveSheet();
-
-        $headers = $this->getHeaders($worksheet);
+        $headers = $this->getHeader($worksheet);
 
         $list = [];
         $household = [];
-        for ($r = self::CONTENT_ROW; ; $r++) {
-            $row = $this->getRow($worksheet, $headers, $r);
+        $startContentRow = $this->getStartContentRow($worksheet);
+
+        for ($r = $startContentRow; ; $r++) {
+            $row = $this->getContentRow($worksheet, $headers, $r);
             if (-1 === $row) {
                 break;
             }
@@ -71,7 +99,7 @@ class ImportParser
      * @param File $file
      *
      * @return array
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception|InvalidFormulaException
      */
     public function parseHeadersOnly(File $file): array
     {
@@ -80,7 +108,7 @@ class ImportParser
 
         $worksheet = $reader->load($file->getRealPath())->getActiveSheet();
 
-        return $this->getHeaders($worksheet);
+        return $this->getHeader($worksheet);
     }
 
     /**
@@ -89,19 +117,22 @@ class ImportParser
      * @return array
      * @throws InvalidFormulaException
      */
-    private function getHeaders(Worksheet $worksheet): array
+    private function getHeader(Worksheet $worksheet): array
     {
+        $startHeaderRow = $this->getStartHeaderRow($worksheet);
+        $startHeaderColumn = $this->getStartHeaderColumn($worksheet);
+
         $headers = [];
 
-        for ($i = self::HEADER_ROW; ; $i++) {
-            $cell = $worksheet->getCellByColumnAndRow($i, 1, false);
+        for ($headerColumn = $startHeaderColumn; ; $headerColumn++) {
+            $cell = $worksheet->getCellByColumnAndRow($headerColumn, $startHeaderRow, false);
             $value = self::value($cell);
 
             if (empty($value)) {
                 break;
             }
 
-            $headers[$i] = $value;
+            $headers[$headerColumn] = $value;
         }
 
         return $headers;
@@ -114,12 +145,13 @@ class ImportParser
      *
      * @return array|int -1 if end of file, data of row otherwise
      */
-    private function getRow(Worksheet $worksheet, array $headers, int $r)
+    private function getContentRow(Worksheet $worksheet, array $headers, int $r)
     {
         $row = [];
         $stop = true;
+        $startContentColumn = $this->getStartContentColumn($worksheet);
 
-        for ($c = 1; $c <= count($headers); $c++) {
+        for ($c = $startContentColumn; $c <= count($headers); $c++) {
             $cellError = null;
             $cell = $worksheet->getCellByColumnAndRow($c, $r, false);
             try {
@@ -160,7 +192,46 @@ class ImportParser
         return $row;
     }
 
-    /**
+    private function getTemplateVersion($worksheet): int
+    {
+        $versionRawValue = $worksheet->getCellByColumnAndRow(self::VERSION_COLUMN, self::VERSION_ROW, false);
+
+        switch ($versionRawValue) {
+            case self::VERSION_2_SRC:
+                $version = self::VERSION_2;
+                break;
+            default:
+                $version = self::VERSION_1;
+        }
+
+        return $version;
+    }
+
+    private function getStartContentColumn($worksheet): int
+    {
+        $version = $this->getTemplateVersion($worksheet);
+        return $this->versionCustomValues[$version][self::CONTENT_COLUMN];
+    }
+
+    private function getStartContentRow($worksheet): int
+    {
+        $version = $this->getTemplateVersion($worksheet);
+        return $this->versionCustomValues[$version][self::CONTENT_ROW];
+    }
+
+    private function getStartHeaderColumn($worksheet): int
+    {
+        $version = $this->getTemplateVersion($worksheet);
+        return $this->versionCustomValues[$version][self::HEADER_COLUMN];
+    }
+
+    private function getStartHeaderRow($worksheet): int
+    {
+        $version = $this->getTemplateVersion($worksheet);
+        return $this->versionCustomValues[$version][self::HEADER_ROW];
+    }
+
+        /**
      * @param Cell|null $cell
      *
      * @return mixed
