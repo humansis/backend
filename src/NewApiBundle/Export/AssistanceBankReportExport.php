@@ -70,9 +70,9 @@ class AssistanceBankReportExport
         $worksheet->getColumnDimension('I')->setWidth(14.853);
         $worksheet->getColumnDimension('J')->setWidth(14.853);
         $worksheet->getColumnDimension('K')->setWidth(14.853);
-        $worksheet->getRowDimension(1)->setRowHeight(28.705);
+        $worksheet->getRowDimension(1)->setRowHeight(45);
         $worksheet->setRightToLeft('right-to-left' === \Punic\Misc::getCharacterOrder($this->translator->getLocale()));
-        $worksheet->getStyle('A1:J1')->applyFromArray([
+        $worksheet->getStyle('A1:K1')->applyFromArray([
             'alignment' => [
                 'horizontal' => Alignment::HORIZONTAL_CENTER,
                 'vertical' => Alignment::VERTICAL_CENTER,
