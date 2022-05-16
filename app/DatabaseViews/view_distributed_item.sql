@@ -25,7 +25,7 @@ SELECT
         END AS field_officer_id
 
 FROM distribution_beneficiary db
-         JOIN assistance_relief_package pack ON pack.assistance_beneficiary_id=db.id
+         JOIN assistance_relief_package pack ON pack.assistance_beneficiary_id=db.id AND pack.amount_distributed > 0
          JOIN assistance a ON a.id=db.assistance_id AND a.assistance_type="distribution"
          JOIN abstract_beneficiary ab ON ab.id=db.beneficiary_id
          JOIN commodity c ON c.assistance_id=db.assistance_id

@@ -137,11 +137,17 @@ class DistributedItemControllerTest extends BMSServiceTestCase
         }
 
         foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
-            $toDistribute = 0;
+            $shouldBeDistributed = 0;
             foreach ($assistanceBeneficiary->getReliefPackages() as $package) {
-                $toDistribute += floatval($package->getAmountDistributed());
+                $shouldBeDistributed += floatval($package->getAmountDistributed());
             }
-            $this->assertEquals($toDistribute, $beneficiaryAmounts[$assistanceBeneficiary->getBeneficiary()->getId()]);
+            $beneficiaryId = $assistanceBeneficiary->getBeneficiary()->getId();
+            if ($shouldBeDistributed > 0) {
+                $this->assertEquals($shouldBeDistributed, $beneficiaryAmounts[$beneficiaryId]);
+            } else {
+                $this->assertArrayNotHasKey($beneficiaryId, $beneficiaryAmounts, "Target {$assistanceBeneficiary->getId()} shouldn't be distributed. Distributed amount=".($beneficiaryAmounts[$beneficiaryId] ?? 'noAmount'));
+            }
+
         }
     }
 }
