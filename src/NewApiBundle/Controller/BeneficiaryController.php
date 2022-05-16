@@ -29,9 +29,24 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
+use TransactionBundle\Export\AssistanceSpreadsheetExport;
 
 class BeneficiaryController extends AbstractController
 {
+
+    /**
+     * @var AssistanceSpreadsheetExport
+     */
+    private $assistanceSpreadsheetExport;
+
+    /**
+     * @param AssistanceSpreadsheetExport $assistanceSpreadsheetExport
+     */
+    public function __construct(AssistanceSpreadsheetExport $assistanceSpreadsheetExport)
+    {
+        $this->assistanceSpreadsheetExport = $assistanceSpreadsheetExport;
+    }
+
     /**
      * @Rest\Post("/web-app/v1/assistances/beneficiaries")
      *
@@ -110,7 +125,7 @@ class BeneficiaryController extends AbstractController
         $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
         $type = $request->query->get('type');
 
-        $filename = $this->get('export.spreadsheet')->export($assistance, $organization, $type);
+        $filename = $this->assistanceSpreadsheetExport->export($assistance, $organization, $type);
 
         try {
             // Create binary file to send
