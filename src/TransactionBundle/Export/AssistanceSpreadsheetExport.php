@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace TransactionBundle\Export;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Community;
+use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Person;
 use CommonBundle\Entity\Organization;
@@ -82,6 +85,7 @@ class AssistanceSpreadsheetExport
         $worksheet->getColumnDimension('I')->setWidth(15.888);
         $worksheet->getColumnDimension('J')->setWidth(19.888);
         $worksheet->getColumnDimension('K')->setWidth(21.032);
+        $worksheet->getColumnDimension('L')->setWidth(30.032);
 
         $worksheet->getStyle('A1:K10000')->applyFromArray($style);
     }
@@ -311,15 +315,6 @@ class AssistanceSpreadsheetExport
             ],
         ];
 
-        $oddRowStyle = [
-            'fill' => [
-                'fillType' => Fill::FILL_SOLID,
-            ],
-            'startColor' => [
-                'argb' => 'F2F2F2',
-            ],
-        ];
-
         $worksheet->getCell('B19')->setValue('No.');
         $worksheet->getCell('C19')->setValue('First Name');
         $worksheet->getCell('D19')->setValue('Second Name');
@@ -361,39 +356,55 @@ class AssistanceSpreadsheetExport
             ->getRight()
             ->setBorderStyle(Border::BORDER_THICK);
 
-        $idx = 21;
-        $no = 1;
-        foreach ($assistance->getDistributionBeneficiaries() as $distributionBeneficiary) {
-            $bnf = $distributionBeneficiary->getBeneficiary();
-            if ($bnf instanceof \BeneficiaryBundle\Entity\Household) {
-                $person = $bnf->getHouseholdHead()->getPerson();
-            } elseif ($bnf instanceof \BeneficiaryBundle\Entity\Community) {
-                $person = $bnf->getContact();
-            } elseif ($bnf instanceof \BeneficiaryBundle\Entity\Institution) {
-                $person = $bnf->getContact();
-            } else {
-                $person = $bnf->getPerson();
-            }
-
-            $worksheet->setCellValue('B'.$idx, $no);
-            $worksheet->setCellValue('C'.$idx, $person->getLocalGivenName());
-            $worksheet->setCellValue('D'.$idx, $person->getLocalFamilyName());
-            $worksheet->setCellValue('E'.$idx, self::getNationalId($person));
-            $worksheet->setCellValue('F'.$idx, self::getPhone($person));
-            $worksheet->setCellValue('G'.$idx, null);
-            $worksheet->setCellValue('H'.$idx, null);
-            $worksheet->setCellValue('I'.$idx, self::getProxyPhone($person));
-            $worksheet->setCellValue('J'.$idx, self::getDistributedItems($distributionBeneficiary));
-            $worksheet->getStyle('B'.$idx.':K'.$idx)->applyFromArray($rowStyle);
-            $worksheet->getRowDimension($idx)->setRowHeight(42.00);
-
-            if (1 === $no % 2) {
-                $worksheet->getStyle('B'.$idx.':K'.$idx)->applyFromArray($oddRowStyle);
-            }
-
-            ++$idx;
-            ++$no;
+        $rowNumber = 21;
+        foreach ($assistance->getDistributionBeneficiaries() as  $id => $distributionBeneficiary) {
+            $rowNumber = $this->createBeneficiaryRow($worksheet, $distributionBeneficiary, $rowNumber, $id+1, $rowStyle);
         }
+    }
+
+    private function createBeneficiaryRow(Worksheet $worksheet, AssistanceBeneficiary $distributionBeneficiary, $rowNumber, $id, $rowStyle) {
+        $bnf = $distributionBeneficiary->getBeneficiary();
+        if ($bnf instanceof Household) {
+            $person = $bnf->getHouseholdHead()->getPerson();
+        } elseif ($bnf instanceof Community) {
+            $person = $bnf->getContact();
+        } elseif ($bnf instanceof Institution) {
+            $person = $bnf->getContact();
+        } else {
+            $person = $bnf->getPerson();
+        }
+
+        if ($distributionBeneficiary->getRemoved()) {
+            $worksheet->getStyle("B$rowNumber:K$rowNumber")->getFont()->setStrikethrough(true);
+            $worksheet->getStyle("K$rowNumber")->getFill()->setFillType(Fill::FILL_SOLID)
+                ->getStartColor()->setRGB('d9d9d9');
+        }
+
+        $worksheet->setCellValue('B'.$rowNumber, $id);
+        $worksheet->setCellValue('C'.$rowNumber, $person->getLocalGivenName());
+        $worksheet->setCellValue('D'.$rowNumber, $person->getLocalFamilyName());
+        $worksheet->setCellValue('E'.$rowNumber, self::getNationalId($person));
+        $worksheet->setCellValue('F'.$rowNumber, self::getPhone($person));
+        $worksheet->setCellValue('G'.$rowNumber, null);
+        $worksheet->setCellValue('H'.$rowNumber, null);
+        $worksheet->setCellValue('I'.$rowNumber, self::getProxyPhone($person));
+        $worksheet->setCellValue('J'.$rowNumber, $distributionBeneficiary->getRemoved() ? '' : self::getDistributedItems($distributionBeneficiary));
+        $worksheet->getStyle('B'.$rowNumber.':K'.$rowNumber)->applyFromArray($rowStyle);
+        $worksheet->getRowDimension($rowNumber)->setRowHeight(42.00);
+
+        $nextRowNumber = $rowNumber + 1;
+
+        if ($distributionBeneficiary->getJustification()) {
+            $worksheet->getStyle('B'.$nextRowNumber.':K'.$nextRowNumber)
+                ->applyFromArray($rowStyle)
+                ->getFill()->setFillType(Fill::FILL_SOLID)
+                ->getStartColor()->setRGB('d9d9d9');
+            $worksheet->setCellValue('B'.$nextRowNumber, $id);
+            $worksheet->mergeCells("C{$nextRowNumber}:J{$nextRowNumber}");
+            $worksheet->setCellValue('C'.$nextRowNumber, $distributionBeneficiary->getJustification());
+            ++$nextRowNumber;
+        }
+        return $nextRowNumber;
     }
 
     private static function getProjectsAndDonors(Assistance $assistance): string
