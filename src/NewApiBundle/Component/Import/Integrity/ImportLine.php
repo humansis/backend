@@ -19,8 +19,14 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class ImportLine
 {
+    /**
+     * Not an user input property. Its purpose is only to display information about the import process.
+     */
     public $humansisData;
 
+    /**
+     * Not an user input property. Its purpose is only to display information about the import process.
+     */
     public $humansisComment;
 
     /**
