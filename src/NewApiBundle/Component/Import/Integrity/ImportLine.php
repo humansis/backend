@@ -19,6 +19,10 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class ImportLine
 {
+    public $humansisData;
+
+    public $humansisComment;
+
     /**
      * @Assert\Type("scalar", groups={"household", "member"})
      */

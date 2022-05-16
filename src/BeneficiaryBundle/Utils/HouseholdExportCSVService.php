@@ -254,6 +254,8 @@ class HouseholdExportCSVService
     ];
 
     public const MAPPING_PROPERTIES = [
+        ImportTemplate::ROW_NAME_STATUS => 'humansisData',
+        ImportTemplate::ROW_NAME_MESSAGES => 'humansisComment',
         'Address street' => 'addressStreet',
         'Address number' => 'addressNumber',
         'Address postcode' => 'addressPostcode',

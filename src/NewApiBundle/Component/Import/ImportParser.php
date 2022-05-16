@@ -16,10 +16,14 @@ use Symfony\Component\HttpFoundation\File\File;
 
 class ImportParser
 {
-    private const VERSION_1 = 1;
-    private const VERSION_2 = 2;
-    private const VERSION_COLUMN = 1;
-    private const VERSION_ROW = 4;
+    private const VERSION_1 = 1; //internal versions marking
+    private const VERSION_1_SRC = ""; //version within source datasheet - not relevant for version 1, versioning starts from version 2
+
+    private const VERSION_2 = 2; //internal versions marking
+    private const VERSION_2_SRC = "2.0"; //version within source datasheet
+
+    private const VERSION_COLUMN = 1; //position in the source datasheet (xls, ...)
+    private const VERSION_ROW = 4; //position in the source datasheet (xls, ...)
 
     private const HEADER_ROW = 0;
     private const HEADER_COLUMN = 1;
@@ -36,9 +40,9 @@ class ImportParser
 
         self::VERSION_2 => [
             self::HEADER_ROW => 5, //header is at row #5
-            self::HEADER_COLUMN => 3, //header starts at column #3
+            self::HEADER_COLUMN => 1, //header starts at column #3
             self::CONTENT_ROW => 6, //content starts at row #6
-            self::CONTENT_COLUMN => 3, //content starts at column #3
+            self::CONTENT_COLUMN => 1, //content starts at column #3
         ]
     ];
 
@@ -193,7 +197,7 @@ class ImportParser
         $versionRawValue = $worksheet->getCellByColumnAndRow(self::VERSION_COLUMN, self::VERSION_ROW, false);
 
         switch ($versionRawValue) {
-            case "2.0":
+            case self::VERSION_2_SRC:
                 $version = self::VERSION_2;
                 break;
             default:
