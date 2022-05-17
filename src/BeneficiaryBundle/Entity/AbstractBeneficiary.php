@@ -35,7 +35,7 @@ abstract class AbstractBeneficiary
 
     /**
      * @var Project[]|Collection
-     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project", inversedBy="households")
+     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project", inversedBy="households", cascade={"persist"})
      * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
      */
     private $projects;

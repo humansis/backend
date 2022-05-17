@@ -145,6 +145,7 @@ class IntegrityCheckerTest extends KernelTestCase
         $method->setAccessible(true);
         $method->invoke($checker, $correctItem);
         $method->invoke($checker, $incorrectItem);
+        self::$entityManager->flush();
 
         $this->assertEquals(ImportQueueState::VALID, $correctItem->getState(), "Correct item should be recognize as one");
         $this->assertNull($correctItem->getMessage());
