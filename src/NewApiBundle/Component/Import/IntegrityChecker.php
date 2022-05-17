@@ -91,7 +91,7 @@ class IntegrityChecker
 
         foreach ($this->queueRepository->getItemsToIntegrityCheck($import, $batchSize) as $i => $item) {
             $this->checkOne($item);
-            if ($i % 500 === 0) {
+            if ($i+1 % 500 === 0) {
                 $this->entityManager->flush();
             }
         }
@@ -117,7 +117,6 @@ class IntegrityChecker
         }
 
         $this->entityManager->persist($item);
-        $this->entityManager->flush();
     }
 
     /**
