@@ -2,61 +2,177 @@
 
 namespace NewApiBundle\Component\Import\ValueObject;
 
-use BeneficiaryBundle\Entity;
-use NewApiBundle\Component\Import\Integrity;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
-
 class BeneficiaryCompare
 {
-    /**
-     * @var Integrity\ImportLine
-     */
-    private $importLine;
+    /** @var ScalarCompare|null */
+    private $householdId;
+
+    /** @var ScalarCompare|null */
+    private $localFullName;
+
+    /** @var ScalarCompare|null */
+    private $englishFullName;
+
+    /** @var ScalarCompare|null */
+    private $gender;
+
+    /** @var ScalarCompare|null */
+    private $dateOfBirth;
+
+    /** @var ScalarCompare|null */
+    private $phone1;
+
+    /** @var ScalarCompare|null */
+    private $phone2;
+
+    /** @var ScalarCompare|null */
+    private $vulnerability;
+
+    /** @var ListCompare|null */
+    private $residencyStatus;
 
     /**
-     * @var Entity\Beneficiary
+     * @return ScalarCompare|null
      */
-    private $beneficiary;
-
-    /** @var ImportBeneficiaryDuplicity */
-    private $beneficiaryDuplicity;
-
-    /**
-     * @param Integrity\ImportLine       $importLine
-     * @param Entity\Beneficiary         $beneficiary
-     * @param ImportBeneficiaryDuplicity $beneficiaryDuplicity
-     */
-    public function __construct(Integrity\ImportLine                            $importLine, Entity\Beneficiary $beneficiary,
-                                ImportBeneficiaryDuplicity $beneficiaryDuplicity
-    )
+    public function getHouseholdId(): ?ScalarCompare
     {
-        $this->importLine = $importLine;
-        $this->beneficiary = $beneficiary;
-        $this->beneficiaryDuplicity = $beneficiaryDuplicity;
+        return $this->householdId;
     }
 
     /**
-     * @return Integrity\ImportLine
+     * @param ScalarCompare|null $householdId
      */
-    public function getImportLine(): Integrity\ImportLine
+    public function setHouseholdId(?ScalarCompare $householdId): void
     {
-        return $this->importLine;
+        $this->householdId = $householdId;
     }
 
     /**
-     * @return Entity\Beneficiary
+     * @return ScalarCompare|null
      */
-    public function getBeneficiary(): Entity\Beneficiary
+    public function getLocalFullName(): ?ScalarCompare
     {
-        return $this->beneficiary;
+        return $this->localFullName;
     }
 
     /**
-     * @return ImportBeneficiaryDuplicity
+     * @param ScalarCompare|null $localFullName
      */
-    public function getBeneficiaryDuplicity(): ImportBeneficiaryDuplicity
+    public function setLocalFullName(?ScalarCompare $localFullName): void
     {
-        return $this->beneficiaryDuplicity;
+        $this->localFullName = $localFullName;
+    }
+
+    /**
+     * @return ScalarCompare|null
+     */
+    public function getEnglishFullName(): ?ScalarCompare
+    {
+        return $this->englishFullName;
+    }
+
+    /**
+     * @param ScalarCompare|null $englishFullName
+     */
+    public function setEnglishFullName(?ScalarCompare $englishFullName): void
+    {
+        $this->englishFullName = $englishFullName;
+    }
+
+    /**
+     * @return ScalarCompare|null
+     */
+    public function getGender(): ?ScalarCompare
+    {
+        return $this->gender;
+    }
+
+    /**
+     * @param ScalarCompare|null $gender
+     */
+    public function setGender(?ScalarCompare $gender): void
+    {
+        $this->gender = $gender;
+    }
+
+    /**
+     * @return ScalarCompare|null
+     */
+    public function getDateOfBirth(): ?ScalarCompare
+    {
+        return $this->dateOfBirth;
+    }
+
+    /**
+     * @param ScalarCompare|null $dateOfBirth
+     */
+    public function setDateOfBirth(?ScalarCompare $dateOfBirth): void
+    {
+        $this->dateOfBirth = $dateOfBirth;
+    }
+
+    /**
+     * @return ScalarCompare|null
+     */
+    public function getPhone1(): ?ScalarCompare
+    {
+        return $this->phone1;
+    }
+
+    /**
+     * @param ScalarCompare|null $phone1
+     */
+    public function setPhone1(?ScalarCompare $phone1): void
+    {
+        $this->phone1 = $phone1;
+    }
+
+    /**
+     * @return ScalarCompare|null
+     */
+    public function getPhone2(): ?ScalarCompare
+    {
+        return $this->phone2;
+    }
+
+    /**
+     * @param ScalarCompare|null $phone2
+     */
+    public function setPhone2(?ScalarCompare $phone2): void
+    {
+        $this->phone2 = $phone2;
+    }
+
+    /**
+     * @return ScalarCompare|null
+     */
+    public function getVulnerability(): ?ScalarCompare
+    {
+        return $this->vulnerability;
+    }
+
+    /**
+     * @param ScalarCompare|null $vulnerability
+     */
+    public function setVulnerability(?ScalarCompare $vulnerability): void
+    {
+        $this->vulnerability = $vulnerability;
+    }
+
+    /**
+     * @return ScalarCompare|null
+     */
+    public function getResidencyStatus(): ?ScalarCompare
+    {
+        return $this->residencyStatus;
+    }
+
+    /**
+     * @param ListCompare|null $residencyStatus
+     */
+    public function setResidencyStatus(?ListCompare $residencyStatus): void
+    {
+        $this->residencyStatus = $residencyStatus;
     }
 
 }

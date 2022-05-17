@@ -3,6 +3,7 @@
 namespace NewApiBundle\Mapper\Import\Duplicity;
 
 use NewApiBundle\Component\Import\Finishing\HouseholdDecoratorBuilder;
+use NewApiBundle\Component\Import\HouseholdFactory;
 use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
 use NewApiBundle\Component\Import\ValueObject\HouseholdCompare;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
@@ -14,17 +15,17 @@ class HouseholdDuplicityMapper implements MapperInterface
     private $object;
     /** @var ImportLineFactory */
     private $importLineFactory;
-    /** @var HouseholdDecoratorBuilder */
-    private $decoratorBuilder;
+    /** @var HouseholdFactory */
+    private $householdFactory;
 
     /**
-     * @param ImportLineFactory         $importLineFactory
-     * @param HouseholdDecoratorBuilder $decoratorBuilder
+     * @param ImportLineFactory $importLineFactory
+     * @param HouseholdFactory  $householdFactory
      */
-    public function __construct(ImportLineFactory $importLineFactory, HouseholdDecoratorBuilder $decoratorBuilder)
+    public function __construct(ImportLineFactory $importLineFactory, HouseholdFactory $householdFactory)
     {
         $this->importLineFactory = $importLineFactory;
-        $this->decoratorBuilder = $decoratorBuilder;
+        $this->householdFactory = $householdFactory;
     }
 
     /**
@@ -71,10 +72,8 @@ class HouseholdDuplicityMapper implements MapperInterface
 
     public function getDifferences(): HouseholdCompare
     {
-        return new HouseholdCompare(
-            $this->decoratorBuilder->buildHouseholdInputType($this->object->getOurs()),
-            $this->object->getTheirs()
-        );
+        $importedHousehold = $this->householdFactory->create($this->object->getOurs());
+        return $importedHousehold->compare($this->object->getTheirs());
     }
 
     public function getMemberDuplicities(): iterable

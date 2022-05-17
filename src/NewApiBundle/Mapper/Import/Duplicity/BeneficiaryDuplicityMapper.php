@@ -3,6 +3,7 @@
 namespace NewApiBundle\Mapper\Import\Duplicity;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Component\Import\BeneficiaryFactory;
 use NewApiBundle\Component\Import\CellParameters;
 use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
 use NewApiBundle\Component\Import\ValueObject\BeneficiaryCompare;
@@ -15,13 +16,17 @@ class BeneficiaryDuplicityMapper implements MapperInterface
     private $object;
     /** @var ImportLineFactory */
     private $importLineFactory;
+    /** @var BeneficiaryFactory */
+    private $beneficiaryFactory;
 
     /**
-     * @param ImportLineFactory $importLineFactory
+     * @param ImportLineFactory  $importLineFactory
+     * @param BeneficiaryFactory $beneficiaryFactory
      */
-    public function __construct(ImportLineFactory $importLineFactory)
+    public function __construct(ImportLineFactory $importLineFactory, BeneficiaryFactory $beneficiaryFactory)
     {
         $this->importLineFactory = $importLineFactory;
+        $this->beneficiaryFactory = $beneficiaryFactory;
     }
 
     /**
@@ -53,11 +58,9 @@ class BeneficiaryDuplicityMapper implements MapperInterface
 
     public function getDifferences(): BeneficiaryCompare
     {
-        return new BeneficiaryCompare(
-            $this->importLineFactory->create($this->object->getQueue(), $this->object->getMemberIndex()),
-            $this->object->getBeneficiary(),
-            $this->object
-        );
+        $importLine = $this->importLineFactory->create($this->object->getQueue(), $this->object->getMemberIndex());
+        $importedBeneficiary = $this->beneficiaryFactory->create($importLine);
+        return $importedBeneficiary->compare($this->object->getBeneficiary());
     }
 
     public function getOriginFullName(): string
