@@ -297,9 +297,9 @@ deploy prod db to stage:
     DATABASE_NAME: proddb
   before_script: *prepare_ssh_aws
   script:
-    - mysqldump --quick --skip-lock-tables --single-transaction --no-tablespaces --set-gtid-purged=OFF -h ${DUMP_DB_HOSTNAME} -u ${DUMP_USER} -p"${DUMP_USER_PW}" ${DUMP_DB_NAME} > db.sql
+    - mysqldump --quick --skip-lock-tables --routines --single-transaction --no-tablespaces --set-gtid-purged=OFF -h ${DUMP_DB_HOSTNAME} -u ${DUMP_USER} -p"${DUMP_USER_PW}" ${DUMP_DB_NAME} > db.sql
     - mysql -h ${UPLOAD_DB_HOSTNAME} -u ${DB_DEPLOY_USER} -p"${DB_DEPLOY_USER_PASSWORD}" -e "DROP DATABASE ${DATABASE_NAME}"
-    - sed -i -e 's/DEFINER[ ]*=[ ]*[^*]*\*/\*/' db.sql
+    - sed -i -e 's/DEFINER[ ]*=[ ]*[^*]*\*/\*/' -e 's/DEFINER[ ]*=[ ]*[^*]*PROCEDURE/PROCEDURE/' -e 's/DEFINER[ ]*=[ ]*[^*]*FUNCTION/FUNCTION/' db.sql
     - mysql -h ${UPLOAD_DB_HOSTNAME} -u ${DB_DEPLOY_USER} -p"${DB_DEPLOY_USER_PASSWORD}" -e "CREATE DATABASE ${DATABASE_NAME} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
     - mysql -h ${UPLOAD_DB_HOSTNAME} -u ${DB_DEPLOY_USER} -p"${DB_DEPLOY_USER_PASSWORD}" ${DATABASE_NAME}
     - ./ci/change-stage-db.sh
