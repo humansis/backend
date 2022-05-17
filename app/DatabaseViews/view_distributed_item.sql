@@ -18,7 +18,12 @@ SELECT
         WHEN sd.id IS NOT NULL THEN s.code
         WHEN b.id  IS NOT NULL THEN b.code
         END AS carrier_number,
-    pack.amount_distributed AS amount,
+    CASE
+        WHEN sd.id  IS NOT NULL THEN sd.value
+        WHEN t.id   IS NOT NULL THEN CAST(REGEXP_SUBSTR(t.amount_sent, "[0-9]+(\.[0-9]+)?") AS DECIMAL)
+        WHEN b.id   IS NOT NULL THEN b.value
+        WHEN pack.amount_distributed > 0 THEN pack.amount_distributed
+        END AS amount,
     CASE
         WHEN sd.distributed_by_id IS NOT NULL THEN sd.distributed_by_id
         WHEN t.id  IS NOT NULL THEN t.sent_by_id
