@@ -20,6 +20,7 @@ use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Component\Country\Country;
 use NewApiBundle\Enum\ProductCategoryType;
 use ProjectBundle\DBAL\SectorEnum;
+use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
 
@@ -79,7 +80,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         'target_type' => AssistanceTargetType::INDIVIDUAL,
         'assistance_type' => AssistanceType::DISTRIBUTION,
         'sector' => SectorEnum::FOOD_SECURITY,
-        'subsector' => null,
+        'subsector' => SubSectorEnum::IN_KIND_FOOD,
         'threshold' => 1,
         'allowedProductCategoryTypes' => [ProductCategoryType::FOOD],
         'foodLimit' => '15',
