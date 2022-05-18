@@ -9,7 +9,6 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use Doctrine\ORM\EntityManager;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
-use NewApiBundle\Entity\ReliefPackage;
 use NewApiBundle\Entity\Smartcard\PreliminaryInvoice;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Enum\ReliefPackageState;

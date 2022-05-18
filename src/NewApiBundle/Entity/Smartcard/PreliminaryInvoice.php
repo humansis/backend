@@ -15,9 +15,10 @@ use VoucherBundle\Entity\Vendor;
 class PreliminaryInvoice
 {
     /**
-     * @var Project
+     * @var Project|null
      *
      * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project")
+     * @ORM\JoinColumn(nullable=true)
      */
     private $project;
 
@@ -53,9 +54,9 @@ class PreliminaryInvoice
     private $purchaseCount;
 
     /**
-     * @return Project
+     * @return Project|null
      */
-    public function getProject(): Project
+    public function getProject(): ?Project
     {
         return $this->project;
     }

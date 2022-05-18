@@ -10,6 +10,6 @@ FROM
     smartcard_purchase AS sp
         INNER JOIN smartcard_purchase_record AS spr ON sp.id = spr.smartcard_purchase_id
         LEFT JOIN assistance a on sp.assistance_id = a.id
-WHERE sp.redemption_batch_id IS NULL AND vendor_id IS NOT NULL AND currency IS NOT NULL AND project_id IS NOT NULL
+WHERE sp.redemption_batch_id IS NULL AND vendor_id IS NOT NULL AND currency IS NOT NULL
 GROUP BY spr.currency, a.project_id, sp.vendor_id
 ORDER BY spr.currency, a.project_id, sp.vendor_id
