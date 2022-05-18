@@ -70,10 +70,11 @@ class HouseholdDuplicityMapper implements MapperInterface
         return $this->object->getState();
     }
 
-    public function getDifferences(): HouseholdCompare
+    public function getDifferences(): ?HouseholdCompare
     {
         $importedHousehold = $this->householdFactory->create($this->object->getOurs());
-        return $importedHousehold->compare($this->object->getTheirs());
+        $comparison = $importedHousehold->compare($this->object->getTheirs());
+        return $comparison->isSame() ? null : $comparison;
     }
 
     public function getMemberDuplicities(): iterable

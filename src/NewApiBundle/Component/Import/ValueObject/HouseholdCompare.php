@@ -72,6 +72,34 @@ class HouseholdCompare
     
     /** @var ScalarCompare|null */
     private $enumeratorName;
+    
+    public function isSame(): bool
+    {
+        return null === $this->livelihood
+            && null === $this->assets
+            && null === $this->shelterStatus
+            && null === $this->notes
+            && null === $this->latitude
+            && null === $this->longitude
+            && null === $this->countrySpecificAnswers
+            && null === $this->income
+            && null === $this->foodConsumptionScore
+            && null === $this->copingStrategiesIndex
+            && null === $this->location
+            && null === $this->adms
+            && null === $this->adm1
+            && null === $this->adm2
+            && null === $this->adm3
+            && null === $this->adm4
+            && null === $this->debtLevel
+            && null === $this->supportReceivedTypes
+            && null === $this->supportOrganizationName
+            && null === $this->supportDateReceived
+            && null === $this->incomeSpentOnFood
+            && null === $this->householdIncome
+            && null === $this->enumeratorName
+            ;
+    }
 
     /**
      * @return ScalarCompare|null
