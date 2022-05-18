@@ -7,7 +7,7 @@ use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Enum\ImportState;
-use NewApiBundle\Workflow\ImportTransitions;
+use NewApiBundle\Component\Import\Workflow\ImportTransitions;
 use NewApiBundle\Workflow\WorkflowTool;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;

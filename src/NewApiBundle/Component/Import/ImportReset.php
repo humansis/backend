@@ -7,7 +7,7 @@ use Doctrine\Persistence\ObjectRepository;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Repository\ImportQueueRepository;
-use NewApiBundle\Workflow\ImportQueueTransitions;
+use NewApiBundle\Component\Import\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\WorkflowTool;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;

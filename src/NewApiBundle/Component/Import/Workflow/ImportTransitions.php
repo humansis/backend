@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Workflow;
+namespace NewApiBundle\Component\Import\Workflow;
 
 use NewApiBundle\Enum\ImportState;
 

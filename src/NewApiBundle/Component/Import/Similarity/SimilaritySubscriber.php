@@ -9,7 +9,7 @@ use NewApiBundle\Component\Import\SimilarityChecker;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Repository\ImportQueueRepository;
-use NewApiBundle\Workflow\ImportTransitions;
+use NewApiBundle\Component\Import\Workflow\ImportTransitions;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\CompletedEvent;
 use Symfony\Component\Workflow\Event\EnteredEvent;

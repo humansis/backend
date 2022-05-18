@@ -13,7 +13,7 @@ use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Repository\ImportQueueRepository;
-use NewApiBundle\Workflow\ImportQueueTransitions;
+use NewApiBundle\Component\Import\Workflow\ImportQueueTransitions;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 
