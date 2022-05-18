@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Event\Subscriber\ImportQueue;
+namespace NewApiBundle\Component\Import\Identity;
 
 use NewApiBundle\Component\Import\DuplicityResolver;
 use NewApiBundle\Entity\ImportQueue;

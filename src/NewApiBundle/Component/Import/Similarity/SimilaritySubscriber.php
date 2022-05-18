@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Event\Subscriber\Import;
+namespace NewApiBundle\Component\Import\Similarity;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;

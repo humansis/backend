@@ -396,7 +396,7 @@ services:
     NewApiBundle\Export\AssistanceBankReportExport:
 
     workflow.import.integrity_subscriber:
-        class: NewApiBundle\Event\Subscriber\Import\IntegritySubscriber
+        class: NewApiBundle\Component\Import\Integrity\IntegritySubscriber
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@NewApiBundle\Component\Import\IntegrityChecker'
@@ -406,7 +406,7 @@ services:
             - { name: kernel.event_subscriber }
 
     workflow.import.identity_subscriber:
-        class: NewApiBundle\Event\Subscriber\Import\IdentitySubscriber
+        class: NewApiBundle\Component\Import\Identity\IdentitySubscriber
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@NewApiBundle\Component\Import\IdentityChecker'
@@ -415,7 +415,7 @@ services:
             - { name: kernel.event_subscriber }
 
     workflow.import.similarity_subscriber:
-        class: NewApiBundle\Event\Subscriber\Import\SimilaritySubscriber
+        class: NewApiBundle\Component\Import\Similarity\SimilaritySubscriber
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@NewApiBundle\Component\Import\SimilarityChecker'
@@ -424,7 +424,7 @@ services:
             - { name: kernel.event_subscriber }
 
     workflow.import.finisher_subscriber:
-        class: NewApiBundle\Event\Subscriber\Import\FinishSubscriber
+        class: NewApiBundle\Component\Import\Finishing\FinishSubscriber
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@NewApiBundle\Component\Import\ImportFinisher'
@@ -433,7 +433,7 @@ services:
             - { name: kernel.event_subscriber }
 
     workflow.import_queue.duplicity_resolve_subscriber:
-        class: NewApiBundle\Event\Subscriber\ImportQueue\DuplicityResolveSubscriber
+        class: NewApiBundle\Component\Import\Identity\DuplicityResolveSubscriber
         arguments:
             - '@NewApiBundle\Component\Import\DuplicityResolver'
         tags:
