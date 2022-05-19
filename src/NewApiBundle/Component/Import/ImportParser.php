@@ -20,7 +20,7 @@ class ImportParser
     private const VERSION_1_SRC = ""; //version within source datasheet (not relevant for version 1, versioning starts from version 2)
 
     private const VERSION_2 = 2; //internal versions marking
-    private const VERSION_2_SRC = "2.0"; //version within source datasheet
+    public const VERSION_2_SRC = "v2.0"; //version within source datasheet
 
     private const VERSION_COLUMN = 1; //position in the source datasheet (xls, ...)
     private const VERSION_ROW = 4; //position in the source datasheet (xls, ...)
