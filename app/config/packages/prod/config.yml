@@ -28,3 +28,8 @@ monolog:
             path: '%kernel.logs_dir%/imports.log'
             level: info
             channels: [ import ]
+
+
+nelmio_cors:
+    defaults:
+        allow_origin: ['https://pin.humansis.org', 'https://prod-pin.humansis.org']

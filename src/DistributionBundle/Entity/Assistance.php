@@ -139,6 +139,7 @@ class Assistance implements ExportableInterface
     private $targetType;
 
     /**
+     * @var Commodity[]
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\Commodity", mappedBy="assistance", cascade={"persist"})
      * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
      */
@@ -1021,6 +1022,21 @@ class Assistance implements ExportableInterface
     public function setSmartcardPurchases(Collection $smartcardPurchases): void
     {
         $this->smartcardPurchases = $smartcardPurchases;
+    }
+
+    /**
+     * Returns if assistance has at least one commodity with given modality type
+     *
+     * @param string $modalityType - You can use NewApiBundle\Enum\ModalityType
+     *
+     * @return bool
+     */
+    public function hasModalityTypeCommodity(string $modalityType): bool {
+        $hasModalityTypeCommodity = false;
+        foreach ($this->commodities as $commodity) {
+            $hasModalityTypeCommodity = $hasModalityTypeCommodity || $commodity->getModalityType()->getName() === $modalityType;
+        }
+        return $hasModalityTypeCommodity;
     }
 
 }

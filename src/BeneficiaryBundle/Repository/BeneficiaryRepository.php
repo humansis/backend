@@ -3,31 +3,28 @@
 namespace BeneficiaryBundle\Repository;
 
 use BeneficiaryBundle\Entity\Household;
+use CommonBundle\Repository\LocationRepository;
 use DistributionBundle\Entity\Assistance;
 use CommonBundle\Entity\Location;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\AbstractQuery;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\Query\Expr\Andx;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Component\Import\Identity\NationalIdHashSet;
 use NewApiBundle\DBAL\PersonGenderEnum;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Enum\NationalIdType;
-use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Enum\ReliefPackageState;
+use NewApiBundle\Enum\SelectionCriteriaField;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 use Doctrine\ORM\Query\Expr\Join;
-use CommonBundle\Entity\Adm3;
-use CommonBundle\Entity\Adm2;
-use CommonBundle\Entity\Adm1;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Enum\SmartcardStates;
 
@@ -44,27 +41,72 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         BNF_ASSISTANCE_CONTEXT_REMOVED = 'removed';
 
     /**
+     * @var LocationRepository
+     */
+    private $locationRepository;
+
+    public function injectLocationRepository(LocationRepository $locationRepository)
+    {
+        $this->locationRepository = $locationRepository;
+    }
+
+    /**
      * Get all beneficiaries in a selected project.
      *
-     * @param int    $project
+     * @param Project $project
      * @param string $target
      *
      * @return mixed
      */
-    public function getAllOfProject(int $project, string $target)
+    public function getAllOfProject(Project $project, string $target)
     {
+        $projectId = $project->getId();
         $qb = $this->createQueryBuilder('b');
         if (AssistanceTargetType::HOUSEHOLD === $target) {
             $q = $qb->leftJoin('b.household', 'hh')
                 ->where(':project MEMBER OF hh.projects')
                 ->andWhere('b.status = 1')
                 ->andWhere('b.archived = 0')
-                ->setParameter('project', $project);
+                ->setParameter('project', $projectId);
         } elseif (AssistanceTargetType::INDIVIDUAL === $target) {
             $q = $qb->leftJoin('b.household', 'hh')
                 ->andWhere(':project MEMBER OF hh.projects')
                 ->andWhere('b.archived = 0')
-                ->setParameter('project', $project);
+                ->setParameter('project', $projectId);
+        } else {
+            return [];
+        }
+
+        return $q->getQuery()->getResult();
+    }
+
+    /**
+     * @param Project $project
+     * @param string $target
+     * @param Assistance $excludedAssistance
+     *
+     * @return array|float|int|mixed|string
+     */
+    public function getNotSelectedBeneficiariesOfProject(Project $project, string $target, Assistance $excludedAssistance){
+        $excludedAssistanceDQL = "SELECT ben.id FROM DistributionBundle\Entity\AssistanceBeneficiary db LEFT JOIN db.beneficiary ab INNER JOIN BeneficiaryBundle\Entity\Beneficiary ben WITH ben.id = ab.id WHERE db.assistance = :assistance";
+        $projectId = $project->getId();
+
+        $qb = $this->createQueryBuilder('b');
+        if (AssistanceTargetType::HOUSEHOLD === $target) {
+            $q = $qb->leftJoin('b.household', 'hh')
+                ->where(':project MEMBER OF hh.projects')
+                ->andWhere('b.status = 1')
+                ->andWhere('b.archived = 0')
+                ->andWhere($qb->expr()->notIn('b.id', $excludedAssistanceDQL))
+                ->setParameter('project', $projectId)
+                ->setParameter('assistance', $excludedAssistance);
+        } elseif (AssistanceTargetType::INDIVIDUAL === $target) {
+            $q = $qb->leftJoin('b.household', 'hh')
+                ->andWhere(':project MEMBER OF hh.projects')
+                ->andWhere('b.archived = 0')
+                ->andWhere($qb->expr()->notIn('b.id', $excludedAssistanceDQL))
+                ->setParameter('project', $projectId)
+                ->setParameter('assistance', $excludedAssistance);
         } else {
             return [];
         }
@@ -593,7 +635,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $qb->getQuery()->getResult();
     }
 
-    private function getHouseholdWithCriterion(&$qb, $field, $condition, $criterion, int $i, &$userConditionsStatement)
+    private function getHouseholdWithCriterion(QueryBuilder &$qb, $field, $condition, $criterion, int $i, Andx &$userConditionsStatement)
     {
         // The selection criteria is a country Specific
         if ($criterion['table_string'] === 'countrySpecific') {
@@ -629,72 +671,27 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             }
             // The selection criteria is the name of the camp in which the household lives
             elseif ($field === 'campName') {
-                $qb->leftJoin('hh.householdLocations', 'hl'.$i, Join::WITH, 'hl'.$i . '.type = :camp')
-                    ->leftJoin('hl' . $i . '.campAddress', 'ca'.$i)
-                    ->leftJoin('ca'.$i.'.camp', 'c'.$i, Join::WITH, 'c'.$i . '.id = :parameter'.$i)
-                    ->setParameter('camp', 'camp');
-                $userConditionsStatement->add('c'.$i . '.id = :parameter'.$i);
-                $qb->addSelect('c'.$i . '.id AS ' . $field.$i);
-            } elseif ($field === 'currentAdm1' || $field === 'currentAdm2' || $field === 'currentAdm3' || $field === 'currentAdm4') {
-                $qb->leftJoin('hh.householdLocations', 'hl'.$i)
+                $qb->leftJoin('hh.householdLocations', 'hl'.$i, Join::WITH, 'hl'.$i.'.type = :camp')
                     ->leftJoin('hl'.$i.'.campAddress', 'ca'.$i)
-                    ->leftJoin('ca'.$i.'.camp', 'c'.$i)
-                    ->leftJoin('hl'.$i.'.address', 'ad'.$i)
-                    ->leftJoin(
-                        Location::class,
-                        'l'.$i,
-                        Join::WITH,
-                        'l'.$i.'.id = COALESCE(IDENTITY(c'.$i.".location, 'id'), IDENTITY(ad".$i.".location, 'id'))"
-                    );
-                $andStatement = $qb->expr()->andX();
-                $andStatement->add('hl'.$i.'.locationGroup = :current');
-                $qb->setParameter('current', 'current');
+                    ->leftJoin('ca'.$i.'.camp', 'c'.$i, Join::WITH, 'c'.$i.'.id = :parameter'.$i)
+                    ->setParameter('camp', 'camp');
+                $userConditionsStatement->add('c'.$i.'.id = :parameter'.$i);
+                $qb->addSelect('c'.$i.'.id AS '.$field.$i);
+            } elseif ($field === SelectionCriteriaField::CURRENT_LOCATION) {
 
-                if ('currentAdm1' === $field) {
-                    $qb->leftJoin('l'.$i.'.adm4', 'adm4'.$i)
-                        ->leftJoin('l'.$i.'.adm3', 'locAdm3'.$i)
-                        ->leftJoin('l'.$i.'.adm2', 'locAdm2'.$i)
-                        ->leftJoin('l'.$i.'.adm1', 'locAdm1'.$i)
-                        ->leftJoin(Adm3::class, 'adm3'.$i, Join::WITH, 'adm3'.$i.'.id = COALESCE(IDENTITY(adm4'.$i.".adm3, 'id'), locAdm3".$i.'.id)')
-                        ->leftJoin(Adm2::class, 'adm2'.$i, Join::WITH, 'adm2'.$i.'.id = COALESCE(IDENTITY(adm3'.$i.".adm2, 'id'), locAdm2".$i.'.id)')
-                        ->leftJoin(
-                            Adm1::class,
-                            'adm1'.$i,
-                            Join::WITH,
-                            'adm1'.$i.'.id = COALESCE(IDENTITY(adm2'.$i.".adm1, 'id'), locAdm1".$i.'.id) AND adm1'.$i.'.id '.$condition.' :parameter'.$i
-                        );
-                    $andStatement->add('adm1'.$i.'.id '.$condition.' :parameter'.$i);
-                    $qb->addSelect('adm1'.$i.'.id AS '.$field.$i);
-                } elseif ('currentAdm2' === $field) {
-                    $qb->leftJoin('l'.$i.'.adm4', 'adm4'.$i)
-                        ->leftJoin('l'.$i.'.adm3', 'locAdm3'.$i)
-                        ->leftJoin('l'.$i.'.adm2', 'locAdm2'.$i)
-                        ->leftJoin(Adm3::class, 'adm3'.$i, Join::WITH, 'adm3'.$i.'.id = COALESCE(IDENTITY(adm4'.$i.".adm3, 'id'), locAdm3".$i.'.id)')
-                        ->leftJoin(
-                            Adm2::class,
-                            'adm2'.$i,
-                            Join::WITH,
-                            'adm2'.$i.'.id = COALESCE(IDENTITY(adm3'.$i.".adm2, 'id'), locAdm2".$i.'.id) AND adm2'.$i.'.id '.$condition.' :parameter'.$i
-                        );
-                    $andStatement->add('adm2'.$i.'.id '.$condition.' :parameter'.$i);
-                    $qb->addSelect('adm2'.$i.'.id AS '.$field.$i);
-                } elseif ('currentAdm3' === $field) {
-                    $qb->leftJoin('l'.$i.'.adm4', 'adm4'.$i)
-                        ->leftJoin('l'.$i.'.adm3', 'locAdm3'.$i)
-                        ->leftJoin(
-                            Adm3::class,
-                            'adm3'.$i,
-                            Join::WITH,
-                            'adm3'.$i.'.id = COALESCE(IDENTITY(adm4'.$i.".adm3, 'id'), locAdm3".$i.'.id) AND adm3'.$i.'.id '.$condition.' :parameter'.$i
-                        );
-                    $andStatement->add('adm3'.$i.'.id '.$condition.' :parameter'.$i);
-                    $qb->addSelect('adm3'.$i.'.id AS '.$field.$i);
-                } elseif ('currentAdm4' === $field) {
-                    $qb->leftJoin('l'.$i.'.adm4', 'adm4'.$i, Join::WITH, 'adm4'.$i.'.id '.$condition.' :parameter'.$i);
-                    $andStatement->add('adm4'.$i.'.id '.$condition.' :parameter'.$i);
-                    $qb->addSelect('adm4'.$i.'.id AS '.$field.$i);
-                }
-                $userConditionsStatement->add($andStatement);
+                /** @var Location $location */
+                $location = $criterion['value'];
+                $locationsQb = $this->locationRepository->getChildrenLocationsQueryBuilder($location);
+
+                $qb->leftJoin('hh.householdLocations', "hl$i")
+                    ->leftJoin("hl$i.campAddress", "ca$i")
+                    ->leftJoin("ca$i.camp", "c$i")
+                    ->leftJoin("hl$i.address", "ad$i")
+                    ->leftJoin(Location::class, "l$i", Join::WITH, "l$i.id = COALESCE(IDENTITY(c$i.location, 'id'), IDENTITY(ad$i.location, 'id'))")
+                    ->andWhere("l$i.id IN ({$locationsQb->getDQL()})")
+                    ->setParameter('currentRgt', $location->getRgt())
+                    ->setParameter('currentLft', $location->getLft())
+                    ->setParameter('currentLvl', $location->getLvl());
             }
         }
     }

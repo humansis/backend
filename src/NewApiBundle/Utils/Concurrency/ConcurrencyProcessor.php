@@ -12,6 +12,8 @@ class ConcurrencyProcessor
     private $lockBatchCallback;
     /** @var callable */
     private $batchItemsCallback;
+    /** @var callable */
+    private $batchCleanupCallback;
     /** @var int */
     private $maxResultsToProcess;
 
@@ -64,6 +66,19 @@ class ConcurrencyProcessor
     }
 
     /**
+     * @param callable $batchCleanupCallback
+     *
+     * @return ConcurrencyProcessor
+     */
+    public function setBatchCleanupCallback(callable $batchCleanupCallback): ConcurrencyProcessor
+    {
+        $this->batchCleanupCallback = $batchCleanupCallback;
+        return $this;
+    }
+
+
+
+    /**
      * @param int $maxResultsToProcess
      *
      * @return ConcurrencyProcessor
@@ -84,19 +99,19 @@ class ConcurrencyProcessor
         $allItemCountCallback = $this->countAllCallback;
         $lockItemsCallback = $this->lockBatchCallback;
         $getBatchCallback = $this->batchItemsCallback;
+        $batchCleanupCallback = $this->batchCleanupCallback ?? function () {};
         $itemCount = $allItemCountCallback();
 
         if ($itemCount === 0) {
             return;
         }
 
+
         $totalItemsToProcess = $itemCount > $this->maxResultsToProcess ? $this->maxResultsToProcess : $itemCount;
         $rounds = ceil($totalItemsToProcess / $this->batchSize);
-
         for ($i = 0; $i < $rounds; $i++) {
             $runCode = uniqid();
             $lockItemsCallback($runCode, $this->batchSize);
-
             $itemsToProceed = $getBatchCallback($runCode, $this->batchSize);
             foreach ($itemsToProceed as $item) {
                 try {
@@ -105,6 +120,7 @@ class ConcurrencyProcessor
                     $item->unlock();
                 }
             }
+            $batchCleanupCallback();
         }
     }
 }

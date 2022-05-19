@@ -40,8 +40,6 @@ class Assistance
     private $assistanceStatisticRepository;
     /** @var AssistanceBeneficiaryRepository */
     private $targetRepository;
-    /** @var EntityManagerInterface */
-    private $entityManager;
     /** @var Registry $workflowRegistry */
     private $workflowRegistry;
 
@@ -50,7 +48,6 @@ class Assistance
      * @param CacheInterface                  $cache
      * @param ModalityTypeRepository          $modalityTypeRepository
      * @param AssistanceStatisticsRepository  $assistanceStatisticRepository
-     * @param EntityManagerInterface          $entityManager
      * @param Registry                        $workflowRegistry
      * @param AssistanceBeneficiaryRepository $targetRepository
      */
@@ -59,7 +56,6 @@ class Assistance
         CacheInterface                                                 $cache,
         ModalityTypeRepository                                         $modalityTypeRepository,
         AssistanceStatisticsRepository                                 $assistanceStatisticRepository,
-        EntityManagerInterface                                         $entityManager,
         Registry                                                       $workflowRegistry,
         AssistanceBeneficiaryRepository $targetRepository
     ) {
@@ -67,7 +63,6 @@ class Assistance
         $this->cache = $cache;
         $this->modalityTypeRepository = $modalityTypeRepository;
         $this->assistanceStatisticRepository = $assistanceStatisticRepository;
-        $this->entityManager = $entityManager;
         $this->workflowRegistry = $workflowRegistry;
         $this->targetRepository = $targetRepository;
     }
@@ -229,6 +224,8 @@ class Assistance
                 }
             }
         }
+
+        $this->cleanCache();
     }
 
     /**
@@ -331,14 +328,6 @@ class Assistance
         $this->cancelUnusedReliefPackages([$target]);
         $this->assistanceRoot->setUpdatedOn(new \DateTime());
         $this->cleanCache();
-
-        return $this;
-    }
-
-    public function save(): self
-    {
-        $this->entityManager->persist($this->assistanceRoot);
-        $this->entityManager->flush();
 
         return $this;
     }

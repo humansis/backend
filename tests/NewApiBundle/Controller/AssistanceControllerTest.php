@@ -7,13 +7,17 @@ use CommonBundle\Entity\Location;
 use DateTime;
 use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Repository\AssistanceRepository;
+use DistributionBundle\Repository\CommodityRepository;
+use DistributionBundle\Repository\ModalityTypeRepository;
 use Exception;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 use NewApiBundle\Enum\BeneficiaryType;
 use NewApiBundle\Enum\ProductCategoryType;
+use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
 
@@ -647,8 +651,17 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         /** @var AssistanceRepository $assistanceRepository */
         $assistanceRepository = self::$container->get('doctrine')->getRepository(Assistance::class);
+        /** @var ModalityTypeRepository $modalityTypeRepository */
+        $modalityTypeRepository = self::$container->get('doctrine')->getRepository(ModalityType::class);
+        /** @var Assistance $assistance */
 
+
+        $cashModality = $modalityTypeRepository->findOneBy(['name' => \NewApiBundle\Enum\ModalityType::CASH]);
+        $commodityData = ['value' => 1, 'unit' => 'USD', 'modality_type' => ['id' => $cashModality->getId()], 'description' => 'Note'];
         $assistance = $assistanceRepository->findOneBy(['validated' => true]);
+        $assistance->setAssistanceType(AssistanceType::DISTRIBUTION);
+        $assistance->setSubSector(SubSectorEnum::MULTI_PURPOSE_CASH_ASSISTANCE);
+        $assistance->addCommodity($this->commodityService->create($assistance, $commodityData, false));
         $id = $assistance->getId();
 
         $this->request('GET', "/api/basic/web-app/v1/assistances/$id/bank-report/exports", [

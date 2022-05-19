@@ -60,9 +60,13 @@ class DistributedItemRepository extends EntityRepository
                 $qbr->andWhere('pr.id IN (:projects)')
                     ->setParameter('projects', $filter->getProjects());
             }
-            if ($filter->hasAssistances()) {
-                $qbr->join('di.assistance', 'ass')
-                    ->andWhere('ass.id IN (:assistances)')
+            if ($filter->hasAssistances() && count($filter->getAssistances()) === 1) {
+                $qbr->andWhere('IDENTITY(di.assistance) = :assistance')
+                    ->setParameter('assistance', $filter->getAssistances()[0])
+                ;
+            }
+            if ($filter->hasAssistances() && count($filter->getAssistances()) > 1) {
+                $qbr->andWhere('IDENTITY(di.assistance) IN (:assistances)')
                     ->setParameter('assistances', $filter->getAssistances());
             }
             if ($filter->hasLocations()) {

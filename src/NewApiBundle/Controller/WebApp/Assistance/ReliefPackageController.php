@@ -5,6 +5,7 @@ namespace NewApiBundle\Controller\WebApp\Assistance;
 
 use DistributionBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Controller\WebApp\AbstractWebAppController;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\InputType\Assistance\DistributeReliefPackagesInputType;
@@ -16,6 +17,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Workflow\Registry;
+use Symfony\Contracts\Cache\CacheInterface;
 
 class ReliefPackageController extends AbstractWebAppController
 {
@@ -69,8 +71,11 @@ class ReliefPackageController extends AbstractWebAppController
      *
      * @return JsonResponse
      */
-    public function distributePackages(array $packages, ReliefPackageRepository $repository, Registry $registry): JsonResponse
-    {
+    public function distributePackages(
+        array                   $packages,
+        ReliefPackageRepository $repository,
+        Registry                $registry
+    ): JsonResponse {
         foreach ($packages as $packageUpdate) {
             /** @var ReliefPackage $package */
             $package = $repository->find($packageUpdate->getId());
@@ -80,6 +85,9 @@ class ReliefPackageController extends AbstractWebAppController
                 $package->addAmountOfDistributed($packageUpdate->getAmountDistributed());
             }
 
+            // Assistance statistic cache is invalidated by workflow transition
+            // for partially distribution process of invalidation cache should be changed
+
             $reliefPackageWorkflow = $registry->get($package);
             if ($reliefPackageWorkflow->can($package, ReliefPackageTransitions::DISTRIBUTE)) {
                 $reliefPackageWorkflow->apply($package, ReliefPackageTransitions::DISTRIBUTE);
@@ -87,6 +95,7 @@ class ReliefPackageController extends AbstractWebAppController
 
             $repository->save($package);
         }
+
         return $this->json(true);
     }
 }

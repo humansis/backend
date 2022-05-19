@@ -69,9 +69,10 @@ class AssistanceBankReportExport
         $worksheet->getColumnDimension('H')->setWidth(14.853);
         $worksheet->getColumnDimension('I')->setWidth(14.853);
         $worksheet->getColumnDimension('J')->setWidth(14.853);
-        $worksheet->getRowDimension(1)->setRowHeight(28.705);
+        $worksheet->getColumnDimension('K')->setWidth(14.853);
+        $worksheet->getRowDimension(1)->setRowHeight(45);
         $worksheet->setRightToLeft('right-to-left' === \Punic\Misc::getCharacterOrder($this->translator->getLocale()));
-        $worksheet->getStyle('A1:J1')->applyFromArray([
+        $worksheet->getStyle('A1:K1')->applyFromArray([
             'alignment' => [
                 'horizontal' => Alignment::HORIZONTAL_CENTER,
                 'vertical' => Alignment::VERTICAL_CENTER,
@@ -94,7 +95,8 @@ class AssistanceBankReportExport
         $worksheet->setCellValue('G1', $this->translator->trans('Document number'));
         $worksheet->setCellValue('H1', $this->translator->trans('Remittance purpose'));
         $worksheet->setCellValue('I1', $this->translator->trans('Remittance amount'));
-        $worksheet->setCellValue('J1', $this->translator->trans('Recipient’s mobile telephone number'));
+        $worksheet->setCellValue('J1', $this->translator->trans('Remittance currency'));
+        $worksheet->setCellValue('K1', $this->translator->trans('Recipient’s mobile telephone number'));
     }
 
     private function generateRows(Worksheet $worksheet, $distributions) {
@@ -111,7 +113,8 @@ class AssistanceBankReportExport
             $worksheet->setCellValue('G'.$i, $distribution['idNumber']);
             $worksheet->setCellValue('H'.$i, 'Благодійна допомога');
             $worksheet->setCellValue('I'.$i, $distribution['amountToDistribute']);
-            $worksheet->setCellValue('J'.$i, $distribution['phoneNumber']);
+            $worksheet->setCellValue('J'.$i, $distribution['currency']);
+            $worksheet->setCellValue('K'.$i, $distribution['phoneNumber']);
 
         }
     }

@@ -5,6 +5,7 @@ namespace NewApiBundle\Controller;
 use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\Commodity;
+use DistributionBundle\Repository\AssistanceRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\InputType\AssistanceCreateInputType;
@@ -54,8 +55,6 @@ class AssistanceCommodityController extends AbstractController
      */
     public function create(AssistanceCreateInputType $inputType, AssistanceFactory $factory): JsonResponse
     {
-        $assistance = $factory->create($inputType);
-
-        return $this->json(new Paginator($assistance->getCommoditiesSummary()));
+        return $this->json(new Paginator($factory->create($inputType)->getCommoditiesSummary()));
     }
 }
