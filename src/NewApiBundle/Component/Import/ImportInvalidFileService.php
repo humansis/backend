@@ -2,6 +2,8 @@
 
 namespace NewApiBundle\Component\Import;
 
+use BeneficiaryBundle\Utils\HouseholdExportCSVService;
+use CommonBundle\Utils\ExportService;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\InvalidCell\InvalidCell;
 use NewApiBundle\Entity\Import;
@@ -51,24 +53,42 @@ class ImportInvalidFileService
      */
     private $importQueueStateMachine;
 
+    /**
+     * @var ExportService
+     */
+    private $exportService;
+
+    /**
+     * @var HouseholdExportCSVService
+     */
+    private $householdExportCSVService;
+
     public function __construct(
         ImportQueueRepository $importQueueRepository,
         ImportTemplate $importTemplate,
         string $importInvalidFilesDirectory,
         EntityManagerInterface $em,
-        WorkflowInterface $importQueueStateMachine
+        WorkflowInterface $importQueueStateMachine,
+        ExportService $exportService,
+        HouseholdExportCSVService $householdExportCSVService
     ) {
         $this->importTemplate = $importTemplate;
         $this->importQueueRepository = $importQueueRepository;
         $this->importInvalidFilesDirectory = $importInvalidFilesDirectory;
         $this->em = $em;
         $this->importQueueStateMachine = $importQueueStateMachine;
+        $this->exportService = $exportService;
+        $this->householdExportCSVService = $householdExportCSVService;
     }
 
+    /**
+     * @throws Exception
+     */
     public function generateFile(Import $import): ImportInvalidFile
     {
         $invalidEntries = $this->importQueueRepository->getInvalidEntries($import);
-        $spreadsheet = $this->importTemplate->generateTemplateSpreadsheet($import->getCountryIso3());
+        $header = $this->householdExportCSVService->getHeaders($import->getCountryIso3());
+        $spreadsheet = $this->exportService->generateSpreadsheet($header);
 
         $header = $this->importTemplate->getTemplateHeader($import->getCountryIso3());
         $this->writeEntries($spreadsheet, $invalidEntries, $header);

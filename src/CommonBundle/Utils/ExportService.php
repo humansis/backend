@@ -73,7 +73,17 @@ class ExportService
             throw new \InvalidArgumentException('No data to export');
         }
 
-        $rows = $this->normalize($exportableTable);
+        $spreadsheet = $this->generateSpreadsheet($exportableTable, $headerDown);
+
+        return $this->generateFile($spreadsheet, $name, $type);
+    }
+
+    /**
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     */
+    public function generateSpreadsheet($tableData, bool $headerDown = true): Spreadsheet
+    {
+        $rows = $this->normalize($tableData);
 
         $spreadsheet = new Spreadsheet();
         $spreadsheet->createSheet();
@@ -93,22 +103,22 @@ class ExportService
             $this->generateHeader($worksheet, $tableHeaders, $generator, $rowIndex);
         }
 
-        return $this->generateFile($spreadsheet, $name, $type);
+        return $spreadsheet;
     }
 
     private function generateHeader($worksheet, $tableHeaders, $generator, $rowIndex)
     {
         $generator->reset();
-        foreach ($tableHeaders as $i => $value) {
+        foreach ($tableHeaders as $value) {
             $worksheet->setCellValue($generator->getNext().$rowIndex, $value);
         }
     }
 
     private function generateData($worksheet, $tableHeaders, $generator, &$rowIndex, $rows)
     {
-        foreach ($rows as $key => $value) {
+        foreach ($rows as $value) {
             $generator->reset();
-            foreach ($tableHeaders as $i => $header) {
+            foreach ($tableHeaders as $header) {
                 $worksheet->setCellValue($generator->getNext().$rowIndex, $value[$header] ?? null);
             }
             ++$rowIndex;
