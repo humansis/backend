@@ -20,6 +20,7 @@ use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
@@ -53,6 +54,9 @@ class IntegrityChecker
     /** @var DuplicityService */
     private $duplicityService;
 
+    /** @var LoggerInterface */
+    private $logger;
+
     public function __construct(
         ValidatorInterface                    $validator,
         EntityManagerInterface                $entityManager,
@@ -61,7 +65,8 @@ class IntegrityChecker
         Integrity\ImportLineFactory           $importLineFactory,
         Integrity\DuplicityService            $duplicityService,
         Finishing\HouseholdDecoratorBuilder   $householdDecoratorBuilder,
-        Finishing\BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder
+        Finishing\BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder,
+        LoggerInterface $importLogger
     ) {
         $this->validator = $validator;
         $this->entityManager = $entityManager;
@@ -72,6 +77,7 @@ class IntegrityChecker
         $this->duplicityService = $duplicityService;
         $this->householdDecoratorBuilder = $householdDecoratorBuilder;
         $this->beneficiaryDecoratorBuilder = $beneficiaryDecoratorBuilder;
+        $this->logger = $importLogger;
     }
 
     /**
@@ -80,6 +86,7 @@ class IntegrityChecker
      */
     public function check(Import $import, ?int $batchSize = null): void
     {
+        $this->logger->info("Integrity checking import #{$import->getId()} started");
         if (ImportState::INTEGRITY_CHECKING !== $import->getState()) {
             throw new \BadMethodCallException('Unable to execute checker. Import is not ready to integrity check.');
         }
@@ -89,12 +96,15 @@ class IntegrityChecker
             return;
         }
 
+        $this->logger->info("Queue processing #{$import->getId()}");
         foreach ($this->queueRepository->getItemsToIntegrityCheck($import, $batchSize) as $i => $item) {
             $this->checkOne($item);
             if ($i+1 % 500 === 0) {
+                $this->logger->info("Flushing #{$import->getId()} records {$i}");
                 $this->entityManager->flush();
             }
         }
+        $this->logger->info("Integrity checking end #{$import->getId()}");
         $this->entityManager->flush();
     }
 
