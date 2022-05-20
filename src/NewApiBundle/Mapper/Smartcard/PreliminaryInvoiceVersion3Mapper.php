@@ -2,8 +2,8 @@
 
 namespace NewApiBundle\Mapper\Smartcard;
 
+use NewApiBundle\Entity\Smartcard\PreliminaryInvoice;
 use NewApiBundle\Serializer\MapperInterface;
-use VoucherBundle\DTO\PreliminaryInvoice;
 
 class PreliminaryInvoiceVersion3Mapper implements MapperInterface
 {
@@ -34,9 +34,9 @@ class PreliminaryInvoiceVersion3Mapper implements MapperInterface
         throw new \InvalidArgumentException('Invalid argument. It should be instance of '.PreliminaryInvoice::class.', '.get_class($object).' given.');
     }
 
-    public function getProjectId(): int
+    public function getProjectId(): ?int
     {
-        return $this->object->getProjectId();
+        return $this->object->getProject() ? $this->object->getProject()->getId() : null;
     }
 
     public function getValue()

@@ -5,12 +5,13 @@ namespace VoucherBundle\Repository;
 use CommonBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\Enum\VendorInvoicingState;
 use NewApiBundle\InputType\VendorFilterInputType;
 use NewApiBundle\InputType\VendorOrderInputType;
+use NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository;
 use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use UserBundle\Entity\User;
-use VoucherBundle\Entity\SmartcardPurchase;
 
 /**
  * VendorRepository.
@@ -25,6 +26,15 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
      */
     private $locationRepository;
 
+    /**
+     * @var PreliminaryInvoiceRepository
+     */
+    private $preliminaryInvoiceRepository;
+
+    public function setPreliminaryInvoiceRepository(PreliminaryInvoiceRepository $preliminaryInvoiceRepository): void
+    {
+        $this->preliminaryInvoiceRepository = $preliminaryInvoiceRepository;
+    }
 
     public function setLocationRepository(LocationRepository $locationRepository)
     {
@@ -108,24 +118,23 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
                     ->setParameter('fulltextId', $filter->getFulltext())
                     ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
             }
-            if ($filter->hasIsInvoiced()) {
-                $purchasesToInvoiceCount = $this->_em->createQueryBuilder()
-                    ->select('count(sp)')
-                    ->from(SmartcardPurchase::class, 'sp')
-                    ->andWhere('sp.vendor = v')
-                    ->andWhere('sp.redemptionBatch IS NULL');
 
-                $existingVendorsPurchases = $this->_em->createQueryBuilder()
-                    ->select('count(sp2.id)')
-                    ->from(SmartcardPurchase::class, 'sp2')
-                    ->andWhere('sp2.vendor = v');
-
-                if ($filter->getIsInvoiced()) {
-                    $qb->andWhere('(' . $purchasesToInvoiceCount->getDQL() . ') = 0');
-                } else {
-                    $qb->andWhere('(' . $purchasesToInvoiceCount->getDQL() . ') > 0');
+            if ($filter->hasInvoicing()) {
+                $preliminaryInvoiceQb = $this->preliminaryInvoiceRepository->provideQueryBuilder('pi')
+                    ->select('IDENTITY(pi.vendor)');
+                switch ($filter->getInvoicing()) {
+                    case VendorInvoicingState::INVOICED:
+                        $qb->andWhere("v.id NOT IN  ({$preliminaryInvoiceQb->getDQL()})");
+                        break;
+                    case VendorInvoicingState::SYNC_REQUIRED:
+                        $preliminaryInvoiceQb->andWhere('pi.project IS NULL');
+                        $qb->andWhere("v.id IN ({$preliminaryInvoiceQb->getDQL()})");
+                        break;
+                    case VendorInvoicingState::TO_REDEEM:
+                        $preliminaryInvoiceQb->andWhere('pi.project IS NOT NULL');
+                        $qb->andWhere("v.id IN ({$preliminaryInvoiceQb->getDQL()})");
+                        break;
                 }
-                $qb->andWhere('(' . $existingVendorsPurchases->getDQL() . ') > 0');
             }
 
             $locations = [];

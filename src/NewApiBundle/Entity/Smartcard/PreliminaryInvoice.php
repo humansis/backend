@@ -9,16 +9,24 @@ use VoucherBundle\Entity\Vendor;
 /**
  * Read only entity.
  *
- * @ORM\MappedSuperclass(repositoryClass="NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository")
  * @ORM\Table(name="view_smartcard_preliminary_invoice")
+ * @ORM\Entity(readOnly=true, repositoryClass="NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository")
  */
 class PreliminaryInvoice
 {
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string")
+     * @ORM\Id
+     */
+    private $id;
+
+    /**
      * @var Project|null
      *
      * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project")
-     * @ORM\JoinColumn(nullable=true)
+     *
      */
     private $project;
 
@@ -49,7 +57,7 @@ class PreliminaryInvoice
     /**
      * @var int
      *
-     * @ORM\Column(name="purchase_count", type="int")
+     * @ORM\Column(name="purchase_count", type="integer")
      */
     private $purchaseCount;
 

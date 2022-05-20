@@ -10,6 +10,7 @@ services:
         class: Doctrine\ORM\EntityRepository
         calls:
             - setLocationRepository: ['@CommonBundle\Repository\LocationRepository']
+            - setPreliminaryInvoiceRepository: ['@NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository']
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - VoucherBundle\Entity\Vendor

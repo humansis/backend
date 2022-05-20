@@ -2,10 +2,9 @@
 
 namespace NewApiBundle\Controller\WebApp\Smartcard;
 
-use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Controller\WebApp\AbstractWebAppController;
-use NewApiBundle\Entity\Smartcard\PreliminaryInvoice;
+use NewApiBundle\Enum\VendorInvoicingState;
 use NewApiBundle\InputType\SmartcardRedemptionBatchCreateInputType;
 use NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository;
 use NewApiBundle\Request\Pagination;
@@ -13,7 +12,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use VoucherBundle\Controller\SmartcardController;
-use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Utils\SmartcardService;
@@ -105,9 +103,9 @@ class InvoiceController extends AbstractWebAppController
      */
     public function preliminaryInvoices(Vendor $vendor, PreliminaryInvoiceRepository $invoiceRepository): JsonResponse
     {
-        $invoices = $invoiceRepository->findBy(['vendor' => $vendor]);
+        $invoices = $invoiceRepository->findByVendorAndState($vendor);
 
-        return $this->json(new Paginator($invoices));
+        return $this->json($invoices);
     }
 
     /**
@@ -126,13 +124,14 @@ class InvoiceController extends AbstractWebAppController
     /**
      * @Rest\Get("/vendor-app/v3/vendors/{id}/smartcard-redemption-candidates")
      *
-     * @param Vendor $vendor
+     * @param Vendor                       $vendor
+     * @param PreliminaryInvoiceRepository $invoiceRepository
      *
      * @return JsonResponse
      */
     public function preliminariesForVendorApp(Vendor $vendor, PreliminaryInvoiceRepository $invoiceRepository): Response
     {
-        $invoices = $invoiceRepository->findBy(['vendor' => $vendor]);
+        $invoices = $invoiceRepository->findByVendorAndState($vendor, VendorInvoicingState::TO_REDEEM);
 
         return $this->json($invoices, 200, [], ['version' => 3]);
     }
