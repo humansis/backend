@@ -284,13 +284,13 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-#    CommonBundle\DataFixtures\SmartcardRedemptionFixtures:
-#        public: true
-#        arguments:
-#            - "@=service('kernel').getEnvironment()"
-#            - "@smartcard_service"
-#        tags:
-#            - { name: doctrine.fixture.orm }
+    CommonBundle\DataFixtures\SmartcardInvoiceFixtures:
+        public: true
+        arguments:
+            - "@=service('kernel').getEnvironment()"
+            - "@smartcard_service"
+        tags:
+            - { name: doctrine.fixture.orm }
 
     CommonBundle\DataFixtures\VoucherRedemptionFixtures:
         public: true
