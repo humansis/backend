@@ -303,11 +303,15 @@ class AssistanceControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreateDistribution
      */
-    public function testUpdateDistributionDate(int $id)
+    public function testUpdateDistributionDate()
     {
+        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findOneBy([
+            'validated' => false,
+            'completed' => false,
+        ], ['updatedOn' => 'desc']);
         $date = new DateTime();
 
-        $this->request('PATCH', "/api/basic/web-app/v1/assistances/$id", [
+        $this->request('PATCH', "/api/basic/web-app/v1/assistances/".$assistance->getId(), [
             'dateDistribution' => $date->format(DateTimeInterface::ISO8601),
         ]);
 
@@ -323,11 +327,15 @@ class AssistanceControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreateDistribution
      */
-    public function testUpdateExpirationDate(int $id)
+    public function testUpdateExpirationDate()
     {
+        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findOneBy([
+            'validated' => false,
+            'completed' => false,
+        ], ['updatedOn' => 'desc']);
         $date = new DateTime('+1 year');
 
-        $this->request('PATCH', "/api/basic/web-app/v1/assistances/$id", [
+        $this->request('PATCH', "/api/basic/web-app/v1/assistances/".$assistance->getId(), [
             'dateExpiration' => $date->format(DateTimeInterface::ISO8601),
         ]);
 
