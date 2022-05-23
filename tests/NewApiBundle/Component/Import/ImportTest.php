@@ -168,6 +168,13 @@ class ImportTest extends KernelTestCase
                 1,
                 7
             ],
+            'reupload fixed households' => [
+                'KHM',
+                'import_3duplicity_first_run.ods',
+                'import_3duplicityFixed_second_run.ods',
+                4,
+                4
+            ],
         ];
     }
 

@@ -83,6 +83,7 @@ class UploadImportService
             $importFile->setIsLoaded(true);
 
             $this->em->flush();
+            $this->em->refresh($importFile->getImport());
 
             $this->integrityDuplicityService->buildIdentityTable($importFile->getImport());
 
