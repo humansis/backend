@@ -163,30 +163,6 @@ class ImportDuplicityTest extends KernelTestCase
         $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
     }
 
-    public function testIncompleteDuplicitiesByBatch()
-    {
-        $import = $this->makeIdentityCheckFailed(
-            $this->project,
-            'import_3duplicity_first_run.ods',
-            'import_1duplicity_second_run.ods'
-        );
-
-        $this->assertQueueCount(2, $import);
-        $this->assertQueueCount(2, $import, [ImportQueueState::IDENTITY_CANDIDATE]);
-        $this->checkDuplicityEndpoint($import);
-
-        $duplicityResolve = new ResolveAllDuplicitiesInputType();
-        $duplicityResolve->setStatus(ImportQueueState::TO_UPDATE);
-        $this->importService->resolveAllDuplicities($import, $duplicityResolve, $this->getUser());
-
-        $this->assertQueueCount(2, $import);
-        $this->assertQueueCount(1, $import, [ImportQueueState::TO_UPDATE]);
-        $this->assertQueueCount(1, $import, [ImportQueueState::IDENTITY_CANDIDATE]);
-        $this->checkDuplicityEndpoint($import);
-
-        $this->assertEquals(ImportState::IDENTITY_CHECK_FAILED, $import->getState());
-    }
-
     private function makeIdentityCheckFailed(Project $project, string $firstFile, string $secondFile): Import
     {
         $testFiles = [
