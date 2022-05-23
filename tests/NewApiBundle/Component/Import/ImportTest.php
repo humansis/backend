@@ -158,6 +158,51 @@ class ImportTest extends KernelTestCase
         $this->assertCount($expectedBeneficiaryCount, $bnfCount, "Wrong beneficiary count");
     }
 
+    public function integrityFixedFiles(): array
+    {
+        return [
+            'full replacement of all wrong households' => [
+                'SYR',
+                'SYR-WrongDatedImport-5HH.xlsx',
+                'SYR-only-camp-1HH.xlsx',
+                1,
+                7
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider integrityFixedFiles
+     *
+     * @param string $country
+     * @param string $integrityWrongFile
+     * @param string $fixedFile
+     * @param int    $expectedHouseholdCount
+     * @param int    $expectedBeneficiaryCount
+     */
+    public function testFixIntegrityErrors(string $country, string $integrityWrongFile, string $fixedFile, int $expectedHouseholdCount, int $expectedBeneficiaryCount)
+    {
+        $this->project = $this->createBlankProject($country, [__METHOD__, $integrityWrongFile]);
+        $this->originHousehold = $this->createBlankHousehold($this->project);
+        $import = $this->createImport("testFixIntegrityErrors", $this->project, $integrityWrongFile);
+
+        $this->userStartedIntegrityCheck($import, false, $this->getBatchCount($import, 'integrity_check'));
+
+        $this->uploadFile($import, $fixedFile);
+
+        $this->userStartedIntegrityCheck($import, true, $this->getBatchCount($import, 'integrity_check'));
+
+        $this->assertQueueCount($expectedHouseholdCount, $import, [ImportQueueState::VALID]);
+
+        $this->userStartedIdentityCheck($import, true, $this->getBatchCount($import,'identity_check'));
+        $this->userStartedSimilarityCheck($import, true, $this->getBatchCount($import, 'similarity_check'));
+        $this->userStartedFinishing($import);
+
+        $this->assertQueueCount($expectedHouseholdCount, $import, [ImportQueueState::CREATED]);
+        $importedBnfs = $this->entityManager->getRepository(Beneficiary::class)->getImported($import);
+        $this->assertCount($expectedBeneficiaryCount, $importedBnfs, "Wrong beneficiary count");
+    }
+
     public function testCountrySpecifics()
     {
         $country = 'SYR';
