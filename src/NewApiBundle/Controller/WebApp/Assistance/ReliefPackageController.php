@@ -84,6 +84,7 @@ class ReliefPackageController extends AbstractWebAppController
             } else {
                 $package->addAmountOfDistributed($packageUpdate->getAmountDistributed());
             }
+            $package->setDistributedBy($this->getUser());
 
             // Assistance statistic cache is invalidated by workflow transition
             // for partially distribution process of invalidation cache should be changed
