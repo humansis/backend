@@ -27,6 +27,7 @@ SELECT
     CASE
         WHEN sd.distributed_by_id IS NOT NULL THEN sd.distributed_by_id
         WHEN t.id  IS NOT NULL THEN t.sent_by_id
+        ELSE pack.distributed_by_id
         END AS field_officer_id
 
 FROM distribution_beneficiary db

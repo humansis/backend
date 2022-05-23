@@ -187,6 +187,7 @@ class SmartcardService
 
         $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
         $reliefPackage->addAmountOfDistributed($value);
+        $reliefPackage->setDistributedBy($user);
 
         if ($reliefPackage->getAmountDistributed() > $reliefPackage->getAmountToDistribute()) {
             $suspicious = true;
