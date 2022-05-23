@@ -19,6 +19,7 @@ class AdmBaseRepository extends EntityRepository
         $qb = $this->createQueryBuilder('adm');
         $qb->innerJoin('adm.location', 'l')
             ->where('l.countryISO3 = :iso3')
+            ->orderBy('l.name')
             ->setParameter('iso3', $iso3);
 
         if ($filter->hasIds()) {
