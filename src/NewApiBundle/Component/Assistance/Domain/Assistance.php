@@ -279,8 +279,8 @@ class Assistance
 
                 $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
 
-                if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::EXPIRE)) {
-                    $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::EXPIRE);
+                if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::CANCEL)) {
+                    $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::CANCEL);
                 }
             }
         }
@@ -335,6 +335,7 @@ class Assistance
             throw new ManipulationOverValidatedAssistanceException('It is not possible to remove a beneficiary from validated and locked assistance');
         }
 
+        /** @var AssistanceBeneficiary $target */
         $target = $this->targetRepository->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $this->assistanceRoot]);
         if ($target === null) return $this;
 
@@ -343,8 +344,10 @@ class Assistance
         }
         $target->setRemoved(true)
             ->setJustification($justification);
-        $this->cancelUnusedReliefPackages([$target]);
         $this->assistanceRoot->setUpdatedOn(new \DateTime());
+
+        $this->cancelUnusedReliefPackages([$target]);
+
         $this->cleanCache();
 
         return $this;
