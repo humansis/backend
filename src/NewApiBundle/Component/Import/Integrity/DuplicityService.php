@@ -3,6 +3,7 @@
 namespace NewApiBundle\Component\Import\Integrity;
 
 use NewApiBundle\Entity\Import;
+use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 use NewApiBundle\Utils\FileSystem\PathConstructor;
 
@@ -28,6 +29,10 @@ class DuplicityService
     {
         $identities = [];
         foreach ($import->getImportQueue() as $item) {
+            if (!in_array($item->getState(), [
+                ImportQueueState::NEW,
+                ImportQueueState::VALID,
+            ])) continue; // ignore non-importing states
             foreach ($this->lineFactory->createAll($item) as $memberIndex => $line) {
                 if ($line->isIdNumberCorrectlyFilled() && !empty($line->idNumber)) {
                     $cardSerialization = self::serializeIDCard((string)$line->idType, (string)$line->idNumber);
