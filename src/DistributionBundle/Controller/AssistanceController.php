@@ -1099,6 +1099,7 @@ class AssistanceController extends Controller
                     $gri->setDistributedAt(new \DateTime());
                     foreach ($gri->getAssistanceBeneficiary()->getReliefPackages() as $package) {
                         $package->distributeRest();
+                        $package->setDistributedBy($this->getUser());
                         $this->getDoctrine()->getManager()->persist($package);
                     }
                     $this->getDoctrine()->getManager()->persist($gri);
