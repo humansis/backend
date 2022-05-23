@@ -269,8 +269,8 @@ class Assistance
 
                 $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
 
-                if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::EXPIRE)) {
-                    $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::EXPIRE);
+                if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::CANCEL)) {
+                    $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::CANCEL);
                 }
             }
         }
@@ -317,6 +317,7 @@ class Assistance
      */
     public function removeBeneficiary(AbstractBeneficiary $beneficiary, string $justification): self
     {
+        /** @var AssistanceBeneficiary $target */
         $target = $this->targetRepository->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $this->assistanceRoot]);
         if ($target === null) return $this;
 
@@ -325,8 +326,13 @@ class Assistance
         }
         $target->setRemoved(true)
             ->setJustification($justification);
-        $this->cancelUnusedReliefPackages([$target]);
         $this->assistanceRoot->setUpdatedOn(new \DateTime());
+
+        // foreach ($target->getReliefPackages() as $reliefPackage) {
+        //     $this->targetRepository->removePackage($reliefPackage);
+        // }
+        $target->discardReliefPackages();
+
         $this->cleanCache();
 
         return $this;
