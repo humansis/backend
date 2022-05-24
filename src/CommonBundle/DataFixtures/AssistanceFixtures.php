@@ -166,6 +166,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data['location'] = $this->randomLocation($manager, $project->getIso3());
         $data['date_distribution'] = $this->randomDate();
         $data['selection_criteria'] = [];
+        $data['date_expiration'] = $project->getEndDate()->format('d-m-Y');
 
         $country = $this->countries->getCountry($project->getIso3());
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
@@ -183,6 +184,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data['location'] = $this->randomLocation($manager, $project->getIso3());
         $data['date_distribution'] = $this->randomDate();
         $data['selection_criteria'] = [];
+        $data['date_expiration'] = $project->getEndDate()->format('d-m-Y');
 
         $country = $this->countries->getCountry($project->getIso3());
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
@@ -199,6 +201,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data['target_type'] = AssistanceTargetType::INSTITUTION;
         $data['location'] = $this->randomLocation($manager, $project->getIso3());
         $data['date_distribution'] = $this->randomDate();
+        $data['date_expiration'] = $project->getEndDate()->format('d-m-Y');
         unset($data['selection_criteria']);
 
         $data['institutions'] = [];
@@ -224,6 +227,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data['target_type'] = AssistanceTargetType::COMMUNITY;
         $data['location'] = $this->randomLocation($manager, $project->getIso3());
         $data['date_distribution'] = $this->randomDate();
+        $data['date_expiration'] = $project->getEndDate()->format('d-m-Y');
         unset($data['selection_criteria']);
 
         $data['communities'] = [];
@@ -273,6 +277,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
                 ],
             ],
         ];
+        $data['date_expiration'] = $project->getEndDate()->format('d-m-Y');
 
         return $this->distributionService->createFromArray($project->getIso3(), $data, 1)['distribution'];
     }
