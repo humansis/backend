@@ -32,7 +32,7 @@ class SmartcardPurchaseService
             'currency' => $currency
         ]);
         foreach ($preliminaryInvoices as $preliminaryInvoice) {
-            return $this->smartcardPurchaseRepository->findBy(['id' => $preliminaryInvoice->getPurchasesIds()]);
+            return $this->smartcardPurchaseRepository->findBy(['id' => $preliminaryInvoice->getPurchaseIds()]);
         }
 
         return [];

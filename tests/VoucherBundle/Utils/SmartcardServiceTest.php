@@ -5,14 +5,16 @@ namespace VoucherBundle\Tests\Utils;
 use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
+use DateTime;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\Entity\Smartcard\PreliminaryInvoice;
 use NewApiBundle\Enum\ModalityType;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use UserBundle\Entity\User;
-use VoucherBundle\DTO\PreliminaryInvoice;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
@@ -178,7 +180,7 @@ class SmartcardServiceTest extends KernelTestCase
         $assistanceRepository = $this->em->getRepository(Assistance::class);
         $product = $this->em->getRepository(Product::class)->findOneBy(['countryISO3'=>'SYR'], ['id' => 'asc']);
 
-        $date = \DateTime::createFromFormat('Y-m-d', '2000-01-01');
+        $date = DateTime::createFromFormat('Y-m-d', '2000-01-01');
         foreach ($actions as $actionData) {
             switch ($actionData[1]) {
                 case 'register':
@@ -246,9 +248,9 @@ class SmartcardServiceTest extends KernelTestCase
         $this->assertIsArray($preliminaryInvoices, "Redemption candidates must be array");
         $this->assertCount(count($expectedResults), $preliminaryInvoices, "Wrong count of redemption candidates");
         foreach ($preliminaryInvoices as $preliminaryInvoice) {
-            $this->assertContains([$preliminaryInvoice->getValue(), $preliminaryInvoice->getCurrency(), $preliminaryInvoice->getProjectId()], $expectedResults, "Result was unexpected");
+            $this->assertContains([$preliminaryInvoice->getValue(), $preliminaryInvoice->getCurrency(), $preliminaryInvoice->getProject()->getId()], $expectedResults, "Result was unexpected");
 
-            foreach ($preliminaryInvoice->getPurchasesIds() as $purchaseId) {
+            foreach ($preliminaryInvoice->getPurchaseIds() as $purchaseId) {
                 /** @var SmartcardPurchase $purchase */
                 $purchase = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->find($purchaseId);
                 $this->assertNotNull($purchase, "Purchase must exists");
@@ -258,7 +260,7 @@ class SmartcardServiceTest extends KernelTestCase
         // redeem test
         foreach ($preliminaryInvoices as $preliminaryInvoice) {
             $batchRequest = new SmartcardInvoice();
-            $batchRequest->setPurchases($preliminaryInvoice->getPurchasesIds());
+            $batchRequest->setPurchases($preliminaryInvoice->getPurchaseIds());
 
             $batch = $this->smartcardService->redeem($this->vendor, $batchRequest, $admin);
 
@@ -267,8 +269,8 @@ class SmartcardServiceTest extends KernelTestCase
             }
             $this->assertEquals($preliminaryInvoice->getValue(), $batch->getValue(), "Redemption value of batch is different");
             $this->assertEquals($preliminaryInvoice->getCurrency(), $batch->getCurrency(), "Redemption currency of batch is different");
-            $this->assertEquals($preliminaryInvoice->getProjectId(), $batch->getProject()->getId(), "Redemption project of batch is different");
-            $this->assertEquals($preliminaryInvoice->getPurchasesCount(), $batch->getPurchases()->count(), "Redemption purchase count of batch is different");
+            $this->assertEquals($preliminaryInvoice->getProject()->getId(), $batch->getProject()->getId(), "Redemption project of batch is different");
+            $this->assertEquals($preliminaryInvoice->getPurchaseCount(), $batch->getPurchases()->count(), "Redemption purchase count of batch is different");
         }
     }
 
@@ -483,7 +485,7 @@ class SmartcardServiceTest extends KernelTestCase
             foreach ($subActions as $action) {
                 switch ($action) {
                     case 'register':
-                        $this->smartcardService->register($serialNumber, $beneficiaryId, \DateTime::createFromFormat('Y-m-d', $dateOfEvent));
+                        $this->smartcardService->register($serialNumber, $beneficiaryId, DateTime::createFromFormat('Y-m-d', $dateOfEvent));
                         break;
                     case 'deposit':
                         /** @var Assistance $assistance */
@@ -506,13 +508,13 @@ class SmartcardServiceTest extends KernelTestCase
                         $this->em->persist($reliefPackage);
                         $this->em->flush();
 
-                        $this->smartcardService->deposit($serialNumber, $reliefPackage->getId(), 100, null, \DateTime::createFromFormat('Y-m-d', $dateOfEvent), $admin);
+                        $this->smartcardService->deposit($serialNumber, $reliefPackage->getId(), 100, null, DateTime::createFromFormat('Y-m-d', $dateOfEvent), $admin);
                         break;
                     case 'purchase':
                         $vendorId = $preparedAction[3];
                         $purchaseData = new SmartcardPurchase();
                         $purchaseData->setBeneficiaryId($beneficiaryId);
-                        $purchaseData->setCreatedAt(\DateTime::createFromFormat('Y-m-d', $dateOfEvent));
+                        $purchaseData->setCreatedAt(DateTime::createFromFormat('Y-m-d', $dateOfEvent));
                         $purchaseData->setVendorId($vendorId);
                         $purchaseData->setProducts([
                             [
@@ -568,9 +570,9 @@ class SmartcardServiceTest extends KernelTestCase
                 $this->assertCount(1, $preliminaryInvoice, "Wrong number of invoice candidates");
                 /** @var PreliminaryInvoice $invoice */
                 $invoice = $preliminaryInvoice[0];
-                $this->assertEquals($values['purchases'], $invoice->getPurchasesCount(), "Wrong redeemable purchases count");
+                $this->assertEquals($values['purchases'], $invoice->getPurchaseCount(), "Wrong redeemable purchases count");
                 $this->assertEquals($values['value'], $invoice->getValue(), "Wrong redeemable value");
-                $this->assertEquals($projectA, $invoice->getProjectId(), "Wrong redeemable project");
+                $this->assertEquals($projectA, $invoice->getProject()->getId(), "Wrong redeemable project");
             } elseif (null === $values) {
                 $this->assertEmpty($preliminaryInvoice, "Wrong number of invoice candidates");
             } else {
@@ -579,7 +581,7 @@ class SmartcardServiceTest extends KernelTestCase
         }
     }
 
-    private function createTempVendor(\Doctrine\ORM\EntityManagerInterface $em): void
+    private function createTempVendor(EntityManagerInterface $em): void
     {
         $id = substr(md5(uniqid()), 0, 5)."_";
         $adm1 = $this->em->getRepository(Adm1::class)->findOneBy(['countryISO3' => 'SYR'], ['id' => 'asc']);

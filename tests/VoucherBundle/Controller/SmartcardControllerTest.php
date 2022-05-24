@@ -7,11 +7,11 @@ use CommonBundle\DataFixtures\VendorFixtures;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\Entity\Smartcard\PreliminaryInvoice;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\User;
-use VoucherBundle\DTO\PreliminaryInvoice;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
@@ -19,7 +19,6 @@ use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Enum\SmartcardStates;
 use VoucherBundle\InputType\SmartcardInvoice;
-use VoucherBundle\Repository\SmartcardPurchaseRepository;
 
 class SmartcardControllerTest extends BMSServiceTestCase
 {
@@ -689,7 +688,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         /** @var PreliminaryInvoice $preliminaryInvoice */
         foreach ($preliminaryInvoices as $preliminaryInvoice) {
             $batchToInvoice = [
-                'purchases' => $preliminaryInvoice->getPurchasesIds(),
+                'purchases' => $preliminaryInvoice->getPurchaseIds(),
             ];
 
             $this->setUp();
