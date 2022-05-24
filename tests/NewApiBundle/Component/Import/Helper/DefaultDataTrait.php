@@ -109,10 +109,4 @@ trait DefaultDataTrait
         $this->assertNotNull($importFile->getId(), "ImportFile wasn't saved to DB");
     }
 
-    private function getBatchCount(Entity\Import $import)
-    {
-        $count = $this->entityManager->getRepository(ImportQueue::class)->count(['import' => $import]);
-        $batch = self::$container->getParameter('import.batch_size');
-        return 1+intval(ceil($count/$batch));
-    }
 }

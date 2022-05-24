@@ -7,15 +7,12 @@ use CommonBundle\Entity\Location;
 use DateTime;
 use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Repository\AssistanceRepository;
-use DistributionBundle\Repository\CommodityRepository;
 use DistributionBundle\Repository\ModalityTypeRepository;
 use Exception;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
-use NewApiBundle\Enum\BeneficiaryType;
 use NewApiBundle\Enum\ProductCategoryType;
 use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
@@ -115,7 +112,48 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('data', $result);
     }
 
-    public function testCreateDistribution()
+    public function commodityGenerator(): iterable
+    {
+        yield \NewApiBundle\Enum\ModalityType::SMART_CARD => [[
+            'modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
+            'unit' => 'CZK',
+            'value' => 1000,
+            'division' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+        ]];
+        yield \NewApiBundle\Enum\ModalityType::PAPER_VOUCHER => [[
+            'modalityType' => \NewApiBundle\Enum\ModalityType::PAPER_VOUCHER,
+            'unit' => 'CZK',
+            'value' => '1000',
+            'description' => 'something important',
+            "remoteDistributionAllowed" => false,
+            'division' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+        ]];
+        yield \NewApiBundle\Enum\ModalityType::QR_CODE_VOUCHER => [[
+            'modalityType' => \NewApiBundle\Enum\ModalityType::QR_CODE_VOUCHER,
+            'unit' => 'CZK',
+            'value' => "1000.00",
+            'description' => '',
+            "remoteDistributionAllowed" => false,
+            'division' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+        ]];
+        yield \NewApiBundle\Enum\ModalityType::MOBILE_MONEY => [[
+            'modalityType' => \NewApiBundle\Enum\ModalityType::MOBILE_MONEY,
+            'unit' => 'CZK',
+            'value' => '0.00',
+            'division' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+        ]];
+        yield \NewApiBundle\Enum\ModalityType::BREAD => [[
+            'modalityType' => \NewApiBundle\Enum\ModalityType::BREAD,
+            'unit' => 'ks',
+            'value' => 1,
+            'division' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+        ]];
+    }
+
+    /**
+     * @dataProvider commodityGenerator
+     */
+    public function testCreateDistribution(array $commodity)
     {
         /** @var Project $project */
         $project = self::$container->get('doctrine')->getRepository(Project::class)->findOneBy([], ['id' => 'asc']);
@@ -127,9 +165,6 @@ class AssistanceControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There needs to be at least one project and location in system for completing this test');
         }
 
-        /** @var ModalityType $modalityType */
-        $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Smartcard'], ['id' => 'asc'])[0];
-
         $this->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
             'projectId' => $project->getId(),
@@ -140,14 +175,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'type' => AssistanceType::DISTRIBUTION,
             'target' => \DistributionBundle\Enum\AssistanceTargetType::HOUSEHOLD,
             'threshold' => 1,
-            'commodities' => [
-                [
-                    'modalityType' => $modalityType->getName(),
-                    'unit' => 'CZK',
-                    'value' => 1000,
-                    'division' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
-                ],
-            ],
+            'commodities' => [$commodity],
             'selectionCriteria' => [
                 [
                     'group' => 1,
@@ -161,7 +189,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'foodLimit' => 10.99,
             'nonFoodLimit' => null,
             'cashbackLimit' => 1024,
-            'remoteDistributionAllowed' => false,
+            'remoteDistributionAllowed' => $commodity['modalityType']==\NewApiBundle\Enum\ModalityType::SMART_CARD ? false : null,
             'allowedProductCategoryTypes' => [ProductCategoryType::CASHBACK, ProductCategoryType::NONFOOD],
         ]);
 
@@ -275,11 +303,15 @@ class AssistanceControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreateDistribution
      */
-    public function testUpdateDistributionDate(int $id)
+    public function testUpdateDistributionDate()
     {
+        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findOneBy([
+            'validated' => false,
+            'completed' => false,
+        ], ['updatedOn' => 'desc']);
         $date = new DateTime();
 
-        $this->request('PATCH', "/api/basic/web-app/v1/assistances/$id", [
+        $this->request('PATCH', "/api/basic/web-app/v1/assistances/".$assistance->getId(), [
             'dateDistribution' => $date->format(DateTimeInterface::ISO8601),
         ]);
 
@@ -295,11 +327,15 @@ class AssistanceControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreateDistribution
      */
-    public function testUpdateExpirationDate(int $id)
+    public function testUpdateExpirationDate()
     {
+        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findOneBy([
+            'validated' => false,
+            'completed' => false,
+        ], ['updatedOn' => 'desc']);
         $date = new DateTime('+1 year');
 
-        $this->request('PATCH', "/api/basic/web-app/v1/assistances/$id", [
+        $this->request('PATCH', "/api/basic/web-app/v1/assistances/".$assistance->getId(), [
             'dateExpiration' => $date->format(DateTimeInterface::ISO8601),
         ]);
 

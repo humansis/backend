@@ -3,7 +3,16 @@
 namespace NewApiBundle\Component\Import;
 
 use BadMethodCallException;
+use BeneficiaryBundle\Entity\AbstractBeneficiary;
+use BeneficiaryBundle\Entity\Address;
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Entity\HouseholdActivity;
+use BeneficiaryBundle\Entity\HouseholdLocation;
+use BeneficiaryBundle\Entity\NationalId;
+use BeneficiaryBundle\Entity\Person;
+use BeneficiaryBundle\Entity\Phone;
+use BeneficiaryBundle\Entity\Profile;
+use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
@@ -12,10 +21,13 @@ use InvalidArgumentException;
 use NewApiBundle\Component\Import\Finishing\HouseholdDecoratorBuilder;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiary;
+use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Entity\ImportQueueDuplicity;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
+use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Utils\Concurrency\ConcurrencyProcessor;
 use NewApiBundle\Workflow\ImportQueueTransitions;
@@ -30,7 +42,7 @@ class ImportFinisher
 {
     use ImportLoggerTrait;
 
-    const LOCK_BATCH = 10;
+    const LOCK_BATCH = 100;
 
     /**
      * @var EntityManagerInterface
@@ -119,6 +131,9 @@ class ImportFinisher
                     'lockedBy' => $runCode,
                 ]);
             })
+            ->setBatchCleanupCallback(function() {
+                $this->em->flush();
+            })
             ->processItems(function(ImportQueue $item) use ($import) {
                 switch ($item->getState()) {
                     case ImportQueueState::TO_CREATE:
@@ -141,12 +156,10 @@ class ImportFinisher
                         $this->importQueueStateMachine->apply($item, ImportQueueTransitions::LINK);
                         break;
                 }
-
                 $this->em->persist($item);
+
             });
-
         $this->em->flush();
-
         if ($this->importStateMachine->can($import, ImportTransitions::FINISH)) {
             $this->importStateMachine->apply($import, ImportTransitions::FINISH);
 
@@ -158,14 +171,7 @@ class ImportFinisher
 
     private function lockImportQueue(Import $import, $state, string $code, int $count)
     {
-        $unlocked = $this->queueRepository->findUnlocked($import, $state, $count);
-
-        /** @var ImportQueue $item */
-        foreach ($unlocked as $item) {
-            $item->lock($code);
-        }
-
-        $this->em->flush();
+        $this->queueRepository->lockUnlockedItems($import, $state, $count, $code);
     }
 
     /**
@@ -267,5 +273,6 @@ class ImportFinisher
         foreach ($import->getProjects() as $project) {
             $household->addProject($project);
         }
+        $this->em->persist($household);
     }
 }

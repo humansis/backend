@@ -70,7 +70,10 @@ services:
             GELF_PORT: 9999
             MOBILE_APP_VERSION: xxx
             MOBILE_APP_ID: xxx
-            IMPORT_BATCH_SIZE: 100
+            BATCH_SIZE_INTEGRITY_CHECK: 2000
+            BATCH_SIZE_IDENTITY_CHECK: 10000
+            BATCH_SIZE_SIMILARITY_CHECK: 10000
+            BATCH_SIZE_FINALIZATION: 2000
 
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
