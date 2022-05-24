@@ -132,10 +132,6 @@ class DistributedItemControllerTest extends BMSServiceTestCase
             $beneficiaryAmounts[$distributedItem->beneficiaryId] = $distributedItem->amount;
         }
 
-        foreach($assistance->getCommodities() as $commodity) {
-            echo $commodity->getValue().' '.$commodity->getUnit(). ' '.$commodity->getModalityType()->getName()."\n";
-        }
-
         foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
             $shouldBeDistributed = 0;
             foreach ($assistanceBeneficiary->getReliefPackages() as $package) {

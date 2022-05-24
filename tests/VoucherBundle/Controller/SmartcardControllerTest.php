@@ -582,7 +582,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $batch = $this->em->getRepository(Invoice::class)->findOneBy([
             'vendor' => $vendor,
         ], [
-            'redeemedAt' => 'asc',
+            'invoicedAt' => 'asc',
         ]);
 
         $crawler = $this->request('GET', '/api/wsse/smartcards/batch/'.$batch->getId().'/purchases');
