@@ -304,13 +304,14 @@ deploy prod db to stage:
     - mysql -h ${UPLOAD_DB_HOSTNAME} -u ${DB_DEPLOY_USER} -p"${DB_DEPLOY_USER_PASSWORD}" -e "DROP DATABASE ${DATABASE_NAME}"
     - sed -i -e 's/DEFINER[ ]*=[ ]*[^*]*\*/\*/' -e 's/DEFINER[ ]*=[ ]*[^*]*PROCEDURE/PROCEDURE/' -e 's/DEFINER[ ]*=[ ]*[^*]*FUNCTION/FUNCTION/' db.sql
     - mysql -h ${UPLOAD_DB_HOSTNAME} -u ${DB_DEPLOY_USER} -p"${DB_DEPLOY_USER_PASSWORD}" -e "CREATE DATABASE ${DATABASE_NAME} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
-    - mysql -h ${UPLOAD_DB_HOSTNAME} -u ${DB_DEPLOY_USER} -p"${DB_DEPLOY_USER_PASSWORD}" ${DATABASE_NAME}
+    - mysql -h ${UPLOAD_DB_HOSTNAME} -u ${DB_DEPLOY_USER} -p"${DB_DEPLOY_USER_PASSWORD}" ${DATABASE_NAME} < db.sql
     - ./ci/change-stage-db.sh
   after_script:
     - rm db.sql
     - rm -rf ~/.ssh/id_rsa
   only:
     - /^release\/.*$/
+    - /^vs\/.*$/
   except:
     - tags
   when: manual
