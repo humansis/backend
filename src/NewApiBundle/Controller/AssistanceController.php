@@ -169,7 +169,7 @@ class AssistanceController extends AbstractController
     public function item(Assistance $assistance): JsonResponse
     {
         if ($assistance->getArchived()) {
-            $this->createNotFoundException();
+            throw $this->createNotFoundException();
         }
 
         return $this->json($assistance);
