@@ -43,7 +43,7 @@ class PhoneMapper implements MapperInterface
         return $this->object->getNumber();
     }
 
-    public function getType(): string
+    public function getType(): ?string
     {
         return $this->object->getType();
     }
