@@ -442,7 +442,9 @@ class Household extends AbstractBeneficiary
      */
     public function getBeneficiaries()
     {
-        return $this->beneficiaries;
+        return $this->beneficiaries->filter(function (Beneficiary $beneficiary) {
+            return !$beneficiary->getArchived();
+        });
     }
 
     /**
