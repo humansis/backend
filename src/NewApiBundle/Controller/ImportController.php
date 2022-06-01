@@ -222,11 +222,15 @@ class ImportController extends AbstractController
 
         /** @var UploadedFile[] $files */
         $files = $request->files->all();
-        $files = [array_pop($files)]; //just last file is accepted, but FE should manage it to upload just one file
 
         if (empty($files)) {
-            throw new \InvalidArgumentException('Missing at least one upload file.');
+            throw new \InvalidArgumentException('Missing upload file.');
         }
+
+        if (count($files) > 1) {
+            throw new \InvalidArgumentException('It is possible to upload just one file.');
+        }
+
         $this->checkImportFileSizes($files);
 
         /** @var User $user */
