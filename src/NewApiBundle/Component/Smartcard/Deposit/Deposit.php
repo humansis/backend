@@ -21,6 +21,7 @@ use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Cache\CacheInterface;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
+use VoucherBundle\Repository\SmartcardDepositRepository;
 use VoucherBundle\Repository\SmartcardRepository;
 use VoucherBundle\Utils\SmartcardService;
 
@@ -84,7 +85,7 @@ class Deposit
     private $smartcard;
 
     /**
-     * @var SmartcardDeposit
+     * @var SmartcardDeposit|null
      */
     private $deposit;
 
@@ -99,6 +100,17 @@ class Deposit
     private $smartcardRepository;
 
     /**
+     * @var SmartcardDepositRepository
+     */
+    private $smartcardDepositRepository;
+
+    /**
+     * @var string
+     */
+    private $hash;
+
+    /**
+     * @param SmartcardDepositRepository      $smartcardDepositRepository
      * @param SmartcardService                $smartcardService
      * @param SmartcardRepository             $smartcardRepository
      * @param Registry                        $workflowRegistry
@@ -112,6 +124,7 @@ class Deposit
      * @throws NonUniqueResultException
      */
     public function __construct(
+        SmartcardDepositRepository      $smartcardDepositRepository,
         SmartcardService                $smartcardService,
         SmartcardRepository             $smartcardRepository,
         Registry                        $workflowRegistry,
@@ -122,6 +135,7 @@ class Deposit
         CacheInterface                  $cache,
         DepositInputType                $depositInputType
     ) {
+        $this->smartcardDepositRepository = $smartcardDepositRepository;
         $this->smartcardService = $smartcardService;
         $this->workflowRegistry = $workflowRegistry;
         $this->assistanceBeneficiaryRepository = $assistanceBeneficiaryRepository;
@@ -132,12 +146,7 @@ class Deposit
         $this->cache = $cache;
         $this->smartcardRepository = $smartcardRepository;
 
-        $this->loadAssistanceBeneficiary();
-        $this->loadSuitableReliefPackage();
-        $this->reliefPackage->addAmountOfDistributed($this->depositInputType->getValue());
-        $this->reliefPackage->setDistributedBy($this->tokenStorage->getToken()->getUser());
-        $this->checkReliefPackage();
-        $this->loadSmartcard();
+        $this->load();
     }
 
     /**
@@ -146,6 +155,10 @@ class Deposit
      */
     public function deposit(): SmartcardDeposit
     {
+        if ($this->deposit) {
+            return $this->deposit;
+        }
+
         $this->createDeposit();
 
         $reliefPackageWorkflow = $this->workflowRegistry->get($this->reliefPackage);
@@ -159,6 +172,25 @@ class Deposit
         $this->smartcardRepository->save($this->smartcard);
 
         return $this->deposit;
+    }
+
+    /**
+     * @return void
+     * @throws NonUniqueResultException
+     */
+    private function load(): void
+    {
+        $this->loadAssistanceBeneficiary();
+        $this->loadSuitableReliefPackage();
+        $this->generateHash();
+        $this->loadSmartcard();
+        $this->deposit = $this->smartcardDepositRepository->findByHash($this->hash);
+
+        if (!$this->deposit) {
+            $this->reliefPackage->addAmountOfDistributed($this->depositInputType->getValue());
+            $this->reliefPackage->setDistributedBy($this->tokenStorage->getToken()->getUser());
+            $this->checkReliefPackage();
+        }
     }
 
     private function createDeposit(): void
@@ -249,5 +281,15 @@ class Deposit
     private function addMessage(string $message)
     {
         $this->messages[] = $message;
+    }
+
+    private function generateHash(): void
+    {
+        $this->hash = md5($this->depositInputType->getSerialNumber().
+            $this->depositInputType->getCreatedAt()->getTimestamp().
+            $this->depositInputType->getValue().
+            $this->reliefPackage->getUnit().
+            $this->reliefPackage->getId()
+        );
     }
 }
