@@ -38,6 +38,20 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
 {
     public const SEARCH_CONTEXT_NOT_REMOVED = 'notRemoved';
 
+    /**
+     * @param int $assistanceId
+     * @param int $beneficiaryId
+     *
+     * @return AssistanceBeneficiary|null
+     */
+    public function findByAssistanceAndBeneficiary(int $assistanceId, int $beneficiaryId): ?AssistanceBeneficiary
+    {
+        return $this->findOneBy([
+            'assistance' => $assistanceId,
+            'beneficiary' => $beneficiaryId,
+        ], ['id' => 'asc']);
+    }
+
     public function countAll(string $iso3)
     {
         $qb = $this->createQueryBuilder("db");
