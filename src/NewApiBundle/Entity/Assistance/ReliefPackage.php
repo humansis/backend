@@ -11,6 +11,7 @@ use NewApiBundle\Entity\Helper\LastModifiedAt;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
+use UserBundle\Entity\User;
 use VoucherBundle\Entity\SmartcardDeposit;
 
 /**
@@ -90,6 +91,14 @@ class ReliefPackage
      * @ORM\Column(name="distributedAt", type="datetime", nullable=true)
      */
     private $distributedAt;
+
+    /**
+     * @var User|null
+     *
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $distributedBy;
 
     /**
      * @param AssistanceBeneficiary $assistanceBeneficiary
@@ -285,6 +294,22 @@ class ReliefPackage
     public function setDistributedAt(?\DateTimeInterface $distributedAt): void
     {
         $this->distributedAt = $distributedAt;
+    }
+
+    /**
+     * @return User|null
+     */
+    public function getDistributedBy(): ?User
+    {
+        return $this->distributedBy;
+    }
+
+    /**
+     * @param User|null $distributedBy
+     */
+    public function setDistributedBy(?User $distributedBy): void
+    {
+        $this->distributedBy = $distributedBy;
     }
 
 }

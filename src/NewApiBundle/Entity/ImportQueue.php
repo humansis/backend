@@ -245,6 +245,10 @@ class ImportQueue implements ConcurrencyLockableInterface
      */
     public function hasColumnViolation(int $index, string $column): bool
     {
+        if (!isset($this->violatedColumns[$index])) {
+            return false;
+        }
+
         return in_array($column, $this->violatedColumns[$index]);
     }
 

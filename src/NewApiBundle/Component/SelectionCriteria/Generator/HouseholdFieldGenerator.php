@@ -36,7 +36,18 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
         foreach ($this->countrySpecificRepository->findBy(['countryIso3' => $countryIso3], ['id'=>'asc']) as $countrySpecific) {
             $type = $this->transformCountrySpecificType($countrySpecific->getType());
 
-            yield new Field($countrySpecific->getFieldString(), $countrySpecific->getFieldString(), ['='], $type);
+            switch ($type) {
+                case "integer":
+                    $conditionList = ['=', '<', '>', '<=', '>='];
+                    break;
+
+                case "string":
+                default:
+                    $conditionList = ['='];
+                    break;
+            }
+
+            yield new Field($countrySpecific->getFieldString(), $countrySpecific->getFieldString(), $conditionList, $type);
         }
     }
 

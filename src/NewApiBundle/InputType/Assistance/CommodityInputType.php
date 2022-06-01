@@ -80,7 +80,7 @@ class CommodityInputType implements InputTypeInterface
      */
     public function getValue()
     {
-        return $this->value;
+        return floatval($this->value);
     }
 
     /**

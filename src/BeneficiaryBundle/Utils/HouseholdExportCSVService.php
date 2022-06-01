@@ -196,7 +196,7 @@ class HouseholdExportCSVService
     ];
 
     private const LINE_4_MAPPING = [
-        ImportTemplate::ROW_NAME_STATUS => "'".ImportTemplate::TEMPLATE_VERSION,
+        ImportTemplate::ROW_NAME_STATUS => ImportTemplate::CURRENT_TEMPLATE_VERSION,
         ImportTemplate::ROW_NAME_MESSAGES => '',
         'Address street' => '**String',
         'Address number' => '**Number',
