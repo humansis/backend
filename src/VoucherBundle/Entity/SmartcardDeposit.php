@@ -98,6 +98,13 @@ class SmartcardDeposit
      */
     private $message;
 
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="hash", type="text", nullable=true)
+     */
+    private $hash;
+
     protected function __construct()
     {
     }
@@ -225,6 +232,22 @@ class SmartcardDeposit
     public function setMessage(?array $message): void
     {
         $this->message = $message;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getHash(): ?string
+    {
+        return $this->hash;
+    }
+
+    /**
+     * @param string|null $hash
+     */
+    public function setHash(?string $hash): void
+    {
+        $this->hash = $hash;
     }
 
 }
