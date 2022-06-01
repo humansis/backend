@@ -432,6 +432,17 @@ services:
             - '@workflow.registry'
             - '@validator'
 
+    NewApiBundle\Component\Smartcard\Deposit\DepositFactory:
+        arguments:
+            - '@smartcard_service'
+            - '@VoucherBundle\Repository\SmartcardRepository'
+            - '@workflow.registry'
+            - '@DistributionBundle\Repository\AssistanceBeneficiaryRepository'
+            - '@NewApiBundle\Repository\Assistance\ReliefPackageRepository'
+            - '@logger'
+            - '@security.untracked_token_storage'
+            - '@cache.app'
+
     NewApiBundle\Export\SmartcardPurchasedItemSpreadsheet:
         arguments:
             - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:SmartcardPurchasedItem")'
