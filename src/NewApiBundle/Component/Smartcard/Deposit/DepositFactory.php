@@ -10,6 +10,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Cache\CacheInterface;
+use VoucherBundle\Repository\SmartcardDepositRepository;
 use VoucherBundle\Repository\SmartcardRepository;
 use VoucherBundle\Utils\SmartcardService;
 
@@ -60,7 +61,13 @@ class DepositFactory
      */
     private $smartcardRepository;
 
+    /**
+     * @var SmartcardDepositRepository
+     */
+    private $smartcardDepositRepository;
+
     public function __construct(
+        SmartcardDepositRepository      $smartcardDepositRepository,
         SmartcardService                $smartcardService,
         SmartcardRepository             $smartcardRepository,
         Registry                        $workflowRegistry,
@@ -71,6 +78,7 @@ class DepositFactory
         CacheInterface                  $cache,
         DepositInputType                $depositInputType
     ) {
+        $this->smartcardDepositRepository = $smartcardDepositRepository;
         $this->smartcardService = $smartcardService;
         $this->workflowRegistry = $workflowRegistry;
         $this->assistanceBeneficiaryRepository = $assistanceBeneficiaryRepository;
@@ -90,7 +98,8 @@ class DepositFactory
      */
     public function create(DepositInputType $depositInputType): Deposit
     {
-        return new Deposit($this->smartcardService, $this->smartcardRepository, $this->workflowRegistry, $this->assistanceBeneficiaryRepository,
-            $this->reliefPackageRepository, $this->logger, $this->tokenStorage, $this->cache, $depositInputType);
+        return new Deposit($this->smartcardDepositRepository, $this->smartcardService, $this->smartcardRepository, $this->workflowRegistry,
+            $this->assistanceBeneficiaryRepository, $this->reliefPackageRepository, $this->logger, $this->tokenStorage, $this->cache,
+            $depositInputType);
     }
 }
