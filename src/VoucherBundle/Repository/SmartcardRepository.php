@@ -100,4 +100,17 @@ class SmartcardRepository extends EntityRepository
             return $smartcards[0];
         }
     }
+
+    /**
+     * @param Smartcard $smartcard
+     *
+     * @return void
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function save(Smartcard $smartcard): void
+    {
+        $this->_em->persist($smartcard);
+        $this->_em->flush();
+    }
 }
