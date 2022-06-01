@@ -11,6 +11,8 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use NewApiBundle\Component\Smartcard\Deposit\DepositFactory;
+use NewApiBundle\InputType\Smartcard\DepositInputType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Swagger\Annotations as SWG;
@@ -319,22 +321,27 @@ class SmartcardController extends Controller
      *     @Model(type=Smartcard::class, groups={"SmartcardOverview"})
      * )
      *
-     * @param Request $request
+     * @param Request        $request
+     * @param DepositFactory $depositFactory
      *
      * @return Response
+     * @throws NonUniqueResultException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Psr\Cache\InvalidArgumentException
      */
-    public function legacyDeposit(Request $request): Response
+    public function legacyDeposit(Request $request, DepositFactory $depositFactory): Response
     {
         try {
-            $deposit = $this->get('smartcard_service')->depositLegacy(
+            $depositInputType = DepositInputType::create(
                 $request->get('serialNumber'),
-                $request->request->get('beneficiaryId'),
+                $request->request->getInt('beneficiaryId'),
                 $request->request->getInt('distributionId'),
                 $request->request->get('value'),
                 null,
                 \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
-                $this->getUser()
             );
+            $depositComponent = $depositFactory->create($depositInputType);
+            $deposit = $depositComponent->deposit();
         } catch (\Exception $exception) {
             $this->writeData(
                 'depositV23',

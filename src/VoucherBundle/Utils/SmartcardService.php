@@ -100,63 +100,6 @@ class SmartcardService
 
     /**
      * @param string                $serialNumber
-     * @param int                   $beneficiaryId
-     * @param int                   $assistanceId
-     * @param string|int|float      $value
-     * @param string|int|float|null $balanceBefore
-     * @param DateTimeInterface     $distributedAt
-     * @param User                  $user
-     *
-     * @return SmartcardDeposit
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Psr\Cache\InvalidArgumentException
-     */
-    public function depositLegacy(
-        string $serialNumber,
-        int $beneficiaryId,
-        int $assistanceId,
-        $value,
-        $balanceBefore,
-        DateTimeInterface $distributedAt,
-        User $user
-    ): SmartcardDeposit {
-        $target = $this->assistanceBeneficiaryRepository->findOneBy([
-            'assistance' => $assistanceId,
-            'beneficiary' => $beneficiaryId,
-        ], ['id' => 'asc']);
-
-        if (null == $target) {
-            throw new NotFoundHttpException("No beneficiary #$beneficiaryId in assistance #$assistanceId");
-        }
-
-        //TODO rewrite deposit function
-
-        // try to find relief package with correct state
-        $reliefPackage = $this->reliefPackageRepository->findForSmartcardByAssistanceBeneficiary($target, ReliefPackageState::TO_DISTRIBUTE);
-
-        // try to find relief package with incorrect state but created before distribution date
-        if (!$reliefPackage) {
-            $reliefPackage = $this->reliefPackageRepository->findForSmartcardByAssistanceBeneficiary($target, null, $distributedAt);
-        }
-
-        // try to find any relief package for distribution
-        if (!$reliefPackage) {
-            $reliefPackage = $this->reliefPackageRepository->findForSmartcardByAssistanceBeneficiary($target);
-        }
-
-        if (!$reliefPackage) {
-            $message = "Nothing to distribute for beneficiary #$beneficiaryId in assistance #$assistanceId";
-            $this->logger->warning($message);
-            throw new NotFoundHttpException($message);
-        }
-
-        return $this->deposit($serialNumber, $reliefPackage->getId(), $value, $balanceBefore, $distributedAt, $user);
-    }
-
-    /**
-     * @param string                $serialNumber
      * @param int                   $reliefPackageId
      * @param string|int|float      $value
      * @param string|int|float|null $balance
@@ -475,5 +418,36 @@ class SmartcardService
         }
 
         throw new \LogicException('Unable to find currency for AssistanceBeneficiary #'.$assistanceBeneficiary->getId());
+    }
+
+    /**
+     * @param Smartcard     $smartcard
+     * @param ReliefPackage $reliefPackage
+     *
+     * @return void
+     */
+    public function setMissingCurrency(Smartcard $smartcard, ReliefPackage $reliefPackage)
+    {
+        if (null === $smartcard->getCurrency()) {
+            $smartcard->setCurrency(SmartcardService::findCurrency($reliefPackage->getAssistanceBeneficiary()));
+        }
+    }
+
+    /**
+     * @param Smartcard $smartcard
+     *
+     * @return void
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public function setMissingCurrencyToPurchases(Smartcard $smartcard)
+    {
+        foreach ($smartcard->getPurchases() as $purchase) {
+            foreach ($purchase->getRecords() as $record) {
+                if (null === $record->getCurrency()) {
+                    $record->setCurrency($smartcard->getCurrency());
+                    $this->em->persist($record);
+                }
+            }
+        }
     }
 }

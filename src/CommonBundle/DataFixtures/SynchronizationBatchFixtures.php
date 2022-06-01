@@ -3,24 +3,18 @@ declare(strict_types=1);
 
 namespace CommonBundle\DataFixtures;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use NewApiBundle\Component\Smartcard\SmartcardDepositService;
+use NewApiBundle\Component\Smartcard\Deposit\Deposit;
 use NewApiBundle\Entity\SynchronizationBatch\Deposits;
-use TransactionBundle\Entity\Transaction;
-use TransactionBundle\Utils\Provider\KHMFinancialProvider;
-use UserBundle\Entity\User;
 
 class SynchronizationBatchFixtures extends Fixture implements DependentFixtureInterface
 {
     /** @var string */
     private $environment;
 
-    /** @var SmartcardDepositService */
+    /** @var Deposit */
     private $smartcardDepositService;
 
     const DEPOSIT_SYNC_DATA = [
@@ -31,10 +25,10 @@ class SynchronizationBatchFixtures extends Fixture implements DependentFixtureIn
     ];
 
     /**
-     * @param string                  $environment
-     * @param SmartcardDepositService $smartcardDepositService
+     * @param string  $environment
+     * @param Deposit $smartcardDepositService
      */
-    public function __construct(string $environment, SmartcardDepositService $smartcardDepositService)
+    public function __construct(string $environment, Deposit $smartcardDepositService)
     {
         $this->environment = $environment;
         $this->smartcardDepositService = $smartcardDepositService;

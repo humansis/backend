@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller\OfflineApp;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\Smartcard\Deposit\DepositFactory;
+use NewApiBundle\InputType\Smartcard\DepositInputType;
 use NewApiBundle\InputType\SmartcardDepositFilterInputType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -61,26 +63,28 @@ class SmartcardDepositController extends AbstractOfflineAppController
      * @Rest\Post("/offline-app/v4/smartcards/{serialNumber}/deposit")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER') or is_granted('ROLE_ENUMERATOR')")
      *
-     * @param Request $request
+     * @param Request        $request
+     * @param DepositFactory $depositFactory
      *
      * @return Response
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Psr\Cache\InvalidArgumentException
      */
-    public function deposit(Request $request): Response
+    public function deposit(Request $request, DepositFactory $depositFactory): Response
     {
         try {
-            $deposit = $this->get('smartcard_service')->depositLegacy(
+            $depositInputType = DepositInputType::create(
                 $request->get('serialNumber'),
                 $request->request->getInt('beneficiaryId'),
                 $request->request->getInt('assistanceId'),
                 $request->request->get('value'),
                 $request->request->get('balanceBefore'),
                 \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
-                $this->getUser()
             );
+            $depositComponent = $depositFactory->create($depositInputType);
+            $deposit = $depositComponent->deposit();
+
         } catch (NotFoundHttpException $exception) {
             $this->writeData(
                 'depositV4',

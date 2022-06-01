@@ -24,6 +24,11 @@ services:
         arguments:
             - VoucherBundle\Entity\SmartcardPurchase
 
+    VoucherBundle\Repository\SmartcardRepository:
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        arguments:
+            - VoucherBundle\Entity\Smartcard
+
     VoucherBundle\Repository\SmartcardPurchaseRepository:
         alias: smartcard_purchase.repository
 
