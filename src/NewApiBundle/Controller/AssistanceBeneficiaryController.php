@@ -142,10 +142,6 @@ class AssistanceBeneficiaryController extends AbstractController
             throw new InvalidArgumentException('This assistance is only for households or individuals');
         }
 
-        if ($assistanceRoot->getValidated() == 1) {
-            throw new InvalidArgumentException('It is not possible to add/remove a beneficiary to/from validated and locked assistance');
-        }
-
         $this->actualizeBeneficiary(
             $factory->hydrate($assistanceRoot),
             $inputType->getBeneficiaryIds(),
