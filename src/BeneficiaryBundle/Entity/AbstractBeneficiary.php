@@ -179,16 +179,4 @@ abstract class AbstractBeneficiary
     {
         return $this->archived;
     }
-
-    public function hasAssistanceStarted(): bool
-    {
-        foreach ($this->getDistributionBeneficiaries() as $target) {
-            if ($target->getAssistance()->getValidated() === true
-            || $target->getAssistance()->getCompleted() === true
-            || $target->getAssistance()->getArchived() === true) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

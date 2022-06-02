@@ -753,4 +753,12 @@ class Household extends AbstractBeneficiary
         $this->proxy = $proxy;
     }
 
+    /**
+     * @param Beneficiary $beneficiary
+     */
+    public function addMember(Beneficiary $beneficiary)
+    {
+        $this->beneficiaries->add($beneficiary);
+    }
+
 }
