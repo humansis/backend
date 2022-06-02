@@ -23,6 +23,7 @@ class NationalIdTypeEnum extends \CommonBundle\DBAL\AbstractEnum
     {
         return [
             NationalIdType::NATIONAL_ID => NationalIdType::NATIONAL_ID,
+            NationalIdType::TAX_NUMBER => NationalIdType::TAX_NUMBER,
             NationalIdType::PASSPORT => NationalIdType::PASSPORT,
             NationalIdType::FAMILY => NationalIdType::FAMILY,
             NationalIdType::BIRTH_CERTIFICATE => NationalIdType::BIRTH_CERTIFICATE,
