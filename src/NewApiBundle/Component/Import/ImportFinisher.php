@@ -137,10 +137,18 @@ class ImportFinisher
             ->processItems(function(ImportQueue $item) use ($import) {
                 switch ($item->getState()) {
                     case ImportQueueState::TO_CREATE:
-                        $this->finishCreationQueue($item, $import);
+                        try {
+                            $this->finishCreationQueue($item, $import);
+                        } catch (\Exception $anyException) {
+                            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::FAIL_UNEXPECTED);
+                        }
                         break;
                     case ImportQueueState::TO_UPDATE:
-                        $this->finishUpdateQueue($item, $import);
+                        try {
+                            $this->finishUpdateQueue($item, $import);
+                        } catch (\Exception $anyException) {
+                            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::FAIL_UNEXPECTED);
+                        }
                         break;
                     case ImportQueueState::TO_IGNORE:
                     case ImportQueueState::TO_LINK:
@@ -150,10 +158,14 @@ class ImportFinisher
                             return;
                         }
 
-                        $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
-                        $this->logImportInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
+                        try {
+                            $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
+                            $this->logImportInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
 
-                        $this->importQueueStateMachine->apply($item, ImportQueueTransitions::LINK);
+                            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::LINK);
+                        } catch (\Exception $anyException) {
+                            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::FAIL_UNEXPECTED);
+                        }
                         break;
                 }
                 $this->em->persist($item);
