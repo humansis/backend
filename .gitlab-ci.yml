@@ -121,7 +121,7 @@ deploy dev2:
     url: https://apidev2.humansis.org
   variables:
     ENVIRONMENT: dev2
-    CLEAN_DATABASE: "true"
+    CLEAN_DATABASE: "false"
     LOAD_FIXTURES: dev
     CACHE_CLEAR_MODE: aggressive
   extends: .deploy
