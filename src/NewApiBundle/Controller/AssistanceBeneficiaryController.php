@@ -14,6 +14,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use InvalidArgumentException;
 use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Component\Assistance\Domain;
+use NewApiBundle\Exception\ManipulationOverValidatedAssistanceException;
 use NewApiBundle\InputType\AddRemoveAbstractBeneficiaryToAssistanceInputType;
 use NewApiBundle\InputType\AddRemoveBeneficiaryToAssistanceInputType;
 use NewApiBundle\InputType\AddRemoveCommunityToAssistanceInputType;
@@ -142,12 +143,16 @@ class AssistanceBeneficiaryController extends AbstractController
             throw new InvalidArgumentException('This assistance is only for households or individuals');
         }
 
-        $this->actualizeBeneficiary(
-            $factory->hydrate($assistanceRoot),
-            $inputType->getBeneficiaryIds(),
-            $repository,
-            $inputType
-        );
+        try {
+            $this->actualizeBeneficiary(
+                $factory->hydrate($assistanceRoot),
+                $inputType->getBeneficiaryIds(),
+                $repository,
+                $inputType
+            );
+        } catch (ManipulationOverValidatedAssistanceException $e) {
+            return $this->json($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
