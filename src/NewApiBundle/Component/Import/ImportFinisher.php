@@ -19,6 +19,7 @@ use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
 use NewApiBundle\Component\Import\Finishing\HouseholdDecoratorBuilder;
+use NewApiBundle\Component\Import\Finishing\UnexpectedError;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiary;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
@@ -140,6 +141,7 @@ class ImportFinisher
                         try {
                             $this->finishCreationQueue($item, $import);
                         } catch (\Exception $anyException) {
+                            $item->setUnexpectedError(UnexpectedError::create($item->getState(), $anyException));
                             $this->importQueueStateMachine->apply($item, ImportQueueTransitions::FAIL_UNEXPECTED);
                         }
                         break;
@@ -147,6 +149,7 @@ class ImportFinisher
                         try {
                             $this->finishUpdateQueue($item, $import);
                         } catch (\Exception $anyException) {
+                            $item->setUnexpectedError(UnexpectedError::create($item->getState(), $anyException));
                             $this->importQueueStateMachine->apply($item, ImportQueueTransitions::FAIL_UNEXPECTED);
                         }
                         break;
@@ -164,6 +167,7 @@ class ImportFinisher
 
                             $this->importQueueStateMachine->apply($item, ImportQueueTransitions::LINK);
                         } catch (\Exception $anyException) {
+                            $item->setUnexpectedError(UnexpectedError::create($item->getState(), $anyException));
                             $this->importQueueStateMachine->apply($item, ImportQueueTransitions::FAIL_UNEXPECTED);
                         }
                         break;
