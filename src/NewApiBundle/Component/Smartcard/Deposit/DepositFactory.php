@@ -7,7 +7,6 @@ use Doctrine\ORM\NonUniqueResultException;
 use NewApiBundle\InputType\Smartcard\DepositInputType;
 use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Cache\CacheInterface;
 use UserBundle\Entity\User;
@@ -43,16 +42,6 @@ class DepositFactory
     private $logger;
 
     /**
-     * @var TokenStorage
-     */
-    private $tokenStorage;
-
-    /**
-     * @var DepositInputType
-     */
-    private $depositInputType;
-
-    /**
      * @var CacheInterface
      */
     private $cache;
@@ -75,7 +64,6 @@ class DepositFactory
         AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository,
         ReliefPackageRepository         $reliefPackageRepository,
         LoggerInterface                 $logger,
-        TokenStorage                    $tokenStorage,
         CacheInterface                  $cache
     ) {
         $this->smartcardDepositRepository = $smartcardDepositRepository;
@@ -84,22 +72,21 @@ class DepositFactory
         $this->assistanceBeneficiaryRepository = $assistanceBeneficiaryRepository;
         $this->reliefPackageRepository = $reliefPackageRepository;
         $this->logger = $logger;
-        $this->tokenStorage = $tokenStorage;
         $this->cache = $cache;
         $this->smartcardRepository = $smartcardRepository;
     }
 
     /**
      * @param DepositInputType $depositInputType
-     * @param User|null        $user
+     * @param User             $user
      *
      * @return Deposit
      * @throws NonUniqueResultException
      */
-    public function create(DepositInputType $depositInputType, ?User $user = null): Deposit
+    public function create(DepositInputType $depositInputType, User $user): Deposit
     {
         return new Deposit($this->smartcardDepositRepository, $this->smartcardService, $this->smartcardRepository, $this->workflowRegistry,
-            $this->assistanceBeneficiaryRepository, $this->reliefPackageRepository, $this->logger, $this->tokenStorage, $this->cache,
+            $this->assistanceBeneficiaryRepository, $this->reliefPackageRepository, $this->logger, $this->cache,
             $depositInputType, $user);
     }
 }

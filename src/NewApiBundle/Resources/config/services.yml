@@ -442,7 +442,6 @@ services:
             - '@DistributionBundle\Repository\AssistanceBeneficiaryRepository'
             - '@NewApiBundle\Repository\Assistance\ReliefPackageRepository'
             - '@logger'
-            - '@security.untracked_token_storage'
             - '@cache.app'
 
     NewApiBundle\Export\SmartcardPurchasedItemSpreadsheet:

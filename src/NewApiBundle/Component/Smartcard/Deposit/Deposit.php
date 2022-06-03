@@ -17,7 +17,6 @@ use NewApiBundle\Workflow\ReliefPackageTransitions;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Cache\CacheInterface;
 use UserBundle\Entity\User;
@@ -50,11 +49,6 @@ class Deposit
      * @var LoggerInterface
      */
     private $logger;
-
-    /**
-     * @var TokenStorage
-     */
-    private $tokenStorage;
 
     /**
      * @var array
@@ -124,10 +118,9 @@ class Deposit
      * @param AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository
      * @param ReliefPackageRepository         $reliefPackageRepository
      * @param LoggerInterface                 $logger
-     * @param TokenStorage                    $tokenStorage
      * @param CacheInterface                  $cache
      * @param DepositInputType                $depositInputType
-     * @param User|null                       $user
+     * @param User                            $user
      *
      * @throws NonUniqueResultException
      */
@@ -139,10 +132,9 @@ class Deposit
         AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository,
         ReliefPackageRepository         $reliefPackageRepository,
         LoggerInterface                 $logger,
-        TokenStorage                    $tokenStorage,
         CacheInterface                  $cache,
         DepositInputType                $depositInputType,
-        ?User                           $user = null
+        User                            $user
     ) {
         $this->smartcardDepositRepository = $smartcardDepositRepository;
         $this->smartcardService = $smartcardService;
@@ -150,13 +142,12 @@ class Deposit
         $this->assistanceBeneficiaryRepository = $assistanceBeneficiaryRepository;
         $this->reliefPackageRepository = $reliefPackageRepository;
         $this->logger = $logger;
-        $this->tokenStorage = $tokenStorage;
         $this->depositInputType = $depositInputType;
         $this->cache = $cache;
         $this->smartcardRepository = $smartcardRepository;
+        $this->user = $user;
 
         $this->load();
-        $this->user = $user ?? $this->tokenStorage->getToken()->getUser();
     }
 
     /**
@@ -209,7 +200,7 @@ class Deposit
 
         if (!$this->deposit) {
             $this->reliefPackage->addAmountOfDistributed($this->depositInputType->getValue());
-            $this->reliefPackage->setDistributedBy($this->tokenStorage->getToken()->getUser());
+            $this->reliefPackage->setDistributedBy($this->user);
             $this->checkReliefPackageWorkflow();
         }
     }
