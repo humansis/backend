@@ -8,8 +8,10 @@ use CommonBundle\Entity\Adm2;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Component\Smartcard\Deposit\DepositFactory;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ModalityType;
+use NewApiBundle\InputType\Smartcard\DepositInputType;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use UserBundle\Entity\User;
 use VoucherBundle\DTO\PurchaseRedemptionBatch;
@@ -37,6 +39,9 @@ class SmartcardServiceTest extends KernelTestCase
     /** @var string */
     private $smartcardNumber = '';
 
+    /** @var DepositFactory */
+    private $depositFactory;
+
     public function setUp()
     {
         self::bootKernel();
@@ -47,6 +52,7 @@ class SmartcardServiceTest extends KernelTestCase
             ->getManager();
 
         $this->smartcardService = static::$kernel->getContainer()->get('smartcard_service');
+        $this->depositFactory = static::$kernel->getContainer()->get(DepositFactory::class);
 
         $this->createTempVendor($this->em);
         $this->em->persist($this->vendor);
@@ -225,14 +231,16 @@ class SmartcardServiceTest extends KernelTestCase
                     $this->em->persist($reliefPackage);
                     $this->em->flush();
 
-                    $this->smartcardService->deposit(
-                        $this->smartcardNumber,
-                        $reliefPackage->getId(),
-                        $value,
-                        $value, // balance is rewritten by new value
-                        $date,
-                        $admin
+                    $deposit = $this->depositFactory->create(
+                        DepositInputType::createFromReliefPackage(
+                            $this->smartcardNumber,
+                            $reliefPackage->getId(),
+                            $value,
+                            $value, // balance is rewritten by new value
+                            $date
+                        ), $admin
                     );
+                    $deposit->createDeposit();
                     break;
             }
             $date = clone $date;
@@ -501,7 +509,16 @@ class SmartcardServiceTest extends KernelTestCase
                         $this->em->persist($reliefPackage);
                         $this->em->flush();
 
-                        $this->smartcardService->deposit($serialNumber, $reliefPackage->getId(), 100, null, \DateTime::createFromFormat('Y-m-d', $dateOfEvent), $admin);
+                        $depositComponent = $this->depositFactory->create(
+                            DepositInputType::createFromReliefPackage(
+                                $serialNumber,
+                                $reliefPackage->getId(),
+                                100,
+                                null,
+                                \DateTime::createFromFormat('Y-m-d', $dateOfEvent)
+                            ), $admin
+                        );
+                        $depositComponent->createDeposit();
                         break;
                     case 'purchase':
                         $vendorId = $preparedAction[3];

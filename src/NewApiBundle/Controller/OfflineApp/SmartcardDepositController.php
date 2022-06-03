@@ -74,7 +74,7 @@ class SmartcardDepositController extends AbstractOfflineAppController
     public function deposit(Request $request, DepositFactory $depositFactory): Response
     {
         try {
-            $depositInputType = DepositInputType::create(
+            $depositInputType = DepositInputType::createFromAssistanceBeneficiary(
                 $request->get('serialNumber'),
                 $request->request->getInt('beneficiaryId'),
                 $request->request->getInt('assistanceId'),
@@ -83,7 +83,7 @@ class SmartcardDepositController extends AbstractOfflineAppController
                 \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
             );
             $depositComponent = $depositFactory->create($depositInputType);
-            $deposit = $depositComponent->deposit();
+            $deposit = $depositComponent->createDeposit();
 
         } catch (NotFoundHttpException $exception) {
             $this->writeData(

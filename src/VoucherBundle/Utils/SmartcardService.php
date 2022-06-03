@@ -6,20 +6,12 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use DateTime;
 use DateTimeInterface;
 use DistributionBundle\Entity\AssistanceBeneficiary;
-use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use Doctrine\ORM\EntityManager;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
-use NewApiBundle\Enum\CacheTarget;
-use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\InputType\SmartcardPurchaseInputType;
-use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
-use NewApiBundle\Workflow\ReliefPackageTransitions;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Repository\ProjectRepository;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Workflow\Registry;
-use Symfony\Contracts\Cache\CacheInterface;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
@@ -41,43 +33,12 @@ class SmartcardService
     /** @var PurchaseService */
     private $purchaseService;
 
-    /** @var Registry $workflowRegistry */
-    private $workflowRegistry;
-
-    /** @var LoggerInterface  */
-    private $logger;
-
-    /**
-     * @var CacheInterface
-     */
-    private $cache;
-
-    /**
-     * @var AssistanceBeneficiaryRepository
-     */
-    private $assistanceBeneficiaryRepository;
-
-    /**
-     * @var ReliefPackageRepository
-     */
-    private $reliefPackageRepository;
-
     public function __construct(
         EntityManager                   $em,
-        PurchaseService                 $purchaseService,
-        Registry                        $workflowRegistry,
-        LoggerInterface                 $logger,
-        CacheInterface                  $cache,
-        AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository,
-        ReliefPackageRepository         $reliefPackageRepository
+        PurchaseService                 $purchaseService
     ) {
         $this->em = $em;
         $this->purchaseService = $purchaseService;
-        $this->workflowRegistry = $workflowRegistry;
-        $this->logger = $logger;
-        $this->cache = $cache;
-        $this->assistanceBeneficiaryRepository = $assistanceBeneficiaryRepository;
-        $this->reliefPackageRepository = $reliefPackageRepository;
     }
 
     public function register(string $serialNumber, string $beneficiaryId, DateTime $createdAt): Smartcard
@@ -96,96 +57,6 @@ class SmartcardService
         $this->em->persist($smartcard);
         $this->em->flush();
         return $smartcard;
-    }
-
-    /**
-     * @param string                $serialNumber
-     * @param int                   $reliefPackageId
-     * @param string|int|float      $value
-     * @param string|int|float|null $balance
-     * @param DateTimeInterface     $distributedAt
-     * @param User                  $user
-     *
-     * @return SmartcardDeposit
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Psr\Cache\InvalidArgumentException
-     */
-    public function deposit(
-        string            $serialNumber,
-        int               $reliefPackageId,
-                          $value,
-                          $balance,
-        DateTimeInterface $distributedAt,
-        User              $user
-    ): SmartcardDeposit {
-        /** @var ReliefPackage|null $reliefPackage */
-        $reliefPackage = $this->reliefPackageRepository->find($reliefPackageId);
-        $suspicious = false;
-        $message = [];
-
-        if (null === $reliefPackage) {
-            throw new NotFoundHttpException("Relief package #$reliefPackageId does not exist.");
-        }
-
-        $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
-        $reliefPackage->addAmountOfDistributed($value);
-        $reliefPackage->setDistributedBy($user);
-
-        if ($reliefPackage->getAmountDistributed() > $reliefPackage->getAmountToDistribute()) {
-            $suspicious = true;
-            $message[] = sprintf('Relief package #%s amount of distributed (%s) is over to distribute (%s).',
-                $reliefPackageId, $reliefPackage->getAmountDistributed(), $reliefPackage->getAmountToDistribute());
-        }
-
-        if (!$reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
-            $suspicious = true;
-            $message[] = "Relief package #$reliefPackageId is in invalid state ({$reliefPackage->getState()}).";
-        }
-
-        $smartcard = $this->getActualSmartcard($serialNumber, $reliefPackage->getAssistanceBeneficiary()->getBeneficiary(), $distributedAt);
-
-        if (!$smartcard->getBeneficiary()) {
-            $suspicious = true;
-            $message[] = 'Smartcard does not have assigned beneficiary.';
-        }
-
-        $deposit = SmartcardDeposit::create(
-            $smartcard,
-            $user,
-            $reliefPackage,
-            (float) $value,
-            null !== $balance ? (float) $balance : null,
-            $distributedAt,
-            $suspicious,
-            $message
-        );
-
-        $smartcard->addDeposit($deposit);
-
-        if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
-            $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::DISTRIBUTE);
-        }
-
-        if (null === $smartcard->getCurrency()) {
-            $smartcard->setCurrency(self::findCurrency($reliefPackage->getAssistanceBeneficiary()));
-        }
-
-        // for situation, that purchases are sync before any money were deposited, we need to fix missing currency
-        foreach ($smartcard->getPurchases() as $purchase) {
-            foreach ($purchase->getRecords() as $record) {
-                if (null === $record->getCurrency()) {
-                    $record->setCurrency($smartcard->getCurrency());
-                    $this->em->persist($record);
-                }
-            }
-        }
-
-        $this->em->persist($smartcard);
-        $this->cache->delete(CacheTarget::assistanceId($deposit->getReliefPackage()->getAssistanceBeneficiary()->getAssistance()->getId()));
-        $this->em->flush();
-
-        return $deposit;
     }
 
     /**
