@@ -6,7 +6,7 @@ namespace CommonBundle\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use NewApiBundle\Component\Smartcard\Deposit\Deposit;
+use NewApiBundle\Component\Smartcard\SmartcardDepositService;
 use NewApiBundle\Entity\SynchronizationBatch\Deposits;
 
 class SynchronizationBatchFixtures extends Fixture implements DependentFixtureInterface
@@ -14,7 +14,7 @@ class SynchronizationBatchFixtures extends Fixture implements DependentFixtureIn
     /** @var string */
     private $environment;
 
-    /** @var Deposit */
+    /** @var SmartcardDepositService */
     private $smartcardDepositService;
 
     const DEPOSIT_SYNC_DATA = [
@@ -25,10 +25,10 @@ class SynchronizationBatchFixtures extends Fixture implements DependentFixtureIn
     ];
 
     /**
-     * @param string  $environment
-     * @param Deposit $smartcardDepositService
+     * @param string                  $environment
+     * @param SmartcardDepositService $smartcardDepositService
      */
-    public function __construct(string $environment, Deposit $smartcardDepositService)
+    public function __construct(string $environment, SmartcardDepositService $smartcardDepositService)
     {
         $this->environment = $environment;
         $this->smartcardDepositService = $smartcardDepositService;
