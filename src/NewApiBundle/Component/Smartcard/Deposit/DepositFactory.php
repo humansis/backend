@@ -10,6 +10,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Cache\CacheInterface;
+use UserBundle\Entity\User;
 use VoucherBundle\Repository\SmartcardDepositRepository;
 use VoucherBundle\Repository\SmartcardRepository;
 use VoucherBundle\Utils\SmartcardService;
@@ -92,14 +93,15 @@ class DepositFactory
 
     /**
      * @param DepositInputType $depositInputType
+     * @param User|null        $user
      *
      * @return Deposit
      * @throws NonUniqueResultException
      */
-    public function create(DepositInputType $depositInputType): Deposit
+    public function create(DepositInputType $depositInputType, ?User $user = null): Deposit
     {
         return new Deposit($this->smartcardDepositRepository, $this->smartcardService, $this->smartcardRepository, $this->workflowRegistry,
             $this->assistanceBeneficiaryRepository, $this->reliefPackageRepository, $this->logger, $this->tokenStorage, $this->cache,
-            $depositInputType);
+            $depositInputType, $user);
     }
 }
