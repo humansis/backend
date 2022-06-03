@@ -650,7 +650,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         $adm4 = $location->getAdm4Name();
 
         $householdFields = $this->getCommonHouseholdExportFields();
-        $beneficiaryFields = $this->getCommonBeneficiaryExportFields();
 
         if ($this->status === true) {
             $finalArray = array_merge(
@@ -707,7 +706,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
             "gender" => $valueGender,
             "head" => $this->isHead() ? "true" : "false",
             "residencyStatus" => $this->getResidencyStatus(),
-            "dateOfBirth" => $this->getDateOfBirthObject()->format('d-m-Y'),
+            "dateOfBirth" => $this->getDateOfBirth(),
             "vulnerabilityCriteria" => $valuescriteria,
             "type phone 1" => $typephones[0],
             "prefix phone 1" => $prefixphones[0],
@@ -752,7 +751,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
             "English Given Name" => $this->getEnGivenName(),
             "English Family Name" => $this->getEnFamilyName(),
             "Gender" => $gender,
-            "Date Of Birth" => $this->getDateOfBirthObject()->format('d-m-Y'),
+            "Date Of Birth" => $this->getDateOfBirth(),
         ];
     }
 
