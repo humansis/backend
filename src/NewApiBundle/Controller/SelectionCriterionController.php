@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
+
 use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Codelist\CodeLists;
 use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
+use NewApiBundle\Component\SelectionCriteria\SelectionCriterionService;
+use NewApiBundle\Enum\ConditionEnum;
 use NewApiBundle\Enum\SelectionCriteriaTarget;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -21,9 +24,13 @@ class SelectionCriterionController extends AbstractController
     /** @var FieldDbTransformer */
     private $fieldDbTransformer;
 
-    public function __construct(FieldDbTransformer $fieldDbTransformer)
+    /** @var SelectionCriterionService */
+    private $selectionCriterionService;
+
+    public function __construct(FieldDbTransformer $fieldDbTransformer, SelectionCriterionService $selectionCriterionService)
     {
         $this->fieldDbTransformer = $fieldDbTransformer;
+        $this->selectionCriterionService = $selectionCriterionService;
     }
 
     /**
@@ -58,7 +65,7 @@ class SelectionCriterionController extends AbstractController
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $data = $this->get('service.selection_criterion')->findFieldsByTarget($targetCode, $countryIso3);
+        $data = $this->selectionCriterionService->findFieldsByTarget($targetCode, $countryIso3);
 
         return $this->json(new Paginator($data));
     }
@@ -78,12 +85,12 @@ class SelectionCriterionController extends AbstractController
         }
 
         try {
-            $data = $this->get('service.selection_criterion')->findFieldConditions($fieldCode, $targetCode, $countryIso3);
+            $data = $this->selectionCriterionService->findFieldConditions($fieldCode, $targetCode, $countryIso3);
         } catch (\InvalidArgumentException|\BadMethodCallException $ex) {
             throw $this->createNotFoundException($ex->getMessage(), $ex);
         }
 
-        $data = CodeLists::mapEnum($data);
+        $data = ConditionEnum::createCodeItems($data);
 
         return $this->json(new Paginator($data));
     }

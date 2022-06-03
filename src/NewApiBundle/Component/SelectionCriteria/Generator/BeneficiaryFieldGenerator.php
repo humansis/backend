@@ -8,6 +8,7 @@ use BeneficiaryBundle\Enum\ResidencyStatus;
 use BeneficiaryBundle\Repository\VulnerabilityCriterionRepository;
 use NewApiBundle\Component\SelectionCriteria\FieldGeneratorInterface;
 use NewApiBundle\Component\SelectionCriteria\Structure\Field;
+use NewApiBundle\Enum\ConditionEnum;
 
 class BeneficiaryFieldGenerator implements FieldGeneratorInterface
 {
@@ -24,13 +25,13 @@ class BeneficiaryFieldGenerator implements FieldGeneratorInterface
      */
     public function generate(?string $countryIso3)
     {
-        yield new Field('gender', 'Gender', ['='], 'gender', [self::class, 'validateGender']);
-        yield new Field('dateOfBirth', 'Date of Birth', ['=', '<', '>', '<=', '>='], 'date', [self::class, 'validateDate']);
-        yield new Field('residencyStatus', 'Residency Status', ['='], 'residencyStatus', [self::class, 'validateResidencyStatus']);
-        yield new Field('hasNotBeenInDistributionsSince', 'Has Not Been In Distribution Since', ['='], 'date', [self::class, 'validateDate']);
+        yield new Field('gender', 'Gender', [ConditionEnum::EQ], 'gender', [self::class, 'validateGender']);
+        yield new Field('dateOfBirth', 'Date of Birth', ConditionEnum::values(), 'date', [self::class, 'validateDate']);
+        yield new Field('residencyStatus', 'Residency Status', [ConditionEnum::EQ], 'residencyStatus', [self::class, 'validateResidencyStatus']);
+        yield new Field('hasNotBeenInDistributionsSince', 'Has Not Been In Distribution Since', [ConditionEnum::EQ], 'date', [self::class, 'validateDate']);
 
         foreach ($this->vulnerabilityCriterionRepository->findAllActive() as $vulnerabilityCriterion) {
-            yield new Field($vulnerabilityCriterion->getFieldString(), VulnerabilityCriterion::all()[$vulnerabilityCriterion->getFieldString()], ['='], 'boolean');
+            yield new Field($vulnerabilityCriterion->getFieldString(), VulnerabilityCriterion::all()[$vulnerabilityCriterion->getFieldString()], [ConditionEnum::EQ], 'boolean');
         }
     }
 

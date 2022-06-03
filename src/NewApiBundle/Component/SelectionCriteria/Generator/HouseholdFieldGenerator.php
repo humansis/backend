@@ -7,6 +7,7 @@ use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Repository\CountrySpecificRepository;
 use NewApiBundle\Component\SelectionCriteria\FieldGeneratorInterface;
 use NewApiBundle\Component\SelectionCriteria\Structure\Field;
+use NewApiBundle\Enum\ConditionEnum;
 use NewApiBundle\Enum\SelectionCriteriaTarget;
 use ProjectBundle\Enum\Livelihood;
 
@@ -25,25 +26,25 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
      */
     public function generate(?string $countryIso3)
     {
-        yield new Field('livelihood', 'Livelihood', ['='], 'livelihood', [self::class, 'validateLivelihood']);
-        yield new Field('foodConsumptionScore', 'Food Consumption Score', ['=', '<', '>', '<=', '>='], 'double');
-        yield new Field('copingStrategiesIndex', 'Coping Strategies Index', ['=', '<', '>', '<=', '>='], 'double');
-        yield new Field('incomeLevel', 'Income Level', ['=', '<', '>', '<=', '>='], 'integer');
-        yield new Field('householdSize', 'Household Size', ['=', '<', '>', '<=', '>='], 'integer');
-        yield new Field('location', 'Location', ['='], 'location', 'is_int');
-        yield new Field('locationType', 'Location Type', ['='], 'locationType', [self::class, 'validateLocation']);
+        yield new Field('livelihood', 'Livelihood', [ConditionEnum::EQ], 'livelihood', [self::class, 'validateLivelihood']);
+        yield new Field('foodConsumptionScore', 'Food Consumption Score', ConditionEnum::values(), 'double');
+        yield new Field('copingStrategiesIndex', 'Coping Strategies Index', ConditionEnum::values(), 'double');
+        yield new Field('incomeLevel', 'Income Level', ConditionEnum::values(), 'integer');
+        yield new Field('householdSize', 'Household Size', ConditionEnum::values(), 'integer');
+        yield new Field('location', 'Location', [ConditionEnum::EQ], 'location', 'is_int');
+        yield new Field('locationType', 'Location Type', [ConditionEnum::EQ], 'locationType', [self::class, 'validateLocation']);
 
         foreach ($this->countrySpecificRepository->findBy(['countryIso3' => $countryIso3], ['id'=>'asc']) as $countrySpecific) {
             $type = $this->transformCountrySpecificType($countrySpecific->getType());
 
             switch ($type) {
                 case "integer":
-                    $conditionList = ['=', '<', '>', '<=', '>='];
+                    $conditionList = ConditionEnum::values();
                     break;
 
                 case "string":
                 default:
-                    $conditionList = ['='];
+                    $conditionList = [ConditionEnum::EQ];
                     break;
             }
 

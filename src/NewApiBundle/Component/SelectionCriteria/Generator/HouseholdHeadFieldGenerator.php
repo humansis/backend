@@ -5,6 +5,7 @@ namespace NewApiBundle\Component\SelectionCriteria\Generator;
 
 use NewApiBundle\Component\SelectionCriteria\FieldGeneratorInterface;
 use NewApiBundle\Component\SelectionCriteria\Structure\Field;
+use NewApiBundle\Enum\ConditionEnum;
 
 class HouseholdHeadFieldGenerator implements FieldGeneratorInterface
 {
@@ -13,10 +14,10 @@ class HouseholdHeadFieldGenerator implements FieldGeneratorInterface
      */
     public function generate(?string $countryIso3)
     {
-        yield new Field('gender', 'Gender', ['='], 'gender', [self::class, 'validateGender']);
-        yield new Field('headOfHouseholdDateOfBirth', 'Date of Birth', ['=', '<', '>', '<=', '>='], 'date', [self::class, 'validateDate']);
-        yield new Field('disabledHeadOfHousehold', 'Disabled', ['='], 'boolean');
-        yield new Field('hasValidSmartcard', 'Has valid card', ['='], 'boolean');
+        yield new Field('gender', 'Gender', [ConditionEnum::EQ], 'gender', [self::class, 'validateGender']);
+        yield new Field('headOfHouseholdDateOfBirth', 'Date of Birth', [ConditionEnum::values()], 'date', [self::class, 'validateDate']);
+        yield new Field('disabledHeadOfHousehold', 'Disabled', [ConditionEnum::EQ], 'boolean');
+        yield new Field('hasValidSmartcard', 'Has valid card', [ConditionEnum::EQ], 'boolean');
     }
 
     /**
