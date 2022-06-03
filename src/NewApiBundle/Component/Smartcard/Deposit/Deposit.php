@@ -186,7 +186,7 @@ class Deposit
             $this->loadReliefPackageFromInput();
             $this->assistanceBeneficiary = $this->reliefPackage->getAssistanceBeneficiary();
         } else {
-            if ($this->depositInputType->getBeneficiaryId() && $this->depositInputType->getAssistanceId()) {
+            if (is_numeric($this->depositInputType->getBeneficiaryId()) && is_numeric($this->depositInputType->getAssistanceId())) {
                 $this->loadAssistanceBeneficiaryFromInput();
                 $this->loadSuitableReliefPackageFromInput();
             } else {
@@ -278,7 +278,7 @@ class Deposit
         $assistanceBeneficiary = $this->assistanceBeneficiaryRepository->findByAssistanceAndBeneficiary($this->depositInputType->getAssistanceId(),
             $this->depositInputType->getBeneficiaryId());
         if (null == $assistanceBeneficiary) {
-            throw new NotFoundHttpException("No beneficiary #$this->depositInputType->getBeneficiaryId() in assistance #{$this->depositInputType->getAssistanceId()}");
+            throw new NotFoundHttpException("No beneficiary #{$this->depositInputType->getBeneficiaryId()} in assistance #{$this->depositInputType->getAssistanceId()}");
         }
 
         $this->assistanceBeneficiary = $assistanceBeneficiary;
