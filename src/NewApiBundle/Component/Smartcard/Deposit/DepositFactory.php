@@ -76,8 +76,7 @@ class DepositFactory
         ReliefPackageRepository         $reliefPackageRepository,
         LoggerInterface                 $logger,
         TokenStorage                    $tokenStorage,
-        CacheInterface                  $cache,
-        DepositInputType                $depositInputType
+        CacheInterface                  $cache
     ) {
         $this->smartcardDepositRepository = $smartcardDepositRepository;
         $this->smartcardService = $smartcardService;
@@ -86,7 +85,6 @@ class DepositFactory
         $this->reliefPackageRepository = $reliefPackageRepository;
         $this->logger = $logger;
         $this->tokenStorage = $tokenStorage;
-        $this->depositInputType = $depositInputType;
         $this->cache = $cache;
         $this->smartcardRepository = $smartcardRepository;
     }
