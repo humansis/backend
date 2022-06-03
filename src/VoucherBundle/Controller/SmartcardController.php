@@ -2,7 +2,6 @@
 
 namespace VoucherBundle\Controller;
 
-use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Organization;
 use CommonBundle\Repository\OrganizationRepository;
 use DistributionBundle\Entity\Assistance;
@@ -29,9 +28,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
-use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
@@ -53,6 +50,10 @@ use VoucherBundle\Repository\SmartcardPurchaseRepository;
  */
 class SmartcardController extends Controller
 {
+    /**
+     * @var DepositFactory
+     */
+    private $depositFactory;
 
     /** @var SmartcardInvoiceExport */
     private $exporter;
@@ -62,12 +63,14 @@ class SmartcardController extends Controller
     private $countries;
 
     /**
+     * @param DepositFactory         $depositFactory
      * @param SmartcardInvoiceExport $exporter
      * @param OrganizationRepository $organizationRepository
      * @param Countries              $countries
      */
-    public function __construct(SmartcardInvoiceExport $exporter, OrganizationRepository $organizationRepository, Countries $countries)
+    public function __construct(DepositFactory $depositFactory, SmartcardInvoiceExport $exporter, OrganizationRepository $organizationRepository, Countries $countries)
     {
+        $this->depositFactory = $depositFactory;
         $this->exporter = $exporter;
         $this->organizationRepository = $organizationRepository;
         $this->countries = $countries;
@@ -346,15 +349,14 @@ class SmartcardController extends Controller
      *     @Model(type=Smartcard::class, groups={"SmartcardOverview"})
      * )
      *
-     * @param Request        $request
-     * @param DepositFactory $depositFactory
+     * @param Request $request
      *
      * @return Response
      * @throws NonUniqueResultException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Psr\Cache\InvalidArgumentException
      */
-    public function legacyDeposit(Request $request, DepositFactory $depositFactory): Response
+    public function legacyDeposit(Request $request): Response
     {
         try {
             $depositInputType = DepositInputType::createFromAssistanceBeneficiary(
@@ -365,7 +367,7 @@ class SmartcardController extends Controller
                 null,
                 \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
             );
-            $deposit = $depositFactory->create($depositInputType, $this->getUser())
+            $deposit = $this->depositFactory->create($depositInputType, $this->getUser())
                 ->createDeposit();
         } catch (\Exception $exception) {
             $this->writeData(
