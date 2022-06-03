@@ -82,9 +82,8 @@ class SmartcardDepositController extends AbstractOfflineAppController
                 $request->request->get('balanceBefore'),
                 \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
             );
-            $depositComponent = $depositFactory->create($depositInputType);
-            $deposit = $depositComponent->createDeposit();
-
+            $deposit = $depositFactory->create($depositInputType, $this->getUser())
+                ->createDeposit();
         } catch (NotFoundHttpException $exception) {
             $this->writeData(
                 'depositV4',
