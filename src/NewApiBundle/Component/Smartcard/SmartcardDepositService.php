@@ -128,6 +128,15 @@ class SmartcardDepositService
         }
     }
 
+    /**
+     * @param CreateDepositInputType $input
+     * @param User                   $user
+     *
+     * @return void
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Psr\Cache\InvalidArgumentException
+     */
     private function deposit(CreateDepositInputType $input, User $user)
     {
         $reliefPackage = $this->reliefPackageRepository->find($input->getReliefPackageId());
@@ -142,8 +151,8 @@ class SmartcardDepositService
                 $reliefPackage->getAmountToDistribute(),
                 $input->getBalanceAfter(),
                 $input->getCreatedAt()
-            ), $user
-        );
+            ), $user)
+            ->createDeposit();
     }
 
 }

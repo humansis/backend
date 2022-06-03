@@ -365,8 +365,8 @@ class SmartcardController extends Controller
                 null,
                 \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
             );
-            $depositComponent = $depositFactory->create($depositInputType);
-            $deposit = $depositComponent->createDeposit();
+            $deposit = $depositFactory->create($depositInputType, $this->getUser())
+                ->createDeposit();
         } catch (\Exception $exception) {
             $this->writeData(
                 'depositV23',
