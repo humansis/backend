@@ -432,12 +432,14 @@ services:
     NewApiBundle\Component\Smartcard\SmartcardDepositService:
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@smartcard_service'
             - '@workflow.registry'
             - '@validator'
+            - '@NewApiBundle\Component\Smartcard\Deposit\DepositFactory'
+            - '@NewApiBundle\Repository\Assistance\ReliefPackageRepository'
 
     NewApiBundle\Component\Smartcard\Deposit\DepositFactory:
         arguments:
+            - '@VoucherBundle\Repository\SmartcardDepositRepository'
             - '@smartcard_service'
             - '@VoucherBundle\Repository\SmartcardRepository'
             - '@workflow.registry'

@@ -7,6 +7,7 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\ORMException;
+use Exception;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Enum\ReliefPackageState;
@@ -19,6 +20,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Cache\CacheInterface;
+use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Repository\SmartcardDepositRepository;
@@ -110,6 +112,11 @@ class Deposit
     private $hash;
 
     /**
+     * @var User|null
+     */
+    private $user;
+
+    /**
      * @param SmartcardDepositRepository      $smartcardDepositRepository
      * @param SmartcardService                $smartcardService
      * @param SmartcardRepository             $smartcardRepository
@@ -120,6 +127,7 @@ class Deposit
      * @param TokenStorage                    $tokenStorage
      * @param CacheInterface                  $cache
      * @param DepositInputType                $depositInputType
+     * @param User|null                       $user
      *
      * @throws NonUniqueResultException
      */
@@ -133,7 +141,8 @@ class Deposit
         LoggerInterface                 $logger,
         TokenStorage                    $tokenStorage,
         CacheInterface                  $cache,
-        DepositInputType                $depositInputType
+        DepositInputType                $depositInputType,
+        ?User                           $user = null
     ) {
         $this->smartcardDepositRepository = $smartcardDepositRepository;
         $this->smartcardService = $smartcardService;
@@ -147,19 +156,20 @@ class Deposit
         $this->smartcardRepository = $smartcardRepository;
 
         $this->load();
+        $this->user = $user ?? $this->tokenStorage->getToken()->getUser();
     }
 
     /**
      * @return SmartcardDeposit
      * @throws ORMException|InvalidArgumentException
      */
-    public function deposit(): SmartcardDeposit
+    public function createDeposit(): SmartcardDeposit
     {
         if ($this->deposit) {
             return $this->deposit;
         }
 
-        $this->createDeposit();
+        $this->createNewDeposit();
 
         $reliefPackageWorkflow = $this->workflowRegistry->get($this->reliefPackage);
         if ($reliefPackageWorkflow->can($this->reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
@@ -177,11 +187,22 @@ class Deposit
     /**
      * @return void
      * @throws NonUniqueResultException
+     * @throws Exception
      */
     private function load(): void
     {
-        $this->loadAssistanceBeneficiary();
-        $this->loadSuitableReliefPackage();
+        if ($this->depositInputType->getReliefPackageId()) {
+            $this->loadReliefPackageFromInput();
+            $this->assistanceBeneficiary = $this->reliefPackage->getAssistanceBeneficiary();
+        } else {
+            if ($this->depositInputType->getBeneficiaryId() && $this->depositInputType->getAssistanceId()) {
+                $this->loadAssistanceBeneficiaryFromInput();
+                $this->loadSuitableReliefPackageFromInput();
+            } else {
+                throw new Exception("Relief Package ID OR (Beneficiary AND Assistance ID must be set)");
+            }
+        }
+
         $this->generateHash();
         $this->loadSmartcard();
         $this->deposit = $this->smartcardDepositRepository->findByHash($this->hash);
@@ -189,24 +210,34 @@ class Deposit
         if (!$this->deposit) {
             $this->reliefPackage->addAmountOfDistributed($this->depositInputType->getValue());
             $this->reliefPackage->setDistributedBy($this->tokenStorage->getToken()->getUser());
-            $this->checkReliefPackage();
+            $this->checkReliefPackageWorkflow();
         }
     }
 
-    private function createDeposit(): void
+    private function createNewDeposit(): void
     {
         $this->deposit = SmartcardDeposit::create(
             $this->smartcard,
-            $this->tokenStorage->getToken()->getUser(),
+            $this->user,
             $this->reliefPackage,
             (float) $this->depositInputType->getValue(),
-            null !== $this->depositInputType->getBalanceBefore() ? (float) $this->depositInputType->getBalanceBefore() : null,
+            null !== $this->depositInputType->getBalance() ? (float) $this->depositInputType->getBalance() : null,
             $this->depositInputType->getCreatedAt(),
             $this->suspicious,
             $this->messages
         );
 
         $this->smartcard->addDeposit($this->deposit);
+    }
+
+    private function loadReliefPackageFromInput(): void
+    {
+        $reliefPackage = $this->reliefPackageRepository->find($this->depositInputType->getReliefPackageId());
+        if (null === $reliefPackage) {
+            throw new NotFoundHttpException("Relief package #{$this->depositInputType->getReliefPackageId()} does not exist.");
+        }
+
+        $this->reliefPackage = $reliefPackage;
     }
 
     private function loadSmartcard(): void
@@ -225,7 +256,7 @@ class Deposit
      * @return void
      * @throws NonUniqueResultException
      */
-    private function loadSuitableReliefPackage(): void
+    private function loadSuitableReliefPackageFromInput(): void
     {
         // try to find relief package with correct state
         $reliefPackage = $this->reliefPackageRepository->findForSmartcardByAssistanceBeneficiary($this->assistanceBeneficiary,
@@ -251,7 +282,7 @@ class Deposit
         $this->reliefPackage = $reliefPackage;
     }
 
-    private function loadAssistanceBeneficiary(): void
+    private function loadAssistanceBeneficiaryFromInput(): void
     {
         $assistanceBeneficiary = $this->assistanceBeneficiaryRepository->findByAssistanceAndBeneficiary($this->depositInputType->getAssistanceId(),
             $this->depositInputType->getBeneficiaryId());
@@ -262,7 +293,7 @@ class Deposit
         $this->assistanceBeneficiary = $assistanceBeneficiary;
     }
 
-    private function checkReliefPackage(): void
+    private function checkReliefPackageWorkflow(): void
     {
         $reliefPackageWorkflow = $this->workflowRegistry->get($this->reliefPackage);
 

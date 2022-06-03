@@ -5,9 +5,11 @@ namespace NewApiBundle\Component\Smartcard;
 
 use CommonBundle\InputType\RequestConverter;
 use Doctrine\ORM\EntityManager;
-use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\Component\Smartcard\Deposit\DepositFactory;
 use NewApiBundle\Entity\SynchronizationBatch\Deposits;
+use NewApiBundle\InputType\Smartcard\DepositInputType;
 use NewApiBundle\InputType\SynchronizationBatch\CreateDepositInputType;
+use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
 use NewApiBundle\Workflow\SynchronizationBatchTransitions;
 use Symfony\Component\Validator\ConstraintViolation;
@@ -22,25 +24,35 @@ class SmartcardDepositService
     /** @var EntityManager */
     private $em;
 
-    /** @var SmartcardService */
-    private $smartcardService;
-
     /** @var Registry $workflowRegistry */
     private $workflowRegistry;
 
     /** @var ValidatorInterface */
     private $validator;
 
-    public function __construct(EntityManager      $em,
-                                SmartcardService   $smartcardService,
-                                Registry           $workflowRegistry,
-                                ValidatorInterface $validator
+    /**
+     * @var DepositFactory
+     */
+    private $depositFactory;
+
+    /**
+     * @var ReliefPackageRepository
+     */
+    private $reliefPackageRepository;
+
+    public function __construct(
+        EntityManager           $em,
+        Registry                $workflowRegistry,
+        ValidatorInterface      $validator,
+        DepositFactory          $depositFactory,
+        ReliefPackageRepository $reliefPackageRepository
     )
     {
         $this->em = $em;
-        $this->smartcardService = $smartcardService;
         $this->workflowRegistry = $workflowRegistry;
         $this->validator = $validator;
+        $this->depositFactory = $depositFactory;
+        $this->reliefPackageRepository = $reliefPackageRepository;
     }
 
     public function validateSync(Deposits $deposits): void
@@ -59,7 +71,7 @@ class SmartcardDepositService
             $violation = $this->validator->validate($depositInput);
 
             if ($depositInput->getReliefPackageId()) {
-                $reliefPackage = $this->em->getRepository(ReliefPackage::class)->find($depositInput->getReliefPackageId());
+                $reliefPackage = $this->reliefPackageRepository->find($depositInput->getReliefPackageId());
                 if (null == $reliefPackage) {
                     $violation->add(new ConstraintViolation(
                         "ReliefPackage #{$depositInput->getReliefPackageId()} doesn't exits",
@@ -116,19 +128,21 @@ class SmartcardDepositService
         }
     }
 
-    public function deposit(CreateDepositInputType $input, User $user)
+    private function deposit(CreateDepositInputType $input, User $user)
     {
-        $reliefPackage = $this->em->getRepository(ReliefPackage::class)->find($input->getReliefPackageId());
+        $reliefPackage = $this->reliefPackageRepository->find($input->getReliefPackageId());
         if (null == $reliefPackage) {
             throw new \InvalidArgumentException("ReliefPackage #{$input->getReliefPackageId()} doesn't exits");
         }
-        $this->smartcardService->deposit(
-            $input->getSmartcardSerialNumber(),
-            $reliefPackage->getId(),
-            $reliefPackage->getAmountToDistribute(),
-            $input->getBalanceAfter(),
-            $input->getCreatedAt(),
-            $user
+
+        $this->depositFactory->create(
+            DepositInputType::createFromReliefPackage(
+                $input->getSmartcardSerialNumber(),
+                $reliefPackage->getId(),
+                $reliefPackage->getAmountToDistribute(),
+                $input->getBalanceAfter(),
+                $input->getCreatedAt()
+            ), $user
         );
     }
 
