@@ -2,14 +2,16 @@
 
 namespace NewApiBundle\Component\Import;
 
+use BeneficiaryBundle\Utils\HouseholdExportCSVService;
+use CommonBundle\Utils\ExportService;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Component\Import\InvalidCell\InvalidCell;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportInvalidFile;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportQueueTransitions;
-use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
@@ -21,7 +23,10 @@ use Symfony\Component\Workflow\WorkflowInterface;
 
 class ImportInvalidFileService
 {
-    private const FORMULA_ERROR_CELL_VALUE = 'INVALID VALUE: formulas are not supported, please fill a value';
+    private const
+        MEMBER_ERROR = 'ERROR',
+        HOUSEHOLD_ERROR = 'ERROR in Household',
+        MEMBER_IS_OK_MESSAGE = 'Member is OK, but cannot be imported due to errors in another beneficiaries in the same household';
 
     /**
      * @var ImportQueueRepository
@@ -48,24 +53,42 @@ class ImportInvalidFileService
      */
     private $importQueueStateMachine;
 
+    /**
+     * @var ExportService
+     */
+    private $exportService;
+
+    /**
+     * @var HouseholdExportCSVService
+     */
+    private $householdExportCSVService;
+
     public function __construct(
         ImportQueueRepository $importQueueRepository,
         ImportTemplate $importTemplate,
         string $importInvalidFilesDirectory,
         EntityManagerInterface $em,
-        WorkflowInterface $importQueueStateMachine
+        WorkflowInterface $importQueueStateMachine,
+        ExportService $exportService,
+        HouseholdExportCSVService $householdExportCSVService
     ) {
         $this->importTemplate = $importTemplate;
         $this->importQueueRepository = $importQueueRepository;
         $this->importInvalidFilesDirectory = $importInvalidFilesDirectory;
         $this->em = $em;
         $this->importQueueStateMachine = $importQueueStateMachine;
+        $this->exportService = $exportService;
+        $this->householdExportCSVService = $householdExportCSVService;
     }
 
+    /**
+     * @throws Exception
+     */
     public function generateFile(Import $import): ImportInvalidFile
     {
         $invalidEntries = $this->importQueueRepository->getInvalidEntries($import);
-        $spreadsheet = $this->importTemplate->generateTemplateSpreadsheet($import->getCountryIso3());
+        $header = $this->householdExportCSVService->getHeaders($import->getCountryIso3());
+        $spreadsheet = $this->exportService->generateSpreadsheet($header);
 
         $header = $this->importTemplate->getTemplateHeader($import->getCountryIso3());
         $this->writeEntries($spreadsheet, $invalidEntries, $header);
@@ -198,7 +221,7 @@ class ImportInvalidFileService
     ): void {
         $errorIsElsewhereInHousehold = empty($validationViolations);
         if ($errorIsElsewhereInHousehold) {
-            $validationViolations = ['Member is OK, error is in other beneficiary'];
+            $validationViolations = [self::MEMBER_IS_OK_MESSAGE];
         }
 
         $currentColumn = 1;
@@ -207,21 +230,14 @@ class ImportInvalidFileService
 
             if (isset($row[$column])) {
                 $cellValue = $row[$column][CellParameters::VALUE];
-
-                // in case of formula error => convert to string and fill cell with default message
-                if ($row[$column][CellParameters::DATA_TYPE] === DataType::TYPE_FORMULA && array_key_exists(CellParameters::ERRORS,
-                        $row[$column])) {
-                    $dataType = DataType::TYPE_STRING;
-                    $cellValue = self::FORMULA_ERROR_CELL_VALUE;
-                } else {
-                    $dataType = $row[$column][CellParameters::DATA_TYPE];
-                }
-
-                $cell->setValueExplicit($cellValue, $dataType);
+                $dataType = $row[$column][CellParameters::DATA_TYPE];
+                $cellErrors = array_key_exists(CellParameters::ERRORS, $row[$column]) ? $row[$column][CellParameters::ERRORS] : null;
+                $invalidCell = new InvalidCell($column, $cellValue, $dataType, $cellErrors);
+                $cell->setValueExplicit($invalidCell->getCellValue(), $invalidCell->getCellDataType());
                 $cell->getStyle()->getNumberFormat()->setFormatCode($row[$column][CellParameters::NUMBER_FORMAT]);
             }
             if ($column === ImportTemplate::ROW_NAME_STATUS) {
-                $cell->setValue($errorIsElsewhereInHousehold ? 'ERROR in Household' : 'ERROR');
+                $cell->setValue($errorIsElsewhereInHousehold ? self::HOUSEHOLD_ERROR : self::MEMBER_ERROR);
             } else if ($column === ImportTemplate::ROW_NAME_MESSAGES) {
                 $cell->setValue(implode("\n", $validationViolations));
             }

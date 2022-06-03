@@ -207,6 +207,7 @@ class BookletControllerTest extends BMSServiceTestCase
      */
     public function testGetBooklet($newBooklet)
     {
+        $this->markTestSkipped('Old endpoint');
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -234,6 +235,7 @@ class BookletControllerTest extends BMSServiceTestCase
      */
     public function testEditBooklet($newBooklet)
     {
+        $this->markTestSkipped('Old endpoint');
         $currency = 'GBP';
         $body = ["currency" => $currency, "number_vouchers" => 4, "individual_values" => [5, 6, 2, 4]];
 

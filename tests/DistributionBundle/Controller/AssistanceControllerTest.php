@@ -138,11 +138,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('data', $return);
 
         $distribution = $return['distribution'];
-        $this->assertArrayHasKey('id', $distribution);
         $this->assertArrayHasKey('name', $distribution);
         $this->assertArrayHasKey('target_type', $distribution);
         $this->assertArrayHasKey('assistance_type', $distribution);
-        $this->assertArrayHasKey('location', $distribution);
         $this->assertArrayHasKey('project', $distribution);
         $this->assertArrayHasKey('selection_criteria', $distribution);
         $this->assertArrayHasKey('validated', $distribution);
@@ -185,6 +183,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
      */
     public function testValidate($distribution)
     {
+        $this->markTestSkipped('Old endpoint');
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -351,6 +350,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
      */
     public function testGetDistributionBeneficiaries($distribution)
     {
+        $this->markTestSkipped('Old endpoint');
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
@@ -376,6 +376,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
      */
     public function testDistributionBeneficiariesVouchers($distribution)
     {
+        $this->markTestSkipped('Old endpoint');
         $bookletService = self::$container->get('voucher.booklet_service');
         $loggerService = self::$container->get('logger');
         $purchaseService = new PurchaseService($this->em, $loggerService);
@@ -503,7 +504,6 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('name', $update);
         $this->assertArrayHasKey('updated_on', $update);
         $this->assertArrayHasKey('date_distribution', $update);
-        $this->assertArrayHasKey('location', $update);
         $this->assertArrayHasKey('project', $update);
         $this->assertArrayHasKey('selection_criteria', $update);
         $this->assertArrayHasKey('archived', $update);
@@ -531,10 +531,6 @@ class AssistanceControllerTest extends BMSServiceTestCase
         // Create the user with the email and the salted password. The user should be enable
         $crawler = $this->request('POST', '/api/wsse/distributions/'. $distribution['id'] . '/archive');
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
-        $archive = json_decode($this->client->getResponse()->getContent(), true);
-
-        // Check if the second step succeed
-        $this->assertEquals($archive, "Archived");
     }
 
     /**
@@ -805,6 +801,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     public function testCreateDistributionToBeDeleted()
     {
+        $this->markTestSkipped('Old endpoint');
         $body = [
             'id' => null,
             'adm1' => '',
@@ -919,6 +916,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     public function testCreateDistributionForCommunity()
     {
+        $this->markTestSkipped('Old endpoint');
         /** @var \BeneficiaryBundle\Repository\CommunityRepository $communityRepo */
         $communityRepo = self::$container->get('doctrine')->getRepository(\BeneficiaryBundle\Entity\Community::class);
         $community = $communityRepo->findBy([], ['id' => 'asc'])[0];
@@ -991,6 +989,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     public function testCreateDistributionForInstitution()
     {
+        $this->markTestSkipped('Old endpoint');
         /** @var \BeneficiaryBundle\Repository\InstitutionRepository $institutionRepo */
         $institutionRepo = self::$container->get('doctrine')->getRepository(\BeneficiaryBundle\Entity\Institution::class);
         $institution = $institutionRepo->findBy([], ['id' => 'asc'])[0];

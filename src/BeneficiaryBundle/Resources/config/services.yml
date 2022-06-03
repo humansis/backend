@@ -51,16 +51,30 @@ services:
         public: true
 
     beneficiary.repository:
-        class: BeneficiaryBundle\Repository\BeneficiaryRepository
-        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        alias: BeneficiaryBundle\Repository\BeneficiaryRepository
         public: true
+
+    BeneficiaryBundle\Repository\BeneficiaryRepository:
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
         arguments:
             - BeneficiaryBundle\Entity\Beneficiary
+        calls:
+            - injectLocationRepository: ['@CommonBundle\Repository\LocationRepository']
 
     BeneficiaryBundle\Repository\CountrySpecificRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - BeneficiaryBundle\Entity\CountrySpecific
+
+    BeneficiaryBundle\Repository\CommunityRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - BeneficiaryBundle\Entity\Community
+
+    BeneficiaryBundle\Repository\InstitutionRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - BeneficiaryBundle\Entity\Institution
 
     BeneficiaryBundle\Mapper\CommunityMapper:
         arguments:
@@ -168,11 +182,13 @@ services:
 ##                                        CSV                                        ##
 #######################################################################################
 
-    beneficiary.household_export_csv_service:
-        class: BeneficiaryBundle\Utils\HouseholdExportCSVService
+    BeneficiaryBundle\Utils\HouseholdExportCSVService:
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@export_csv_service"
+
+    beneficiary.household_export_csv_service:
+        alias: BeneficiaryBundle\Utils\HouseholdExportCSVService
         public: true
 
     beneficiary.household_csv_service:

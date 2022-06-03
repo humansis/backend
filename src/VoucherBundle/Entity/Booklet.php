@@ -6,6 +6,8 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
 use ProjectBundle\Entity\Project;
@@ -23,15 +25,15 @@ class Booklet implements ExportableInterface
     public const USED = 2;
     public const DEACTIVATED = 3;
 
+    use StandardizedPrimaryKey;
+
     /**
-     * @var int
+     * @var ReliefPackage|null
      *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullBooklet", "ValidatedAssistance"})
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Assistance\ReliefPackage")
+     * @ORM\JoinColumn(name="relief_package_id")
      */
-    private $id;
+    private $reliefPackage;
 
     /**
      * @var Project|null
@@ -127,14 +129,25 @@ class Booklet implements ExportableInterface
     }
 
     /**
-     * Get id.
-     *
-     * @return int
+     * @return ReliefPackage|null
      */
-    public function getId()
+    public function getReliefPackage(): ?ReliefPackage
     {
-        return $this->id;
+        return $this->reliefPackage;
     }
+
+    /**
+     * @param ReliefPackage|null $reliefPackage
+     *
+     * @return Booklet
+     */
+    public function setReliefPackage(?ReliefPackage $reliefPackage): Booklet
+    {
+        $this->reliefPackage = $reliefPackage;
+
+        return $this;
+    }
+
 
     /**
      * @return Project|null

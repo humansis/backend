@@ -10,12 +10,17 @@ class AdmBaseRepository extends EntityRepository
 {
     /**
      * @param AdmFilterInputType $filter
+     * @param string             $iso3
      *
      * @return Paginator
      */
-    public function findByFilter(AdmFilterInputType $filter): Paginator
+    public function findByFilter(AdmFilterInputType $filter, string $iso3): Paginator
     {
         $qb = $this->createQueryBuilder('adm');
+        $qb->innerJoin('adm.location', 'l')
+            ->where('l.countryISO3 = :iso3')
+            ->orderBy('l.name')
+            ->setParameter('iso3', $iso3);
 
         if ($filter->hasIds()) {
             $qb->andWhere(

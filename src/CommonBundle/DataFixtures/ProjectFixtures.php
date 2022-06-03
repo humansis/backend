@@ -7,12 +7,22 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Enum\ProductCategoryType;
+use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
 
 class ProjectFixtures extends Fixture implements FixtureGroupInterface
 {
     private $countries = ["KHM", "UKR", "SYR", "ETH", "MNG", "ARM", "ZMB"];
+
+    private const PROJECT_NAME = 0;
+    private const PROJECT_NUMBER_OF_HOUSEHOLDS = 1;
+    private const PROJECT_TARGET = 2;
+    private const PROJECT_NOTES = 3;
+    private const PROJECT_ISO3 = 4;
+    private const PROJECT_PROJECT_INVOICE_ADDRESS_ENGLISH = 5;
+    private const PROJECT_PROJECT_INVOICE_ADDRESS_LOCAL = 6;
+    private const PROJECT_ALLOWED_PRODUCT_CATEGORY_TYPES = 7;
 
     private $explicitTestProjects = [
         ['Dev KHM Project', 1, 1, 'notes', 'KHM', 'KHM eng address', 'KHM local address', [ProductCategoryType::FOOD] ],
@@ -36,7 +46,6 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
     ];
 
     private $kernel;
-
 
     public function __construct(Kernel $kernel)
     {
@@ -84,16 +93,19 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
             echo "User {$project->getName()} in {$project->getIso3()} already exists. Omit creation.\n";
         } else {
             $project = new Project();
-            $project->setName($data[0])
+            $project->setName($data[self::PROJECT_NAME])
                 ->setStartDate(new \DateTime())
                 ->setEndDate((new \DateTime())->add(new \DateInterval("P1M")))
-                ->setNumberOfHouseholds($data[1])
-                ->setTarget($data[2])
-                ->setNotes($data[3])
-                ->setIso3($data[4])
-                ->setProjectInvoiceAddressEnglish($data[5])
-                ->setProjectInvoiceAddressLocal($data[6])
-                ->setAllowedProductCategoryTypes($data[7]);
+                ->setNumberOfHouseholds($data[self::PROJECT_NUMBER_OF_HOUSEHOLDS])
+                ->setTarget($data[self::PROJECT_TARGET])
+                ->setNotes($data[self::PROJECT_NOTES])
+                ->setIso3($data[self::PROJECT_ISO3])
+                ->setProjectInvoiceAddressEnglish($data[self::PROJECT_PROJECT_INVOICE_ADDRESS_ENGLISH])
+                ->setProjectInvoiceAddressLocal($data[self::PROJECT_PROJECT_INVOICE_ADDRESS_LOCAL])
+                ->setAllowedProductCategoryTypes($data[self::PROJECT_ALLOWED_PRODUCT_CATEGORY_TYPES])
+                ->setSectors(SectorEnum::all())
+            ;
+
             $manager->persist($project);
             echo $project->getName()." created\n";
         }

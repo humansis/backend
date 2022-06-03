@@ -10,6 +10,7 @@ use \DateTime;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\DBAL\PersonGenderEnum;
+use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\InputType\AssistanceByProjectOfflineAppFilterInputType;
 use NewApiBundle\InputType\AssistanceFilterInputType;
 use NewApiBundle\InputType\AssistanceOrderInputType;
@@ -82,7 +83,8 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function countCompleted(string $countryISO3) {
+    public function countCompleted(string $countryISO3): int
+    {
         $qb = $this->createQueryBuilder('dd');
         $qb->select('COUNT(dd)')
             ->leftJoin("dd.location", "l");
@@ -90,7 +92,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
         $locationRepository->whereCountry($qb, $countryISO3);
         $qb->andWhere("dd.completed = 1");
 
-        return $qb->getQuery()->getSingleScalarResult();
+        return intval($qb->getQuery()->getSingleScalarResult());
 
     }
 
@@ -174,7 +176,9 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                 } else if ($modalityType === 'QR Code Voucher') {
                     $qb->innerJoin('db.booklets', 'b', Join::WITH, 'b.status = 1 OR b.status = 2');
                 } else {
-                    $qb->innerJoin('db.generalReliefs', 'gr', Join::WITH, 'gr.distributedAt IS NOT NULL');
+                    $qb->innerJoin('db.reliefPackages', 'rp', Join::WITH, 'rp.state = :undistributedState')
+                        ->setParameter('undistributedState', ReliefPackageState::TO_DISTRIBUTE)
+                    ;
                 }
         return $qb->getQuery()->getSingleScalarResult();
     }
@@ -438,5 +442,11 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
         }
 
         return new Paginator($qb);
+    }
+
+    public function save(\NewApiBundle\Component\Assistance\Domain\Assistance $assistance): void
+    {
+        $this->_em->persist($assistance->getAssistanceRoot());
+        $this->_em->flush();
     }
 }

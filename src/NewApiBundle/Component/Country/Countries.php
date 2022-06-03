@@ -15,9 +15,9 @@ class Countries
     /**
      * @return Country[]
      */
-    public function getAll(): array
+    public function getAll(bool $withArchived = false): array
     {
-        return $this->lazyList();
+        return $this->lazyList($withArchived);
     }
 
     /**
@@ -50,15 +50,25 @@ class Countries
     /**
      * @return Country[]
      */
-    private function lazyList()
+    private function lazyList(bool $withArchived = false): array
     {
         static $cache;
+        static $cacheArchived;
 
-        if (null === $cache) {
+        if (null === $cache || null === $cacheArchived) {
             $cache = [];
             foreach ($this->array as $item) {
-                $cache[] = new Country($item);
+                $country = new Country($item);
+                if ($country->isArchived()) {
+                    $cacheArchived[] = new Country($item);
+                } else {
+                    $cache[] = new Country($item);
+                }
             }
+        }
+
+        if ($withArchived) {
+            return array_merge($cache, $cacheArchived);
         }
 
         return $cache;

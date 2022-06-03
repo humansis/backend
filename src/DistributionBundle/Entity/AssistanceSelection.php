@@ -31,7 +31,7 @@ class AssistanceSelection
     /**
      * @var Collection|SelectionCriteria[]
      *
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\SelectionCriteria", mappedBy="assistanceSelection")
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\SelectionCriteria", mappedBy="assistanceSelection", cascade={"persist"})
      */
     private $selectionCriteria;
 

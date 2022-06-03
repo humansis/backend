@@ -35,10 +35,7 @@ class BeneficiaryDecoratorBuilder
         }
 
         if (!is_null($beneficiaryLine->idType)) {
-            $nationalId = new NationalIdCardInputType();
-            $nationalId->setType($beneficiaryLine->idType);
-            $nationalId->setNumber((string) $beneficiaryLine->idNumber);
-            $beneficiary->addNationalIdCard($nationalId);
+            $beneficiary->addNationalIdCard($this->buildIdentityType($beneficiaryLine->idType, (string) $beneficiaryLine->idNumber));
         }
 
         if (!is_null($beneficiaryLine->numberPhone1)) { //TODO check, that phone is filled completely in import
@@ -60,5 +57,35 @@ class BeneficiaryDecoratorBuilder
         }
 
         return $beneficiary;
+    }
+
+    /**
+     * @param Import\Integrity\ImportLine $beneficiaryLine
+     *
+     * @return BeneficiaryInputType
+     */
+    public function buildBeneficiaryIdentityInputType(Import\Integrity\ImportLine $beneficiaryLine): BeneficiaryInputType
+    {
+        $beneficiary = new BeneficiaryInputType();
+        if (!is_null($beneficiaryLine->idType)) {
+            $beneficiary->addNationalIdCard($this->buildIdentityType($beneficiaryLine->idType, (string) $beneficiaryLine->idNumber));
+        }
+
+        return $beneficiary;
+    }
+
+    /**
+     * @param string $idType
+     * @param string $idNumber
+     *
+     * @return NationalIdCardInputType
+     */
+    private function buildIdentityType(string $idType, string $idNumber): NationalIdCardInputType
+    {
+        $nationalId = new NationalIdCardInputType();
+        $nationalId->setType($idType);
+        $nationalId->setNumber($idNumber);
+
+        return $nationalId;
     }
 }

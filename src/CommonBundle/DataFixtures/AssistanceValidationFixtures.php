@@ -7,6 +7,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Component\Country\Countries;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
 
@@ -16,16 +17,16 @@ class AssistanceValidationFixtures extends Fixture implements DependentFixtureIn
 
     private $kernel;
 
-    private $countries = [];
+    /**
+     * @var Countries
+     */
+    private $countries;
 
-    public function __construct(Kernel $kernel, array $countries, AssistanceService $assistanceService)
+    public function __construct(Kernel $kernel, Countries $countries, AssistanceService $assistanceService)
     {
         $this->assistanceService = $assistanceService;
         $this->kernel = $kernel;
-
-        foreach ($countries as $country) {
-            $this->countries[$country['iso3']] = $country;
-        }
+        $this->countries = $countries;
     }
 
     /**
@@ -41,7 +42,7 @@ class AssistanceValidationFixtures extends Fixture implements DependentFixtureIn
             return;
         }
 
-        foreach ($this->countries as $iso3 => $details) {
+        foreach ($this->countries->getAll() as $country) {
             $project = $manager->getRepository(Project::class)->findOneBy([], ['id' => 'desc']);
 
             foreach ($project->getDistributions() as $assistance) {

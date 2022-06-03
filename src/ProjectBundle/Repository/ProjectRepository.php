@@ -8,7 +8,6 @@ use NewApiBundle\InputType\ProjectFilterInputType;
 use NewApiBundle\InputType\ProjectOrderInputType;
 use NewApiBundle\Request\Pagination;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Symfony\Component\Security\Core\Security;
 use UserBundle\Entity\User;
 
 /**
@@ -154,5 +153,22 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
         }
 
         return new Paginator($qb);
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return array
+     */
+    public function getProjectCountriesByUser(User $user): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p.iso3')
+            ->leftJoin('p.usersProject', 'up')
+            ->where('up.user = :user')
+            ->setParameter('user', $user)
+            ->groupBy('p.iso3')
+            ->getQuery()
+            ->getResult();
     }
 }

@@ -145,6 +145,7 @@ class IntegrityCheckerTest extends KernelTestCase
         $method->setAccessible(true);
         $method->invoke($checker, $correctItem);
         $method->invoke($checker, $incorrectItem);
+        self::$entityManager->flush();
 
         $this->assertEquals(ImportQueueState::VALID, $correctItem->getState(), "Correct item should be recognize as one");
         $this->assertNull($correctItem->getMessage());
@@ -169,7 +170,6 @@ class IntegrityCheckerTest extends KernelTestCase
 
     public function testAllDuplicitiesIdentified()
     {
-        $this->markTestSkipped('removed due error in hotfix, should be returned to check self duplicities in import files');
         $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'iso3' => 'KHM'], null, 1)[0];
         $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
 

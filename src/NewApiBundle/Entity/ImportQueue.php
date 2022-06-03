@@ -7,6 +7,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Component\Import\Integrity\QueueViolation;
 use NewApiBundle\Entity\Helper\EnumTrait;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ImportDuplicityState;
@@ -108,6 +109,11 @@ class ImportQueue implements ConcurrencyLockableInterface
      * @ORM\Column(name="similarity_checked_at", type="datetimetz", nullable=true)
      */
     private $similarityCheckedAt;
+
+    /**
+     * @var array
+     */
+    private $violatedColumns = [];
 
     public function __construct(Import $import, ImportFile $file, array $content)
     {
@@ -217,13 +223,29 @@ class ImportQueue implements ConcurrencyLockableInterface
     }
 
     /**
-     * @param $message
+     * @param QueueViolation $queueViolation
      */
-    public function addViolation(int $lineIndex, $message): void
+    public function addViolation(QueueViolation $queueViolation): void
     {
-        $this->rawMessageData[$lineIndex][] = $message;
+        $this->rawMessageData[$queueViolation->getLineIndex()][] = [
+            'column' => $queueViolation->getColumn(),
+            'violation' => $queueViolation->getMessage(),
+            'value' => $queueViolation->getValue(),
+        ];
 
         $this->message = json_encode($this->rawMessageData);
+        $this->violatedColumns[$queueViolation->getLineIndex()][] = $queueViolation->getColumn();
+    }
+
+    /**
+     * @param int    $index
+     * @param string $column
+     *
+     * @return bool
+     */
+    public function hasColumnViolation(int $index, string $column): bool
+    {
+        return in_array($column, $this->violatedColumns[$index]);
     }
 
     public function __toString()

@@ -97,9 +97,6 @@ END
 
 ```
 git clone https://gitlab-public.quanti.cz/humansis/web-platform/backend customdir
-cd customdir
-cp docker-compose.yml.dist docker-compose.yml
-cp app/config/parameters.yml.dist app/config/parameters.yml
 ```
 
 Open `docker-compose.yml` and add:

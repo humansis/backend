@@ -3,6 +3,8 @@
 namespace CommonBundle\Repository;
 
 use CommonBundle\Entity\Adm3;
+use CommonBundle\Entity\Adm4;
+use Doctrine\ORM\Query\Expr\Join;
 
 /**
  * Adm4Repository
@@ -17,4 +19,21 @@ class Adm4Repository extends AdmBaseRepository
         return $this->findBy(['adm3' => $adm1], ['name' => 'ASC']);
     }
 
+    /**
+     * @param Adm3   $adm3
+     * @param string $code
+     *
+     * @return Adm4|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function findByAdm3AndCode(Adm3 $adm3, string $code): ?Adm4
+    {
+        return $this->createQueryBuilder('adm4')
+            ->leftJoin('adm4.adm3', 'adm3', Join::WITH, 'adm3.id = :adm3')
+            ->where('adm4.code = :code')
+            ->setParameter('adm3', $adm3->getId())
+            ->setParameter('code', $code)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

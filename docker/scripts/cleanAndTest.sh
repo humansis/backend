@@ -3,4 +3,4 @@
 clean
 bin/console app:adm:upload --limit=10 --all
 
-vendor/bin/phpunit
+php -d memory_limit=-1 vendor/bin/phpunit

@@ -236,8 +236,21 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
      */
     public function getChildrenLocations(Location $location): array
     {
+        return $this->getChildrenLocationsQueryBuilder($location)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param Location $location
+     *
+     * @return QueryBuilder
+     */
+    public function getChildrenLocationsQueryBuilder(Location $location): QueryBuilder
+    {
         $qb = $this->createQueryBuilder('l');
-        $qb->andWhere(
+
+        return $qb->andWhere(
             $qb->expr()->lte('l.rgt', ':currentRgt'),
             $qb->expr()->gte('l.lft', ':currentLft'),
             $qb->expr()->gte('l.lvl', ':currentLvl')
@@ -247,22 +260,43 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
                 'currentLft' => $location->getLft(),
                 'currentLvl' => $location->getLvl(),
             ]);
-
-        return $qb->getQuery()->getResult();
     }
 
     /**
      * @param LocationFilterInputType $filter
+     * @param string|null             $iso3
      *
      * @return Paginator
      */
-    public function findByParams(LocationFilterInputType $filter): Paginator
+    public function findByParams(LocationFilterInputType $filter, ?string $iso3 = null): Paginator
     {
         $qbr = $this->createQueryBuilder('l');
 
+        if ($iso3) {
+            $qbr->andWhere('l.countryISO3 = :iso3')
+                ->setParameter('iso3', $iso3);
+        }
         if ($filter->hasIds()) {
             $qbr->andWhere('l.id IN (:ids)')
                 ->setParameter('ids', $filter->getIds());
+        }
+        if ($filter->hasFulltext()) {
+            $orX = $qbr->expr()->orX();
+            $orX
+                ->add($qbr->expr()->eq('l.id', ':id'))
+                ->add($qbr->expr()->like('l.name', ':fulltext'))
+                ->add($qbr->expr()->like('l.code', ':fulltext'));
+            $qbr->andWhere($orX);
+            $qbr->setParameter('id', $filter->getFulltext());
+            $qbr->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+        }
+        if($filter->hasLevel()){
+            $qbr->andWhere('l.lvl = :level')
+                ->setParameter('level', $filter->getLevel());
+        }
+        if($filter->hasParent()){
+            $qbr->andWhere('l.parentLocation = :parent')
+                ->setParameter('parent', $filter->getParent());
         }
 
         return new Paginator($qbr);
@@ -284,5 +318,25 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
                 )
                 SELECT DISTINCT loc_id FROM loc', [$locationId])
             ->fetchFirstColumn();
+    }
+
+    /**
+     * @param string      $code
+     * @param string|null $iso3
+     * @param array|null  $context
+     *
+     * @return Location[]
+     */
+    public function findLocationsByCode(string $code, ?string $iso3 = null): array
+    {
+        $qb = $this->createQueryBuilder('l');
+        $qb->andWhere('l.code = :code')
+            ->setParameter('code', $code);
+        if ($iso3) {
+            $qb->andWhere('l.countryISO3 = :iso3');
+            $qb->setParameter('iso3', $iso3);
+        }
+
+        return $qb->getQuery()->getResult();
     }
 }

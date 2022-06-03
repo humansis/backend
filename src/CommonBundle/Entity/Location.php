@@ -114,6 +114,21 @@ class Location implements TreeInterface
     private $adm4;
 
     /**
+     * @param string      $countryISO3
+     * @param string|null $name
+     * @param string|null $code
+     */
+    public function __construct(
+        string  $countryISO3,
+        ?string $name = null,
+        ?string $code = null
+    ) {
+        $this->countryISO3 = $countryISO3;
+        $this->name = $name;
+        $this->code = $code;
+    }
+
+    /**
      * Get id.
      *
      * @return int

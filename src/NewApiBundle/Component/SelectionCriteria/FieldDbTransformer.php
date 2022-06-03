@@ -10,6 +10,7 @@ use BeneficiaryBundle\Repository\VulnerabilityCriterionRepository;
 use CommonBundle\Repository\LocationRepository;
 use DistributionBundle\Entity\SelectionCriteria;
 use Doctrine\ORM\EntityNotFoundException;
+use NewApiBundle\Enum\SelectionCriteriaField;
 use NewApiBundle\Enum\SelectionCriteriaTarget;
 use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
 
@@ -110,23 +111,14 @@ class FieldDbTransformer
             if (!$location) {
                 throw new EntityNotFoundException();
             }
-            $fieldString = '';
-            if ($location->getAdm() instanceof \CommonBundle\Entity\Adm1) {
-                $fieldString = 'currentAdm1';
-            } elseif ($location->getAdm() instanceof \CommonBundle\Entity\Adm2) {
-                $fieldString = 'currentAdm2';
-            } elseif ($location->getAdm() instanceof \CommonBundle\Entity\Adm3) {
-                $fieldString = 'currentAdm3';
-            } elseif ($location->getAdm() instanceof \CommonBundle\Entity\Adm4) {
-                $fieldString = 'currentAdm4';
-            }
 
             return [
                 'condition_string' => $input->getCondition(),
-                'field_string' => $fieldString,
+                'field_string' => SelectionCriteriaField::CURRENT_LOCATION,
                 'target' => $input->getTarget(),
                 'table_string' => 'Personnal',
-                'value_string' => $input->getValue(),
+                'value_string' => null,
+                'value' => $location,
                 'weight' => $input->getWeight(),
                 'type' => 'other',
             ];
@@ -217,17 +209,6 @@ class FieldDbTransformer
                 'group' => $criterion->getGroupNumber(),
                 'target' => $criterion->getTarget(),
                 'field' => $criterion->getFieldString(),
-                'condition' => $criterion->getConditionString(),
-                'value' => $criterion->getValueString(),
-                'weight' => $criterion->getWeight(),
-            ];
-        }
-
-        if (SelectionCriteriaTarget::HOUSEHOLD === $criterion->getTarget() && in_array($criterion->getTarget(), ['currentAdm1', 'currentAdm2', 'currentAdm3', 'currentAdm4'])) {
-            return [
-                'group' => $criterion->getGroupNumber(),
-                'target' => $criterion->getTarget(),
-                'field' => 'location',
                 'condition' => $criterion->getConditionString(),
                 'value' => $criterion->getValueString(),
                 'weight' => $criterion->getWeight(),

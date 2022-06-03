@@ -10,10 +10,44 @@ use NewApiBundle\Enum\ImportQueueState;
 
 class ImportQueueRepository extends EntityRepository
 {
-    public function findUnlocked(Import $import, $state,int $count)
+
+    public function lockUnlockedItems(Import $import, $state,int $count, $code)
+    {
+        $freeIds = $this->findUnlockedIds($import, $state, $count);
+        $lockDate = new \DateTimeImmutable();
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $builder = $qb
+            ->update($this->getEntityName(), 'iq')
+            ->set('iq.lockedBy', ':lockedBy')
+            ->set('iq.lockedAt',  ':lockDate')
+
+            ->where('iq.import = :import')
+            ->andWhere('iq.lockedBy IS NULL OR iq.lockedAt <= :expiredLock')
+            ->andWhere('iq.id IN (:freeIds)')
+            ->setParameter('lockedBy', $code)
+            ->setParameter('import', $import)
+            ->setParameter('lockDate', $lockDate)
+            ->setParameter('expiredLock', (new \DateTime())->sub(date_interval_create_from_date_string('1 hours')))
+            ->setParameter('freeIds', $freeIds);
+        if (is_string($state)) {
+            $builder
+                ->andWhere('iq.state = :state')
+                ->setParameter('state', $state)
+            ;
+        } elseif (is_array($state)) {
+            $builder
+                ->andWhere('iq.state IN (:states)')
+                ->setParameter('states', $state)
+            ;
+        }
+        $builder->getQuery()->execute();
+    }
+
+    public function findUnlockedIds(Import $import, $state,int $count)
     {
         $qb = $this->createQueryBuilder('iq');
         $builder = $qb
+            ->select('iq.id')
             ->andWhere('iq.import = :import')
             ->andWhere('iq.lockedBy IS NULL OR iq.lockedAt <= :expiredLock')
             ->setParameter('expiredLock', (new \DateTime())->sub(date_interval_create_from_date_string('1 hours')))
@@ -32,7 +66,8 @@ class ImportQueueRepository extends EntityRepository
             ;
         }
 
-        return $builder->getQuery()->getResult();
+        $results = $builder->getQuery()->getArrayResult();
+        return array_map(function($item) { return $item['id']; }, $results);
     }
 
     public function getTotalByImportAndStatus(Import $import, string $state): int

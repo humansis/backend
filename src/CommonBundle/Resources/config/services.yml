@@ -2,6 +2,7 @@ services:
 
     CommonBundle\Controller\:
         resource: '../../Controller'
+        autowire: true
         public: true
         tags: [ 'app.controller' ]
 
@@ -9,6 +10,13 @@ services:
         public: true
         tags:
             - { name: 'console.command' }
+        arguments:
+            - '@doctrine.orm.default_entity_manager'
+            - '@CommonBundle\Repository\Adm1Repository'
+            - '@CommonBundle\Repository\Adm2Repository'
+            - '@CommonBundle\Repository\Adm3Repository'
+            - '@CommonBundle\Repository\Adm4Repository'
+            - '@CommonBundle\Repository\LocationRepository'
 
     CommonBundle\Command\AdmCSV2XMLCommand:
         public: true
@@ -137,8 +145,12 @@ services:
     CommonBundle\DataFixtures\LocationFixtures:
         public: true
         arguments:
-            - "@kernel"
-            - "@location_service"
+            - '@CommonBundle\Repository\Adm1Repository'
+            - '@CommonBundle\Repository\Adm2Repository'
+            - '@CommonBundle\Repository\Adm3Repository'
+            - '@CommonBundle\Repository\Adm4Repository'
+            - '@CommonBundle\Repository\LocationRepository'
+            - '@NewApiBundle\Component\Country\Countries'
         tags:
             - { name: doctrine.fixture.orm }
 
@@ -186,8 +198,10 @@ services:
         public: true
         arguments:
             - "@kernel"
-            - "%app.countries%"
+            - '@NewApiBundle\Component\Country\Countries'
             - "@voucher.booklet_service"
+            - '@ProjectBundle\Repository\ProjectRepository'
+            - '@beneficiary.repository'
         tags:
             - { name: doctrine.fixture.orm }
 
@@ -211,8 +225,9 @@ services:
         public: true
         arguments:
             - "@=service('kernel').getEnvironment()"
-            - "%app.countries%"
+            - '@NewApiBundle\Component\Country\Countries'
             - "@beneficiary.institution_service"
+            - '@ProjectBundle\Repository\ProjectRepository'
         tags:
             - { name: doctrine.fixture.orm }
 
@@ -220,8 +235,9 @@ services:
         public: true
         arguments:
             - "@=service('kernel').getEnvironment()"
-            - "%app.countries%"
+            - '@NewApiBundle\Component\Country\Countries'
             - "@beneficiary.community_service"
+            - '@ProjectBundle\Repository\ProjectRepository'
         tags:
             - { name: doctrine.fixture.orm }
 
@@ -229,7 +245,7 @@ services:
         public: true
         arguments:
             - "@kernel"
-            - "%app.countries%"
+            - '@NewApiBundle\Component\Country\Countries'
             - "@distribution.assistance_service"
         tags:
             - { name: doctrine.fixture.orm }
@@ -238,7 +254,7 @@ services:
         public: true
         arguments:
             - "@kernel"
-            - "%app.countries%"
+            - '@NewApiBundle\Component\Country\Countries'
             - "@distribution.assistance_service"
         tags:
             - { name: doctrine.fixture.orm }
@@ -323,7 +339,7 @@ services:
     CommonBundle\DataFixtures\ProductFixtures:
         public: true
         arguments:
-            - "%app.countries%"
+            - '@NewApiBundle\Component\Country\Countries'
         tags:
             - { name: doctrine.fixture.orm }
 
@@ -331,7 +347,7 @@ services:
         public: true
         arguments:
             - "@kernel"
-            - "%app.countries%"
+            - '@NewApiBundle\Component\Country\Countries'
         tags:
             - { name: doctrine.fixture.orm }
 

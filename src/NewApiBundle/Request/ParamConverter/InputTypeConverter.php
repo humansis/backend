@@ -53,6 +53,11 @@ class InputTypeConverter implements ParamConverterInterface
      */
     public function supports(ParamConverter $configuration)
     {
-        return null !== $configuration->getClass() && in_array(InputTypeInterface::class, class_implements($configuration->getClass()));
+        if (null === $configuration->getClass()) return false;
+        $class = $configuration->getClass();
+        if (str_ends_with($class, '[]')) { // for support arrays of InputTypes
+            $class = str_replace('[]', '', $class);
+        }
+        return in_array(InputTypeInterface::class, class_implements($class));
     }
 }

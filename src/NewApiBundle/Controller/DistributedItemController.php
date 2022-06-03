@@ -10,6 +10,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Entity\DistributedItem;
 use NewApiBundle\InputType\DistributedItemFilterInputType;
 use NewApiBundle\InputType\DistributedItemOrderInputType;
+use NewApiBundle\Repository\DistributedItemRepository;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -59,6 +60,7 @@ class DistributedItemController extends AbstractController
      * @param Request                        $request
      * @param DistributedItemFilterInputType $inputType
      * @param DistributedItemOrderInputType  $order
+     * @param DistributedItemRepository      $distributedItemRepository
      * @param Pagination                     $pagination
      *
      * @return JsonResponse
@@ -67,6 +69,7 @@ class DistributedItemController extends AbstractController
         Request $request,
         DistributedItemFilterInputType $inputType,
         DistributedItemOrderInputType $order,
+        DistributedItemRepository $distributedItemRepository,
         Pagination $pagination
     ): JsonResponse
     {
@@ -74,8 +77,7 @@ class DistributedItemController extends AbstractController
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        $data = $this->getDoctrine()->getRepository(DistributedItem::class)
-            ->findByParams($request->headers->get('country'), $inputType, $order, $pagination);
+        $data = $distributedItemRepository->findByParams($request->headers->get('country'), $inputType, $order, $pagination);
 
         return $this->json($data);
     }

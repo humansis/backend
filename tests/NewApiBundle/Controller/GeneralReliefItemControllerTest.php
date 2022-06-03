@@ -24,7 +24,11 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
     public function testGet()
     {
         /** @var GeneralReliefItem $item */
-        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy([], ['id' => 'asc'])[0];
+        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findOneBy([], ['id' => 'asc']);
+
+        if (!$item) {
+            $this->markTestIncomplete('Missing test data: GRI');
+        }
 
         $this->request('GET', '/api/basic/web-app/v1/general-relief-items/'.$item->getId());
 
@@ -58,7 +62,11 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
     public function testPatch()
     {
         /** @var GeneralReliefItem $item */
-        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy(['distributedAt' => null], ['id' => 'asc'])[0];
+        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findOneBy(['distributedAt' => null], ['id' => 'asc']);
+
+        if (!$item) {
+            $this->markTestIncomplete('Missing test data: GRI');
+        }
 
         $this->request('PATCH', '/api/basic/web-app/v2/general-relief-items/'.$item->getId(), [
             'distributed' => true,

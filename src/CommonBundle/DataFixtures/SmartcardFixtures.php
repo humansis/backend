@@ -3,11 +3,12 @@
 namespace CommonBundle\DataFixtures;
 
 use DateTimeImmutable;
+use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ModalityType;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Product;
@@ -157,7 +158,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
     {
         $smartcard = $manager->getRepository(Smartcard::class)->findOneBy(['serialNumber' => $ab->getBeneficiary()->getSmartcardSerialNumber()], ['id' => 'desc']);
         for ($j = 0; $j < rand(0, 50); ++$j) {
-            $this->generatePurchase($j, $smartcard, $vendor, $manager);
+            $this->generatePurchase($j, $smartcard, $vendor, $j > 3 ? $ab->getAssistance() : null, $manager);
         }
     }
 
@@ -175,10 +176,10 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         return Smartcard::states()[$i];
     }
 
-    private function generatePurchase($seed, Smartcard $smartcard, Vendor $vendor, ObjectManager $manager): SmartcardPurchase
+    private function generatePurchase($seed, Smartcard $smartcard, Vendor $vendor, ?Assistance $assistance, ObjectManager $manager): SmartcardPurchase
     {
         $date = new DateTimeImmutable('now');
-        $purchase = SmartcardPurchase::create($smartcard, $vendor, $date);
+        $purchase = SmartcardPurchase::create($smartcard, $vendor, $date, $assistance);
         $purchase->setHash($this->purchaseService->hashPurchase($smartcard->getBeneficiary(), $vendor, $date));
 
         for ($j = 0; $j < rand(1, 3); ++$j) {

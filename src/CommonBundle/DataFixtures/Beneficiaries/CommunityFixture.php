@@ -1,10 +1,8 @@
 <?php
 namespace CommonBundle\DataFixtures\Beneficiaries;
 
-use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\InputType\NewCommunityType;
 use BeneficiaryBundle\Utils\CommunityService;
-use CommonBundle\Controller\CountryController;
 use CommonBundle\DataFixtures\LocationFixtures;
 use CommonBundle\DataFixtures\ProjectFixtures;
 use CommonBundle\InputType\Country;
@@ -12,8 +10,10 @@ use CommonBundle\InputType\RequestConverter;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Enum\NationalIdType;
 use ProjectBundle\Entity\Project;
+use ProjectBundle\Repository\ProjectRepository;
 
 class CommunityFixture extends Fixture implements DependentFixtureInterface
 {
@@ -101,22 +101,35 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
     /** @var string */
     private $environment;
 
-    /** @var array */
+    /** @var Countries */
     private $countries;
 
     /** @var CommunityService */
     private $communityService;
 
     /**
-     * CommunityFixture constructor.
-     * @param string $environment
-     * @param CommunityService $communityService
+     * @var ProjectRepository
      */
-    public function __construct(string $environment, array $countries, CommunityService $communityService)
-    {
+    private $projectRepository;
+
+    /**
+     * CommunityFixture constructor.
+     *
+     * @param string            $environment
+     * @param Countries         $countries
+     * @param CommunityService  $communityService
+     * @param ProjectRepository $projectRepository
+     */
+    public function __construct(
+        string            $environment,
+        Countries         $countries,
+        CommunityService  $communityService,
+        ProjectRepository $projectRepository
+    ) {
         $this->countries = $countries;
         $this->environment = $environment;
         $this->communityService = $communityService;
+        $this->projectRepository = $projectRepository;
     }
 
 
@@ -126,8 +139,8 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
             echo "Cannot run on production environment";
             return;
         }
-        foreach ($this->countries as $COUNTRY) {
-            $projects = $manager->getRepository(Project::class)->findBy(['iso3' => $COUNTRY['iso3']], ['id' => 'asc']);
+        foreach ($this->countries->getAll() as $COUNTRY) {
+            $projects = $this->projectRepository->findBy(['iso3' => $COUNTRY->getIso3()], ['id' => 'asc']);
             $projectIds = array_map(function (Project $project) {
                 return $project->getId();
             }, $projects);
@@ -135,7 +148,7 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
                 $communityTypeData['projects'] = $projectIds;
                 $communityType = RequestConverter::normalizeInputType($communityTypeData, NewCommunityType::class);
 
-                $institution = $this->communityService->createDeprecated(new Country($COUNTRY['iso3']), $communityType);
+                $institution = $this->communityService->createDeprecated(new Country($COUNTRY->getIso3()), $communityType);
                 $manager->persist($institution);
             }
         }

@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
@@ -85,8 +86,6 @@ class Assistance implements ExportableInterface
      * @var Location
      *
      * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
-     *
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
     private $location;
 
@@ -140,13 +139,14 @@ class Assistance implements ExportableInterface
     private $targetType;
 
     /**
+     * @var Commodity[]
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\Commodity", mappedBy="assistance", cascade={"persist"})
      * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
      */
     private $commodities;
 
     /**
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", mappedBy="assistance")
+     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", mappedBy="assistance", cascade={"persist"})
      *
      * @SymfonyGroups({"FullAssistance", "FullProject"})
      */
@@ -333,11 +333,11 @@ class Assistance implements ExportableInterface
     /**
      * Set updatedOn.
      *
-     * @param \DateTime $updatedOn
+     * @param \DateTimeInterface $updatedOn
      *
      * @return Assistance
      */
-    public function setUpdatedOn($updatedOn)
+    public function setUpdatedOn(\DateTimeInterface $updatedOn)
     {
         $this->updatedOn = $updatedOn;
 
@@ -597,6 +597,7 @@ class Assistance implements ExportableInterface
      */
     public function addCommodity(\DistributionBundle\Entity\Commodity $commodity)
     {
+        $commodity->setAssistance($this);
         $this->commodities[] = $commodity;
 
         return $this;
@@ -898,38 +899,15 @@ class Assistance implements ExportableInterface
         return round($percentage * 100) / 100;
     }
 
-    public function getCommoditySentAmountFromBeneficiary($commodity, $assistanceBeneficiary)
+    public function getCommoditySentAmountFromBeneficiary(Commodity $commodity, AssistanceBeneficiary $assistanceBeneficiary): int
     {
-        $modalityType = $this->getCommodities()[0]->getModalityType()->getName();
-        if ($modalityType === 'Mobile Money') {
-            $values = 0;
-            foreach ($assistanceBeneficiary->getTransactions() as $transaction) {
-                if (Transaction::SUCCESS === $transaction->getTransactionStatus()) {
-                    $values += $commodity->getValue();
-                }
+        $sent = 0;
+        foreach ($assistanceBeneficiary->getReliefPackages() as $package) {
+            if ($package->getModalityType() == $commodity->getModalityType()) {
+                $sent += floatval($package->getAmountDistributed());
             }
-            return $values;
-        } elseif ($modalityType === 'QR Code Voucher') {
-            $booklets = $assistanceBeneficiary->getBooklets();
-            foreach ($booklets as $booklet) {
-                if ($booklet->getStatus() === 1 || $booklet->getStatus() === 2) {
-                    return $booklet->getTotalValue();
-                }
-            }
-        } else {
-            $commodityIndex = null;
-            foreach ($this->getCommodities() as $index => $commodityInList) {
-                if ($commodityInList->getId() === $commodity->getId()) {
-                    $commodityIndex = $index;
-                }
-            }
-            if (!$assistanceBeneficiary->getGeneralReliefs() || null == $commodityIndex) {
-                return 0;
-            }
-            $correspondingGeneralRelief = $assistanceBeneficiary->getGeneralReliefs()[$commodityIndex];
-
-            return ($correspondingGeneralRelief && $correspondingGeneralRelief->getDistributedAt() ? $commodity->getValue() : 0);
         }
+        return floor($sent);
     }
 
     /**
@@ -1044,6 +1022,21 @@ class Assistance implements ExportableInterface
     public function setSmartcardPurchases(Collection $smartcardPurchases): void
     {
         $this->smartcardPurchases = $smartcardPurchases;
+    }
+
+    /**
+     * Returns if assistance has at least one commodity with given modality type
+     *
+     * @param string $modalityType - You can use NewApiBundle\Enum\ModalityType
+     *
+     * @return bool
+     */
+    public function hasModalityTypeCommodity(string $modalityType): bool {
+        $hasModalityTypeCommodity = false;
+        foreach ($this->commodities as $commodity) {
+            $hasModalityTypeCommodity = $hasModalityTypeCommodity || $commodity->getModalityType()->getName() === $modalityType;
+        }
+        return $hasModalityTypeCommodity;
     }
 
 }

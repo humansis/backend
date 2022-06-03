@@ -5,7 +5,7 @@ if [ ! -d vendor ]; then
 fi
 
 # Start cron
-cron-launch
+#cron-launch
 
 # Wait for database to be ready
 available=`bin/console doctrine:migrations:status | awk 'NR==19' | cut -d " " -f 44`

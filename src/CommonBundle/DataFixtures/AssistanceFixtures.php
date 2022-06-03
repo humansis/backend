@@ -16,8 +16,11 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Component\Country\Countries;
+use NewApiBundle\Component\Country\Country;
 use NewApiBundle\Enum\ProductCategoryType;
 use ProjectBundle\DBAL\SectorEnum;
+use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
 
@@ -77,7 +80,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         'target_type' => AssistanceTargetType::INDIVIDUAL,
         'assistance_type' => AssistanceType::DISTRIBUTION,
         'sector' => SectorEnum::FOOD_SECURITY,
-        'subsector' => null,
+        'subsector' => SubSectorEnum::IN_KIND_FOOD,
         'threshold' => 1,
         'allowedProductCategoryTypes' => [ProductCategoryType::FOOD],
         'foodLimit' => '15',
@@ -87,16 +90,14 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
 
     private $kernel;
 
-    private $countries = [];
+    /** @var Countries */
+    private $countries;
 
-    public function __construct(Kernel $kernel, array $countries, AssistanceService $distributionService)
+    public function __construct(Kernel $kernel, Countries $countries, AssistanceService $distributionService)
     {
         $this->distributionService = $distributionService;
         $this->kernel = $kernel;
-
-        foreach ($countries as $country) {
-            $this->countries[$country['iso3']] = $country;
-        }
+        $this->countries = $countries;
     }
 
     /**
@@ -166,7 +167,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data['date_distribution'] = $this->randomDate();
         $data['selection_criteria'] = [];
 
-        $country = $this->countries[$project->getIso3()];
+        $country = $this->countries->getCountry($project->getIso3());
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
             $data['commodities'] = [0 => $commodityArray];
             $receivers = $this->distributionService->createFromArray($project->getIso3(), $data)['data'];
@@ -183,7 +184,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data['date_distribution'] = $this->randomDate();
         $data['selection_criteria'] = [];
 
-        $country = $this->countries[$project->getIso3()];
+        $country = $this->countries->getCountry($project->getIso3());
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
             $data['commodities'] = [0 => $commodityArray];
             $receivers = $this->distributionService->createFromArray($project->getIso3(), $data)['data'];
@@ -208,7 +209,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         }
         $data['institutions'] = array_map(function (Institution $institution) { return $institution->getId(); }, $institutions);
 
-        $country = $this->countries[$project->getIso3()];
+        $country = $this->countries->getCountry($project->getIso3());
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
             $data['commodities'] = [0 => $commodityArray];
             $receivers = $this->distributionService->createFromArray($project->getIso3(), $data)['data'];
@@ -233,7 +234,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         }
         $data['communities'] = array_map(function (Community $community) { return $community->getId(); }, $communities);
 
-        $country = $this->countries[$project->getIso3()];
+        $country = $this->countries->getCountry($project->getIso3());
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
             $data['commodities'] = [0 => $commodityArray];
             $receivers = $this->distributionService->createFromArray($project->getIso3(), $data)['data'];
@@ -276,7 +277,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         return $this->distributionService->createFromArray($project->getIso3(), $data, 1)['distribution'];
     }
 
-    private function getCommodities(ObjectManager $manager, array $country): array
+    private function getCommodities(ObjectManager $manager, Country $country): array
     {
         $modalities = $manager->getRepository(Modality::class)->findAll();
         $commodities = [];
@@ -288,7 +289,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
                     'id' => $modalityType->getId(),
                 ],
                 'type' => $modalityType->getModality()->getId(),
-                'unit' => $country['currency'],
+                'unit' => $country->getCurrency(),
                 'value' => 42,
                 'description' => 'autogenerated by fixtures',
             ];

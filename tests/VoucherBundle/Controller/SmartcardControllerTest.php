@@ -6,7 +6,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\DataFixtures\VendorFixtures;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
-use NewApiBundle\Entity\ReliefPackage;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ModalityType;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\User;
@@ -633,6 +633,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
     public function testConsistencyBatchToRedemptionWithSummary(): void
     {
+        $this->markTestIncomplete('Old and without proper data preparation');
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);

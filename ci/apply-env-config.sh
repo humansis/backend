@@ -11,7 +11,7 @@
 # $8: jwt passphrase
 # $9: server hostname
 
-cp app/config/parameters.yml.dist app/config/parameters.yml
+
 # common
 sed -i -e "s|%env(RDS_PORT)%|${DB_PORT}|g" \
   -e "s|%env(SES_USERNAME)%|${MAILER_USER}|g" \
@@ -35,7 +35,10 @@ sed -i -e "s|%env(RDS_HOSTNAME)%|$1|g" \
   -e "s|%env(MOBILE_APP_ID)%|$7|g" \
   -e "s|%env(JWT_PASSPHRASE)%|${8}|g" \
   -e "s|%env(GELF_SERVER_NAME)%|${9}|g"\
-  -e "s|%env(IMPORT_BATCH_SIZE)%|${IMPORT_BATCH_SIZE}|g" \
+  -e "s|%env(BATCH_SIZE_INTEGRITY_CHECK)%|${BATCH_SIZE_INTEGRITY_CHECK}|g" \
+  -e "s|%env(BATCH_SIZE_IDENTITY_CHECK)%|${BATCH_SIZE_IDENTITY_CHECK}|g" \
+  -e "s|%env(BATCH_SIZE_SIMILARITY_CHECK)%|${BATCH_SIZE_SIMILARITY_CHECK}|g" \
+  -e "s|%env(BATCH_SIZE_FINALIZATION)%|${BATCH_SIZE_FINALIZATION}|g" \
   -e "s|%env(ENVIRONMENT)%|${ENVIRONMENT}|g" app/config/parameters.yml
 
 

@@ -57,6 +57,8 @@ services:
         arguments: [ '@translator' ]
         public: true
 
+    TransactionBundle\Export\AssistanceSpreadsheetExport: '@export.spreadsheet'
+
     export.pdf:
         class: TransactionBundle\Export\AssistancePdfExport
         arguments: [ '@translator', '@templating', '@pdf_service' ]

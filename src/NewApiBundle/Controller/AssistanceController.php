@@ -5,14 +5,20 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use CommonBundle\Controller\ExportController;
+use CommonBundle\Entity\Organization;
 use CommonBundle\Pagination\Paginator;
 use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Repository\AssistanceRepository;
 use DistributionBundle\Utils\AssistanceService;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\Assistance\AssistanceFactory;
+use NewApiBundle\Component\Assistance\AssistanceQuery;
 use NewApiBundle\Entity\AssistanceStatistics;
+use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Exception\ConstraintViolationException;
+use NewApiBundle\Export\AssistanceBankReportExport;
 use NewApiBundle\Export\VulnerabilityScoreExport;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\AssistanceFilterInputType;
@@ -21,6 +27,7 @@ use NewApiBundle\InputType\AssistanceStatisticsFilterInputType;
 use NewApiBundle\InputType\ProjectsAssistanceFilterInputType;
 use NewApiBundle\Request\Pagination;
 use NewApiBundle\Utils\DateTime\Iso8601Converter;
+use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
 use Psr\Cache\InvalidArgumentException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -30,7 +37,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
+use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolation;
@@ -43,22 +51,19 @@ class AssistanceController extends AbstractController
     /** @var AssistanceService */
     private $assistanceService;
 
-    /**
-     * @var SerializerInterface
-     */
+    /** @var AssistanceBankReportExport */
+    private $assistanceBankReportExport;
+
+    /** @var SerializerInterface */
     private $serializer;
 
-    /**
-     * @var NormalizerInterface
-     */
-    private $normalizer;
 
-    public function __construct(VulnerabilityScoreExport $vulnerabilityScoreExport, AssistanceService $assistanceService, SerializerInterface $serializer, NormalizerInterface $normalizer)
+    public function __construct(VulnerabilityScoreExport $vulnerabilityScoreExport, AssistanceService $assistanceService, AssistanceBankReportExport $assistanceBankReportExport, SerializerInterface $serializer)
     {
         $this->vulnerabilityScoreExport = $vulnerabilityScoreExport;
         $this->assistanceService = $assistanceService;
+        $this->assistanceBankReportExport = $assistanceBankReportExport;
         $this->serializer = $serializer;
-        $this->normalizer = $normalizer;
     }
 
     /**
@@ -66,11 +71,11 @@ class AssistanceController extends AbstractController
      *
      * @param Request                             $request
      * @param AssistanceStatisticsFilterInputType $filter
+     * @param AssistanceQuery                     $assistanceQuery
      *
      * @return JsonResponse
-     * @throws InvalidArgumentException
      */
-    public function statistics(Request $request, AssistanceStatisticsFilterInputType $filter): JsonResponse
+    public function statistics(Request $request, AssistanceStatisticsFilterInputType $filter, AssistanceQuery $assistanceQuery): JsonResponse
     {
         $countryIso3 = $request->headers->get('country', false);
         if (!$countryIso3) {
@@ -80,7 +85,7 @@ class AssistanceController extends AbstractController
         $statistics = [];
         if($filter->hasIds()){
             foreach($filter->getIds() as $key => $id){
-                $statistics[] = $this->assistanceService->getStatisticByAssistance($id, $countryIso3);
+                $statistics[] = $assistanceQuery->find($id)->getStatistics($countryIso3);
             }
         } else {
 
@@ -97,14 +102,14 @@ class AssistanceController extends AbstractController
      * @Rest\Get("/web-app/v1/assistances/{id}/statistics")
      * @ParamConverter("assistance", options={"mapping": {"id": "id"}})
      *
-     * @param Assistance $assistance
+     * @param Assistance        $assistance
+     * @param AssistanceFactory $factory
      *
      * @return JsonResponse
-     * @throws InvalidArgumentException
      */
-    public function assistanceStatistics(Assistance $assistance): JsonResponse
+    public function assistanceStatistics(Assistance $assistance, AssistanceFactory $factory): JsonResponse
     {
-        $statistics = $this->assistanceService->getStatisticByAssistance($assistance);
+        $statistics = $factory->hydrate($assistance)->getStatistics();
 
         return $this->json($statistics);
     }
@@ -140,14 +145,18 @@ class AssistanceController extends AbstractController
      * @Rest\Post("/web-app/v1/assistances")
      *
      * @param AssistanceCreateInputType $inputType
+     * @param AssistanceFactory         $factory
+     * @param AssistanceRepository      $repository
      *
      * @return JsonResponse
+     * @throws \Doctrine\ORM\EntityNotFoundException
      */
-    public function create(AssistanceCreateInputType $inputType): JsonResponse
+    public function create(AssistanceCreateInputType $inputType, AssistanceFactory $factory, AssistanceRepository $repository): JsonResponse
     {
-        $assistance = $this->get('distribution.assistance_service')->create($inputType);
+        $assistance = $factory->create($inputType);
+        $repository->save($assistance);
 
-        return $this->json($assistance);
+        return $this->json($assistance->getAssistanceRoot());
     }
 
     /**
@@ -169,22 +178,26 @@ class AssistanceController extends AbstractController
     /**
      * @Rest\Patch("/web-app/v1/assistances/{id}")
      *
-     * @param Assistance $assistance
+     * @param Request              $request
+     * @param Assistance           $assistanceRoot
+     * @param AssistanceFactory    $factory
+     * @param AssistanceRepository $repository
      *
      * @return JsonResponse
      */
-    public function update(Request $request, Assistance $assistance): JsonResponse
+    public function update(Request $request, Assistance $assistanceRoot, AssistanceFactory $factory, AssistanceRepository $repository): JsonResponse
     {
+        $assistance = $factory->hydrate($assistanceRoot);
         if ($request->request->has('validated')) {
             if ($request->request->get('validated', true)) {
-                $this->get('distribution.assistance_service')->validateDistribution($assistance);
+                $assistance->validate();
             } else {
-                $this->get('distribution.assistance_service')->unvalidateDistribution($assistance);
+                $assistance->unvalidate();
             }
         }
 
         if ($request->request->get('completed', false)) {
-            $this->get('distribution.assistance_service')->complete($assistance);
+            $assistance->complete();
         }
 
         //TODO think about better input validation for PATCH method
@@ -202,7 +215,7 @@ class AssistanceController extends AbstractController
                 ));
             }
 
-            $this->assistanceService->updateDateDistribution($assistance, $date);
+            $this->assistanceService->updateDateDistribution($assistanceRoot, $date);
         }
 
         if ($request->request->has('dateExpiration')) {
@@ -219,8 +232,9 @@ class AssistanceController extends AbstractController
                 ));
             }
 
-            $this->assistanceService->updateDateExpiration($assistance, $date);
+            $this->assistanceService->updateDateExpiration($assistanceRoot, $date);
         }
+        $repository->save($assistance);
 
         return $this->json($assistance);
     }
@@ -237,6 +251,41 @@ class AssistanceController extends AbstractController
         $this->get('distribution.assistance_service')->delete($assistance);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Rest\Get("/web-app/v1/assistances/{id}/bank-report/exports")
+     *
+     * @param Assistance $assistance
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function bankReportExports(Assistance $assistance, Request $request): Response
+    {
+        $type = $request->query->get('type', 'csv');
+        if (!$assistance->getValidated()) {
+            throw new BadRequestHttpException('Cannot download bank report for assistance which is not validated.');
+        }
+        if ($assistance->getAssistanceType() !== AssistanceType::DISTRIBUTION) {
+            throw new BadRequestHttpException('Bank export is allowed only for Distribution type of assistance.');
+        }
+        if ($assistance->getSubSector() !== SubSectorEnum::MULTI_PURPOSE_CASH_ASSISTANCE) {
+            throw new BadRequestHttpException('Bank export is allowed only for subsector Multi purpose cash assistance.');
+        }
+        if (!$assistance->hasModalityTypeCommodity(ModalityType::CASH)) {
+            throw new BadRequestHttpException('Bank export is allowed only for assistance with Cash commodity.');
+        }
+        $filename = $this->assistanceBankReportExport->export($assistance, $type);
+        try {
+            $response = new BinaryFileResponse($filename);
+            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
+            $response->deleteFileAfterSend(true);
+            return  $response;
+        } catch (\Exception $exception) {
+            return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+        }
+
     }
 
     /**

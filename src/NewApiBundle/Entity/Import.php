@@ -44,7 +44,7 @@ class Import
     /**
      * @var Project[]|Collection
      *
-     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project")
+     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project", cascade={"persist"})
      * @ORM\JoinTable(name="import_project",
      *     joinColumns={@ORM\JoinColumn(name="import_id", referencedColumnName="id")},
      *     inverseJoinColumns={@ORM\JoinColumn(name="project_id", referencedColumnName="id")}
@@ -76,7 +76,7 @@ class Import
     /**
      * @var ImportBeneficiary[]|Collection
      *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiary", mappedBy="import", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportBeneficiary", mappedBy="import", cascade={"persist", "remove"})
      */
     private $importBeneficiaries;
 

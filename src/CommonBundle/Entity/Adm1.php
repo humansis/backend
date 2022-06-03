@@ -64,9 +64,10 @@ class Adm1
     private $location;
 
 
-    public function __construct()
+    public function __construct(string $countryISO3)
     {
-        $this->location = new Location();
+        $this->countryISO3 = $countryISO3;
+        $this->location = new Location($countryISO3);
         $this->location->setLvl(1);
     }
 
