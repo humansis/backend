@@ -98,33 +98,33 @@ class DepositInputType implements InputTypeInterface
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getBeneficiaryId(): int
+    public function getBeneficiaryId(): ?int
     {
         return $this->beneficiaryId;
     }
 
     /**
-     * @param int $beneficiaryId
+     * @param int|null $beneficiaryId
      */
-    public function setBeneficiaryId(int $beneficiaryId): void
+    public function setBeneficiaryId(?int $beneficiaryId): void
     {
         $this->beneficiaryId = $beneficiaryId;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getAssistanceId(): int
+    public function getAssistanceId(): ?int
     {
         return $this->assistanceId;
     }
 
     /**
-     * @param int $assistanceId
+     * @param int|null $assistanceId
      */
-    public function setAssistanceId(int $assistanceId): void
+    public function setAssistanceId(?int $assistanceId): void
     {
         $this->assistanceId = $assistanceId;
     }
