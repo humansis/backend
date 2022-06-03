@@ -460,7 +460,7 @@ class AssistanceSpreadsheetExport
 
         foreach ($assistanceBeneficiary->getReliefPackages() as $relief) {
             /** @var ReliefPackage $relief */
-            if ($relief->getState() !== ReliefPackageState::TO_DISTRIBUTE) {
+            if ($relief->getState() === ReliefPackageState::DISTRIBUTED) {
                 $result[] = $relief->getModalityType().', '.$relief->getAmountToDistribute().' '.$relief->getUnit();
                 break;
             }
