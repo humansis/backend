@@ -357,7 +357,7 @@ class SmartcardController extends Controller
     public function legacyDeposit(Request $request, DepositFactory $depositFactory): Response
     {
         try {
-            $depositInputType = DepositInputType::create(
+            $depositInputType = DepositInputType::createFromAssistanceBeneficiary(
                 $request->get('serialNumber'),
                 $request->request->getInt('beneficiaryId'),
                 $request->request->getInt('distributionId'),
@@ -366,7 +366,7 @@ class SmartcardController extends Controller
                 \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')),
             );
             $depositComponent = $depositFactory->create($depositInputType);
-            $deposit = $depositComponent->deposit();
+            $deposit = $depositComponent->createDeposit();
         } catch (\Exception $exception) {
             $this->writeData(
                 'depositV23',
