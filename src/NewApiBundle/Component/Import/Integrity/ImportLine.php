@@ -36,11 +36,13 @@ class ImportLine
 
     /**
      * @Assert\Type("scalar", groups={"household", "member"})
+     * @Assert\Positive(groups={"household", "member"})
      */
     public $addressNumber;
 
     /**
      * @Assert\Type("scalar", groups={"household", "member"})
+     * @Assert\Positive(groups={"household", "member"})
      */
     public $addressPostcode;
 
