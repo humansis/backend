@@ -15,13 +15,28 @@ final class Version20220602135718 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE import_queue CHANGE state state ENUM(\'New\', \'Valid\', \'Invalid\', \'Invalid Exported\', \'Suspicious\', \'To Create\', \'To Update\', \'To Link\', \'To Ignore\', \'Unexpected fail\') NOT NULL COMMENT \'(DC2Type:enum_import_queue_state)\'');
+        $this->addSql('ALTER TABLE import_queue CHANGE state state ENUM(
+                \'New\',
+                \'Valid\',
+                \'Invalid\',
+                \'Invalid Exported\',
+                \'Identity Candidate\',
+                \'Unique Candidate\',
+                \'Similarity Candidate\',
+                \'To Create\',
+                \'To Update\',
+                \'To Link\',
+                \'To Ignore\',
+                \'Created\',
+                \'Updated\',
+                \'Linked\',
+                \'Unexpected fail\'
+            ) NOT NULL COMMENT \'(DC2Type:enum_import_queue_state)\'');
     }
 
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
-        $this->addSql('ALTER TABLE import_queue CHANGE state state ENUM(\'New\', \'Valid\', \'Invalid\', \'Invalid Exported\', \'Suspicious\', \'To Create\', \'To Update\', \'To Link\', \'To Ignore\') NOT NULL COMMENT \'(DC2Type:enum_import_queue_state)\'');
+        $this->abortIf(true, 'Cant be downgraded');
     }
 }
