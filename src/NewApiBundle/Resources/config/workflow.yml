@@ -295,4 +295,4 @@ framework:
             - !php/const NewApiBundle\Enum\ImportQueueState::TO_UPDATE
             - !php/const NewApiBundle\Enum\ImportQueueState::TO_LINK
             - !php/const NewApiBundle\Enum\ImportQueueState::TO_IGNORE
-          to: !php/const NewApiBundle\Enum\ImportQueueState::FAILED_UNEXPECTED
+          to: !php/const NewApiBundle\Enum\ImportQueueState::ERROR

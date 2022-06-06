@@ -30,7 +30,7 @@ final class Version20220602135718 extends AbstractMigration
                 \'Created\',
                 \'Updated\',
                 \'Linked\',
-                \'Unexpected fail\'
+                \'Error\'
             ) NOT NULL COMMENT \'(DC2Type:enum_import_queue_state)\'');
     }
 

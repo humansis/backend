@@ -21,5 +21,5 @@ final class ImportQueueTransitions
         CREATE = ImportQueueState::CREATED,
         UPDATE = ImportQueueState::UPDATED,
         LINK = ImportQueueState::LINKED,
-        FAIL_UNEXPECTED = ImportQueueState::FAILED_UNEXPECTED;
+        FAIL_UNEXPECTED = ImportQueueState::ERROR;
 }
