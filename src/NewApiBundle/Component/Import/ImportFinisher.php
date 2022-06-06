@@ -136,41 +136,31 @@ class ImportFinisher
                 $this->em->flush();
             })
             ->processItems(function(ImportQueue $item) use ($import) {
-                switch ($item->getState()) {
-                    case ImportQueueState::TO_CREATE:
-                        try {
+                try {
+                    switch ($item->getState()) {
+                        case ImportQueueState::TO_CREATE:
                             $this->finishCreationQueue($item, $import);
-                        } catch (\Exception $anyException) {
-                            $item->setUnexpectedError(UnexpectedError::create($item->getState(), $anyException));
-                            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::FAIL_UNEXPECTED);
-                        }
-                        break;
-                    case ImportQueueState::TO_UPDATE:
-                        try {
+                            break;
+                        case ImportQueueState::TO_UPDATE:
                             $this->finishUpdateQueue($item, $import);
-                        } catch (\Exception $anyException) {
-                            $item->setUnexpectedError(UnexpectedError::create($item->getState(), $anyException));
-                            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::FAIL_UNEXPECTED);
-                        }
-                        break;
-                    case ImportQueueState::TO_IGNORE:
-                    case ImportQueueState::TO_LINK:
-                        /** @var ImportHouseholdDuplicity $acceptedDuplicity */
-                        $acceptedDuplicity = $item->getAcceptedDuplicity();
-                        if (null == $acceptedDuplicity) {
-                            return;
-                        }
+                            break;
+                        case ImportQueueState::TO_IGNORE:
+                        case ImportQueueState::TO_LINK:
+                            /** @var ImportHouseholdDuplicity $acceptedDuplicity */
+                            $acceptedDuplicity = $item->getAcceptedDuplicity();
+                            if (null == $acceptedDuplicity) {
+                                return;
+                            }
 
-                        try {
                             $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
                             $this->logImportInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
 
                             $this->importQueueStateMachine->apply($item, ImportQueueTransitions::LINK);
-                        } catch (\Exception $anyException) {
-                            $item->setUnexpectedError(UnexpectedError::create($item->getState(), $anyException));
-                            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::FAIL_UNEXPECTED);
-                        }
-                        break;
+                            break;
+                    }
+                } catch (\Exception $anyException) {
+                    $item->setUnexpectedError(UnexpectedError::create($item->getState(), $anyException));
+                    $this->importQueueStateMachine->apply($item, ImportQueueTransitions::FAIL_UNEXPECTED);
                 }
                 $this->em->persist($item);
 
