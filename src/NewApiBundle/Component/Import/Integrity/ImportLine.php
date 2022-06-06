@@ -12,6 +12,7 @@ use NewApiBundle\Component\Import\Utils\ImportDateConverter;
 use NewApiBundle\Enum\EnumTrait;
 use NewApiBundle\Validator\Constraints\EmptyCountrySpecifics;
 use NewApiBundle\Validator\Constraints\ImportDate;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use Symfony\Component\Validator\Constraints as Assert;
 use NewApiBundle\Validator\Constraints\Enum;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
@@ -376,7 +377,7 @@ class ImportLine
 
         $countrySpecifics = $entityManager->getRepository(CountrySpecific::class)->findBy(['countryIso3' => $countryIso3], ['id'=>'asc']);
         foreach ($countrySpecifics as $countrySpecific) {
-            if (isset($content[$countrySpecific->getFieldString()])) {
+            if (isset($content[$countrySpecific->getFieldString()]) && $content[$countrySpecific->getFieldString()][CellParameters::DATA_TYPE] !== DataType::TYPE_NULL) {
                 $this->countrySpecifics[$countrySpecific->getId()] = $content[$countrySpecific->getFieldString()][CellParameters::VALUE];
             }
         }
