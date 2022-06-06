@@ -191,7 +191,7 @@ framework:
         - !php/const NewApiBundle\Enum\ImportQueueState::CREATED
         - !php/const NewApiBundle\Enum\ImportQueueState::UPDATED
         - !php/const NewApiBundle\Enum\ImportQueueState::LINKED
-        - !php/const NewApiBundle\Enum\ImportQueueState::FAILED_UNEXPECTED
+        - !php/const NewApiBundle\Enum\ImportQueueState::ERROR
       transitions:
 
         # integrity
