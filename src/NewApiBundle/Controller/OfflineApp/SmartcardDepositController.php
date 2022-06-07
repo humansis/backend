@@ -79,7 +79,7 @@ class SmartcardDepositController extends AbstractOfflineAppController
      * Put money to smartcard. If smartcard does not exist, it will be created.
      *
      * @Rest\Post("/offline-app/v4/smartcards/{serialNumber}/deposit")
-     * @Deprecated Use /offline-app/v5/smartcards/{serialNumber}/deposit instead (version with Relief package)
+     * @deprecated Use /offline-app/v5/smartcards/{serialNumber}/deposit instead (version with Relief package)
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER') or is_granted('ROLE_ENUMERATOR')")
      *
      * @param string                          $serialNumber
