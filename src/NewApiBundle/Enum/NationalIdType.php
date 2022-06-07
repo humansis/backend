@@ -8,6 +8,7 @@ final class NationalIdType
     use EnumTrait;
 
     const NATIONAL_ID = 'National ID';
+    const TAX_NUMBER = 'Tax Number';
     const PASSPORT = 'Passport';
     const FAMILY = 'Family Registration';
     const BIRTH_CERTIFICATE = 'Birth Certificate';
@@ -21,6 +22,7 @@ final class NationalIdType
     {
         return [
             self::NATIONAL_ID,
+            self::TAX_NUMBER,
             self::PASSPORT,
             self::FAMILY,
             self::BIRTH_CERTIFICATE,

@@ -153,6 +153,7 @@ deploy test - keep db:
   extends: .deploy
   only:
     - /^develop$/
+    - /^release\/.*$/
   except:
     - tags
   when: manual
@@ -171,6 +172,7 @@ deploy test - clean fixtures:
   extends: .deploy
   only:
     - /^develop$/
+    - /^release\/.*$/
   except:
     - tags
   when: manual
@@ -189,6 +191,7 @@ deploy test - anonymized db:
   extends: .deploy
   only:
     - /^develop$/
+    - /^release\/.*$/
   except:
     - tags
   when: manual

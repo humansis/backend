@@ -16,7 +16,8 @@ use Symfony\Component\Translation\TranslatorInterface;
 class AssistanceBankReportExport
 {
 
-    const COUNTRY_SPECIFIC_FIELD = 'TIN';
+    const COUNTRY_SPECIFIC_ID_NUMBER = 'Secondary ID Type';
+    const COUNTRY_SPECIFIC_ID_TYPE = 'Secondary ID Number';
 
     /** @var TranslatorInterface */
     private $translator;
@@ -44,8 +45,9 @@ class AssistanceBankReportExport
         $filename = sys_get_temp_dir().'/bank-report.'.$filetype;
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
-        $countrySpecific = $this->countrySpecificRepository->findOneBy(['fieldString' => self::COUNTRY_SPECIFIC_FIELD]);
-        $this->build($worksheet, $this->assistanceBeneficiaryRepository->getBeneficiaryReliefCompilation($assistance, $countrySpecific));
+        $countrySpecific1 = $this->countrySpecificRepository->findOneBy(['fieldString' => self::COUNTRY_SPECIFIC_ID_NUMBER]);
+        $countrySpecific2 = $this->countrySpecificRepository->findOneBy(['fieldString' => self::COUNTRY_SPECIFIC_ID_TYPE]);
+        $this->build($worksheet, $this->assistanceBeneficiaryRepository->getBeneficiaryReliefCompilation($assistance, $countrySpecific1, $countrySpecific2));
         $writer = IOFactory::createWriter($spreadsheet, ucfirst($filetype));
         $writer->save($filename);
         return $filename;
@@ -108,9 +110,9 @@ class AssistanceBankReportExport
             $worksheet->setCellValue('B'.$i, $distribution['localFamilyName']);
             $worksheet->setCellValue('C'.$i, $distribution['localGivenName']);
             $worksheet->setCellValue('D'.$i, $distribution['localParentsName']);
-            $worksheet->setCellValue('E'.$i, $distribution['countrySpecificValue']);
-            $worksheet->setCellValue('F'.$i, $distribution['idType']);
-            $worksheet->setCellValue('G'.$i, $distribution['idNumber']);
+            $worksheet->setCellValue('E'.$i, $distribution['idNumber']);
+            $worksheet->setCellValue('F'.$i, $distribution['countrySpecificValue1']);
+            $worksheet->setCellValue('G'.$i, $distribution['countrySpecificValue2']);
             $worksheet->setCellValue('H'.$i, 'Благодійна допомога');
             $worksheet->setCellValue('I'.$i, $distribution['amountToDistribute']);
             $worksheet->setCellValue('J'.$i, $distribution['currency']);

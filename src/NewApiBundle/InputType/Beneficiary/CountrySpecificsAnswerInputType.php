@@ -18,7 +18,7 @@ class CountrySpecificsAnswerInputType implements InputTypeInterface
     private $countrySpecificId;
 
     /**
-     * @Assert\Type("string")
+     * @Assert\Type(type={"string", "numeric"})
      * @Assert\Length(max="255")
      */
     private $answer;

@@ -163,14 +163,10 @@ class ImportParser
 
             $header = $headers[$c];
             if ($cell) {
-                $dataType = $cell->getDataType();
 
-                // convert formula type to string|number type
-                if ($dataType === DataType::TYPE_FORMULA && !$cellError) {
-                    $dataType = is_numeric($value) ? DataType::TYPE_NUMERIC : DataType::TYPE_STRING;
-                }
+                $dataType = $this->getCellDataType($cell, $value, $cellError);
                 $valueData = [
-                    CellParameters::VALUE => $value,
+                    CellParameters::VALUE => $dataType === DataType::TYPE_NULL ? null : $value,
                     CellParameters::DATA_TYPE => $dataType,
                     CellParameters::NUMBER_FORMAT => $cell->getStyle()->getNumberFormat()->getFormatCode(),
                 ];
@@ -190,6 +186,22 @@ class ImportParser
         }
 
         return $row;
+    }
+
+    private function getCellDataType(Cell $cell, $value, $cellError): string {
+        if ($cell->getDataType() === DataType::TYPE_STRING) {
+            return strlen(trim($value)) === 0 ? DataType::TYPE_NULL : $cell->getDataType();
+        }
+        if ($cell->getDataType() !== DataType::TYPE_FORMULA || $cellError) {
+           return $cell->getDataType();
+        }
+        if (is_numeric($value)) {
+            return DataType::TYPE_NUMERIC;
+        }
+        if (is_null($value) || (is_string($value) && strlen(trim($value)) == 0)) {
+            return DataType::TYPE_NULL;
+        }
+        return DataType::TYPE_STRING;
     }
 
     private function getTemplateVersion($worksheet): int
