@@ -92,6 +92,8 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
     public function testDepositToSmartcard()
     {
+        $this->markTestSkipped('This should be re-factorized to current deposit endpoint');
+
         $ab = $this->assistanceBeneficiaryWithoutRelief();
         $bnf = $ab->getBeneficiary();
         $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
@@ -776,6 +778,8 @@ class SmartcardControllerTest extends BMSServiceTestCase
      */
     public function testPurchasesShouldHaveCurrencyInNotPresentInRequestStep3($array)
     {
+        $this->markTestSkipped('This should be re-factorized to current deposit endpoint.');
+
         [$nonexistentSmarcard, $distribution, $beneficiary] = $array;
 
         $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy([

@@ -15,7 +15,7 @@ final class Version20220601060717 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE smartcard_deposit ADD hash TEXT DEFAULT NULL;');
+        $this->addSql('ALTER TABLE smartcard_deposit ADD hash VARCHAR(32) DEFAULT NULL;');
         $this->addSql('
             UPDATE smartcard_deposit sd
                 INNER JOIN smartcard s on sd.smartcard_id = s.id

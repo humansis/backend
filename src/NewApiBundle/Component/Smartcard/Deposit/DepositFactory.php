@@ -12,6 +12,7 @@ use NewApiBundle\InputType\Smartcard\DepositInputType;
 use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
 use Psr\Cache\InvalidArgumentException;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -55,6 +56,11 @@ class DepositFactory
     private $smartcardDepositRepository;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @var array
      */
     private $messages = [];
@@ -65,12 +71,13 @@ class DepositFactory
     private $suspicious = false;
 
     public function __construct(
-        SmartcardDepositRepository      $smartcardDepositRepository,
-        SmartcardService                $smartcardService,
-        SmartcardRepository             $smartcardRepository,
-        Registry                        $workflowRegistry,
-        ReliefPackageRepository         $reliefPackageRepository,
-        CacheInterface                  $cache
+        SmartcardDepositRepository $smartcardDepositRepository,
+        SmartcardService           $smartcardService,
+        SmartcardRepository        $smartcardRepository,
+        Registry                   $workflowRegistry,
+        ReliefPackageRepository    $reliefPackageRepository,
+        CacheInterface             $cache,
+        LoggerInterface            $logger
     ) {
         $this->smartcardDepositRepository = $smartcardDepositRepository;
         $this->smartcardService = $smartcardService;
@@ -78,6 +85,7 @@ class DepositFactory
         $this->reliefPackageRepository = $reliefPackageRepository;
         $this->cache = $cache;
         $this->smartcardRepository = $smartcardRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -102,6 +110,7 @@ class DepositFactory
         $deposit = $this->smartcardDepositRepository->findByHash($hash);
 
         if ($deposit) {
+            $this->logger->info("Creation of deposit with hash {$deposit->getHash()} was omitted. It's already set in Deposit #{$deposit->getId()}");
             throw new DoubledDepositException($deposit);
         } else {
             $reliefPackage->addAmountOfDistributed($depositInputType->getValue());
