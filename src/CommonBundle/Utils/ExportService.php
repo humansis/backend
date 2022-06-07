@@ -3,10 +3,9 @@
 namespace CommonBundle\Utils;
 
 use BeneficiaryBundle\Utils\ExcelColumnsGenerator;
-use CommonBundle\Controller\ExportController;
+use CommonBundle\Utils\Exception\ExportNoDataException;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Class ExportService.
@@ -29,7 +28,7 @@ class ExportService
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    public function generateFile(Spreadsheet $spreadsheet, string $name, string $type)
+    public function generateFile(Spreadsheet $spreadsheet, string $name, string $type): string
     {
         if (self::FORMAT_CSV == $type) {
             $writer = IOFactory::createWriter($spreadsheet, 'Csv');
@@ -58,19 +57,22 @@ class ExportService
      * @param        $exportableTable
      * @param string $name
      * @param string $type
+     * @param bool   $headerDown
      *
      * @return string $filename
      *
      * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws ExportNoDataException
      */
     public function export(
         $exportableTable,
         string $name,
         string $type,
         bool $headerDown = false
-    ) {
+    ): string {
         if (0 === count($exportableTable)) {
-            throw new \InvalidArgumentException('No data to export');
+            throw new ExportNoDataException('No data to export');
         }
 
         $spreadsheet = $this->generateSpreadsheet($exportableTable, $headerDown);
