@@ -101,7 +101,7 @@ class SmartcardDeposit
     /**
      * @var string|null
      *
-     * @ORM\Column(name="hash", type="text", nullable=true)
+     * @ORM\Column(name="hash", type="string", nullable=true)
      */
     private $hash;
 
