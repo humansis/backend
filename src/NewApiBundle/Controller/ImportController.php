@@ -224,8 +224,13 @@ class ImportController extends AbstractController
         $files = $request->files->all();
 
         if (empty($files)) {
-            throw new \InvalidArgumentException('Missing at least one upload file.');
+            throw new \InvalidArgumentException('Missing upload file.');
         }
+
+        if (count($files) > 1) {
+            throw new \InvalidArgumentException('It is possible to upload just one file.');
+        }
+
         $this->checkImportFileSizes($files);
 
         /** @var User $user */
