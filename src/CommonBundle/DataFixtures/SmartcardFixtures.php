@@ -174,14 +174,16 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
 
         foreach ($packages as $package) {
             $i = rand(5, 10);
-            $this->depositFactory->create(DepositInputType::createFromReliefPackage(
+            $this->depositFactory->create(
                 $ab->getBeneficiary()->getSmartcardSerialNumber(),
-                $package->getId(),
-                $package->getAmountToDistribute(),
-                null,
-                new DateTimeImmutable("now-${i} days")
-            ), $this->randomEntity(User::class, $manager))
-                ->createDeposit();
+                DepositInputType::create(
+                    $package->getId(),
+                    $package->getAmountToDistribute(),
+                    null,
+                    new DateTimeImmutable("now-${i} days")
+                ),
+                $this->randomEntity(User::class, $manager)
+            );
         }
     }
 

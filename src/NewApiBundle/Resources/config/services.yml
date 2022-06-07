@@ -444,9 +444,7 @@ services:
             - '@smartcard_service'
             - '@VoucherBundle\Repository\SmartcardRepository'
             - '@workflow.registry'
-            - '@DistributionBundle\Repository\AssistanceBeneficiaryRepository'
             - '@NewApiBundle\Repository\Assistance\ReliefPackageRepository'
-            - '@logger'
             - '@cache.app'
 
     NewApiBundle\Export\SmartcardPurchasedItemSpreadsheet:
