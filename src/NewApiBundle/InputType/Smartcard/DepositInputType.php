@@ -5,19 +5,11 @@ namespace NewApiBundle\InputType\Smartcard;
 use DateTimeInterface;
 use NewApiBundle\Request\InputTypeInterface;
 
-class DepositInputType implements InputTypeInterface
+final class DepositInputType implements InputTypeInterface
 {
-    /** @var string|null */
-    private $serialNumber = null;
 
-    /** @var int|null */
-    private $beneficiaryId = null;
-
-    /** @var int|null */
-    private $assistanceId = null;
-
-    /** @var int|null */
-    private $reliefPackageId = null;
+    /** @var int */
+    private $reliefPackageId;
 
     private $value = null;
 
@@ -26,107 +18,15 @@ class DepositInputType implements InputTypeInterface
     /** @var DateTimeInterface */
     private $createdAt;
 
-    /**
-     * @param string            $serialNumber
-     * @param int               $reliefPackageId
-     * @param                   $value
-     * @param                   $balance
-     * @param DateTimeInterface $createdAt
-     *
-     * @return DepositInputType
-     */
-    public static function createFromReliefPackage(
-        string            $serialNumber,
-        int               $reliefPackageId,
-                          $value,
-                          $balance,
-        DateTimeInterface $createdAt
-    ): DepositInputType {
+    public static function create(int $reliefPackageId, $value, $balance, DateTimeInterface $createdAt): self
+    {
         $self = new self();
-        $self->setSerialNumber($serialNumber);
-        $self->setReliefPackageId($reliefPackageId);
-        $self->setValue($value);
-        $self->setBalance($balance);
-        $self->setCreatedAt($createdAt);
+        $self->reliefPackageId = $reliefPackageId;
+        $self->createdAt = $createdAt;
+        $self->value = $value;
+        $self->balance = $balance;
 
         return $self;
-    }
-
-    /**
-     * @param string|null       $serialNumber
-     * @param int               $beneficiaryId
-     * @param int               $assistanceId
-     * @param                   $value
-     * @param                   $balanceBefore
-     * @param DateTimeInterface $createdAt
-     *
-     * @return DepositInputType
-     */
-    public static function createFromAssistanceBeneficiary(
-        ?string           $serialNumber,
-        int               $beneficiaryId,
-        int               $assistanceId,
-                          $value,
-                          $balanceBefore,
-        DateTimeInterface $createdAt
-    ): DepositInputType {
-        $self = new self();
-        $self->setSerialNumber($serialNumber);
-        $self->setBeneficiaryId($beneficiaryId);
-        $self->setAssistanceId($assistanceId);
-        $self->setValue($value);
-        $self->setBalance($balanceBefore);
-        $self->setCreatedAt($createdAt);
-
-        return $self;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getSerialNumber(): ?string
-    {
-        return $this->serialNumber;
-    }
-
-    /**
-     * @param string|null $serialNumber
-     */
-    public function setSerialNumber(?string $serialNumber): void
-    {
-        $this->serialNumber = $serialNumber;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getBeneficiaryId(): ?int
-    {
-        return $this->beneficiaryId;
-    }
-
-    /**
-     * @param int|null $beneficiaryId
-     */
-    public function setBeneficiaryId(?int $beneficiaryId): void
-    {
-        $this->beneficiaryId = $beneficiaryId;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getAssistanceId(): ?int
-    {
-        return $this->assistanceId;
-    }
-
-    /**
-     * @param int|null $assistanceId
-     */
-    public function setAssistanceId(?int $assistanceId): void
-    {
-        $this->assistanceId = $assistanceId;
     }
 
     /**

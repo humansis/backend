@@ -17,7 +17,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\TransitionBlocker;
 use UserBundle\Entity\User;
-use VoucherBundle\Utils\SmartcardService;
 
 class SmartcardDepositService
 {
@@ -55,6 +54,14 @@ class SmartcardDepositService
         $this->reliefPackageRepository = $reliefPackageRepository;
     }
 
+    /**
+     * @param Deposits $deposits
+     *
+     * @return void
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Psr\Cache\InvalidArgumentException
+     */
     public function validateSync(Deposits $deposits): void
     {
         $workflow = $this->workflowRegistry->get($deposits);
@@ -124,7 +131,10 @@ class SmartcardDepositService
         $this->em->flush();
 
         foreach ($inputs as $input) {
-            $this->deposit($input, $deposits->getCreatedBy());
+            try {
+                $this->deposit($input, $deposits->getCreatedBy());
+            } catch (Deposit\Exception\DoubledDepositException $e) {
+            }
         }
     }
 
@@ -133,9 +143,10 @@ class SmartcardDepositService
      * @param User                   $user
      *
      * @return void
-     * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Psr\Cache\InvalidArgumentException
+     * @throws Deposit\Exception\DoubledDepositException
      */
     private function deposit(CreateDepositInputType $input, User $user)
     {
@@ -145,14 +156,15 @@ class SmartcardDepositService
         }
 
         $this->depositFactory->create(
-            DepositInputType::createFromReliefPackage(
-                $input->getSmartcardSerialNumber(),
+            $input->getSmartcardSerialNumber(),
+            DepositInputType::create(
                 $reliefPackage->getId(),
                 $reliefPackage->getAmountToDistribute(),
                 $input->getBalanceAfter(),
                 $input->getCreatedAt()
-            ), $user)
-            ->createDeposit();
+            ),
+            $user
+        );
     }
 
 }
