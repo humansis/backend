@@ -236,14 +236,15 @@ class SmartcardServiceTest extends KernelTestCase
                     $this->em->flush();
 
                     $this->depositFactory->create(
-                        DepositInputType::createFromReliefPackage(
-                            $this->smartcardNumber,
+                        $this->smartcardNumber,
+                        DepositInputType::create(
                             $reliefPackage->getId(),
                             $value,
                             $value, // balance is rewritten by new value
                             $date
-                        ), $admin)
-                        ->createDeposit();
+                        ),
+                        $admin
+                    );
                     break;
             }
             $date = clone $date;
@@ -515,14 +516,15 @@ class SmartcardServiceTest extends KernelTestCase
                         $this->em->flush();
 
                         $this->depositFactory->create(
-                            DepositInputType::createFromReliefPackage(
-                                $serialNumber,
+                            $serialNumber,
+                            DepositInputType::create(
                                 $reliefPackage->getId(),
                                 100,
                                 null,
                                 \DateTime::createFromFormat('Y-m-d', $dateOfEvent)
-                            ), $admin)
-                            ->createDeposit();
+                            ),
+                            $admin
+                        );
                         break;
                     case 'purchase':
                         $vendorId = $preparedAction[3];
