@@ -12,6 +12,7 @@ use NewApiBundle\InputType\SynchronizationBatch\CreateDepositInputType;
 use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
 use NewApiBundle\Workflow\SynchronizationBatchTransitions;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
@@ -39,12 +40,18 @@ class SmartcardDepositService
      */
     private $reliefPackageRepository;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         EntityManager           $em,
         Registry                $workflowRegistry,
         ValidatorInterface      $validator,
         DepositFactory          $depositFactory,
-        ReliefPackageRepository $reliefPackageRepository
+        ReliefPackageRepository $reliefPackageRepository,
+        LoggerInterface         $logger
     )
     {
         $this->em = $em;
@@ -52,6 +59,7 @@ class SmartcardDepositService
         $this->validator = $validator;
         $this->depositFactory = $depositFactory;
         $this->reliefPackageRepository = $reliefPackageRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -134,6 +142,7 @@ class SmartcardDepositService
             try {
                 $this->deposit($input, $deposits->getCreatedBy());
             } catch (Deposit\Exception\DoubledDepositException $e) {
+                $this->logger->info("Creation of deposit with hash {$e->getDeposit()->getHash()} was omitted. It's already set in Deposit #{$e->getDeposit()->getId()}");
             }
         }
     }
