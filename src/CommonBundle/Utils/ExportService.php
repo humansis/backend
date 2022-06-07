@@ -3,10 +3,9 @@
 namespace CommonBundle\Utils;
 
 use BeneficiaryBundle\Utils\ExcelColumnsGenerator;
-use CommonBundle\Controller\ExportController;
+use CommonBundle\Utils\Exception\ExportNoDataException;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Class ExportService.
@@ -64,6 +63,7 @@ class ExportService
      *
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws ExportNoDataException
      */
     public function export(
         $exportableTable,
@@ -72,7 +72,7 @@ class ExportService
         bool $headerDown = false
     ): string {
         if (0 === count($exportableTable)) {
-            throw new \InvalidArgumentException('No data to export');
+            throw new ExportNoDataException('No data to export');
         }
 
         $spreadsheet = $this->generateSpreadsheet($exportableTable, $headerDown);

@@ -17,6 +17,7 @@ use BeneficiaryBundle\Repository\PhoneRepository;
 use BeneficiaryBundle\Repository\ProfileRepository;
 use BeneficiaryBundle\Repository\VulnerabilityCriterionRepository;
 use CommonBundle\Controller\ExportController;
+use CommonBundle\Utils\Exception\ExportNoDataException;
 use CommonBundle\Utils\ExportService;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Enum\PersonGender;
@@ -48,11 +49,6 @@ class BeneficiaryService
      * @var ExportService
      */
     private $exportService;
-
-    /**
-     * @var HouseholdService
-     */
-    private $householdService;
 
     /**
      * @var BeneficiaryRepository
@@ -703,7 +699,7 @@ class BeneficiaryService
 
         try {
             return $this->exportService->export($exportableTable, 'beneficiaryhousehoulds', $type);
-        } catch (\InvalidArgumentException $e) {
+        } catch (ExportNoDataException $e) {
             throw new BadRequestHttpException("No data to export.");
         }
     }
