@@ -406,6 +406,10 @@ services:
             - '%import.invalidFilesDirectory%'
             - '%import.maxFileSizeToLoad%'
 
+    NewApiBundle\Controller\OfflineApp\SmartcardDepositController:
+        arguments:
+            - '%kernel.logs_dir%'
+
     NewApiBundle\Component\Product\ProductCategoryService:
 
     NewApiBundle\Component\Import\ImportFileValidator:
@@ -432,6 +436,7 @@ services:
             - '@validator'
             - '@NewApiBundle\Component\Smartcard\Deposit\DepositFactory'
             - '@NewApiBundle\Repository\Assistance\ReliefPackageRepository'
+            - '@logger'
 
     NewApiBundle\Component\Smartcard\Deposit\DepositFactory:
         public: true

@@ -19,20 +19,19 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\KernelInterface;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Repository\SmartcardDepositRepository;
 
 class SmartcardDepositController extends AbstractOfflineAppController
 {
     /**
-     * @var KernelInterface
+     * @var string
      */
-    private $kernel;
+    private $logsDir;
 
-    public function __construct(KernelInterface $kernel)
+    public function __construct(string $logsDir)
     {
-        $this->kernel = $kernel;
+        $this->logsDir = $logsDir;
     }
 
     /**
@@ -184,7 +183,7 @@ class SmartcardDepositController extends AbstractOfflineAppController
             return new Response('', Response::HTTP_ACCEPTED);
         } catch (\Exception $e) {
             $this->writeData(
-                'depositV4',
+                'depositV5',
                 $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
                 $request->get('serialNumber', 'missing'),
                 json_encode($request->request->all())
@@ -197,7 +196,7 @@ class SmartcardDepositController extends AbstractOfflineAppController
 
     private function writeData(string $type, string $user, string $smartcard, $data): void
     {
-        $filename = $this->kernel->getLogDir().'/';
+        $filename = $this->logsDir.'/';
         $filename .= implode('_', ['SC-invalidData', $type, 'vendor-'.$user, 'sc-'.$smartcard.'.json']);
         $logFile = fopen($filename, "a+");
         fwrite($logFile, $data);
