@@ -159,7 +159,6 @@ services:
             - "@request_validator"
             - "@validator"
             - '@CommonBundle\Utils\ExportService'
-            - '@beneficiary.household_service'
             - '@BeneficiaryBundle\Repository\BeneficiaryRepository'
             - '@BeneficiaryBundle\Repository\HouseholdRepository'
             - '@BeneficiaryBundle\Repository\VulnerabilityCriterionRepository'

@@ -89,7 +89,6 @@ class BeneficiaryService
         RequestValidator                 $requestValidator,
         ValidatorInterface               $validator,
         ExportService                    $exportService,
-        HouseholdService                 $householdService,
         BeneficiaryRepository            $beneficiaryRepository,
         HouseholdRepository              $householdRepository,
         VulnerabilityCriterionRepository $vulnerabilityCriterionRepository,
@@ -101,7 +100,6 @@ class BeneficiaryService
         $this->requestValidator = $requestValidator;
         $this->validator = $validator;
         $this->exportService = $exportService;
-        $this->householdService = $householdService;
         $this->beneficiaryRepository = $beneficiaryRepository;
         $this->householdRepository = $householdRepository;
         $this->vulnerabilityCriterionRepository = $vulnerabilityCriterionRepository;
@@ -603,6 +601,7 @@ class BeneficiaryService
      * @return string
      * @throws Exception
      * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \Exception
      */
     public function exportToCsvDeprecated(string $type, string $countryIso3, $filters, $ids): string
     {
@@ -611,7 +610,9 @@ class BeneficiaryService
         if ($ids) {
             $households = $this->householdRepository->getAllByIds($ids);
         } else if ($filters) {
-            $households = $this->householdService->getAll($countryIso3, $filters)[1];
+            // $households = $this->householdService->getAll($countryIso3, $filters)[1];
+            // This should be not used this way
+            throw new \Exception('Using deprecated method.');
         } else {
             $exportableTable = $this->beneficiaryRepository->getAllInCountry($countryIso3);
         }
