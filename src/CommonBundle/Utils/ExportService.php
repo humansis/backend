@@ -29,7 +29,7 @@ class ExportService
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    public function generateFile(Spreadsheet $spreadsheet, string $name, string $type)
+    public function generateFile(Spreadsheet $spreadsheet, string $name, string $type): string
     {
         if (self::FORMAT_CSV == $type) {
             $writer = IOFactory::createWriter($spreadsheet, 'Csv');
@@ -58,17 +58,19 @@ class ExportService
      * @param        $exportableTable
      * @param string $name
      * @param string $type
+     * @param bool   $headerDown
      *
      * @return string $filename
      *
      * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function export(
         $exportableTable,
         string $name,
         string $type,
         bool $headerDown = false
-    ) {
+    ): string {
         if (0 === count($exportableTable)) {
             throw new \InvalidArgumentException('No data to export');
         }

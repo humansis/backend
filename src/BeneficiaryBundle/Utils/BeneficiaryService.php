@@ -5,13 +5,19 @@ namespace BeneficiaryBundle\Utils;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\Referral;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
+use BeneficiaryBundle\Repository\BeneficiaryRepository;
+use BeneficiaryBundle\Repository\HouseholdRepository;
+use BeneficiaryBundle\Repository\NationalIdRepository;
+use BeneficiaryBundle\Repository\PhoneRepository;
+use BeneficiaryBundle\Repository\ProfileRepository;
+use BeneficiaryBundle\Repository\VulnerabilityCriterionRepository;
 use CommonBundle\Controller\ExportController;
+use CommonBundle\Utils\ExportService;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\BenefciaryPatchInputType;
@@ -21,25 +27,16 @@ use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\InputType\HouseholdFilterInputType;
 use NewApiBundle\InputType\HouseholdOrderInputType;
 use NewApiBundle\Request\Pagination;
+use PhpOffice\PhpSpreadsheet\Writer\Exception;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Serializer\SerializerInterface as Serializer;
-use PhpOption\Tests\PhpOptionRepo;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Csv;
-use DistributionBundle\Utils\AssistanceBeneficiaryService;
-use DistributionBundle\Entity\Assistance;
 
 class BeneficiaryService
 {
     /** @var EntityManagerInterface $em */
     private $em;
-
-    /** @var Serializer $serializer */
-    private $serializer;
 
     /** @var RequestValidator $requestValidator */
     private $requestValidator;
@@ -47,31 +44,70 @@ class BeneficiaryService
     /** @var ValidatorInterface $validator */
     private $validator;
 
-    /** @var ContainerInterface $container */
-    private $container;
+    /**
+     * @var ExportService
+     */
+    private $exportService;
 
-    /** @var Beneficiary $beneficiary */
-    private $beneficiary;
+    /**
+     * @var HouseholdService
+     */
+    private $householdService;
 
-    /** @var AssistanceBeneficiaryService $dbs */
-    private $dbs;
+    /**
+     * @var BeneficiaryRepository
+     */
+    private $beneficiaryRepository;
 
+    /**
+     * @var HouseholdRepository
+     */
+    private $householdRepository;
+
+    /**
+     * @var VulnerabilityCriterionRepository
+     */
+    private $vulnerabilityCriterionRepository;
+
+    /**
+     * @var PhoneRepository
+     */
+    private $phoneRepository;
+
+    /**
+     * @var NationalIdRepository
+     */
+    private $nationalIdRepository;
+
+    /**
+     * @var ProfileRepository
+     */
+    private $profileRepository;
 
     public function __construct(
-        EntityManagerInterface $entityManager,
-        Serializer $serializer,
-        RequestValidator $requestValidator,
-        ValidatorInterface $validator,
-        ContainerInterface $container,
-        AssistanceBeneficiaryService $assistanceBeneficiary
+        EntityManagerInterface           $entityManager,
+        RequestValidator                 $requestValidator,
+        ValidatorInterface               $validator,
+        ExportService                    $exportService,
+        HouseholdService                 $householdService,
+        BeneficiaryRepository            $beneficiaryRepository,
+        HouseholdRepository              $householdRepository,
+        VulnerabilityCriterionRepository $vulnerabilityCriterionRepository,
+        PhoneRepository                  $phoneRepository,
+        NationalIdRepository             $nationalIdRepository,
+        ProfileRepository                $profileRepository
     ) {
         $this->em = $entityManager;
-        $this->serializer = $serializer;
         $this->requestValidator = $requestValidator;
         $this->validator = $validator;
-        $this->container = $container;
-        $this->beneficiary = new Beneficiary();
-        $this->dbs = $assistanceBeneficiary;
+        $this->exportService = $exportService;
+        $this->householdService = $householdService;
+        $this->beneficiaryRepository = $beneficiaryRepository;
+        $this->householdRepository = $householdRepository;
+        $this->vulnerabilityCriterionRepository = $vulnerabilityCriterionRepository;
+        $this->phoneRepository = $phoneRepository;
+        $this->nationalIdRepository = $nationalIdRepository;
+        $this->profileRepository = $profileRepository;
     }
 
 
@@ -79,9 +115,9 @@ class BeneficiaryService
      * Get all vulnerability criteria
      * @return array
      */
-    public function getAllVulnerabilityCriteria()
+    public function getAllVulnerabilityCriteria(): array
     {
-        return $this->em->getRepository(VulnerabilityCriterion::class)->findAllActive();
+        return $this->vulnerabilityCriterionRepository->findAllActive();
     }
 
     public function createPhone(PhoneInputType $inputType): Phone
@@ -166,7 +202,7 @@ class BeneficiaryService
         $beneficiary->getVulnerabilityCriteria()->clear();
         foreach ($inputType->getVulnerabilityCriteria() as $vulnerabilityCriterionName) {
             /** @var VulnerabilityCriterion $criterion */
-            $criterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy(['fieldString' => $vulnerabilityCriterionName]);
+            $criterion = $this->vulnerabilityCriterionRepository->findOneBy(['fieldString' => $vulnerabilityCriterionName]);
             $beneficiary->addVulnerabilityCriterion($criterion);
         }
 
@@ -300,7 +336,7 @@ class BeneficiaryService
         );
 
         if (array_key_exists("id", $beneficiaryArray) && $beneficiaryArray['id'] !== null) {
-            $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryArray["id"]);
+            $beneficiary = $this->beneficiaryRepository->find($beneficiaryArray["id"]);
             if (!$beneficiary instanceof Beneficiary) {
                 throw new \Exception("Beneficiary was not found.");
             }
@@ -310,11 +346,11 @@ class BeneficiaryService
             
             // Clear vulnerability criteria, phones and national id
             $beneficiary->setVulnerabilityCriteria(null);
-            $items = $this->em->getRepository(Phone::class)->findByPerson($beneficiary->getPerson());
+            $items = $this->phoneRepository->findByPerson($beneficiary->getPerson());
             foreach ($items as $item) {
                 $this->em->remove($item);
             }
-            $items = $this->em->getRepository(NationalId::class)->findByPerson($beneficiary->getPerson());
+            $items = $this->nationalIdRepository->findByPerson($beneficiary->getPerson());
             foreach ($items as $item) {
                 $this->em->remove($item);
             }
@@ -391,10 +427,10 @@ class BeneficiaryService
     public function getVulnerabilityCriterion($vulnerabilityCriterionId)
     {
         /** @var VulnerabilityCriterion $vulnerabilityCriterion */
-        $vulnerabilityCriterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy(['fieldString' => $vulnerabilityCriterionId]);
+        $vulnerabilityCriterion = $this->vulnerabilityCriterionRepository->findOneBy(['fieldString' => $vulnerabilityCriterionId]);
 
         if (!$vulnerabilityCriterion) {
-            $vulnerabilityCriterion = $this->em->getRepository(VulnerabilityCriterion::class)->find($vulnerabilityCriterionId);
+            $vulnerabilityCriterion = $this->vulnerabilityCriterionRepository->find($vulnerabilityCriterionId);
         }
 
         if (!$vulnerabilityCriterion instanceof VulnerabilityCriterion) {
@@ -493,7 +529,7 @@ class BeneficiaryService
         if (null === $profile) {
             $profile = new Profile();
         } else {
-            $profile = $this->em->getRepository(Profile::class)->find($profile);
+            $profile = $this->profileRepository->find($profile);
         }
 
         /** @var Profile $profile */
@@ -524,13 +560,13 @@ class BeneficiaryService
             $this->em->remove($importLink);
         }
 
-        $nationalIds = $this->em->getRepository(NationalId::class)->findByPerson($beneficiary->getPerson());
-        $profile = $this->em->getRepository(Profile::class)->find($beneficiary->getProfile());
+        $nationalIds = $this->nationalIdRepository->findByPerson($beneficiary->getPerson());
+        $profile = $this->profileRepository->find($beneficiary->getProfile());
         foreach ($nationalIds as $nationalId) {
             $this->em->remove($nationalId);
         }
 
-        $phones = $this->em->getRepository(Phone::class)->findByPerson($beneficiary->getPerson());
+        $phones = $this->phoneRepository->findByPerson($beneficiary->getPerson());
         foreach ($phones as $phone) {
             $this->em->remove($phone);
         }
@@ -544,37 +580,40 @@ class BeneficiaryService
      * @param string $iso3
      * @return int
      */
-    public function countAll(string $iso3)
+    public function countAll(string $iso3): int
     {
-        $count = (int) $this->em->getRepository(Beneficiary::class)->countAllInCountry($iso3);
-        return $count;
+        return (int) $this->beneficiaryRepository->countAllInCountry($iso3);
     }
 
     /**
      * @param string $iso3
      * @return int
      */
-    public function countAllServed(string $iso3)
+    public function countAllServed(string $iso3): int
     {
-        $count = (int) $this->em->getRepository(Beneficiary::class)->countServedInCountry($iso3);
-
-        return $count;
+        return (int) $this->beneficiaryRepository->countServedInCountry($iso3);
     }
 
     /**
      * @param string $type
-     * @return mixed
+     * @param string $countryIso3
+     * @param        $filters
+     * @param        $ids
+     *
+     * @return string
+     * @throws Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
-    public function exportToCsvDeprecated(string $type, string $countryIso3, $filters, $ids)
+    public function exportToCsvDeprecated(string $type, string $countryIso3, $filters, $ids): string
     {
         $households = null;
         $exportableTable = [];
         if ($ids) {
-            $households = $this->em->getRepository(Household::class)->getAllByIds($ids);
+            $households = $this->householdRepository->getAllByIds($ids);
         } else if ($filters) {
-            $households = $this->container->get('beneficiary.household_service')->getAll($countryIso3, $filters)[1];
+            $households = $this->householdService->getAll($countryIso3, $filters)[1];
         } else {
-            $exportableTable = $this->em->getRepository(Beneficiary::class)->getAllInCountry($countryIso3);	
+            $exportableTable = $this->beneficiaryRepository->getAllInCountry($countryIso3);
         }
 
         if ('csv' !== $type && count($households) > ExportController::EXPORT_LIMIT) {
@@ -605,7 +644,11 @@ class BeneficiaryService
             throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit for CSV is ".ExportController::EXPORT_LIMIT_CSV);
         }
 
-        return $this->container->get('export_csv_service')->export($exportableTable, 'beneficiaryhousehoulds', $type);
+        try {
+            return $this->exportService->export($exportableTable, 'beneficiaryhousehoulds', $type);
+        } catch (\InvalidArgumentException $e) {
+            throw new BadRequestHttpException("No data to export.");
+        }
     }
 
     /**
@@ -615,7 +658,9 @@ class BeneficiaryService
      * @param Pagination               $pagination
      * @param HouseholdOrderInputType  $order
      *
-     * @return mixed
+     * @return string
+     * @throws Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
     public function exportToCsv(
         string $type,
@@ -623,9 +668,8 @@ class BeneficiaryService
         HouseholdFilterInputType $filter,
         Pagination $pagination,
         HouseholdOrderInputType $order
-    )
-    {
-        $households = $this->em->getRepository(Household::class)->findByParams($countryIso3, $filter, $order, $pagination);
+    ): string {
+        $households = $this->householdRepository->findByParams($countryIso3, $filter, $order, $pagination);
 
         if ('csv' !== $type && count($households) > ExportController::EXPORT_LIMIT) {
             $count = count($households);
@@ -656,7 +700,11 @@ class BeneficiaryService
             throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit for CSV is ".ExportController::EXPORT_LIMIT_CSV);
         }
 
-        return $this->container->get('export_csv_service')->export($exportableTable, 'beneficiaryhousehoulds', $type);
+        try {
+            return $this->exportService->export($exportableTable, 'beneficiaryhousehoulds', $type);
+        } catch (\InvalidArgumentException $e) {
+            throw new BadRequestHttpException("No data to export.");
+        }
     }
 
     public function patch(Beneficiary $beneficiary, BenefciaryPatchInputType $inputType)

@@ -54,6 +54,32 @@ services:
         alias: BeneficiaryBundle\Repository\BeneficiaryRepository
         public: true
 
+    BeneficiaryBundle\Repository\ProfileRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - BeneficiaryBundle\Entity\Profile
+
+    BeneficiaryBundle\Repository\NationalIdRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - BeneficiaryBundle\Entity\NationalId
+
+    BeneficiaryBundle\Repository\PhoneRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - BeneficiaryBundle\Entity\Phone
+
+    BeneficiaryBundle\Repository\VulnerabilityCriterionRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - BeneficiaryBundle\Entity\VulnerabilityCriterion
+
+
+    BeneficiaryBundle\Repository\HouseholdRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - BeneficiaryBundle\Entity\Household
+
     BeneficiaryBundle\Repository\BeneficiaryRepository:
         factory: ['@doctrine.orm.default_entity_manager', getRepository]
         arguments:
@@ -130,11 +156,16 @@ services:
         class: BeneficiaryBundle\Utils\BeneficiaryService
         arguments:
             - "@doctrine.orm.entity_manager"
-            - "@serializer"
             - "@request_validator"
             - "@validator"
-            - "@service_container"
-            - "@distribution.assistance_beneficiary_service"
+            - '@CommonBundle\Utils\ExportService'
+            - '@beneficiary.household_service'
+            - '@BeneficiaryBundle\Repository\BeneficiaryRepository'
+            - '@BeneficiaryBundle\Repository\HouseholdRepository'
+            - '@BeneficiaryBundle\Repository\VulnerabilityCriterionRepository'
+            - '@BeneficiaryBundle\Repository\PhoneRepository'
+            - '@BeneficiaryBundle\Repository\NationalIdRepository'
+            - '@BeneficiaryBundle\Repository\ProfileRepository'
         public: true
 
     BeneficiaryBundle\Utils\BeneficiaryService:
