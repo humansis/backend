@@ -70,11 +70,11 @@ final class DepositInputType implements InputTypeInterface
     }
 
     /**
-     * @param DateTimeInterface $createdAt
+     * @param string $createdAt
      */
-    public function setCreatedAt(DateTimeInterface $createdAt): void
+    public function setCreatedAt(string $createdAt): void
     {
-        $this->createdAt = $createdAt;
+        $this->createdAt = \DateTimeImmutable::createFromFormat(DateTimeInterface::ISO8601, $createdAt);
     }
 
     /**
