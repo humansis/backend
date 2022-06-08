@@ -199,7 +199,7 @@ class IntegrityChecker
         if (null === $mapping) {
             $mapping = array_flip(HouseholdExportCSVService::MAPPING_PROPERTIES);
             foreach ($this->entityManager->getRepository(CountrySpecific::class)->findAll() as $countrySpecific) {
-                $mapping['countrySpecifics.'.$countrySpecific->getId()] = $countrySpecific->getFieldString();
+                $mapping['countrySpecifics['.$countrySpecific->getId().']'] = $countrySpecific->getFieldString();
             }
         }
 

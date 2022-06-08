@@ -17,6 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use NewApiBundle\Validator\Constraints\Enum;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use NewApiBundle\Validator\Constraints\CountrySpecificDataType;
 
 class ImportLine
 {
@@ -327,8 +328,14 @@ class ImportLine
     public $m60;
 
     /**
-     * @var string[] countrySpecific::id => countrySpecificAnswer::answer
+     * @var [] countrySpecific::id => countrySpecificAnswer::answer
      * @EmptyCountrySpecifics(groups={"member"})
+     * @Assert\All(
+     *     constraints={
+     *         @CountrySpecificDataType()
+     *     },
+     *     groups={"household"}
+     * )
      */
     public $countrySpecifics = [];
 
@@ -378,7 +385,10 @@ class ImportLine
         $countrySpecifics = $entityManager->getRepository(CountrySpecific::class)->findBy(['countryIso3' => $countryIso3], ['id'=>'asc']);
         foreach ($countrySpecifics as $countrySpecific) {
             if (isset($content[$countrySpecific->getFieldString()]) && $content[$countrySpecific->getFieldString()][CellParameters::DATA_TYPE] !== DataType::TYPE_NULL) {
-                $this->countrySpecifics[$countrySpecific->getId()] = $content[$countrySpecific->getFieldString()][CellParameters::VALUE];
+                $this->countrySpecifics[$countrySpecific->getId()] = [
+                    'countrySpecific' => $countrySpecific,
+                    'value' =>  $content[$countrySpecific->getFieldString()][CellParameters::VALUE],
+                ];
             }
         }
     }
