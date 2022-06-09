@@ -14,6 +14,7 @@ use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use InvalidArgumentException;
+use NewApiBundle\DBAL\NationalIdTypeEnum;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
@@ -470,13 +471,14 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
             ->leftJoin('db.beneficiary', 'ab')
             ->innerJoin(Beneficiary::class, 'bnf', Join::WITH, 'bnf.id = ab.id')
             ->leftJoin('bnf.person', 'person')
-            ->leftJoin('person.nationalIds', 'national')
+            ->leftJoin('person.nationalIds', 'national', Join::WITH, 'national.idType = :nationalIdType')
             ->leftJoin('person.phones', 'phone')
             ->leftJoin('db.reliefPackages', 'relief')
             ->andWhere('db.assistance = :assistance')
             ->groupBy('person.id')
             ->orderBy('person.localFamilyName')
-            ->setParameter('assistance', $assistance);
+            ->setParameter('assistance', $assistance)
+            ->setParameter('nationalIdType', NationalIdType::TAX_NUMBER);
 
         $result = $qb->getQuery()->getResult();
         $personInfo = [];
