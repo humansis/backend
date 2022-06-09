@@ -131,7 +131,7 @@ class FieldDbTransformer
                     'field_string' => SelectionCriteriaField::CURRENT_LOCATION,
                     'target' => $input->getTarget(),
                     'table_string' => 'Personnal',
-                    'value_string' => null,
+                    'value_string' => $location->getId(),
                     'value' => $location,
                     'weight' => $input->getWeight(),
                     'type' => 'other',
