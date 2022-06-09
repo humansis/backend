@@ -150,6 +150,16 @@ services:
         arguments:
             - NewApiBundle\Entity\AssistanceStatistics
 
+    NewApiBundle\Repository\ImportRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\Import
+
+    NewApiBundle\Repository\ImportQueueRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\ImportQueue
+
     NewApiBundle\Controller\OfflineApp\AssistanceController:
         arguments:
             - '@assistance.repository'

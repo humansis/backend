@@ -9,8 +9,11 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Component\Import\UploadImportService;
 use NewApiBundle\Entity;
+use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\InputType\Import;
+use NewApiBundle\Repository\ImportQueueRepository;
+use NewApiBundle\Repository\ImportRepository;
 use NewApiBundle\Request\Pagination;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -49,12 +52,30 @@ class ImportController extends AbstractController
      */
     private $maxFileSizeToLoad;
 
-    public function __construct(ImportService $importService, UploadImportService $uploadImportService, string $importInvalidFilesDirectory, int $maxFileSizeToLoad)
-    {
+    /**
+     * @var ImportRepository
+     */
+    private $importRepo;
+
+    /**
+     * @var ImportQueueRepository
+     */
+    private $importQueueRepo;
+
+    public function __construct(
+        ImportService         $importService,
+        UploadImportService   $uploadImportService,
+        string                $importInvalidFilesDirectory,
+        int                   $maxFileSizeToLoad,
+        ImportRepository      $importRepo,
+        ImportQueueRepository $importQueueRepo
+    ) {
         $this->importService = $importService;
         $this->uploadImportService = $uploadImportService;
         $this->importInvalidFilesDirectory = $importInvalidFilesDirectory;
         $this->maxFileSizeToLoad = $maxFileSizeToLoad;
+        $this->importRepo = $importRepo;
+        $this->importQueueRepo = $importQueueRepo;
     }
 
     /**
@@ -95,8 +116,12 @@ class ImportController extends AbstractController
      */
     public function list(Pagination $pagination, Import\FilterInputType $filterInputType, Import\OrderInputType $orderInputType, Request $request): JsonResponse
     {
-        $data = $this->getDoctrine()->getRepository(Entity\Import::class)
-            ->findByParams($request->headers->get('country'), $pagination, $filterInputType, $orderInputType);
+        $data = $this->importRepo->findByParams(
+            $request->headers->get('country'),
+            $pagination,
+            $filterInputType,
+            $orderInputType
+        );
 
         return $this->json($data);
     }
@@ -423,10 +448,24 @@ class ImportController extends AbstractController
      */
     public function listQueue(Entity\Import $import): JsonResponse
     {
-        $importQueue = $this->getDoctrine()->getRepository(Entity\ImportQueue::class)
-            ->findBy([
-                'import' => $import,
-            ]);
+        $importQueue = $this->importQueueRepo->findBy(['import' => $import]);
+
+        return $this->json(new Paginator($importQueue));
+    }
+
+    /**
+     * @Rest\Get("/web-app/v1/imports/{id}/fails")
+     *
+     * @param Entity\Import $import
+     *
+     * @return JsonResponse
+     */
+    public function failedList(Entity\Import $import): JsonResponse
+    {
+        $importQueue = $this->importQueueRepo->findBy([
+            'import' => $import,
+            'state' => ImportQueueState::ERROR,
+        ]);
 
         return $this->json(new Paginator($importQueue));
     }
