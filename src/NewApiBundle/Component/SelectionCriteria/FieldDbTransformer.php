@@ -241,6 +241,17 @@ class FieldDbTransformer
             ];
         }
 
+        if (SelectionCriteriaTarget::HOUSEHOLD === $criterion->getTarget() && 'currentLocation' === $criterion->getFieldString()) {
+            return [
+                'group' => $criterion->getGroupNumber(),
+                'target' => $criterion->getTarget(),
+                'field' => 'location',
+                'condition' => $criterion->getConditionString(),
+                'value' => $criterion->getValueString(),
+                'weight' => $criterion->getWeight(),
+            ];
+        }
+
         $value = $criterion->getValueString();
         $field = $criterion->getFieldString();
         if ('gender' === $criterion->getFieldString() || 'headOfHouseholdGender' === $criterion->getFieldString()) {
