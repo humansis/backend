@@ -99,7 +99,7 @@ class HouseholdDecoratorBuilder
         }
 
         // defined must be Camp or Address - it's checked in Integrity Checking
-        if($this->householdLine->campName && $this->householdLine->tentNumber){
+        if($this->householdLine->isCampValid()){
             $household->setCampAddress($this->buildCampAddress($this->householdLine, $countryIso3));
         } else {
             /** @var LocationRepository $locationRepository */

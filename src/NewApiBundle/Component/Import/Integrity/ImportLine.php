@@ -429,21 +429,37 @@ class ImportLine
     /**
      * @Assert\IsTrue(message="Camp must have defined both Tent number and Camp name", payload={"propertyPath"="campName"}, groups={"household", "member"})
      */
+    public function isCampValidOrEmpty(): bool
+    {
+       return $this->isCampValid()
+            xor ($this->isEmpty($this->tentNumber) && $this->isEmpty($this->campName));
+    }
+
     public function isCampValid(): bool
     {
-        return ($this->tentNumber && $this->campName) xor !($this->tentNumber || $this->campName);
+        return (!$this->isEmpty($this->tentNumber) && !$this->isEmpty($this->campName));
     }
 
     /**
      * @Assert\IsTrue(message="Address must have defined street, number and postcode", payload={"propertyPath"="addressStreet"}, groups={"household", "member"})
      */
-    public function isAddressValid(): bool
+    public function isAddressValidOrEmpty(): bool
     {
-        return ($this->addressNumber && $this->addressPostcode && $this->addressStreet) xor !($this->addressNumber || $this->addressPostcode || $this->addressStreet);
+        return $this->isAddressValid()
+            xor ($this->isEmpty($this->addressNumber)) && $this->isEmpty($this->addressPostcode) && $this->isEmpty($this->addressStreet);
+    }
+
+    private function isAddressValid(): bool
+    {
+        return (!$this->isEmpty($this->addressNumber)) && !$this->isEmpty($this->addressPostcode) && !$this->isEmpty($this->addressStreet);
+    }
+
+    private function isEmpty($value) {
+        return "" === trim((string) $value);
     }
 
     /**
-     * @Assert\IsTrue(message="Camp or address must be fully defined", payload={"propertyPath"="addressStreet"}, groups={"household", "member"})
+     * @Assert\IsTrue(message="Camp or address must be fully defined", payload={"propertyPath"="addressStreet"}, groups={"household"})
      */
     public function isAddressExists(): bool
     {
@@ -451,7 +467,7 @@ class ImportLine
     }
 
     /**
-     * @Assert\IsFalse(message="Address or Camp must be defined, not both", payload={"propertyPath"="addressStreet"}, groups={"household", "member"})
+     * @Assert\IsFalse(message="Address or Camp must be defined, not both", payload={"propertyPath"="addressStreet"}, groups={"household"})
      *
      * @return bool
      */
