@@ -328,7 +328,7 @@ class ImportLine
     public $m60;
 
     /**
-     * @var [] countrySpecific::id => countrySpecificAnswer::answer
+     * @var array countrySpecific::id => countrySpecificAnswer::answer
      * @EmptyCountrySpecifics(groups={"member"})
      * @Assert\All(
      *     constraints={
