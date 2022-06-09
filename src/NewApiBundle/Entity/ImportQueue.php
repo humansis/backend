@@ -240,7 +240,7 @@ class ImportQueue implements ConcurrencyLockableInterface
 
     public function setUnexpectedError(UnexpectedError $error): void
     {
-        $this->rawMessageData[-1][] = $error->jsonSerialize();
+        $this->rawMessageData[-1] = $error->jsonSerialize();
 
         $this->message = json_encode($this->rawMessageData);
     }

@@ -7,10 +7,14 @@ use CommonBundle\Controller\ExportController;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Import\ImportService;
+use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
 use NewApiBundle\Component\Import\UploadImportService;
 use NewApiBundle\Entity;
+use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\InputType\Import;
+use NewApiBundle\Repository\ImportQueueRepository;
+use NewApiBundle\Repository\ImportRepository;
 use NewApiBundle\Request\Pagination;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -49,12 +53,30 @@ class ImportController extends AbstractController
      */
     private $maxFileSizeToLoad;
 
-    public function __construct(ImportService $importService, UploadImportService $uploadImportService, string $importInvalidFilesDirectory, int $maxFileSizeToLoad)
-    {
+    /**
+     * @var ImportRepository
+     */
+    private $importRepo;
+
+    /**
+     * @var ImportQueueRepository
+     */
+    private $importQueueRepo;
+
+    public function __construct(
+        ImportService         $importService,
+        UploadImportService   $uploadImportService,
+        string                $importInvalidFilesDirectory,
+        int                   $maxFileSizeToLoad,
+        ImportRepository      $importRepo,
+        ImportQueueRepository $importQueueRepo
+    ) {
         $this->importService = $importService;
         $this->uploadImportService = $uploadImportService;
         $this->importInvalidFilesDirectory = $importInvalidFilesDirectory;
         $this->maxFileSizeToLoad = $maxFileSizeToLoad;
+        $this->importRepo = $importRepo;
+        $this->importQueueRepo = $importQueueRepo;
     }
 
     /**
@@ -95,8 +117,12 @@ class ImportController extends AbstractController
      */
     public function list(Pagination $pagination, Import\FilterInputType $filterInputType, Import\OrderInputType $orderInputType, Request $request): JsonResponse
     {
-        $data = $this->getDoctrine()->getRepository(Entity\Import::class)
-            ->findByParams($request->headers->get('country'), $pagination, $filterInputType, $orderInputType);
+        $data = $this->importRepo->findByParams(
+            $request->headers->get('country'),
+            $pagination,
+            $filterInputType,
+            $orderInputType
+        );
 
         return $this->json($data);
     }
@@ -423,11 +449,56 @@ class ImportController extends AbstractController
      */
     public function listQueue(Entity\Import $import): JsonResponse
     {
-        $importQueue = $this->getDoctrine()->getRepository(Entity\ImportQueue::class)
-            ->findBy([
-                'import' => $import,
-            ]);
+        $importQueue = $this->importQueueRepo->findBy(['import' => $import]);
 
         return $this->json(new Paginator($importQueue));
+    }
+
+    /**
+     * @Rest\Get("/web-app/v1/imports/{id}/fails")
+     *
+     * @param Entity\Import     $import
+     * @param ImportLineFactory $lineFactory
+     *
+     * @return JsonResponse
+     */
+    public function failedList(Entity\Import $import, ImportLineFactory $lineFactory): JsonResponse
+    {
+        $importQueues = $this->importQueueRepo->findBy([
+            'import' => $import,
+            'state' => ImportQueueState::ERROR,
+        ]);
+
+        $fails = array_map(function (Entity\ImportQueue $failedQueue) use ($lineFactory) {
+            $line = $lineFactory->create($failedQueue, 0);
+            $messages = json_decode($failedQueue->getMessage(), true);
+
+            $householdId = null;
+            $householdHeadId = null;
+            if ($failedQueue->getAcceptedDuplicity()) {
+                $household = $failedQueue->getAcceptedDuplicity()->getTheirs();
+                $householdId = $household->getId();
+                $householdHeadId = $household->getHouseholdHead()->getId();
+            }
+            return [
+                "id" => $failedQueue->getId(),
+                "householdId" => $householdId,
+                "beneficiaryId" => $householdHeadId,
+                "failedAction" => $messages[-1]['action'],
+                "errorMessage" => $messages[-1]['message'],
+                "localFamilyName" => $line->localFamilyName,
+                "localGivenName" => $line->localGivenName,
+                "localParentsName" => $line->localParentsName,
+                "enFamilyName" => $line->englishFamilyName,
+                "enGivenName" => $line->englishGivenName,
+                "enParentsName" => $line->englishParentsName,
+                "primaryIdCard" => [
+                    "number" => $line->idNumber,
+                    "type" => $line->idType
+                ]
+            ];
+        }, $importQueues);
+
+        return $this->json(new Paginator($fails));
     }
 }

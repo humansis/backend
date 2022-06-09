@@ -5,11 +5,13 @@ namespace Tests\NewApiBundle\Controller;
 
 use Doctrine\ORM\NoResultException;
 use Exception;
+use NewApiBundle\Component\Import\Finishing\UnexpectedError;
 use NewApiBundle\Controller\ImportController;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportInvalidFile;
 use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\Filesystem\Filesystem;
@@ -493,6 +495,54 @@ class ImportControllerTest extends BMSServiceTestCase
                     "id": "*",
                     "values": "*",
                     "status": "*"
+                }
+            ]}', $this->client->getResponse()->getContent()
+        );
+    }
+
+    public function testListFailedQueue()
+    {
+        $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy(['state'=>ImportQueueState::ERROR], ['id' => 'asc']);
+        if (!$importQueue) {
+            /** @var ImportQueue|null $importQueue */
+            $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy([], ['id' => 'asc']);
+
+            if (is_null($importQueue)) {
+                $this->markTestSkipped('There needs to be at least one import with items in queue in system.');
+            }
+
+            $importQueue->setUnexpectedError(UnexpectedError::create('finishing', new \InvalidArgumentException('Some error')));
+            $importQueue->setState(ImportQueueState::ERROR);
+            $this->em->persist($importQueue);
+            $this->em->flush();
+            $this->em->clear();
+        }
+
+        $importId = $importQueue->getImport()->getId();
+
+        $this->request('GET', "/api/basic/web-app/v1/imports/$importId/fails");
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        $this->assertJsonFragment('{
+            "totalCount": "*",
+            "data": [
+                {
+                    "id": "*",
+                    "householdId": "*",
+                    "beneficiaryId": "*",
+                    "failedAction": "*",
+                    "errorMessage": "*",
+                    "localFamilyName": "*",
+                    "localGivenName": "*",
+                    "localParentsName": "*",
+                    "enFamilyName": "*",
+                    "enGivenName": "*",
+                    "enParentsName": "*",
+                    "primaryIdCard": "*"
                 }
             ]}', $this->client->getResponse()->getContent()
         );
