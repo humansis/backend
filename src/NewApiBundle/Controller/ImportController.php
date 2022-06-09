@@ -7,6 +7,7 @@ use CommonBundle\Controller\ExportController;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Import\ImportService;
+use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
 use NewApiBundle\Component\Import\UploadImportService;
 use NewApiBundle\Entity;
 use NewApiBundle\Enum\ImportQueueState;
@@ -456,17 +457,48 @@ class ImportController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/imports/{id}/fails")
      *
-     * @param Entity\Import $import
+     * @param Entity\Import     $import
+     * @param ImportLineFactory $lineFactory
      *
      * @return JsonResponse
      */
-    public function failedList(Entity\Import $import): JsonResponse
+    public function failedList(Entity\Import $import, ImportLineFactory $lineFactory): JsonResponse
     {
-        $importQueue = $this->importQueueRepo->findBy([
+        $importQueues = $this->importQueueRepo->findBy([
             'import' => $import,
             'state' => ImportQueueState::ERROR,
         ]);
 
-        return $this->json(new Paginator($importQueue));
+        $fails = array_map(function (Entity\ImportQueue $failedQueue) use ($lineFactory) {
+            $line = $lineFactory->create($failedQueue, 0);
+            $messages = json_decode($failedQueue->getMessage(), true);
+
+            $householdId = null;
+            $householdHeadId = null;
+            if ($failedQueue->getAcceptedDuplicity()) {
+                $household = $failedQueue->getAcceptedDuplicity()->getTheirs();
+                $householdId = $household->getId();
+                $householdHeadId = $household->getHouseholdHead()->getId();
+            }
+            return [
+                "id" => $failedQueue->getId(),
+                "householdId" => $householdId,
+                "beneficiaryId" => $householdHeadId,
+                "failedAction" => $messages[-1]['action'],
+                "errorMessage" => $messages[-1]['message'],
+                "localFamilyName" => $line->localFamilyName,
+                "localGivenName" => $line->localGivenName,
+                "localParentsName" => $line->localParentsName,
+                "enFamilyName" => $line->englishFamilyName,
+                "enGivenName" => $line->englishGivenName,
+                "enParentsName" => $line->englishParentsName,
+                "primaryIdCard" => [
+                    "number" => $line->idNumber,
+                    "type" => $line->idType
+                ]
+            ];
+        }, $importQueues);
+
+        return $this->json(new Paginator($fails));
     }
 }

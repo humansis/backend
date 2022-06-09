@@ -532,8 +532,17 @@ class ImportControllerTest extends BMSServiceTestCase
             "data": [
                 {
                     "id": "*",
-                    "values": "*",
-                    "status": "*"
+                    "householdId": "*",
+                    "beneficiaryId": "*",
+                    "failedAction": "*",
+                    "errorMessage": "*",
+                    "localFamilyName": "*",
+                    "localGivenName": "*",
+                    "localParentsName": "*",
+                    "enFamilyName": "*",
+                    "enGivenName": "*",
+                    "enParentsName": "*",
+                    "primaryIdCard": "*"
                 }
             ]}', $this->client->getResponse()->getContent()
         );
