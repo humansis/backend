@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType\Beneficiary;
 
+use BeneficiaryBundle\Entity\CountrySpecific;
 use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use NewApiBundle\Validator\Constraints\CountrySpecificDataType;
 
 class CountrySpecificsAnswerInputType implements InputTypeInterface
 {
+
     /**
      * @Assert\Type("integer")
      * @Assert\GreaterThanOrEqual("0")
@@ -18,7 +21,7 @@ class CountrySpecificsAnswerInputType implements InputTypeInterface
     private $countrySpecificId;
 
     /**
-     * @Assert\Type(type={"string", "numeric"})
+     * @Assert\Type(type={"string", "numeric"}, message="Value '{{ value }}' should be of type {{ type }}")
      * @Assert\Length(max="255")
      */
     private $answer;
@@ -54,5 +57,6 @@ class CountrySpecificsAnswerInputType implements InputTypeInterface
     {
         $this->answer = $answer;
     }
+
 
 }

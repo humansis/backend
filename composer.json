@@ -50,7 +50,7 @@
 		"mpdf/mpdf": "^7.1",
 		"nelmio/api-doc-bundle": "^3.0",
 		"nelmio/cors-bundle": "^1.5",
-		"phpoffice/phpspreadsheet": "^1.4",
+		"phpoffice/phpspreadsheet": "^1.18",
 		"phpstan/phpstan": "^0.12.94",
 		"punic/punic": "^3.5",
 		"relief_applications/symfony-request-validator-bundle": "@dev",
