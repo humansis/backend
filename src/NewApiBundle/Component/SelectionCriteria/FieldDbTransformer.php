@@ -41,6 +41,13 @@ class FieldDbTransformer
         $this->locationRepository = $locationRepository;
     }
 
+    /**
+     * @deprecated rewrite into SelectionCriteriaFactory::create (returns SelectionCriteria domain object)
+     * @param SelectionCriterionInputType $input
+     *
+     * @return array
+     * @throws EntityNotFoundException
+     */
     public function toDbArray(SelectionCriterionInputType $input): array
     {
         if (SelectionCriteriaTarget::BENEFICIARY === $input->getTarget()) {
@@ -171,6 +178,12 @@ class FieldDbTransformer
         ];
     }
 
+    /**
+     * @deprecated rewrite into SelectionCriteriaMapper (maybe multiple mappers)
+     * @param SelectionCriteria $criterion
+     *
+     * @return array
+     */
     public function toResponseArray(SelectionCriteria $criterion)
     {
         if (SelectionCriteriaTarget::BENEFICIARY === $criterion->getTarget() && 'vulnerabilityCriteria' === $criterion->getTableString()) {

@@ -54,6 +54,7 @@ class CriteriaAssistanceService
     }
 
     /**
+     * @deprecated replace by new method with type control of incoming criteria objects and country code
      * @param array       $filters
      * @param Project     $project
      * @param string      $targetType
@@ -84,6 +85,7 @@ class CriteriaAssistanceService
         foreach ($filters['criteria'] as $group) {
             foreach ($group as $index => $criterion) {
                 if ($criterion['table_string'] === 'Personnal') {
+                    // TODO: move criteria enhancing into SelectionCriteria domain object/happens in SelectionCriteriaFactory
                     $criterion['type'] = $this->configurationLoader->criteria[$criterion['field_string']]['type'];
                     $group[$index] = $criterion;
                 }

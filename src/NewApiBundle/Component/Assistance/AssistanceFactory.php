@@ -166,6 +166,7 @@ class AssistanceFactory
                 foreach ($inputType->getSelectionCriteria() as $criterion) {
                     $selectionCriteriaShitArray[$criterion->getGroup()][] = $this->fieldDbTransformer->toDbArray($criterion);
                 }
+                // TODO: replace by SelectionCriteriaFactory::create
                 $criteria['criteria'] = $this->makeSelectionCriteriaBlackMagick($assistanceRoot, $selectionCriteriaShitArray);
                 $criteria['countryIso3'] = $inputType->getIso3();
                 $assistanceRoot->getAssistanceSelection()->setThreshold($inputType->getThreshold());
@@ -221,6 +222,13 @@ class AssistanceFactory
         );
     }
 
+    /**
+     * @deprecated rewrite or remove after use SelectionCriteriaFactory::create
+     * @param Entity\Assistance $assistance
+     * @param array             $selectionCriteriaShitArray
+     *
+     * @return array
+     */
     private function makeSelectionCriteriaBlackMagick(Entity\Assistance $assistance, array $selectionCriteriaShitArray): array
     {
         $criteria = [];
