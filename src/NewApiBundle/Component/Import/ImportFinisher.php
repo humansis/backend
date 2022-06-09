@@ -19,6 +19,7 @@ use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
 use NewApiBundle\Component\Import\Finishing\HouseholdDecoratorBuilder;
+use NewApiBundle\Component\Import\Finishing\UnexpectedError;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiary;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
@@ -135,26 +136,31 @@ class ImportFinisher
                 $this->em->flush();
             })
             ->processItems(function(ImportQueue $item) use ($import) {
-                switch ($item->getState()) {
-                    case ImportQueueState::TO_CREATE:
-                        $this->finishCreationQueue($item, $import);
-                        break;
-                    case ImportQueueState::TO_UPDATE:
-                        $this->finishUpdateQueue($item, $import);
-                        break;
-                    case ImportQueueState::TO_IGNORE:
-                    case ImportQueueState::TO_LINK:
-                        /** @var ImportHouseholdDuplicity $acceptedDuplicity */
-                        $acceptedDuplicity = $item->getAcceptedDuplicity();
-                        if (null == $acceptedDuplicity) {
-                            return;
-                        }
+                try {
+                    switch ($item->getState()) {
+                        case ImportQueueState::TO_CREATE:
+                            $this->finishCreationQueue($item, $import);
+                            break;
+                        case ImportQueueState::TO_UPDATE:
+                            $this->finishUpdateQueue($item, $import);
+                            break;
+                        case ImportQueueState::TO_IGNORE:
+                        case ImportQueueState::TO_LINK:
+                            /** @var ImportHouseholdDuplicity $acceptedDuplicity */
+                            $acceptedDuplicity = $item->getAcceptedDuplicity();
+                            if (null == $acceptedDuplicity) {
+                                return;
+                            }
 
-                        $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
-                        $this->logImportInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
+                            $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
+                            $this->logImportInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
 
-                        $this->importQueueStateMachine->apply($item, ImportQueueTransitions::LINK);
-                        break;
+                            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::LINK);
+                            break;
+                    }
+                } catch (\Exception $anyException) {
+                    $item->setUnexpectedError(UnexpectedError::create($item->getState(), $anyException));
+                    $this->importQueueStateMachine->apply($item, ImportQueueTransitions::FAIL_UNEXPECTED);
                 }
                 $this->em->persist($item);
 
