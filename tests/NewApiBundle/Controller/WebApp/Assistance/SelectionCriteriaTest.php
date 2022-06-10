@@ -41,10 +41,6 @@ class SelectionCriteriaTest extends BMSServiceTestCase
      */
     private function assistanceWithCriteria($criteria): array
     {
-        $group = 0;
-        foreach ($criteria as $criterion) {
-            $criterion['group'] = $group++;
-        }
         return [
             'iso3' => 'KHM',
             'projectId' => 8,
@@ -74,8 +70,9 @@ class SelectionCriteriaTest extends BMSServiceTestCase
 
     public function assistanceArrayGenerator(): iterable
     {
+        $group = 0;
         $bornBefore2020 = [
-            'group' => 1,
+            'group' => $group++,
             'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::BENEFICIARY,
             'field' => 'dateOfBirth',
             'condition' => '<',
@@ -83,7 +80,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'value' => '2020-01-01',
         ];
         $femaleHead = [
-            'group' => 1,
+            'group' => $group++,
             'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD_HEAD,
             'field' => 'gender',
             'condition' => '=',
@@ -91,7 +88,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'value' => 'F',
         ];
         $femaleHeadLongString = [
-            'group' => 1,
+            'group' => $group++,
             'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD_HEAD,
             'field' => 'gender',
             'condition' => '=',
@@ -99,7 +96,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'value' => 'female',
         ];
         $hasAnyIncomeString = [
-            'group' => 1,
+            'group' => $group++,
             'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD,
             'field' => 'income',
             'condition' => '>',
@@ -107,7 +104,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'value' => '0',
         ];
         $hasAnyIncomeInt = [
-            'group' => 1,
+            'group' => $group++,
             'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD,
             'field' => 'income',
             'condition' => '>',
@@ -115,7 +112,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'value' => 0,
         ];
         $location = [
-            'group' => 1,
+            'group' => $group++,
             'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD,
             'field' => 'location',
             'condition' => '=',
@@ -123,7 +120,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'value' => 21,
         ];
         $CSOEquityCard = [
-            'group' => 1,
+            'group' => $group++,
             'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD,
             'field' => 'equityCardNo',
             'condition' => '=',
@@ -131,7 +128,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'value' => '111222333',
         ];
         $workForGovernment = [
-            'group' => 1,
+            'group' => $group++,
             'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD,
             'field' => 'livelihood',
             'condition' => '=',
