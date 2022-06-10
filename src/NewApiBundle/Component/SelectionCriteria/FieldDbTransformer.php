@@ -10,6 +10,7 @@ use BeneficiaryBundle\Repository\VulnerabilityCriterionRepository;
 use CommonBundle\Repository\LocationRepository;
 use DistributionBundle\Entity\SelectionCriteria;
 use Doctrine\ORM\EntityNotFoundException;
+use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Enum\SelectionCriteriaField;
 use NewApiBundle\Enum\SelectionCriteriaTarget;
 use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
@@ -161,7 +162,8 @@ class FieldDbTransformer
         $value = $input->getValue();
         $field = $input->getField();
         if ('gender' === $input->getField()) {
-            $value = ('M' === $input->getValue()) ? '1' : '0';
+            $genderEnum = PersonGender::valueFromAPI($input->getValue());
+            $value = (PersonGender::MALE === $genderEnum) ? '1' : '0';
             if (SelectionCriteriaTarget::HOUSEHOLD_HEAD === $input->getTarget()) {
                 $field = 'headOfHouseholdGender';
             }

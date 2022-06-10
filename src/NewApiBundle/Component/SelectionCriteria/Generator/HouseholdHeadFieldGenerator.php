@@ -5,6 +5,8 @@ namespace NewApiBundle\Component\SelectionCriteria\Generator;
 
 use NewApiBundle\Component\SelectionCriteria\FieldGeneratorInterface;
 use NewApiBundle\Component\SelectionCriteria\Structure\Field;
+use NewApiBundle\Enum\EnumValueNoFoundException;
+use NewApiBundle\Enum\PersonGender;
 
 class HouseholdHeadFieldGenerator implements FieldGeneratorInterface
 {
@@ -29,7 +31,11 @@ class HouseholdHeadFieldGenerator implements FieldGeneratorInterface
 
     public static function validateGender($value): bool
     {
-        return in_array($value, ['M', 'F'], true);
+        try {
+            return PersonGender::valueFromAPI($value) ? true : false;
+        } catch (EnumValueNoFoundException $e) {
+            return false;
+        }
     }
 
     public static function validateDate($value): bool
