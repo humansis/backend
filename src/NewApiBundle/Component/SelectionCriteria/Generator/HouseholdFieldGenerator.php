@@ -28,7 +28,7 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
         yield new Field('livelihood', 'Livelihood', ['='], 'livelihood', [self::class, 'validateLivelihood']);
         yield new Field('foodConsumptionScore', 'Food Consumption Score', ['=', '<', '>', '<=', '>='], 'double');
         yield new Field('copingStrategiesIndex', 'Coping Strategies Index', ['=', '<', '>', '<=', '>='], 'double');
-        yield new Field('incomeLevel', 'Income Level', ['=', '<', '>', '<=', '>='], 'integer');
+        yield new Field('income', 'Income', ['=', '<', '>', '<=', '>='], 'integer');
         yield new Field('householdSize', 'Household Size', ['=', '<', '>', '<=', '>='], 'integer');
         yield new Field('location', 'Location', ['='], 'location', 'is_int');
         yield new Field('locationType', 'Location Type', ['='], 'locationType', [self::class, 'validateLocation']);

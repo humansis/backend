@@ -101,7 +101,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         $hasAnyIncomeString = [
             'group' => 1,
             'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD,
-            'field' => 'incomeLevel',
+            'field' => 'income',
             'condition' => '>',
             'weight' => 1,
             'value' => '0',
@@ -109,7 +109,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         $hasAnyIncomeInt = [
             'group' => 1,
             'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD,
-            'field' => 'incomeLevel',
+            'field' => 'income',
             'condition' => '>',
             'weight' => 1,
             'value' => 0,

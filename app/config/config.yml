@@ -281,7 +281,7 @@ distribution:
                 type: table_field,
                 target: Household
             },
-            incomeLevel: {
+            income: {
                 type: table_field,
                 target: Household
             },
