@@ -34,8 +34,17 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         $this->client = self::$container->get('test.client');
     }
 
+    /**
+     * @param $criteria array[] will be in distinct groups
+     *
+     * @return array
+     */
     private function assistanceWithCriteria($criteria): array
     {
+        $group = 0;
+        foreach ($criteria as $criterion) {
+            $criterion['group'] = $group++;
+        }
         return [
             'iso3' => 'KHM',
             'projectId' => 8,
@@ -73,9 +82,80 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'weight' => 1,
             'value' => '2020-01-01',
         ];
-        yield 'bornBefore' => [
-            $this->assistanceWithCriteria([$bornBefore2020])
+        $femaleHead = [
+            'group' => 1,
+            'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD_HEAD,
+            'field' => 'gender',
+            'condition' => '=',
+            'weight' => 1,
+            'value' => 'F',
         ];
+        $femaleHeadLongString = [
+            'group' => 1,
+            'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD_HEAD,
+            'field' => 'gender',
+            'condition' => '=',
+            'weight' => 1,
+            'value' => 'female',
+        ];
+        $hasAnyIncomeString = [
+            'group' => 1,
+            'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD,
+            'field' => 'incomeLevel',
+            'condition' => '>',
+            'weight' => 1,
+            'value' => '0',
+        ];
+        $hasAnyIncomeInt = [
+            'group' => 1,
+            'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD,
+            'field' => 'incomeLevel',
+            'condition' => '>',
+            'weight' => 1,
+            'value' => 0,
+        ];
+        $locationString = [
+            'group' => 1,
+            'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD,
+            'field' => 'location',
+            'condition' => '=',
+            'weight' => 1,
+            'value' => '21',
+        ];
+        $locationInt = [
+            'group' => 1,
+            'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD,
+            'field' => 'location',
+            'condition' => '=',
+            'weight' => 1,
+            'value' => 21,
+        ];
+        $CSOEquityCard = [
+            'group' => 1,
+            'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD,
+            'field' => 'equityCardNo',
+            'condition' => '=',
+            'weight' => 1,
+            'value' => '111222333',
+        ];
+        $workForGovernment = [
+            'group' => 1,
+            'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD,
+            'field' => 'livelihood',
+            'condition' => '=',
+            'weight' => 1,
+            'value' => 'Government',
+        ];
+        yield 'female head' => [$this->assistanceWithCriteria([$femaleHead])];
+        yield 'female head (long string)' => [$this->assistanceWithCriteria([$femaleHeadLongString])];
+        yield 'born before 2020' => [$this->assistanceWithCriteria([$bornBefore2020])];
+        yield 'has any income (string value)' => [$this->assistanceWithCriteria([$hasAnyIncomeString])];
+        yield 'has any income (int value)' => [$this->assistanceWithCriteria([$hasAnyIncomeInt])];
+        yield 'is in location Banteay Meanchey (string value)' => [$this->assistanceWithCriteria([$locationString])];
+        yield 'is in location Banteay Meanchey (int value)' => [$this->assistanceWithCriteria([$locationInt])];
+        yield 'CSO equity card' => [$this->assistanceWithCriteria([$CSOEquityCard])];
+        yield 'Livelihood for government' => [$this->assistanceWithCriteria([$workForGovernment])];
+        yield 'all in one' => [$this->assistanceWithCriteria([$femaleHead, $bornBefore2020, $hasAnyIncomeInt, $locationInt, $CSOEquityCard, $workForGovernment])];
     }
 
     /**
