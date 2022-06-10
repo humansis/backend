@@ -114,15 +114,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'weight' => 1,
             'value' => 0,
         ];
-        $locationString = [
-            'group' => 1,
-            'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD,
-            'field' => 'location',
-            'condition' => '=',
-            'weight' => 1,
-            'value' => '21',
-        ];
-        $locationInt = [
+        $location = [
             'group' => 1,
             'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD,
             'field' => 'location',
@@ -151,11 +143,10 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         yield 'born before 2020' => [$this->assistanceWithCriteria([$bornBefore2020])];
         yield 'has any income (string value)' => [$this->assistanceWithCriteria([$hasAnyIncomeString])];
         yield 'has any income (int value)' => [$this->assistanceWithCriteria([$hasAnyIncomeInt])];
-        yield 'is in location Banteay Meanchey (string value)' => [$this->assistanceWithCriteria([$locationString])];
-        yield 'is in location Banteay Meanchey (int value)' => [$this->assistanceWithCriteria([$locationInt])];
+        yield 'is in location Banteay Meanchey' => [$this->assistanceWithCriteria([$location])];
         yield 'CSO equity card' => [$this->assistanceWithCriteria([$CSOEquityCard])];
         yield 'Livelihood for government' => [$this->assistanceWithCriteria([$workForGovernment])];
-        yield 'all in one' => [$this->assistanceWithCriteria([$femaleHead, $bornBefore2020, $hasAnyIncomeInt, $locationInt, $CSOEquityCard, $workForGovernment])];
+        yield 'all in one' => [$this->assistanceWithCriteria([$femaleHead, $bornBefore2020, $hasAnyIncomeInt, $location, $CSOEquityCard, $workForGovernment])];
     }
 
     /**
@@ -221,44 +212,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
      */
     public function testCreateAssistance(array $assistanceArray)
     {
-        $commodity = [
-            'modalityType' => \NewApiBundle\Enum\ModalityType::PAPER_VOUCHER,
-            'unit' => 'CZK',
-            'value' => '1000',
-            'description' => 'something important',
-            "remoteDistributionAllowed" => false,
-            'division' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
-        ];
-
-        /** @var Project $project */
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findOneBy([], ['id' => 'asc']);
-
-        /** @var Location $location */
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findOneBy([], ['id' => 'asc']);
-
-        if (null === $project || null === $location) {
-            $this->markTestSkipped('There needs to be at least one project and location in system for completing this test');
-        }
-
         $this->request('POST', '/api/basic/web-app/v1/assistances', $assistanceArray);
-        // $this->request('POST', '/api/basic/web-app/v1/assistances', [
-        //     'iso3' => 'KHM',
-        //     'projectId' => $project->getId(),
-        //     'locationId' => $location->getId(),
-        //     'dateDistribution' => '2021-03-10T13:45:32.988Z',
-        //     'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
-        //     'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
-        //     'type' => AssistanceType::DISTRIBUTION,
-        //     'target' => \DistributionBundle\Enum\AssistanceTargetType::HOUSEHOLD,
-        //     'threshold' => 1,
-        //     'commodities' => [$commodity],
-        //     'selectionCriteria' => $selectionCriteria,
-        //     'foodLimit' => 10.99,
-        //     'nonFoodLimit' => null,
-        //     'cashbackLimit' => 1024,
-        //     'remoteDistributionAllowed' => $commodity['modalityType']==\NewApiBundle\Enum\ModalityType::SMART_CARD ? false : null,
-        //     'allowedProductCategoryTypes' => [ProductCategoryType::CASHBACK, ProductCategoryType::NONFOOD],
-        // ]);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
