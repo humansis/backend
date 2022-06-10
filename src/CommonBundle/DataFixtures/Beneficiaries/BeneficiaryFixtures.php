@@ -52,7 +52,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                     ],
                 ],
                 [
-                    "answer" => null,
+                    "answer" => "111222333",
                     "country_specific" => [
                         "id" => 2
                     ],
@@ -117,7 +117,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                     ],
                   ],
                   [
-                      "answer" => null,
+                      "answer" => "111222333",
                       "country_specific" => [
                           "id" => 2
                       ],
