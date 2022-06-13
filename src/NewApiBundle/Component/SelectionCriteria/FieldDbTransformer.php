@@ -10,6 +10,7 @@ use BeneficiaryBundle\Repository\VulnerabilityCriterionRepository;
 use CommonBundle\Repository\LocationRepository;
 use DistributionBundle\Entity\SelectionCriteria;
 use Doctrine\ORM\EntityNotFoundException;
+use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Enum\SelectionCriteriaField;
 use NewApiBundle\Enum\SelectionCriteriaTarget;
 use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
@@ -41,105 +42,127 @@ class FieldDbTransformer
         $this->locationRepository = $locationRepository;
     }
 
+    /**
+     * @deprecated rewrite into SelectionCriteriaFactory::create (returns SelectionCriteria domain object)
+     * @param SelectionCriterionInputType $input
+     *
+     * @return array
+     * @throws EntityNotFoundException
+     */
     public function toDbArray(SelectionCriterionInputType $input): array
     {
-        if (SelectionCriteriaTarget::BENEFICIARY === $input->getTarget() && ($vulnerability = $this->getVulnerability($input->getField()))) {
-            return [
-                'condition_string' => $input->getValue(),
-                'field_string' => $input->getField(),
-                'target' => $input->getTarget(),
-                'table_string' => 'vulnerabilityCriteria',
-                'value_string' => null,
-                'weight' => $input->getWeight(),
-            ];
-        }
-
-        if (SelectionCriteriaTarget::HOUSEHOLD_HEAD === $input->getTarget() && 'disabledHeadOfHousehold' === $input->getField()) {
-            return [
-                'condition_string' => true,
-                'field_string' => $input->getField(),
-                'target' => $input->getTarget(),
-                'table_string' => 'Personnal',
-                'value_string' => null,
-                'weight' => $input->getWeight(),
-                'type' => 'other',
-            ];
-        }
-
-        if (SelectionCriteriaTarget::HOUSEHOLD_HEAD === $input->getTarget() && 'hasValidSmartcard' === $input->getField()) {
-            return [
-                'condition_string' => true,
-                'field_string' => $input->getField(),
-                'target' => $input->getTarget(),
-                'table_string' => 'Personnal',
-                'value_string' => null,
-                'value' => $input->getValue(),
-                'weight' => $input->getWeight(),
-                'type' => 'other',
-            ];
-        }
-
-        if ((SelectionCriteriaTarget::BENEFICIARY === $input->getTarget() && 'hasNotBeenInDistributionsSince' === $input->getField()) ||
-            (SelectionCriteriaTarget::HOUSEHOLD === $input->getTarget() && 'householdSize' === $input->getField())
-        ) {
-            return [
-                'condition_string' => $input->getCondition(),
-                'field_string' => $input->getField(),
-                'target' => $input->getTarget(),
-                'table_string' => 'Personnal',
-                'value_string' => $input->getValue(),
-                'weight' => $input->getWeight(),
-                'type' => 'other',
-            ];
-        }
-
-        if (SelectionCriteriaTarget::HOUSEHOLD === $input->getTarget() && ($countrySpecific = $this->getCountrySpecific($input->getField()))) {
-            return [
-                'condition_string' => $input->getCondition(),
-                'field_string' => $input->getField(),
-                'target' => $input->getTarget(),
-                'table_string' => 'countrySpecific',
-                'value_string' => $input->getValue(),
-                'weight' => $input->getWeight(),
-                'type' => $countrySpecific->getType(),
-            ];
-        }
-
-        if (SelectionCriteriaTarget::HOUSEHOLD === $input->getTarget() && 'location' === $input->getField()) {
-            /** @var \CommonBundle\Entity\Location $location */
-            $location = $this->locationRepository->find($input->getValue());
-            if (!$location) {
-                throw new EntityNotFoundException();
+        if (SelectionCriteriaTarget::BENEFICIARY === $input->getTarget()) {
+            if (($vulnerability = $this->getVulnerability($input->getField()))) {
+                return [
+                    'condition_string' => $input->getValue(),
+                    'field_string' => $input->getField(),
+                    'target' => $input->getTarget(),
+                    'table_string' => 'vulnerabilityCriteria',
+                    'value_string' => null,
+                    'weight' => $input->getWeight(),
+                ];
             }
 
-            return [
-                'condition_string' => $input->getCondition(),
-                'field_string' => SelectionCriteriaField::CURRENT_LOCATION,
-                'target' => $input->getTarget(),
-                'table_string' => 'Personnal',
-                'value_string' => null,
-                'value' => $location,
-                'weight' => $input->getWeight(),
-                'type' => 'other',
-            ];
+            if ('hasNotBeenInDistributionsSince' === $input->getField()) {
+                return [
+                    'condition_string' => $input->getCondition(),
+                    'field_string' => $input->getField(),
+                    'target' => $input->getTarget(),
+                    'table_string' => 'Personnal',
+                    'value_string' => $input->getValue(),
+                    'weight' => $input->getWeight(),
+                    'type' => 'other',
+                ];
+            }
         }
 
-        if (SelectionCriteriaTarget::HOUSEHOLD === $input->getTarget() && 'campName' === $input->getField()) {
-            return [
-                'condition_string' => $input->getCondition(),
-                'field_string' => $input->getField(),
-                'target' => $input->getTarget(),
-                'table_string' => 'Personnal',
-                'value_string' => $input->getValue(),
-                'weight' => $input->getWeight(),
-                'type' => 'other',
-            ];
+        if (SelectionCriteriaTarget::HOUSEHOLD_HEAD === $input->getTarget()) {
+            if ('disabledHeadOfHousehold' === $input->getField()) {
+                return [
+                    'condition_string' => true,
+                    'field_string' => $input->getField(),
+                    'target' => $input->getTarget(),
+                    'table_string' => 'Personnal',
+                    'value_string' => null,
+                    'weight' => $input->getWeight(),
+                    'type' => 'other',
+                ];
+            }
+
+            if ('hasValidSmartcard' === $input->getField()) {
+                return [
+                    'condition_string' => true,
+                    'field_string' => $input->getField(),
+                    'target' => $input->getTarget(),
+                    'table_string' => 'Personnal',
+                    'value_string' => null,
+                    'value' => $input->getValue(),
+                    'weight' => $input->getWeight(),
+                    'type' => 'other',
+                ];
+            }
+        }
+
+        if (SelectionCriteriaTarget::HOUSEHOLD === $input->getTarget()) {
+            if ('householdSize' === $input->getField()) {
+                return [
+                    'condition_string' => $input->getCondition(),
+                    'field_string' => $input->getField(),
+                    'target' => $input->getTarget(),
+                    'table_string' => 'Personnal',
+                    'value_string' => $input->getValue(),
+                    'weight' => $input->getWeight(),
+                    'type' => 'other',
+                ];
+            }
+
+            if ($countrySpecific = $this->getCountrySpecific($input->getField())) {
+                return [
+                    'condition_string' => $input->getCondition(),
+                    'field_string' => $input->getField(),
+                    'target' => $input->getTarget(),
+                    'table_string' => 'countrySpecific',
+                    'value_string' => $input->getValue(),
+                    'weight' => $input->getWeight(),
+                    'type' => $countrySpecific->getType(),
+                ];
+            }
+            if ('location' === $input->getField()) {
+                /** @var \CommonBundle\Entity\Location $location */
+                $location = $this->locationRepository->find($input->getValue());
+                if (!$location) {
+                    throw new EntityNotFoundException();
+                }
+
+                return [
+                    'condition_string' => $input->getCondition(),
+                    'field_string' => SelectionCriteriaField::CURRENT_LOCATION,
+                    'target' => $input->getTarget(),
+                    'table_string' => 'Personnal',
+                    'value' => $location,
+                    'weight' => $input->getWeight(),
+                    'type' => 'other',
+                ];
+            }
+
+            if ('campName' === $input->getField()) {
+                return [
+                    'condition_string' => $input->getCondition(),
+                    'field_string' => $input->getField(),
+                    'target' => $input->getTarget(),
+                    'table_string' => 'Personnal',
+                    'value_string' => $input->getValue(),
+                    'weight' => $input->getWeight(),
+                    'type' => 'other',
+                ];
+            }
         }
 
         $value = $input->getValue();
         $field = $input->getField();
         if ('gender' === $input->getField()) {
-            $value = ('M' === $input->getValue()) ? '1' : '0';
+            $genderEnum = PersonGender::valueFromAPI($input->getValue());
+            $value = (PersonGender::MALE === $genderEnum) ? '1' : '0';
             if (SelectionCriteriaTarget::HOUSEHOLD_HEAD === $input->getTarget()) {
                 $field = 'headOfHouseholdGender';
             }
@@ -156,6 +179,12 @@ class FieldDbTransformer
         ];
     }
 
+    /**
+     * @deprecated rewrite into SelectionCriteriaMapper (maybe multiple mappers)
+     * @param SelectionCriteria $criterion
+     *
+     * @return array
+     */
     public function toResponseArray(SelectionCriteria $criterion)
     {
         if (SelectionCriteriaTarget::BENEFICIARY === $criterion->getTarget() && 'vulnerabilityCriteria' === $criterion->getTableString()) {
@@ -220,6 +249,17 @@ class FieldDbTransformer
                 'group' => $criterion->getGroupNumber(),
                 'target' => $criterion->getTarget(),
                 'field' => $criterion->getFieldString(),
+                'condition' => $criterion->getConditionString(),
+                'value' => $criterion->getValueString(),
+                'weight' => $criterion->getWeight(),
+            ];
+        }
+
+        if (SelectionCriteriaTarget::HOUSEHOLD === $criterion->getTarget() && 'currentLocation' === $criterion->getFieldString()) {
+            return [
+                'group' => $criterion->getGroupNumber(),
+                'target' => $criterion->getTarget(),
+                'field' => 'location',
                 'condition' => $criterion->getConditionString(),
                 'value' => $criterion->getValueString(),
                 'weight' => $criterion->getWeight(),
