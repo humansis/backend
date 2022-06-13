@@ -91,10 +91,10 @@ class HouseholdDecoratorBuilder
         $household->setSupportReceivedTypes($this->householdLine->supportReceivedTypes);
         $household->setAssets($this->householdLine->assets);
 
-        foreach ($this->householdLine->countrySpecifics as $countrySpecificId => $answer) {
+        foreach ($this->householdLine->countrySpecifics as $countrySpecificId => $data) {
             $specificAnswer = new CountrySpecificsAnswerInputType();
             $specificAnswer->setCountrySpecificId($countrySpecificId);
-            $specificAnswer->setAnswer($answer);
+            $specificAnswer->setAnswer($data['value']);
             $household->addCountrySpecificAnswer($specificAnswer);
         }
 

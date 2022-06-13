@@ -199,11 +199,12 @@ class IntegrityChecker
         if (null === $mapping) {
             $mapping = array_flip(HouseholdExportCSVService::MAPPING_PROPERTIES);
             foreach ($this->entityManager->getRepository(CountrySpecific::class)->findAll() as $countrySpecific) {
+                $mapping['countrySpecifics['.$countrySpecific->getId().']'] = $countrySpecific->getFieldString();
                 $mapping['countrySpecifics.'.$countrySpecific->getId()] = $countrySpecific->getFieldString();
             }
         }
-
-        return Integrity\QueueViolation::create($lineIndex, $mapping[$property], $violation->getMessage(), $violation->getInvalidValue());
+        $column = key_exists($property, $mapping) ? $mapping[$property] : $property;
+        return Integrity\QueueViolation::create($lineIndex, $column, $violation->getMessage(), $violation->getInvalidValue());
     }
 
     private function buildNormalizedErrorMessage(ConstraintViolationInterface $violation, int $lineIndex): Integrity\QueueViolation

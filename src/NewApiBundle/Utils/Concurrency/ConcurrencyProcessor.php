@@ -13,6 +13,8 @@ class ConcurrencyProcessor
     /** @var callable */
     private $batchItemsCallback;
     /** @var callable */
+    private $batchUnlockCallback;
+    /** @var callable */
     private $batchCleanupCallback;
     /** @var int */
     private $maxResultsToProcess;
@@ -66,6 +68,18 @@ class ConcurrencyProcessor
     }
 
     /**
+     * @param callable $batchUnlockCallback
+     *
+     * @return ConcurrencyProcessor
+     */
+    public function setUnlockItemsCallback(callable $batchUnlockCallback): ConcurrencyProcessor
+    {
+        $this->batchUnlockCallback = $batchUnlockCallback;
+
+        return $this;
+    }
+
+    /**
      * @param callable $batchCleanupCallback
      *
      * @return ConcurrencyProcessor
@@ -99,6 +113,7 @@ class ConcurrencyProcessor
         $allItemCountCallback = $this->countAllCallback;
         $lockItemsCallback = $this->lockBatchCallback;
         $getBatchCallback = $this->batchItemsCallback;
+        $batchUnlockCallback = $this->batchUnlockCallback;
         $batchCleanupCallback = $this->batchCleanupCallback ?? function () {};
         $itemCount = $allItemCountCallback();
 
@@ -116,8 +131,9 @@ class ConcurrencyProcessor
             foreach ($itemsToProceed as $item) {
                 try {
                     $processItemCallback($item);
-                } finally {
-                    $item->unlock();
+                } catch (\Exception $ex) {
+                    $batchUnlockCallback($runCode);
+                    break;
                 }
             }
             $batchCleanupCallback();

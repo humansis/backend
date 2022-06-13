@@ -16,9 +16,11 @@ use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
 use NewApiBundle\Component\Import\Finishing\HouseholdDecoratorBuilder;
+use NewApiBundle\Component\Import\Finishing\UnexpectedError;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiary;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
@@ -75,6 +77,9 @@ class ImportFinisher
     /** @var integer */
     private $totalBatchSize;
 
+    /** @var ManagerRegistry */
+    private $managerRegistry;
+
     public function __construct(
         int                                 $totalBatchSize,
         EntityManagerInterface              $em,
@@ -82,7 +87,8 @@ class ImportFinisher
         LoggerInterface                     $logger,
         WorkflowInterface                   $importStateMachine,
         WorkflowInterface                   $importQueueStateMachine,
-        Finishing\HouseholdDecoratorBuilder $householdDecoratorBuilder
+        Finishing\HouseholdDecoratorBuilder $householdDecoratorBuilder,
+        ManagerRegistry                     $managerRegistry
     ) {
         $this->em = $em;
         $this->importStateMachine = $importStateMachine;
@@ -92,6 +98,7 @@ class ImportFinisher
         $this->logger = $logger;
         $this->totalBatchSize = $totalBatchSize;
         $this->householdDecoratorBuilder = $householdDecoratorBuilder;
+        $this->managerRegistry = $managerRegistry;
     }
 
     /**
@@ -125,6 +132,9 @@ class ImportFinisher
             ->setLockBatchCallback(function($runCode, $batchSize) use ($import, $statesToFinish) {
                 $this->lockImportQueue($import, $statesToFinish, $runCode, $batchSize);
             })
+            ->setUnlockItemsCallback(function($runCode) use ($import) {
+                $this->queueRepository->unlockLockedItems($import, $runCode);
+            })
             ->setBatchItemsCallback(function($runCode) use ($import) {
                 return $this->queueRepository->findBy([
                     'import' => $import,
@@ -135,28 +145,40 @@ class ImportFinisher
                 $this->em->flush();
             })
             ->processItems(function(ImportQueue $item) use ($import) {
-                switch ($item->getState()) {
-                    case ImportQueueState::TO_CREATE:
-                        $this->finishCreationQueue($item, $import);
-                        break;
-                    case ImportQueueState::TO_UPDATE:
-                        $this->finishUpdateQueue($item, $import);
-                        break;
-                    case ImportQueueState::TO_IGNORE:
-                    case ImportQueueState::TO_LINK:
-                        /** @var ImportHouseholdDuplicity $acceptedDuplicity */
-                        $acceptedDuplicity = $item->getAcceptedDuplicity();
-                        if (null == $acceptedDuplicity) {
-                            return;
-                        }
+                try {
+                    switch ($item->getState()) {
+                        case ImportQueueState::TO_CREATE:
+                            $this->finishCreationQueue($item, $import);
+                            break;
+                        case ImportQueueState::TO_UPDATE:
+                            $this->finishUpdateQueue($item, $import);
+                            break;
+                        case ImportQueueState::TO_IGNORE:
+                        case ImportQueueState::TO_LINK:
+                            /** @var ImportHouseholdDuplicity $acceptedDuplicity */
+                            $acceptedDuplicity = $item->getAcceptedDuplicity();
+                            if (null == $acceptedDuplicity) {
+                                return;
+                            }
 
-                        $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
-                        $this->logImportInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
+                            $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
+                            $this->logImportInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
 
-                        $this->importQueueStateMachine->apply($item, ImportQueueTransitions::LINK);
-                        break;
+                            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::LINK);
+                            break;
+                    }
+                    $this->em->persist($item);
+                } catch (\Exception $anyException) {
+                    if (!$this->em->isOpen()) {
+                        $this->em = $this->managerRegistry->resetManager();
+                        $item = $this->em->getRepository(ImportQueue::class)->find($item->getId());
+                    }
+                    $this->logger->error($anyException->getMessage());
+                    $item->setUnexpectedError(UnexpectedError::create($item->getState(), $anyException));
+                    $this->importQueueStateMachine->apply($item, ImportQueueTransitions::FAIL_UNEXPECTED);
+                    $this->em->persist($item);
+                    throw $anyException;
                 }
-                $this->em->persist($item);
 
             });
         $this->em->flush();

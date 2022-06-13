@@ -7,6 +7,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Component\Import\Finishing\UnexpectedError;
 use NewApiBundle\Component\Import\Integrity\QueueViolation;
 use NewApiBundle\Entity\Helper\EnumTrait;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
@@ -237,6 +238,13 @@ class ImportQueue implements ConcurrencyLockableInterface
         $this->violatedColumns[$queueViolation->getLineIndex()][] = $queueViolation->getColumn();
     }
 
+    public function setUnexpectedError(UnexpectedError $error): void
+    {
+        $this->rawMessageData[-1] = $error->jsonSerialize();
+
+        $this->message = json_encode($this->rawMessageData);
+    }
+
     /**
      * @param int    $index
      * @param string $column
@@ -245,7 +253,7 @@ class ImportQueue implements ConcurrencyLockableInterface
      */
     public function hasColumnViolation(int $index, string $column): bool
     {
-        return in_array($column, $this->violatedColumns[$index]);
+        return key_exists($index, $this->violatedColumns) && in_array($column, $this->violatedColumns[$index]);
     }
 
     public function __toString()

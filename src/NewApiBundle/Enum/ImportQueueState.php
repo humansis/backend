@@ -21,6 +21,8 @@ final class ImportQueueState
     const CREATED = 'Created';
     const UPDATED = 'Updated';
     const LINKED = 'Linked';
+    const ERROR = 'Error';
+
 
     public static function values(): array
     {
@@ -39,6 +41,7 @@ final class ImportQueueState
             self::CREATED,
             self::UPDATED,
             self::LINKED,
+            self::ERROR,
         ];
     }
 

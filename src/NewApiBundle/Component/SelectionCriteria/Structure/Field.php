@@ -32,7 +32,13 @@ class Field
 
         if (null === $callback) {
             $callback = 'boolean' === $type ? 'is_bool' : 'is_'.$type;
-            if (!function_exists($callback)) {
+            if ('is_integer' === $callback || 'is_int' === $callback) {
+                $callback = function ($integerString) {
+                    return is_integer($integerString) || (
+                        is_numeric($integerString) && (string)intval($integerString) === $integerString
+                        );
+                };
+            } else if (!function_exists($callback)) {
                 throw new \InvalidArgumentException('Argument 5 missing. Callback is necessary for type '.$type);
             }
         }

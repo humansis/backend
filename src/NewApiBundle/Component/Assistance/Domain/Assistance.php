@@ -19,6 +19,7 @@ use NewApiBundle\Component\Assistance\DTO\CommoditySummary;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\CacheTarget;
+use NewApiBundle\Exception\ManipulationOverValidatedAssistanceException;
 use NewApiBundle\InputType\Assistance\CommodityInputType;
 use NewApiBundle\Repository\AssistanceStatisticsRepository;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
@@ -285,6 +286,10 @@ class Assistance
      */
     public function addBeneficiary(AbstractBeneficiary $beneficiary, ?string $justification = null, ?array $vulnerabilityScore = null): self
     {
+        if ($this->assistanceRoot->getValidated() == 1) {
+            throw new ManipulationOverValidatedAssistanceException("It is not possible to add a beneficiary to validated and locked assistance");
+        }
+
         $target = $this->targetRepository->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $this->assistanceRoot]);
         if (null === $target) {
             $target = (new AssistanceBeneficiary())
@@ -317,6 +322,10 @@ class Assistance
      */
     public function removeBeneficiary(AbstractBeneficiary $beneficiary, string $justification): self
     {
+        if ($this->assistanceRoot->getValidated() == 1) {
+            throw new ManipulationOverValidatedAssistanceException('It is not possible to remove a beneficiary from validated and locked assistance');
+        }
+
         $target = $this->targetRepository->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $this->assistanceRoot]);
         if ($target === null) return $this;
 
