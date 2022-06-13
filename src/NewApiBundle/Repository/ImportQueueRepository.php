@@ -43,6 +43,22 @@ class ImportQueueRepository extends EntityRepository
         $builder->getQuery()->execute();
     }
 
+    public function unlockLockedItems(Import $import, $code)
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $builder = $qb
+            ->update($this->getEntityName(), 'iq')
+            ->set('iq.lockedBy', 'NULL')
+            ->set('iq.lockedAt',  'NULL')
+
+            ->where('iq.import = :import')
+            ->andWhere('iq.lockedBy = :lockedBy')
+            ->andWhere('iq.lockedAt IS NOT NULL')
+            ->setParameter('lockedBy', $code)
+            ->setParameter('import', $import);
+        $builder->getQuery()->execute();
+    }
+
     public function findUnlockedIds(Import $import, $state,int $count)
     {
         $qb = $this->createQueryBuilder('iq');
