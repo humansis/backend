@@ -3,25 +3,18 @@
 namespace DistributionBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
- * SelectionCriteria
+ * SelectionCriteria - user filled criteria
  *
  * @ORM\Table(name="selection_criteria")
  * @ORM\Entity(repositoryClass="DistributionBundle\Repository\SelectionCriteriaRepository")
  */
 class SelectionCriteria
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var AssistanceSelection
@@ -109,16 +102,6 @@ class SelectionCriteria
     public function setWeight(int $weight)
     {
         $this->weight = $weight;
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**
