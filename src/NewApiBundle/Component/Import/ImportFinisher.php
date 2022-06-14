@@ -168,7 +168,7 @@ class ImportFinisher
                             break;
                     }
                     $this->em->persist($item);
-                } catch (\Exception $anyException) {
+                } catch (\Throwable $anyException) {
                     if (!$this->em->isOpen()) {
                         $this->em = $this->managerRegistry->resetManager();
                         $item = $this->em->getRepository(ImportQueue::class)->find($item->getId());
