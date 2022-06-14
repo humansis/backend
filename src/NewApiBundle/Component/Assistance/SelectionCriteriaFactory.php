@@ -11,7 +11,6 @@ use DistributionBundle\Utils\ConfigurationLoader;
 use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\Component\Assistance\Domain\SelectionCriteria;
 use NewApiBundle\Component\Assistance\DTO\CriteriaGroup;
-use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
 use NewApiBundle\Entity\Assistance\SelectionCriteria as SelectionCriteriaEntity;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Enum\SelectionCriteriaField;
@@ -49,68 +48,42 @@ class SelectionCriteriaFactory
 
     public function create(SelectionCriterionInputType $input): SelectionCriteriaEntity
     {
+        $criterium = new SelectionCriteriaEntity();
+        $criterium->setConditionString($input->getCondition());
+        $criterium->setFieldString($input->getField());
+        $criterium->setTarget($input->getTarget());
+        $criterium->setValueString($input->getValue());
+        $criterium->setWeight($input->getWeight());
+        $criterium->setGroupNumber($input->getGroup());
+        $criterium->setTableString('Personnal');
+
         if (SelectionCriteriaTarget::BENEFICIARY === $input->getTarget()) {
             if (($vulnerability = $this->getVulnerability($input->getField()))) {
-                return $this->createVulnerability(
-                    $input->getField(),
-                    $input->getTarget(),
-                    $input->getValue(),
-                    $input->getWeight()
-                );
-            }
-
-            if ('hasNotBeenInDistributionsSince' === $input->getField()) {
-                return $this->createPersonnal(
-                    $input->getCondition(),
-                    $input->getField(),
-                    $input->getTarget(),
-                    $input->getValue(),
-                    $input->getWeight()
-                );
+                $criterium->setConditionString(null);
+                $criterium->setTableString('vulnerabilityCriteria');
+                return $criterium;
             }
         }
 
         if (SelectionCriteriaTarget::HOUSEHOLD_HEAD === $input->getTarget()) {
             if ('disabledHeadOfHousehold' === $input->getField()) {
-                return $this->createPersonnal(
-                    $input->getCondition(),
-                    $input->getField(),
-                    $input->getTarget(),
-                    null,
-                    $input->getWeight()
-                );
+                $criterium->setValueString(null);
+                return $criterium;
             }
 
             if ('hasValidSmartcard' === $input->getField()) {
-                return $this->createPersonnal(
-                    'true',
-                    $input->getField(),
-                    $input->getTarget(),
-                    null,
-                    $input->getWeight()
-                );
+                $criterium->setConditionString(null);
+                $criterium->setValueString(null);
+                return $criterium;
             }
         }
 
         if (SelectionCriteriaTarget::HOUSEHOLD === $input->getTarget()) {
-            if ('householdSize' === $input->getField()) {
-                return $this->createPersonnal(
-                    $input->getCondition(),
-                    $input->getField(),
-                    $input->getTarget(),
-                    $input->getValue(),
-                    $input->getWeight()
-                );
-            }
 
             if ($countrySpecific = $this->getCountrySpecific($input->getField())) {
-                return $this->createCountrySpecific(
-                    $input->getCondition(),
-                    $input->getField(),
-                    $input->getTarget(),
-                    $input->getValue(),
-                    $input->getWeight()
-                );
+                $criterium->setTableString($countrySpecific->getFieldString());
+                $criterium->setFieldString('countrySpecific');
+                return $criterium;
             }
             if ('location' === $input->getField()) {
                 /** @var \CommonBundle\Entity\Location $location */
@@ -119,43 +92,20 @@ class SelectionCriteriaFactory
                     throw new EntityNotFoundException();
                 }
 
-                return $this->createPersonnal(
-                    $input->getCondition(),
-                    SelectionCriteriaField::CURRENT_LOCATION,
-                    $input->getTarget(),
-                    $location,
-                    $input->getWeight()
-                );
-            }
-
-            if ('campName' === $input->getField()) {
-                return $this->createPersonnal(
-                    $input->getCondition(),
-                    $input->getField(),
-                    $input->getTarget(),
-                    $input->getValue(),
-                    $input->getWeight()
-                );
+                $criterium->setFieldString(SelectionCriteriaField::CURRENT_LOCATION);
+                $criterium->setValueString($location->getId());
+                return $criterium;
             }
         }
 
-        $value = $input->getValue();
-        $field = $input->getField();
         if ('gender' === $input->getField()) {
             $genderEnum = PersonGender::valueFromAPI($input->getValue());
-            $value = (PersonGender::MALE === $genderEnum) ? '1' : '0';
-            if (SelectionCriteriaTarget::HOUSEHOLD_HEAD === $input->getTarget()) {
-                $field = 'headOfHouseholdGender';
-            }
+            $criterium->setFieldString('headOfHouseholdGender');
+            $criterium->setValueString((PersonGender::MALE === $genderEnum) ? '1' : '0');
+            return $criterium;
         }
 
-        return $this->createPersonnal(
-            $input->getCondition(),
-            $field,
-            $input->getTarget(),
-            $value,
-            $input->getWeight()
-        );
+        return $criterium;
     }
 
     /**

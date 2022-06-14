@@ -295,11 +295,12 @@ class AssistanceService
                 foreach ($criteriaData as $j => $criterionArray) {
                     $criterium = new SelectionCriterionInputType();
                     $criterium->setWeight($criterionArray['weight']);
-                    $criterium->setGroup($criterionArray['group']);
+                    $criterium->setGroup($j);
                     $criterium->setTarget($criterionArray['target']);
-                    $criterium->setCondition($criterionArray['condition']);
-                    $criterium->setField($criterionArray['field']);
-                    $criterium->setValue($criterionArray['value']);
+                    $criterium->setCondition($criterionArray['condition_string']);
+                    $criterium->setField($criterionArray['field_string']);
+                    $criterium->setValue($criterionArray['value'] ?? $criterionArray['value_string'] );
+                    $criteria[] = $criterium;
                 }
             }
             $selectionGroups = $this->selectionCriteriaFactory->createGroups($criteria);

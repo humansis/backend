@@ -621,7 +621,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
          * @var SelectionCriteria $criterion
          */
         foreach ($criteriaGroup->getCriteria() as $index => $criterion) {
-            $condition = $criterion->getConditionOperator() === '!=' ? '<>' : $criterion->getConditionOperator();
+            $condition = ($criterion->getConditionOperator() === '!=') ? '<>' : $criterion->getConditionOperator();
 
             if ($criterion->supportsHousehold()) {
                 $this->getHouseholdWithCriterion($qb, $criterion->getField(), $condition, $criterion, $index, $userConditionsStatement);
@@ -630,9 +630,9 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             } elseif ($criterion->supportsHouseholdHead()) {
                 $this->getHeadWithCriterion($qb, $criterion->getField(), $condition, $criterion, $index, $userConditionsStatement);
             }
-            // if ($criterion->hasValueString()) {
-            //     $qb->setParameter('parameter'.$index, $criterion->getValueString());
-            // }
+            if ($criterion->hasCountrySpecificType()) {
+                $qb->setParameter('parameter'.$index, $criterion->getValueString());
+            }
         }
         $qb->andWhere($userConditionsStatement);
 
@@ -643,16 +643,16 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     {
         // The selection criteria is a country Specific
         if ($criterion->hasCountrySpecificType()) {
-            $qb->leftJoin('hh.countrySpecificAnswers', 'csa'. $i, Join::WITH, 'csa'.$i . '.answer ' . $condition . ' :parameter'.$i)
-            ->leftJoin('csa'.$i . '.countrySpecific', 'cs'.$i, Join::WITH, 'cs'.$i . '.fieldString = :csName'.$i)
-            ->setParameter('csName'.$i, $field);
+            $qb->leftJoin('hh.countrySpecificAnswers', "csa$i", Join::WITH, "csa$i.answer $condition :parameter$i")
+            ->leftJoin("csa$i.countrySpecific", "cs$i", Join::WITH, "cs$i.fieldString = :csName$i")
+            ->setParameter("csName$i", $field);
 
             // To validate the criterion, the household has to answer the countrySpecific AND have the good value for it
             $andStatement = $qb->expr()->andX();
-            $andStatement->add('cs'.$i . '.fieldString = :csName'.$i);
-            $andStatement->add('csa'.$i . '.answer ' . $condition . ' :parameter'.$i);
+            $andStatement->add("cs$i.fieldString = :csName$i");
+            $andStatement->add("csa$i.answer $condition :parameter$i");
             $userConditionsStatement->add($andStatement);
-            $qb->addSelect('cs'.$i . '.fieldString');
+            $qb->addSelect("cs$i.fieldString");
         }
 
         // The selection criteria is directly a field in the Household table
