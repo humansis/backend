@@ -15,6 +15,7 @@ use Doctrine\ORM\Query\Expr\Andx;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Component\Assistance\Domain\SelectionCriteria;
+use NewApiBundle\Component\Assistance\DTO\CriteriaGroup;
 use NewApiBundle\Component\Import\Identity\NationalIdHashSet;
 use NewApiBundle\DBAL\PersonGenderEnum;
 use NewApiBundle\Entity\Import;
@@ -601,7 +602,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     }
 
 
-    public function getDistributionBeneficiaries(array $criteria, Project $project)
+    public function getDistributionBeneficiaries(CriteriaGroup $criteriaGroup, Project $project)
     {
         $hhRepository = $this->getEntityManager()->getRepository(Household::class);
         $qb = $hhRepository->getUnarchivedByProject($project);
@@ -619,7 +620,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
          * @var  $index
          * @var SelectionCriteria $criterion
          */
-        foreach ($criteria as $index => $criterion) {
+        foreach ($criteriaGroup->getCriteria() as $index => $criterion) {
             $condition = $criterion->getConditionOperator() === '!=' ? '<>' : $criterion->getConditionOperator();
 
             if ($criterion->supportsHousehold()) {

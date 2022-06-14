@@ -112,23 +112,7 @@ class BeneficiaryController extends Controller
      */
     public function getBeneficiariesAction(Request $request, Project $project)
     {
-        $filters = $request->request->all();
-        $filters['countryIso3'] = $filters['__country'];
-        $threshold = $filters['threshold'];
-        $targetType = $filters['target_type'] ?? null;
-
-        if (!in_array($targetType, AssistanceTargetType::values())) {
-            throw new BadRequestHttpException('Nonexistent assistance target type: '.$targetType);
-        }
-
-        $limit = $request->query->getInt('limit', 1000);
-        $offset = $request->query->getInt('offset', 0);
-
-        /** @var CriteriaAssistanceService $criteriaAssistanceService */
-        $criteriaAssistanceService = $this->get('distribution.criteria_assistance_service');
-        $data = $criteriaAssistanceService->getList($filters, $project, $targetType, $threshold, $limit, $offset);
-
-        return $this->json($data);
+        return new Response('Old endpoint', Response::HTTP_VERSION_NOT_SUPPORTED);
     }
 
     /**
@@ -161,22 +145,7 @@ class BeneficiaryController extends Controller
      */
     public function getBeneficiariesNumberAction(Request $request, Project $project)
     {
-        $filters = $request->request->all();
-        $filters['countryIso3'] = $filters['__country'];
-        $threshold = $filters['threshold'];
-        $sector = $filters['sector'];
-        $subSector = $filters['subsector'];
-        $targetType = $filters['target_type'] ?? null;
-
-        if (!in_array($targetType, AssistanceTargetType::values())) {
-            throw new BadRequestHttpException('Nonexistent assistance target type: '.$targetType);
-        }
-
-        /** @var CriteriaAssistanceService $criteriaAssistanceService */
-        $criteriaAssistanceService = $this->get('distribution.criteria_assistance_service');
-        $receivers = $criteriaAssistanceService->load($filters, $project, $targetType, $sector, $subSector, $threshold, true);
-
-        return $this->json($receivers);
+        return new Response('Old endpoint', Response::HTTP_VERSION_NOT_SUPPORTED);
     }
 
      /**

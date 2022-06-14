@@ -32,6 +32,7 @@ use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\Assistance\SelectionCriteria;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Enum\PersonGender;
+use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
@@ -152,10 +153,8 @@ class AssistanceService
             throw new EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
         }
 
-        $filters = $this->mapping($inputType);
-        $filters['criteria'] = $filters['selection_criteria'];
-
-        $result = $this->criteriaAssistanceService->load($filters, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false);
+        $selectionGroups = $this->selectionCriteriaFactory->createGroups($inputType->getSelectionCriteria());
+        $result = $this->criteriaAssistanceService->load($selectionGroups, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false);
         $ids = array_keys($result['finalArray']);
         $count = count($ids);
 
@@ -184,10 +183,8 @@ class AssistanceService
             throw new EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
         }
 
-        $filters = $this->mapping($inputType);
-        $filters['criteria'] = $filters['selection_criteria'];
-
-        $result = $this->criteriaAssistanceService->load($filters, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false);
+        $selectionGroups = $this->selectionCriteriaFactory->createGroups($inputType->getSelectionCriteria());
+        $result = $this->criteriaAssistanceService->load($selectionGroups, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false);
         $ids = array_keys($result['finalArray']);
         $count = count($ids);
 
@@ -296,19 +293,26 @@ class AssistanceService
             $criteria = [];
             foreach ($selectionCriteriaGroup as $i => $criteriaData) {
                 foreach ($criteriaData as $j => $criterionArray) {
-                    /** @var SelectionCriteria $criterion */
-                    $criterion = $this->serializer->deserialize(json_encode($criterionArray), SelectionCriteria::class, 'json', [
-                        PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true
-                    ]);
-                    $criterion->setGroupNumber($i);
-                    $this->criteriaAssistanceService->save($distribution, $criterion);
-                    $this->em->persist($criterion);
-                    $criteria[$i][$j] = $this->selectionCriteriaFactory->hydrate($criterion);
+                    $criterium = new SelectionCriterionInputType();
+                    $criterium->setWeight($criterionArray['weight']);
+                    $criterium->setGroup($criterionArray['group']);
+                    $criterium->setTarget($criterionArray['target']);
+                    $criterium->setCondition($criterionArray['condition']);
+                    $criterium->setField($criterionArray['field']);
+                    $criterium->setValue($criterionArray['value']);
                 }
             }
-
-            $distributionArray['selection_criteria'] = $criteria;
-            $listReceivers = $this->guessBeneficiaries($distributionArray, $countryISO3, $projectTmp, $distribution->getTargetType(), $sector, $subsector, $distributionArray['threshold']);
+            $selectionGroups = $this->selectionCriteriaFactory->createGroups($criteria);
+            $listReceivers = $this->container->get('distribution.criteria_assistance_service')
+                ->load(
+                    $selectionGroups,
+                    $project,
+                    $distribution->getTargetType(),
+                    $sector,
+                    $subsector,
+                    $distributionArray['threshold'],
+                    false
+                );
             $this->saveReceivers($distribution, $listReceivers);
         }
 
@@ -324,26 +328,6 @@ class AssistanceService
         $this->em->flush();
 
         return ["distribution" => $distribution, "data" => $listReceivers];
-    }
-
-    /**
-     * @deprecated dont use at all
-     * @param array   $criteria
-     * @param         $countryISO3
-     * @param Project $project
-     * @param string  $targetType
-     * @param         $sector
-     * @param         $subsector
-     * @param int     $threshold
-     *
-     * @return mixed
-     */
-    private function guessBeneficiaries(array $criteria, $countryISO3, Project $project, string $targetType, $sector, $subsector, int $threshold)
-    {
-        $criteria['criteria'] = $criteria['selection_criteria'];
-        $criteria['countryIso3'] = $countryISO3;
-
-        return $this->container->get('distribution.criteria_assistance_service')->load($criteria, $project, $targetType, $sector, $subsector, $threshold, false);
     }
 
     /**
@@ -773,9 +757,7 @@ class AssistanceService
         }
 
         foreach ($inputType->getSelectionCriteria() as $criterion) {
-            $distributionArray['selection_criteria'][$criterion->getGroup()][] = $this->selectionCriteriaFactory->hydrate(
-                $this->fieldDbTransformer->toDbArray($criterion)
-            );
+            $distributionArray['selection_criteria'][$criterion->getGroup()][] = $this->selectionCriteriaFactory->create($criterion);
         }
 
         return $distributionArray;

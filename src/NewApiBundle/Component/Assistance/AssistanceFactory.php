@@ -15,8 +15,10 @@ use DistributionBundle\Repository\ModalityTypeRepository;
 use DistributionBundle\Utils\CriteriaAssistanceService;
 use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\Component\Assistance\Domain;
+use NewApiBundle\Component\Assistance\DTO\CriteriaGroup;
 use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
 use NewApiBundle\Entity\Assistance\SelectionCriteria;
+use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\Repository\AssistanceStatisticsRepository;
 use ProjectBundle\Repository\ProjectRepository;
@@ -167,20 +169,16 @@ class AssistanceFactory
             case AssistanceTargetType::INDIVIDUAL:
             case AssistanceTargetType::HOUSEHOLD:
             default:
-                $selectionCriteria = [];
-                foreach ($inputType->getSelectionCriteria() as $criterion) {
-                    $selectionCriteria[$criterion->getGroup()][] = $sc = $this->selectionCriteriaFactory->hydrate(
-                        $this->fieldDbTransformer->toDbArray($criterion)
-                    );
-                    $assistance->addSelectionCriteria($sc);
+                $groups = $this->selectionCriteriaFactory->createGroups($inputType->getSelectionCriteria());
+                foreach ($groups as $criteriumGroup) {
+                    foreach ($criteriumGroup->getCriteria() as $criterion) {
+                        $assistance->addSelectionCriteria($criterion);
+                    }
                 }
-                // TODO: replace by SelectionCriteriaFactory::create
-                $criteria['criteria'] = $selectionCriteria;
-                $criteria['countryIso3'] = $inputType->getIso3();
                 $assistanceRoot->getAssistanceSelection()->setThreshold($inputType->getThreshold());
                 // WARNING: those are mixed Individual BNF IDs or HHH IDs of HH (HH ID aren't currently used)
                 $beneficiaryIds = $this->criteriaAssistanceService->load(
-                    $criteria,
+                    $assistance->getSelectionCriteriaGroups(),
                     $project,
                     $assistanceRoot->getTargetType(),
                     $assistanceRoot->getSector(),
@@ -226,7 +224,9 @@ class AssistanceFactory
             $this->modalityTypeRepository,
             $this->assistanceStatisticRepository,
             $this->workflowRegistry,
-            $this->targetRepository
+            $this->targetRepository,
+            $this->fieldDbTransformer,
+            $this->selectionCriteriaFactory
         );
     }
 }

@@ -538,7 +538,7 @@ class Assistance implements ExportableInterface
      *
      * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return \Doctrine\Common\Collections\Collection|SelectionCriteria[]
      */
     public function getSelectionCriteria()
     {

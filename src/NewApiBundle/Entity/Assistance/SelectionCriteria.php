@@ -87,7 +87,7 @@ class SelectionCriteria
      * @ORM\Column(name="group_number", type="integer", nullable=false)
      * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
-    private $groupNumber = 666;
+    private $groupNumber;
 
     /**
      * @return int

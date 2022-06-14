@@ -10,6 +10,7 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
+use NewApiBundle\Component\Assistance\DTO\CriteriaGroup;
 use NewApiBundle\Entity\Assistance\SelectionCriteria;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\Serializer\Serializer;
@@ -53,25 +54,23 @@ class CriteriaAssistanceService
     }
 
     /**
-     * @deprecated replace by new method with type control of incoming criteria objects and country code
-     * @param array       $filters
-     * @param Project     $project
-     * @param string      $targetType
-     * @param string      $sector
-     * @param string|null $subsector
-     * @param int         $threshold
-     * @param bool        $isCount
+     * @param iterable|CriteriaGroup[] $criteriaGroups
+     * @param Project         $project
+     * @param string          $targetType
+     * @param string          $sector
+     * @param string|null     $subsector
+     * @param int             $threshold
+     * @param bool            $isCount
      *
      * @return array
      * @throws \BeneficiaryBundle\Exception\CsvParserException
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Doctrine\ORM\ORMException
+     *@deprecated replace by new method with type control of incoming criteria objects and country code
      */
-    public function load(array $filters, Project $project, string $targetType, string $sector, ?string $subsector, int $threshold, bool $isCount)
+    public function load(iterable $criteriaGroups, Project $project, string $targetType, string $sector, ?string $subsector, int $threshold, bool $isCount)
     {
-        $countryISO3 = $filters['countryIso3'];
-
         if (!in_array($targetType, [
             AssistanceTargetType::INDIVIDUAL,
             AssistanceTargetType::HOUSEHOLD,
@@ -81,9 +80,8 @@ class CriteriaAssistanceService
 
         $reachedBeneficiaries = [];
 
-        /** @var \NewApiBundle\Component\Assistance\Domain\SelectionCriteria[] $group */
-        foreach ($filters['criteria'] as $group) {
-
+        foreach ($criteriaGroups as $group)
+        {
             $selectableBeneficiaries = $this->em->getRepository(Beneficiary::class)
                 ->getDistributionBeneficiaries($group, $project);
 
@@ -116,42 +114,6 @@ class CriteriaAssistanceService
             // !!!! Those are ids, not directly beneficiaries !!!!
             return ['finalArray' => $reachedBeneficiaries];
         }
-    }
-
-    /**
-     * @param array   $filters
-     * @param Project $project
-     * @param string  $targetType
-     * @param int     $threshold
-     * @param int     $limit
-     * @param int     $offset
-     *
-     * @return Beneficiary[]
-     * @throws \BeneficiaryBundle\Exception\CsvParserException
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Doctrine\ORM\ORMException
-     */
-    public function getList(array $filters, Project $project, string $targetType, int $threshold, int $limit, int $offset)
-    {
-        $result = $this->load($filters, $project, $targetType, $filters['sector'], $filters['subsector'], $threshold, false);
-
-        $beneficiaries = $this->em->getRepository(Beneficiary::class)->findBy(['id' => array_keys($result['finalArray'])], null, $limit, $offset);
-
-        $data = [];
-        foreach ($beneficiaries as $beneficiary) {
-            $serialized = $this->serializer->serialize($beneficiary, 'json', ['groups' => ['SmallHousehold']]);
-            $deserialized = json_decode($serialized, true);
-            $deserialized['scores'] = $result['finalArray'][$beneficiary->getId()];
-
-            $data[] = $deserialized;
-        }
-
-        usort($data, function ($a, $b) {
-            return $b['scores']['totalScore'] <=> $a['scores']['totalScore'];
-        });
-
-        return $data;
     }
 
     /**
