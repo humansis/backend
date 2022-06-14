@@ -10,7 +10,9 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 /**
  * CountrySpecific
  *
- * @ORM\Table(name="country_specific")
+ * @ORM\Table(name="country_specific", uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="duplicity_check_idx", columns={"field_string", "country_iso3"})
+ * })
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\CountrySpecificRepository")
  */
 class CountrySpecific extends Criteria implements ExportableInterface
