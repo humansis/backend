@@ -7,6 +7,7 @@ namespace NewApiBundle\Controller;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use CommonBundle\Controller\ExportController;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\CountrySpecificCreateInputType;
 use NewApiBundle\InputType\CountrySpecificFilterInputType;
@@ -34,7 +35,7 @@ class CountrySpecificController extends AbstractController
             '__country' => $request->headers->get('country'),
         ]);
 
-        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
+        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
     }
 
     /**
@@ -64,18 +65,18 @@ class CountrySpecificController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/country-specifics")
      *
-     * @param Request                        $request
+     * @param Request $request
      * @param CountrySpecificFilterInputType $filter
-     * @param Pagination                     $pagination
-     * @param CountrySpecificOrderInputType  $orderBy
+     * @param Pagination $pagination
+     * @param CountrySpecificOrderInputType $orderBy
      *
      * @return JsonResponse
      */
     public function list(
-        Request $request,
+        Request                        $request,
         CountrySpecificFilterInputType $filter,
-        Pagination $pagination,
-        CountrySpecificOrderInputType $orderBy
+        Pagination                     $pagination,
+        CountrySpecificOrderInputType  $orderBy
     ): JsonResponse
     {
         if (!$request->headers->has('country')) {
@@ -94,13 +95,18 @@ class CountrySpecificController extends AbstractController
      * @param CountrySpecificCreateInputType $inputType
      *
      * @return JsonResponse
+     * @throws \Exception
      */
     public function create(CountrySpecificCreateInputType $inputType): JsonResponse
     {
         $countrySpecific = new CountrySpecific($inputType->getField(), $inputType->getType(), $inputType->getIso3());
 
-        $this->getDoctrine()->getManager()->persist($countrySpecific);
-        $this->getDoctrine()->getManager()->flush();
+        try {
+            $this->getDoctrine()->getManager()->persist($countrySpecific);
+            $this->getDoctrine()->getManager()->flush();
+        } catch (UniqueConstraintViolationException $e) {
+            return new JsonResponse("Country specific option with the same name already exists, please choose another name.", 400);
+        }
 
         return $this->json($countrySpecific);
     }
@@ -108,18 +114,23 @@ class CountrySpecificController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/country-specifics/{id}")
      *
-     * @param CountrySpecific                $countrySpecific
+     * @param CountrySpecific $countrySpecific
      * @param CountrySpecificUpdateInputType $inputType
      *
      * @return JsonResponse
+     * @throws \Exception
      */
     public function update(CountrySpecific $countrySpecific, CountrySpecificUpdateInputType $inputType): JsonResponse
     {
         $countrySpecific->setFieldString($inputType->getField());
         $countrySpecific->setType($inputType->getType());
 
-        $this->getDoctrine()->getManager()->persist($countrySpecific);
-        $this->getDoctrine()->getManager()->flush();
+        try {
+            $this->getDoctrine()->getManager()->persist($countrySpecific);
+            $this->getDoctrine()->getManager()->flush();
+        } catch (UniqueConstraintViolationException $e) {
+            return new JsonResponse("Country specific option with the same name already exists, please choose another name.", 400);
+        }
 
         return $this->json($countrySpecific);
     }
