@@ -4,15 +4,14 @@
 namespace DistributionBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Model\Vulnerability\CategoryEnum;
+use BeneficiaryBundle\Entity\Camp;
 use BeneficiaryBundle\Model\Vulnerability\Resolver;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
+use NewApiBundle\Entity\Assistance\SelectionCriteria;
 use ProjectBundle\Entity\Project;
-use BeneficiaryBundle\Entity\Camp;
 use Symfony\Component\Serializer\Serializer;
 
 /**

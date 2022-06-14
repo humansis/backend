@@ -1,7 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace DistributionBundle\Entity;
+namespace NewApiBundle\Entity\Assistance;
 
+use DistributionBundle\Entity\AssistanceSelection;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;

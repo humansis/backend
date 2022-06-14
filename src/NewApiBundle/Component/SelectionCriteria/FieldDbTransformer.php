@@ -8,8 +8,8 @@ use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Repository\CountrySpecificRepository;
 use BeneficiaryBundle\Repository\VulnerabilityCriterionRepository;
 use CommonBundle\Repository\LocationRepository;
-use DistributionBundle\Entity\SelectionCriteria;
 use Doctrine\ORM\EntityNotFoundException;
+use NewApiBundle\Entity\Assistance\SelectionCriteria;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Enum\SelectionCriteriaField;
 use NewApiBundle\Enum\SelectionCriteriaTarget;
@@ -180,10 +180,10 @@ class FieldDbTransformer
     }
 
     /**
-     * @deprecated rewrite into SelectionCriteriaMapper (maybe multiple mappers)
-     * @param SelectionCriteria $criterion
+     * @param \NewApiBundle\Entity\Assistance\SelectionCriteria $criterion
      *
      * @return array
+     * @deprecated rewrite into SelectionCriteriaMapper (maybe multiple mappers)
      */
     public function toResponseArray(SelectionCriteria $criterion)
     {
