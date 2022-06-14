@@ -81,14 +81,8 @@ class CriteriaAssistanceService
 
         $reachedBeneficiaries = [];
 
+        /** @var \NewApiBundle\Component\Assistance\Domain\SelectionCriteria[] $group */
         foreach ($filters['criteria'] as $group) {
-            foreach ($group as $index => $criterion) {
-                if ($criterion['table_string'] === 'Personnal') {
-                    // TODO: move criteria enhancing into SelectionCriteria domain object/happens in SelectionCriteriaFactory
-                    $criterion['type'] = $this->configurationLoader->criteria[$criterion['field_string']]['type'];
-                    $group[$index] = $criterion;
-                }
-            }
 
             $selectableBeneficiaries = $this->em->getRepository(Beneficiary::class)
                 ->getDistributionBeneficiaries($group, $project);

@@ -393,4 +393,17 @@ class Assistance
         });
     }
 
+    public function addSelectionCriteria(SelectionCriteria $selectionCriteria): void
+    {
+        $this->assistanceRoot
+            ->getAssistanceSelection()
+            ->getSelectionCriteria()
+            ->add($selectionCriteria->getCriteriaRoot())
+        ;
+        $selectionCriteria
+            ->getCriteriaRoot()
+            ->setAssistanceSelection($this->assistanceRoot->getAssistanceSelection())
+        ;
+    }
+
 }

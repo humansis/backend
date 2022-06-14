@@ -51,8 +51,10 @@ services:
             - '@serializer'
 
     distribution.configuration_loader:
-        class: DistributionBundle\Utils\ConfigurationLoader
+        alias: DistributionBundle\Utils\ConfigurationLoader
         public: true
+
+    DistributionBundle\Utils\ConfigurationLoader:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '%distribution.criteria%'

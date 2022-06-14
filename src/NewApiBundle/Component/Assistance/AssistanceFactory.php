@@ -66,6 +66,9 @@ class AssistanceFactory
     /** @var AssistanceBeneficiaryRepository */
     private $targetRepository;
 
+    /** @var SelectionCriteriaFactory */
+    private $selectionCriteriaFactory;
+
     /**
      * @param CacheInterface                  $cache
      * @param CriteriaAssistanceService       $criteriaAssistanceService
@@ -80,21 +83,23 @@ class AssistanceFactory
      * @param AssistanceStatisticsRepository  $assistanceStatisticRepository
      * @param Registry                        $workflowRegistry
      * @param AssistanceBeneficiaryRepository $targetRepository
+     * @param SelectionCriteriaFactory        $selectionCriteriaFactory
      */
     public function __construct(
-        CacheInterface                                                 $cache,
-        CriteriaAssistanceService                                      $criteriaAssistanceService,
-        FieldDbTransformer                                             $fieldDbTransformer,
-        SerializerInterface                                            $serializer,
-        ModalityTypeRepository                                         $modalityTypeRepository,
-        LocationRepository                                             $locationRepository,
-        ProjectRepository                                              $projectRepository,
-        CommunityRepository                                            $communityRepository,
-        InstitutionRepository                                          $institutionRepository,
-        BeneficiaryRepository                                          $beneficiaryRepository,
-        AssistanceStatisticsRepository                                 $assistanceStatisticRepository,
-        Registry                                                       $workflowRegistry,
-        AssistanceBeneficiaryRepository $targetRepository
+        CacheInterface                  $cache,
+        CriteriaAssistanceService       $criteriaAssistanceService,
+        FieldDbTransformer              $fieldDbTransformer,
+        SerializerInterface             $serializer,
+        ModalityTypeRepository          $modalityTypeRepository,
+        LocationRepository              $locationRepository,
+        ProjectRepository               $projectRepository,
+        CommunityRepository             $communityRepository,
+        InstitutionRepository           $institutionRepository,
+        BeneficiaryRepository           $beneficiaryRepository,
+        AssistanceStatisticsRepository  $assistanceStatisticRepository,
+        Registry                        $workflowRegistry,
+        AssistanceBeneficiaryRepository $targetRepository,
+        SelectionCriteriaFactory        $selectionCriteriaFactory
     ) {
         $this->cache = $cache;
         $this->criteriaAssistanceService = $criteriaAssistanceService;
@@ -109,6 +114,7 @@ class AssistanceFactory
         $this->assistanceStatisticRepository = $assistanceStatisticRepository;
         $this->workflowRegistry = $workflowRegistry;
         $this->targetRepository = $targetRepository;
+        $this->selectionCriteriaFactory = $selectionCriteriaFactory;
     }
 
     public function create(AssistanceCreateInputType $inputType): Domain\Assistance
@@ -161,12 +167,15 @@ class AssistanceFactory
             case AssistanceTargetType::INDIVIDUAL:
             case AssistanceTargetType::HOUSEHOLD:
             default:
-                $selectionCriteriaShitArray = [];
+                $selectionCriteria = [];
                 foreach ($inputType->getSelectionCriteria() as $criterion) {
-                    $selectionCriteriaShitArray[$criterion->getGroup()][] = $this->fieldDbTransformer->toDbArray($criterion);
+                    $selectionCriteria[$criterion->getGroup()][] = $sc = $this->selectionCriteriaFactory->hydrate(
+                        $this->fieldDbTransformer->toDbArray($criterion)
+                    );
+                    $assistance->addSelectionCriteria($sc);
                 }
                 // TODO: replace by SelectionCriteriaFactory::create
-                $criteria['criteria'] = $this->makeSelectionCriteriaBlackMagick($assistanceRoot, $selectionCriteriaShitArray);
+                $criteria['criteria'] = $selectionCriteria;
                 $criteria['countryIso3'] = $inputType->getIso3();
                 $assistanceRoot->getAssistanceSelection()->setThreshold($inputType->getThreshold());
                 // WARNING: those are mixed Individual BNF IDs or HHH IDs of HH (HH ID aren't currently used)
@@ -219,30 +228,5 @@ class AssistanceFactory
             $this->workflowRegistry,
             $this->targetRepository
         );
-    }
-
-    /**
-     * @deprecated rewrite or remove after use SelectionCriteriaFactory::create
-     * @param Entity\Assistance $assistance
-     * @param array             $selectionCriteriaShitArray
-     *
-     * @return array
-     */
-    private function makeSelectionCriteriaBlackMagick(Entity\Assistance $assistance, array $selectionCriteriaShitArray): array
-    {
-        $criteria = [];
-        foreach ($selectionCriteriaShitArray as $i => $criteriaData) {
-            foreach ($criteriaData as $j => $criterionArray) {
-                /** @var SelectionCriteria $criterion */
-                $criterion = $this->serializer->deserialize(json_encode($criterionArray), SelectionCriteria::class, 'json', [
-                    PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
-                ]);
-                $criterion->setGroupNumber($i);
-                $this->criteriaAssistanceService->save($assistance, $criterion);
-                $criteria[$i][$j] = $criterionArray;
-            }
-        }
-
-        return $criteria;
     }
 }

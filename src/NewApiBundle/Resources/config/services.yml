@@ -447,6 +447,8 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
+    NewApiBundle\Component\Assistance\SelectionCriteriaFactory:
+
     NewApiBundle\Factory\AwsStorageFactory:
         public: true
 

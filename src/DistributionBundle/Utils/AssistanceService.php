@@ -26,6 +26,7 @@ use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\ORMException;
 use Exception;
 use NewApiBundle\Component\Assistance\AssistanceFactory;
+use NewApiBundle\Component\Assistance\SelectionCriteriaFactory;
 use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\Assistance\SelectionCriteria;
@@ -84,6 +85,9 @@ class AssistanceService
     /** @var AssistanceRepository */
     private $assistanceRepository;
 
+    /** @var SelectionCriteriaFactory */
+    private $selectionCriteriaFactory;
+
     /**
      * AssistanceService constructor.
      *
@@ -98,6 +102,7 @@ class AssistanceService
      * @param FilesystemAdapter         $cache
      * @param AssistanceFactory         $assistanceFactory
      * @param AssistanceRepository      $assistanceRepository
+     * @param SelectionCriteriaFactory  $selectionCriteriaFactory
      */
     public function __construct(
         EntityManagerInterface    $entityManager,
@@ -110,7 +115,8 @@ class AssistanceService
         ContainerInterface        $container,
         CacheInterface            $cache,
         AssistanceFactory         $assistanceFactory,
-        AssistanceRepository      $assistanceRepository
+        AssistanceRepository      $assistanceRepository,
+        SelectionCriteriaFactory  $selectionCriteriaFactory
     ) {
         $this->em = $entityManager;
         $this->serializer = $serializer;
@@ -123,6 +129,7 @@ class AssistanceService
         $this->cache = $cache;
         $this->assistanceFactory = $assistanceFactory;
         $this->assistanceRepository = $assistanceRepository;
+        $this->selectionCriteriaFactory = $selectionCriteriaFactory;
     }
 
     /**
@@ -296,7 +303,7 @@ class AssistanceService
                     $criterion->setGroupNumber($i);
                     $this->criteriaAssistanceService->save($distribution, $criterion);
                     $this->em->persist($criterion);
-                    $criteria[$i][$j] = $criterionArray;
+                    $criteria[$i][$j] = $this->selectionCriteriaFactory->hydrate($criterion);
                 }
             }
 
@@ -766,7 +773,9 @@ class AssistanceService
         }
 
         foreach ($inputType->getSelectionCriteria() as $criterion) {
-            $distributionArray['selection_criteria'][$criterion->getGroup()][] = $this->fieldDbTransformer->toDbArray($criterion);
+            $distributionArray['selection_criteria'][$criterion->getGroup()][] = $this->selectionCriteriaFactory->hydrate(
+                $this->fieldDbTransformer->toDbArray($criterion)
+            );
         }
 
         return $distributionArray;

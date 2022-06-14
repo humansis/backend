@@ -9,6 +9,7 @@ use BeneficiaryBundle\Repository\CountrySpecificRepository;
 use BeneficiaryBundle\Repository\VulnerabilityCriterionRepository;
 use CommonBundle\Repository\LocationRepository;
 use Doctrine\ORM\EntityNotFoundException;
+use NewApiBundle\Component\Assistance\SelectionCriteriaFactory;
 use NewApiBundle\Entity\Assistance\SelectionCriteria;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Enum\SelectionCriteriaField;
@@ -31,101 +32,146 @@ class FieldDbTransformer
     /** @var LocationRepository */
     private $locationRepository;
 
+    /** @var SelectionCriteriaFactory */
+    private $selectionCriteriaFactory;
+
     public function __construct(
-        CountrySpecificRepository $countrySpecificRepository,
+        CountrySpecificRepository        $countrySpecificRepository,
         VulnerabilityCriterionRepository $vulnerabilityCriterionRepository,
-        LocationRepository $locationRepository
-    )
-    {
+        LocationRepository               $locationRepository,
+        SelectionCriteriaFactory         $selectionCriteriaFactory
+    ) {
         $this->countrySpecificRepository = $countrySpecificRepository;
         $this->vulnerabilityCriterionRepository = $vulnerabilityCriterionRepository;
         $this->locationRepository = $locationRepository;
+        $this->selectionCriteriaFactory = $selectionCriteriaFactory;
     }
 
     /**
      * @deprecated rewrite into SelectionCriteriaFactory::create (returns SelectionCriteria domain object)
      * @param SelectionCriterionInputType $input
      *
-     * @return array
+     * @return SelectionCriteria
      * @throws EntityNotFoundException
      */
-    public function toDbArray(SelectionCriterionInputType $input): array
+    public function toDbArray(SelectionCriterionInputType $input): SelectionCriteria
     {
         if (SelectionCriteriaTarget::BENEFICIARY === $input->getTarget()) {
             if (($vulnerability = $this->getVulnerability($input->getField()))) {
-                return [
-                    'condition_string' => $input->getValue(),
-                    'field_string' => $input->getField(),
-                    'target' => $input->getTarget(),
-                    'table_string' => 'vulnerabilityCriteria',
-                    'value_string' => null,
-                    'weight' => $input->getWeight(),
-                ];
+                return $this->selectionCriteriaFactory->createVulnerability(
+                    $input->getField(),
+                    $input->getTarget(),
+                    $input->getValue(),
+                    $input->getWeight()
+                );
+                // return [
+                //     'condition_string' => $input->getValue(),
+                //     'field_string' => $input->getField(),
+                //     'target' => $input->getTarget(),
+                //     'table_string' => 'vulnerabilityCriteria',
+                //     'value_string' => null,
+                //     'weight' => $input->getWeight(),
+                // ];
             }
 
             if ('hasNotBeenInDistributionsSince' === $input->getField()) {
-                return [
-                    'condition_string' => $input->getCondition(),
-                    'field_string' => $input->getField(),
-                    'target' => $input->getTarget(),
-                    'table_string' => 'Personnal',
-                    'value_string' => $input->getValue(),
-                    'weight' => $input->getWeight(),
-                    'type' => 'other',
-                ];
+                return $this->selectionCriteriaFactory->createPersonnal(
+                    $input->getCondition(),
+                    $input->getField(),
+                    $input->getTarget(),
+                    $input->getValue(),
+                    $input->getWeight()
+                );
+                // return [
+                //     'condition_string' => $input->getCondition(),
+                //     'field_string' => $input->getField(),
+                //     'target' => $input->getTarget(),
+                //     'table_string' => 'Personnal',
+                //     'value_string' => $input->getValue(),
+                //     'weight' => $input->getWeight(),
+                //     'type' => 'other',
+                // ];
             }
         }
 
         if (SelectionCriteriaTarget::HOUSEHOLD_HEAD === $input->getTarget()) {
             if ('disabledHeadOfHousehold' === $input->getField()) {
-                return [
-                    'condition_string' => true,
-                    'field_string' => $input->getField(),
-                    'target' => $input->getTarget(),
-                    'table_string' => 'Personnal',
-                    'value_string' => null,
-                    'weight' => $input->getWeight(),
-                    'type' => 'other',
-                ];
+                return $this->selectionCriteriaFactory->createPersonnal(
+                    $input->getCondition(),
+                    $input->getField(),
+                    $input->getTarget(),
+                    null,
+                    $input->getWeight()
+                );
+                // return [
+                //     'condition_string' => true,
+                //     'field_string' => $input->getField(),
+                //     'target' => $input->getTarget(),
+                //     'table_string' => 'Personnal',
+                //     'value_string' => null,
+                //     'weight' => $input->getWeight(),
+                //     'type' => 'other',
+                // ];
             }
 
             if ('hasValidSmartcard' === $input->getField()) {
-                return [
-                    'condition_string' => true,
-                    'field_string' => $input->getField(),
-                    'target' => $input->getTarget(),
-                    'table_string' => 'Personnal',
-                    'value_string' => null,
-                    'value' => $input->getValue(),
-                    'weight' => $input->getWeight(),
-                    'type' => 'other',
-                ];
+                return $this->selectionCriteriaFactory->createPersonnal(
+                    'true',
+                    $input->getField(),
+                    $input->getTarget(),
+                    null,
+                    $input->getWeight()
+                );
+                // return [
+                //     'condition_string' => true,
+                //     'field_string' => $input->getField(),
+                //     'target' => $input->getTarget(),
+                //     'table_string' => 'Personnal',
+                //     'value_string' => null,
+                //     'value' => $input->getValue(),
+                //     'weight' => $input->getWeight(),
+                //     'type' => 'other',
+                // ];
             }
         }
 
         if (SelectionCriteriaTarget::HOUSEHOLD === $input->getTarget()) {
             if ('householdSize' === $input->getField()) {
-                return [
-                    'condition_string' => $input->getCondition(),
-                    'field_string' => $input->getField(),
-                    'target' => $input->getTarget(),
-                    'table_string' => 'Personnal',
-                    'value_string' => $input->getValue(),
-                    'weight' => $input->getWeight(),
-                    'type' => 'other',
-                ];
+                return $this->selectionCriteriaFactory->createPersonnal(
+                    $input->getCondition(),
+                    $input->getField(),
+                    $input->getTarget(),
+                    $input->getValue(),
+                    $input->getWeight()
+                );
+                // return [
+                //     'condition_string' => $input->getCondition(),
+                //     'field_string' => $input->getField(),
+                //     'target' => $input->getTarget(),
+                //     'table_string' => 'Personnal',
+                //     'value_string' => $input->getValue(),
+                //     'weight' => $input->getWeight(),
+                //     'type' => 'other',
+                // ];
             }
 
             if ($countrySpecific = $this->getCountrySpecific($input->getField())) {
-                return [
-                    'condition_string' => $input->getCondition(),
-                    'field_string' => $input->getField(),
-                    'target' => $input->getTarget(),
-                    'table_string' => 'countrySpecific',
-                    'value_string' => $input->getValue(),
-                    'weight' => $input->getWeight(),
-                    'type' => $countrySpecific->getType(),
-                ];
+                return $this->selectionCriteriaFactory->createCountrySpecific(
+                    $input->getCondition(),
+                    $input->getField(),
+                    $input->getTarget(),
+                    $input->getValue(),
+                    $input->getWeight()
+                );
+                // return [
+                //     'condition_string' => $input->getCondition(),
+                //     'field_string' => $input->getField(),
+                //     'target' => $input->getTarget(),
+                //     'table_string' => 'countrySpecific',
+                //     'value_string' => $input->getValue(),
+                //     'weight' => $input->getWeight(),
+                //     'type' => $countrySpecific->getType(),
+                // ];
             }
             if ('location' === $input->getField()) {
                 /** @var \CommonBundle\Entity\Location $location */
@@ -134,27 +180,41 @@ class FieldDbTransformer
                     throw new EntityNotFoundException();
                 }
 
-                return [
-                    'condition_string' => $input->getCondition(),
-                    'field_string' => SelectionCriteriaField::CURRENT_LOCATION,
-                    'target' => $input->getTarget(),
-                    'table_string' => 'Personnal',
-                    'value' => $location,
-                    'weight' => $input->getWeight(),
-                    'type' => 'other',
-                ];
+                return $this->selectionCriteriaFactory->createPersonnal(
+                    $input->getCondition(),
+                    SelectionCriteriaField::CURRENT_LOCATION,
+                    $input->getTarget(),
+                    $location,
+                    $input->getWeight()
+                );
+                // return [
+                //     'condition_string' => $input->getCondition(),
+                //     'field_string' => SelectionCriteriaField::CURRENT_LOCATION,
+                //     'target' => $input->getTarget(),
+                //     'table_string' => 'Personnal',
+                //     'value' => $location,
+                //     'weight' => $input->getWeight(),
+                //     'type' => 'other',
+                // ];
             }
 
             if ('campName' === $input->getField()) {
-                return [
-                    'condition_string' => $input->getCondition(),
-                    'field_string' => $input->getField(),
-                    'target' => $input->getTarget(),
-                    'table_string' => 'Personnal',
-                    'value_string' => $input->getValue(),
-                    'weight' => $input->getWeight(),
-                    'type' => 'other',
-                ];
+                return $this->selectionCriteriaFactory->createPersonnal(
+                    $input->getCondition(),
+                    $input->getField(),
+                    $input->getTarget(),
+                    $input->getValue(),
+                    $input->getWeight()
+                );
+                // return [
+                //     'condition_string' => $input->getCondition(),
+                //     'field_string' => $input->getField(),
+                //     'target' => $input->getTarget(),
+                //     'table_string' => 'Personnal',
+                //     'value_string' => $input->getValue(),
+                //     'weight' => $input->getWeight(),
+                //     'type' => 'other',
+                // ];
             }
         }
 
@@ -168,15 +228,23 @@ class FieldDbTransformer
             }
         }
 
-        return [
-            'condition_string' => $input->getCondition(),
-            'field_string' => $field,
-            'target' => $input->getTarget(),
-            'table_string' => 'Personnal',
-            'value_string' => $value,
-            'weight' => $input->getWeight(),
-            'type' => 'table_field',
-        ];
+        return $this->selectionCriteriaFactory->createPersonnal(
+            $input->getCondition(),
+            $field,
+            $input->getTarget(),
+            $value,
+            $input->getWeight()
+        );
+
+        // return [
+        //     'condition_string' => $input->getCondition(),
+        //     'field_string' => $field,
+        //     'target' => $input->getTarget(),
+        //     'table_string' => 'Personnal',
+        //     'value_string' => $value,
+        //     'weight' => $input->getWeight(),
+        //     'type' => 'table_field',
+        // ];
     }
 
     /**

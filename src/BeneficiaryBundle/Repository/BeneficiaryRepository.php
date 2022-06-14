@@ -14,6 +14,7 @@ use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query\Expr\Andx;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use NewApiBundle\Component\Assistance\Domain\SelectionCriteria;
 use NewApiBundle\Component\Import\Identity\NationalIdHashSet;
 use NewApiBundle\DBAL\PersonGenderEnum;
 use NewApiBundle\Entity\Import;
@@ -614,31 +615,33 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
 
         // If a beneficiary has a criterion, they are selectable, therefore every criterion has to go in a orX()
         $userConditionsStatement = $qb->expr()->andX();
+        /**
+         * @var  $index
+         * @var SelectionCriteria $criterion
+         */
         foreach ($criteria as $index => $criterion) {
-            $condition = $criterion['condition_string'];
-            $field = $criterion['field_string'];
-            $condition = $condition === '!=' ? '<>' : $condition;
+            $condition = $criterion->getConditionOperator() === '!=' ? '<>' : $criterion->getConditionOperator();
 
-            if ('Household' == $criterion['target']) {
-                $this->getHouseholdWithCriterion($qb, $field, $condition, $criterion, $index, $userConditionsStatement);
-            } elseif ('Beneficiary' == $criterion['target']) {
-                $this->getBeneficiaryWithCriterion($qb, $field, $condition, $criterion, $index, $userConditionsStatement);
-            } elseif ('Head' == $criterion['target']) {
-                $this->getHeadWithCriterion($qb, $field, $condition, $criterion, $index, $userConditionsStatement);
+            if ($criterion->supportsHousehold()) {
+                $this->getHouseholdWithCriterion($qb, $criterion->getField(), $condition, $criterion, $index, $userConditionsStatement);
+            } elseif ($criterion->supportsIndividual()) {
+                $this->getBeneficiaryWithCriterion($qb, $criterion->getField(), $condition, $criterion, $index, $userConditionsStatement);
+            } elseif ($criterion->supportsHouseholdHead()) {
+                $this->getHeadWithCriterion($qb, $criterion->getField(), $condition, $criterion, $index, $userConditionsStatement);
             }
-            if (array_key_exists('value_string', $criterion) && !is_null($criterion['value_string'])) {
-                $qb->setParameter('parameter'.$index, $criterion['value_string']);
-            }
+            // if ($criterion->hasValueString()) {
+            //     $qb->setParameter('parameter'.$index, $criterion->getValueString());
+            // }
         }
         $qb->andWhere($userConditionsStatement);
 
         return $qb->getQuery()->getResult();
     }
 
-    private function getHouseholdWithCriterion(QueryBuilder &$qb, $field, $condition, $criterion, int $i, Andx &$userConditionsStatement)
+    private function getHouseholdWithCriterion(QueryBuilder &$qb, $field, $condition, SelectionCriteria $criterion, int $i, Andx &$userConditionsStatement)
     {
         // The selection criteria is a country Specific
-        if ($criterion['table_string'] === 'countrySpecific') {
+        if ($criterion->hasCountrySpecificType()) {
             $qb->leftJoin('hh.countrySpecificAnswers', 'csa'. $i, Join::WITH, 'csa'.$i . '.answer ' . $condition . ' :parameter'.$i)
             ->leftJoin('csa'.$i . '.countrySpecific', 'cs'.$i, Join::WITH, 'cs'.$i . '.fieldString = :csName'.$i)
             ->setParameter('csName'.$i, $field);
@@ -652,11 +655,11 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         }
 
         // The selection criteria is directly a field in the Household table
-        elseif ($criterion['type'] === 'table_field') {
+        elseif ($criterion->hasTableFieldType()) {
             $userConditionsStatement->add('hh.' . $field . $condition . ' :parameter'.$i);
             $qb->addSelect('(CASE WHEN hh.' . $field . $condition . ' :parameter'.$i . ' THEN hh. ' . $field . ' ELSE :null END) AS ' . $field.$i)
                 ->setParameter('null', null);
-        } elseif ($criterion['type'] === 'other') {
+        } elseif ($criterion->hasTypeOther()) {
             // The selection criteria is the size of the household
             if ($field === 'householdSize') {
                 $userConditionsStatement->add('SIZE(hh.beneficiaries) ' . $condition . ' :parameter'.$i);
@@ -696,14 +699,14 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         }
     }
 
-    private function getBeneficiaryWithCriterion(&$qb, $field, $condition, $criterion, int $i, &$userConditionsStatement)
+    private function getBeneficiaryWithCriterion(&$qb, $field, $condition, SelectionCriteria $criterion, int $i, &$userConditionsStatement)
     {
         // The selection criteria is a vulnerability criterion
-        if ($criterion['table_string'] === 'vulnerabilityCriteria') {
+        if ($criterion->hasVulnerabilityCriteriaType()) {
             $this->hasVulnerabilityCriterion($qb, 'b', $condition, $field, $userConditionsStatement, $i);
         }
         // The selection criteria is directly a field in the Beneficiary table
-        else if ($criterion['type'] === 'table_field') {
+        else if ($criterion->hasTableFieldType()) {
             if (in_array($field, ['dateOfBirth', 'gender'])) {
                 if (!in_array('prsn', $qb->getAllAliases())) {
                     $qb->join('b.person', 'prsn');
@@ -717,7 +720,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                 $qb->addSelect('(CASE WHEN b.'.$field.$condition.' :parameter'.$i.' THEN b.'.$field.' ELSE :null END) AS '.$field.$i)
                     ->setParameter('null', null);
             }
-        } elseif ('other' === $criterion['type']) {
+        } elseif ($criterion->hasTypeOther()) {
             // The selection criteria is the last distribution
             if ('hasNotBeenInDistributionsSince' === $field) {
                 $qb->leftJoin('b.assistanceBeneficiary', 'db'.$i)
@@ -771,14 +774,14 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         }
     }
 
-    private function getHeadWithCriterion(&$qb, $field, $condition, $criterion, int $i, &$userConditionsStatement)
+    private function getHeadWithCriterion(&$qb, $field, $condition, SelectionCriteria $criterion, int $i, &$userConditionsStatement)
     {
         $qb->leftJoin('hh.beneficiaries', 'hhh'.$i)
             ->andWhere('hhh'.$i.'.status = 1');
         $qb->join('hhh'.$i.'.person', 'prsn'.$i);
 
         // The selection criteria is directly a field in the Beneficiary table
-        if ('table_field' === $criterion['type']) {
+        if ($criterion->hasTableFieldType()) {
             // The criterion name identifies the criterion (eg. headOfHouseholdDateOfBirth) whereas the field is gonna identify the table field (eg. dateOfBirth) in the Beneficiary table
             $criterionName = $field;
             if ('headOfHouseholdDateOfBirth' === $field) {
@@ -794,7 +797,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                 $qb->addSelect('(CASE WHEN hhh'.$i.'.'.$field.$condition.' :parameter'.$i.' THEN hhh'.$i.'.'.$field.' ELSE :null END) AS '.$criterionName.$i)
                     ->setParameter('null', null);
             }
-        } elseif ('other' === $criterion['type']) {
+        } elseif ($criterion->hasTypeOther()) {
             if ('disabledHeadOfHousehold' === $field) {
                 $this->hasVulnerabilityCriterion($qb, 'hhh'.$i, $condition, 'disabled', $userConditionsStatement, $i);
             }
