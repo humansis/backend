@@ -37,7 +37,7 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
             $type = $this->transformCountrySpecificType($countrySpecific->getType());
 
             switch ($type) {
-                case "integer":
+                case "double":
                     $conditionList = ['=', '<', '>', '<=', '>='];
                     break;
 
@@ -62,7 +62,7 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
     public function transformCountrySpecificType($type): string
     {
         if ('number' === $type) {
-            return 'integer';
+            return 'double';
         } elseif ('text' === $type) {
             return 'string';
         } else {
