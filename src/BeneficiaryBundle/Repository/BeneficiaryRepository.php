@@ -8,6 +8,7 @@ use DistributionBundle\Entity\Assistance;
 use CommonBundle\Entity\Location;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -657,45 +658,45 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
 
         // The selection criteria is directly a field in the Household table
         elseif ($criterion->hasTableFieldType()) {
-            $userConditionsStatement->add('hh.' . $field . $condition . ' :parameter'.$i);
-            $qb->addSelect('(CASE WHEN hh.' . $field . $condition . ' :parameter'.$i . ' THEN hh. ' . $field . ' ELSE :null END) AS ' . $field.$i)
-                ->setParameter('null', null);
+            $userConditionsStatement->add("hh.$field$condition :parameter".$i);
+            $qb->addSelect("(CASE WHEN hh.$field$condition :parameter$i THEN hh.$field ELSE :null END) AS $field.$i")
+                ->setParameter("null", null);
         } elseif ($criterion->hasTypeOther()) {
             // The selection criteria is the size of the household
-            if ($field === 'householdSize') {
-                $userConditionsStatement->add('SIZE(hh.beneficiaries) ' . $condition . ' :parameter'.$i);
-                $qb->addSelect('(CASE WHEN SIZE(hh.beneficiaries) ' . $condition . ' :parameter'.$i .' THEN SIZE(hh.beneficiaries) ELSE :null END) AS ' . $field.$i)
-                    ->setParameter('null', null);
+            if ($field === "householdSize") {
+                $userConditionsStatement->add("SIZE(hh.beneficiaries) $condition :parameter$i");
+                $qb->addSelect("(CASE WHEN SIZE(hh.beneficiaries) $condition :parameter$i THEN SIZE(hh.beneficiaries) ELSE :null END) AS $field.$i")
+                    ->setParameter("null", null);
             }
             // The selection criteria is the location type (residence, camp...)
-            elseif ($field === 'locationType') {
-                $qb->leftJoin('hh.householdLocations', 'hl'.$i, Join::WITH, 'hl'.$i . '.type ' . $condition . ' :parameter'.$i);
-                $userConditionsStatement->add('hl'.$i . '.type ' . $condition . ' :parameter'.$i);
-                $qb->addSelect('hl'.$i . '.type AS ' . $field.$i);
+            elseif ($field === "locationType") {
+                $qb->leftJoin("hh.householdLocations", "hl$i", Join::WITH, "hl$i.type $condition :parameter$i");
+                $userConditionsStatement->add("hl$i.type $condition :parameter$i");
+                $qb->addSelect("hl$i.type AS $field$i");
             }
             // The selection criteria is the name of the camp in which the household lives
-            elseif ($field === 'campName') {
-                $qb->leftJoin('hh.householdLocations', 'hl'.$i, Join::WITH, 'hl'.$i.'.type = :camp')
-                    ->leftJoin('hl'.$i.'.campAddress', 'ca'.$i)
-                    ->leftJoin('ca'.$i.'.camp', 'c'.$i, Join::WITH, 'c'.$i.'.id = :parameter'.$i)
-                    ->setParameter('camp', 'camp');
-                $userConditionsStatement->add('c'.$i.'.id = :parameter'.$i);
-                $qb->addSelect('c'.$i.'.id AS '.$field.$i);
+            elseif ($field === "campName") {
+                $qb->leftJoin("hh.householdLocations", "hl$i", Join::WITH, "hl$i.type = :camp")
+                    ->leftJoin("hl$i.campAddress", "ca$i")
+                    ->leftJoin("ca$i.camp", "c$i", Join::WITH, "c$i.id = :parameter$i")
+                    ->setParameter("camp", "camp");
+                $userConditionsStatement->add("c$i.id = :parameter$i");
+                $qb->addSelect("c$i.id AS $field$i");
             } elseif ($field === SelectionCriteriaField::CURRENT_LOCATION) {
 
                 /** @var Location $location */
-                $location = $criterion['value'];
+                $location = $criterion["value"];
                 $locationsQb = $this->locationRepository->getChildrenLocationsQueryBuilder($location);
 
-                $qb->leftJoin('hh.householdLocations', "hl$i")
+                $qb->leftJoin("hh.householdLocations", "hl$i")
                     ->leftJoin("hl$i.campAddress", "ca$i")
                     ->leftJoin("ca$i.camp", "c$i")
                     ->leftJoin("hl$i.address", "ad$i")
                     ->leftJoin(Location::class, "l$i", Join::WITH, "l$i.id = COALESCE(IDENTITY(c$i.location, 'id'), IDENTITY(ad$i.location, 'id'))")
                     ->andWhere("l$i.id IN ({$locationsQb->getDQL()})")
-                    ->setParameter('currentRgt', $location->getRgt())
-                    ->setParameter('currentLft', $location->getLft())
-                    ->setParameter('currentLvl', $location->getLvl());
+                    ->setParameter("currentRgt", $location->getRgt())
+                    ->setParameter("currentLft", $location->getLft())
+                    ->setParameter("currentLvl", $location->getLvl());
             }
         }
     }

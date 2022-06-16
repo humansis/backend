@@ -5,6 +5,7 @@ namespace DistributionBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Camp;
+use BeneficiaryBundle\Model\Vulnerability\CategoryEnum;
 use BeneficiaryBundle\Model\Vulnerability\Resolver;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Enum\AssistanceTargetType;
@@ -89,7 +90,7 @@ class CriteriaAssistanceService
                 /** @var Beneficiary $beneficiary */
                 $beneficiary = $this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $bnf['id']);
 
-                $protocol = $this->resolver->compute($beneficiary->getHousehold(), $countryISO3, $sector);
+                $protocol = $this->resolver->compute($beneficiary->getHousehold(), $project->getIso3(), $sector);
                 $scores = ['totalScore' => $protocol->getTotalScore()];
                 foreach (CategoryEnum::all() as $value) {
                     $scores[$value] = $protocol->getCategoryScore($value);
