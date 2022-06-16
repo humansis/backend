@@ -1,14 +1,13 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
-
-namespace NewApiBundle\Controller;
+namespace NewApiBundle\Controller\WebApp\Assistance;
 
 use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Codelist\CodeLists;
-use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
+use NewApiBundle\Component\SelectionCriteria\SelectionCriterionService;
+use NewApiBundle\Controller\AbstractController;
 use NewApiBundle\Enum\SelectionCriteriaTarget;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -18,14 +17,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class SelectionCriterionController extends AbstractController
 {
-    /** @var FieldDbTransformer */
-    private $fieldDbTransformer;
-
-    public function __construct(FieldDbTransformer $fieldDbTransformer)
-    {
-        $this->fieldDbTransformer = $fieldDbTransformer;
-    }
-
     /**
      * @Rest\Get("/web-app/v1/selection-criteria/targets")
      * @Cache(expires="+5 days", public=true)
@@ -42,12 +33,13 @@ class SelectionCriterionController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/selection-criteria/targets/{targetCode}/fields")
      *
-     * @param Request $request
-     * @param string  $targetCode
+     * @param Request                   $request
+     * @param string                    $targetCode
+     * @param SelectionCriterionService $selectionCriterionService
      *
      * @return JsonResponse
      */
-    public function fields(Request $request, string $targetCode): JsonResponse
+    public function fields(Request $request, string $targetCode, SelectionCriterionService $selectionCriterionService): JsonResponse
     {
         if (!in_array($targetCode, SelectionCriteriaTarget::values())) {
             throw $this->createNotFoundException();
@@ -58,19 +50,21 @@ class SelectionCriterionController extends AbstractController
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $data = $this->get('service.selection_criterion')->findFieldsByTarget($targetCode, $countryIso3);
+        $data = $selectionCriterionService->findFieldsByTarget($targetCode, $countryIso3);
 
         return $this->json(new Paginator($data));
     }
 
     /**
      * @Rest\Get("/web-app/v1/selection-criteria/targets/{targetCode}/fields/{fieldCode}/conditions")
-     * @param Request $request
-     * @param string  $targetCode
-     * @param string  $fieldCode
+     * @param Request                   $request
+     * @param string                    $targetCode
+     * @param string                    $fieldCode
+     * @param SelectionCriterionService $selectionCriterionService
+     *
      * @return JsonResponse
      */
-    public function conditions(Request $request, string $targetCode, string $fieldCode): JsonResponse
+    public function conditions(Request $request, string $targetCode, string $fieldCode, SelectionCriterionService $selectionCriterionService): JsonResponse
     {
         $countryIso3 = $request->headers->get('country', false);
         if (!$countryIso3) {
@@ -78,7 +72,7 @@ class SelectionCriterionController extends AbstractController
         }
 
         try {
-            $data = $this->get('service.selection_criterion')->findFieldConditions($fieldCode, $targetCode, $countryIso3);
+            $data = $selectionCriterionService->findFieldConditions($fieldCode, $targetCode, $countryIso3);
         } catch (\InvalidArgumentException|\BadMethodCallException $ex) {
             throw $this->createNotFoundException($ex->getMessage(), $ex);
         }
@@ -93,15 +87,12 @@ class SelectionCriterionController extends AbstractController
      * @ParamConverter("assistance")
      * @Cache(expires="+5 days", public=true)
      *
+     * @param Assistance $assistance
+     *
      * @return JsonResponse
      */
     public function selectionCriteriaByAssistance(Assistance $assistance): JsonResponse
     {
-        $data = [];
-        foreach ($assistance->getSelectionCriteria() as $selectionCriterion) {
-            $data[] = $this->fieldDbTransformer->toResponseArray($selectionCriterion);
-        }
-
-        return $this->json(new Paginator($data));
+        return $this->json(new Paginator($assistance->getSelectionCriteria()));
     }
 }
