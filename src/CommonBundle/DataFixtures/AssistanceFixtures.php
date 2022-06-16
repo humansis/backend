@@ -61,9 +61,8 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             'donors' => [],
             'donors_name' => [],
             'id' => '?',
-            'name' => '',
-            'sectors' => [],
-            'sectors_name' => [],
+            'name' => 'Test assistance project',
+            'iso3' => 'KHM',
         ],
         'selection_criteria' => [
             0 => [
