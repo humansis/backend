@@ -56,12 +56,12 @@ class ReliefPackageMapper implements MapperInterface
         return $this->object->getNotes() ?? '';
     }
 
-    public function getAmountDistributed(): string
+    public function getAmountDistributed()
     {
         return $this->object->getAmountDistributed();
     }
 
-    public function getAmountToDistribute(): string
+    public function getAmountToDistribute()
     {
         return $this->object->getAmountToDistribute();
     }

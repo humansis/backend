@@ -4,10 +4,12 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller\WebApp\Assistance;
 
 use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Utils\AssistanceDistributionService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Controller\WebApp\AbstractWebAppController;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\InputType\Assistance\DistributeBeneficiaryReliefPackagesInputType;
 use NewApiBundle\InputType\Assistance\DistributeReliefPackagesInputType;
 use NewApiBundle\InputType\Assistance\ReliefPackageFilterInputType;
 use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
@@ -21,6 +23,20 @@ use Symfony\Contracts\Cache\CacheInterface;
 
 class ReliefPackageController extends AbstractWebAppController
 {
+
+    /**
+     * @var AssistanceDistributionService
+     */
+    private $assistanceDistributionService;
+
+    /**
+     * @param AssistanceDistributionService $assistanceDistributionService
+     */
+    public function __construct(AssistanceDistributionService $assistanceDistributionService)
+    {
+        $this->assistanceDistributionService = $assistanceDistributionService;
+    }
+
     /**
      * @Rest\Get("/web-app/v1/assistances/{id}/relief-packages")
      *
@@ -98,5 +114,22 @@ class ReliefPackageController extends AbstractWebAppController
         }
 
         return $this->json(true);
+    }
+
+    /**
+     * @Rest\Patch("/web-app/v1/assistances/{id}/relief-packages/distribute")
+     * @ParamConverter(class="NewApiBundle\InputType\Assistance\DistributeBeneficiaryReliefPackagesInputType[]", name="packages", converter="input_type_converter")
+     *
+     * @param Assistance        $assistance
+     * @param DistributeBeneficiaryReliefPackagesInputType[] $packages
+     *
+     * @return JsonResponse
+     */
+    public function distributeBeneficiaryPackages(
+        Assistance $assistance,
+        array                   $packages
+    ): JsonResponse {
+        $result = $this->assistanceDistributionService->distributeByBeneficiaryIdAndAssistanceId($packages, $assistance, $this->getUser());
+        return $this->json($result);
     }
 }

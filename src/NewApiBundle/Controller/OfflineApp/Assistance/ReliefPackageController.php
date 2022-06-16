@@ -38,59 +38,14 @@ class ReliefPackageController extends AbstractOfflineAppController
      * @ParamConverter(class="NewApiBundle\InputType\Assistance\DistributeReliefPackagesInputType[]", name="packages", converter="input_type_converter")
      *
      * @param DistributeReliefPackagesInputType[] $packages
-     * @param ReliefPackageRepository             $repository
-     * @param Registry                            $registry
      *
      * @return JsonResponse
      */
     public function distributePackages(
-        array                   $packages,
-        ReliefPackageRepository $repository,
-        Registry                $registry
+        array                   $packages
     ): JsonResponse {
 
         $this->assistanceDistributionService->distributeByReliefIds($packages, $this->getUser());
-        return $this->json(true);
-    }
-
-    /**
-     * @Rest\Patch("/offline-app/v1/assistances/{id}/relief-packages/distribute")
-     * @ParamConverter(class="NewApiBundle\InputType\Assistance\DistributeBeneficiaryReliefPackagesInputType[]", name="packages", converter="input_type_converter")
-     *
-     * @param Assistance        $assistance
-     * @param DistributeBeneficiaryReliefPackagesInputType[] $packages
-     * @param ReliefPackageRepository             $repository
-     * @param Registry                            $registry
-     *
-     * @return JsonResponse
-     */
-    public function distributeBeneficiaryPackages(
-        Assistance $assistance,
-        array                   $packages,
-        ReliefPackageRepository $repository,
-        Registry                $registry
-    ): JsonResponse {
-        foreach ($packages as $packageUpdate) {
-            /** @var ReliefPackage $package */
-            $package = $repository->find($packageUpdate->getId());
-            if ($packageUpdate->getAmountDistributed() === null) {
-                $package->distributeRest();
-            } else {
-                $package->addAmountOfDistributed($packageUpdate->getAmountDistributed());
-            }
-            $package->setDistributedBy($this->getUser());
-
-            // Assistance statistic cache is invalidated by workflow transition
-            // for partially distribution process of invalidation cache should be changed
-
-            $reliefPackageWorkflow = $registry->get($package);
-            if ($reliefPackageWorkflow->can($package, ReliefPackageTransitions::DISTRIBUTE)) {
-                $reliefPackageWorkflow->apply($package, ReliefPackageTransitions::DISTRIBUTE);
-            }
-
-            $repository->save($package);
-        }
-
         return $this->json(true);
     }
 }

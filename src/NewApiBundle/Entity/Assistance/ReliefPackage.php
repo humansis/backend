@@ -47,14 +47,14 @@ class ReliefPackage
     private $modalityType;
 
     /**
-     * @var string
+     * @var float
      *
      * @ORM\Column(name="amount_to_distribute", type="decimal", precision=10, scale=2)
      */
     private $amountToDistribute;
 
     /**
-     * @var string
+     * @var float
      *
      * Not in use right now. Prepared for partial assists.
      *
@@ -103,18 +103,18 @@ class ReliefPackage
     /**
      * @param AssistanceBeneficiary $assistanceBeneficiary
      * @param string                $modalityType
-     * @param float|string|int      $amountToDistribute
+     * @param float     $amountToDistribute
      * @param string                $unit
      * @param string                $state
-     * @param float|string|int      $amountDistributed
+     * @param float     $amountDistributed
      */
     public function __construct(
         AssistanceBeneficiary $assistanceBeneficiary,
         string $modalityType,
-        $amountToDistribute,
+        float $amountToDistribute,
         string $unit,
         string $state = ReliefPackageState::TO_DISTRIBUTE,
-        $amountDistributed = 0.0
+        float $amountDistributed = 0.0
     )
     {
         if (!in_array($modalityType, ModalityType::values())) {
@@ -131,10 +131,10 @@ class ReliefPackage
 
         $this->assistanceBeneficiary = $assistanceBeneficiary;
         $this->modalityType = $modalityType;
-        $this->amountToDistribute = (string) $amountToDistribute;
+        $this->amountToDistribute = floatval($amountToDistribute);
         $this->unit = $unit;
         $this->state = $state;
-        $this->amountDistributed = (string) $amountDistributed;
+        $this->amountDistributed = floatval($amountDistributed);
     }
 
     /**
@@ -181,9 +181,9 @@ class ReliefPackage
     }
 
     /**
-     * @return string
+     * @return float
      */
-    public function getAmountToDistribute(): string
+    public function getAmountToDistribute()
     {
         return $this->amountToDistribute;
     }
@@ -191,12 +191,8 @@ class ReliefPackage
     /**
      * @param float|string|int $amountToDistribute
      */
-    public function setAmountToDistribute($amountToDistribute): void
+    public function setAmountToDistribute(float $amountToDistribute): void
     {
-        if (!is_numeric($amountToDistribute)) {
-            throw new InvalidArgumentException("amountToDistribute has to bee numeric. Provided value: '$amountToDistribute'");
-        }
-
         $this->amountToDistribute = $amountToDistribute;
     }
 
@@ -217,17 +213,17 @@ class ReliefPackage
     }
 
     /**
-     * @return string
+     * @return float
      */
-    public function getAmountDistributed(): string
+    public function getAmountDistributed()
     {
         return $this->amountDistributed;
     }
 
     /**
-     * @param string $amountDistributed
+     * @param float|string $amountDistributed
      */
-    public function setAmountDistributed(string $amountDistributed): void
+    public function setAmountDistributed(float $amountDistributed): void
     {
         $this->amountDistributed = $amountDistributed;
     }
@@ -239,13 +235,26 @@ class ReliefPackage
      */
     public function addAmountOfDistributed($amountDistributed): void
     {
-        $this->setAmountDistributed((string) ((float) $this->amountDistributed + (float) $amountDistributed));
+        $this->setAmountDistributed(($this->amountDistributed + (float) $amountDistributed));
     }
 
     public function distributeRest(): void
     {
-        $amountDistributed = floatval($this->getAmountToDistribute()) - floatval($this->getAmountDistributed());
-        $this->addAmountOfDistributed($amountDistributed);
+        $this->addAmountOfDistributed($this->getCurrentUndistributedAmount());
+    }
+
+    /**
+     * @return float
+     */
+    public function getCurrentUndistributedAmount(): float {
+        return $this->getAmountToDistribute() - $this->getAmountDistributed();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFullyDistributed(): bool {
+        return $this->getCurrentUndistributedAmount() == 0;
     }
 
     /**

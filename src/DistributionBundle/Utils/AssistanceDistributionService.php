@@ -7,6 +7,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Exception\CsvParserException;
+use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use CommonBundle\Entity\Location;
 use CommonBundle\Pagination\Paginator;
 use CommonBundle\Utils\LocationService;
@@ -34,6 +35,7 @@ use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\Assistance\DistributeBeneficiaryReliefPackagesInputType;
 use NewApiBundle\InputType\Assistance\DistributeReliefPackagesInputType;
 use NewApiBundle\InputType\AssistanceCreateInputType;
+use NewApiBundle\OutputType\Assistance\DistributeReliefPackagesOutputType;
 use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
 use NewApiBundle\Request\Pagination;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
@@ -64,16 +66,24 @@ class AssistanceDistributionService
      private $reliefPackageRepository;
 
     /**
+     * @var BeneficiaryRepository
+     */
+    private $beneficiaryRepository;
+
+    /**
      * @var Registry
      */
      private $registry;
 
     /**
-     * @param ReliefPackageRepository $repository
+     * @param ReliefPackageRepository $reliefPackageRepository
+     * @param BeneficiaryRepository   $beneficiaryRepository
+     * @param Registry                $registry
      */
-    public function __construct(ReliefPackageRepository $reliefPackageRepository, Registry $registry)
+    public function __construct(ReliefPackageRepository $reliefPackageRepository, BeneficiaryRepository $beneficiaryRepository, Registry $registry)
     {
         $this->reliefPackageRepository = $reliefPackageRepository;
+        $this->beneficiaryRepository = $beneficiaryRepository;
         $this->registry = $registry;
     }
 
@@ -81,51 +91,100 @@ class AssistanceDistributionService
      * @param DistributeReliefPackagesInputType[] $packages
      * @param User $distributor
      *
-     * @return void
+     * @return DistributeReliefPackagesOutputType
      */
-    public function distributeByReliefIds(array $packages, User $distributor) {
+    public function distributeByReliefIds(array $packages, User $distributor): DistributeReliefPackagesOutputType {
+        $distributeReliefPackageOutputType = new DistributeReliefPackagesOutputType();
         foreach ($packages as $packageUpdate) {
-            /** @var ReliefPackage $package */
-            $package = $this->reliefPackageRepository->find($packageUpdate->getId());
-            if ($packageUpdate->getAmountDistributed() === null) {
-                $package->distributeRest();
-            } else {
-                $package->addAmountOfDistributed($packageUpdate->getAmountDistributed());
+
+            try {
+                /** @var ReliefPackage $package */
+                $reliefPackage = $this->reliefPackageRepository->find($packageUpdate->getId());
+                if ($packageUpdate->getAmountDistributed() === null) {
+                    $reliefPackage->distributeRest();
+                } else {
+                    $reliefPackage->addAmountOfDistributed($packageUpdate->getAmountDistributed());
+                }
+                if ($reliefPackage->getAmountToDistribute() === $reliefPackage->getAmountDistributed()) {
+                    $distributeReliefPackageOutputType->addSuccessfullyDistributed($packageUpdate->getId());
+                } else {
+                    $distributeReliefPackageOutputType->addPartiallyDistributed($packageUpdate->getId());
+                }
+                $this->startReliefPackageDitributionWorkflow($reliefPackage, $distributor);
+            } catch (\Throwable $ex) {
+                $distributeReliefPackageOutputType->addFailed($packageUpdate->getId());
             }
-            $package->setDistributedBy($distributor);
-            // Assistance statistic cache is invalidated by workflow transition
-            // for partially distribution process of invalidation cache should be changed
-            $reliefPackageWorkflow = $this->registry->get($package);
-            if ($reliefPackageWorkflow->can($package, ReliefPackageTransitions::DISTRIBUTE)) {
-                $reliefPackageWorkflow->apply($package, ReliefPackageTransitions::DISTRIBUTE);
-            }
-            $this->reliefPackageRepository->save($package);
         }
+        return $distributeReliefPackageOutputType;
     }
 
     /**
-     * @param DistributeBeneficiaryReliefPackagesInputType[] $packages
+     * @param DistributeBeneficiaryReliefPackagesInputType[]      $inputPackages
+     * @param Assistance $assistance
+     * @param User       $distributor
      *
-     * @return void
+     * @return DistributeReliefPackagesOutputType
+     * @throws NonUniqueResultException
      */
-    public function distributeByBeneficiryIdAndAssistanceId(array $packages, $assistanceId,User $distributor) {
-        foreach ($packages as $packageUpdate) {
-            /** @var ReliefPackage $package */
-            $package = $this->reliefPackageRepository->findByAssistanceAndBeneficiary($assistanceId, $packageUpdate->getBeneficiaryId());
+    public function distributeByBeneficiaryIdAndAssistanceId(array $inputPackages, Assistance $assistance,User $distributor): DistributeReliefPackagesOutputType {
+        $distributeReliefPackageOutputType = new DistributeReliefPackagesOutputType();
+        foreach ($inputPackages as $packageUpdate) {
+            $beneficiary = $this->beneficiaryRepository->find($packageUpdate->getBeneficiaryId());
+            /** @var ReliefPackage[] $packages */
+            $packages = $this->reliefPackageRepository->findByAssistanceAndBeneficiary($assistance, $beneficiary);
+
             if ($packageUpdate->getAmountDistributed() === null) {
-                $package->distributeRest();
+                foreach ($packages as $reliefPackage) {
+                    $result = $this->distributeSinglePackage(
+                        $reliefPackage,
+                        $reliefPackage->getCurrentUndistributedAmount(),
+                        $reliefPackage->getCurrentUndistributedAmount(),
+                        $distributor,
+                        $distributeReliefPackageOutputType);
+                    $distributeReliefPackageOutputType = $result['output'];
+                }
             } else {
-                $package->addAmountOfDistributed($packageUpdate->getAmountDistributed());
+                $totalSumToDistribute = $packageUpdate->getAmountDistributed();
+                foreach ($packages as $reliefPackage) {
+                    $result = $this->distributeSinglePackage($reliefPackage,
+                        $reliefPackage->getCurrentUndistributedAmount(),
+                        $totalSumToDistribute,
+                        $distributor,
+                    $distributeReliefPackageOutputType);
+                    $totalSumToDistribute = $totalSumToDistribute - $result['amount'];
+                    $distributeReliefPackageOutputType = $result['output'];
+                }
             }
-            $package->setDistributedBy($distributor);
-            // Assistance statistic cache is invalidated by workflow transition
-            // for partially distribution process of invalidation cache should be changed
-            $reliefPackageWorkflow = $this->registry->get($package);
-            if ($reliefPackageWorkflow->can($package, ReliefPackageTransitions::DISTRIBUTE)) {
-                $reliefPackageWorkflow->apply($package, ReliefPackageTransitions::DISTRIBUTE);
-            }
-            $this->reliefPackageRepository->save($package);
         }
+        return  $distributeReliefPackageOutputType;
+    }
+
+    private function distributeSinglePackage(ReliefPackage $reliefPackage, $targetDistributionAmount, $totalUndistributedAmount, User $distributor, DistributeReliefPackagesOutputType $distributeReliefPackageOutputType) {
+        $amount = 0;
+        try {
+            $toDistribute = min($targetDistributionAmount, $totalUndistributedAmount);
+            $reliefPackage->addAmountOfDistributed($toDistribute);
+            $this->startReliefPackageDitributionWorkflow($reliefPackage, $distributor);
+            $amount = $toDistribute;
+            $reliefPackage->isFullyDistributed() ? $distributeReliefPackageOutputType->addSuccessfullyDistributed($reliefPackage->getId()) : $distributeReliefPackageOutputType->addPartiallyDistributed($reliefPackage->getId());
+        } catch (\Throwable $ex) {
+            $distributeReliefPackageOutputType->addFailed($reliefPackage->getId());
+        } finally {
+            return ['amount' => $amount, 'output' => $distributeReliefPackageOutputType];
+        }
+
+    }
+
+    private function startReliefPackageDitributionWorkflow(ReliefPackage $reliefPackage,User $distributor) {
+        $reliefPackage->setDistributedBy($distributor);
+        // Assistance statistic cache is invalidated by workflow transition
+        // for partially distribution process of invalidation cache should be changed
+        $reliefPackageWorkflow = $this->registry->get($reliefPackage);
+        if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
+            $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::DISTRIBUTE);
+        }
+        $this->reliefPackageRepository->save($reliefPackage);
+
     }
 
 }

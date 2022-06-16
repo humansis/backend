@@ -125,21 +125,21 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * @param $assistanceId
-     * @param $beneficiaryId
+     * @param Assistance $assistance
+     * @param Beneficiary $beneficiary
      *
      * @return float|int|mixed|string|null
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function findByAssistanceAndBeneficiary($assistanceId, $beneficiaryId) {
+    public function findByAssistanceAndBeneficiary(Assistance $assistance, Beneficiary $beneficiary) {
         return $this->createQueryBuilder('rp')
             ->join('rp.assistanceBeneficiary', 'ab', Join::WITH, 'ab.removed = 0')
             ->join('ab.beneficiary', 'abstB',Join::WITH, 'abstB.archived = 0')
-            ->andWhere('IDENTITY(ab.assistance) = :assistanceId')
-            ->andWhere('IDENTITY(ab.beneficiary) = :beneficiaryId')
-            ->setParameter('assistanceId', $assistanceId)
-            ->setParameter('beneficiaryId', $beneficiaryId)
-            ->getQuery()->getOneOrNullResult();
+            ->andWhere('ab.assistance = :assistance')
+            ->andWhere('ab.beneficiary = :beneficiary')
+            ->setParameter('assistance', $assistance)
+            ->setParameter('beneficiary', $beneficiary)
+            ->getQuery()->getResult();
     }
 
     public function save(ReliefPackage $package): void
