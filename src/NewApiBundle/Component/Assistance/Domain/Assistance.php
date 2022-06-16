@@ -20,7 +20,6 @@ use NewApiBundle\Component\Assistance\DTO\CommoditySummary;
 use NewApiBundle\Component\Assistance\DTO\CriteriaGroup;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 use NewApiBundle\Component\Assistance\SelectionCriteriaFactory;
-use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Exception\ManipulationOverValidatedAssistanceException;
@@ -48,8 +47,6 @@ class Assistance
     private $targetRepository;
     /** @var Registry $workflowRegistry */
     private $workflowRegistry;
-    /** @var FieldDbTransformer */
-    private $fieldDbTransformer;
     /** @var SelectionCriteriaFactory */
     private $selectionCriteriaFactory;
 
@@ -60,7 +57,6 @@ class Assistance
      * @param AssistanceStatisticsRepository  $assistanceStatisticRepository
      * @param Registry                        $workflowRegistry
      * @param AssistanceBeneficiaryRepository $targetRepository
-     * @param FieldDbTransformer              $fieldDbTransformer
      * @param SelectionCriteriaFactory        $selectionCriteriaFactory
      */
     public function __construct(
@@ -70,7 +66,6 @@ class Assistance
         AssistanceStatisticsRepository  $assistanceStatisticRepository,
         Registry                        $workflowRegistry,
         AssistanceBeneficiaryRepository $targetRepository,
-        FieldDbTransformer              $fieldDbTransformer,
         SelectionCriteriaFactory        $selectionCriteriaFactory
     ) {
         $this->assistanceRoot = $assistanceEntity;
@@ -79,7 +74,6 @@ class Assistance
         $this->assistanceStatisticRepository = $assistanceStatisticRepository;
         $this->workflowRegistry = $workflowRegistry;
         $this->targetRepository = $targetRepository;
-        $this->fieldDbTransformer = $fieldDbTransformer;
         $this->selectionCriteriaFactory = $selectionCriteriaFactory;
     }
 

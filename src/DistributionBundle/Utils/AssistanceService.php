@@ -27,7 +27,6 @@ use Doctrine\ORM\ORMException;
 use Exception;
 use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Component\Assistance\SelectionCriteriaFactory;
-use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\Assistance\SelectionCriteria;
 use NewApiBundle\Enum\CacheTarget;
@@ -74,9 +73,6 @@ class AssistanceService
     /** @var ContainerInterface $container */
     private $container;
 
-    /** @var FieldDbTransformer */
-    private $fieldDbTransformer;
-
     /** @var CacheInterface */
     private $cache;
 
@@ -98,7 +94,6 @@ class AssistanceService
      * @param LocationService           $locationService
      * @param CommodityService          $commodityService
      * @param CriteriaAssistanceService $criteriaAssistanceService
-     * @param FieldDbTransformer        $fieldDbTransformer
      * @param ContainerInterface        $container
      * @param FilesystemAdapter         $cache
      * @param AssistanceFactory         $assistanceFactory
@@ -112,7 +107,6 @@ class AssistanceService
         LocationService           $locationService,
         CommodityService          $commodityService,
         CriteriaAssistanceService $criteriaAssistanceService,
-        FieldDbTransformer        $fieldDbTransformer,
         ContainerInterface        $container,
         CacheInterface            $cache,
         AssistanceFactory         $assistanceFactory,
@@ -125,7 +119,6 @@ class AssistanceService
         $this->locationService = $locationService;
         $this->commodityService = $commodityService;
         $this->criteriaAssistanceService = $criteriaAssistanceService;
-        $this->fieldDbTransformer = $fieldDbTransformer;
         $this->container = $container;
         $this->cache = $cache;
         $this->assistanceFactory = $assistanceFactory;

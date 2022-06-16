@@ -29,7 +29,6 @@ services:
             - '@location_service'
             - '@distribution.commodity_service'
             - '@distribution.criteria_assistance_service'
-            - '@transformer.selection_criterion_field'
             - '@service_container'
 
     distribution.assistance_beneficiary_service:

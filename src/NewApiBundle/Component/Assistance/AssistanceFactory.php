@@ -35,9 +35,6 @@ class AssistanceFactory
     /** @var CriteriaAssistanceService */
     private $criteriaAssistanceService;
 
-    /** @var FieldDbTransformer */
-    private $fieldDbTransformer;
-
     /** @var SerializerInterface */
     private $serializer;
 
@@ -74,7 +71,6 @@ class AssistanceFactory
     /**
      * @param CacheInterface                  $cache
      * @param CriteriaAssistanceService       $criteriaAssistanceService
-     * @param FieldDbTransformer              $fieldDbTransformer
      * @param SerializerInterface             $serializer
      * @param ModalityTypeRepository          $modalityTypeRepository
      * @param LocationRepository              $locationRepository
@@ -90,7 +86,6 @@ class AssistanceFactory
     public function __construct(
         CacheInterface                  $cache,
         CriteriaAssistanceService       $criteriaAssistanceService,
-        FieldDbTransformer              $fieldDbTransformer,
         SerializerInterface             $serializer,
         ModalityTypeRepository          $modalityTypeRepository,
         LocationRepository              $locationRepository,
@@ -105,7 +100,6 @@ class AssistanceFactory
     ) {
         $this->cache = $cache;
         $this->criteriaAssistanceService = $criteriaAssistanceService;
-        $this->fieldDbTransformer = $fieldDbTransformer;
         $this->serializer = $serializer;
         $this->modalityTypeRepository = $modalityTypeRepository;
         $this->locationRepository = $locationRepository;
@@ -225,7 +219,6 @@ class AssistanceFactory
             $this->assistanceStatisticRepository,
             $this->workflowRegistry,
             $this->targetRepository,
-            $this->fieldDbTransformer,
             $this->selectionCriteriaFactory
         );
     }
