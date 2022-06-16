@@ -39,15 +39,21 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
             switch ($type) {
                 case "double":
                     $conditionList = ['=', '<', '>', '<=', '>='];
+                    $validator = function ($value) {
+                        return is_numeric($value);
+                    };
                     break;
 
                 case "string":
                 default:
                     $conditionList = ['='];
+                    $validator = function ($value) {
+                        return is_string($value);
+                    };
                     break;
             }
 
-            yield new Field($countrySpecific->getFieldString(), $countrySpecific->getFieldString(), $conditionList, $type);
+            yield new Field($countrySpecific->getFieldString(), $countrySpecific->getFieldString(), $conditionList, $type, $validator);
         }
     }
 
