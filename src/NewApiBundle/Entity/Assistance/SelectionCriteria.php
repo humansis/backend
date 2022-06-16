@@ -58,7 +58,7 @@ class SelectionCriteria
     private $idField;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(name="condition_string", type="string", length=255, nullable=true)
      * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
@@ -180,11 +180,11 @@ class SelectionCriteria
     /**
      * Set conditionString.
      *
-     * @param string $conditionString
+     * @param string|null $conditionString
      *
      * @return SelectionCriteria
      */
-    public function setConditionString($conditionString)
+    public function setConditionString(?string $conditionString): self
     {
         $this->conditionString = $conditionString;
 
@@ -194,9 +194,9 @@ class SelectionCriteria
     /**
      * Get conditionString.
      *
-     * @return string
+     * @return string|null
      */
-    public function getConditionString()
+    public function getConditionString(): ?string
     {
         return $this->conditionString;
     }

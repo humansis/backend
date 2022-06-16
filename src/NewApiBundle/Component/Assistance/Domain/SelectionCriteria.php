@@ -40,7 +40,10 @@ class SelectionCriteria
         return 'table_field';
     }
 
-    public function getConditionOperator(): string
+    /**
+     * @return string|null
+     */
+    public function getConditionOperator(): ?string
     {
         return $this->criteriaRoot->getConditionString();
     }
