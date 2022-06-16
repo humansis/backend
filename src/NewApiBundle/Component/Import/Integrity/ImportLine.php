@@ -47,7 +47,7 @@ class ImportLine
     public $addressPostcode;
 
     /**
-     * @Assert\Type("string", groups={"household", "member"})
+     * @Assert\Type(type={"string", "numeric"}, groups={"household", "member"})
      */
     public $campName;
 
