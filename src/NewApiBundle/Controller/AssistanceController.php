@@ -37,11 +37,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
+use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolation;
+use NewApiBundle\Component\Assistance\Domain\Assistance as DomainAssistance;
 
 class AssistanceController extends AbstractController
 {
@@ -307,17 +308,55 @@ class AssistanceController extends AbstractController
      * @Rest\Get("/web-app/v1/assistances/{id}/vulnerability-scores/exports")
      *
      * @param Assistance $assistance
-     * @param Request    $request
+     * @param Request $request
      *
      * @return Response
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
-    public function vulnerabilityScoresExports(Assistance $assistance, Request $request): Response
+    public function vulnerabilityScoresExports(Assistance $assistance, Request $request, AssistanceFactory $factory): Response
     {
         if (!$request->query->has('type')) {
             throw $this->createNotFoundException('Missing query attribute type');
         }
 
-        $filename = $this->vulnerabilityScoreExport->export($assistance, $request->query->get('type'));
+        $type = $request->query->get('type');
+
+        return $this->scoresFromAssistance($factory->hydrate($assistance), $type);
+    }
+
+    /**
+     * @Rest\Post("/web-app/v1/assistances/vulnerability-scores/exports")
+     *
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\EntityNotFoundException
+     */
+    public function vulnerabilityScoresPreExport(AssistanceCreateInputType $inputType, AssistanceFactory $factory, Request $request)
+    {
+        if (!$request->query->has('type')) {
+            throw $this->createNotFoundException('Missing query attribute type');
+        }
+
+        $type = $request->query->get('type');
+        $assistance = $factory->create($inputType);
+
+        return $this->scoresFromAssistance($assistance, $type);
+    }
+
+    /**
+     * @param DomainAssistance $assistance
+     * @param string $type
+     * @return Response
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     */
+    private function scoresFromAssistance(DomainAssistance $assistance, string $type): Response
+    {
+        $filename = $this->vulnerabilityScoreExport->export($assistance, $type);
         if (!$filename) {
             throw $this->createNotFoundException();
         }

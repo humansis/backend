@@ -11,6 +11,7 @@ use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use DistributionBundle\Repository\ModalityTypeRepository;
 use DistributionBundle\Utils\Exception\RemoveBeneficiaryWithReliefException;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NoResultException;
@@ -375,6 +376,21 @@ class Assistance
             }
         }
         return $summaries;
+    }
+
+    /**
+     * Get all active beneficiaries (not removed or archived)
+     *
+     * @return ArrayCollection
+     */
+    public function getBeneficiaries(): ArrayCollection
+    {
+        return $this->getAssistanceRoot()->getDistributionBeneficiaries()->filter(function ($item) {
+            /**
+             * @var AssistanceBeneficiary $item
+             */
+            return ($item->getBeneficiary()->getArchived() === false) && ($item->getRemoved() === false);
+        });
     }
 
 }
