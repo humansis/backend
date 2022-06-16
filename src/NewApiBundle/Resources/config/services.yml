@@ -246,6 +246,8 @@ services:
         class: NewApiBundle\Component\SelectionCriteria\Generator\BeneficiaryFieldGenerator
         arguments: [ "@=service('doctrine.orm.entity_manager').getRepository('BeneficiaryBundle:VulnerabilityCriterion')" ]
 
+    NewApiBundle\Component\SelectionCriteria\SelectionCriterionService: "@service.selection_criterion"
+
     service.selection_criterion:
         public: true
         class: NewApiBundle\Component\SelectionCriteria\SelectionCriterionService
