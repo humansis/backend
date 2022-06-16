@@ -44,6 +44,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
      */
     public function testCreateDistribution()
     {
+        $this->markTestSkipped('Old endpoint');
 //        $this->removeHousehold($this->namefullnameHousehold);
         $this->createHousehold();
 
