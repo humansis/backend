@@ -3,10 +3,13 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller\OfflineApp\Assistance;
 
+use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Utils\AssistanceDistributionService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Controller\OfflineApp\AbstractOfflineAppController;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\InputType\Assistance\DistributeBeneficiaryReliefPackagesInputType;
 use NewApiBundle\InputType\Assistance\DistributeReliefPackagesInputType;
 use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
@@ -16,6 +19,20 @@ use Symfony\Component\Workflow\Registry;
 
 class ReliefPackageController extends AbstractOfflineAppController
 {
+
+    /**
+     * @var AssistanceDistributionService
+     */
+    private $assistanceDistributionService;
+
+    /**
+     * @param AssistanceDistributionService $assistanceDistributionService
+     */
+    public function __construct(AssistanceDistributionService $assistanceDistributionService)
+    {
+        $this->assistanceDistributionService = $assistanceDistributionService;
+    }
+
     /**
      * @Rest\Patch("/offline-app/v1/assistances/relief-packages/distribute")
      * @ParamConverter(class="NewApiBundle\InputType\Assistance\DistributeReliefPackagesInputType[]", name="packages", converter="input_type_converter")
@@ -27,6 +44,28 @@ class ReliefPackageController extends AbstractOfflineAppController
      * @return JsonResponse
      */
     public function distributePackages(
+        array                   $packages,
+        ReliefPackageRepository $repository,
+        Registry                $registry
+    ): JsonResponse {
+
+        $this->assistanceDistributionService->distributeByReliefIds($packages, $this->getUser());
+        return $this->json(true);
+    }
+
+    /**
+     * @Rest\Patch("/offline-app/v1/assistances/{id}/relief-packages/distribute")
+     * @ParamConverter(class="NewApiBundle\InputType\Assistance\DistributeBeneficiaryReliefPackagesInputType[]", name="packages", converter="input_type_converter")
+     *
+     * @param Assistance        $assistance
+     * @param DistributeBeneficiaryReliefPackagesInputType[] $packages
+     * @param ReliefPackageRepository             $repository
+     * @param Registry                            $registry
+     *
+     * @return JsonResponse
+     */
+    public function distributeBeneficiaryPackages(
+        Assistance $assistance,
         array                   $packages,
         ReliefPackageRepository $repository,
         Registry                $registry

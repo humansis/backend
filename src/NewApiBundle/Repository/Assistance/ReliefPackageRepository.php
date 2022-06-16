@@ -124,6 +124,24 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
         return new Paginator($qb);
     }
 
+    /**
+     * @param $assistanceId
+     * @param $beneficiaryId
+     *
+     * @return float|int|mixed|string|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function findByAssistanceAndBeneficiary($assistanceId, $beneficiaryId) {
+        return $this->createQueryBuilder('rp')
+            ->join('rp.assistanceBeneficiary', 'ab', Join::WITH, 'ab.removed = 0')
+            ->join('ab.beneficiary', 'abstB',Join::WITH, 'abstB.archived = 0')
+            ->andWhere('IDENTITY(ab.assistance) = :assistanceId')
+            ->andWhere('IDENTITY(ab.beneficiary) = :beneficiaryId')
+            ->setParameter('assistanceId', $assistanceId)
+            ->setParameter('beneficiaryId', $beneficiaryId)
+            ->getQuery()->getOneOrNullResult();
+    }
+
     public function save(ReliefPackage $package): void
     {
         $this->_em->persist($package);
