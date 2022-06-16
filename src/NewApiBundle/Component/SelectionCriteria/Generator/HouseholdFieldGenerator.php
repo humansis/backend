@@ -39,15 +39,27 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
             switch ($type) {
                 case "double":
                     $conditionList = ['=', '<', '>', '<=', '>='];
+                    /*
+                     * Nelze pouzit implicitni validaci.
+                     * Implicitni validace pouzije podle hodnoty type kontrolu pouzitim is_double().
+                     * Pro cislo zadane bez desetinne tecky vraci is_double() false
+                     * is_double(1) vraci false, is_double(1.1) vraci true
+                     */
+                    $validator = function ($value) {
+                        return is_numeric($value);
+                    };
                     break;
 
                 case "string":
                 default:
                     $conditionList = ['='];
+                    $validator = function ($value) {
+                        return is_string($value);
+                    };
                     break;
             }
 
-            yield new Field($countrySpecific->getFieldString(), $countrySpecific->getFieldString(), $conditionList, $type);
+            yield new Field($countrySpecific->getFieldString(), $countrySpecific->getFieldString(), $conditionList, $type, $validator);
         }
     }
 
