@@ -52,6 +52,7 @@ use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Cache\CacheInterface;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Voucher;
+use function _PHPStan_8f2e45ccf\React\Promise\Stream\first;
 
 /**
  * Class AssistanceDistributionService
@@ -128,12 +129,31 @@ class AssistanceDistributionService
      */
     public function distributeByBeneficiaryIdAndAssistanceId(array $inputPackages, Assistance $assistance,User $distributor): DistributeReliefPackagesOutputType {
         $distributeReliefPackageOutputType = new DistributeReliefPackagesOutputType();
-        foreach ($inputPackages as $packageUpdate) {
-            $beneficiary = $this->beneficiaryRepository->find($packageUpdate->getBeneficiaryId());
-            /** @var ReliefPackage[] $packages */
-            $packages = $this->reliefPackageRepository->findByAssistanceAndBeneficiary($assistance, $beneficiary);
+        foreach ($inputPackages as $packageData) {
+            $distributeReliefPackageOutputType = $this->processPackageData($packageData, $distributeReliefPackageOutputType, $assistance, $distributor);
 
-            if ($packageUpdate->getAmountDistributed() === null) {
+        }
+        return  $distributeReliefPackageOutputType;
+    }
+
+    private function processPackageData(
+        DistributeBeneficiaryReliefPackagesInputType $packageData,
+        DistributeReliefPackagesOutputType $distributeReliefPackageOutputType,
+        Assistance $assistance,
+        User $distributor
+    ) {
+        $beneficiaries = $this->beneficiaryRepository->findByIdentityAndProject($packageData->getIdNumber(), $assistance->getProject());
+        if (count($beneficiaries) === 0) {
+            return $distributeReliefPackageOutputType->addNotFound($packageData->getIdNumber());
+        }
+        if (count($beneficiaries) > 1) {
+            return $distributeReliefPackageOutputType->addConflictId($packageData->getIdNumber(), $beneficiaries);
+        }
+        if (count($beneficiaries) === 1) {
+            /** @var ReliefPackage[] $packages */
+            $packages = $this->reliefPackageRepository->findByAssistanceAndBeneficiary($assistance, array_shift($beneficiaries));
+
+            if ($packageData->getAmountDistributed() === null) {
                 foreach ($packages as $reliefPackage) {
                     $result = $this->distributeSinglePackage(
                         $reliefPackage,
@@ -144,22 +164,26 @@ class AssistanceDistributionService
                     $distributeReliefPackageOutputType = $result['output'];
                 }
             } else {
-                $totalSumToDistribute = $packageUpdate->getAmountDistributed();
+                $totalSumToDistribute = $packageData->getAmountDistributed();
                 foreach ($packages as $reliefPackage) {
                     $result = $this->distributeSinglePackage($reliefPackage,
                         $reliefPackage->getCurrentUndistributedAmount(),
                         $totalSumToDistribute,
                         $distributor,
-                    $distributeReliefPackageOutputType);
+                        $distributeReliefPackageOutputType);
                     $totalSumToDistribute = $totalSumToDistribute - $result['amount'];
                     $distributeReliefPackageOutputType = $result['output'];
                 }
             }
         }
-        return  $distributeReliefPackageOutputType;
+        return $distributeReliefPackageOutputType;
     }
 
     private function distributeSinglePackage(ReliefPackage $reliefPackage, $targetDistributionAmount, $totalUndistributedAmount, User $distributor, DistributeReliefPackagesOutputType $distributeReliefPackageOutputType) {
+        if ($targetDistributionAmount <= 0) {
+            $output = $distributeReliefPackageOutputType->addAlreadyDistributed($reliefPackage->getId());
+            return ['amount' => 0, 'output' => $output];
+        }
         $amount = 0;
         try {
             $toDistribute = min($targetDistributionAmount, $totalUndistributedAmount);

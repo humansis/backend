@@ -273,6 +273,22 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             ->getResult();
     }
 
+    public function findByIdentityAndProject($idNumber, $project) {
+        $qb = $this->createQueryBuilder('b')
+            ->join('b.person', 'p')
+            ->join('b.household', 'hh')
+            ->join('p.nationalIds', 'id')
+            ->join('hh.projects', 'project')
+            ->andWhere('project = :project')
+            ->andWhere('b.archived = 0')
+            ->andWhere('hh.archived = 0')
+            ->andWhere('id.idNumber = :idNumber')
+            ->setParameter('idNumber', $idNumber)
+            ->setParameter('project', $project);
+        return $qb->getQuery()
+            ->getResult();
+    }
+
     public function findIdentitiesByNationalIds(string $iso3, NationalIdHashSet $ids)
     {
         $qb = $this->createQueryBuilder('b')
