@@ -171,9 +171,6 @@ services:
             - '@NewApiBundle\Export\VulnerabilityScoreExport'
             - '@distribution.assistance_service'
 
-    NewApiBundle\Controller\AssistanceSelectionController:
-        arguments:
-            - "@transformer.selection_criterion_field"
 
     NewApiBundle\Controller\CommonController:
         arguments:
@@ -203,8 +200,6 @@ services:
             - "@project.sector_service"
 
     NewApiBundle\Controller\SelectionCriterionController:
-        arguments:
-            - "@transformer.selection_criterion_field"
 
     NewApiBundle\Controller\SmartcardPurchaseController:
         arguments:
@@ -251,20 +246,13 @@ services:
         class: NewApiBundle\Component\SelectionCriteria\Generator\BeneficiaryFieldGenerator
         arguments: [ "@=service('doctrine.orm.entity_manager').getRepository('BeneficiaryBundle:VulnerabilityCriterion')" ]
 
+    NewApiBundle\Component\SelectionCriteria\SelectionCriterionService: "@service.selection_criterion"
+
     service.selection_criterion:
         public: true
         class: NewApiBundle\Component\SelectionCriteria\SelectionCriterionService
         arguments:
             - [ '@generator.beneficiary', '@generator.household', '@generator.household_head' ]
-
-    transformer.selection_criterion_field:
-        alias: NewApiBundle\Component\SelectionCriteria\FieldDbTransformer
-
-    NewApiBundle\Component\SelectionCriteria\FieldDbTransformer:
-        arguments:
-            - "@=service('doctrine.orm.entity_manager').getRepository('BeneficiaryBundle:CountrySpecific')"
-            - "@=service('doctrine.orm.entity_manager').getRepository('BeneficiaryBundle:VulnerabilityCriterion')"
-            - "@=service('doctrine.orm.entity_manager').getRepository('CommonBundle:Location')"
 
     NewApiBundle\Validator\Constraints\SelectionCriterionFieldValidator:
         arguments: [ '@service.selection_criterion' ]
@@ -446,6 +434,8 @@ services:
     NewApiBundle\Component\Assistance\ReliefPackageSubscriber:
         tags:
             - { name: kernel.event_subscriber }
+
+    NewApiBundle\Component\Assistance\SelectionCriteriaFactory:
 
     NewApiBundle\Factory\AwsStorageFactory:
         public: true

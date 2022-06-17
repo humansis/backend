@@ -17,11 +17,14 @@ use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NoResultException;
 use NewApiBundle\Component\Assistance\CommodityAssignBuilder;
 use NewApiBundle\Component\Assistance\DTO\CommoditySummary;
+use NewApiBundle\Component\Assistance\DTO\CriteriaGroup;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
+use NewApiBundle\Component\Assistance\SelectionCriteriaFactory;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Exception\ManipulationOverValidatedAssistanceException;
 use NewApiBundle\InputType\Assistance\CommodityInputType;
+use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
 use NewApiBundle\Repository\AssistanceStatisticsRepository;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
 use Psr\Cache\InvalidArgumentException;
@@ -44,6 +47,8 @@ class Assistance
     private $targetRepository;
     /** @var Registry $workflowRegistry */
     private $workflowRegistry;
+    /** @var SelectionCriteriaFactory */
+    private $selectionCriteriaFactory;
 
     /**
      * @param Entity\Assistance               $assistanceEntity
@@ -52,14 +57,16 @@ class Assistance
      * @param AssistanceStatisticsRepository  $assistanceStatisticRepository
      * @param Registry                        $workflowRegistry
      * @param AssistanceBeneficiaryRepository $targetRepository
+     * @param SelectionCriteriaFactory        $selectionCriteriaFactory
      */
     public function __construct(
-        Entity\Assistance                                              $assistanceEntity,
-        CacheInterface                                                 $cache,
-        ModalityTypeRepository                                         $modalityTypeRepository,
-        AssistanceStatisticsRepository                                 $assistanceStatisticRepository,
-        Registry                                                       $workflowRegistry,
-        AssistanceBeneficiaryRepository $targetRepository
+        Entity\Assistance               $assistanceEntity,
+        CacheInterface                  $cache,
+        ModalityTypeRepository          $modalityTypeRepository,
+        AssistanceStatisticsRepository  $assistanceStatisticRepository,
+        Registry                        $workflowRegistry,
+        AssistanceBeneficiaryRepository $targetRepository,
+        SelectionCriteriaFactory        $selectionCriteriaFactory
     ) {
         $this->assistanceRoot = $assistanceEntity;
         $this->cache = $cache;
@@ -67,6 +74,7 @@ class Assistance
         $this->assistanceStatisticRepository = $assistanceStatisticRepository;
         $this->workflowRegistry = $workflowRegistry;
         $this->targetRepository = $targetRepository;
+        $this->selectionCriteriaFactory = $selectionCriteriaFactory;
     }
 
     public function getStatistics(?string $countryIso3 = null): array
@@ -391,6 +399,34 @@ class Assistance
              */
             return ($item->getBeneficiary()->getArchived() === false) && ($item->getRemoved() === false);
         });
+    }
+
+    public function addSelectionCriteria(SelectionCriteria $selectionCriteria): void
+    {
+        $this->assistanceRoot
+            ->getAssistanceSelection()
+            ->getSelectionCriteria()
+            ->add($selectionCriteria->getCriteriaRoot())
+        ;
+        $selectionCriteria
+            ->getCriteriaRoot()
+            ->setAssistanceSelection($this->assistanceRoot->getAssistanceSelection())
+        ;
+    }
+
+    /**
+     * @return CriteriaGroup[]
+     */
+    public function getSelectionCriteriaGroups(): iterable
+    {
+        $selectionCriteria = [];
+        /** @var \NewApiBundle\Entity\Assistance\SelectionCriteria $criterion */
+        foreach ($this->assistanceRoot->getSelectionCriteria() as $criterion) {
+            $selectionCriteria[$criterion->getGroupNumber()][] = $this->selectionCriteriaFactory->hydrate($criterion);
+        }
+        foreach ($selectionCriteria as $groupNumber => $criteria) {
+            yield new CriteriaGroup($groupNumber, $criteria);
+        }
     }
 
 }

@@ -1,27 +1,21 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace DistributionBundle\Entity;
+namespace NewApiBundle\Entity\Assistance;
 
+use DistributionBundle\Entity\AssistanceSelection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
- * SelectionCriteria
+ * SelectionCriteria - user filled criteria
  *
  * @ORM\Table(name="selection_criteria")
  * @ORM\Entity(repositoryClass="DistributionBundle\Repository\SelectionCriteriaRepository")
  */
 class SelectionCriteria
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var AssistanceSelection
@@ -64,7 +58,7 @@ class SelectionCriteria
     private $idField;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(name="condition_string", type="string", length=255, nullable=true)
      * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
@@ -109,16 +103,6 @@ class SelectionCriteria
     public function setWeight(int $weight)
     {
         $this->weight = $weight;
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**
@@ -196,11 +180,11 @@ class SelectionCriteria
     /**
      * Set conditionString.
      *
-     * @param string $conditionString
+     * @param string|null $conditionString
      *
      * @return SelectionCriteria
      */
-    public function setConditionString($conditionString)
+    public function setConditionString(?string $conditionString): self
     {
         $this->conditionString = $conditionString;
 
@@ -210,9 +194,9 @@ class SelectionCriteria
     /**
      * Get conditionString.
      *
-     * @return string
+     * @return string|null
      */
-    public function getConditionString()
+    public function getConditionString(): ?string
     {
         return $this->conditionString;
     }

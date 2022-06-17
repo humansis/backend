@@ -189,6 +189,8 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: '.$this->client->getResponse()->getContent()
         );
+        $contentArray = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertGreaterThan(0, $contentArray['totalCount']);
     }
 
     /**

@@ -4,15 +4,16 @@
 namespace DistributionBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\Camp;
 use BeneficiaryBundle\Model\Vulnerability\CategoryEnum;
 use BeneficiaryBundle\Model\Vulnerability\Resolver;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
+use NewApiBundle\Component\Assistance\DTO\CriteriaGroup;
+use NewApiBundle\Entity\Assistance\SelectionCriteria;
 use ProjectBundle\Entity\Project;
-use BeneficiaryBundle\Entity\Camp;
 use Symfony\Component\Serializer\Serializer;
 
 /**
@@ -54,25 +55,23 @@ class CriteriaAssistanceService
     }
 
     /**
-     * @deprecated replace by new method with type control of incoming criteria objects and country code
-     * @param array       $filters
-     * @param Project     $project
-     * @param string      $targetType
-     * @param string      $sector
-     * @param string|null $subsector
-     * @param int         $threshold
-     * @param bool        $isCount
+     * @param iterable|CriteriaGroup[] $criteriaGroups
+     * @param Project         $project
+     * @param string          $targetType
+     * @param string          $sector
+     * @param string|null     $subsector
+     * @param int             $threshold
+     * @param bool            $isCount
      *
      * @return array
      * @throws \BeneficiaryBundle\Exception\CsvParserException
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Doctrine\ORM\ORMException
+     *@deprecated replace by new method with type control of incoming criteria objects and country code
      */
-    public function load(array $filters, Project $project, string $targetType, string $sector, ?string $subsector, int $threshold, bool $isCount)
+    public function load(iterable $criteriaGroups, Project $project, string $targetType, string $sector, ?string $subsector, int $threshold, bool $isCount)
     {
-        $countryISO3 = $filters['countryIso3'];
-
         if (!in_array($targetType, [
             AssistanceTargetType::INDIVIDUAL,
             AssistanceTargetType::HOUSEHOLD,
@@ -82,15 +81,8 @@ class CriteriaAssistanceService
 
         $reachedBeneficiaries = [];
 
-        foreach ($filters['criteria'] as $group) {
-            foreach ($group as $index => $criterion) {
-                if ($criterion['table_string'] === 'Personnal') {
-                    // TODO: move criteria enhancing into SelectionCriteria domain object/happens in SelectionCriteriaFactory
-                    $criterion['type'] = $this->configurationLoader->criteria[$criterion['field_string']]['type'];
-                    $group[$index] = $criterion;
-                }
-            }
-
+        foreach ($criteriaGroups as $group)
+        {
             $selectableBeneficiaries = $this->em->getRepository(Beneficiary::class)
                 ->getDistributionBeneficiaries($group, $project);
 
@@ -98,7 +90,7 @@ class CriteriaAssistanceService
                 /** @var Beneficiary $beneficiary */
                 $beneficiary = $this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $bnf['id']);
 
-                $protocol = $this->resolver->compute($beneficiary->getHousehold(), $countryISO3, $sector);
+                $protocol = $this->resolver->compute($beneficiary->getHousehold(), $project->getIso3(), $sector);
                 $scores = ['totalScore' => $protocol->getTotalScore()];
                 foreach (CategoryEnum::all() as $value) {
                     $scores[$value] = $protocol->getCategoryScore($value);
@@ -123,42 +115,6 @@ class CriteriaAssistanceService
             // !!!! Those are ids, not directly beneficiaries !!!!
             return ['finalArray' => $reachedBeneficiaries];
         }
-    }
-
-    /**
-     * @param array   $filters
-     * @param Project $project
-     * @param string  $targetType
-     * @param int     $threshold
-     * @param int     $limit
-     * @param int     $offset
-     *
-     * @return Beneficiary[]
-     * @throws \BeneficiaryBundle\Exception\CsvParserException
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Doctrine\ORM\ORMException
-     */
-    public function getList(array $filters, Project $project, string $targetType, int $threshold, int $limit, int $offset)
-    {
-        $result = $this->load($filters, $project, $targetType, $filters['sector'], $filters['subsector'], $threshold, false);
-
-        $beneficiaries = $this->em->getRepository(Beneficiary::class)->findBy(['id' => array_keys($result['finalArray'])], null, $limit, $offset);
-
-        $data = [];
-        foreach ($beneficiaries as $beneficiary) {
-            $serialized = $this->serializer->serialize($beneficiary, 'json', ['groups' => ['SmallHousehold']]);
-            $deserialized = json_decode($serialized, true);
-            $deserialized['scores'] = $result['finalArray'][$beneficiary->getId()];
-
-            $data[] = $deserialized;
-        }
-
-        usort($data, function ($a, $b) {
-            return $b['scores']['totalScore'] <=> $a['scores']['totalScore'];
-        });
-
-        return $data;
     }
 
     /**

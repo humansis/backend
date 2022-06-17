@@ -4,33 +4,21 @@ declare(strict_types=1);
 
 namespace Tests\DistributionBundle\Controller;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
-use CommonBundle\Entity\Adm4;
-use CommonBundle\Entity\Location;
-use DistributionBundle\DBAL\AssistanceTypeEnum;
-use DistributionBundle\Entity\Commodity;
-use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\ModalityType;
-use DistributionBundle\Entity\SelectionCriteria;
+use DistributionBundle\Entity\AssistanceBeneficiary;
+use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Utils\DistributionCSVService;
-use DistributionBundle\Utils\AssistanceService;
-use ProjectBundle\Entity\Project;
-use Symfony\Component\BrowserKit\Client;
+use NewApiBundle\Entity\Assistance\SelectionCriteria;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Tests\BeneficiaryBundle\Controller\HouseholdControllerTest;
 use Tests\BMSServiceTestCase;
 use TransactionBundle\Entity\Transaction;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\InputType\VoucherPurchase;
 use VoucherBundle\Model\PurchaseService;
-use VoucherBundle\Utils\BookletService;
 
 class AssistanceControllerTest extends BMSServiceTestCase
 {
@@ -56,6 +44,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
      */
     public function testCreateDistribution()
     {
+        $this->markTestSkipped('Old endpoint');
 //        $this->removeHousehold($this->namefullnameHousehold);
         $this->createHousehold();
 

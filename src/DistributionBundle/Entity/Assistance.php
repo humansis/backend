@@ -10,13 +10,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use NewApiBundle\Entity\Assistance\SelectionCriteria;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
-
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
-use TransactionBundle\Entity\Transaction;
 use VoucherBundle\Entity\SmartcardPurchase;
 
 /**
@@ -511,11 +509,11 @@ class Assistance implements ExportableInterface
     /**
      * Add selectionCriterion.
      *
-     * @param \DistributionBundle\Entity\SelectionCriteria $selectionCriterion
+     * @param SelectionCriteria $selectionCriterion
      *
      * @return Assistance
      */
-    public function addSelectionCriterion(\DistributionBundle\Entity\SelectionCriteria $selectionCriterion)
+    public function addSelectionCriterion(SelectionCriteria $selectionCriterion)
     {
         $this->getAssistanceSelection()->getSelectionCriteria()->add($selectionCriterion);
         $selectionCriterion->setAssistanceSelection($this->getAssistanceSelection());
@@ -526,11 +524,11 @@ class Assistance implements ExportableInterface
     /**
      * Remove selectionCriterion.
      *
-     * @param \DistributionBundle\Entity\SelectionCriteria $selectionCriterion
+     * @param SelectionCriteria $selectionCriterion
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeSelectionCriterion(\DistributionBundle\Entity\SelectionCriteria $selectionCriterion)
+    public function removeSelectionCriterion(SelectionCriteria $selectionCriterion)
     {
         return $this->getAssistanceSelection()->getSelectionCriteria()->removeElement($selectionCriterion);
     }
@@ -540,7 +538,7 @@ class Assistance implements ExportableInterface
      *
      * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return \Doctrine\Common\Collections\Collection|SelectionCriteria[]
      */
     public function getSelectionCriteria()
     {

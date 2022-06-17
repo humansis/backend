@@ -4,21 +4,8 @@
 namespace Tests\DistributionBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Entity\CountrySpecificAnswer;
-use BeneficiaryBundle\Entity\Household;
-use CommonBundle\Entity\Adm4;
-use CommonBundle\Entity\Location;
-use DistributionBundle\Entity\Commodity;
-use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\ModalityType;
-use DistributionBundle\Entity\SelectionCriteria;
-use DistributionBundle\Utils\DistributionCSVService;
-use DistributionBundle\Utils\AssistanceService;
-use ProjectBundle\Entity\Project;
-use Symfony\Component\BrowserKit\Client;
-use Tests\BeneficiaryBundle\Controller\HouseholdControllerTest;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use Tests\BMSServiceTestCase;
 
 class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
