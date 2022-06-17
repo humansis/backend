@@ -47,14 +47,14 @@ class ReliefPackage
     private $modalityType;
 
     /**
-     * @var float
+     * @var string
      *
      * @ORM\Column(name="amount_to_distribute", type="decimal", precision=10, scale=2)
      */
     private $amountToDistribute;
 
     /**
-     * @var float
+     * @var string
      *
      * Not in use right now. Prepared for partial assists.
      *
@@ -103,18 +103,18 @@ class ReliefPackage
     /**
      * @param AssistanceBeneficiary $assistanceBeneficiary
      * @param string                $modalityType
-     * @param float     $amountToDistribute
+     * @param float|string|int      $amountToDistribute
      * @param string                $unit
      * @param string                $state
-     * @param float     $amountDistributed
+     * @param float|string|int      $amountDistributed
      */
     public function __construct(
         AssistanceBeneficiary $assistanceBeneficiary,
         string $modalityType,
-        float $amountToDistribute,
+        $amountToDistribute,
         string $unit,
         string $state = ReliefPackageState::TO_DISTRIBUTE,
-        float $amountDistributed = 0.0
+        $amountDistributed = 0.0
     )
     {
         if (!in_array($modalityType, ModalityType::values())) {
@@ -131,10 +131,10 @@ class ReliefPackage
 
         $this->assistanceBeneficiary = $assistanceBeneficiary;
         $this->modalityType = $modalityType;
-        $this->amountToDistribute = floatval($amountToDistribute);
+        $this->amountToDistribute = (string) $amountToDistribute;
         $this->unit = $unit;
         $this->state = $state;
-        $this->amountDistributed = floatval($amountDistributed);
+        $this->amountDistributed = (string) $amountDistributed;
     }
 
     /**
@@ -181,9 +181,9 @@ class ReliefPackage
     }
 
     /**
-     * @return float
+     * @return string
      */
-    public function getAmountToDistribute()
+    public function getAmountToDistribute(): string
     {
         return $this->amountToDistribute;
     }
@@ -191,8 +191,12 @@ class ReliefPackage
     /**
      * @param float|string|int $amountToDistribute
      */
-    public function setAmountToDistribute(float $amountToDistribute): void
+    public function setAmountToDistribute($amountToDistribute): void
     {
+        if (!is_numeric($amountToDistribute)) {
+            throw new InvalidArgumentException("amountToDistribute has to bee numeric. Provided value: '$amountToDistribute'");
+        }
+
         $this->amountToDistribute = $amountToDistribute;
     }
 
@@ -213,17 +217,17 @@ class ReliefPackage
     }
 
     /**
-     * @return float
+     * @return string
      */
-    public function getAmountDistributed()
+    public function getAmountDistributed(): string
     {
         return $this->amountDistributed;
     }
 
     /**
-     * @param float|string $amountDistributed
+     * @param string $amountDistributed
      */
-    public function setAmountDistributed(float $amountDistributed): void
+    public function setAmountDistributed(string $amountDistributed): void
     {
         $this->amountDistributed = $amountDistributed;
     }
@@ -235,7 +239,7 @@ class ReliefPackage
      */
     public function addAmountOfDistributed($amountDistributed): void
     {
-        $this->setAmountDistributed(($this->amountDistributed + (float) $amountDistributed));
+        $this->setAmountDistributed((string) ((float) $this->amountDistributed + (float) $amountDistributed));
     }
 
     public function distributeRest(): void
@@ -247,7 +251,7 @@ class ReliefPackage
      * @return float
      */
     public function getCurrentUndistributedAmount(): float {
-        return $this->getAmountToDistribute() - $this->getAmountDistributed();
+        return (float) $this->getAmountToDistribute() - $this->getAmountDistributed();
     }
 
     /**
