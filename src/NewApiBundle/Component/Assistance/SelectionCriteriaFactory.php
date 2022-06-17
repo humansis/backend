@@ -81,8 +81,9 @@ class SelectionCriteriaFactory
         if (SelectionCriteriaTarget::HOUSEHOLD === $input->getTarget()) {
 
             if ($countrySpecific = $this->getCountrySpecific($input->getField())) {
-                $criterium->setTableString($countrySpecific->getFieldString());
-                $criterium->setFieldString('countrySpecific');
+                // $criterium->setTableString($countrySpecific->getFieldString());
+                $criterium->setFieldString($countrySpecific->getFieldString());
+                $criterium->setTableString('countrySpecific');
                 return $criterium;
             }
             if ('location' === $input->getField()) {
@@ -110,6 +111,12 @@ class SelectionCriteriaFactory
 
     public function hydrate(SelectionCriteriaEntity $criteriaEntity): SelectionCriteria
     {
+        if ($criteriaEntity->getTableString() === 'countrySpecific') {
+            return new SelectionCriteria(
+                $criteriaEntity,
+                $this->configurationLoader->criteria['countrySpecific']
+            );
+        }
         return new SelectionCriteria(
             $criteriaEntity,
             $this->configurationLoader->criteria[$criteriaEntity->getFieldString()]
