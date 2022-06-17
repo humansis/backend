@@ -692,7 +692,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         }
         $userConditionsStatement->add("hh.$field$condition :parameter".$i);
         $qb->addSelect("(CASE WHEN hh.$field$condition :parameter$i THEN hh.$field ELSE :null END) AS $field.$i")
-            ->setParameter("null", null);
+            ->setParameter('null', null);
     }
 
     private function getHouseholdWithOtherCriterion(QueryBuilder &$qb, $field, $condition, SelectionCriteria $criterion, int $i, Andx &$userConditionsStatement)
@@ -704,7 +704,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             case SelectionCriteriaField::HOUSEHOLD_SIZE:
                 $userConditionsStatement->add("SIZE(hh.beneficiaries) $condition :parameter$i");
                 $qb->addSelect("(CASE WHEN SIZE(hh.beneficiaries) $condition :parameter$i THEN SIZE(hh.beneficiaries) ELSE :null END) AS $field.$i")
-                    ->setParameter("null", null);
+                    ->setParameter('null', null);
                 break;
             case SelectionCriteriaField::LOCATION_TYPE:
                 $qb->leftJoin("hh.householdLocations", "hl$i", Join::WITH, "hl$i.type $condition :parameter$i");
@@ -715,7 +715,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                 $qb->leftJoin("hh.householdLocations", "hl$i", Join::WITH, "hl$i.type = :camp")
                     ->leftJoin("hl$i.campAddress", "ca$i")
                     ->leftJoin("ca$i.camp", "c$i", Join::WITH, "c$i.id = :parameter$i")
-                    ->setParameter("camp", "camp");
+                    ->setParameter('camp', 'camp');
                 $userConditionsStatement->add("c$i.id = :parameter$i");
                 $qb->addSelect("c$i.id AS $field$i");
                 break;
@@ -730,9 +730,9 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                     ->leftJoin("hl$i.address", "ad$i")
                     ->leftJoin(Location::class, "l$i", Join::WITH, "l$i.id = COALESCE(IDENTITY(c$i.location, 'id'), IDENTITY(ad$i.location, 'id'))")
                     ->andWhere("l$i.id IN ({$locationsQb->getDQL()})")
-                    ->setParameter("currentRgt", $location->getRgt())
-                    ->setParameter("currentLft", $location->getLft())
-                    ->setParameter("currentLvl", $location->getLvl());
+                    ->setParameter('currentRgt', $location->getRgt())
+                    ->setParameter('currentLft', $location->getLft())
+                    ->setParameter('currentLvl', $location->getLvl());
                 break;
         }
     }
