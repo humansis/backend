@@ -81,7 +81,6 @@ class SelectionCriteriaFactory
         if (SelectionCriteriaTarget::HOUSEHOLD === $input->getTarget()) {
 
             if ($countrySpecific = $this->getCountrySpecific($input->getField())) {
-                // $criterium->setTableString($countrySpecific->getFieldString());
                 $criterium->setFieldString($countrySpecific->getFieldString());
                 $criterium->setTableString('countrySpecific');
                 return $criterium;
