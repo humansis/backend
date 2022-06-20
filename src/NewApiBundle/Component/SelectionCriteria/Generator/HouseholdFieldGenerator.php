@@ -63,9 +63,9 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
         /**
          * Disabled fields
          * yield new Field('copingStrategiesIndex', 'Coping Strategies Index', ['=', '<', '>', '<=', '>='], 'double');
+         * yield new Field('foodConsumptionScore', 'Food Consumption Score', ['=', '<', '>', '<=', '>='], 'double');
          */
         yield new Field('livelihood', 'Livelihood', ['='], 'livelihood', [self::class, 'validateLivelihood']);
-        yield new Field('foodConsumptionScore', 'Food Consumption Score', ['=', '<', '>', '<=', '>='], 'double');
         yield new Field('income', 'Income', ['=', '<', '>', '<=', '>='], 'integer');
         yield new Field('householdSize', 'Household Size', ['=', '<', '>', '<=', '>='], 'integer');
         yield new Field('location', 'Location', ['='], 'location', 'is_int');
