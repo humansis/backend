@@ -10,6 +10,9 @@ use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
+use DistributionBundle\Enum\AssistanceTargetType;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
@@ -125,5 +128,93 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
     {
         $this->_em->persist($package);
         $this->_em->flush();
+    }
+
+    /**
+     * @param Assistance $assistance
+     * @param array|null $reliefPackageStates
+     *
+     * @return float|int|mixed|string
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
+    public function sumReliefPackagesAmountByAssistance(Assistance $assistance, ?array $reliefPackageStates = null)
+    {
+        $qb = $this->createQueryBuilder('rp');
+        $qb->select('SUM(rp.amountToDistribute)')
+            ->join('rp.assistanceBeneficiary', 'ab')
+            ->andWhere('IDENTITY(ab.assistance) = :assistance')
+            ->setParameter('assistance', $assistance->getId());
+
+        if ($reliefPackageStates) {
+            $qb->andWhere('rp.state IN (:states)')
+                ->setParameter('states', $reliefPackageStates);
+        }
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * @param Assistance $assistance
+     * @param array|null $reliefPackageStates
+     *
+     * @return float|int|mixed|string
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
+    public function sumDistributedReliefPackagesAmountByAssistance(Assistance $assistance, ?array $reliefPackageStates = null)
+    {
+        $qb = $this->createQueryBuilder('rp');
+        $qb->select('SUM(rp.amountDistributed)')
+            ->join('rp.assistanceBeneficiary', 'ab')
+            ->andWhere('IDENTITY(ab.assistance) = :assistance')
+            ->setParameter('assistance', $assistance->getId());
+
+        if ($reliefPackageStates) {
+            $qb->andWhere('rp.state IN (:states)')
+                ->setParameter('states', $reliefPackageStates);
+        }
+
+        $result = $qb->getQuery()->getSingleScalarResult();
+        if (!$result) {
+            return 0;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return ReliefPackage|null
+     * @throws NonUniqueResultException
+     */
+    public function findRandomWithNotValidatedAssistance(): ?ReliefPackage
+    {
+        $qb1 = $this->createQueryBuilder('arp');
+        $qb1->select('IDENTITY(arp.assistanceBeneficiary)')
+            ->andWhere('arp.state != :state')
+            ->groupBy('arp.assistanceBeneficiary')
+            ->having('COUNT(arp.id) > 0');
+
+        $qb = $this->createQueryBuilder('rp');
+        $qb->leftJoin('rp.assistanceBeneficiary', 'ab')
+            ->leftJoin('ab.assistance', 'a')
+            ->andWhere('ab.removed = :removed')
+            ->setParameter('removed', false)
+            ->andWhere('a.validated = :validated')
+            ->setParameter('validated', false)
+            ->andWhere('a.completed = :completed')
+            ->setParameter('completed', false)
+            ->andWhere('a.archived = :archived')
+            ->setParameter('archived', false)
+            ->andWhere('a.targetType = :targetType')
+            ->setParameter('targetType', AssistanceTargetType::INDIVIDUAL)
+            ->andWhere('rp.amountToDistribute IS NOT NULL')
+            ->andWhere('rp.state = :toDistributeState')
+            ->setParameter('toDistributeState', ReliefPackageState::TO_DISTRIBUTE)
+            ->setMaxResults(1)
+            ->andWhere('ab.id NOT IN ('.$qb1->getDQL().')')
+            ->setParameter('state', ReliefPackageState::TO_DISTRIBUTE);
+
+        return $qb->getQuery()->getOneOrNullResult();
     }
 }

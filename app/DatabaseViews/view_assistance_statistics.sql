@@ -10,6 +10,7 @@ select
 from assistance a
          left join distribution_beneficiary db on a.id = db.assistance_id
          left join assistance_relief_package rp on db.id = rp.assistance_beneficiary_id
+where rp.state != 'Canceled'
 group by a.id
 order by a.id
 
