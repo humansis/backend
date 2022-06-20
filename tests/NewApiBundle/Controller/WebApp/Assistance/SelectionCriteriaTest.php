@@ -127,6 +127,30 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'weight' => 1,
             'value' => '111222333',
         ];
+        $CSOFloatGtInt = [
+            'group' => $group++,
+            'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD,
+            'field' => 'CSO float property',
+            'condition' => '>',
+            'weight' => 1,
+            'value' => 0,
+        ];
+        $CSOFloatLtFloat = [
+            'group' => $group++,
+            'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD,
+            'field' => 'CSO float property',
+            'condition' => '<',
+            'weight' => 1,
+            'value' => 1.00000001,
+        ];
+        $CSOFloatGteFloat = [
+            'group' => $group++,
+            'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD,
+            'field' => 'CSO float property',
+            'condition' => '>=',
+            'weight' => 1,
+            'value' => 0.5,
+        ];
         $workForGovernment = [
             'group' => $group++,
             'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD,
@@ -141,9 +165,12 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         yield 'has any income (string value)' => [$this->assistanceWithCriteria([$hasAnyIncomeString])];
         yield 'has any income (int value)' => [$this->assistanceWithCriteria([$hasAnyIncomeInt])];
         yield 'is in location Banteay Meanchey' => [$this->assistanceWithCriteria([$location])];
-        yield 'CSO equity card' => [$this->assistanceWithCriteria([$CSOEquityCard])];
+        yield 'CSO equity card exact string value' => [$this->assistanceWithCriteria([$CSOEquityCard])];
+        yield 'CSO float property higher integer value' => [$this->assistanceWithCriteria([$CSOFloatGtInt])];
+        yield 'CSO float property lower float value' => [$this->assistanceWithCriteria([$CSOFloatLtFloat])];
+        yield 'CSO float property greater or equal float value' => [$this->assistanceWithCriteria([$CSOFloatGteFloat])];
         yield 'Livelihood for government' => [$this->assistanceWithCriteria([$workForGovernment])];
-        yield 'all in one' => [$this->assistanceWithCriteria([$femaleHead, $bornBefore2020, $hasAnyIncomeInt, $location, $CSOEquityCard, $workForGovernment])];
+        yield 'all in one' => [$this->assistanceWithCriteria([$femaleHead, $bornBefore2020, $hasAnyIncomeInt, $location, $CSOEquityCard, $CSOFloatGtInt, $CSOFloatLtFloat, $CSOFloatGteFloat, $workForGovernment])];
     }
 
     /**

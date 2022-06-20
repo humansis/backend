@@ -63,7 +63,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "adm4" => $optionalNumeric
         ];
         $countrySpecificAnswer = [
-            "answer" => $string,
+            "answer" => new Type('numeric'),
             "country_specific" => $array,
         ];
         $beneficiary = [
