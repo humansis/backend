@@ -86,12 +86,12 @@ class SelectionCriteria
 
     public function hasTableFieldType(): bool
     {
-        return $this->criteriaRoot->getTableString() === 'table_field';
+        return $this->getType() === 'table_field';
     }
 
     public function hasTypeOther(): bool
     {
-        return $this->criteriaRoot->getTableString() === 'other';
+        return $this->getType() === 'other';
     }
 
     public function hasVulnerabilityCriteriaType(): bool
