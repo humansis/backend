@@ -160,7 +160,8 @@ class AssistanceDistributionService
                         $reliefPackage->getCurrentUndistributedAmount(),
                         $reliefPackage->getCurrentUndistributedAmount(),
                         $distributor,
-                        $beneficiary
+                        $beneficiary,
+                        $packageData->getIdNumber()
                         );
                     $distributeReliefPackageOutputType = $result['output'];
                 }
@@ -173,7 +174,8 @@ class AssistanceDistributionService
                         $reliefPackage->getCurrentUndistributedAmount(),
                         $totalSumToDistribute,
                         $distributor,
-                        $beneficiary
+                        $beneficiary,
+                        $packageData->getIdNumber()
                         );
                     $totalSumToDistribute = $totalSumToDistribute - $result['amount'];
                     $distributeReliefPackageOutputType = $result['output'];
@@ -183,10 +185,10 @@ class AssistanceDistributionService
         return $distributeReliefPackageOutputType;
     }
 
-    private function distributeSinglePackage( DistributeReliefPackagesOutputType $distributeReliefPackageOutputType, ReliefPackage $reliefPackage, $targetDistributionAmount, $totalUndistributedAmount, User $distributor, Beneficiary $beneficiary = NULL) {
+    private function distributeSinglePackage( DistributeReliefPackagesOutputType $distributeReliefPackageOutputType, ReliefPackage $reliefPackage, $targetDistributionAmount, $totalUndistributedAmount, User $distributor, Beneficiary $beneficiary = NULL, $idNumber = NULL) {
         $beneficiaryId = isset($beneficiary) ? $beneficiary->getId() : NULL;
         if ($reliefPackage->isFullyDistributed()) {
-            $output = $distributeReliefPackageOutputType->addAlreadyDistributed($reliefPackage->getId(), $beneficiaryId);
+            $output = $distributeReliefPackageOutputType->addAlreadyDistributed($reliefPackage->getId(), $beneficiaryId, $idNumber);
             return ['amount' => 0, 'output' => $output];
         }
         $amount = 0;
@@ -195,9 +197,9 @@ class AssistanceDistributionService
             $reliefPackage->addAmountOfDistributed($toDistribute);
             $this->startReliefPackageDitributionWorkflow($reliefPackage, $distributor);
             $amount = $toDistribute;
-            $reliefPackage->isFullyDistributed() ? $distributeReliefPackageOutputType->addSuccessfullyDistributed($reliefPackage->getId(), $beneficiaryId) : $distributeReliefPackageOutputType->addPartiallyDistributed($reliefPackage->getId(), $beneficiaryId);
+            $reliefPackage->isFullyDistributed() ? $distributeReliefPackageOutputType->addSuccessfullyDistributed($reliefPackage->getId(), $beneficiaryId, $idNumber) : $distributeReliefPackageOutputType->addPartiallyDistributed($reliefPackage->getId(), $beneficiaryId, $idNumber);
         } catch (\Throwable $ex) {
-            $distributeReliefPackageOutputType->addFailed($reliefPackage->getId());
+            $distributeReliefPackageOutputType->addFailed($reliefPackage->getId(), $ex->getMessage());
         } finally {
             return ['amount' => $amount, 'output' => $distributeReliefPackageOutputType];
         }

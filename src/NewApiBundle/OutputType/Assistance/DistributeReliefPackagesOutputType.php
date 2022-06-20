@@ -67,9 +67,13 @@ class DistributeReliefPackagesOutputType implements InputTypeInterface
      *
      * @return $this
      */
-    public function addSuccessfullyDistributed($successfullyDistributedId, $beneficiaryId = NULL): DistributeReliefPackagesOutputType
+    public function addSuccessfullyDistributed($successfullyDistributedId, $beneficiaryId = NULL, $idNumber = NULL): DistributeReliefPackagesOutputType
     {
-        $this->successfullyDistributed[] = ['reliefPackageId' => $successfullyDistributedId, 'beneficiaryId' => $beneficiaryId];
+        $this->successfullyDistributed[] = [
+            'reliefPackageId' => $successfullyDistributedId,
+            'beneficiaryId' => $beneficiaryId,
+            'idNumber' => $idNumber,
+        ];
         return $this;
     }
 
@@ -98,9 +102,13 @@ class DistributeReliefPackagesOutputType implements InputTypeInterface
      *
      * @return $this
      */
-    public function addPartiallyDistributed($partiallyDistributedId, $beneficiaryId = NULL): DistributeReliefPackagesOutputType
+    public function addPartiallyDistributed($partiallyDistributedId, $beneficiaryId = NULL, $idNumber = NULL): DistributeReliefPackagesOutputType
     {
-        $this->partiallyDistributed[] = ['reliefPackageId' => $partiallyDistributedId, 'beneficiaryId' => $beneficiaryId];
+        $this->partiallyDistributed[] = [
+            'reliefPackageId' => $partiallyDistributedId,
+            'beneficiaryId' => $beneficiaryId,
+            'idNumber' => $idNumber,
+        ];
         return $this;
     }
 
@@ -126,9 +134,13 @@ class DistributeReliefPackagesOutputType implements InputTypeInterface
      *
      * @return $this
      */
-    public function addAlreadyDistributed($alreadyDistributedId, $beneficiaryId = NULL): DistributeReliefPackagesOutputType
+    public function addAlreadyDistributed($alreadyDistributedId, $beneficiaryId = NULL, $idNumber = NULL): DistributeReliefPackagesOutputType
     {
-        $this->alreadyDistributed[] = ['reliefPackageId' => $alreadyDistributedId, 'beneficiaryId' => $beneficiaryId];
+        $this->alreadyDistributed[] = [
+            'reliefPackageId' => $alreadyDistributedId,
+            'beneficiaryId' => $beneficiaryId,
+            'idNumber' => $idNumber,
+        ];
         return $this;
     }
 
