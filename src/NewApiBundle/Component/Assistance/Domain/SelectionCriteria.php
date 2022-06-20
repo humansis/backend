@@ -81,7 +81,7 @@ class SelectionCriteria
 
     public function hasCountrySpecificType(): bool
     {
-        return $this->criteriaRoot->getFieldString() === 'countrySpecific';
+        return $this->criteriaRoot->getTableString() === 'countrySpecific';
     }
 
     public function hasTableFieldType(): bool
