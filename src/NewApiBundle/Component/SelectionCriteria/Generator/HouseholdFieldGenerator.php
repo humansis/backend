@@ -25,14 +25,7 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
      */
     public function generate(?string $countryIso3)
     {
-        yield new Field('livelihood', 'Livelihood', ['='], 'livelihood', [self::class, 'validateLivelihood']);
-        yield new Field('foodConsumptionScore', 'Food Consumption Score', ['=', '<', '>', '<=', '>='], 'double');
-        yield new Field('copingStrategiesIndex', 'Coping Strategies Index', ['=', '<', '>', '<=', '>='], 'double');
-        yield new Field('income', 'Income', ['=', '<', '>', '<=', '>='], 'integer');
-        yield new Field('householdSize', 'Household Size', ['=', '<', '>', '<=', '>='], 'integer');
-        yield new Field('location', 'Location', ['='], 'location', 'is_int');
-        yield new Field('locationType', 'Location Type', ['='], 'locationType', [self::class, 'validateLocationType']);
-
+        yield from $this->getStaticFields();
         foreach ($this->countrySpecificRepository->findBy(['countryIso3' => $countryIso3], ['id'=>'asc']) as $countrySpecific) {
             $type = $this->transformCountrySpecificType($countrySpecific->getType());
 
@@ -61,6 +54,23 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
 
             yield new Field($countrySpecific->getFieldString(), $countrySpecific->getFieldString(), $conditionList, $type, $validator);
         }
+    }
+
+    /**
+     * @return \Generator
+     */
+    private function getStaticFields(): \Generator {
+        /**
+         * Disabled fields
+         * yield new Field('copingStrategiesIndex', 'Coping Strategies Index', ['=', '<', '>', '<=', '>='], 'double');
+         */
+        yield new Field('livelihood', 'Livelihood', ['='], 'livelihood', [self::class, 'validateLivelihood']);
+        yield new Field('foodConsumptionScore', 'Food Consumption Score', ['=', '<', '>', '<=', '>='], 'double');
+        yield new Field('income', 'Income', ['=', '<', '>', '<=', '>='], 'integer');
+        yield new Field('householdSize', 'Household Size', ['=', '<', '>', '<=', '>='], 'integer');
+        yield new Field('location', 'Location', ['='], 'location', 'is_int');
+        yield new Field('locationType', 'Location Type', ['='], 'locationType', [self::class, 'validateLocationType']);
+
     }
 
     /**
