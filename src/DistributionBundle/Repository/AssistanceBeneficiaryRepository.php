@@ -526,35 +526,4 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    /**
-     * @return AssistanceBeneficiary|null
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     */
-    public function findRandomWithNotValidatedAssistance(): ?AssistanceBeneficiary
-    {
-        $qb = $this->createQueryBuilder('ab');
-        $qb->leftJoin('ab.assistance', 'a')
-            ->andWhere('ab.removed = :removed')
-            ->setParameter('removed', false)
-            ->andWhere('a.validated = :validated')
-            ->setParameter('validated', false)
-            ->andWhere('a.completed = :completed')
-            ->setParameter('completed', false)
-            ->andWhere('a.archived = :archived')
-            ->setParameter('archived', false)
-            ->andWhere('a.targetType = :targetType')
-            ->setParameter('targetType', AssistanceTargetType::INDIVIDUAL)
-            ->setMaxResults(1)
-            ->innerJoin('ab.reliefPackages', 'rp', Join::WITH, 'rp.assistanceBeneficiary = ab.id AND rp.state = :rpState')
-            ->setParameter('rpState', ReliefPackageState::TO_DISTRIBUTE);
-
-        return $qb->getQuery()->getOneOrNullResult();
-    }
-
-    public function save(AssistanceBeneficiary $target)
-    {
-        $this->_em->persist($target);
-        $this->_em->flush();
-    }
 }
