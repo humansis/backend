@@ -9,7 +9,6 @@ use BeneficiaryBundle\Repository\InstitutionRepository;
 use DistributionBundle\Entity;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
-use DistributionBundle\Repository\AssistanceRepository;
 use Doctrine\ORM\EntityRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InvalidArgumentException;
@@ -38,17 +37,11 @@ class AssistanceBeneficiaryController extends AbstractController
     private $assistanceBeneficiaryRepository;
 
     /**
-     * @var AssistanceRepository
-     */
-    private $assistanceRepository;
-
-    /**
      * @param AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository
      */
-    public function __construct(AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository, AssistanceRepository $assistanceRepository)
+    public function __construct(AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository)
     {
         $this->assistanceBeneficiaryRepository = $assistanceBeneficiaryRepository;
-        $this->assistanceRepository = $assistanceRepository;
     }
 
     /**
@@ -177,7 +170,6 @@ class AssistanceBeneficiaryController extends AbstractController
             } elseif ($inputType->getRemoved()) {
                 $assistance->removeBeneficiary($beneficiary, $inputType->getJustification());
             }
-            $this->assistanceRepository->save($assistance);
         }
     }
 
