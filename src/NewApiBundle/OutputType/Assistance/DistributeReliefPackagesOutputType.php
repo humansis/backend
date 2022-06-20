@@ -62,13 +62,14 @@ class DistributeReliefPackagesOutputType implements InputTypeInterface
     }
 
     /**
-     * @param $successfullyDistributedId
+     * @param      $successfullyDistributedId
+     * @param null $beneficiaryId
      *
      * @return $this
      */
-    public function addSuccessfullyDistributed($successfullyDistributedId): DistributeReliefPackagesOutputType
+    public function addSuccessfullyDistributed($successfullyDistributedId, $beneficiaryId = NULL): DistributeReliefPackagesOutputType
     {
-        $this->successfullyDistributed[] = ['reliefPackageId' => $successfullyDistributedId];
+        $this->successfullyDistributed[] = ['reliefPackageId' => $successfullyDistributedId, 'beneficiaryId' => $beneficiaryId];
         return $this;
     }
 
@@ -92,13 +93,14 @@ class DistributeReliefPackagesOutputType implements InputTypeInterface
     }
 
     /**
-     * @param $partiallyDistributedId
+     * @param      $partiallyDistributedId
+     * @param null $beneficiaryId
      *
      * @return $this
      */
-    public function addPartiallyDistributed($partiallyDistributedId): DistributeReliefPackagesOutputType
+    public function addPartiallyDistributed($partiallyDistributedId, $beneficiaryId = NULL): DistributeReliefPackagesOutputType
     {
-        $this->partiallyDistributed[] = ['reliefPackageId' => $partiallyDistributedId];
+        $this->partiallyDistributed[] = ['reliefPackageId' => $partiallyDistributedId, 'beneficiaryId' => $beneficiaryId];
         return $this;
     }
 
@@ -119,13 +121,14 @@ class DistributeReliefPackagesOutputType implements InputTypeInterface
     }
 
     /**
-     * @param $alreadyDistributedId
+     * @param      $alreadyDistributedId
+     * @param null $beneficiaryId
      *
      * @return $this
      */
-    public function addAlreadyDistributed($alreadyDistributedId): DistributeReliefPackagesOutputType
+    public function addAlreadyDistributed($alreadyDistributedId, $beneficiaryId = NULL): DistributeReliefPackagesOutputType
     {
-        $this->alreadyDistributed[] = ['reliefPackageId' => $alreadyDistributedId];
+        $this->alreadyDistributed[] = ['reliefPackageId' => $alreadyDistributedId, 'beneficiaryId' => $beneficiaryId];
         return $this;
     }
 
@@ -149,11 +152,14 @@ class DistributeReliefPackagesOutputType implements InputTypeInterface
     }
 
     /**
-     * @param $partiallyDistributedId
+     * @param $failedId
+     * @param $message
+     *
+     * @return $this
      */
-    public function addFailed($failedId): DistributeReliefPackagesOutputType
+    public function addFailed($failedId, $message = NULL): DistributeReliefPackagesOutputType
     {
-        $this->failed[] = ['reliefPackageId' => $failedId];
+        $this->failed[] = ['reliefPackageId' => $failedId, 'error' => $message];
         return $this;
     }
 
@@ -179,7 +185,7 @@ class DistributeReliefPackagesOutputType implements InputTypeInterface
      */
     public function addNotFound($notFound): DistributeReliefPackagesOutputType
     {
-        $this->$notFound[] = ['idNumber' => $notFound];
+        $this->notFound[] = ['idNumber' => $notFound];
         return $this;
     }
 
