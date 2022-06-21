@@ -17,6 +17,7 @@ use InvalidArgumentException;
 use NewApiBundle\DBAL\NationalIdTypeEnum;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\NationalIdType;
+use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\InputType\CommunityFilterType;
@@ -524,4 +525,5 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('modalityType', 'Cash');
         return $qb->getQuery()->getResult();
     }
+
 }
