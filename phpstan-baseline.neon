@@ -1471,6 +1471,16 @@ parameters:
 			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
 
 		-
+			message: "#^Cannot access offset 'field_string' on NewApiBundle\\\\Component\\\\Assistance\\\\Domain\\\\SelectionCriteria\\.$#"
+			count: 1
+			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
+
+		-
+			message: "#^Cannot access offset 'value' on NewApiBundle\\\\Component\\\\Assistance\\\\Domain\\\\SelectionCriteria\\.$#"
+			count: 2
+			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
+
+		-
 			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:beneficiariesInCountry\\(\\) has no return typehint specified\\.$#"
 			count: 1
 			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
@@ -1551,32 +1561,52 @@ parameters:
 			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
 
 		-
-			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getBeneficiaryWithCriterion\\(\\) has no return typehint specified\\.$#"
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getBeneficiaryWithOtherCriterion\\(\\) has no return typehint specified\\.$#"
 			count: 1
 			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
 
 		-
-			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getBeneficiaryWithCriterion\\(\\) has parameter \\$condition with no typehint specified\\.$#"
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getBeneficiaryWithOtherCriterion\\(\\) has parameter \\$condition with no typehint specified\\.$#"
 			count: 1
 			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
 
 		-
-			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getBeneficiaryWithCriterion\\(\\) has parameter \\$criterion with no typehint specified\\.$#"
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getBeneficiaryWithOtherCriterion\\(\\) has parameter \\$field with no typehint specified\\.$#"
 			count: 1
 			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
 
 		-
-			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getBeneficiaryWithCriterion\\(\\) has parameter \\$field with no typehint specified\\.$#"
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getBeneficiaryWithOtherCriterion\\(\\) has parameter \\$qb with no typehint specified\\.$#"
 			count: 1
 			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
 
 		-
-			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getBeneficiaryWithCriterion\\(\\) has parameter \\$qb with no typehint specified\\.$#"
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getBeneficiaryWithOtherCriterion\\(\\) has parameter \\$userConditionsStatement with no typehint specified\\.$#"
 			count: 1
 			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
 
 		-
-			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getBeneficiaryWithCriterion\\(\\) has parameter \\$userConditionsStatement with no typehint specified\\.$#"
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getBeneficiaryWithTableFieldCriterion\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
+
+		-
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getBeneficiaryWithTableFieldCriterion\\(\\) has parameter \\$condition with no typehint specified\\.$#"
+			count: 1
+			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
+
+		-
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getBeneficiaryWithTableFieldCriterion\\(\\) has parameter \\$field with no typehint specified\\.$#"
+			count: 1
+			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
+
+		-
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getBeneficiaryWithTableFieldCriterion\\(\\) has parameter \\$qb with no typehint specified\\.$#"
+			count: 1
+			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
+
+		-
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getBeneficiaryWithTableFieldCriterion\\(\\) has parameter \\$userConditionsStatement with no typehint specified\\.$#"
 			count: 1
 			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
 
@@ -1586,62 +1616,102 @@ parameters:
 			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
 
 		-
-			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getDistributionBeneficiaries\\(\\) has parameter \\$criteria with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
-
-		-
 			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHeadOfHouseholdId\\(\\) has parameter \\$householdId with no typehint specified\\.$#"
 			count: 1
 			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
 
 		-
-			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHeadWithCriterion\\(\\) has no return typehint specified\\.$#"
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHeadWithFieldCriterion\\(\\) has no return typehint specified\\.$#"
 			count: 1
 			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
 
 		-
-			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHeadWithCriterion\\(\\) has parameter \\$condition with no typehint specified\\.$#"
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHeadWithFieldCriterion\\(\\) has parameter \\$condition with no typehint specified\\.$#"
 			count: 1
 			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
 
 		-
-			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHeadWithCriterion\\(\\) has parameter \\$criterion with no typehint specified\\.$#"
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHeadWithFieldCriterion\\(\\) has parameter \\$field with no typehint specified\\.$#"
 			count: 1
 			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
 
 		-
-			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHeadWithCriterion\\(\\) has parameter \\$field with no typehint specified\\.$#"
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHeadWithFieldCriterion\\(\\) has parameter \\$qb with no typehint specified\\.$#"
 			count: 1
 			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
 
 		-
-			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHeadWithCriterion\\(\\) has parameter \\$qb with no typehint specified\\.$#"
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHeadWithFieldCriterion\\(\\) has parameter \\$userConditionsStatement with no typehint specified\\.$#"
 			count: 1
 			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
 
 		-
-			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHeadWithCriterion\\(\\) has parameter \\$userConditionsStatement with no typehint specified\\.$#"
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHeadWithOtherCriterion\\(\\) has no return typehint specified\\.$#"
 			count: 1
 			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
 
 		-
-			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHouseholdWithCriterion\\(\\) has no return typehint specified\\.$#"
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHeadWithOtherCriterion\\(\\) has parameter \\$condition with no typehint specified\\.$#"
 			count: 1
 			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
 
 		-
-			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHouseholdWithCriterion\\(\\) has parameter \\$condition with no typehint specified\\.$#"
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHeadWithOtherCriterion\\(\\) has parameter \\$field with no typehint specified\\.$#"
 			count: 1
 			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
 
 		-
-			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHouseholdWithCriterion\\(\\) has parameter \\$criterion with no typehint specified\\.$#"
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHeadWithOtherCriterion\\(\\) has parameter \\$qb with no typehint specified\\.$#"
 			count: 1
 			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
 
 		-
-			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHouseholdWithCriterion\\(\\) has parameter \\$field with no typehint specified\\.$#"
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHeadWithOtherCriterion\\(\\) has parameter \\$userConditionsStatement with no typehint specified\\.$#"
+			count: 1
+			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
+
+		-
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHouseholdWithCountrySpecificCriterion\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
+
+		-
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHouseholdWithCountrySpecificCriterion\\(\\) has parameter \\$condition with no typehint specified\\.$#"
+			count: 1
+			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
+
+		-
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHouseholdWithCountrySpecificCriterion\\(\\) has parameter \\$field with no typehint specified\\.$#"
+			count: 1
+			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
+
+		-
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHouseholdWithOtherCriterion\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
+
+		-
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHouseholdWithOtherCriterion\\(\\) has parameter \\$condition with no typehint specified\\.$#"
+			count: 1
+			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
+
+		-
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHouseholdWithOtherCriterion\\(\\) has parameter \\$field with no typehint specified\\.$#"
+			count: 1
+			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
+
+		-
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHouseholdWithTableFieldCriterion\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
+
+		-
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHouseholdWithTableFieldCriterion\\(\\) has parameter \\$condition with no typehint specified\\.$#"
+			count: 1
+			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
+
+		-
+			message: "#^Method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:getHouseholdWithTableFieldCriterion\\(\\) has parameter \\$field with no typehint specified\\.$#"
 			count: 1
 			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
 
@@ -1822,6 +1892,11 @@ parameters:
 
 		-
 			message: "#^PHPDoc tag @param has invalid value \\(\\$onlyCount\\)\\: Unexpected token \"\\$onlyCount\", expected type at offset 26$#"
+			count: 1
+			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
+
+		-
+			message: "#^PHPDoc tag @var has invalid value \\(\\$index\\)\\: Unexpected token \"\\$index\", expected type at offset 21$#"
 			count: 1
 			path: src/BeneficiaryBundle/Repository/BeneficiaryRepository.php
 
@@ -7701,21 +7776,6 @@ parameters:
 			path: src/DistributionBundle/Entity/ModalityType.php
 
 		-
-			message: "#^Method DistributionBundle\\\\Entity\\\\SelectionCriteria\\:\\:setWeight\\(\\) has no return typehint specified\\.$#"
-			count: 1
-			path: src/DistributionBundle/Entity/SelectionCriteria.php
-
-		-
-			message: "#^Property DistributionBundle\\\\Entity\\\\SelectionCriteria\\:\\:\\$idField \\(int\\) does not accept int\\|null\\.$#"
-			count: 1
-			path: src/DistributionBundle/Entity/SelectionCriteria.php
-
-		-
-			message: "#^Property DistributionBundle\\\\Entity\\\\SelectionCriteria\\:\\:\\$target \\(string\\) does not accept string\\|null\\.$#"
-			count: 1
-			path: src/DistributionBundle/Entity/SelectionCriteria.php
-
-		-
 			message: "#^Method DistributionBundle\\\\Enum\\\\AssistanceTargetType\\:\\:values\\(\\) has no return typehint specified\\.$#"
 			count: 1
 			path: src/DistributionBundle/Enum/AssistanceTargetType.php
@@ -8856,26 +8916,6 @@ parameters:
 			path: src/DistributionBundle/Utils/AssistanceService.php
 
 		-
-			message: "#^Method DistributionBundle\\\\Utils\\\\AssistanceService\\:\\:guessBeneficiaries\\(\\) has parameter \\$countryISO3 with no typehint specified\\.$#"
-			count: 1
-			path: src/DistributionBundle/Utils/AssistanceService.php
-
-		-
-			message: "#^Method DistributionBundle\\\\Utils\\\\AssistanceService\\:\\:guessBeneficiaries\\(\\) has parameter \\$criteria with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/DistributionBundle/Utils/AssistanceService.php
-
-		-
-			message: "#^Method DistributionBundle\\\\Utils\\\\AssistanceService\\:\\:guessBeneficiaries\\(\\) has parameter \\$sector with no typehint specified\\.$#"
-			count: 1
-			path: src/DistributionBundle/Utils/AssistanceService.php
-
-		-
-			message: "#^Method DistributionBundle\\\\Utils\\\\AssistanceService\\:\\:guessBeneficiaries\\(\\) has parameter \\$subsector with no typehint specified\\.$#"
-			count: 1
-			path: src/DistributionBundle/Utils/AssistanceService.php
-
-		-
 			message: "#^Method DistributionBundle\\\\Utils\\\\AssistanceService\\:\\:mapping\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/DistributionBundle/Utils/AssistanceService.php
@@ -8906,27 +8946,17 @@ parameters:
 			path: src/DistributionBundle/Utils/AssistanceService.php
 
 		-
-			message: "#^PHPDoc tag @param has invalid value \\(\\$countryISO3\\)\\: Unexpected token \"\\$countryISO3\", expected type at offset 93$#"
-			count: 1
-			path: src/DistributionBundle/Utils/AssistanceService.php
-
-		-
 			message: "#^PHPDoc tag @param has invalid value \\(\\$distributions\\)\\: Unexpected token \"\\$distributions\", expected type at offset 18$#"
 			count: 1
 			path: src/DistributionBundle/Utils/AssistanceService.php
 
 		-
-			message: "#^PHPDoc tag @param has invalid value \\(\\$sector\\)\\: Unexpected token \"\\$sector\", expected type at offset 193$#"
-			count: 1
-			path: src/DistributionBundle/Utils/AssistanceService.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(\\$subsector\\)\\: Unexpected token \"\\$subsector\", expected type at offset 223$#"
-			count: 1
-			path: src/DistributionBundle/Utils/AssistanceService.php
-
-		-
 			message: "#^PHPDoc tag @throws with type DistributionBundle\\\\Utils\\\\ValidationException is not subtype of Throwable$#"
+			count: 1
+			path: src/DistributionBundle/Utils/AssistanceService.php
+
+		-
+			message: "#^Parameter \\#1 \\$bnf of class DistributionBundle\\\\DTO\\\\VulnerabilityScore constructor expects BeneficiaryBundle\\\\Entity\\\\AbstractBeneficiary, object\\|null given\\.$#"
 			count: 1
 			path: src/DistributionBundle/Utils/AssistanceService.php
 
@@ -8967,22 +8997,12 @@ parameters:
 
 		-
 			message: "#^Parameter \\#2 \\$project of method DistributionBundle\\\\Utils\\\\CriteriaAssistanceService\\:\\:load\\(\\) expects ProjectBundle\\\\Entity\\\\Project, object given\\.$#"
-			count: 1
-			path: src/DistributionBundle/Utils/AssistanceService.php
-
-		-
-			message: "#^Parameter \\#3 \\$project of method DistributionBundle\\\\Utils\\\\AssistanceService\\:\\:guessBeneficiaries\\(\\) expects ProjectBundle\\\\Entity\\\\Project, object\\|null given\\.$#"
-			count: 1
+			count: 2
 			path: src/DistributionBundle/Utils/AssistanceService.php
 
 		-
 			message: "#^Parameter \\#6 \\$threshold of method DistributionBundle\\\\Utils\\\\CriteriaAssistanceService\\:\\:load\\(\\) expects int, int\\|null given\\.$#"
-			count: 1
-			path: src/DistributionBundle/Utils/AssistanceService.php
-
-		-
-			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 1
+			count: 2
 			path: src/DistributionBundle/Utils/AssistanceService.php
 
 		-
@@ -9091,11 +9111,6 @@ parameters:
 			path: src/DistributionBundle/Utils/CriteriaAssistanceService.php
 
 		-
-			message: "#^Call to an undefined method object\\:\\:getId\\(\\)\\.$#"
-			count: 1
-			path: src/DistributionBundle/Utils/CriteriaAssistanceService.php
-
-		-
 			message: "#^Cannot call method getHouseholdHead\\(\\) on BeneficiaryBundle\\\\Entity\\\\Household\\|null\\.$#"
 			count: 1
 			path: src/DistributionBundle/Utils/CriteriaAssistanceService.php
@@ -9116,22 +9131,17 @@ parameters:
 			path: src/DistributionBundle/Utils/CriteriaAssistanceService.php
 
 		-
-			message: "#^Method DistributionBundle\\\\Utils\\\\CriteriaAssistanceService\\:\\:getList\\(\\) has parameter \\$filters with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/DistributionBundle/Utils/CriteriaAssistanceService.php
-
-		-
-			message: "#^Method DistributionBundle\\\\Utils\\\\CriteriaAssistanceService\\:\\:load\\(\\) has parameter \\$filters with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/DistributionBundle/Utils/CriteriaAssistanceService.php
-
-		-
 			message: "#^Method DistributionBundle\\\\Utils\\\\CriteriaAssistanceService\\:\\:load\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/DistributionBundle/Utils/CriteriaAssistanceService.php
 
 		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$flush$#"
+			count: 1
+			path: src/DistributionBundle/Utils/CriteriaAssistanceService.php
+
+		-
+			message: "#^Parameter \\#1 \\$household of method BeneficiaryBundle\\\\Model\\\\Vulnerability\\\\Resolver\\:\\:compute\\(\\) expects BeneficiaryBundle\\\\Entity\\\\Household, BeneficiaryBundle\\\\Entity\\\\Household\\|null given\\.$#"
 			count: 1
 			path: src/DistributionBundle/Utils/CriteriaAssistanceService.php
 
@@ -9496,16 +9506,6 @@ parameters:
 			path: src/NewApiBundle/Component/Assistance/AssistanceFactory.php
 
 		-
-			message: "#^Method NewApiBundle\\\\Component\\\\Assistance\\\\AssistanceFactory\\:\\:makeSelectionCriteriaBlackMagick\\(\\) has parameter \\$selectionCriteriaShitArray with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/NewApiBundle/Component/Assistance/AssistanceFactory.php
-
-		-
-			message: "#^Method NewApiBundle\\\\Component\\\\Assistance\\\\AssistanceFactory\\:\\:makeSelectionCriteriaBlackMagick\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/NewApiBundle/Component/Assistance/AssistanceFactory.php
-
-		-
 			message: "#^Parameter \\#1 \\$beneficiary of method NewApiBundle\\\\Component\\\\Assistance\\\\Domain\\\\Assistance\\:\\:addBeneficiary\\(\\) expects BeneficiaryBundle\\\\Entity\\\\AbstractBeneficiary, object\\|null given\\.$#"
 			count: 3
 			path: src/NewApiBundle/Component/Assistance/AssistanceFactory.php
@@ -9556,23 +9556,18 @@ parameters:
 			path: src/NewApiBundle/Component/Assistance/CommodityAssignBuilder.php
 
 		-
-			message: "#^Call to an undefined method object\\:\\:getBeneficiary\\(\\)\\.$#"
-			count: 1
-			path: src/NewApiBundle/Component/Assistance/Domain/Assistance.php
-
-		-
-			message: "#^Call to an undefined method object\\:\\:hasDistributionStarted\\(\\)\\.$#"
-			count: 1
-			path: src/NewApiBundle/Component/Assistance/Domain/Assistance.php
-
-		-
 			message: "#^Call to an undefined method object\\:\\:setJustification\\(\\)\\.$#"
 			count: 1
 			path: src/NewApiBundle/Component/Assistance/Domain/Assistance.php
 
 		-
 			message: "#^Call to an undefined method object\\:\\:setRemoved\\(\\)\\.$#"
-			count: 2
+			count: 1
+			path: src/NewApiBundle/Component/Assistance/Domain/Assistance.php
+
+		-
+			message: "#^Cannot call method getArchived\\(\\) on BeneficiaryBundle\\\\Entity\\\\AbstractBeneficiary\\|null\\.$#"
+			count: 1
 			path: src/NewApiBundle/Component/Assistance/Domain/Assistance.php
 
 		-
@@ -9601,12 +9596,27 @@ parameters:
 			path: src/NewApiBundle/Component/Assistance/Domain/Assistance.php
 
 		-
+			message: "#^Method NewApiBundle\\\\Component\\\\Assistance\\\\Domain\\\\Assistance\\:\\:getBeneficiaries\\(\\) return type with generic class Doctrine\\\\Common\\\\Collections\\\\ArrayCollection does not specify its types\\: TKey, T$#"
+			count: 1
+			path: src/NewApiBundle/Component/Assistance/Domain/Assistance.php
+
+		-
+			message: "#^Method NewApiBundle\\\\Component\\\\Assistance\\\\Domain\\\\Assistance\\:\\:getBeneficiaries\\(\\) should return Doctrine\\\\Common\\\\Collections\\\\ArrayCollection but returns Doctrine\\\\Common\\\\Collections\\\\Collection\\<mixed, mixed\\>\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Assistance/Domain/Assistance.php
+
+		-
 			message: "#^Method NewApiBundle\\\\Component\\\\Assistance\\\\Domain\\\\Assistance\\:\\:getStatistics\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/NewApiBundle/Component/Assistance/Domain/Assistance.php
 
 		-
 			message: "#^Method NewApiBundle\\\\Component\\\\Assistance\\\\Domain\\\\Assistance\\:\\:recountReliefPackages\\(\\) has parameter \\$targets with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Assistance/Domain/Assistance.php
+
+		-
+			message: "#^Parameter \\#1 \\$beneficiary of class DistributionBundle\\\\Utils\\\\Exception\\\\RemoveBeneficiaryWithReliefException constructor expects BeneficiaryBundle\\\\Entity\\\\Beneficiary, BeneficiaryBundle\\\\Entity\\\\AbstractBeneficiary\\|null given\\.$#"
 			count: 1
 			path: src/NewApiBundle/Component/Assistance/Domain/Assistance.php
 
@@ -9624,6 +9634,31 @@ parameters:
 			message: "#^Parameter \\#1 \\$vulnerabilityScores of method DistributionBundle\\\\Entity\\\\AssistanceBeneficiary\\:\\:setVulnerabilityScores\\(\\) expects string, string\\|false given\\.$#"
 			count: 1
 			path: src/NewApiBundle/Component/Assistance/Domain/Assistance.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between DistributionBundle\\\\Entity\\\\AssistanceBeneficiary and null will always evaluate to false\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Assistance/Domain/Assistance.php
+
+		-
+			message: "#^Call to function is_null\\(\\) with string will always evaluate to false\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Assistance/Domain/SelectionCriteria.php
+
+		-
+			message: "#^Method NewApiBundle\\\\Component\\\\Assistance\\\\Domain\\\\SelectionCriteria\\:\\:__construct\\(\\) has parameter \\$configuration with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Assistance/Domain/SelectionCriteria.php
+
+		-
+			message: "#^Method NewApiBundle\\\\Component\\\\Assistance\\\\Domain\\\\SelectionCriteria\\:\\:getValueString\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Assistance/Domain/SelectionCriteria.php
+
+		-
+			message: "#^Property NewApiBundle\\\\Component\\\\Assistance\\\\Domain\\\\SelectionCriteria\\:\\:\\$configuration type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Assistance/Domain/SelectionCriteria.php
 
 		-
 			message: "#^Method NewApiBundle\\\\Component\\\\Assistance\\\\Enum\\\\CommodityDivision\\:\\:normalizeValue\\(\\) has parameter \\$value with no typehint specified\\.$#"
@@ -9654,6 +9689,36 @@ parameters:
 			message: "#^Method NewApiBundle\\\\Component\\\\Assistance\\\\ReliefPackageSubscriber\\:\\:markAsDistributed\\(\\) has no return typehint specified\\.$#"
 			count: 1
 			path: src/NewApiBundle/Component/Assistance/ReliefPackageSubscriber.php
+
+		-
+			message: "#^Method NewApiBundle\\\\Component\\\\Assistance\\\\SelectionCriteriaFactory\\:\\:createGroups\\(\\) has parameter \\$inputTypes with no value type specified in iterable type iterable\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Assistance/SelectionCriteriaFactory.php
+
+		-
+			message: "#^Method NewApiBundle\\\\Component\\\\Assistance\\\\SelectionCriteriaFactory\\:\\:createGroups\\(\\) return type has no value type specified in iterable type iterable\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Assistance/SelectionCriteriaFactory.php
+
+		-
+			message: "#^Negated boolean expression is always false\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Assistance/SelectionCriteriaFactory.php
+
+		-
+			message: "#^Parameter \\#1 \\$groupNumber of class NewApiBundle\\\\Component\\\\Assistance\\\\DTO\\\\CriteriaGroup constructor expects int, int\\|string given\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Assistance/SelectionCriteriaFactory.php
+
+		-
+			message: "#^Parameter \\#1 \\$valueString of method NewApiBundle\\\\Entity\\\\Assistance\\\\SelectionCriteria\\:\\:setValueString\\(\\) expects string, int given\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Assistance/SelectionCriteriaFactory.php
+
+		-
+			message: "#^Parameter \\#1 \\$valueString of method NewApiBundle\\\\Entity\\\\Assistance\\\\SelectionCriteria\\:\\:setValueString\\(\\) expects string, null given\\.$#"
+			count: 2
+			path: src/NewApiBundle/Component/Assistance/SelectionCriteriaFactory.php
 
 		-
 			message: "#^Method NewApiBundle\\\\Component\\\\Codelist\\\\CodeItem\\:\\:__construct\\(\\) has parameter \\$code with no typehint specified\\.$#"
@@ -9757,6 +9822,11 @@ parameters:
 
 		-
 			message: "#^Property NewApiBundle\\\\Component\\\\Country\\\\Country\\:\\:\\$iso3 has no typehint specified\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Country/Country.php
+
+		-
+			message: "#^Property NewApiBundle\\\\Component\\\\Country\\\\Country\\:\\:\\$language has no typehint specified\\.$#"
 			count: 1
 			path: src/NewApiBundle/Component/Country/Country.php
 
@@ -9866,6 +9936,16 @@ parameters:
 			path: src/NewApiBundle/Component/Import/Finishing/HouseholdDecoratorBuilder.php
 
 		-
+			message: "#^Method NewApiBundle\\\\Component\\\\Import\\\\Finishing\\\\UnexpectedError\\:\\:jsonSerialize\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Import/Finishing/UnexpectedError.php
+
+		-
+			message: "#^Parameter \\#3 \\$stackTrace of class NewApiBundle\\\\Component\\\\Import\\\\Finishing\\\\UnexpectedError constructor expects array\\<string\\>, array\\<int, array\\<string, mixed\\>\\> given\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Import/Finishing/UnexpectedError.php
+
+		-
 			message: "#^Method NewApiBundle\\\\Component\\\\Import\\\\Identity\\\\NationalIdHashSet\\:\\:getNumbers\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/NewApiBundle/Component/Import/Identity/NationalIdHashSet.php
@@ -9946,7 +10026,22 @@ parameters:
 			path: src/NewApiBundle/Component/Import/ImportFinisher.php
 
 		-
+			message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\ObjectRepository\\:\\:unlockLockedItems\\(\\)\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Import/ImportFinisher.php
+
+		-
+			message: "#^Cannot call method getState\\(\\) on object\\|null\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Import/ImportFinisher.php
+
+		-
 			message: "#^Cannot call method setProjectIds\\(\\) on NewApiBundle\\\\InputType\\\\HouseholdUpdateInputType\\|null\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Import/ImportFinisher.php
+
+		-
+			message: "#^Cannot call method setUnexpectedError\\(\\) on object\\|null\\.$#"
 			count: 1
 			path: src/NewApiBundle/Component/Import/ImportFinisher.php
 
@@ -9981,6 +10076,21 @@ parameters:
 			path: src/NewApiBundle/Component/Import/ImportFinisher.php
 
 		-
+			message: "#^Parameter \\#1 \\$object of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:persist\\(\\) expects object, object\\|null given\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Import/ImportFinisher.php
+
+		-
+			message: "#^Parameter \\#1 \\$subject of method Symfony\\\\Component\\\\Workflow\\\\WorkflowInterface\\:\\:apply\\(\\) expects object, object\\|null given\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Import/ImportFinisher.php
+
+		-
+			message: "#^Parameter \\#2 \\$exception of static method NewApiBundle\\\\Component\\\\Import\\\\Finishing\\\\UnexpectedError\\:\\:create\\(\\) expects Exception, Throwable given\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Import/ImportFinisher.php
+
+		-
 			message: "#^Parameter \\#2 \\$inputType of method BeneficiaryBundle\\\\Utils\\\\HouseholdService\\:\\:update\\(\\) expects NewApiBundle\\\\InputType\\\\HouseholdUpdateInputType, NewApiBundle\\\\InputType\\\\HouseholdUpdateInputType\\|null given\\.$#"
 			count: 1
 			path: src/NewApiBundle/Component/Import/ImportFinisher.php
@@ -9991,19 +10101,9 @@ parameters:
 			path: src/NewApiBundle/Component/Import/ImportFinisher.php
 
 		-
-			message: "#^Cannot call method getStyle\\(\\) on PhpOffice\\\\PhpSpreadsheet\\\\Cell\\\\Cell\\|null\\.$#"
-			count: 3
-			path: src/NewApiBundle/Component/Import/ImportInvalidFileService.php
-
-		-
-			message: "#^Cannot call method setValue\\(\\) on PhpOffice\\\\PhpSpreadsheet\\\\Cell\\\\Cell\\|null\\.$#"
-			count: 2
-			path: src/NewApiBundle/Component/Import/ImportInvalidFileService.php
-
-		-
-			message: "#^Cannot call method setValueExplicit\\(\\) on PhpOffice\\\\PhpSpreadsheet\\\\Cell\\\\Cell\\|null\\.$#"
+			message: "#^Property NewApiBundle\\\\Component\\\\Import\\\\ImportFinisher\\:\\:\\$em \\(Doctrine\\\\ORM\\\\EntityManagerInterface\\) does not accept Doctrine\\\\Persistence\\\\ObjectManager\\.$#"
 			count: 1
-			path: src/NewApiBundle/Component/Import/ImportInvalidFileService.php
+			path: src/NewApiBundle/Component/Import/ImportFinisher.php
 
 		-
 			message: "#^Method NewApiBundle\\\\Component\\\\Import\\\\ImportInvalidFileService\\:\\:decodeMessages\\(\\) return type has no value type specified in iterable type array\\.$#"
@@ -10081,6 +10181,11 @@ parameters:
 			path: src/NewApiBundle/Component/Import/ImportInvalidFileService.php
 
 		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Import/ImportParser.php
+
+		-
 			message: "#^Method NewApiBundle\\\\Component\\\\Import\\\\ImportParser\\:\\:getCellDataType\\(\\) has parameter \\$cellError with no typehint specified\\.$#"
 			count: 1
 			path: src/NewApiBundle/Component/Import/ImportParser.php
@@ -10141,6 +10246,11 @@ parameters:
 			path: src/NewApiBundle/Component/Import/ImportParser.php
 
 		-
+			message: "#^Method PhpOffice\\\\PhpSpreadsheet\\\\Worksheet\\\\Worksheet\\:\\:getCellByColumnAndRow\\(\\) invoked with 3 parameters, 2 required\\.$#"
+			count: 2
+			path: src/NewApiBundle/Component/Import/ImportParser.php
+
+		-
 			message: "#^Parameter \\#1 \\$filename of static method PhpOffice\\\\PhpSpreadsheet\\\\IOFactory\\:\\:createReaderForFile\\(\\) expects string, string\\|false given\\.$#"
 			count: 2
 			path: src/NewApiBundle/Component/Import/ImportParser.php
@@ -10197,7 +10307,7 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method object\\:\\:getFieldString\\(\\)\\.$#"
-			count: 2
+			count: 3
 			path: src/NewApiBundle/Component/Import/Integrity/ImportLine.php
 
 		-
@@ -10207,6 +10317,16 @@ parameters:
 
 		-
 			message: "#^Method NewApiBundle\\\\Component\\\\Import\\\\Integrity\\\\ImportLine\\:\\:__construct\\(\\) has parameter \\$content with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Import/Integrity/ImportLine.php
+
+		-
+			message: "#^Method NewApiBundle\\\\Component\\\\Import\\\\Integrity\\\\ImportLine\\:\\:isEmpty\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Import/Integrity/ImportLine.php
+
+		-
+			message: "#^Method NewApiBundle\\\\Component\\\\Import\\\\Integrity\\\\ImportLine\\:\\:isEmpty\\(\\) has parameter \\$value with no typehint specified\\.$#"
 			count: 1
 			path: src/NewApiBundle/Component/Import/Integrity/ImportLine.php
 
@@ -10262,6 +10382,11 @@ parameters:
 
 		-
 			message: "#^Property NewApiBundle\\\\Component\\\\Import\\\\Integrity\\\\ImportLine\\:\\:\\$copingStrategiesIndex has no typehint specified\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/Import/Integrity/ImportLine.php
+
+		-
+			message: "#^Property NewApiBundle\\\\Component\\\\Import\\\\Integrity\\\\ImportLine\\:\\:\\$countrySpecifics type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/NewApiBundle/Component/Import/Integrity/ImportLine.php
 
@@ -10527,12 +10652,12 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method object\\:\\:getFieldString\\(\\)\\.$#"
-			count: 1
+			count: 2
 			path: src/NewApiBundle/Component/Import/IntegrityChecker.php
 
 		-
 			message: "#^Call to an undefined method object\\:\\:getId\\(\\)\\.$#"
-			count: 1
+			count: 2
 			path: src/NewApiBundle/Component/Import/IntegrityChecker.php
 
 		-
@@ -10621,21 +10746,6 @@ parameters:
 			path: src/NewApiBundle/Component/Product/ProductCategoryService.php
 
 		-
-			message: "#^Method NewApiBundle\\\\Component\\\\SelectionCriteria\\\\FieldDbTransformer\\:\\:toDbArray\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/NewApiBundle/Component/SelectionCriteria/FieldDbTransformer.php
-
-		-
-			message: "#^Method NewApiBundle\\\\Component\\\\SelectionCriteria\\\\FieldDbTransformer\\:\\:toResponseArray\\(\\) has no return typehint specified\\.$#"
-			count: 1
-			path: src/NewApiBundle/Component/SelectionCriteria/FieldDbTransformer.php
-
-		-
-			message: "#^Negated boolean expression is always false\\.$#"
-			count: 1
-			path: src/NewApiBundle/Component/SelectionCriteria/FieldDbTransformer.php
-
-		-
 			message: "#^Method NewApiBundle\\\\Component\\\\SelectionCriteria\\\\Generator\\\\BeneficiaryFieldGenerator\\:\\:validateDate\\(\\) has parameter \\$value with no typehint specified\\.$#"
 			count: 1
 			path: src/NewApiBundle/Component/SelectionCriteria/Generator/BeneficiaryFieldGenerator.php
@@ -10656,6 +10766,11 @@ parameters:
 			path: src/NewApiBundle/Component/SelectionCriteria/Generator/BeneficiaryFieldGenerator.php
 
 		-
+			message: "#^Method NewApiBundle\\\\Component\\\\SelectionCriteria\\\\Generator\\\\HouseholdFieldGenerator\\:\\:getStaticFields\\(\\) return type has no value type specified in iterable type Generator\\.$#"
+			count: 1
+			path: src/NewApiBundle/Component/SelectionCriteria/Generator/HouseholdFieldGenerator.php
+
+		-
 			message: "#^Method NewApiBundle\\\\Component\\\\SelectionCriteria\\\\Generator\\\\HouseholdFieldGenerator\\:\\:transformCountrySpecificType\\(\\) has parameter \\$type with no typehint specified\\.$#"
 			count: 1
 			path: src/NewApiBundle/Component/SelectionCriteria/Generator/HouseholdFieldGenerator.php
@@ -10666,13 +10781,13 @@ parameters:
 			path: src/NewApiBundle/Component/SelectionCriteria/Generator/HouseholdFieldGenerator.php
 
 		-
-			message: "#^Method NewApiBundle\\\\Component\\\\SelectionCriteria\\\\Generator\\\\HouseholdFieldGenerator\\:\\:validateLocation\\(\\) has parameter \\$value with no typehint specified\\.$#"
+			message: "#^Method NewApiBundle\\\\Component\\\\SelectionCriteria\\\\Generator\\\\HouseholdFieldGenerator\\:\\:validateLocationType\\(\\) has parameter \\$value with no typehint specified\\.$#"
 			count: 1
 			path: src/NewApiBundle/Component/SelectionCriteria/Generator/HouseholdFieldGenerator.php
 
 		-
 			message: "#^Yield can be used only with these return types\\: Generator, Iterator, Traversable, iterable\\.$#"
-			count: 8
+			count: 2
 			path: src/NewApiBundle/Component/SelectionCriteria/Generator/HouseholdFieldGenerator.php
 
 		-
@@ -11006,16 +11121,6 @@ parameters:
 			path: src/NewApiBundle/Component/WingMoney/ImportService.php
 
 		-
-			message: "#^Cannot call method getFormattedValue\\(\\) on PhpOffice\\\\PhpSpreadsheet\\\\Cell\\\\Cell\\|null\\.$#"
-			count: 1
-			path: src/NewApiBundle/Component/WingMoney/ReportParser.php
-
-		-
-			message: "#^Cannot call method getValue\\(\\) on PhpOffice\\\\PhpSpreadsheet\\\\Cell\\\\Cell\\|null\\.$#"
-			count: 5
-			path: src/NewApiBundle/Component/WingMoney/ReportParser.php
-
-		-
 			message: "#^Parameter \\#1 \\$excelTimestamp of static method PhpOffice\\\\PhpSpreadsheet\\\\Shared\\\\Date\\:\\:excelToDateTimeObject\\(\\) expects float\\|int, string given\\.$#"
 			count: 1
 			path: src/NewApiBundle/Component/WingMoney/ReportParser.php
@@ -11091,17 +11196,12 @@ parameters:
 			path: src/NewApiBundle/Controller/AssistanceController.php
 
 		-
-			message: "#^Call to an undefined method Symfony\\\\Component\\\\HttpFoundation\\\\File\\\\MimeType\\\\FileinfoMimeTypeGuesser\\:\\:guessMimeType\\(\\)\\.$#"
-			count: 1
-			path: src/NewApiBundle/Controller/AssistanceController.php
-
-		-
-			message: "#^Call to an undefined method Symfony\\\\Component\\\\HttpFoundation\\\\File\\\\MimeType\\\\FileinfoMimeTypeGuesser\\:\\:isGuesserSupported\\(\\)\\.$#"
-			count: 1
-			path: src/NewApiBundle/Controller/AssistanceController.php
-
-		-
 			message: "#^Call to an undefined method object\\:\\:delete\\(\\)\\.$#"
+			count: 1
+			path: src/NewApiBundle/Controller/AssistanceController.php
+
+		-
+			message: "#^Method NewApiBundle\\\\Controller\\\\AssistanceController\\:\\:vulnerabilityScoresPreExport\\(\\) has no return typehint specified\\.$#"
 			count: 1
 			path: src/NewApiBundle/Controller/AssistanceController.php
 
@@ -11416,7 +11516,12 @@ parameters:
 			path: src/NewApiBundle/Controller/ImportController.php
 
 		-
-			message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\ObjectRepository\\:\\:findByParams\\(\\)\\.$#"
+			message: "#^Cannot call method getId\\(\\) on BeneficiaryBundle\\\\Entity\\\\Beneficiary\\|null\\.$#"
+			count: 1
+			path: src/NewApiBundle/Controller/ImportController.php
+
+		-
+			message: "#^Cannot call method getTheirs\\(\\) on NewApiBundle\\\\Entity\\\\ImportHouseholdDuplicity\\|null\\.$#"
 			count: 1
 			path: src/NewApiBundle/Controller/ImportController.php
 
@@ -11442,6 +11547,11 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$countryIso3 of method NewApiBundle\\\\Component\\\\Import\\\\ImportService\\:\\:create\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/NewApiBundle/Controller/ImportController.php
+
+		-
+			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|null given\\.$#"
 			count: 1
 			path: src/NewApiBundle/Controller/ImportController.php
 
@@ -11761,21 +11871,6 @@ parameters:
 			path: src/NewApiBundle/Controller/PurchasedItemController.php
 
 		-
-			message: "#^Call to an undefined method object\\:\\:findFieldConditions\\(\\)\\.$#"
-			count: 1
-			path: src/NewApiBundle/Controller/SelectionCriterionController.php
-
-		-
-			message: "#^Call to an undefined method object\\:\\:findFieldsByTarget\\(\\)\\.$#"
-			count: 1
-			path: src/NewApiBundle/Controller/SelectionCriterionController.php
-
-		-
-			message: "#^Parameter \\#2 \\$default of method Symfony\\\\Component\\\\HttpFoundation\\\\HeaderBag\\:\\:get\\(\\) expects string\\|null, false given\\.$#"
-			count: 2
-			path: src/NewApiBundle/Controller/SelectionCriterionController.php
-
-		-
 			message: "#^Call to an undefined method object\\:\\:sendVerifyEmail\\(\\)\\.$#"
 			count: 1
 			path: src/NewApiBundle/Controller/TransactionController.php
@@ -11949,6 +12044,11 @@ parameters:
 			message: "#^Parameter \\#1 \\$str of function md5 expects string, string\\|false given\\.$#"
 			count: 2
 			path: src/NewApiBundle/Controller/WebApp/Assistance/ReliefPackageController.php
+
+		-
+			message: "#^Parameter \\#2 \\$default of method Symfony\\\\Component\\\\HttpFoundation\\\\HeaderBag\\:\\:get\\(\\) expects string\\|null, false given\\.$#"
+			count: 2
+			path: src/NewApiBundle/Controller/WebApp/Assistance/SelectionCriterionController.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\ObjectRepository\\:\\:findByBatch\\(\\)\\.$#"
@@ -12199,6 +12299,21 @@ parameters:
 			message: "#^Property NewApiBundle\\\\Entity\\\\Assistance\\\\ReliefPackage\\:\\:\\$smartcardDeposits with generic interface Doctrine\\\\Common\\\\Collections\\\\Collection does not specify its types\\: TKey, T$#"
 			count: 1
 			path: src/NewApiBundle/Entity/Assistance/ReliefPackage.php
+
+		-
+			message: "#^Method NewApiBundle\\\\Entity\\\\Assistance\\\\SelectionCriteria\\:\\:setWeight\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: src/NewApiBundle/Entity/Assistance/SelectionCriteria.php
+
+		-
+			message: "#^Property NewApiBundle\\\\Entity\\\\Assistance\\\\SelectionCriteria\\:\\:\\$idField \\(int\\) does not accept int\\|null\\.$#"
+			count: 1
+			path: src/NewApiBundle/Entity/Assistance/SelectionCriteria.php
+
+		-
+			message: "#^Property NewApiBundle\\\\Entity\\\\Assistance\\\\SelectionCriteria\\:\\:\\$target \\(string\\) does not accept string\\|null\\.$#"
+			count: 1
+			path: src/NewApiBundle/Entity/Assistance/SelectionCriteria.php
 
 		-
 			message: "#^Method NewApiBundle\\\\Entity\\\\Helper\\\\TreeInterface\\:\\:getChildren\\(\\) return type has no value type specified in iterable type iterable\\.$#"
@@ -12522,7 +12637,7 @@ parameters:
 
 		-
 			message: "#^Property NewApiBundle\\\\Entity\\\\ImportQueue\\:\\:\\$message \\(string\\|null\\) does not accept string\\|false\\.$#"
-			count: 1
+			count: 2
 			path: src/NewApiBundle/Entity/ImportQueue.php
 
 		-
@@ -13471,12 +13586,47 @@ parameters:
 			path: src/NewApiBundle/Export/SmartcardPurchasedItemSpreadsheet.php
 
 		-
-			message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\ObjectRepository\\:\\:findByAssistance\\(\\)\\.$#"
-			count: 1
+			message: "#^Cannot call method getHouseholdHead\\(\\) on BeneficiaryBundle\\\\Entity\\\\Household\\|null\\.$#"
+			count: 2
 			path: src/NewApiBundle/Export/VulnerabilityScoreExport.php
 
 		-
 			message: "#^Cannot call method getId\\(\\) on BeneficiaryBundle\\\\Entity\\\\Household\\|null\\.$#"
+			count: 1
+			path: src/NewApiBundle/Export/VulnerabilityScoreExport.php
+
+		-
+			message: "#^Cannot call method getPerson\\(\\) on BeneficiaryBundle\\\\Entity\\\\Beneficiary\\|null\\.$#"
+			count: 2
+			path: src/NewApiBundle/Export/VulnerabilityScoreExport.php
+
+		-
+			message: "#^Method NewApiBundle\\\\Export\\\\VulnerabilityScoreExport\\:\\:getAmounts\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: src/NewApiBundle/Export/VulnerabilityScoreExport.php
+
+		-
+			message: "#^Method NewApiBundle\\\\Export\\\\VulnerabilityScoreExport\\:\\:getAmounts\\(\\) has parameter \\$reliefPackages with no typehint specified\\.$#"
+			count: 1
+			path: src/NewApiBundle/Export/VulnerabilityScoreExport.php
+
+		-
+			message: "#^Method NewApiBundle\\\\Export\\\\VulnerabilityScoreExport\\:\\:getCumulativeAmounts\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: src/NewApiBundle/Export/VulnerabilityScoreExport.php
+
+		-
+			message: "#^Method NewApiBundle\\\\Export\\\\VulnerabilityScoreExport\\:\\:getCumulativeAmounts\\(\\) has parameter \\$cumulativeAmount with no typehint specified\\.$#"
+			count: 1
+			path: src/NewApiBundle/Export/VulnerabilityScoreExport.php
+
+		-
+			message: "#^Method NewApiBundle\\\\Export\\\\VulnerabilityScoreExport\\:\\:getCumulativeAmounts\\(\\) has parameter \\$reliefPackages with no typehint specified\\.$#"
+			count: 1
+			path: src/NewApiBundle/Export/VulnerabilityScoreExport.php
+
+		-
+			message: "#^Parameter \\#1 \\$household of method BeneficiaryBundle\\\\Repository\\\\BeneficiaryRepository\\:\\:countByHousehold\\(\\) expects BeneficiaryBundle\\\\Entity\\\\Household, BeneficiaryBundle\\\\Entity\\\\Household\\|null given\\.$#"
 			count: 1
 			path: src/NewApiBundle/Export/VulnerabilityScoreExport.php
 
@@ -17041,6 +17191,26 @@ parameters:
 			path: src/NewApiBundle/Mapper/Assistance/OfflineApp/TargetMapper.php
 
 		-
+			message: "#^Method NewApiBundle\\\\Mapper\\\\Assistance\\\\SelectionCriteriaMapper\\:\\:getCondition\\(\\) should return string but returns string\\|null\\.$#"
+			count: 1
+			path: src/NewApiBundle/Mapper/Assistance/SelectionCriteriaMapper.php
+
+		-
+			message: "#^Method NewApiBundle\\\\Mapper\\\\Assistance\\\\SelectionCriteriaMapper\\:\\:getTarget\\(\\) should return string but returns string\\|null\\.$#"
+			count: 1
+			path: src/NewApiBundle/Mapper/Assistance/SelectionCriteriaMapper.php
+
+		-
+			message: "#^Method NewApiBundle\\\\Mapper\\\\Assistance\\\\SelectionCriteriaMapper\\:\\:populate\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: src/NewApiBundle/Mapper/Assistance/SelectionCriteriaMapper.php
+
+		-
+			message: "#^Method NewApiBundle\\\\Mapper\\\\Assistance\\\\SelectionCriteriaMapper\\:\\:supports\\(\\) has parameter \\$context with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/NewApiBundle/Mapper/Assistance/SelectionCriteriaMapper.php
+
+		-
 			message: "#^Method NewApiBundle\\\\Mapper\\\\Assistance\\\\SelectionMapper\\:\\:populate\\(\\) has no return typehint specified\\.$#"
 			count: 1
 			path: src/NewApiBundle/Mapper/Assistance/SelectionMapper.php
@@ -18771,6 +18941,16 @@ parameters:
 			path: src/NewApiBundle/Repository/Assistance/ReliefPackageRepository.php
 
 		-
+			message: "#^Method NewApiBundle\\\\Repository\\\\Assistance\\\\ReliefPackageRepository\\:\\:sumDistributedReliefPackagesAmountByAssistance\\(\\) has parameter \\$reliefPackageStates with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/NewApiBundle/Repository/Assistance/ReliefPackageRepository.php
+
+		-
+			message: "#^Method NewApiBundle\\\\Repository\\\\Assistance\\\\ReliefPackageRepository\\:\\:sumReliefPackagesAmountByAssistance\\(\\) has parameter \\$reliefPackageStates with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/NewApiBundle/Repository/Assistance/ReliefPackageRepository.php
+
+		-
 			message: "#^If condition is always true\\.$#"
 			count: 1
 			path: src/NewApiBundle/Repository/AssistanceStatisticsRepository.php
@@ -18812,6 +18992,16 @@ parameters:
 
 		-
 			message: "#^Method NewApiBundle\\\\Repository\\\\ImportQueueRepository\\:\\:lockUnlockedItems\\(\\) has parameter \\$state with no typehint specified\\.$#"
+			count: 1
+			path: src/NewApiBundle/Repository/ImportQueueRepository.php
+
+		-
+			message: "#^Method NewApiBundle\\\\Repository\\\\ImportQueueRepository\\:\\:unlockLockedItems\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: src/NewApiBundle/Repository/ImportQueueRepository.php
+
+		-
+			message: "#^Method NewApiBundle\\\\Repository\\\\ImportQueueRepository\\:\\:unlockLockedItems\\(\\) has parameter \\$code with no typehint specified\\.$#"
 			count: 1
 			path: src/NewApiBundle/Repository/ImportQueueRepository.php
 
@@ -19049,6 +19239,31 @@ parameters:
 			message: "#^Parameter \\#1 \\$filename of method ZipArchive\\:\\:open\\(\\) expects string, string\\|false given\\.$#"
 			count: 1
 			path: src/NewApiBundle/Utils/FileSystem/Zip.php
+
+		-
+			message: "#^Property NewApiBundle\\\\Validator\\\\Constraints\\\\CountrySpecificDataType\\:\\:\\$message has no typehint specified\\.$#"
+			count: 1
+			path: src/NewApiBundle/Validator/Constraints/CountrySpecificDataType.php
+
+		-
+			message: "#^Method NewApiBundle\\\\Validator\\\\Constraints\\\\CountrySpecificDataTypeValidator\\:\\:hasValueCorrectNumberType\\(\\) has parameter \\$countrySpecific with no typehint specified\\.$#"
+			count: 1
+			path: src/NewApiBundle/Validator/Constraints/CountrySpecificDataTypeValidator.php
+
+		-
+			message: "#^Method NewApiBundle\\\\Validator\\\\Constraints\\\\CountrySpecificDataTypeValidator\\:\\:hasValueCorrectNumberType\\(\\) has parameter \\$value with no typehint specified\\.$#"
+			count: 1
+			path: src/NewApiBundle/Validator/Constraints/CountrySpecificDataTypeValidator.php
+
+		-
+			message: "#^Method NewApiBundle\\\\Validator\\\\Constraints\\\\CountrySpecificDataTypeValidator\\:\\:validate\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: src/NewApiBundle/Validator/Constraints/CountrySpecificDataTypeValidator.php
+
+		-
+			message: "#^Property NewApiBundle\\\\Validator\\\\Constraints\\\\CountrySpecificDataTypeValidator\\:\\:\\$propertyAccessor has no typehint specified\\.$#"
+			count: 1
+			path: src/NewApiBundle/Validator/Constraints/CountrySpecificDataTypeValidator.php
 
 		-
 			message: "#^Method NewApiBundle\\\\Validator\\\\Constraints\\\\CountryValidator\\:\\:validate\\(\\) has no return typehint specified\\.$#"
@@ -21281,16 +21496,6 @@ parameters:
 			path: src/TransactionBundle/Export/AssistanceSpreadsheetExport.php
 
 		-
-			message: "#^Cannot call method getStyle\\(\\) on PhpOffice\\\\PhpSpreadsheet\\\\Cell\\\\Cell\\|null\\.$#"
-			count: 35
-			path: src/TransactionBundle/Export/AssistanceSpreadsheetExport.php
-
-		-
-			message: "#^Cannot call method setValue\\(\\) on PhpOffice\\\\PhpSpreadsheet\\\\Cell\\\\Cell\\|null\\.$#"
-			count: 44
-			path: src/TransactionBundle/Export/AssistanceSpreadsheetExport.php
-
-		-
 			message: "#^Method TransactionBundle\\\\Export\\\\AssistanceSpreadsheetExport\\:\\:buildBody\\(\\) has no return typehint specified\\.$#"
 			count: 1
 			path: src/TransactionBundle/Export/AssistanceSpreadsheetExport.php
@@ -22631,11 +22836,6 @@ parameters:
 			path: src/VoucherBundle/Controller/ProductController.php
 
 		-
-			message: "#^Argument of an invalid type array\\|bool\\|float\\|int\\|string\\|null supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: src/VoucherBundle/Controller/SmartcardController.php
-
-		-
 			message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\ObjectRepository\\:\\:findActiveBySerialNumber\\(\\)\\.$#"
 			count: 1
 			path: src/VoucherBundle/Controller/SmartcardController.php
@@ -22657,7 +22857,7 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method object\\:\\:export\\(\\)\\.$#"
-			count: 2
+			count: 1
 			path: src/VoucherBundle/Controller/SmartcardController.php
 
 		-
@@ -22706,17 +22906,17 @@ parameters:
 			path: src/VoucherBundle/Controller/SmartcardController.php
 
 		-
+			message: "#^Cannot call method getLanguage\\(\\) on NewApiBundle\\\\Component\\\\Country\\\\Country\\|null\\.$#"
+			count: 1
+			path: src/VoucherBundle/Controller/SmartcardController.php
+
+		-
 			message: "#^Cannot call method getUsername\\(\\) on object\\|null\\.$#"
 			count: 7
 			path: src/VoucherBundle/Controller/SmartcardController.php
 
 		-
 			message: "#^Method VoucherBundle\\\\Controller\\\\SmartcardController\\:\\:writeData\\(\\) has parameter \\$data with no typehint specified\\.$#"
-			count: 1
-			path: src/VoucherBundle/Controller/SmartcardController.php
-
-		-
-			message: "#^PHPDoc tag @throws has invalid value \\(\\)\\: Unexpected token \"\\\\n     \", expected type at offset 410$#"
 			count: 1
 			path: src/VoucherBundle/Controller/SmartcardController.php
 
@@ -22732,6 +22932,16 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$fp of function fwrite expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: src/VoucherBundle/Controller/SmartcardController.php
+
+		-
+			message: "#^Parameter \\#2 \\$organization of method DistributionBundle\\\\Export\\\\SmartcardInvoiceExport\\:\\:export\\(\\) expects CommonBundle\\\\Entity\\\\Organization, object\\|null given\\.$#"
+			count: 1
+			path: src/VoucherBundle/Controller/SmartcardController.php
+
+		-
+			message: "#^Parameter \\#3 \\$user of method DistributionBundle\\\\Export\\\\SmartcardInvoiceExport\\:\\:export\\(\\) expects UserBundle\\\\Entity\\\\User, object\\|null given\\.$#"
 			count: 1
 			path: src/VoucherBundle/Controller/SmartcardController.php
 
@@ -24531,22 +24741,12 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method object\\:\\:getContent\\(\\)\\.$#"
-			count: 8
-			path: tests/BeneficiaryBundle/Controller/BeneficiaryControllerTest.php
-
-		-
-			message: "#^Call to an undefined method object\\:\\:getId\\(\\)\\.$#"
-			count: 1
+			count: 6
 			path: tests/BeneficiaryBundle/Controller/BeneficiaryControllerTest.php
 
 		-
 			message: "#^Call to an undefined method object\\:\\:isSuccessful\\(\\)\\.$#"
-			count: 4
-			path: tests/BeneficiaryBundle/Controller/BeneficiaryControllerTest.php
-
-		-
-			message: "#^Cannot call method addRole\\(\\) on object\\|null\\.$#"
-			count: 1
+			count: 3
 			path: tests/BeneficiaryBundle/Controller/BeneficiaryControllerTest.php
 
 		-
@@ -24565,11 +24765,6 @@ parameters:
 			path: tests/BeneficiaryBundle/Controller/BeneficiaryControllerTest.php
 
 		-
-			message: "#^Method Tests\\\\BeneficiaryBundle\\\\Controller\\\\BeneficiaryControllerTest\\:\\:testGetBeneficiariesNumberAction\\(\\) should return bool but return statement is missing\\.$#"
-			count: 1
-			path: tests/BeneficiaryBundle/Controller/BeneficiaryControllerTest.php
-
-		-
 			message: "#^Method Tests\\\\BeneficiaryBundle\\\\Controller\\\\BeneficiaryControllerTest\\:\\:testGetResidencyStatuses\\(\\) has no return typehint specified\\.$#"
 			count: 1
 			path: tests/BeneficiaryBundle/Controller/BeneficiaryControllerTest.php
@@ -24581,7 +24776,7 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$user of method Tests\\\\BMSServiceTestCase\\:\\:getUserToken\\(\\) expects UserBundle\\\\Entity\\\\User, object\\|null given\\.$#"
-			count: 4
+			count: 3
 			path: tests/BeneficiaryBundle/Controller/BeneficiaryControllerTest.php
 
 		-
@@ -27151,12 +27346,32 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method object\\:\\:getContent\\(\\)\\.$#"
-			count: 4
+			count: 9
 			path: tests/NewApiBundle/Controller/AssistanceStatisticsControllerTest.php
 
 		-
 			message: "#^Call to an undefined method object\\:\\:isSuccessful\\(\\)\\.$#"
-			count: 2
+			count: 5
+			path: tests/NewApiBundle/Controller/AssistanceStatisticsControllerTest.php
+
+		-
+			message: "#^Cannot call method getAmountToDistribute\\(\\) on NewApiBundle\\\\Entity\\\\Assistance\\\\ReliefPackage\\|null\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/AssistanceStatisticsControllerTest.php
+
+		-
+			message: "#^Cannot call method getAssistanceBeneficiary\\(\\) on NewApiBundle\\\\Entity\\\\Assistance\\\\ReliefPackage\\|null\\.$#"
+			count: 5
+			path: tests/NewApiBundle/Controller/AssistanceStatisticsControllerTest.php
+
+		-
+			message: "#^Cannot call method getId\\(\\) on BeneficiaryBundle\\\\Entity\\\\AbstractBeneficiary\\|null\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/AssistanceStatisticsControllerTest.php
+
+		-
+			message: "#^Cannot call method getId\\(\\) on object\\|null\\.$#"
+			count: 1
 			path: tests/NewApiBundle/Controller/AssistanceStatisticsControllerTest.php
 
 		-
@@ -27175,7 +27390,37 @@ parameters:
 			path: tests/NewApiBundle/Controller/AssistanceStatisticsControllerTest.php
 
 		-
+			message: "#^Parameter \\#1 \\$assistance of method NewApiBundle\\\\Repository\\\\Assistance\\\\ReliefPackageRepository\\:\\:sumDistributedReliefPackagesAmountByAssistance\\(\\) expects DistributionBundle\\\\Entity\\\\Assistance, object\\|null given\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/AssistanceStatisticsControllerTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$assistance of method NewApiBundle\\\\Repository\\\\Assistance\\\\ReliefPackageRepository\\:\\:sumReliefPackagesAmountByAssistance\\(\\) expects DistributionBundle\\\\Entity\\\\Assistance, object\\|null given\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/AssistanceStatisticsControllerTest.php
+
+		-
 			message: "#^Property Tests\\\\BMSServiceTestCase\\:\\:\\$client \\(Symfony\\\\Component\\\\BrowserKit\\\\Client\\) does not accept object\\|null\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/AssistanceStatisticsControllerTest.php
+
+		-
+			message: "#^Property Tests\\\\NewApiBundle\\\\Controller\\\\AssistanceStatisticsControllerTest\\:\\:\\$assistanceBeneficiaryRepository \\(DistributionBundle\\\\Repository\\\\AssistanceBeneficiaryRepository\\) does not accept object\\|null\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/AssistanceStatisticsControllerTest.php
+
+		-
+			message: "#^Property Tests\\\\NewApiBundle\\\\Controller\\\\AssistanceStatisticsControllerTest\\:\\:\\$assistanceFactory \\(NewApiBundle\\\\Component\\\\Assistance\\\\AssistanceFactory\\) does not accept object\\|null\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/AssistanceStatisticsControllerTest.php
+
+		-
+			message: "#^Property Tests\\\\NewApiBundle\\\\Controller\\\\AssistanceStatisticsControllerTest\\:\\:\\$assistanceRepository \\(DistributionBundle\\\\Repository\\\\AssistanceRepository\\) does not accept object\\|null\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/AssistanceStatisticsControllerTest.php
+
+		-
+			message: "#^Property Tests\\\\NewApiBundle\\\\Controller\\\\AssistanceStatisticsControllerTest\\:\\:\\$reliefPackageRepository \\(NewApiBundle\\\\Repository\\\\Assistance\\\\ReliefPackageRepository\\) does not accept object\\|null\\.$#"
 			count: 1
 			path: tests/NewApiBundle/Controller/AssistanceStatisticsControllerTest.php
 
@@ -27891,12 +28136,12 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method object\\:\\:getContent\\(\\)\\.$#"
-			count: 27
+			count: 29
 			path: tests/NewApiBundle/Controller/ImportControllerTest.php
 
 		-
 			message: "#^Call to an undefined method object\\:\\:isSuccessful\\(\\)\\.$#"
-			count: 15
+			count: 16
 			path: tests/NewApiBundle/Controller/ImportControllerTest.php
 
 		-
@@ -27940,6 +28185,11 @@ parameters:
 			path: tests/NewApiBundle/Controller/ImportControllerTest.php
 
 		-
+			message: "#^Cannot call method getImport\\(\\) on object\\|null\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/ImportControllerTest.php
+
+		-
 			message: "#^Cannot call method getOurs\\(\\) on NewApiBundle\\\\Entity\\\\ImportHouseholdDuplicity\\|null\\.$#"
 			count: 1
 			path: tests/NewApiBundle/Controller/ImportControllerTest.php
@@ -27955,8 +28205,18 @@ parameters:
 			path: tests/NewApiBundle/Controller/ImportControllerTest.php
 
 		-
+			message: "#^Cannot call method setState\\(\\) on NewApiBundle\\\\Entity\\\\ImportQueue\\|null\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/ImportControllerTest.php
+
+		-
+			message: "#^Cannot call method setUnexpectedError\\(\\) on NewApiBundle\\\\Entity\\\\ImportQueue\\|null\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/ImportControllerTest.php
+
+		-
 			message: "#^Method Doctrine\\\\Persistence\\\\ObjectRepository\\:\\:findOneBy\\(\\) invoked with 2 parameters, 1 required\\.$#"
-			count: 7
+			count: 9
 			path: tests/NewApiBundle/Controller/ImportControllerTest.php
 
 		-
@@ -27986,6 +28246,11 @@ parameters:
 
 		-
 			message: "#^Method Tests\\\\NewApiBundle\\\\Controller\\\\ImportControllerTest\\:\\:testList\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/ImportControllerTest.php
+
+		-
+			message: "#^Method Tests\\\\NewApiBundle\\\\Controller\\\\ImportControllerTest\\:\\:testListFailedQueue\\(\\) has no return typehint specified\\.$#"
 			count: 1
 			path: tests/NewApiBundle/Controller/ImportControllerTest.php
 
@@ -28036,6 +28301,11 @@ parameters:
 
 		-
 			message: "#^PHPDoc tag @param has invalid value \\(\\$value\\)\\: Unexpected token \"\\$value\", expected type at offset 155$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/ImportControllerTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$entity of method Doctrine\\\\ORM\\\\EntityManager\\:\\:persist\\(\\) expects object, NewApiBundle\\\\Entity\\\\ImportQueue\\|null given\\.$#"
 			count: 1
 			path: tests/NewApiBundle/Controller/ImportControllerTest.php
 
@@ -29448,6 +29718,81 @@ parameters:
 			message: "#^Variable \\$assitance in PHPDoc tag @var does not match assigned variable \\$assistance\\.$#"
 			count: 2
 			path: tests/NewApiBundle/Controller/WebApp/Assistance/ReliefPackageControllerTest.php
+
+		-
+			message: "#^Call to an undefined method object\\:\\:getContent\\(\\)\\.$#"
+			count: 8
+			path: tests/NewApiBundle/Controller/WebApp/Assistance/SelectionCriteriaTest.php
+
+		-
+			message: "#^Call to an undefined method object\\:\\:isSuccessful\\(\\)\\.$#"
+			count: 4
+			path: tests/NewApiBundle/Controller/WebApp/Assistance/SelectionCriteriaTest.php
+
+		-
+			message: "#^Method Tests\\\\NewApiBundle\\\\Controller\\\\WebApp\\\\Assistance\\\\SelectionCriteriaTest\\:\\:assistanceArrayGenerator\\(\\) return type has no value type specified in iterable type iterable\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/WebApp/Assistance/SelectionCriteriaTest.php
+
+		-
+			message: "#^Method Tests\\\\NewApiBundle\\\\Controller\\\\WebApp\\\\Assistance\\\\SelectionCriteriaTest\\:\\:assistanceWithCriteria\\(\\) has parameter \\$criteria with no typehint specified\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/WebApp/Assistance/SelectionCriteriaTest.php
+
+		-
+			message: "#^Method Tests\\\\NewApiBundle\\\\Controller\\\\WebApp\\\\Assistance\\\\SelectionCriteriaTest\\:\\:assistanceWithCriteria\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/WebApp/Assistance/SelectionCriteriaTest.php
+
+		-
+			message: "#^Method Tests\\\\NewApiBundle\\\\Controller\\\\WebApp\\\\Assistance\\\\SelectionCriteriaTest\\:\\:testBeneficiaryPrecalculations\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/WebApp/Assistance/SelectionCriteriaTest.php
+
+		-
+			message: "#^Method Tests\\\\NewApiBundle\\\\Controller\\\\WebApp\\\\Assistance\\\\SelectionCriteriaTest\\:\\:testBeneficiaryPrecalculations\\(\\) has parameter \\$assistanceArray with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/WebApp/Assistance/SelectionCriteriaTest.php
+
+		-
+			message: "#^Method Tests\\\\NewApiBundle\\\\Controller\\\\WebApp\\\\Assistance\\\\SelectionCriteriaTest\\:\\:testCommodityCountOfCreatedAssistance\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/WebApp/Assistance/SelectionCriteriaTest.php
+
+		-
+			message: "#^Method Tests\\\\NewApiBundle\\\\Controller\\\\WebApp\\\\Assistance\\\\SelectionCriteriaTest\\:\\:testCommodityCountOfCreatedAssistance\\(\\) has parameter \\$assistanceArray with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/WebApp/Assistance/SelectionCriteriaTest.php
+
+		-
+			message: "#^Method Tests\\\\NewApiBundle\\\\Controller\\\\WebApp\\\\Assistance\\\\SelectionCriteriaTest\\:\\:testCreateAssistance\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/WebApp/Assistance/SelectionCriteriaTest.php
+
+		-
+			message: "#^Method Tests\\\\NewApiBundle\\\\Controller\\\\WebApp\\\\Assistance\\\\SelectionCriteriaTest\\:\\:testCreateAssistance\\(\\) has parameter \\$assistanceArray with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/WebApp/Assistance/SelectionCriteriaTest.php
+
+		-
+			message: "#^Method Tests\\\\NewApiBundle\\\\Controller\\\\WebApp\\\\Assistance\\\\SelectionCriteriaTest\\:\\:testVulnerabilityPrecalculations\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/WebApp/Assistance/SelectionCriteriaTest.php
+
+		-
+			message: "#^Method Tests\\\\NewApiBundle\\\\Controller\\\\WebApp\\\\Assistance\\\\SelectionCriteriaTest\\:\\:testVulnerabilityPrecalculations\\(\\) has parameter \\$assistanceArray with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/WebApp/Assistance/SelectionCriteriaTest.php
+
+		-
+			message: "#^PHPDoc tag @param has invalid value \\(\\$criteria array\\[\\] will be in distinct groups\\)\\: Unexpected token \"\\$criteria\", expected type at offset 18$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/WebApp/Assistance/SelectionCriteriaTest.php
+
+		-
+			message: "#^Property Tests\\\\BMSServiceTestCase\\:\\:\\$client \\(Symfony\\\\Component\\\\BrowserKit\\\\Client\\) does not accept object\\|null\\.$#"
+			count: 1
+			path: tests/NewApiBundle/Controller/WebApp/Assistance/SelectionCriteriaTest.php
 
 		-
 			message: "#^Call to an undefined method object\\:\\:getContent\\(\\)\\.$#"
