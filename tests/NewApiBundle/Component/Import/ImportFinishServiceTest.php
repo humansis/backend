@@ -102,7 +102,7 @@ class ImportFinishServiceTest extends KernelTestCase
       "numberFormat": "General"
     },
     "Livelihood": {
-      "value": "Government",
+      "value": "Regular salary - public sector",
       "dataType": "s",
       "numberFormat": "General"
     },

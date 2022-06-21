@@ -133,7 +133,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'field' => 'livelihood',
             'condition' => '=',
             'weight' => 1,
-            'value' => 'Government',
+            'value' => 'Regular salary - public sector',
         ];
         yield 'female head' => [$this->assistanceWithCriteria([$femaleHead])];
         yield 'female head (long string)' => [$this->assistanceWithCriteria([$femaleHeadLongString])];
