@@ -326,7 +326,7 @@ class ImportTest extends KernelTestCase
         $this->assertHHHasAssets($bnf->getHousehold(), [HouseholdAssets::AC, HouseholdAssets::CAR]);
         $this->assertHHHasSupportTypes($bnf->getHousehold(), [HouseholdSupportReceivedType::MPCA]);
         $this->assertHHHasShelterStatus($bnf->getHousehold(), HouseholdShelterStatus::TENT);
-        $this->assertHHHasLivelihood($bnf->getHousehold(), Livelihood::GOVERNMENT);
+        $this->assertHHHasLivelihood($bnf->getHousehold(), Livelihood::REGULAR_SALARY_PUBLIC);
         $this->assertEquals(PersonGender::MALE, $bnf->getPerson()->getGender());
         // Homer Simpson
         $bnf = $this->findOneIdentity(NationalIdType::NATIONAL_ID, '124483434');

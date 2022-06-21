@@ -36,7 +36,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('POST', '/api/basic/web-app/v1/households', [
-            'livelihood' => Livelihood::DAILY_LABOUR,
+            'livelihood' => Livelihood::IRREGULAR_EARNINGS,
             'iso3' => 'KHM',
             'assets' => ['1'],
             'shelterStatus' => '1',

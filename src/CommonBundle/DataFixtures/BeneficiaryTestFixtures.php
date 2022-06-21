@@ -51,7 +51,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
     ];
 
     private $householdTemplate = [
-        'livelihood' => Livelihood::GOVERNMENT,
+        'livelihood' => Livelihood::REGULAR_SALARY_PUBLIC,
         'income' => 3,
         'notes' => null,
         'latitude' => null,
