@@ -19,7 +19,7 @@ final class Livelihood
     const HOME_DUTIES = 'Home Duties';
     const OWN_BUSINESS_TRADING = 'Own business/trading'; //TRADING + OWN_BUSINESS
     const SAVINGS = 'Savings';
-    const REMMITANCES = 'Remmitances';
+    const REMITTANCES = 'Remittances';
     const HUMANITARIAN_AID = 'Humanitarian aid';
     const NO_INCOME = 'No Income';
     const REFUSED_TO_ANSWER = 'Refused to answer';
@@ -41,7 +41,7 @@ final class Livelihood
             self::HOME_DUTIES,
             self::OWN_BUSINESS_TRADING,
             self::SAVINGS,
-            self::REMMITANCES,
+            self::REMITTANCES,
             self::HUMANITARIAN_AID,
             self::NO_INCOME,
             self::REFUSED_TO_ANSWER,

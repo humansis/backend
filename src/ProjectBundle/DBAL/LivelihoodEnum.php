@@ -33,7 +33,7 @@ class LivelihoodEnum extends AbstractEnum
             'home_duties' => Livelihood::HOME_DUTIES,
             'own_business_trading' => Livelihood::OWN_BUSINESS_TRADING,
             'savings' => Livelihood::SAVINGS,
-            'remmitances' => Livelihood::REMMITANCES,
+            'remittances' => Livelihood::REMITTANCES,
             'humanitarian_aid' => Livelihood::HUMANITARIAN_AID,
             'no_income' => Livelihood::NO_INCOME,
             'refused_to_answer' => Livelihood::REFUSED_TO_ANSWER,
