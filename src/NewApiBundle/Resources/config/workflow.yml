@@ -149,7 +149,9 @@ framework:
             - !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_FAILED
           to: !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECKING
         !php/const NewApiBundle\Workflow\ImportTransitions::IMPORT:
-          from: !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_CORRECT
+          from:
+            - !php/const NewApiBundle\Enum\ImportState::SIMILARITY_CHECK_CORRECT
+            - !php/const NewApiBundle\Enum\ImportState::IDENTITY_CHECK_CORRECT
           to: !php/const NewApiBundle\Enum\ImportState::IMPORTING
         !php/const NewApiBundle\Workflow\ImportTransitions::FINISH:
           from: !php/const NewApiBundle\Enum\ImportState::IMPORTING

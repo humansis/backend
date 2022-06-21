@@ -45,7 +45,7 @@ class FinishSubscriber implements EventSubscriberInterface
     {
         return [
             'workflow.import.guard.'.ImportTransitions::FINISH => ['guardAllItemsAreImported'],
-            'workflow.import.guard.'.ImportTransitions::IMPORT => ['guardIfThereIsOnlyOneFinishingImport'],
+            'workflow.import.guard.'.ImportTransitions::IMPORT => ['guardIfThereIsOnlyOneFinishingImport', 'guardAllItemsAreReadyForImport'],
             'workflow.import.completed.'.ImportTransitions::RESET => ['resetImport'],
         ];
     }
@@ -86,5 +86,18 @@ class FinishSubscriber implements EventSubscriberInterface
         /** @var Import $import */
         $import = $enteredEvent->getSubject();
         $this->importReset->reset($import);
+    }
+
+    public function guardAllItemsAreReadyForImport(GuardEvent $event): void
+    {
+        /** @var Import $import */
+        $import = $event->getSubject();
+
+        /** @var ImportQueueRepository $importQueueRepository */
+        $importQueueRepository = $this->entityManager->getRepository(ImportQueue::class);
+
+        if ($importQueueRepository->countByImport($import) != $importQueueRepository->getTotalReadyForSave($import)) {
+            $event->addTransitionBlocker(new TransitionBlocker("One or more item of import #{$import->getId()} are not ready for import.", '0'));
+        }
     }
 }

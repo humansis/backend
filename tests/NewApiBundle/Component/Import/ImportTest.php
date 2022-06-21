@@ -158,6 +158,35 @@ class ImportTest extends KernelTestCase
         $this->assertCount($expectedBeneficiaryCount, $bnfCount, "Wrong beneficiary count");
     }
 
+    /**
+     * @dataProvider correctFiles
+     */
+    public function testMinimalWorkflowWithoutSimilarityCheck(string $country, string $filename, int $expectedHouseholdCount, int $expectedBeneficiaryCount)
+    {
+        $this->project = $this->createBlankProject($country, [__METHOD__, $filename]);
+        $this->originHousehold = $this->createBlankHousehold($this->project);
+        $import = $this->createImport("testMinimalWorkflow", $this->project, $filename);
+
+        $this->assertQueueCount($expectedHouseholdCount, $import);
+
+        $this->userStartedIntegrityCheck($import, true, $this->getBatchCount($import, 'integrity_check'));
+
+        $this->assertQueueCount($expectedHouseholdCount, $import);
+
+        $this->userStartedIdentityCheck($import, true, $this->getBatchCount($import,'identity_check'));
+
+        $this->assertQueueCount($expectedHouseholdCount, $import);
+
+        $this->assertQueueCount($expectedHouseholdCount, $import, [ImportQueueState::TO_CREATE]);
+
+        $this->userStartedFinishing($import, true);
+
+        $this->assertQueueCount($expectedHouseholdCount, $import);
+
+        $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->getImported($import);
+        $this->assertCount($expectedBeneficiaryCount, $bnfCount, "Wrong beneficiary count");
+    }
+
     public function integrityFixedFiles(): array
     {
         return [

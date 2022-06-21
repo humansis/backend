@@ -54,9 +54,14 @@ trait CliTrait
         }
     }
 
-    private function userStartedFinishing(Import $import): void
+    private function userStartedFinishing(Import $import, bool $skipSimilarityCheck = false): void
     {
-        $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
+        if ($skipSimilarityCheck) {
+            $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
+        } else {
+            $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
+        }
+
         $this->importService->updateStatus($import, ImportState::IMPORTING);
         $this->assertEquals(ImportState::IMPORTING, $import->getState());
         $this->cli('app:import:finish', $import);

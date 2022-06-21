@@ -27,5 +27,7 @@ final class ImportTransitions
         IMPORT = ImportState::IMPORTING,
         FINISH = ImportState::FINISHED,
         CANCEL = ImportState::CANCELED,
-        RESET = 'reset';
+        RESET = 'reset',
+
+        SKIP_SIMILARITY_CHECK = 'skip_similarity_check';
 }

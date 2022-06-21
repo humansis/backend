@@ -92,6 +92,9 @@ class IdentityChecker
             } else {
                 $this->logImportDebug($item->getImport(), "Duplicity check OK");
                 $this->importQueueStateMachine->apply($item, ImportQueueTransitions::UNIQUE_CANDIDATE);
+
+                //skip similarity check
+                $this->importQueueStateMachine->apply($item, ImportQueueTransitions::TO_CREATE);
             }
 
             $item->setIdentityCheckedAt(new \DateTime());
@@ -113,6 +116,9 @@ class IdentityChecker
         } else {
             $this->logImportDebug($item->getImport(), "Duplicity check OK");
             $this->importQueueStateMachine->apply($item, ImportQueueTransitions::UNIQUE_CANDIDATE);
+
+            //skip similarity check
+            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::TO_CREATE);
         }
     }
 
