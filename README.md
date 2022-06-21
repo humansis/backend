@@ -171,3 +171,8 @@ Docker and others already described commands are accessible from Makefile
 * clean -> Recreate DB, migrate migrations, load fixtures, start cron service
 * cron-launch -> Start the cron service
 * test -> Run phpunit tests
+
+#### Profiler
+tool to debug application backend (queries, requests, etc.)  
+run in browser - http://localhost:8087/_profiler  
+docs - https://symfony.com/doc/4.4/profiler.html
