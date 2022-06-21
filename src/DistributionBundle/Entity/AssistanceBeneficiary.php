@@ -400,12 +400,4 @@ class AssistanceBeneficiary
         $this->reliefPackages->add($reliefPackage);
     }
 
-    public function discardReliefPackages()
-    {
-        if ($this->hasDistributionStarted()) {
-            throw new \LogicException("You cannot discard distributed package");
-        }
-        $this->reliefPackages = new ArrayCollection();
-    }
-
 }
