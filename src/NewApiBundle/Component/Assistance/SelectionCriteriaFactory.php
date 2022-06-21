@@ -58,20 +58,20 @@ class SelectionCriteriaFactory
         $criterium->setTableString('Personnal');
 
         if (SelectionCriteriaTarget::BENEFICIARY === $input->getTarget()) {
-            if (($vulnerability = $this->getVulnerability($input->getField()))) {
+            if (($this->getVulnerability($input->getField()))) {
                 $criterium->setConditionString(null);
-                $criterium->setTableString('vulnerabilityCriteria');
+                $criterium->setTableString(SelectionCriteriaField::VULNERABILITY_CRITERIA);
                 return $criterium;
             }
         }
 
         if (SelectionCriteriaTarget::HOUSEHOLD_HEAD === $input->getTarget()) {
-            if ('disabledHeadOfHousehold' === $input->getField()) {
+            if (SelectionCriteriaField::DISABLED_HEAD_OF_HOUSEHOLD === $input->getField()) {
                 $criterium->setValueString(null);
                 return $criterium;
             }
 
-            if ('hasValidSmartcard' === $input->getField()) {
+            if (SelectionCriteriaField::HAS_VALID_SMARTCARD === $input->getField()) {
                 $criterium->setConditionString(null);
                 $criterium->setValueString(null);
                 return $criterium;
@@ -82,25 +82,24 @@ class SelectionCriteriaFactory
 
             if ($countrySpecific = $this->getCountrySpecific($input->getField())) {
                 $criterium->setFieldString($countrySpecific->getFieldString());
-                $criterium->setTableString('countrySpecific');
+                $criterium->setTableString(SelectionCriteriaField::COUNTRY_SPECIFIC);
                 return $criterium;
             }
-            if ('location' === $input->getField()) {
+            if (SelectionCriteriaField::CURRENT_LOCATION === $input->getField()) {
                 /** @var \CommonBundle\Entity\Location $location */
                 $location = $this->locationRepository->find($input->getValue());
                 if (!$location) {
                     throw new EntityNotFoundException();
                 }
 
-                $criterium->setFieldString(SelectionCriteriaField::CURRENT_LOCATION);
                 $criterium->setValueString($location->getId());
                 return $criterium;
             }
         }
 
-        if ('gender' === $input->getField()) {
+        if (SelectionCriteriaField::GENDER === $input->getField()) {
             $genderEnum = PersonGender::valueFromAPI($input->getValue());
-            $criterium->setFieldString('headOfHouseholdGender');
+            $criterium->setFieldString(SelectionCriteriaField::HEAD_OF_HOUSEHOLD_GENDER);
             $criterium->setValueString((PersonGender::MALE === $genderEnum) ? '1' : '0');
             return $criterium;
         }
@@ -110,10 +109,10 @@ class SelectionCriteriaFactory
 
     public function hydrate(SelectionCriteriaEntity $criteriaEntity): SelectionCriteria
     {
-        if ($criteriaEntity->getTableString() === 'countrySpecific') {
+        if ($criteriaEntity->getTableString() === SelectionCriteriaField::COUNTRY_SPECIFIC) {
             return new SelectionCriteria(
                 $criteriaEntity,
-                $this->configurationLoader->criteria['countrySpecific']
+                $this->configurationLoader->criteria[SelectionCriteriaField::COUNTRY_SPECIFIC]
             );
         }
         return new SelectionCriteria(

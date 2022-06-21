@@ -4,6 +4,7 @@ namespace NewApiBundle\Mapper\Assistance;
 
 use DistributionBundle\Entity\AssistanceSelection;
 use NewApiBundle\Entity\Assistance\SelectionCriteria;
+use NewApiBundle\Enum\SelectionCriteriaField;
 use NewApiBundle\Serializer\MapperInterface;
 
 class SelectionCriteriaMapper implements MapperInterface
@@ -35,8 +36,8 @@ class SelectionCriteriaMapper implements MapperInterface
 
     private function isGenderCriterium(): bool
     {
-        return 'gender' === $this->object->getFieldString()
-            || 'headOfHouseholdGender' === $this->object->getFieldString();
+        return SelectionCriteriaField::GENDER === $this->object->getFieldString()
+            || SelectionCriteriaField::HEAD_OF_HOUSEHOLD_GENDER === $this->object->getFieldString();
     }
 
     public function getGroup(): int

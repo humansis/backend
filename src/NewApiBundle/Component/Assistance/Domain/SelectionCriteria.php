@@ -3,6 +3,7 @@
 namespace NewApiBundle\Component\Assistance\Domain;
 
 use NewApiBundle\Entity\Assistance\SelectionCriteria as SelectionCriteriaEntity;
+use NewApiBundle\Enum\SelectionCriteriaField;
 
 class SelectionCriteria
 {
@@ -81,7 +82,7 @@ class SelectionCriteria
 
     public function hasCountrySpecificType(): bool
     {
-        return $this->criteriaRoot->getFieldString() === 'countrySpecific';
+        return $this->criteriaRoot->getFieldString() === SelectionCriteriaField::COUNTRY_SPECIFIC;
     }
 
     public function hasTableFieldType(): bool
@@ -96,6 +97,6 @@ class SelectionCriteria
 
     public function hasVulnerabilityCriteriaType(): bool
     {
-        return $this->criteriaRoot->getTableString() === 'vulnerabilityCriteria';
+        return $this->criteriaRoot->getTableString() === SelectionCriteriaField::VULNERABILITY_CRITERIA;
     }
 }

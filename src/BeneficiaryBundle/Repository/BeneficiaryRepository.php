@@ -742,7 +742,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         if (!$criterion->hasTableFieldType()) {
             throw new \InvalidArgumentException('Selection criterium isnt for table field criterium');
         }
-        if (in_array($field, ['dateOfBirth', 'gender'])) {
+        if (in_array($field, [SelectionCriteriaField::DATE_OF_BIRTH, SelectionCriteriaField::GENDER])) {
             if (!in_array('prsn', $qb->getAllAliases())) {
                 $qb->join('b.person', 'prsn');
             }

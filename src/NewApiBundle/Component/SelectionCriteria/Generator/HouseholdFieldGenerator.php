@@ -7,6 +7,7 @@ use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Repository\CountrySpecificRepository;
 use NewApiBundle\Component\SelectionCriteria\FieldGeneratorInterface;
 use NewApiBundle\Component\SelectionCriteria\Structure\Field;
+use NewApiBundle\Enum\SelectionCriteriaField;
 use NewApiBundle\Enum\SelectionCriteriaTarget;
 use ProjectBundle\Enum\Livelihood;
 
@@ -65,11 +66,11 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
          * yield new Field('copingStrategiesIndex', 'Coping Strategies Index', ['=', '<', '>', '<=', '>='], 'double');
          * yield new Field('foodConsumptionScore', 'Food Consumption Score', ['=', '<', '>', '<=', '>='], 'double');
          */
-        yield new Field('livelihood', 'Livelihood', ['='], 'livelihood', [self::class, 'validateLivelihood']);
-        yield new Field('income', 'Income', ['=', '<', '>', '<=', '>='], 'integer');
-        yield new Field('householdSize', 'Household Size', ['=', '<', '>', '<=', '>='], 'integer');
-        yield new Field('location', 'Location', ['='], 'location', 'is_int');
-        yield new Field('locationType', 'Location Type', ['='], 'locationType', [self::class, 'validateLocationType']);
+        yield new Field(SelectionCriteriaField::LIVELIHOD, 'Livelihood', ['='], 'livelihood', [self::class, 'validateLivelihood']);
+        yield new Field(SelectionCriteriaField::INCOME, 'Income', ['=', '<', '>', '<=', '>='], 'integer');
+        yield new Field(SelectionCriteriaField::HOUSEHOLD_SIZE, 'Household Size', ['=', '<', '>', '<=', '>='], 'integer');
+        yield new Field(SelectionCriteriaField::CURRENT_LOCATION, 'Location', ['='], 'location', 'is_int');
+        yield new Field(SelectionCriteriaField::LOCATION_TYPE, 'Location Type', ['='], 'locationType', [self::class, 'validateLocationType']);
 
     }
 

@@ -4,6 +4,7 @@
 namespace DistributionBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Enum\SelectionCriteriaField;
 
 /**
  * Class ConfigurationLoader
@@ -42,9 +43,9 @@ class ConfigurationLoader
         $criteriaFormatted = [];
         foreach ($this->criteria as $criterion => $info) {
             // The type can be the countrySpecific or the vulnerabilityCriteria classes, or anything else
-            if ($criterion === 'countrySpecific') {
+            if ($criterion === SelectionCriteriaField::COUNTRY_SPECIFIC) {
                 $criteriaFormatted = array_merge($criteriaFormatted, $this->formatClassCriteria($countryISO3, $info['target'], $criterion, $info['type']));
-            } else if ($criterion === 'vulnerabilityCriteria') {
+            } else if ($criterion === SelectionCriteriaField::VULNERABILITY_CRITERIA) {
                 $criteriaFormatted = array_merge($criteriaFormatted, $this->formatClassCriteria($countryISO3, $info['target'], $criterion, $info['type']));
             } else {
                 $criteriaFormatted[] = $this->formatOtherCriteria($info['target'], $criterion, $info['type']);
