@@ -4,13 +4,17 @@ namespace VoucherBundle\Controller;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Organization;
+use CommonBundle\Repository\OrganizationRepository;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
+use DistributionBundle\Export\SmartcardInvoiceExport;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use NewApiBundle\Component\Country\Countries;
+use NewApiBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Swagger\Annotations as SWG;
@@ -46,6 +50,26 @@ use VoucherBundle\Repository\SmartcardPurchaseRepository;
  */
 class SmartcardController extends Controller
 {
+
+    /** @var SmartcardInvoiceExport */
+    private $exporter;
+    /** @var OrganizationRepository */
+    private  $organizationRepository;
+    /** @var Countries  */
+    private $countries;
+
+    /**
+     * @param SmartcardInvoiceExport $exporter
+     * @param OrganizationRepository $organizationRepository
+     * @param Countries              $countries
+     */
+    public function __construct(SmartcardInvoiceExport $exporter, OrganizationRepository $organizationRepository, Countries $countries)
+    {
+        $this->exporter = $exporter;
+        $this->organizationRepository = $organizationRepository;
+        $this->countries = $countries;
+    }
+
     /**
      * Register smartcard to system and assign to beneficiary.
      *
@@ -796,22 +820,19 @@ class SmartcardController extends Controller
      *
      * @return Response
      *
-     * @throws
      */
     public function export(SmartcardRedemptionBatch $batch): Response
     {
+        $country = $this->countries->getCountry($batch->getProject()->getIso3());
+
         // todo find organisation by relation to smartcard
-        $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
-
-        $language = 'en';
-        foreach ($this->getParameter('app.countries') as $country) {
-            if ($country['iso3'] === $batch->getProject()->getIso3() && isset($country['language'])) {
-                $language = $country['language'];
-                break;
-            }
-        }
-
-        $filename = $this->get('distribution.export.smartcard_invoice')->export($batch, $organization, $this->getUser(), $language);
+        $organization = $this->organizationRepository->findOneBy([]);
+        $filename = $this->exporter->export(
+            $batch,
+            $organization,
+            $this->getUser(),
+            $country->getLanguage()
+        );
 
         $response = new BinaryFileResponse(getcwd().'/'.$filename);
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);

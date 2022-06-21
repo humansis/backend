@@ -137,9 +137,11 @@ services:
         public: true
 
     distribution.export.smartcard_invoice:
-        class: DistributionBundle\Export\SmartcardInvoiceExport
+        alias: DistributionBundle\Export\SmartcardInvoiceExport
+        public: true
+
+    DistributionBundle\Export\SmartcardInvoiceExport:
         arguments:
             - '@translator'
             - '@CommonBundle\Mapper\LocationMapper'
             - '@smartcard_purchase.repository'
-        public: true

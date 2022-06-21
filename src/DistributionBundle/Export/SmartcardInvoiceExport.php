@@ -441,6 +441,8 @@ class SmartcardInvoiceExport
             $worksheet->setCellValue('I'.$lineStart, $purchasedProduct['currency']);
 
             self::setSmallBorder($worksheet, "B$lineStart:I$lineStart");
+            $worksheet->getStyle('B'.$lineStart)->getAlignment()
+                ->setHorizontal(Alignment::HORIZONTAL_LEFT);
             $worksheet->getStyle('D'.$lineStart)->getAlignment()
                 ->setHorizontal(Alignment::HORIZONTAL_CENTER);
         }
