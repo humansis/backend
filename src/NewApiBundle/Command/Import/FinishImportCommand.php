@@ -4,12 +4,10 @@ declare(strict_types=1);
 namespace NewApiBundle\Command\Import;
 
 use Doctrine\Persistence\ObjectManager;
-use NewApiBundle\Component\Import\ImportFinisher;
+use NewApiBundle\Component\Import\Finishing\ItemFinishService;
 use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Enum\ImportState;
-use NewApiBundle\Workflow\ImportTransitions;
-use NewApiBundle\Workflow\WorkflowTool;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,15 +16,15 @@ use Throwable;
 
 class FinishImportCommand extends AbstractImportQueueCommand
 {
-    /** @var ImportFinisher */
+    /** @var \NewApiBundle\Component\Import\Finishing\ItemFinishService */
     private $importFinisher;
 
     public function __construct(
-        ObjectManager     $manager,
-        ImportService     $importService,
-        LoggerInterface   $importLogger,
-        WorkflowInterface $importStateMachine,
-        ImportFinisher    $importFinisher
+        ObjectManager                                           $manager,
+        ImportService                                           $importService,
+        LoggerInterface                                         $importLogger,
+        WorkflowInterface                                       $importStateMachine,
+        \NewApiBundle\Component\Import\Finishing\ItemFinishService $importFinisher
     ) {
         parent::__construct($manager, $importService, $importLogger, $importStateMachine);
         $this->importFinisher = $importFinisher;

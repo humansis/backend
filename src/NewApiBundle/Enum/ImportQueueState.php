@@ -21,6 +21,7 @@ final class ImportQueueState
     const CREATED = 'Created';
     const UPDATED = 'Updated';
     const LINKED = 'Linked';
+    const IGNORED = 'Ignored';
     const ERROR = 'Error';
 
 
@@ -41,6 +42,7 @@ final class ImportQueueState
             self::CREATED,
             self::UPDATED,
             self::LINKED,
+            self::IGNORED,
             self::ERROR,
         ];
     }

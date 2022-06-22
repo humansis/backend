@@ -1,46 +1,33 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Component\Import;
+namespace NewApiBundle\Component\Import\Finishing;
 
 use BadMethodCallException;
-use BeneficiaryBundle\Entity\AbstractBeneficiary;
-use BeneficiaryBundle\Entity\Address;
 use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\HouseholdActivity;
-use BeneficiaryBundle\Entity\HouseholdLocation;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Person;
-use BeneficiaryBundle\Entity\Phone;
-use BeneficiaryBundle\Entity\Profile;
-use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
-use NewApiBundle\Component\Import\Finishing\HouseholdDecoratorBuilder;
-use NewApiBundle\Component\Import\Finishing\UnexpectedError;
+use NewApiBundle\Component\Import\Finishing;
+use NewApiBundle\Component\Import\ImportLoggerTrait;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiary;
-use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportQueue;
-use NewApiBundle\Entity\ImportQueueDuplicity;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
-use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Utils\Concurrency\ConcurrencyProcessor;
 use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
-use NewApiBundle\Workflow\WorkflowTool;
 use ProjectBundle\Entity\Project;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 use UserBundle\Entity\User;
 
-class ImportFinisher
+class ItemFinishService
 {
     use ImportLoggerTrait;
 
@@ -70,7 +57,7 @@ class ImportFinisher
     private $householdService;
 
     /**
-     * @var ObjectRepository|ImportQueueRepository
+     * @var ImportQueueRepository
      */
     private $queueRepository;
 
@@ -88,13 +75,14 @@ class ImportFinisher
         WorkflowInterface                   $importStateMachine,
         WorkflowInterface                   $importQueueStateMachine,
         Finishing\HouseholdDecoratorBuilder $householdDecoratorBuilder,
+        ImportQueueRepository               $queueRepository,
         ManagerRegistry                     $managerRegistry
     ) {
         $this->em = $em;
         $this->importStateMachine = $importStateMachine;
         $this->importQueueStateMachine = $importQueueStateMachine;
         $this->householdService = $householdService;
-        $this->queueRepository = $em->getRepository(ImportQueue::class);
+        $this->queueRepository = $queueRepository;
         $this->logger = $logger;
         $this->totalBatchSize = $totalBatchSize;
         $this->householdDecoratorBuilder = $householdDecoratorBuilder;
@@ -155,16 +143,7 @@ class ImportFinisher
                             break;
                         case ImportQueueState::TO_IGNORE:
                         case ImportQueueState::TO_LINK:
-                            /** @var ImportHouseholdDuplicity $acceptedDuplicity */
-                            $acceptedDuplicity = $item->getAcceptedDuplicity();
-                            if (null == $acceptedDuplicity) {
-                                return;
-                            }
-
-                            $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
-                            $this->logImportInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
-
-                            $this->importQueueStateMachine->apply($item, ImportQueueTransitions::LINK);
+                            $this->finishLinkQueue($item, $import);
                             break;
                     }
                     $this->em->persist($item);
@@ -223,7 +202,7 @@ class ImportFinisher
      * @param ImportQueue $item
      * @param Import      $import
      */
-    private function finishCreationQueue(ImportQueue $item, Import $import): void
+    public function finishCreationQueue(ImportQueue $item, Import $import): void
     {
         if (ImportQueueState::TO_CREATE !== $item->getState()) {
             throw new InvalidArgumentException("Wrong ImportQueue creation state: ".$item->getState());
@@ -249,9 +228,9 @@ class ImportFinisher
      * @param ImportQueue $item
      * @param Import      $import
      *
-     * @throws EntityNotFoundException
+     * @throws EntityNotFoundException|\Exception
      */
-    private function finishUpdateQueue(ImportQueue $item, Import $import): void
+    public function finishUpdateQueue(ImportQueue $item, Import $import): void
     {
         if (ImportQueueState::TO_UPDATE !== $item->getState()) {
             throw new InvalidArgumentException("Wrong ImportQueue state");
@@ -283,6 +262,25 @@ class ImportFinisher
         $this->logImportInfo($import, "Updated Household #{$updatedHousehold->getId()}");
 
         $this->importQueueStateMachine->apply($item, ImportQueueTransitions::UPDATE);
+    }
+
+    public function finishLinkQueue(ImportQueue $item, Import $import): void
+    {
+        /** @var ImportHouseholdDuplicity $acceptedDuplicity */
+        $acceptedDuplicity = $item->getAcceptedDuplicity();
+        if (null == $acceptedDuplicity) {
+            return;
+        }
+
+        $this->linkHouseholdToQueue($import, $acceptedDuplicity->getTheirs(), $acceptedDuplicity->getDecideBy());
+        $this->logImportInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
+
+        $this->importQueueStateMachine->apply($item, ImportQueueTransitions::LINK);
+    }
+
+    public function finishIgnoreQueue(ImportQueue $item, Import $import): void
+    {
+        $this->importQueueStateMachine->apply($item, ImportQueueTransitions::IGNORE);
     }
 
     private function linkHouseholdToQueue(Import $import, Household $household, User $decide): void

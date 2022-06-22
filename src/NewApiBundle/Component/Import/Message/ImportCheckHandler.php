@@ -58,6 +58,11 @@ class ImportCheckHandler implements MessageHandlerInterface
                     ImportTransitions::COMPLETE_SIMILARITY
                 ]);
                 break;
+            case ImportState::IMPORTING:
+                $this->tryTransitions($import, [
+                    ImportTransitions::FINISH,
+                ]);
+                break;
         }
     }
 
