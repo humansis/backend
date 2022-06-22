@@ -12,6 +12,7 @@ use NewApiBundle\Component\Import\Message\IntegrityBatch;
 use NewApiBundle\Component\Import\Message\ItemBatch;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportTransitions;
@@ -94,7 +95,10 @@ class IntegritySubscriber implements EventSubscriberInterface
         /** @var Import $import */
         $import = $event->getSubject();
 
-        foreach ($this->queueRepository->findByImport($import) as $item) {
+        foreach ($this->queueRepository->findBy([
+            'import' => $import,
+            'state' => ImportQueueState::NEW,
+        ]) as $item) {
             $this->messageBus->dispatch(ItemBatch::checkSingleItemIntegrity($item));
         }
         $this->messageBus->dispatch(ImportCheck::checkIntegrityComplete($import));

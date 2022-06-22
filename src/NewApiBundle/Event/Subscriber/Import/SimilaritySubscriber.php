@@ -10,6 +10,7 @@ use NewApiBundle\Component\Import\Message\ItemBatch;
 use NewApiBundle\Component\Import\SimilarityChecker;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportTransitions;
@@ -83,7 +84,10 @@ class SimilaritySubscriber implements EventSubscriberInterface
         /** @var Import $import */
         $import = $event->getSubject();
 
-        foreach ($this->queueRepository->findByImport($import) as $item) {
+        foreach ($this->queueRepository->findBy([
+            'import' => $import,
+            'state' => [ImportQueueState::NEW],
+        ]) as $item) {
             $this->messageBus->dispatch(ItemBatch::checkSingleItemSimilarity($item));
         }
         $this->messageBus->dispatch(ImportCheck::checkSimilarityComplete($import));

@@ -80,7 +80,10 @@ class IdentitySubscriber implements EventSubscriberInterface
         /** @var Import $import */
         $import = $event->getSubject();
 
-        foreach ($this->queueRepository->findByImport($import) as $item) {
+        foreach ($this->queueRepository->findBy([
+            'import' => $import,
+            'state' => ImportQueueState::VALID,
+        ]) as $item) {
             $this->messageBus->dispatch(ItemBatch::checkSingleItemIdentity($item));
         }
 
