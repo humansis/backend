@@ -5,6 +5,8 @@ use NewApiBundle\Component\Import\Finishing;
 use NewApiBundle\Component\Import\Identity;
 use NewApiBundle\Component\Import\ImportQueueLoggerTrait;
 use NewApiBundle\Component\Import\Integrity;
+use NewApiBundle\Entity\Import;
+use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
@@ -54,14 +56,10 @@ class ItemBatchHandler implements MessageHandlerInterface
     {
         switch ($batch->getCheckType()) {
             case ImportState::INTEGRITY_CHECKING:
-                $items = $this->queueRepository->findBy([
-                    'id' => $batch->getQueueItemIds(),
-                    'state' => ImportQueueState::NEW,
-                ]);
-                foreach ($items as $item) {
+                $this->foreach($batch, ImportQueueState::NEW, function (Import $import, ImportQueue $item) {
                     $this->logQueueInfo($item, "Integrity check");
                     $this->integrityChecker->checkOne($item);
-                }
+                });
                 break;
             case ImportState::IDENTITY_CHECKING:
                 $items = $this->queueRepository->findBy([
@@ -78,49 +76,40 @@ class ItemBatchHandler implements MessageHandlerInterface
                 }
                 break;
             case ImportState::SIMILARITY_CHECKING:
-                $items = $this->queueRepository->findBy([
-                    'id' => $batch->getQueueItemIds(),
-                    'state' => ImportQueueState::UNIQUE_CANDIDATE,
-                ]);
-                foreach ($items as $item) {
+                $this->foreach($batch, ImportQueueState::UNIQUE_CANDIDATE, function (Import $import, ImportQueue $item) {
                     $this->logQueueInfo($item, "Similarity check");
                     $this->similarityChecker->checkOne($item);
-                }
+                });
                 break;
             case ImportState::IMPORTING:
-                $items = $this->queueRepository->findBy([
-                    'id' => $batch->getQueueItemIds(),
-                    'state' => ImportQueueState::TO_CREATE,
-                ]);
-                foreach ($items as $item) {
+                $this->foreach($batch, ImportQueueState::TO_CREATE, function (Import $import, ImportQueue $item) {
                     $this->logQueueInfo($item, "Finish by creation");
                     $this->finisher->finishCreationQueue($item, $item->getImport());
-                }
-                $items = $this->queueRepository->findBy([
-                    'id' => $batch->getQueueItemIds(),
-                    'state' => ImportQueueState::TO_UPDATE,
-                ]);
-                foreach ($items as $item) {
+                });
+                $this->foreach($batch, ImportQueueState::TO_UPDATE, function (Import $import, ImportQueue $item) {
                     $this->logQueueInfo($item, "Finish by update");
                     $this->finisher->finishUpdateQueue($item, $item->getImport());
-                }
-                $items = $this->queueRepository->findBy([
-                    'id' => $batch->getQueueItemIds(),
-                    'state' => ImportQueueState::TO_LINK,
-                ]);
-                foreach ($items as $item) {
+                });
+                $this->foreach($batch, ImportQueueState::TO_LINK, function (Import $import, ImportQueue $item) {
                     $this->logQueueInfo($item, "Finish by link");
                     $this->finisher->finishLinkQueue($item, $item->getImport());
-                }
-                $items = $this->queueRepository->findBy([
-                    'id' => $batch->getQueueItemIds(),
-                    'state' => ImportQueueState::TO_IGNORE,
-                ]);
-                foreach ($items as $item) {
+                });
+                $this->foreach($batch, ImportQueueState::TO_IGNORE, function (Import $import, ImportQueue $item) {
                     $this->logQueueInfo($item, "Finish by ignore");
                     $this->finisher->finishIgnoreQueue($item, $item->getImport());
-                }
+                });
                 break;
+        }
+    }
+
+    private function foreach(ItemBatch $batch, string $state, callable $itemCallback)
+    {
+        $items = $this->queueRepository->findBy([
+            'id' => $batch->getQueueItemIds(),
+            'state' => $state,
+        ]);
+        foreach ($items as $item) {
+            $itemCallback($item->getImport(), $item);
         }
     }
 }
