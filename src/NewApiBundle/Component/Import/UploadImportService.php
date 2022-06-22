@@ -12,7 +12,7 @@ use NewApiBundle\Entity\ImportFile;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Messenger\MessageBus;
+use Symfony\Component\Messenger\MessageBusInterface;
 use UserBundle\Entity\User;
 
 class UploadImportService
@@ -35,7 +35,7 @@ class UploadImportService
     /** @var Integrity\DuplicityService */
     private $integrityDuplicityService;
 
-    /** @var MessageBus */
+    /** @var MessageBusInterface */
     private $messageBus;
 
     public function __construct(
@@ -43,7 +43,7 @@ class UploadImportService
         string                     $uploadDirectory,
         ImportFileValidator        $importFileValidator,
         Integrity\DuplicityService $integrityDuplicityService,
-        MessageBus                 $messageBus
+        MessageBusInterface        $messageBus
     )
     {
         $this->parser = new ImportParser();
