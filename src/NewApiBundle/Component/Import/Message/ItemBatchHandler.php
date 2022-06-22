@@ -59,6 +59,7 @@ class ItemBatchHandler implements MessageHandlerInterface
                 $this->foreach($batch, ImportQueueState::NEW, function (Import $import, ImportQueue $item) {
                     $this->logQueueInfo($item, "Integrity check");
                     $this->integrityChecker->checkOne($item);
+                    $this->queueRepository->save($item);
                 });
                 break;
             case ImportState::IDENTITY_CHECKING:
@@ -74,29 +75,37 @@ class ItemBatchHandler implements MessageHandlerInterface
                 foreach ($queueByImport as $items) {
                     $this->identityChecker->checkBatch($items[0]->getImport(), $items);
                 }
+                foreach ($items as $item) {
+                    $this->queueRepository->save($item);
+                }
                 break;
             case ImportState::SIMILARITY_CHECKING:
                 $this->foreach($batch, ImportQueueState::UNIQUE_CANDIDATE, function (Import $import, ImportQueue $item) {
                     $this->logQueueInfo($item, "Similarity check");
                     $this->similarityChecker->checkOne($item);
+                    $this->queueRepository->save($item);
                 });
                 break;
             case ImportState::IMPORTING:
                 $this->foreach($batch, ImportQueueState::TO_CREATE, function (Import $import, ImportQueue $item) {
                     $this->logQueueInfo($item, "Finish by creation");
                     $this->finisher->finishCreationQueue($item, $item->getImport());
+                    $this->queueRepository->save($item);
                 });
                 $this->foreach($batch, ImportQueueState::TO_UPDATE, function (Import $import, ImportQueue $item) {
                     $this->logQueueInfo($item, "Finish by update");
                     $this->finisher->finishUpdateQueue($item, $item->getImport());
+                    $this->queueRepository->save($item);
                 });
                 $this->foreach($batch, ImportQueueState::TO_LINK, function (Import $import, ImportQueue $item) {
                     $this->logQueueInfo($item, "Finish by link");
                     $this->finisher->finishLinkQueue($item, $item->getImport());
+                    $this->queueRepository->save($item);
                 });
                 $this->foreach($batch, ImportQueueState::TO_IGNORE, function (Import $import, ImportQueue $item) {
                     $this->logQueueInfo($item, "Finish by ignore");
                     $this->finisher->finishIgnoreQueue($item, $item->getImport());
+                    $this->queueRepository->save($item);
                 });
                 break;
         }

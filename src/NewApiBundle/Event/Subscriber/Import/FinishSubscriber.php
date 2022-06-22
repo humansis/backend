@@ -10,6 +10,7 @@ use NewApiBundle\Component\Import\Message\ItemBatch;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
+use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportTransitions;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -61,7 +62,7 @@ class FinishSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.import.entered.'.ImportTransitions::FINISH => ['fillQueue'],
+            'workflow.import.entered.'.ImportState::IMPORTING => ['fillQueue'],
             'workflow.import.guard.'.ImportTransitions::FINISH => ['guardAllItemsAreImported'],
             'workflow.import.guard.'.ImportTransitions::IMPORT => ['guardIfThereIsOnlyOneFinishingImport', 'guardAllItemsAreReadyForImport'],
             'workflow.import.completed.'.ImportTransitions::RESET => ['resetOtherImports'],

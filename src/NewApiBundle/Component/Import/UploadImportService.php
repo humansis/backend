@@ -12,10 +12,11 @@ use NewApiBundle\Entity\ImportFile;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use UserBundle\Entity\User;
 
-class UploadImportService
+class UploadImportService implements MessageHandlerInterface
 {
     /** @var ImportParser */
     private $parser;
@@ -56,11 +57,15 @@ class UploadImportService
     }
 
     /**
+     * @param UploadFile $uploadFile
+     *
+     * @return void
      * @throws \Doctrine\DBAL\ConnectionException
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    public function __invoke(ImportFile $importFile): void
+    public function __invoke(UploadFile $uploadFile): void
     {
+        $importFile = $this->em->getRepository(ImportFile::class)->find($uploadFile->getImportFileId());
         $this->load($importFile);
     }
 
