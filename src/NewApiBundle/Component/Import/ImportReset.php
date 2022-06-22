@@ -4,10 +4,13 @@ namespace NewApiBundle\Component\Import;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
+use http\Exception\BadMethodCallException;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportQueueTransitions;
+use NewApiBundle\Workflow\ImportTransitions;
 use NewApiBundle\Workflow\WorkflowTool;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
@@ -48,6 +51,29 @@ class ImportReset
         $this->importStateMachine = $importStateMachine;
         $this->importQueueStateMachine = $importQueueStateMachine;
         $this->logger = $logger;
+    }
+
+    /**
+     * @param Import $import
+     */
+    public function resetOtherImports(Import $import)
+    {
+        if ($import->getState() !== ImportState::FINISHED) {
+            throw new BadMethodCallException('Wrong import status');
+        }
+
+        $importConflicts = $this->em->getRepository(Import::class)->getConflictingImports($import);
+        $this->logImportInfo($import, count($importConflicts)." conflicting imports to reset duplicity checks");
+        foreach ($importConflicts as $conflictImport) {
+            if ($this->importStateMachine->can($conflictImport, ImportTransitions::RESET)) {
+                $this->logImportInfo($conflictImport, " reset to ".ImportState::IDENTITY_CHECKING);
+                $this->importStateMachine->apply($conflictImport, ImportTransitions::RESET);
+            } else {
+                $this->logImportTransitionConstraints($this->importStateMachine, $conflictImport, ImportTransitions::RESET);
+            }
+
+        }
+        $this->em->flush();
     }
 
     /**

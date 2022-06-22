@@ -31,8 +31,6 @@ class ItemFinishService
 {
     use ImportLoggerTrait;
 
-    const LOCK_BATCH = 100;
-
     /**
      * @var EntityManagerInterface
      */
@@ -87,115 +85,6 @@ class ItemFinishService
         $this->totalBatchSize = $totalBatchSize;
         $this->householdDecoratorBuilder = $householdDecoratorBuilder;
         $this->managerRegistry = $managerRegistry;
-    }
-
-    /**
-     * @param Import $import
-     *
-     * @throws EntityNotFoundException
-     */
-    public function import(Import $import)
-    {
-        if ($import->getState() !== ImportState::IMPORTING) {
-            throw new BadMethodCallException('Wrong import status');
-        }
-
-        $statesToFinish = [
-            ImportQueueState::TO_CREATE,
-            ImportQueueState::TO_UPDATE,
-            ImportQueueState::TO_LINK,
-            ImportQueueState::TO_IGNORE,
-        ];
-
-        $itemProcessor = new ConcurrencyProcessor();
-        $itemProcessor
-            ->setBatchSize(self::LOCK_BATCH)
-            ->setMaxResultsToProcess($this->totalBatchSize)
-            ->setCountAllCallback(function() use ($import, $statesToFinish) {
-                return $this->queueRepository->count([
-                    'import' => $import,
-                    'state' => $statesToFinish,
-                ]);
-            })
-            ->setLockBatchCallback(function($runCode, $batchSize) use ($import, $statesToFinish) {
-                $this->lockImportQueue($import, $statesToFinish, $runCode, $batchSize);
-            })
-            ->setUnlockItemsCallback(function($runCode) use ($import) {
-                $this->queueRepository->unlockLockedItems($import, $runCode);
-            })
-            ->setBatchItemsCallback(function($runCode) use ($import) {
-                return $this->queueRepository->findBy([
-                    'import' => $import,
-                    'lockedBy' => $runCode,
-                ]);
-            })
-            ->setBatchCleanupCallback(function() {
-                $this->em->flush();
-            })
-            ->processItems(function(ImportQueue $item) use ($import) {
-                try {
-                    switch ($item->getState()) {
-                        case ImportQueueState::TO_CREATE:
-                            $this->finishCreationQueue($item, $import);
-                            break;
-                        case ImportQueueState::TO_UPDATE:
-                            $this->finishUpdateQueue($item, $import);
-                            break;
-                        case ImportQueueState::TO_IGNORE:
-                        case ImportQueueState::TO_LINK:
-                            $this->finishLinkQueue($item, $import);
-                            break;
-                    }
-                    $this->em->persist($item);
-                } catch (\Throwable $anyException) {
-                    if (!$this->em->isOpen()) {
-                        $this->em = $this->managerRegistry->resetManager();
-                        $item = $this->em->getRepository(ImportQueue::class)->find($item->getId());
-                    }
-                    $this->logger->error($anyException->getMessage());
-                    $item->setUnexpectedError(UnexpectedError::create($item->getState(), $anyException));
-                    $this->importQueueStateMachine->apply($item, ImportQueueTransitions::FAIL_UNEXPECTED);
-                    $this->em->persist($item);
-                    throw $anyException;
-                }
-
-            });
-        $this->em->flush();
-        if ($this->importStateMachine->can($import, ImportTransitions::FINISH)) {
-            $this->importStateMachine->apply($import, ImportTransitions::FINISH);
-
-            $this->resetOtherImports($import);
-        }
-
-        $this->em->flush();
-    }
-
-    private function lockImportQueue(Import $import, $state, string $code, int $count)
-    {
-        $this->queueRepository->lockUnlockedItems($import, $state, $count, $code);
-    }
-
-    /**
-     * @param Import $import
-     */
-    public function resetOtherImports(Import $import)
-    {
-        if ($import->getState() !== ImportState::FINISHED) {
-            throw new BadMethodCallException('Wrong import status');
-        }
-
-        $importConflicts = $this->em->getRepository(Import::class)->getConflictingImports($import);
-        $this->logImportInfo($import, count($importConflicts)." conflicting imports to reset duplicity checks");
-        foreach ($importConflicts as $conflictImport) {
-            if ($this->importStateMachine->can($conflictImport, ImportTransitions::RESET)) {
-                $this->logImportInfo($conflictImport, " reset to ".ImportState::IDENTITY_CHECKING);
-                $this->importStateMachine->apply($conflictImport, ImportTransitions::RESET);
-            } else {
-                $this->logImportTransitionConstraints($this->importStateMachine, $conflictImport, ImportTransitions::RESET);
-            }
-
-        }
-        $this->em->flush();
     }
 
     /**
