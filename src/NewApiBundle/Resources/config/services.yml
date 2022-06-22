@@ -297,6 +297,7 @@ services:
         tags: [ 'messenger.message_handler' ]
 
     NewApiBundle\Component\Import\UploadImportService:
+        public: true
         arguments:
             - '@doctrine.orm.entity_manager'
             - '%import.uploadedFilesDirectory%'

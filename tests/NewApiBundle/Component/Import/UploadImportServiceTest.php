@@ -31,12 +31,7 @@ class UploadImportServiceTest extends KernelTestCase
             ->get('doctrine')
             ->getManager();
 
-        $this->uploadService = new UploadImportService(
-            $this->entityManager,
-            $kernel->getContainer()->getParameter('import.uploadedFilesDirectory'),
-            $kernel->getContainer()->get(ImportFileValidator::class),
-            $kernel->getContainer()->get(DuplicityService::class)
-        );
+        $this->uploadService = $kernel->getContainer()->get(UploadImportService::class);
     }
 
     protected function tearDown(): void

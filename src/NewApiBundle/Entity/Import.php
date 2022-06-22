@@ -69,7 +69,7 @@ class Import
     /**
      * @var ImportFile[]|Collection
      *
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportFile", mappedBy="import", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ImportFile", mappedBy="import", cascade={"persist", "remove"})
      */
     private $importFiles;
 
