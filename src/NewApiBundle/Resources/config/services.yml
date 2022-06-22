@@ -133,11 +133,6 @@ services:
             - '@lexik_jwt_authentication.jwt_manager'
             - '@user.user_service'
 
-    NewApiBundle\Repository\ImportRepository:
-        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
-        arguments:
-            - NewApiBundle\Entity\Import
-
     NewApiBundle\Repository\Assistance\ReliefPackageRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:

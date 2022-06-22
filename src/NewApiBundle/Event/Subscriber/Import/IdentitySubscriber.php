@@ -52,13 +52,14 @@ class IdentitySubscriber implements EventSubscriberInterface
         EntityManagerInterface $entityManager,
         IdentityChecker        $identityChecker,
         int                    $batchSize,
-        MessageBusInterface    $messageBus
+        MessageBusInterface    $messageBus,
+        ImportQueueRepository  $queueRepository
     ) {
         $this->entityManager = $entityManager;
         $this->identityChecker = $identityChecker;
         $this->batchSize = $batchSize;
         $this->messageBus = $messageBus;
-        $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
+        $this->queueRepository = $queueRepository;
     }
 
     public static function getSubscribedEvents(): array
