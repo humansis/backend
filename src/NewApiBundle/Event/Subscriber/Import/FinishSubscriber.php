@@ -64,7 +64,7 @@ class FinishSubscriber implements EventSubscriberInterface
             'workflow.import.entered.'.ImportTransitions::FINISH => ['fillQueue'],
             'workflow.import.guard.'.ImportTransitions::FINISH => ['guardAllItemsAreImported'],
             'workflow.import.guard.'.ImportTransitions::IMPORT => ['guardIfThereIsOnlyOneFinishingImport', 'guardAllItemsAreReadyForImport'],
-            'workflow.import.completed.'.ImportTransitions::RESET => ['resetImport'],
+            'workflow.import.completed.'.ImportTransitions::RESET => ['resetOtherImports'],
         ];
     }
 
@@ -135,11 +135,11 @@ class FinishSubscriber implements EventSubscriberInterface
     /**
      * @param CompletedEvent $enteredEvent
      */
-    public function resetImport(CompletedEvent $enteredEvent): void
+    public function resetOtherImports(CompletedEvent $enteredEvent): void
     {
         /** @var Import $import */
         $import = $enteredEvent->getSubject();
-        $this->importReset->reset($import);
+        $this->importReset->resetOtherImports($import);
     }
 
     public function guardAllItemsAreReadyForImport(GuardEvent $event): void
