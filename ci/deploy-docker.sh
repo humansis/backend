@@ -72,11 +72,12 @@ start_app="cd /opt/humansis && sudo docker-compose pull && sudo docker-compose u
 ssh $ec2_user@$ec2_host $start_app
 
 # clean database
-echo "Cleaning database"
 if [[ $2 == "true" ]]; then
+  echo "Cleaning database"
   clean_database="cd /opt/humansis && sudo docker-compose exec -T php bash -c 'bash clean-database.sh migrations'"
   ssh $ec2_user@$ec2_host $clean_database
 elif [[ $2 == "database" ]]; then
+  echo "Cleaning database - copying ${DB_DEPLOY_NAME} database"
   clean_database="cd /opt/humansis && sudo docker-compose exec -T php bash -c 'bash clean-database.sh'"
   ssh $ec2_user@$ec2_host $clean_database
   # get database
@@ -85,6 +86,7 @@ elif [[ $2 == "database" ]]; then
   migrations="cd /opt/humansis && sudo docker-compose exec -T php bash -c 'php bin/console doctrine:migrations:migrate -n'"
   ssh $ec2_user@$ec2_host $migrations
 elif [[ $2 == "false" ]]; then
+  echo "Running migrations only, keeping database intact"
   # run database migrations
   migrations="cd /opt/humansis && sudo docker-compose exec -T php bash -c 'php bin/console doctrine:migrations:migrate -n'"
   ssh $ec2_user@$ec2_host $migrations
