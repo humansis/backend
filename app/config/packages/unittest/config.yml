@@ -6,6 +6,7 @@ framework:
         collect: false
     messenger:
         routing:
+            'NewApiBundle\Component\Import\Message\UploadFile': sync
             'NewApiBundle\Component\Import\Message\ItemBatch': sync
             'NewApiBundle\Component\Import\Message\ImportCheck': sync
 

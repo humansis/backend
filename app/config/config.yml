@@ -144,10 +144,15 @@ framework:
                 dsn: 'doctrine://default'
                 options:
                     queue_name: import_items
+            incoming_big_data:
+                dsn: 'doctrine://default'
+                options:
+                    queue_name: incoming_big_data
             sync: 'sync://'
         routing:
             'NewApiBundle\Component\Import\Message\ImportCheck': import
             'NewApiBundle\Component\Import\Message\ItemBatch': import
+            'NewApiBundle\Component\Import\Message\UploadFile': incoming_big_data
 
 sensio_framework_extra:
     router:

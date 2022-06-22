@@ -63,8 +63,7 @@ class UploadImportServiceTest extends KernelTestCase
 
         $file = new UploadedFile($uploadedFilePath, 'KHM-Import-2HH-3HHM-24HHM.ods', null, null, true);
 
-        $importFile = $this->uploadService->uploadFile($import, $file, $user);
-        $this->uploadService->load($importFile);
+        $this->uploadService->uploadFile($import, $file, $user);
 
         $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
 

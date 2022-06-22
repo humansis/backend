@@ -6,11 +6,13 @@ use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use NewApiBundle\Component\Import\DBAL\InsertQueryCollection;
 use NewApiBundle\Component\Import\Integrity;
+use NewApiBundle\Component\Import\Message\UploadFile;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Messenger\MessageBus;
 use UserBundle\Entity\User;
 
 class UploadImportService
@@ -33,10 +35,15 @@ class UploadImportService
     /** @var Integrity\DuplicityService */
     private $integrityDuplicityService;
 
-    public function __construct(EntityManagerInterface     $em,
-                                string                     $uploadDirectory,
-                                ImportFileValidator        $importFileValidator,
-                                Integrity\DuplicityService $integrityDuplicityService
+    /** @var MessageBus */
+    private $messageBus;
+
+    public function __construct(
+        EntityManagerInterface     $em,
+        string                     $uploadDirectory,
+        ImportFileValidator        $importFileValidator,
+        Integrity\DuplicityService $integrityDuplicityService,
+        MessageBus                 $messageBus
     )
     {
         $this->parser = new ImportParser();
@@ -45,6 +52,16 @@ class UploadImportService
         $this->uploadDirectory = $uploadDirectory;
         $this->importFileValidator = $importFileValidator;
         $this->integrityDuplicityService = $integrityDuplicityService;
+        $this->messageBus = $messageBus;
+    }
+
+    /**
+     * @throws \Doctrine\DBAL\ConnectionException
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     */
+    public function __invoke(ImportFile $importFile): void
+    {
+        $this->load($importFile);
     }
 
     /**
@@ -54,7 +71,7 @@ class UploadImportService
      * @throws \Doctrine\DBAL\ConnectionException
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    public function load(ImportFile $importFile): ImportFile
+    private function load(ImportFile $importFile): ImportFile
     {
         if ($importFile->isLoaded()) {
             throw new InvalidArgumentException('This import file is already loaded in database.');
@@ -109,7 +126,7 @@ class UploadImportService
      *
      * @return ImportFile
      */
-    public function uploadFile(Import $import, UploadedFile $uploadedFile, User $user): ImportFile
+    public function uploadFile(Import $import, UploadedFile $uploadedFile, User $user): void
     {
         $savedAsFilename = time().'-'.$uploadedFile->getClientOriginalName();
 
@@ -123,6 +140,6 @@ class UploadImportService
         $this->em->persist($importFile);
         $this->em->flush();
 
-        return $importFile;
+        $this->messageBus->dispatch(new UploadFile($importFile));
     }
 }

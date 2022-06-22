@@ -649,10 +649,7 @@ class ImportTest extends KernelTestCase
         $fs->copy(__DIR__.'/../../Resources/'.$filename, $uploadedFilePath, true);
 
         $file = new UploadedFile($uploadedFilePath, $filename, null, null, true);
-        $importFile = $this->uploadService->uploadFile($import, $file, $this->getUser());
-        $this->uploadService->load($importFile);
-
-        $this->assertNotNull($importFile->getId(), "ImportFile wasn't saved to DB");
+        $this->uploadService->uploadFile($import, $file, $this->getUser());
     }
 
     private function getBatchCount(Import $import, $phase)
