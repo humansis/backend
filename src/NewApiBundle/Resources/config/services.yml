@@ -318,7 +318,7 @@ services:
             - "@doctrine.orm.entity_manager"
             - "@monolog.logger.import"
 
-    NewApiBundle\Component\Import\ImportFinisher:
+    NewApiBundle\Component\Import\Finishing\ItemFinishService:
         arguments:
             - "%import.batch_size.finalization%"
             - "@doctrine.orm.entity_manager"
@@ -423,7 +423,7 @@ services:
         class: NewApiBundle\Event\Subscriber\Import\FinishSubscriber
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@NewApiBundle\Component\Import\ImportFinisher'
+            - '@NewApiBundle\Component\Import\Finishing\ItemFinishService'
             - '@NewApiBundle\Component\Import\ImportReset'
         tags:
             - { name: kernel.event_subscriber }
