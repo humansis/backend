@@ -222,16 +222,12 @@ class ImportController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        $importFiles = [];
 
         foreach ($files as $file) {
-            $importFiles[] = $uploadedFile = $this->uploadImportService->uploadFile($import, $file, $user);
-            if (empty($uploadedFile->getStructureViolations())) {
-                $this->uploadImportService->load($uploadedFile);
-            }
+            $this->uploadImportService->uploadFile($import, $file, $user);
         }
 
-        return $this->json(new Paginator($importFiles));
+        return $this->json(null, Response::HTTP_ACCEPTED);
     }
 
     /**

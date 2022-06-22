@@ -344,9 +344,7 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '%import.uploadedFilesDirectory%'
-            - '@NewApiBundle\Component\Import\ImportFileValidator'
-            - '@NewApiBundle\Component\Import\Integrity\DuplicityService'
-        public: true
+        tags: [ 'messenger.message_handler' ]
 
     NewApiBundle\Component\Import\Integrity\ItemCheckerService:
         arguments:
