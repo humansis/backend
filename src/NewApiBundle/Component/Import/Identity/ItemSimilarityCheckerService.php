@@ -1,21 +1,20 @@
 <?php
 declare(strict_types=1);
 
-namespace NewApiBundle\Component\Import;
+namespace NewApiBundle\Component\Import\Identity;
 
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Component\Import\ImportLoggerTrait;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportQueueTransitions;
-use NewApiBundle\Workflow\ImportTransitions;
-use NewApiBundle\Workflow\WorkflowTool;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 
-class SimilarityChecker
+class ItemSimilarityCheckerService
 {
     use ImportLoggerTrait;
 

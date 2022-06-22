@@ -5,20 +5,18 @@ namespace NewApiBundle\Event\Subscriber\Import;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectRepository;
-use NewApiBundle\Component\Import\IdentityChecker;
+use NewApiBundle\Component\Import\Identity;
 use NewApiBundle\Component\Import\Message\ImportCheck;
 use NewApiBundle\Component\Import\Message\ItemBatch;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
-use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportTransitions;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Event\CompletedEvent;
 use Symfony\Component\Workflow\Event\EnteredEvent;
-use Symfony\Component\Workflow\Event\EnterEvent;
 use Symfony\Component\Workflow\Event\GuardEvent;
 use Symfony\Component\Workflow\TransitionBlocker;
 
@@ -31,7 +29,7 @@ class IdentitySubscriber implements EventSubscriberInterface
     private $entityManager;
 
     /**
-     * @var IdentityChecker
+     * @var Identity\ItemCheckerService
      */
     private $identityChecker;
 
@@ -49,11 +47,11 @@ class IdentitySubscriber implements EventSubscriberInterface
     private $batchSize;
 
     public function __construct(
-        EntityManagerInterface $entityManager,
-        IdentityChecker        $identityChecker,
-        int                    $batchSize,
-        MessageBusInterface    $messageBus,
-        ImportQueueRepository  $queueRepository
+        EntityManagerInterface      $entityManager,
+        Identity\ItemCheckerService $identityChecker,
+        int                         $batchSize,
+        MessageBusInterface         $messageBus,
+        ImportQueueRepository       $queueRepository
     ) {
         $this->entityManager = $entityManager;
         $this->identityChecker = $identityChecker;

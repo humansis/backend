@@ -5,9 +5,9 @@ namespace NewApiBundle\Event\Subscriber\Import;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectRepository;
+use NewApiBundle\Component\Import\Identity;
 use NewApiBundle\Component\Import\Message\ImportCheck;
 use NewApiBundle\Component\Import\Message\ItemBatch;
-use NewApiBundle\Component\Import\SimilarityChecker;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
@@ -18,7 +18,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Event\CompletedEvent;
 use Symfony\Component\Workflow\Event\EnteredEvent;
-use Symfony\Component\Workflow\Event\EnterEvent;
 use Symfony\Component\Workflow\Event\GuardEvent;
 use Symfony\Component\Workflow\TransitionBlocker;
 
@@ -30,7 +29,7 @@ class SimilaritySubscriber implements EventSubscriberInterface
     private $entityManager;
 
     /**
-     * @var SimilarityChecker
+     * @var Identity\ItemSimilarityCheckerService
      */
     private $similarityChecker;
 
@@ -48,10 +47,10 @@ class SimilaritySubscriber implements EventSubscriberInterface
     private $batchSize;
 
     public function __construct(
-        EntityManagerInterface $entityManager,
-        SimilarityChecker      $similarityChecker,
-        int                    $batchSize,
-        MessageBusInterface    $messageBus
+        EntityManagerInterface                $entityManager,
+        Identity\ItemSimilarityCheckerService $similarityChecker,
+        int                                   $batchSize,
+        MessageBusInterface                   $messageBus
     ) {
         $this->entityManager = $entityManager;
         $this->similarityChecker = $similarityChecker;

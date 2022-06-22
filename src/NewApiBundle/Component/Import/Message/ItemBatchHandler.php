@@ -1,11 +1,9 @@
 <?php declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import\Message;
-use NewApiBundle\Component\Import\IdentityChecker;
-use NewApiBundle\Component\Import\ImportLoggerTrait;
+use NewApiBundle\Component\Import\Identity;
+use NewApiBundle\Component\Import\Integrity;
 use NewApiBundle\Component\Import\ImportQueueLoggerTrait;
-use NewApiBundle\Component\Import\IntegrityChecker;
-use NewApiBundle\Component\Import\SimilarityChecker;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
@@ -18,26 +16,26 @@ class ItemBatchHandler implements MessageHandlerInterface
 
     /** @var ImportQueueRepository */
     private $queueRepository;
-    /** @var IntegrityChecker */
+    /** @var Integrity\ItemCheckerService */
     private $integrityChecker;
-    /** @var IdentityChecker */
+    /** @var Identity\ItemCheckerService */
     private $identityChecker;
-    /** @var SimilarityChecker */
+    /** @var Identity\ItemSimilarityCheckerService */
     private $similarityChecker;
 
     /**
-     * @param LoggerInterface       $importLogger
-     * @param ImportQueueRepository $queueRepository
-     * @param IntegrityChecker      $integrityChecker
-     * @param IdentityChecker       $identityChecker
-     * @param SimilarityChecker     $similarityChecker
+     * @param LoggerInterface                       $importLogger
+     * @param ImportQueueRepository                 $queueRepository
+     * @param Integrity\ItemCheckerService          $integrityChecker
+     * @param Identity\ItemCheckerService           $identityChecker
+     * @param Identity\ItemSimilarityCheckerService $similarityChecker
      */
     public function __construct(
-        LoggerInterface       $importLogger,
-        ImportQueueRepository $queueRepository,
-        IntegrityChecker      $integrityChecker,
-        IdentityChecker       $identityChecker,
-        SimilarityChecker     $similarityChecker
+        LoggerInterface                       $importLogger,
+        ImportQueueRepository                 $queueRepository,
+        Integrity\ItemCheckerService          $integrityChecker,
+        Identity\ItemCheckerService           $identityChecker,
+        Identity\ItemSimilarityCheckerService $similarityChecker
     ) {
         $this->logger = $importLogger;
         $this->queueRepository = $queueRepository;

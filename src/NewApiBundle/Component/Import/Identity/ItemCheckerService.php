@@ -1,11 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Component\Import;
+namespace NewApiBundle\Component\Import\Identity;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\NationalId;
 use Doctrine\ORM\EntityManagerInterface;
-use NewApiBundle\Component\Import\Identity\NationalIdHashSet;
+use NewApiBundle\Component\Import\ImportLoggerTrait;
+use NewApiBundle\Component\Import\Integrity;
 use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
@@ -17,7 +18,7 @@ use NewApiBundle\Workflow\ImportQueueTransitions;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 
-class IdentityChecker
+class ItemCheckerService
 {
     use ImportLoggerTrait;
 
