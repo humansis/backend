@@ -48,8 +48,6 @@ trait CliTrait
         }
 
         $this->importService->updateStatus($import, ImportState::IMPORTING);
-        $this->assertEquals(ImportState::IMPORTING, $import->getState());
-        $this->cli('app:import:finish', $import);
         $this->assertEquals(ImportState::FINISHED, $import->getState());
     }
 
