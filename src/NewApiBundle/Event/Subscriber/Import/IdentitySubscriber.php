@@ -83,7 +83,7 @@ class IdentitySubscriber implements EventSubscriberInterface
             $this->messageBus->dispatch(ItemBatch::checkSingleItemIdentity($item));
         }
 
-        $this->messageBus->dispatch(new ImportCheck(ImportState::IDENTITY_CHECKING, $import->getId()));
+        $this->messageBus->dispatch(ImportCheck::checkIdentityComplete($import));
     }
 
     /**

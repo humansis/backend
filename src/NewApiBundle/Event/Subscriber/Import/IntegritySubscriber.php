@@ -97,7 +97,7 @@ class IntegritySubscriber implements EventSubscriberInterface
         foreach ($this->queueRepository->findByImport($import) as $item) {
             $this->messageBus->dispatch(ItemBatch::checkSingleItemIntegrity($item));
         }
-        $this->messageBus->dispatch(new ImportCheck(ImportState::INTEGRITY_CHECKING, $import->getId()));
+        $this->messageBus->dispatch(ImportCheck::checkIntegrityComplete($import));
     }
 
     /**
