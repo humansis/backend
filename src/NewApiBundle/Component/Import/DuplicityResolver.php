@@ -4,14 +4,13 @@ namespace NewApiBundle\Component\Import;
 
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Component\Import\Identity;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
-use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
-use NewApiBundle\Workflow\WorkflowTool;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 use UserBundle\Entity\User;
@@ -26,12 +25,12 @@ class DuplicityResolver
     private $em;
 
     /**
-     * @var IdentityChecker
+     * @var Identity\ItemCheckerService
      */
     private $identityChecker;
 
     /**
-     * @var SimilarityChecker
+     * @var Identity\ItemSimilarityCheckerService
      */
     private $similarityChecker;
 
@@ -46,12 +45,12 @@ class DuplicityResolver
     private $importStateMachine;
 
     public function __construct(
-        EntityManagerInterface                        $entityManager,
-        LoggerInterface                               $logger,
-        IdentityChecker                               $identityChecker,
-        SimilarityChecker                             $similarityChecker,
-        WorkflowInterface                             $importQueueStateMachine,
-        WorkflowInterface $importStateMachine
+        EntityManagerInterface                $entityManager,
+        LoggerInterface                       $logger,
+        Identity\ItemCheckerService           $identityChecker,
+        Identity\ItemSimilarityCheckerService $similarityChecker,
+        WorkflowInterface                     $importQueueStateMachine,
+        WorkflowInterface                     $importStateMachine
     ) {
         $this->em = $entityManager;
         $this->logger = $logger;

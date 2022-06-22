@@ -6,9 +6,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectRepository;
 use NewApiBundle\Component\Import\ImportInvalidFileService;
-use NewApiBundle\Component\Import\IntegrityChecker;
+use NewApiBundle\Component\Import\Integrity;
 use NewApiBundle\Component\Import\Message\ImportCheck;
-use NewApiBundle\Component\Import\Message\IntegrityBatch;
 use NewApiBundle\Component\Import\Message\ItemBatch;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
@@ -20,7 +19,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Event\CompletedEvent;
 use Symfony\Component\Workflow\Event\EnteredEvent;
-use Symfony\Component\Workflow\Event\EnterEvent;
 use Symfony\Component\Workflow\Event\Event;
 use Symfony\Component\Workflow\Event\GuardEvent;
 use Symfony\Component\Workflow\TransitionBlocker;
@@ -33,7 +31,7 @@ class IntegritySubscriber implements EventSubscriberInterface
     private $entityManager;
 
     /**
-     * @var IntegrityChecker
+     * @var Integrity\ItemCheckerService
      */
     private $integrityChecker;
 
@@ -56,15 +54,16 @@ class IntegritySubscriber implements EventSubscriberInterface
     private $batchSize;
 
     public function __construct(
-        EntityManagerInterface   $entityManager,
-        IntegrityChecker         $integrityChecker,
-        ImportInvalidFileService $importInvalidFileService,
-        int                      $batchSize,
-        MessageBusInterface      $messageBus
+        EntityManagerInterface       $entityManager,
+        Integrity\ItemCheckerService $integrityChecker,
+        ImportInvalidFileService     $importInvalidFileService,
+        int                          $batchSize,
+        MessageBusInterface          $messageBus,
+        ImportQueueRepository        $queueRepository
     ) {
         $this->entityManager = $entityManager;
         $this->integrityChecker = $integrityChecker;
-        $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
+        $this->queueRepository = $queueRepository;
         $this->importInvalidFileService = $importInvalidFileService;
         $this->batchSize = $batchSize;
         $this->messageBus = $messageBus;

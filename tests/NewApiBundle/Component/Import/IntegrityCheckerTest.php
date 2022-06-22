@@ -7,7 +7,7 @@ use NewApiBundle\Component\Import\ImportInvalidFileService;
 use NewApiBundle\Component\Import\ImportParser;
 use NewApiBundle\Component\Import\ImportTemplate;
 use NewApiBundle\Component\Import\Integrity\DuplicityService;
-use NewApiBundle\Component\Import\IntegrityChecker;
+use NewApiBundle\Component\Import\Integrity\ItemCheckerService;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueue;
@@ -24,7 +24,7 @@ class IntegrityCheckerTest extends KernelTestCase
     /** @var EntityManagerInterface */
     private static $entityManager;
 
-    /** @var IntegrityChecker */
+    /** @var \NewApiBundle\Component\Import\Integrity\ItemCheckerService */
     private static $integrityChecker;
 
     /** @var DuplicityService */
@@ -43,7 +43,7 @@ class IntegrityCheckerTest extends KernelTestCase
         $kernel = self::bootKernel();
 
         self::$entityManager = $kernel->getContainer()->get('doctrine')->getManager();
-        self::$integrityChecker = $kernel->getContainer()->get(IntegrityChecker::class);
+        self::$integrityChecker = $kernel->getContainer()->get(ItemCheckerService::class);
         self::$importInvalidFileService = $kernel->getContainer()->get(ImportInvalidFileService::class);
         self::$invalidFilesDirectory = $kernel->getContainer()->getParameter('import.invalidFilesDirectory');
         self::$integrityDuplicityService = $kernel->getContainer()->get(DuplicityService::class);
