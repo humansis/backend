@@ -84,7 +84,7 @@ class SimilaritySubscriber implements EventSubscriberInterface
         $import = $event->getSubject();
 
         foreach ($this->queueRepository->findByImport($import) as $item) {
-            $this->messageBus->dispatch(new ItemBatch(ImportState::SIMILARITY_CHECKING, [$item->getId()]));
+            $this->messageBus->dispatch(ItemBatch::checkSingleItemSimilarity($item));
         }
         $this->messageBus->dispatch(new ImportCheck(ImportState::SIMILARITY_CHECKING, $import->getId()));
     }

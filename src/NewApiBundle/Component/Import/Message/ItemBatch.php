@@ -3,6 +3,7 @@
 namespace NewApiBundle\Component\Import\Message;
 
 use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Enum\ImportState;
 
 class ItemBatch implements \JsonSerializable
 {
@@ -12,13 +13,43 @@ class ItemBatch implements \JsonSerializable
     private $queueItemIds = [];
 
     /**
-     * @param int[]  $queueItemIds
-     * @param string $checkType
+     * @param string|null $checkType
+     * @param int[]       $queueItemIds
      */
-    public function __construct(?string $checkType = null, ?array $queueItemIds=null)
+    private function __construct(?string $checkType = null, ?array $queueItemIds=null)
     {
         $this->queueItemIds = $queueItemIds;
         $this->checkType = $checkType;
+    }
+
+    /**
+     * @param ImportQueue $item
+     *
+     * @return static
+     */
+    public static function checkSingleItemIntegrity(ImportQueue $item): self
+    {
+        return new self(ImportState::INTEGRITY_CHECKING, [$item->getId()]);
+    }
+
+    /**
+     * @param ImportQueue $item
+     *
+     * @return static
+     */
+    public static function checkSingleItemIdentity(ImportQueue $item): self
+    {
+        return new self(ImportState::IDENTITY_CHECKING, [$item->getId()]);
+    }
+
+    /**
+     * @param ImportQueue $item
+     *
+     * @return static
+     */
+    public static function checkSingleItemSimilarity(ImportQueue $item): self
+    {
+        return new self(ImportState::SIMILARITY_CHECKING, [$item->getId()]);
     }
 
     /**
