@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import\Message;
+use NewApiBundle\Component\Import\Finishing;
 use NewApiBundle\Component\Import\Identity;
-use NewApiBundle\Component\Import\Integrity;
 use NewApiBundle\Component\Import\ImportQueueLoggerTrait;
+use NewApiBundle\Component\Import\Integrity;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
@@ -22,6 +23,8 @@ class ItemBatchHandler implements MessageHandlerInterface
     private $identityChecker;
     /** @var Identity\ItemSimilarityCheckerService */
     private $similarityChecker;
+    /** @var Finishing\ItemFinishService */
+    private $finisher;
 
     /**
      * @param LoggerInterface                       $importLogger
@@ -29,19 +32,22 @@ class ItemBatchHandler implements MessageHandlerInterface
      * @param Integrity\ItemCheckerService          $integrityChecker
      * @param Identity\ItemCheckerService           $identityChecker
      * @param Identity\ItemSimilarityCheckerService $similarityChecker
+     * @param Finishing\ItemFinishService           $finisher
      */
     public function __construct(
         LoggerInterface                       $importLogger,
         ImportQueueRepository                 $queueRepository,
         Integrity\ItemCheckerService          $integrityChecker,
         Identity\ItemCheckerService           $identityChecker,
-        Identity\ItemSimilarityCheckerService $similarityChecker
+        Identity\ItemSimilarityCheckerService $similarityChecker,
+        Finishing\ItemFinishService           $finisher
     ) {
         $this->logger = $importLogger;
         $this->queueRepository = $queueRepository;
         $this->integrityChecker = $integrityChecker;
         $this->identityChecker = $identityChecker;
         $this->similarityChecker = $similarityChecker;
+        $this->finisher = $finisher;
     }
 
     public function __invoke(ItemBatch $batch): void
@@ -79,6 +85,40 @@ class ItemBatchHandler implements MessageHandlerInterface
                 foreach ($items as $item) {
                     $this->logQueueInfo($item, "Similarity check");
                     $this->similarityChecker->checkOne($item);
+                }
+                break;
+            case ImportState::IMPORTING:
+                $items = $this->queueRepository->findBy([
+                    'id' => $batch->getQueueItemIds(),
+                    'state' => ImportQueueState::TO_CREATE,
+                ]);
+                foreach ($items as $item) {
+                    $this->logQueueInfo($item, "Finish by creation");
+                    $this->finisher->finishCreationQueue($item, $item->getImport());
+                }
+                $items = $this->queueRepository->findBy([
+                    'id' => $batch->getQueueItemIds(),
+                    'state' => ImportQueueState::TO_UPDATE,
+                ]);
+                foreach ($items as $item) {
+                    $this->logQueueInfo($item, "Finish by update");
+                    $this->finisher->finishUpdateQueue($item, $item->getImport());
+                }
+                $items = $this->queueRepository->findBy([
+                    'id' => $batch->getQueueItemIds(),
+                    'state' => ImportQueueState::TO_LINK,
+                ]);
+                foreach ($items as $item) {
+                    $this->logQueueInfo($item, "Finish by link");
+                    $this->finisher->finishLinkQueue($item, $item->getImport());
+                }
+                $items = $this->queueRepository->findBy([
+                    'id' => $batch->getQueueItemIds(),
+                    'state' => ImportQueueState::TO_IGNORE,
+                ]);
+                foreach ($items as $item) {
+                    $this->logQueueInfo($item, "Finish by ignore");
+                    $this->finisher->finishIgnoreQueue($item, $item->getImport());
                 }
                 break;
         }

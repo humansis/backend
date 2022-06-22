@@ -54,6 +54,16 @@ class ImportCheck implements \JsonSerializable
     }
 
     /**
+     * @param Import $import
+     *
+     * @return static
+     */
+    public static function checkImportingComplete(Import $import): self
+    {
+        return new self(ImportState::IMPORTING, $import->getId());
+    }
+
+    /**
      * @return string
      */
     public function getCheckType(): ?string

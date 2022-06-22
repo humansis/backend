@@ -3,15 +3,17 @@
 namespace NewApiBundle\Event\Subscriber\Import;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityNotFoundException;
-use NewApiBundle\Component\Import\ImportFinisher;
+use NewApiBundle\Component\Import\Finishing;
 use NewApiBundle\Component\Import\ImportReset;
+use NewApiBundle\Component\Import\Message\ImportCheck;
+use NewApiBundle\Component\Import\Message\ItemBatch;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportTransitions;
-use NewApiBundle\Workflow\WorkflowTool;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Event\CompletedEvent;
 use Symfony\Component\Workflow\Event\EnteredEvent;
 use Symfony\Component\Workflow\Event\GuardEvent;
@@ -20,9 +22,17 @@ use Symfony\Component\Workflow\TransitionBlocker;
 class FinishSubscriber implements EventSubscriberInterface
 {
     /**
-     * @var ImportFinisher
+     * @var Finishing\ItemFinishService
      */
     private $importFinisher;
+
+    /**
+     * @var ImportQueueRepository
+     */
+    private $queueRepository;
+
+    /** @var MessageBusInterface */
+    private $messageBus;
 
     /**
      * @var EntityManagerInterface
@@ -34,20 +44,64 @@ class FinishSubscriber implements EventSubscriberInterface
      */
     private $importReset;
 
-    public function __construct(EntityManagerInterface $entityManager, ImportFinisher $importFinisher, ImportReset $importReset)
-    {
+    public function __construct(
+        EntityManagerInterface      $entityManager,
+        Finishing\ItemFinishService $importFinisher,
+        ImportReset                 $importReset,
+        ImportQueueRepository       $queueRepository,
+        MessageBusInterface         $messageBus
+    ) {
         $this->importFinisher = $importFinisher;
         $this->entityManager = $entityManager;
         $this->importReset = $importReset;
+        $this->queueRepository = $queueRepository;
+        $this->messageBus = $messageBus;
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
+            'workflow.import.entered.'.ImportTransitions::FINISH => ['fillQueue'],
             'workflow.import.guard.'.ImportTransitions::FINISH => ['guardAllItemsAreImported'],
             'workflow.import.guard.'.ImportTransitions::IMPORT => ['guardIfThereIsOnlyOneFinishingImport', 'guardAllItemsAreReadyForImport'],
             'workflow.import.completed.'.ImportTransitions::RESET => ['resetImport'],
         ];
+    }
+
+    public function fillQueue(EnteredEvent $event): void
+    {
+        /** @var Import $import */
+        $import = $event->getSubject();
+
+        foreach ($this->queueRepository->findBy([
+            'import' => $import,
+            'state' => ImportQueueState::TO_CREATE,
+        ]) as $item) {
+            $this->messageBus->dispatch(ItemBatch::finishSingleItem($item));
+        }
+
+        foreach ($this->queueRepository->findBy([
+            'import' => $import,
+            'state' => ImportQueueState::TO_UPDATE,
+        ]) as $item) {
+            $this->messageBus->dispatch(ItemBatch::finishSingleItem($item));
+        }
+
+        foreach ($this->queueRepository->findBy([
+            'import' => $import,
+            'state' => ImportQueueState::TO_LINK,
+        ]) as $item) {
+            $this->messageBus->dispatch(ItemBatch::finishSingleItem($item));
+        }
+
+        foreach ($this->queueRepository->findBy([
+            'import' => $import,
+            'state' => ImportQueueState::TO_IGNORE,
+        ]) as $item) {
+            $this->messageBus->dispatch(ItemBatch::finishSingleItem($item));
+        }
+
+        $this->messageBus->dispatch(ImportCheck::checkImportingComplete($import));
     }
 
     public function guardAllItemsAreImported(GuardEvent $event)

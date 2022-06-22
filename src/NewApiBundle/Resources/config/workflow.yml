@@ -193,6 +193,7 @@ framework:
         - !php/const NewApiBundle\Enum\ImportQueueState::CREATED
         - !php/const NewApiBundle\Enum\ImportQueueState::UPDATED
         - !php/const NewApiBundle\Enum\ImportQueueState::LINKED
+        - !php/const NewApiBundle\Enum\ImportQueueState::IGNORED
         - !php/const NewApiBundle\Enum\ImportQueueState::ERROR
       transitions:
 
@@ -283,6 +284,10 @@ framework:
             - !php/const NewApiBundle\Enum\ImportQueueState::TO_IGNORE
             - !php/const NewApiBundle\Enum\ImportQueueState::TO_LINK
           to: !php/const NewApiBundle\Enum\ImportQueueState::LINKED
+        !php/const NewApiBundle\Workflow\ImportQueueTransitions::IGNORE:
+          from:
+            - !php/const NewApiBundle\Enum\ImportQueueState::TO_IGNORE
+          to: !php/const NewApiBundle\Enum\ImportQueueState::IGNORED
 
         # errors, from ALL states where is anything happening
         !php/const NewApiBundle\Workflow\ImportQueueTransitions::FAIL_UNEXPECTED:

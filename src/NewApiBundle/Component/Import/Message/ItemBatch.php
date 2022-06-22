@@ -42,6 +42,11 @@ class ItemBatch implements \JsonSerializable
         return new self(ImportState::IDENTITY_CHECKING, [$item->getId()]);
     }
 
+    public static function finishSingleItem(ImportQueue $item): self
+    {
+        return new self(ImportState::IMPORTING, [$item->getId()]);
+    }
+
     /**
      * @param ImportQueue $item
      *

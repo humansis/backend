@@ -34,7 +34,7 @@ class IdentitySubscriber implements EventSubscriberInterface
     private $identityChecker;
 
     /**
-     * @var EntityRepository|ObjectRepository|ImportQueueRepository
+     * @var ImportQueueRepository
      */
     private $queueRepository;
 
