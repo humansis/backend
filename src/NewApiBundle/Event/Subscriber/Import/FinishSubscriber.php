@@ -65,7 +65,7 @@ class FinishSubscriber implements EventSubscriberInterface
             'workflow.import.entered.'.ImportState::IMPORTING => ['fillQueue'],
             'workflow.import.guard.'.ImportTransitions::FINISH => ['guardAllItemsAreImported'],
             'workflow.import.guard.'.ImportTransitions::IMPORT => ['guardIfThereIsOnlyOneFinishingImport', 'guardAllItemsAreReadyForImport'],
-            'workflow.import.completed.'.ImportTransitions::RESET => ['resetOtherImports'],
+            'workflow.import.completed.'.ImportTransitions::FINISH => ['resetOtherImports'],
         ];
     }
 

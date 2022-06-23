@@ -429,12 +429,13 @@ class ImportTest extends KernelTestCase
         $this->userStartedFinishing($import);
 
         $import = $imports['second'];
+        $this->entityManager->refresh($import);
 
         if ($expectedDuplicities === 0) {
-            $this->userStartedIdentityCheck($import, true, $this->getBatchCount($import, 'identity_check'));
+            $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
             return; // another check doesn't have any meaning
         } else {
-            $this->userStartedIdentityCheck($import, false, $this->getBatchCount($import, 'identity_check'));
+            $this->assertEquals(ImportState::IDENTITY_CHECK_FAILED, $import->getState());
         }
 
         $stats = $this->importService->getStatistics($import);
