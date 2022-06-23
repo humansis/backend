@@ -34,7 +34,7 @@ class SelectionCriteria
      */
     public function getType(): string
     {
-        if ($this->criteriaRoot->getFieldString() === 'Personnal') {
+        if ($this->criteriaRoot->getTableString() === 'Personnal') {
             return $this->configuration['type'];
         }
         return 'table_field';
@@ -81,17 +81,17 @@ class SelectionCriteria
 
     public function hasCountrySpecificType(): bool
     {
-        return $this->criteriaRoot->getFieldString() === 'countrySpecific';
+        return $this->criteriaRoot->getTableString() === 'countrySpecific';
     }
 
     public function hasTableFieldType(): bool
     {
-        return $this->criteriaRoot->getTableString() === 'table_field';
+        return $this->getType() === 'table_field';
     }
 
     public function hasTypeOther(): bool
     {
-        return $this->criteriaRoot->getTableString() === 'other';
+        return $this->getType() === 'other';
     }
 
     public function hasVulnerabilityCriteriaType(): bool
