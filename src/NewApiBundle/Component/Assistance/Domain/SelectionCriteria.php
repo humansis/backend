@@ -34,7 +34,7 @@ class SelectionCriteria
      */
     public function getType(): string
     {
-        if ($this->criteriaRoot->getFieldString() === 'Personnal') {
+        if ($this->criteriaRoot->getTableString() === 'Personnal') {
             return $this->configuration['type'];
         }
         return 'table_field';

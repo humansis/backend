@@ -58,22 +58,8 @@ class SelectionCriteriaFactory
         $criterium->setTableString('Personnal');
 
         if (SelectionCriteriaTarget::BENEFICIARY === $input->getTarget()) {
-            if (($vulnerability = $this->getVulnerability($input->getField()))) {
-                $criterium->setConditionString(null);
-                $criterium->setTableString('vulnerabilityCriteria');
-                return $criterium;
-            }
-        }
-
-        if (SelectionCriteriaTarget::HOUSEHOLD_HEAD === $input->getTarget()) {
-            if ('disabledHeadOfHousehold' === $input->getField()) {
-                $criterium->setValueString(null);
-                return $criterium;
-            }
-
-            if ('hasValidSmartcard' === $input->getField()) {
-                $criterium->setConditionString(null);
-                $criterium->setValueString(null);
+            if ($this->getVulnerability($input->getField())) {
+                $criterium->setTableString(SelectionCriteriaField::VULNERABILITY_CRITERIA);
                 return $criterium;
             }
         }
@@ -98,10 +84,10 @@ class SelectionCriteriaFactory
             }
         }
 
-        if ('gender' === $input->getField()) {
+        if (SelectionCriteriaField::GENDER === $input->getField()) {
             $genderEnum = PersonGender::valueFromAPI($input->getValue());
-            $criterium->setFieldString('headOfHouseholdGender');
             $criterium->setValueString((PersonGender::MALE === $genderEnum) ? '1' : '0');
+            $criterium->setFieldString(SelectionCriteriaField::GENDER);
             return $criterium;
         }
 
@@ -110,16 +96,18 @@ class SelectionCriteriaFactory
 
     public function hydrate(SelectionCriteriaEntity $criteriaEntity): SelectionCriteria
     {
-        if ($criteriaEntity->getTableString() === 'countrySpecific') {
-            return new SelectionCriteria(
-                $criteriaEntity,
-                $this->configurationLoader->criteria['countrySpecific']
-            );
+        switch ($criteriaEntity->getTableString()) {
+            case SelectionCriteriaField::COUNTRY_SPECIFIC:
+                $configuration = $this->configurationLoader->criteria[SelectionCriteriaField::COUNTRY_SPECIFIC];
+                break;
+            case SelectionCriteriaField::VULNERABILITY_CRITERIA:
+                $configuration = $this->configurationLoader->criteria[SelectionCriteriaField::VULNERABILITY_CRITERIA];
+                break;
+            default:
+                $configuration = $this->configurationLoader->criteria[$criteriaEntity->getFieldString()];
         }
-        return new SelectionCriteria(
-            $criteriaEntity,
-            $this->configurationLoader->criteria[$criteriaEntity->getFieldString()]
-        );
+
+        return new SelectionCriteria($criteriaEntity, $configuration);
     }
 
     public function createGroups(iterable $inputTypes): iterable
