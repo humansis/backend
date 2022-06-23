@@ -7,15 +7,11 @@ use NewApiBundle\Utils\DateTime\Iso8601Converter;
 use NewApiBundle\Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"DistributeBeneficiaryReliefPackagesInputType", "Strict"})
- */
 class DistributeBeneficiaryReliefPackagesInputType implements InputTypeInterface
 {
     /**
      * @Assert\Type(type="string")
      * @Assert\NotBlank
-     * @Assert\NotNull
      */
     private $idNumber;
 

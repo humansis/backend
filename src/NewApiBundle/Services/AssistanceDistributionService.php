@@ -1,58 +1,20 @@
 <?php
 
-namespace DistributionBundle\Utils;
+namespace NewApiBundle\Services;
 
-use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Community;
-use BeneficiaryBundle\Entity\Institution;
-use BeneficiaryBundle\Exception\CsvParserException;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
-use CommonBundle\Entity\Location;
-use CommonBundle\Pagination\Paginator;
-use CommonBundle\Utils\LocationService;
-use DateTime;
-use DateTimeInterface;
-use DistributionBundle\DTO\VulnerabilityScore;
+use BeneficiaryBundle\Repository\CountrySpecificRepository;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\AssistanceBeneficiary;
-use DistributionBundle\Entity\ModalityType;
-use DistributionBundle\Entity\SelectionCriteria;
-use DistributionBundle\Enum\AssistanceTargetType;
-use DistributionBundle\Enum\AssistanceType;
-use DistributionBundle\Repository\AssistanceRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\NoResultException;
-use Doctrine\ORM\ORMException;
-use Exception;
-use NewApiBundle\Component\Assistance\AssistanceFactory;
-use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
-use NewApiBundle\Enum\CacheTarget;
-use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\Assistance\DistributeBeneficiaryReliefPackagesInputType;
 use NewApiBundle\InputType\Assistance\DistributeReliefPackagesInputType;
-use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\OutputType\Assistance\DistributeReliefPackagesOutputType;
 use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
-use NewApiBundle\Request\Pagination;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
-use ProjectBundle\Entity\Project;
-use Psr\Container\ContainerInterface;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
-use Symfony\Component\Serializer\SerializerInterface as Serializer;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
-use Symfony\Contracts\Cache\CacheInterface;
 use UserBundle\Entity\User;
-use VoucherBundle\Entity\Voucher;
-use function _PHPStan_8f2e45ccf\React\Promise\Stream\first;
 
 /**
  * Class AssistanceDistributionService
@@ -60,6 +22,8 @@ use function _PHPStan_8f2e45ccf\React\Promise\Stream\first;
  */
 class AssistanceDistributionService
 {
+
+    const COUNTRY_SPECIFIC_ID_NUMBER = 'Secondary ID Number';
 
     /**
      * @var ReliefPackageRepository
@@ -72,6 +36,11 @@ class AssistanceDistributionService
     private $beneficiaryRepository;
 
     /**
+     * @var CountrySpecificRepository
+     */
+    private $countrySpecificRepository;
+
+    /**
      * @var Registry
      */
      private $registry;
@@ -79,12 +48,18 @@ class AssistanceDistributionService
     /**
      * @param ReliefPackageRepository $reliefPackageRepository
      * @param BeneficiaryRepository   $beneficiaryRepository
+     * @param CountrySpecificRepository $countrySpecificRepository
      * @param Registry                $registry
      */
-    public function __construct(ReliefPackageRepository $reliefPackageRepository, BeneficiaryRepository $beneficiaryRepository, Registry $registry)
+    public function __construct(
+        ReliefPackageRepository $reliefPackageRepository,
+        BeneficiaryRepository $beneficiaryRepository,
+        CountrySpecificRepository $countrySpecificRepository,
+        Registry $registry)
     {
         $this->reliefPackageRepository = $reliefPackageRepository;
         $this->beneficiaryRepository = $beneficiaryRepository;
+        $this->countrySpecificRepository = $countrySpecificRepository;
         $this->registry = $registry;
     }
 
@@ -99,7 +74,7 @@ class AssistanceDistributionService
         foreach ($packages as $packageUpdate) {
 
             try {
-                /** @var ReliefPackage $package */
+                /** @var ReliefPackage $reliefPackage */
                 $reliefPackage = $this->reliefPackageRepository->find($packageUpdate->getId());
                 $amountToDistribute = $packageUpdate->getAmountDistributed() === null ? $reliefPackage->getCurrentUndistributedAmount() : $packageUpdate->getAmountDistributed();
 
@@ -140,7 +115,8 @@ class AssistanceDistributionService
         Assistance $assistance,
         User $distributor
     ) {
-        $beneficiaries = $this->beneficiaryRepository->findByIdentityAndProject($packageData->getIdNumber(), $assistance->getProject());
+        $countrySpecific = $this->countrySpecificRepository->findOneBy(['fieldString' => self::COUNTRY_SPECIFIC_ID_NUMBER]);
+        $beneficiaries = $this->beneficiaryRepository->findByIdentityAndProject($packageData->getIdNumber(), $assistance->getProject(), $countrySpecific);
         if (count($beneficiaries) === 0) {
             return $distributeReliefPackageOutputType->addNotFound($packageData->getIdNumber());
         }

@@ -3,19 +3,12 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller\OfflineApp\Assistance;
 
-use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Utils\AssistanceDistributionService;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Controller\OfflineApp\AbstractOfflineAppController;
-use NewApiBundle\Entity\Assistance\ReliefPackage;
-use NewApiBundle\InputType\Assistance\DistributeBeneficiaryReliefPackagesInputType;
 use NewApiBundle\InputType\Assistance\DistributeReliefPackagesInputType;
-use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
-use NewApiBundle\Workflow\ReliefPackageTransitions;
+use NewApiBundle\Services\AssistanceDistributionService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Workflow\Registry;
 
 class ReliefPackageController extends AbstractOfflineAppController
 {

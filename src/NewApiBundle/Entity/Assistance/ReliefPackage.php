@@ -258,7 +258,7 @@ class ReliefPackage
      * @return bool
      */
     public function isFullyDistributed(): bool {
-        return $this->getCurrentUndistributedAmount() == 0;
+        return round($this->getCurrentUndistributedAmount(), 2) == 0;
     }
 
     /**

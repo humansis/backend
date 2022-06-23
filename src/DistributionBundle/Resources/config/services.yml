@@ -38,9 +38,6 @@ services:
             - '@doctrine.orm.entity_manager'
             - '@service_container'
 
-    DistributionBundle\Utils\AssistanceDistributionService:
-
-
     distribution.criteria_assistance_service:
         alias: DistributionBundle\Utils\CriteriaAssistanceService
         public: true

@@ -100,4 +100,21 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
             ]
         }', $this->client->getResponse()->getContent());
     }
+
+    public function testDistributeByBeneficiaryId()
+    {
+        $assistance = $this->em->getRepository(Assistance::class)->findOneBy([], ['id' => 'asc']);
+
+        $this->request('PATCH', "/api/basic/web-app/v1/assistances/{$assistance->getId()}/relief-packages/distribute",
+            [
+                [
+                    "idNumber" => "PIN-1234"
+                ]
+            ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+    }
 }
