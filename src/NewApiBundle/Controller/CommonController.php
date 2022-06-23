@@ -161,8 +161,12 @@ class CommonController extends AbstractController
 
         $data = [];
 
-        foreach ($this->get('translator')->getCatalogue($language)->all('messages') as $key => $value) {
-            $data[$key] = $value;
+        $domains = $this->translator->getCatalogue($language)->getDomains();
+
+        foreach ($domains as $domain) {
+            foreach ($this->translator->getCatalogue($language)->all($domain) as $key => $value) {
+                $data[$key] = $value;
+            }
         }
 
         return $this->json($data);
