@@ -696,7 +696,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             throw new \InvalidArgumentException('Selection criterium isnt for Table field criterium');
         }
         $userConditionsStatement->add("hh.$field$condition :parameter$i");
-        $qb->addSelect("(CASE WHEN hh.$field$condition :parameter$i THEN hh.$field ELSE :null END) AS ".$field.$i)
+        $qb->addSelect("(CASE WHEN hh.$field$condition :parameter$i THEN hh.$field ELSE :null END) AS $field$i")
             ->setParameter('null', null);
 
         if($criterion->getField() === SelectionCriteriaField::LIVELIHOD){
@@ -714,7 +714,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         switch ($field) {
             case SelectionCriteriaField::HOUSEHOLD_SIZE:
                 $userConditionsStatement->add("SIZE(hh.beneficiaries) $condition :parameter$i");
-                $qb->addSelect("(CASE WHEN SIZE(hh.beneficiaries) $condition :parameter$i THEN SIZE(hh.beneficiaries) ELSE :null END) AS ".$field.$i)
+                $qb->addSelect("(CASE WHEN SIZE(hh.beneficiaries) $condition :parameter$i THEN SIZE(hh.beneficiaries) ELSE :null END) AS $field$i")
                     ->setParameter('null', null)
                     ->setParameter("parameter$i", $criterion->getValueString());
                 break;
