@@ -85,6 +85,8 @@ parameters:
           adms: [ Region, District, Ward, Constituency ]
           archived: false
 
+    app.translations_dir: '%kernel.project_dir%/app/Resources/translations'
+
 framework:
     #esi: ~
     translator:
