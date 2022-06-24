@@ -2,7 +2,6 @@
 
 namespace NewApiBundle\Event\Subscriber\Import;
 
-use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\ImportReset;
 use NewApiBundle\Component\Import\Message\ImportCheck;
 use NewApiBundle\Component\Import\Message\ItemBatch;
@@ -11,6 +10,7 @@ use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
+use NewApiBundle\Repository\ImportRepository;
 use NewApiBundle\Workflow\ImportTransitions;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -21,41 +21,28 @@ use Symfony\Component\Workflow\TransitionBlocker;
 
 class FinishSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var \NewApiBundle\Component\Import\ImportFinisher
-     */
-    private $importFinisher;
-
-    /**
-     * @var ImportQueueRepository
-     */
+    /** @var ImportQueueRepository */
     private $queueRepository;
+
+    /** @var ImportRepository */
+    private $importRepository;
 
     /** @var MessageBusInterface */
     private $messageBus;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
-     * @var ImportReset
-     */
+    /** @var ImportReset */
     private $importReset;
 
     public function __construct(
-        EntityManagerInterface                        $entityManager,
-        \NewApiBundle\Component\Import\ImportFinisher $importFinisher,
-        ImportReset                                   $importReset,
-        ImportQueueRepository                         $queueRepository,
-        MessageBusInterface                           $messageBus
+        ImportReset           $importReset,
+        ImportQueueRepository $queueRepository,
+        MessageBusInterface   $messageBus,
+        ImportRepository      $importRepository
     ) {
-        $this->importFinisher = $importFinisher;
-        $this->entityManager = $entityManager;
         $this->importReset = $importReset;
         $this->queueRepository = $queueRepository;
         $this->messageBus = $messageBus;
+        $this->importRepository = $importRepository;
     }
 
     public static function getSubscribedEvents(): array
@@ -63,7 +50,10 @@ class FinishSubscriber implements EventSubscriberInterface
         return [
             'workflow.import.entered.'.ImportState::IMPORTING => ['fillQueue'],
             'workflow.import.guard.'.ImportTransitions::FINISH => ['guardAllItemsAreImported'],
-            'workflow.import.guard.'.ImportTransitions::IMPORT => ['guardIfThereIsOnlyOneFinishingImport', 'guardAllItemsAreReadyForImport'],
+            'workflow.import.guard.'.ImportTransitions::IMPORT => [
+                ['guardIfThereIsOnlyOneFinishingImport', 0],
+                ['guardAllItemsAreReadyForImport', 10],
+            ],
             'workflow.import.completed.'.ImportTransitions::FINISH => ['resetOtherImports'],
         ];
     }
@@ -109,10 +99,7 @@ class FinishSubscriber implements EventSubscriberInterface
         /** @var Import $import */
         $import = $event->getSubject();
 
-        /** @var ImportQueueRepository $importQueueRepository */
-        $importQueueRepository = $this->entityManager->getRepository(ImportQueue::class);
-
-        $entriesReadyForImport = $importQueueRepository->getTotalReadyForSave($import);
+        $entriesReadyForImport = $this->queueRepository->getTotalReadyForSave($import);
         if ($entriesReadyForImport > 0) {
             $event->addTransitionBlocker(new TransitionBlocker('Import can\'t be finished because there are still ' . $entriesReadyForImport . ' entries ready for import', '0'));
         }
@@ -126,8 +113,7 @@ class FinishSubscriber implements EventSubscriberInterface
         /** @var Import $import */
         $import = $event->getSubject();
 
-        if (!$this->entityManager->getRepository(Import::class)
-            ->isCountryFreeFromImporting($import, $import->getCountryIso3())) {
+        if (!$this->importRepository->isCountryFreeFromImporting($import, $import->getCountryIso3())) {
             $event->addTransitionBlocker(new TransitionBlocker('There can be only one finishing import in country in single time.', '0'));
         }
     }
@@ -147,10 +133,7 @@ class FinishSubscriber implements EventSubscriberInterface
         /** @var Import $import */
         $import = $event->getSubject();
 
-        /** @var ImportQueueRepository $importQueueRepository */
-        $importQueueRepository = $this->entityManager->getRepository(ImportQueue::class);
-
-        if ($importQueueRepository->countByImport($import) != $importQueueRepository->getTotalReadyForSave($import)) {
+        if ($this->queueRepository->countByImport($import) != $this->queueRepository->getTotalReadyForSave($import)) {
             $event->addTransitionBlocker(new TransitionBlocker("One or more item of import #{$import->getId()} are not ready for import.", '0'));
         }
     }

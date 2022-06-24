@@ -132,15 +132,15 @@ class ImportTest extends KernelTestCase
 
         $this->assertQueueCount($expectedHouseholdCount, $import);
 
-        $this->userStartedIntegrityCheck($import, true, $this->getBatchCount($import, 'integrity_check'));
+        $this->userStartedIntegrityCheck($import, true);
 
         $this->assertQueueCount($expectedHouseholdCount, $import);
 
-        $this->userStartedIdentityCheck($import, true, $this->getBatchCount($import,'identity_check'));
+        $this->userStartedIdentityCheck($import, true);
 
         $this->assertQueueCount($expectedHouseholdCount, $import);
 
-        $this->userStartedSimilarityCheck($import, true, $this->getBatchCount($import, 'similarity_check'));
+        $this->userStartedSimilarityCheck($import, true);
 
         $this->assertQueueCount($expectedHouseholdCount, $import);
         $this->assertQueueCount($expectedHouseholdCount, $import, [ImportQueueState::TO_CREATE]);
@@ -164,11 +164,11 @@ class ImportTest extends KernelTestCase
 
         $this->assertQueueCount($expectedHouseholdCount, $import);
 
-        $this->userStartedIntegrityCheck($import, true, $this->getBatchCount($import, 'integrity_check'));
+        $this->userStartedIntegrityCheck($import, true);
 
         $this->assertQueueCount($expectedHouseholdCount, $import);
 
-        $this->userStartedIdentityCheck($import, true, $this->getBatchCount($import,'identity_check'));
+        $this->userStartedIdentityCheck($import, true);
 
         $this->assertQueueCount($expectedHouseholdCount, $import);
 
@@ -217,16 +217,16 @@ class ImportTest extends KernelTestCase
         $this->originHousehold = $this->createBlankHousehold($this->project);
         $import = $this->createImport("testFixIntegrityErrors", $this->project, $integrityWrongFile);
 
-        $this->userStartedIntegrityCheck($import, false, $this->getBatchCount($import, 'integrity_check'));
+        $this->userStartedIntegrityCheck($import, false);
 
         $this->uploadFile($import, $fixedFile);
 
-        $this->userStartedIntegrityCheck($import, true, $this->getBatchCount($import, 'integrity_check'));
+        $this->userStartedIntegrityCheck($import, true);
 
         $this->assertQueueCount($expectedHouseholdCount, $import, [ImportQueueState::VALID]);
 
-        $this->userStartedIdentityCheck($import, true, $this->getBatchCount($import,'identity_check'));
-        $this->userStartedSimilarityCheck($import, true, $this->getBatchCount($import, 'similarity_check'));
+        $this->userStartedIdentityCheck($import, true);
+        $this->userStartedSimilarityCheck($import, true);
         $this->userStartedFinishing($import);
 
         $this->assertQueueCount($expectedHouseholdCount, $import, [ImportQueueState::CREATED]);
@@ -518,14 +518,14 @@ class ImportTest extends KernelTestCase
 
         $this->entityManager->refresh($firstImport);
         $this->entityManager->refresh($secondImport);
-        $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
+        $this->assertEquals(ImportState::IDENTITY_CHECK_FAILED, $secondImport->getState());
 
         $firstImportBeneficiary = $firstImport->getImportBeneficiaries()[0]->getBeneficiary();
         $this->assertEquals(1, $firstImport->getImportBeneficiaries()->count());
         $this->assertEquals('John', $firstImportBeneficiary->getPerson()->getLocalGivenName());
 
         //check identity again on second import
-        $this->userStartedIdentityCheck($import, false);
+        $this->userStartedIdentityCheck($secondImport, false);
         $this->entityManager->refresh($secondImport);
 
         $this->assertQueueCount(1, $firstImport, [ImportQueueState::CREATED]);

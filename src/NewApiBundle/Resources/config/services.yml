@@ -467,10 +467,6 @@ services:
 
     workflow.import.finisher_subscriber:
         class: NewApiBundle\Event\Subscriber\Import\FinishSubscriber
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - '@NewApiBundle\Component\Import\ImportFinisher'
-            - '@NewApiBundle\Component\Import\ImportReset'
         tags:
             - { name: kernel.event_subscriber }
 

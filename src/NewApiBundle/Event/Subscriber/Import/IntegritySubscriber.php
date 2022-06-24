@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectRepository;
 use NewApiBundle\Component\Import\ImportInvalidFileService;
+use NewApiBundle\Component\Import\IntegrityChecker;
 use NewApiBundle\Component\Import\Message\ImportCheck;
 use NewApiBundle\Component\Import\Message\ItemBatch;
 use NewApiBundle\Entity\Import;
@@ -29,7 +30,7 @@ class IntegritySubscriber implements EventSubscriberInterface
     private $entityManager;
 
     /**
-     * @var \NewApiBundle\Component\Import\IntegrityChecker
+     * @var IntegrityChecker
      */
     private $integrityChecker;
 
@@ -52,12 +53,12 @@ class IntegritySubscriber implements EventSubscriberInterface
     private $batchSize;
 
     public function __construct(
-        EntityManagerInterface                          $entityManager,
-        \NewApiBundle\Component\Import\IntegrityChecker $integrityChecker,
-        ImportInvalidFileService                        $importInvalidFileService,
-        int                                             $batchSize,
-        MessageBusInterface                             $messageBus,
-        ImportQueueRepository                           $queueRepository
+        EntityManagerInterface   $entityManager,
+        IntegrityChecker         $integrityChecker,
+        ImportInvalidFileService $importInvalidFileService,
+        int                      $batchSize,
+        MessageBusInterface      $messageBus,
+        ImportQueueRepository    $queueRepository
     ) {
         $this->entityManager = $entityManager;
         $this->integrityChecker = $integrityChecker;

@@ -5,14 +5,17 @@ namespace NewApiBundle\Component\Import;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 use http\Exception\BadMethodCallException;
+use NewApiBundle\Component\Import\Message\ItemBatch;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
+use NewApiBundle\Repository\ImportRepository;
 use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
 use NewApiBundle\Workflow\WorkflowTool;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 
 class ImportReset
@@ -36,21 +39,29 @@ class ImportReset
     private $importQueueStateMachine;
 
     /**
-     * @var ObjectRepository|ImportQueueRepository
+     * @var ImportQueueRepository
      */
     private $queueRepository;
+
+    /**
+     * @var ImportRepository
+     */
+    private $importRepository;
 
     public function __construct(
         EntityManagerInterface $em,
         LoggerInterface        $logger,
         WorkflowInterface      $importStateMachine,
-        WorkflowInterface      $importQueueStateMachine
+        WorkflowInterface      $importQueueStateMachine,
+        ImportRepository       $importRepository,
+        ImportQueueRepository  $queueRepository
     ) {
         $this->em = $em;
-        $this->queueRepository = $this->em->getRepository(ImportQueue::class);
         $this->importStateMachine = $importStateMachine;
         $this->importQueueStateMachine = $importQueueStateMachine;
         $this->logger = $logger;
+        $this->importRepository = $importRepository;
+        $this->queueRepository = $queueRepository;
     }
 
     /**
@@ -62,12 +73,13 @@ class ImportReset
             throw new BadMethodCallException('Wrong import status');
         }
 
-        $importConflicts = $this->em->getRepository(Import::class)->getConflictingImports($import);
+        $importConflicts = $this->importRepository->getConflictingImports($import);
         $this->logImportInfo($import, count($importConflicts)." conflicting imports to reset duplicity checks");
         foreach ($importConflicts as $conflictImport) {
             if ($this->importStateMachine->can($conflictImport, ImportTransitions::RESET)) {
-                $this->logImportInfo($conflictImport, " reset to ".ImportState::IDENTITY_CHECKING);
+                $this->logImportInfo($conflictImport, "reset to another duplicity check");
                 $this->importStateMachine->apply($conflictImport, ImportTransitions::RESET);
+                $this->reset($conflictImport);
             } else {
                 $this->logImportTransitionConstraints($this->importStateMachine, $conflictImport, ImportTransitions::RESET);
             }
