@@ -29,66 +29,66 @@ parameters:
 
     # countries supported in the application
     app.countries:
-        - name: Cambodia
-          iso3: KHM
-          currency: KHR
-          language: en
-          adms: [ Province, District, Commune, Village ]
-          archived: false
+        -   name: Cambodia
+            iso3: KHM
+            currency: KHR
+            language: en
+            adms: [ Province, District, Commune, Village ]
+            archived: false
 
-        - name: Syria
-          iso3: SYR
-          currency: SYP
-          language: ar
-          adms: [ Governorate, District, Sub-District, Village/Neighbourhood ]
-          archived: false
+        -   name: Syria
+            iso3: SYR
+            currency: SYP
+            language: ar
+            adms: [ Governorate, District, Sub-District, Village/Neighbourhood ]
+            archived: false
 
-        - name: Ukraine
-          iso3: UKR
-          currency: UAH
-          language: en
-          adms: [ Region, District, Community, Settlement ]
-          archived: false
+        -   name: Ukraine
+            iso3: UKR
+            currency: UAH
+            language: en
+            adms: [ Region, District, Community, Settlement ]
+            archived: false
 
-        - name: Ukraine
-          iso3: UA1
-          currency: UAH
-          language: en
-          adms: [ Region, District, Community, Settlement ]
-          archived: true
+        -   name: Ukraine
+            iso3: UA1
+            currency: UAH
+            language: en
+            adms: [ Region, District, Community, Settlement ]
+            archived: true
 
-        - name: Ethiopia
-          iso3: ETH
-          currency: ETB
-          language: en
-          adms: [ Region, Zone, Woreda, Village ]
-          archived: false
+        -   name: Ethiopia
+            iso3: ETH
+            currency: ETB
+            language: en
+            adms: [ Region, Zone, Woreda, Village ]
+            archived: false
 
-        - name: Mongolia
-          iso3: MNG
-          currency: MNT
-          language: en
-          adms: [ Province, District, Commune, Village ]
-          archived: false
+        -   name: Mongolia
+            iso3: MNG
+            currency: MNT
+            language: en
+            adms: [ Province, District, Commune, Village ]
+            archived: false
 
-        - name: Armenia
-          iso3: ARM
-          currency: AMD
-          language: en
-          adms: [ Province, District, Commune, Village ]
-          archived: false
+        -   name: Armenia
+            iso3: ARM
+            currency: AMD
+            language: en
+            adms: [ Province, District, Commune, Village ]
+            archived: false
 
-        - name: Zambia
-          iso3: ZMB
-          currency: ZMW
-          language: en
-          adms: [ Region, District, Ward, Constituency ]
-          archived: false
+        -   name: Zambia
+            iso3: ZMB
+            currency: ZMW
+            language: en
+            adms: [ Region, District, Ward, Constituency ]
+            archived: false
 
 framework:
     #esi: ~
     translator:
-        fallbacks: ['%locale%']
+        fallbacks: [ '%locale%' ]
     secret: '%secret%'
     form: ~
     csrf_protection: ~
@@ -97,7 +97,7 @@ framework:
         enable_annotations: true
         name_converter: 'serializer.name_converter.camel_case_to_snake_case'
     templating:
-        engines: ['twig']
+        engines: [ 'twig' ]
     default_locale: '%locale%'
     trusted_hosts: ~
     session:
@@ -160,17 +160,17 @@ doctrine:
         auto_mapping: true
         dql:
             string_functions:
-                 soundex:       DoctrineExtensions\Query\Mysql\Soundex
-                 date_format:   DoctrineExtensions\Query\Mysql\DateFormat
-                 timestampdiff: DoctrineExtensions\Query\Mysql\TimestampDiff
-                 quarter: DoctrineExtensions\Query\Mysql\Quarter
-                 month: DoctrineExtensions\Query\Mysql\Month
-                 year: DoctrineExtensions\Query\Mysql\Year
-                 any_value: DoctrineExtensions\Query\Mysql\AnyValue
+                soundex: DoctrineExtensions\Query\Mysql\Soundex
+                date_format: DoctrineExtensions\Query\Mysql\DateFormat
+                timestampdiff: DoctrineExtensions\Query\Mysql\TimestampDiff
+                quarter: DoctrineExtensions\Query\Mysql\Quarter
+                month: DoctrineExtensions\Query\Mysql\Month
+                year: DoctrineExtensions\Query\Mysql\Year
+                any_value: DoctrineExtensions\Query\Mysql\AnyValue
 
             numeric_functions:
-                levenshtein:        Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinFunction
-                levenshtein_ratio:  Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinRatioFunction
+                levenshtein: Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinFunction
+                levenshtein_ratio: Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinRatioFunction
         metadata_cache_driver:
             type: array
         result_cache_driver:
@@ -182,21 +182,21 @@ doctrine:
 
 # Swiftmailer Configuration
 swiftmailer:
-    transport:  '%mailer_transport%'
-    host:       '%mailer_host%'
-    username:   '%mailer_user%'
-    password:   '%mailer_password%'
-    port:       '%mailer_port%'
+    transport: '%mailer_transport%'
+    host: '%mailer_host%'
+    username: '%mailer_user%'
+    password: '%mailer_password%'
+    port: '%mailer_port%'
     encryption: '%mailer_encryption%'
-    spool:      { type: memory }
+    spool: { type: memory }
 
 doctrine_migrations:
-    dir_name:             "%kernel.root_dir%/DoctrineMigrations"
-    namespace:            Application\Migrations
-    table_name:           migration_versions
-    name:                 Application Migrations
-    organize_migrations:  false # Version >= 1.2, possible values are: "BY_YEAR", "BY_YEAR_AND_MONTH", false
-    custom_template:      ~ # Version >= 1.2, path to your custom migrations template
+    dir_name: "%kernel.root_dir%/DoctrineMigrations"
+    namespace: Application\Migrations
+    table_name: migration_versions
+    name: Application Migrations
+    organize_migrations: false # Version >= 1.2, possible values are: "BY_YEAR", "BY_YEAR_AND_MONTH", false
+    custom_template: ~ # Version >= 1.2, path to your custom migrations template
 #    all_or_nothing:       true # we have too old doctrine version
 
 fos_user:
@@ -215,7 +215,7 @@ fos_rest:
     view:
         view_response_listener: 'force'
         formats:
-            json : true
+            json: true
         failed_validation: HTTP_BAD_REQUEST
     routing_loader: false
     serializer:
@@ -233,115 +233,114 @@ nelmio_api_doc:
 nelmio_cors:
     defaults:
         allow_credentials: true
-        allow_origin: []
-        allow_headers: ['*']
+        allow_origin: [ ]
+        allow_headers: [ '*' ]
         allow_methods: [ 'POST', 'PUT', 'PATCH', 'GET', 'DELETE', 'OPTIONS' ]
         max_age: 3600
-        expose_headers: []
-        hosts: []
+        expose_headers: [ ]
+        hosts: [ ]
         origin_regex: false
 
 distribution:
     retriever: BeneficiaryBundle\Utils\Distribution\DefaultRetriever
     # The type 'table_field' means the criteria is a real field in the target table (for eg, residencyStatus in the Beneficiary table)
     criteria: {
-            gender: {
-                type: table_field,
-                target: Beneficiary
-            },
-            dateOfBirth: {
-                type: table_field,
-                target: Beneficiary
-            },
-            residencyStatus: {
-                type: table_field,
-                target: Beneficiary
-            },
-            hasNotBeenInDistributionsSince: {
-                type: other,
-                target: Beneficiary
-            },
-            disabledHeadOfHousehold: {
-                type: other,
-                target: Head
-            },
-            hasValidSmartcard: {
-                type: other,
-                target: Head
-            },
-            headOfHouseholdDateOfBirth: {
-                type: table_field,
-                target: Head
-            },
-            headOfHouseholdGender: {
-                type: table_field,
-                target: Head
-            },
-            livelihood: {
-                type: table_field,
-                target: Household
-            },
-            foodConsumptionScore: {
-                type: table_field,
-                target: Household
-            },
-            copingStrategiesIndex: {
-                type: table_field,
-                target: Household
-            },
-            income: {
-                type: table_field,
-                target: Household
-            },
-            householdSize: {
-                type: other,
-                target: Household
-            },
-            currentLocation: {
-                type: other,
-                target: Household
-            },
-            currentAdm1: {
-                type: other,
-                target: Household
-            },
-            currentAdm2: {
-                type: other,
-                target: Household
-            },
-            currentAdm3: {
-                type: other,
-                target: Household
-            },
-            currentAdm4: {
-                type: other,
-                target: Household
-            },
-            locationType: {
-                type: other,
-                target: Household
-            },
-            campName: {
-                type: other,
-                target: Household
-            },
-            vulnerabilityCriteria: {
-                type: BeneficiaryBundle\Entity\VulnerabilityCriterion,
-                target: Beneficiary
-            },
-            countrySpecific: {
-                type: BeneficiaryBundle\Entity\CountrySpecific,
-                target: Household
-            }
+        gender: {
+            type: table_field,
+            target: Beneficiary
+        },
+        dateOfBirth: {
+            type: table_field,
+            target: Beneficiary
+        },
+        residencyStatus: {
+            type: table_field,
+            target: Beneficiary
+        },
+        hasNotBeenInDistributionsSince: {
+            type: other,
+            target: Beneficiary
+        },
+        headOfHouseholdWithDisability: {
+            type: other,
+            target: Head
+        },
+        hasValidSmartcard: {
+            type: other,
+            target: Head
+        },
+        headOfHouseholdDateOfBirth: {
+            type: table_field,
+            target: Head
+        },
+        headOfHouseholdGender: {
+            type: table_field,
+            target: Head
+        },
+        livelihood: {
+            type: table_field,
+            target: Household
+        },
+        foodConsumptionScore: {
+            type: table_field,
+            target: Household
+        },
+        copingStrategiesIndex: {
+            type: table_field,
+            target: Household
+        },
+        income: {
+            type: table_field,
+            target: Household
+        },
+        householdSize: {
+            type: other,
+            target: Household
+        },
+        currentLocation: {
+            type: other,
+            target: Household
+        },
+        currentAdm1: {
+            type: other,
+            target: Household
+        },
+        currentAdm2: {
+            type: other,
+            target: Household
+        },
+        currentAdm3: {
+            type: other,
+            target: Household
+        },
+        currentAdm4: {
+            type: other,
+            target: Household
+        },
+        locationType: {
+            type: other,
+            target: Household
+        },
+        campName: {
+            type: other,
+            target: Household
+        },
+        vulnerabilityCriteria: {
+            type: BeneficiaryBundle\Entity\VulnerabilityCriterion,
+            target: Beneficiary
+        },
+        countrySpecific: {
+            type: BeneficiaryBundle\Entity\CountrySpecific,
+            target: Household
         }
+    }
 
 services:
     acme.aws_s3.client:
         class: Aws\S3\S3Client
-        factory: [Aws\S3\S3Client, 'factory']
+        factory: [ Aws\S3\S3Client, 'factory' ]
         arguments:
-            -
-                version: latest
+            -   version: latest
                 region: '%aws_s3_region%'
                 credentials:
                     key: '%aws_access_key_id%'
@@ -373,14 +372,14 @@ knp_gaufrette:
                     directory: 'donors'
     filesystems:
         products:
-            adapter:    products
-            alias:      products_filesystem
+            adapter: products
+            alias: products_filesystem
         organization:
-            adapter:    organization
-            alias:      organization_filesystem
+            adapter: organization
+            alias: organization_filesystem
         donors:
-            adapter:    donors
-            alias:      donors_filesystem
+            adapter: donors
+            alias: donors_filesystem
 
 lexik_jwt_authentication:
     secret_key: '%kernel.project_dir%/app/config/jwt/private.pem'

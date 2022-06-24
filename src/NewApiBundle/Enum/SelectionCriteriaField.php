@@ -9,7 +9,7 @@ final class SelectionCriteriaField
         DATE_OF_BIRTH = 'dateOfBirth',
         RESIDENCY_STATUS = 'residencyStatus',
         HAS_NOT_BEEN_IN_DISTRIBUTIONS_SINCE = 'hasNotBeenInDistributionsSince',
-        DISABLED_HEAD_OF_HOUSEHOLD = 'disabledHeadOfHousehold',
+        HEAD_OF_HOUSEHOLD_WITH_DISABILITY = 'headOfHouseholdWithDisability',
         HAS_VALID_SMARTCARD = 'hasValidSmartcard',
         HEAD_OF_HOUSEHOLD_DATE_OF_BIRTH = 'headOfHouseholdDateOfBirth',
         HEAD_OF_HOUSEHOLD_GENDER = 'headOfHouseholdGender',

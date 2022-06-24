@@ -944,7 +944,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $qb->join("hhh$i.person", "prsn$i");
 
         switch ($field) {
-            case SelectionCriteriaField::DISABLED_HEAD_OF_HOUSEHOLD:
+            case SelectionCriteriaField::HEAD_OF_HOUSEHOLD_WITH_DISABILITY:
                 $this->addVulnerabilityCriterion($qb, 'hhh'.$i, (bool) $criterion->getValueString(), VulnerabilityCriteria::DISABLED,
                     $userConditionsStatement, $i);
                 break;
