@@ -14,6 +14,7 @@ use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Enum\PersonGender;
+use NewApiBundle\InputType\Assistance\Scoring\ScoringService;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\BenefciaryPatchInputType;
 use NewApiBundle\InputType\BeneficiaryExportFilterInputType;
@@ -21,6 +22,7 @@ use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiarySelectedFilterInputType;
 use NewApiBundle\InputType\NationalIdFilterInputType;
 use NewApiBundle\InputType\PhoneFilterInputType;
+use NewApiBundle\InputType\VulnerabilityScoreInputType;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -33,18 +35,23 @@ use TransactionBundle\Export\AssistanceSpreadsheetExport;
 
 class BeneficiaryController extends AbstractController
 {
-
     /**
      * @var AssistanceSpreadsheetExport
      */
     private $assistanceSpreadsheetExport;
 
     /**
+     * @var ScoringService
+     */
+    private $scoringService;
+
+    /**
      * @param AssistanceSpreadsheetExport $assistanceSpreadsheetExport
      */
-    public function __construct(AssistanceSpreadsheetExport $assistanceSpreadsheetExport)
+    public function __construct(AssistanceSpreadsheetExport $assistanceSpreadsheetExport, ScoringService $scoringService)
     {
         $this->assistanceSpreadsheetExport = $assistanceSpreadsheetExport;
+        $this->scoringService = $scoringService;
     }
 
     /**
@@ -68,11 +75,29 @@ class BeneficiaryController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function vulnerabilityScores(AssistanceCreateInputType $inputType, Pagination $pagination): JsonResponse
+    public function vulnerabilityScoresOld(AssistanceCreateInputType $inputType, Pagination $pagination): JsonResponse
     {
         $vulnerabilities = $this->get('distribution.assistance_service')->findVulnerabilityScores($inputType, $pagination);
 
         return $this->json($vulnerabilities);
+    }
+
+    /**
+     * @Rest\Post("/web-app/v2/assistances/vulnerability-scores")
+     *
+     * @param VulnerabilityScoreInputType $vulnerabilityScoreInputType
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function vulnerabilityScores(VulnerabilityScoreInputType $vulnerabilityScoreInputType, Request $request): JsonResponse
+    {
+        if (!$request->headers->has('country')) {
+            throw $this->createNotFoundException('Missing header attribute country');
+        }
+
+        $scoring = $this->scoringService->computeTotalScore($vulnerabilityScoreInputType, $request->headers->get('country'));
+
+        return $this->json(new Paginator($scoring));
     }
 
     /**

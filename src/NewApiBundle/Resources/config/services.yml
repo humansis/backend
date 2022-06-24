@@ -178,7 +178,6 @@ services:
     NewApiBundle\Controller\CommonController:
         arguments:
             - '@NewApiBundle\Component\Country\Countries'
-            - '%app.translations_dir%'
 
     NewApiBundle\Controller\DonorController:
         arguments:
@@ -458,6 +457,8 @@ services:
             - '%logs.vendorAppPath%'
             - '%logs.fieldAppPath%'
             - '%logs.lifetime%'
+
+    NewApiBundle\InputType\Assistance\Scoring\ScoringService:
 
     NewApiBundle\Services\AssistanceDistributionService:
 
