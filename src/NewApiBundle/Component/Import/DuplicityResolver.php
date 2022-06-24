@@ -4,7 +4,6 @@ namespace NewApiBundle\Component\Import;
 
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use NewApiBundle\Component\Import\Identity;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportDuplicityState;
@@ -25,12 +24,12 @@ class DuplicityResolver
     private $em;
 
     /**
-     * @var Identity\ItemCheckerService
+     * @var \NewApiBundle\Component\Import\IdentityChecker
      */
     private $identityChecker;
 
     /**
-     * @var Identity\ItemSimilarityCheckerService
+     * @var \NewApiBundle\Component\Import\SimilarityChecker
      */
     private $similarityChecker;
 
@@ -45,12 +44,12 @@ class DuplicityResolver
     private $importStateMachine;
 
     public function __construct(
-        EntityManagerInterface                $entityManager,
-        LoggerInterface                       $logger,
-        Identity\ItemCheckerService           $identityChecker,
-        Identity\ItemSimilarityCheckerService $similarityChecker,
-        WorkflowInterface                     $importQueueStateMachine,
-        WorkflowInterface                     $importStateMachine
+        EntityManagerInterface                           $entityManager,
+        LoggerInterface                                  $logger,
+        \NewApiBundle\Component\Import\IdentityChecker   $identityChecker,
+        \NewApiBundle\Component\Import\SimilarityChecker $similarityChecker,
+        WorkflowInterface                                $importQueueStateMachine,
+        WorkflowInterface                                $importStateMachine
     ) {
         $this->em = $entityManager;
         $this->logger = $logger;

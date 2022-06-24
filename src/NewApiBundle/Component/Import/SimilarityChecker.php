@@ -1,10 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace NewApiBundle\Component\Import\Identity;
+namespace NewApiBundle\Component\Import;
 
 use Doctrine\ORM\EntityManagerInterface;
-use NewApiBundle\Component\Import\ImportLoggerTrait;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
@@ -13,8 +12,9 @@ use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportQueueTransitions;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
+use function NewApiBundle\Component\Import\Identity\count;
 
-class ItemSimilarityCheckerService
+class SimilarityChecker
 {
     use ImportLoggerTrait;
 

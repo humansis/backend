@@ -1,13 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace NewApiBundle\Component\Import\Integrity;
+namespace NewApiBundle\Component\Import;
 
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\Finishing;
 use NewApiBundle\Component\Import\Integrity;
+use NewApiBundle\Component\Import\Integrity\DuplicityService;
+use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueue;
@@ -20,8 +22,9 @@ use NewApiBundle\Workflow\ImportTransitions;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
+use function NewApiBundle\Component\Import\Integrity\count;
 
-class ItemCheckerService
+class IntegrityChecker
 {
     /** @var ValidatorInterface */
     private $validator;

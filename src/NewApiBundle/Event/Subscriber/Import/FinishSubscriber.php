@@ -3,7 +3,6 @@
 namespace NewApiBundle\Event\Subscriber\Import;
 
 use Doctrine\ORM\EntityManagerInterface;
-use NewApiBundle\Component\Import\Finishing;
 use NewApiBundle\Component\Import\ImportReset;
 use NewApiBundle\Component\Import\Message\ImportCheck;
 use NewApiBundle\Component\Import\Message\ItemBatch;
@@ -23,7 +22,7 @@ use Symfony\Component\Workflow\TransitionBlocker;
 class FinishSubscriber implements EventSubscriberInterface
 {
     /**
-     * @var Finishing\ItemFinishService
+     * @var \NewApiBundle\Component\Import\ImportFinisher
      */
     private $importFinisher;
 
@@ -46,11 +45,11 @@ class FinishSubscriber implements EventSubscriberInterface
     private $importReset;
 
     public function __construct(
-        EntityManagerInterface      $entityManager,
-        Finishing\ItemFinishService $importFinisher,
-        ImportReset                 $importReset,
-        ImportQueueRepository       $queueRepository,
-        MessageBusInterface         $messageBus
+        EntityManagerInterface                        $entityManager,
+        \NewApiBundle\Component\Import\ImportFinisher $importFinisher,
+        ImportReset                                   $importReset,
+        ImportQueueRepository                         $queueRepository,
+        MessageBusInterface                           $messageBus
     ) {
         $this->importFinisher = $importFinisher;
         $this->entityManager = $entityManager;

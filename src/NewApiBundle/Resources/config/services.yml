@@ -303,23 +303,23 @@ services:
             - '%import.uploadedFilesDirectory%'
         tags: [ 'messenger.message_handler' ]
 
-    NewApiBundle\Component\Import\Integrity\ItemCheckerService:
+    NewApiBundle\Component\Import\IntegrityChecker:
         arguments:
             - "@validator"
             - "@doctrine.orm.entity_manager"
         public: true
 
-    NewApiBundle\Component\Import\Identity\ItemCheckerService:
+    NewApiBundle\Component\Import\IdentityChecker:
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@monolog.logger.import"
 
-    NewApiBundle\Component\Import\Identity\ItemSimilarityCheckerService:
+    NewApiBundle\Component\Import\SimilarityChecker:
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@monolog.logger.import"
 
-    NewApiBundle\Component\Import\Finishing\ItemFinishService:
+    NewApiBundle\Component\Import\ImportFinisher:
         arguments:
             - "%import.batch_size.finalization%"
             - "@doctrine.orm.entity_manager"
@@ -396,7 +396,7 @@ services:
         class: NewApiBundle\Event\Subscriber\Import\IntegritySubscriber
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@NewApiBundle\Component\Import\Integrity\ItemCheckerService'
+            - '@NewApiBundle\Component\Import\IntegrityChecker'
             - '@NewApiBundle\Component\Import\ImportInvalidFileService'
             - '%import.batch_size.integrity_check%'
         tags:
@@ -406,7 +406,7 @@ services:
         class: NewApiBundle\Event\Subscriber\Import\IdentitySubscriber
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@NewApiBundle\Component\Import\Identity\ItemCheckerService'
+            - '@NewApiBundle\Component\Import\IdentityChecker'
             - '%import.batch_size.identity_check%'
         tags:
             - { name: kernel.event_subscriber }
@@ -415,7 +415,7 @@ services:
         class: NewApiBundle\Event\Subscriber\Import\SimilaritySubscriber
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@NewApiBundle\Component\Import\Identity\ItemSimilarityCheckerService'
+            - '@NewApiBundle\Component\Import\SimilarityChecker'
             - '%import.batch_size.similarity_check%'
         tags:
             - { name: kernel.event_subscriber }
@@ -424,7 +424,7 @@ services:
         class: NewApiBundle\Event\Subscriber\Import\FinishSubscriber
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@NewApiBundle\Component\Import\Finishing\ItemFinishService'
+            - '@NewApiBundle\Component\Import\ImportFinisher'
             - '@NewApiBundle\Component\Import\ImportReset'
         tags:
             - { name: kernel.event_subscriber }

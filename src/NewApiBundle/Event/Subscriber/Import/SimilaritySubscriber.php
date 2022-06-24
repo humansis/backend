@@ -5,7 +5,6 @@ namespace NewApiBundle\Event\Subscriber\Import;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectRepository;
-use NewApiBundle\Component\Import\Identity;
 use NewApiBundle\Component\Import\Message\ImportCheck;
 use NewApiBundle\Component\Import\Message\ItemBatch;
 use NewApiBundle\Entity\Import;
@@ -29,7 +28,7 @@ class SimilaritySubscriber implements EventSubscriberInterface
     private $entityManager;
 
     /**
-     * @var Identity\ItemSimilarityCheckerService
+     * @var \NewApiBundle\Component\Import\SimilarityChecker
      */
     private $similarityChecker;
 
@@ -47,10 +46,10 @@ class SimilaritySubscriber implements EventSubscriberInterface
     private $batchSize;
 
     public function __construct(
-        EntityManagerInterface                $entityManager,
-        Identity\ItemSimilarityCheckerService $similarityChecker,
-        int                                   $batchSize,
-        MessageBusInterface                   $messageBus
+        EntityManagerInterface                           $entityManager,
+        \NewApiBundle\Component\Import\SimilarityChecker $similarityChecker,
+        int                                              $batchSize,
+        MessageBusInterface                              $messageBus
     ) {
         $this->entityManager = $entityManager;
         $this->similarityChecker = $similarityChecker;

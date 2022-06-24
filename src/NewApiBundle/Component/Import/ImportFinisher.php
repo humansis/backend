@@ -1,17 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Component\Import\Finishing;
+namespace NewApiBundle\Component\Import;
 
-use BadMethodCallException;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
 use NewApiBundle\Component\Import\Finishing;
-use NewApiBundle\Component\Import\ImportLoggerTrait;
+use NewApiBundle\Component\Import\Finishing\HouseholdDecoratorBuilder;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiary;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
@@ -24,7 +22,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 use UserBundle\Entity\User;
 
-class ItemFinishService
+class ImportFinisher
 {
     use ImportLoggerTrait;
 
