@@ -18,7 +18,7 @@ class Resolver
 
     public function compute(Household $household, string $scoringType): Protocol
     {
-
+        //TODO: implement
     }
 
     /**

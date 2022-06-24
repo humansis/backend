@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType\Assistance\Scoring;
 
-use BeneficiaryBundle\Model\Vulnerability\Resolver;
 use BeneficiaryBundle\Repository\HouseholdRepository;
 use DistributionBundle\DTO\VulnerabilityScore;
+use NewApiBundle\Component\Assistance\Scoring\Resolver;
 use NewApiBundle\InputType\VulnerabilityScoreInputType;
 
 final class ScoringService
@@ -24,7 +24,11 @@ final class ScoringService
         foreach ($vulnerabilityScoreInputType->getHouseholdIds() as $householdId) {
             $household = $this->householdRepository->find($householdId);
 
-            //TODO compute protocol using resolver
+            $protocol = $this->resolver->compute(
+                $household,
+                $vulnerabilityScoreInputType->getScoringType()
+            );
+
             yield new VulnerabilityScore($household, ['totalScore' => $protocol->getTotalScore()]);
         }
     }
