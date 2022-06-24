@@ -13,6 +13,7 @@ use NewApiBundle\InputType\Assistance\DistributeReliefPackagesInputType;
 use NewApiBundle\OutputType\Assistance\DistributeReliefPackagesOutputType;
 use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\Registry;
 use UserBundle\Entity\User;
 
@@ -40,6 +41,8 @@ class AssistanceDistributionService
      */
     private $countrySpecificRepository;
 
+    private $logger;
+
     /**
      * @var Registry
      */
@@ -55,12 +58,14 @@ class AssistanceDistributionService
         ReliefPackageRepository $reliefPackageRepository,
         BeneficiaryRepository $beneficiaryRepository,
         CountrySpecificRepository $countrySpecificRepository,
+        LoggerInterface $logger,
         Registry $registry)
     {
         $this->reliefPackageRepository = $reliefPackageRepository;
         $this->beneficiaryRepository = $beneficiaryRepository;
         $this->countrySpecificRepository = $countrySpecificRepository;
         $this->registry = $registry;
+        $this->logger = $logger;
     }
 
     /**
@@ -88,6 +93,7 @@ class AssistanceDistributionService
                 $distributeReliefPackageOutputType = $result['output'];
             } catch (\Throwable $ex) {
                 $distributeReliefPackageOutputType->addFailed($packageUpdate->getId(), $ex->getMessage());
+                $this->logger->error($ex->getMessage());
             }
         }
         return $distributeReliefPackageOutputType;
@@ -176,6 +182,7 @@ class AssistanceDistributionService
             $reliefPackage->isFullyDistributed() ? $distributeReliefPackageOutputType->addSuccessfullyDistributed($reliefPackage->getId(), $beneficiaryId, $idNumber) : $distributeReliefPackageOutputType->addPartiallyDistributed($reliefPackage->getId(), $beneficiaryId, $idNumber);
         } catch (\Throwable $ex) {
             $distributeReliefPackageOutputType->addFailed($reliefPackage->getId(), $ex->getMessage());
+            $this->logger->error($ex->getMessage());
         } finally {
             return ['amount' => $amount, 'output' => $distributeReliefPackageOutputType];
         }
