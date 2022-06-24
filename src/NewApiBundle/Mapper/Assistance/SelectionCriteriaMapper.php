@@ -2,7 +2,8 @@
 
 namespace NewApiBundle\Mapper\Assistance;
 
-use DistributionBundle\Entity\AssistanceSelection;
+use NewApiBundle\Component\Assistance\Domain\SelectionCriteria as SelectionCriteriaDomain;
+use NewApiBundle\Component\Assistance\SelectionCriteriaFactory;
 use NewApiBundle\Entity\Assistance\SelectionCriteria;
 use NewApiBundle\Serializer\MapperInterface;
 
@@ -10,6 +11,19 @@ class SelectionCriteriaMapper implements MapperInterface
 {
     /** @var SelectionCriteria */
     private $object;
+
+    /** @var SelectionCriteriaDomain */
+    private $criteriaDomain;
+
+    /**
+     * @var SelectionCriteriaFactory
+     */
+    private $criteriaFactory;
+
+    public function __construct(SelectionCriteriaFactory $criteriaFactory)
+    {
+        $this->criteriaFactory = $criteriaFactory;
+    }
 
     /**
      * {@inheritdoc}
@@ -26,6 +40,7 @@ class SelectionCriteriaMapper implements MapperInterface
     {
         if ($object instanceof SelectionCriteria) {
             $this->object = $object;
+            $this->criteriaDomain = $this->criteriaFactory->hydrate($object);
 
             return;
         }
@@ -62,12 +77,12 @@ class SelectionCriteriaMapper implements MapperInterface
         return $this->object->getConditionString();
     }
 
-    public function getValue(): string
+    public function getValue()
     {
         if ($this->isGenderCriterium()) {
             return (1 == $this->object->getValueString()) ? 'M' : 'F';
         }
-        return $this->object->getValueString();
+        return $this->criteriaDomain->getTypedValue();
     }
 
     public function getWeight(): int

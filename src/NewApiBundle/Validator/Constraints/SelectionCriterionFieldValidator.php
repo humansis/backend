@@ -5,8 +5,10 @@ namespace NewApiBundle\Validator\Constraints;
 
 use NewApiBundle\Component\SelectionCriteria\SelectionCriterionService;
 use NewApiBundle\Component\SelectionCriteria\Structure\Field;
+use NewApiBundle\Enum\SelectionCriteriaTarget;
 use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
 use NewApiBundle\InputType\AssistanceCreateInputType;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -37,6 +39,12 @@ class SelectionCriterionFieldValidator extends ConstraintValidator
         /** @var AssistanceCreateInputType $root */
         $root = $this->context->getRoot();
         $countryIso3 = $root->getIso3();
+
+        if (!is_string($value->getTarget()) || !in_array($value->getTarget(), SelectionCriteriaTarget::values())) {
+            $this->context->addViolation("Target should be one of ".implode(',', SelectionCriteriaTarget::values()));
+
+            return;
+        }
 
         $fields = $this->service->findFieldsByTarget($value->getTarget(), $countryIso3);
         foreach ($fields as $field) {
@@ -83,4 +91,5 @@ class SelectionCriterionFieldValidator extends ConstraintValidator
             ->atPath('value')
             ->addViolation();
     }
+
 }
