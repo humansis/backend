@@ -78,8 +78,8 @@ class ImportReset
         foreach ($importConflicts as $conflictImport) {
             if ($this->importStateMachine->can($conflictImport, ImportTransitions::RESET)) {
                 $this->logImportInfo($conflictImport, "reset to another duplicity check");
-                $this->importStateMachine->apply($conflictImport, ImportTransitions::RESET);
                 $this->reset($conflictImport);
+                $this->importStateMachine->apply($conflictImport, ImportTransitions::RESET);
             } else {
                 $this->logImportTransitionConstraints($this->importStateMachine, $conflictImport, ImportTransitions::RESET);
             }

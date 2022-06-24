@@ -53,10 +53,10 @@ class IntegritySubscriber implements EventSubscriberInterface
     private $batchSize;
 
     public function __construct(
+        int                      $batchSize,
         EntityManagerInterface   $entityManager,
         IntegrityChecker         $integrityChecker,
         ImportInvalidFileService $importInvalidFileService,
-        int                      $batchSize,
         MessageBusInterface      $messageBus,
         ImportQueueRepository    $queueRepository
     ) {

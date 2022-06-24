@@ -1,7 +1,11 @@
 <?php declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import\Message;
+use NewApiBundle\Component\Import\IdentityChecker;
+use NewApiBundle\Component\Import\ImportFinisher;
 use NewApiBundle\Component\Import\ImportQueueLoggerTrait;
+use NewApiBundle\Component\Import\IntegrityChecker;
+use NewApiBundle\Component\Import\SimilarityChecker;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
@@ -16,30 +20,30 @@ class ItemBatchHandler implements MessageHandlerInterface
 
     /** @var ImportQueueRepository */
     private $queueRepository;
-    /** @var \NewApiBundle\Component\Import\IntegrityChecker */
+    /** @var IntegrityChecker */
     private $integrityChecker;
-    /** @var \NewApiBundle\Component\Import\IdentityChecker */
+    /** @var IdentityChecker */
     private $identityChecker;
-    /** @var \NewApiBundle\Component\Import\SimilarityChecker */
+    /** @var SimilarityChecker */
     private $similarityChecker;
-    /** @var \NewApiBundle\Component\Import\ImportFinisher */
+    /** @var ImportFinisher */
     private $finisher;
 
     /**
-     * @param LoggerInterface                                  $importLogger
-     * @param ImportQueueRepository                            $queueRepository
-     * @param \NewApiBundle\Component\Import\IntegrityChecker  $integrityChecker
-     * @param \NewApiBundle\Component\Import\IdentityChecker   $identityChecker
-     * @param \NewApiBundle\Component\Import\SimilarityChecker $similarityChecker
-     * @param \NewApiBundle\Component\Import\ImportFinisher    $finisher
+     * @param LoggerInterface       $importLogger
+     * @param ImportQueueRepository $queueRepository
+     * @param IntegrityChecker      $integrityChecker
+     * @param IdentityChecker       $identityChecker
+     * @param SimilarityChecker     $similarityChecker
+     * @param ImportFinisher        $finisher
      */
     public function __construct(
-        LoggerInterface                                  $importLogger,
-        ImportQueueRepository                            $queueRepository,
-        \NewApiBundle\Component\Import\IntegrityChecker  $integrityChecker,
-        \NewApiBundle\Component\Import\IdentityChecker   $identityChecker,
-        \NewApiBundle\Component\Import\SimilarityChecker $similarityChecker,
-        \NewApiBundle\Component\Import\ImportFinisher    $finisher
+        LoggerInterface       $importLogger,
+        ImportQueueRepository $queueRepository,
+        IntegrityChecker      $integrityChecker,
+        IdentityChecker       $identityChecker,
+        SimilarityChecker     $similarityChecker,
+        ImportFinisher        $finisher
     ) {
         $this->logger = $importLogger;
         $this->queueRepository = $queueRepository;
