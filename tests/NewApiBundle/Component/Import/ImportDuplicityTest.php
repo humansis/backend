@@ -185,10 +185,6 @@ class ImportDuplicityTest extends KernelTestCase
         $this->entityManager->refresh($firstImport);
         $this->entityManager->refresh($secondImport);
 
-        //check identity again on second import
-        $this->userStartedIdentityCheck($secondImport, false);
-        $this->entityManager->refresh($secondImport);
-
         return $secondImport;
     }
 

@@ -100,7 +100,7 @@ class ItemCheckerService
                 });
             }
         }
-
+        /** @var ImportQueue $item */
         foreach ($items as $item) {
             if (count($item->getHouseholdDuplicities()) > 0) {
                 $this->logImportWarning($item->getImport(), "Found duplicity!");
@@ -111,13 +111,15 @@ class ItemCheckerService
 
                 //skip similarity check
                 $this->importQueueStateMachine->apply($item, ImportQueueTransitions::TO_CREATE);
+                $item->setSimilarityCheckedAt(new \DateTime());
             }
 
             $item->setIdentityCheckedAt(new \DateTime());
-            $this->entityManager->persist($item);
+            $this->queueRepository->save($item);
+            // $this->entityManager->persist($item);
         }
 
-        $this->entityManager->flush();
+        // $this->entityManager->flush();
     }
 
     /**
