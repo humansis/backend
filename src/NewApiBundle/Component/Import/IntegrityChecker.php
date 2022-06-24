@@ -86,12 +86,13 @@ class IntegrityChecker
 
         if ($this->hasImportValidFile($import) === false) {
             $this->importStateMachine->apply($import, ImportTransitions::FAIL_INTEGRITY);
+
             return;
         }
 
         foreach ($this->queueRepository->getItemsToIntegrityCheck($import, $batchSize) as $i => $item) {
             $this->checkOne($item);
-            if (($i+1) % 500 === 0) {
+            if (($i + 1) % 500 === 0) {
                 $this->entityManager->flush();
             }
         }
@@ -146,8 +147,8 @@ class IntegrityChecker
         foreach ($this->importLineFactory->createAll($item) as $hhm) {
             $index++;
             if ($item->hasViolations($index)) {
-                if (!$item->hasColumnViolation($index, HouseholdExportCSVService::ID_NUMBER) && !$item->hasColumnViolation($index,
-                        HouseholdExportCSVService::ID_TYPE)) {
+                if (!$item->hasColumnViolation($index, HouseholdExportCSVService::PRIMARY_ID_NUMBER) && !$item->hasColumnViolation($index,
+                        HouseholdExportCSVService::PRIMARY_ID_TYPE)) {
                     $beneficiary = $this->beneficiaryDecoratorBuilder->buildBeneficiaryIdentityInputType($hhm);
                     $this->checkFileDuplicity($item, $index, $beneficiary);
                 }
@@ -185,7 +186,7 @@ class IntegrityChecker
         $queueSize = $this->entityManager->getRepository(ImportQueue::class)
             ->count([
                 'import' => $import,
-                'state' => [ImportQueueState::NEW, ImportQueueState::INVALID, ImportQueueState::VALID]
+                'state' => [ImportQueueState::NEW, ImportQueueState::INVALID, ImportQueueState::VALID],
             ]);
 
         return $queueSize == 0;
@@ -204,6 +205,7 @@ class IntegrityChecker
             }
         }
         $column = key_exists($property, $mapping) ? $mapping[$property] : $property;
+
         return Integrity\QueueViolation::create($lineIndex, $column, $violation->getMessage(), $violation->getInvalidValue());
     }
 
@@ -241,10 +243,10 @@ class IntegrityChecker
             $idCard = $cards[0];
             $nationalIdCount = $this->duplicityService->getIdentityCount($importQueue->getImport(), $idCard);
             if ($nationalIdCount > 1) {
-                $importQueue->addViolation(Integrity\QueueViolation::create($index, HouseholdExportCSVService::ID_TYPE,
+                $importQueue->addViolation(Integrity\QueueViolation::create($index, HouseholdExportCSVService::PRIMARY_ID_TYPE,
                     'This line has ID duplicity!',
                     sprintf('%s: %s', $idCard->getType(), $idCard->getNumber())));
-                $importQueue->addViolation(Integrity\QueueViolation::create($index, HouseholdExportCSVService::ID_NUMBER,
+                $importQueue->addViolation(Integrity\QueueViolation::create($index, HouseholdExportCSVService::PRIMARY_ID_NUMBER,
                     'This line has ID duplicity!',
                     sprintf('%s: %s', $idCard->getType(), $idCard->getNumber())));
             }

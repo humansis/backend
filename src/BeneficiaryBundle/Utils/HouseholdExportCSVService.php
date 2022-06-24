@@ -11,8 +11,12 @@ use NewApiBundle\Enum\NationalIdType;
 class HouseholdExportCSVService
 {
     public const
-        ID_TYPE = 'ID Type',
-        ID_NUMBER = 'ID Number',
+        PRIMARY_ID_TYPE = 'Primary ID Type',
+        PRIMARY_ID_NUMBER = 'Primary ID Number',
+        SECONDARY_ID_TYPE = 'Secondary ID Type',
+        SECONDARY_ID_NUMBER = 'Secondary ID Number',
+        TERNARY_ID_TYPE = 'Ternary ID Type',
+        TERNARY_ID_NUMBER = 'Ternary ID Number',
         HEAD = 'Head';
 
     /** @var EntityManagerInterface */
@@ -60,8 +64,12 @@ class HouseholdExportCSVService
         'Prefix phone 2' => '',
         'Number phone 2' => '',
         'Proxy phone 2' => '',
-        self::ID_TYPE => '',
-        self::ID_NUMBER => '',
+        self::PRIMARY_ID_TYPE => '',
+        self::PRIMARY_ID_NUMBER => '',
+        self::SECONDARY_ID_TYPE => '',
+        self::SECONDARY_ID_NUMBER => '',
+        self::TERNARY_ID_TYPE => '',
+        self::TERNARY_ID_NUMBER => '',
         'Shelter status' => '',
         'Assets' => '',
         'Debt Level' => '',
@@ -118,8 +126,12 @@ class HouseholdExportCSVService
         'Prefix phone 2' => '',
         'Number phone 2' => '',
         'Proxy phone 2' => '',
-        self::ID_TYPE => '',
-        self::ID_NUMBER => '',
+        self::PRIMARY_ID_TYPE => '',
+        self::PRIMARY_ID_NUMBER => '',
+        self::SECONDARY_ID_TYPE => '',
+        self::SECONDARY_ID_NUMBER => '',
+        self::TERNARY_ID_TYPE => '',
+        self::TERNARY_ID_NUMBER => '',
         'Shelter status' => '',
         'Assets' => '',
         'Debt Level' => '',
@@ -176,8 +188,12 @@ class HouseholdExportCSVService
         'Prefix phone 2' => '',
         'Number phone 2' => '',
         'Proxy phone 2' => '',
-        self::ID_TYPE => '',
-        self::ID_NUMBER => '',
+        self::PRIMARY_ID_TYPE => '',
+        self::PRIMARY_ID_NUMBER => '',
+        self::SECONDARY_ID_TYPE => '',
+        self::SECONDARY_ID_NUMBER => '',
+        self::TERNARY_ID_TYPE => '',
+        self::TERNARY_ID_NUMBER => '',
         'Shelter status' => '',
         'Assets' => '',
         'Debt Level' => '',
@@ -234,8 +250,12 @@ class HouseholdExportCSVService
         'Prefix phone 2' => "'+X",
         'Number phone 2' => 'Number',
         'Proxy phone 2' => 'Y / N (Proxy)',
-        self::ID_TYPE => '"TypeAsString"',
-        self::ID_NUMBER => 'Number',
+        self::PRIMARY_ID_TYPE => 'TypeAsString',
+        self::PRIMARY_ID_NUMBER => 'String',
+        self::SECONDARY_ID_TYPE => 'TypeAsString',
+        self::SECONDARY_ID_NUMBER => 'String',
+        self::TERNARY_ID_TYPE => 'TypeAsString',
+        self::TERNARY_ID_NUMBER => 'String',
         'Shelter status' => 'String',
         'Assets' => 'Comma separated strings',
         'Debt Level' => 'Number',
@@ -292,8 +312,12 @@ class HouseholdExportCSVService
         'Prefix phone 2' => 'prefixPhone2',
         'Number phone 2' => 'numberPhone2',
         'Proxy phone 2' => 'proxyPhone2',
-        self::ID_TYPE => 'idType',
-        self::ID_NUMBER => 'idNumber',
+        self::PRIMARY_ID_TYPE => 'primaryIdType',
+        self::PRIMARY_ID_NUMBER => 'primaryIdNumber',
+        self::SECONDARY_ID_TYPE => 'secondaryIdType',
+        self::SECONDARY_ID_NUMBER => 'secondaryIdNumber',
+        self::TERNARY_ID_TYPE => 'ternaryIdType',
+        self::TERNARY_ID_NUMBER => 'ternaryIdNumber',
         'Shelter status' => 'shelterStatus',
         'Assets' => 'assets',
         'Debt Level' => 'debtLevel',
@@ -310,7 +334,7 @@ class HouseholdExportCSVService
         'M 18 - 59' => 'm18',
         'M 60+' => 'm60',
     ];
-    
+
     public function __construct(EntityManagerInterface $entityManager, ExportService $exportService)
     {
         $this->em = $entityManager;
@@ -324,7 +348,7 @@ class HouseholdExportCSVService
      */
     private function getCountrySpecifics($countryIso3)
     {
-        return $this->em->getRepository(CountrySpecific::class)->findBy(['countryIso3' => $countryIso3], ['id'=>'asc']);
+        return $this->em->getRepository(CountrySpecific::class)->findBy(['countryIso3' => $countryIso3], ['id' => 'asc']);
     }
 
     /**

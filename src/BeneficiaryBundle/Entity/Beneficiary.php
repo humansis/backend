@@ -104,6 +104,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Get HHId.
      * @SymfonyGroups({"FullReceivers", "ValidatedAssistance", "FullBooklet", "FullBeneficiary"})
+     *
      * @return int
      */
     public function getHouseholdId(): ?int
@@ -119,13 +120,13 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         return $this->person;
     }
 
-
     /**
      * Set enGivenName.
-     * @deprecated
+     *
      * @param string|null $enGivenName
      *
      * @return Beneficiary
+     * @deprecated
      */
     public function setEnGivenName($enGivenName): self
     {
@@ -136,9 +137,10 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Get enGivenName.
+     *
+     * @return string|null
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedAssistance", "FullBooklet", "FullBeneficiary"})
-     * @return string|null
      */
     public function getEnGivenName(): ?string
     {
@@ -147,10 +149,11 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Set enFamilyName.
-     * @deprecated
+     *
      * @param string|null $enFamilyName
      *
      * @return Beneficiary
+     * @deprecated
      */
     public function setEnFamilyName($enFamilyName): self
     {
@@ -161,9 +164,10 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Get enFamilyName.
+     *
+     * @return string|null
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedAssistance", "FullBeneficiary"})
-     * @return string|null
      */
     public function getEnFamilyName(): ?string
     {
@@ -172,22 +176,25 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Set localGivenName.
-     * @deprecated
+     *
      * @param string|null $localGivenName
      *
      * @return Beneficiary
+     * @deprecated
      */
     public function setLocalGivenName($localGivenName): self
     {
         $this->person->setLocalGivenName($localGivenName);
+
         return $this;
     }
 
     /**
      * Get localGivenName.
+     *
+     * @return string|null
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedAssistance", "FullBooklet", "FullBeneficiary"})
-     * @return string|null
      */
     public function getLocalGivenName(): ?string
     {
@@ -196,10 +203,11 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Set localFamilyName.
-     * @deprecated
+     *
      * @param string|null $localFamilyName
      *
      * @return Beneficiary
+     * @deprecated
      */
     public function setLocalFamilyName($localFamilyName): self
     {
@@ -210,9 +218,10 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Get localFamilyName.
+     *
+     * @return string|null
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedAssistance", "FullBeneficiary"})
-     * @return string|null
      */
     public function getLocalFamilyName(): ?string
     {
@@ -221,23 +230,26 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Set gender.
-     * @deprecated
+     *
      * @param int|null $gender one of Person::GENDER_*
      *
      * @return Beneficiary
+     * @deprecated
      */
     public function setGender($gender): self
     {
         $this->person->setGender($gender);
+
         return $this;
     }
 
     /**
      * Get gender.
+     *
+     * @return string|null one of Person::GENDER_*
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedAssistance", "FullBeneficiary"})
      *
-     * @return string|null one of Person::GENDER_*
      */
     public function getGender(): ?string
     {
@@ -246,10 +258,11 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Set dateOfBirth.
-     * @deprecated
+     *
      * @param DateTime|null $dateOfBirth
      *
      * @return Beneficiary
+     * @deprecated
      */
     public function setDateOfBirth($dateOfBirth): self
     {
@@ -260,8 +273,9 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Get dateOfBirth.
-     * @deprecated
+     *
      * @return DateTime|null
+     * @deprecated
      */
     public function getDateOfBirthObject(): ?\DateTimeInterface
     {
@@ -269,9 +283,9 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     }
 
     /**
+     * @return string|null
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedAssistance", "FullBeneficiary"})
-     * @return string|null
      */
     public function getDateOfBirth(): ?string
     {
@@ -378,10 +392,11 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Add phone.
-     * @deprecated
+     *
      * @param Phone $phone
      *
      * @return Beneficiary
+     * @deprecated
      */
     public function addPhone(Phone $phone): self
     {
@@ -392,10 +407,11 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Remove phone.
-     * @deprecated
+     *
      * @param Phone $phone
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @deprecated
      */
     public function removePhone(Phone $phone): bool
     {
@@ -404,9 +420,10 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Get phones.
+     *
+     * @return Collection
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedAssistance", "FullBeneficiary"})
-     * @return Collection
      */
     public function getPhones(): Collection
     {
@@ -415,10 +432,11 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Set phones.
-     * @deprecated
+     *
      * @param $collection
      *
      * @return Beneficiary
+     * @deprecated
      */
     public function setPhones(Collection $collection = null): self
     {
@@ -429,10 +447,11 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Set nationalId.
-     * @deprecated
+     *
      * @param  $collection
      *
      * @return Beneficiary
+     * @deprecated
      */
     public function setNationalIds(Collection $collection = null): self
     {
@@ -443,10 +462,11 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Add nationalId.
-     * @deprecated
+     *
      * @param NationalId $nationalId
      *
      * @return Beneficiary
+     * @deprecated
      */
     public function addNationalId(NationalId $nationalId): self
     {
@@ -457,10 +477,11 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Remove nationalId.
-     * @deprecated
+     *
      * @param NationalId $nationalId
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @deprecated
      */
     public function removeNationalId(NationalId $nationalId): bool
     {
@@ -469,9 +490,10 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Get nationalIds.
+     *
+     * @return Collection
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedAssistance", "FullBeneficiary"})
-     * @return Collection
      */
     public function getNationalIds(): Collection
     {
@@ -530,15 +552,17 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     public function setResidencyStatus($residencyStatus): self
     {
         $this->residencyStatus = $residencyStatus;
+
         return $this;
     }
 
     /**
      * Set profile.
-     * @deprecated
+     *
      * @param Profile|null $profile
      *
      * @return Beneficiary
+     * @deprecated
      */
     public function setProfile(Profile $profile = null): self
     {
@@ -549,9 +573,10 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Get profile.
+     *
+     * @return Profile|null
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "FullBeneficiary"})
-     * @return Profile|null
      */
     public function getProfile(): ?Profile
     {
@@ -560,10 +585,11 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Set referral.
-     * @deprecated
+     *
      * @param Referral|null $referral
      *
      * @return Beneficiary
+     * @deprecated
      */
     public function setReferral(Referral $referral = null)
     {
@@ -574,18 +600,19 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Get referral.
+     *
+     * @return Referral|null
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "ValidatedAssistance", "FullBeneficiary"})
-     * @return Referral|null
      */
     public function getReferral(): ?Referral
     {
         return $this->person->getReferral();
     }
 
-
     /**
      * Returns an array representation of this class in order to prepare the export
+     *
      * @return array
      */
     public function getMappedValueForExport(): array
@@ -613,14 +640,23 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         $valuescriteria = join(',', $valuescriteria);
 
         // Recover nationalID from nationalID object
-        $typenationalID = [];
-        $valuesnationalID = [];
+        /** @var NationalId $primaryId */
+        $primaryId = null;
+        /** @var NationalId $primaryId */
+        $secondaryId = null;
+        /** @var NationalId $primaryId */
+        $ternaryId = null;
         foreach ($this->getNationalIds()->getValues() as $value) {
-            array_push($typenationalID, $value->getIdType());
-            array_push($valuesnationalID, $value->getIdNumber());
+            if ($value->getPriority() === 1) {
+                $primaryId = $value;
+            }
+            if ($value->getPriority() === 2) {
+                $secondaryId = $value;
+            }
+            if ($value->getPriority() === 3) {
+                $ternaryId = $value;
+            }
         }
-        $typenationalID = join(',', $typenationalID);
-        $valuesnationalID = join(',', $valuesnationalID);
 
         //Recover country specifics for the household
         $valueCountrySpecific = [];
@@ -716,8 +752,12 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
             "prefix phone 2" => $prefixphones[1],
             "phone 2" => $valuesphones[1],
             "proxy phone 2" => $proxyphones[1],
-            "ID Type" => $typenationalID,
-            "ID Number" => $valuesnationalID,
+            "primary ID type" => $primaryId ? $primaryId->getIdType() : '',
+            "primary ID number" => $primaryId ? $primaryId->getIdNumber() : '',
+            "secondary ID type" => $secondaryId ? $secondaryId->getIdType() : '',
+            "secondary ID number" => $secondaryId ? $secondaryId->getIdNumber() : '',
+            "ternary ID type" => $ternaryId ? $ternaryId->getIdType() : '',
+            "ternary ID number" => $ternaryId ? $ternaryId->getIdNumber() : '',
             "Assets" => implode(', ', $assets),
             "Shelter Status" => $shelterStatus,
             "Debt Level" => $this->getHousehold()->getDebtLevel(),
@@ -838,7 +878,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
         $referralInfo = [
             "Referral Type" => $referral_type ? Referral::REFERRALTYPES[$referral_type] : null,
-            "Referral Comment" => $referral_comment
+            "Referral Comment" => $referral_comment,
         ];
 
         return array_merge($this->getCommonHouseholdExportFields(), $this->getCommonBeneficiaryExportFields(), $referralInfo);
@@ -846,6 +886,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Returns age of beneficiary in years
+     *
      * @return int|null
      */
     public function getAge(): ?int
@@ -878,9 +919,10 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Get localParentsName.
+     *
+     * @return string|null
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
-     * @return string|null
      */
     public function getLocalParentsName(): ?string
     {
@@ -889,9 +931,11 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Set localParentsName.
-     * @deprecated
+     *
      * @param string|null $localParentsName
+     *
      * @return Beneficiary
+     * @deprecated
      */
     public function setLocalParentsName(?string $localParentsName): self
     {
@@ -902,9 +946,10 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Get enParentsName.
+     *
+     * @return string|null
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "SmallHousehold","FullBeneficiary"})
-     * @return string|null
      */
     public function getEnParentsName(): ?string
     {
@@ -913,7 +958,9 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Set enParentsName.
+     *
      * @param string|null $enParentsName
+     *
      * @return Beneficiary
      * @deprecated
      */
@@ -923,7 +970,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
         return $this;
     }
-
 
     public function hasVulnerabilityCriteria(string $vulnerabilityCriteria): bool
     {

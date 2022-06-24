@@ -223,12 +223,32 @@ class ImportLine
     /**
      * @Enum(enumClass="NewApiBundle\Enum\NationalIdType", groups={"household", "member"})
      */
-    public $idType;
+    public $primaryIdType;
 
     /**
      * @Assert\Type("scalar", groups={"household", "member"})
      */
-    public $idNumber;
+    public $primaryIdNumber;
+
+    /**
+     * @Enum(enumClass="NewApiBundle\Enum\NationalIdType", groups={"household", "member"})
+     */
+    public $secondaryIdType;
+
+    /**
+     * @Assert\Type("scalar", groups={"household", "member"})
+     */
+    public $secondaryIdNumber;
+
+    /**
+     * @Enum(enumClass="NewApiBundle\Enum\NationalIdType", groups={"household", "member"})
+     */
+    public $ternaryIdType;
+
+    /**
+     * @Assert\Type("scalar", groups={"household", "member"})
+     */
+    public $ternaryIdNumber;
 
     /**
      * @Enum(enumClass="NewApiBundle\Enum\HouseholdShelterStatus", groups={"household", "member"})
@@ -382,12 +402,12 @@ class ImportLine
             }
         }
 
-        $countrySpecifics = $entityManager->getRepository(CountrySpecific::class)->findBy(['countryIso3' => $countryIso3], ['id'=>'asc']);
+        $countrySpecifics = $entityManager->getRepository(CountrySpecific::class)->findBy(['countryIso3' => $countryIso3], ['id' => 'asc']);
         foreach ($countrySpecifics as $countrySpecific) {
             if (isset($content[$countrySpecific->getFieldString()]) && $content[$countrySpecific->getFieldString()][CellParameters::DATA_TYPE] !== DataType::TYPE_NULL) {
                 $this->countrySpecifics[$countrySpecific->getId()] = [
                     'countrySpecific' => $countrySpecific,
-                    'value' =>  $content[$countrySpecific->getFieldString()][CellParameters::VALUE],
+                    'value' => $content[$countrySpecific->getFieldString()][CellParameters::VALUE],
                 ];
             }
         }
@@ -425,13 +445,12 @@ class ImportLine
         return !$this->numberPhone2 || $this->prefixPhone2;
     }
 
-    
     /**
      * @Assert\IsTrue(message="Camp must have defined both Tent number and Camp name", payload={"propertyPath"="campName"}, groups={"household", "member"})
      */
     public function isCampValidOrEmpty(): bool
     {
-       return $this->isCampValid()
+        return $this->isCampValid()
             xor ($this->isEmpty($this->tentNumber) && $this->isEmpty($this->campName));
     }
 
@@ -454,7 +473,8 @@ class ImportLine
         return (!$this->isEmpty($this->addressNumber)) && !$this->isEmpty($this->addressPostcode) && !$this->isEmpty($this->addressStreet);
     }
 
-    private function isEmpty($value) {
+    private function isEmpty($value)
+    {
         return "" === trim((string) $value);
     }
 
@@ -491,6 +511,7 @@ class ImportLine
         $locationsArray = [EnumTrait::normalizeValue($this->adm1)];
 
         $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames($this->countryIso3, $locationsArray);
+
         return null !== $location;
     }
 
@@ -506,6 +527,7 @@ class ImportLine
         $locationsArray = [EnumTrait::normalizeValue($this->adm1), EnumTrait::normalizeValue($this->adm2)];
 
         $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames($this->countryIso3, $locationsArray);
+
         return null !== $location;
     }
 
@@ -521,6 +543,7 @@ class ImportLine
         $locationsArray = [EnumTrait::normalizeValue($this->adm1), EnumTrait::normalizeValue($this->adm2), EnumTrait::normalizeValue($this->adm3)];
 
         $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames($this->countryIso3, $locationsArray);
+
         return null !== $location;
     }
 
@@ -536,31 +559,80 @@ class ImportLine
         $locationsArray = [EnumTrait::normalizeValue($this->adm1), EnumTrait::normalizeValue($this->adm2), EnumTrait::normalizeValue($this->adm3), EnumTrait::normalizeValue($this->adm4)];
 
         $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames($this->countryIso3, $locationsArray);
+
         return null !== $location;
     }
 
     /**
-     * @Assert\IsTrue(message="When ID Number is filled, ID type has to be filled to.", payload={"propertyPath"="idType"}, groups={"household", "member"})
+     * @Assert\IsTrue(message="When ID Number is filled, ID type has to be filled to.", payload={"propertyPath"="primaryIdType"}, groups={"household", "member"})
      */
-    public function isIdTypeCorrectlyFilled(): bool
+    public function isPrimaryIdTypeCorrectlyFilled(): bool
     {
-        if (null === $this->idNumber) {
+        if (null === $this->primaryIdNumber) {
             return true;
         }
 
-        return (null !== $this->idType);
+        return (null !== $this->primaryIdType);
     }
 
     /**
-     * @Assert\IsTrue(message="When ID Type is filled, ID number has to be filled to.", payload={"propertyPath"="idNumber"}, groups={"household", "member"})
+     * @Assert\IsTrue(message="When ID Type is filled, ID number has to be filled to.", payload={"propertyPath"="primaryIdNumber"}, groups={"household", "member"})
      */
     public function isIdNumberCorrectlyFilled(): bool
     {
-        if (null === $this->idType) {
+        if (null === $this->primaryIdType) {
             return true;
         }
 
-        return (null !== $this->idNumber);
+        return (null !== $this->primaryIdNumber);
+    }
+
+    /**
+     * @Assert\IsTrue(message="When ID Number is filled, ID type has to be filled to.", payload={"propertyPath"="secondaryIdType"}, groups={"household", "member"})
+     */
+    public function isSecondaryIdTypeCorrectlyFilled(): bool
+    {
+        if (null === $this->secondaryIdNumber) {
+            return true;
+        }
+
+        return (null !== $this->secondaryIdType);
+    }
+
+    /**
+     * @Assert\IsTrue(message="When ID Type is filled, ID number has to be filled to.", payload={"propertyPath"="secondaryIdNumber"}, groups={"household", "member"})
+     */
+    public function isSecondaryIdNumberCorrectlyFilled(): bool
+    {
+        if (null === $this->secondaryIdType) {
+            return true;
+        }
+
+        return (null !== $this->secondaryIdNumber);
+    }
+
+    /**
+     * @Assert\IsTrue(message="When ID Number is filled, ID type has to be filled to.", payload={"propertyPath"="ternaryIdType"}, groups={"household", "member"})
+     */
+    public function isTernaryIdTypeCorrectlyFilled(): bool
+    {
+        if (null === $this->ternaryIdNumber) {
+            return true;
+        }
+
+        return (null !== $this->ternaryIdType);
+    }
+
+    /**
+     * @Assert\IsTrue(message="When ID Type is filled, ID number has to be filled to.", payload={"propertyPath"="ternaryIdNumber"}, groups={"household", "member"})
+     */
+    public function isTernaryIdNumberCorrectlyFilled(): bool
+    {
+        if (null === $this->ternaryIdType) {
+            return true;
+        }
+
+        return (null !== $this->ternaryIdNumber);
     }
 
     /**
@@ -612,5 +684,29 @@ class ImportLine
     public function getSupportDateReceived(): \DateTime
     {
         return ImportDateConverter::toDatetime($this->supportDateReceived);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasPrimaryId()
+    {
+        return isset($this->primaryIdNumber) && isset($this->primaryIdType);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasSecondaryId()
+    {
+        return isset($this->secondaryIdNumber) && isset($this->secondaryIdType);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasTernaryId()
+    {
+        return isset($this->ternaryIdNumber) && isset($this->ternaryIdType);
     }
 }

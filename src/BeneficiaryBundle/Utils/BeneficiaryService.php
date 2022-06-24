@@ -104,9 +104,9 @@ class BeneficiaryService
         $this->profileRepository = $profileRepository;
     }
 
-
     /**
      * Get all vulnerability criteria
+     *
      * @return array
      */
     public function getAllVulnerabilityCriteria(): array
@@ -244,8 +244,7 @@ class BeneficiaryService
             ->setLocalGivenName($inputType->getLocalGivenName())
             ->setLocalParentsName($inputType->getLocalParentsName())
             ->setUpdatedOn(new \DateTime())
-            ->setProfile(new Profile())
-        ;
+            ->setProfile(new Profile());
         $person->getProfile()->setPhoto('');
 
         foreach ($inputType->getPhones() as $phoneInputType) {
@@ -283,8 +282,9 @@ class BeneficiaryService
 
     /**
      * @param Household $household
-     * @param array $beneficiaryArray
-     * @param $flush
+     * @param array     $beneficiaryArray
+     * @param           $flush
+     *
      * @return Beneficiary|null|object
      * @throws \Exception
      * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
@@ -316,11 +316,10 @@ class BeneficiaryService
             unset($beneficiaryArray['national_id_type']);
             unset($beneficiaryArray['national_id_number']);
         }
-        
+
         if (strrpos($beneficiaryArray['date_of_birth'], '/') !== false) {
             $beneficiaryArray['date_of_birth'] = str_replace('/', '-', $beneficiaryArray['date_of_birth']);
         }
- 
 
         $this->requestValidator->validate(
             "beneficiary",
@@ -337,7 +336,7 @@ class BeneficiaryService
             if ($beneficiary->getHousehold() !== $household) {
                 throw new \Exception("You are trying to update a beneficiary in the wrong household.");
             }
-            
+
             // Clear vulnerability criteria, phones and national id
             $beneficiary->setVulnerabilityCriteria(null);
             $items = $this->phoneRepository->findByPerson($beneficiary->getPerson());
@@ -384,7 +383,6 @@ class BeneficiaryService
             throw new \Exception($errorsMessage);
         }
 
-
         foreach ($beneficiaryArray["vulnerability_criteria"] as $vulnerability_criterion) {
             $beneficiary->addVulnerabilityCriterion($this->getVulnerabilityCriterion($vulnerability_criterion["id"]));
         }
@@ -415,6 +413,7 @@ class BeneficiaryService
 
     /**
      * @param $vulnerabilityCriterionId
+     *
      * @return VulnerabilityCriterion
      * @throws \Exception
      */
@@ -430,13 +429,15 @@ class BeneficiaryService
         if (!$vulnerabilityCriterion instanceof VulnerabilityCriterion) {
             throw new \Exception("Vulnerability $vulnerabilityCriterionId doesn't exist.");
         }
+
         return $vulnerabilityCriterion;
     }
 
     /**
      * @param Beneficiary $beneficiary
-     * @param array $phoneArray
-     * @param $flush
+     * @param array       $phoneArray
+     * @param             $flush
+     *
      * @return Phone|null|object
      * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
@@ -447,7 +448,7 @@ class BeneficiaryService
         } elseif ($phoneArray['proxy'] && $phoneArray['proxy'] === 'Y') {
             $phoneArray['proxy'] = true;
         }
-            
+
         if (preg_match('/^0/', $phoneArray['number'])) {
             $phoneArray['number'] = substr($phoneArray['number'], 1);
         }
@@ -458,7 +459,6 @@ class BeneficiaryService
             $phoneArray,
             'any'
         );
-
 
         $phone = new Phone();
         $phone->setPerson($beneficiary->getPerson())
@@ -477,8 +477,9 @@ class BeneficiaryService
 
     /**
      * @param Beneficiary $beneficiary
-     * @param array $nationalIdArray
-     * @param $flush
+     * @param array       $nationalIdArray
+     * @param             $flush
+     *
      * @return NationalId|null|object
      * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
@@ -505,8 +506,9 @@ class BeneficiaryService
 
     /**
      * @param Beneficiary $beneficiary
-     * @param array $profileArray
-     * @param $flush
+     * @param array       $profileArray
+     * @param             $flush
+     *
      * @return Profile|null|object
      * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
      */
@@ -542,6 +544,7 @@ class BeneficiaryService
 
     /**
      * @param Beneficiary $beneficiary
+     *
      * @return bool
      */
     public function remove(Beneficiary $beneficiary)
@@ -567,11 +570,13 @@ class BeneficiaryService
         $this->em->remove($beneficiary);
         $this->em->remove($profile);
         $this->em->flush();
+
         return true;
     }
 
     /**
      * @param string $iso3
+     *
      * @return int
      */
     public function countAll(string $iso3): int
@@ -581,6 +586,7 @@ class BeneficiaryService
 
     /**
      * @param string $iso3
+     *
      * @return int
      */
     public function countAllServed(string $iso3): int
@@ -605,12 +611,14 @@ class BeneficiaryService
         $exportableTable = [];
         if ($ids) {
             $households = $this->householdRepository->getAllByIds($ids);
-        } else if ($filters) {
-            // $households = $this->householdService->getAll($countryIso3, $filters)[1];
-            // This should be not used this way
-            throw new \Exception('Using deprecated method.');
         } else {
-            $exportableTable = $this->beneficiaryRepository->getAllInCountry($countryIso3);
+            if ($filters) {
+                // $households = $this->householdService->getAll($countryIso3, $filters)[1];
+                // This should be not used this way
+                throw new \Exception('Using deprecated method.');
+            } else {
+                $exportableTable = $this->beneficiaryRepository->getAllInCountry($countryIso3);
+            }
         }
 
         if ('csv' !== $type && count($households) > ExportController::EXPORT_LIMIT) {
@@ -621,7 +629,7 @@ class BeneficiaryService
             $count = count($households);
             throw new BadRequestHttpException("Too much households ($count) to export. Limit for CSV is ".ExportController::EXPORT_LIMIT_CSV);
         }
-        
+
         if ($households) {
             foreach ($households as $household) {
                 foreach ($household->getBeneficiaries() as $beneficiary) {
@@ -660,11 +668,11 @@ class BeneficiaryService
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
     public function exportToCsv(
-        string $type,
-        string $countryIso3,
+        string                   $type,
+        string                   $countryIso3,
         HouseholdFilterInputType $filter,
-        Pagination $pagination,
-        HouseholdOrderInputType $order
+        Pagination               $pagination,
+        HouseholdOrderInputType  $order
     ): string {
         $households = $this->householdRepository->findByParams($countryIso3, $filter, $order, $pagination);
 
@@ -725,7 +733,8 @@ class BeneficiaryService
         return $beneficiary;
     }
 
-    public function updateReferral(Beneficiary $beneficiary, array $beneficiaryData) {
+    public function updateReferral(Beneficiary $beneficiary, array $beneficiaryData)
+    {
         if (array_key_exists('referral_type', $beneficiaryData) && array_key_exists('referral_comment', $beneficiaryData) &&
             $beneficiaryData['referral_type'] && $beneficiaryData['referral_comment']) {
             $previousReferral = $beneficiary->getReferral();
