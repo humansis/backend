@@ -81,9 +81,10 @@ class ReliefPackageController extends AbstractWebAppController
      * @return JsonResponse
      */
     public function distributePackages(
-        array                   $packages
+        array $packages
     ): JsonResponse {
         $result = $this->assistanceDistributionService->distributeByReliefIds($packages, $this->getUser());
+
         return $this->json($result);
     }
 
@@ -91,16 +92,17 @@ class ReliefPackageController extends AbstractWebAppController
      * @Rest\Patch("/web-app/v1/assistances/{id}/relief-packages/distribute")
      * @ParamConverter(class="NewApiBundle\InputType\Assistance\DistributeBeneficiaryReliefPackagesInputType[]", name="packages", converter="input_type_converter")
      *
-     * @param Assistance        $assistance
+     * @param Assistance                                     $assistance
      * @param DistributeBeneficiaryReliefPackagesInputType[] $packages
      *
      * @return JsonResponse
      */
     public function distributeBeneficiaryPackages(
         Assistance $assistance,
-        array                   $packages
+        array      $packages
     ): JsonResponse {
         $result = $this->assistanceDistributionService->distributeByBeneficiaryIdAndAssistanceId($packages, $assistance, $this->getUser());
+
         return $this->json($result);
     }
 }

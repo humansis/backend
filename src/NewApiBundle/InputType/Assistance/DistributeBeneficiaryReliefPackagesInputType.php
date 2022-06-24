@@ -36,9 +36,6 @@ class DistributeBeneficiaryReliefPackagesInputType implements InputTypeInterface
         $this->idNumber = $idNumber;
     }
 
-
-
-
     /**
      * @return mixed
      */
@@ -54,6 +51,5 @@ class DistributeBeneficiaryReliefPackagesInputType implements InputTypeInterface
     {
         $this->amountDistributed = $amountDistributed;
     }
-
 
 }

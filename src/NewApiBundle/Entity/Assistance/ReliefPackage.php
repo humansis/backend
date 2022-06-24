@@ -110,13 +110,12 @@ class ReliefPackage
      */
     public function __construct(
         AssistanceBeneficiary $assistanceBeneficiary,
-        string $modalityType,
-        $amountToDistribute,
-        string $unit,
-        string $state = ReliefPackageState::TO_DISTRIBUTE,
-        $amountDistributed = 0.0
-    )
-    {
+        string                $modalityType,
+                              $amountToDistribute,
+        string                $unit,
+        string                $state = ReliefPackageState::TO_DISTRIBUTE,
+                              $amountDistributed = 0.0
+    ) {
         if (!in_array($modalityType, ModalityType::values())) {
             throw new InvalidArgumentException("Argument '$modalityType' isn't valid ModalityType");
         }
@@ -250,14 +249,16 @@ class ReliefPackage
     /**
      * @return float
      */
-    public function getCurrentUndistributedAmount(): float {
+    public function getCurrentUndistributedAmount(): float
+    {
         return (float) $this->getAmountToDistribute() - $this->getAmountDistributed();
     }
 
     /**
      * @return bool
      */
-    public function isFullyDistributed(): bool {
+    public function isFullyDistributed(): bool
+    {
         return round($this->getCurrentUndistributedAmount(), 2) == 0;
     }
 

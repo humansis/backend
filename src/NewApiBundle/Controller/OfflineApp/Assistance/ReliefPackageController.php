@@ -35,10 +35,12 @@ class ReliefPackageController extends AbstractOfflineAppController
      * @return JsonResponse
      */
     public function distributePackages(
-        array                   $packages
+        array $packages
     ): JsonResponse {
 
         $this->assistanceDistributionService->distributeByReliefIds($packages, $this->getUser());
+
         return $this->json(true);
     }
 }
+

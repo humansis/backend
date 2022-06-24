@@ -60,7 +60,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
      * Get all beneficiaries in a selected project.
      *
      * @param Project $project
-     * @param string $target
+     * @param string  $target
      *
      * @return mixed
      */
@@ -87,13 +87,14 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     }
 
     /**
-     * @param Project $project
-     * @param string $target
+     * @param Project    $project
+     * @param string     $target
      * @param Assistance $excludedAssistance
      *
      * @return array|float|int|mixed|string
      */
-    public function getNotSelectedBeneficiariesOfProject(Project $project, string $target, Assistance $excludedAssistance){
+    public function getNotSelectedBeneficiariesOfProject(Project $project, string $target, Assistance $excludedAssistance)
+    {
         $excludedAssistanceDQL = "SELECT ben.id FROM DistributionBundle\Entity\AssistanceBeneficiary db LEFT JOIN db.beneficiary ab INNER JOIN BeneficiaryBundle\Entity\Beneficiary ben WITH ben.id = ab.id WHERE db.assistance = :assistance";
         $projectId = $project->getId();
 
@@ -178,7 +179,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
 
     public function findByName(string $givenName, ?string $parentsName, string $familyName, ?string $gender = null, Household $household = null)
     {
-        $qbr =  $this->createQueryBuilder('b')
+        $qbr = $this->createQueryBuilder('b')
             ->leftJoin('b.household', 'hh')
             ->join('b.person', 'p')
             ->andWhere('hh.archived = 0')
@@ -274,20 +275,23 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             ->getResult();
     }
 
-    public function findByIdentityAndProject($idNumber, $project, ?CountrySpecific $countrySpecific) {
+    public function findByIdentityAndProject($idNumber, $project, ?CountrySpecific $countrySpecific)
+    {
         $qb = $this->createQueryBuilder('b')
             ->join('b.person', 'p')
             ->join('b.household', 'hh')
             ->join('hh.projects', 'project')
             ->leftJoin('p.nationalIds', 'id')
-            ->leftJoin('hh.countrySpecificAnswers', 'countrySpecificAnswer', Join::WITH, 'IDENTITY(countrySpecificAnswer.countrySpecific) = :countrySpecificId')
+            ->leftJoin('hh.countrySpecificAnswers', 'countrySpecificAnswer', Join::WITH,
+                'IDENTITY(countrySpecificAnswer.countrySpecific) = :countrySpecificId')
             ->andWhere('project = :project')
             ->andWhere('b.archived = 0')
             ->andWhere('hh.archived = 0')
             ->andWhere('id.idNumber = :idNumber OR countrySpecificAnswer.answer = :idNumber')
             ->setParameter('idNumber', $idNumber)
             ->setParameter('project', $project)
-            ->setParameter('countrySpecificId',  $countrySpecific ? $countrySpecific->getId() : null);
+            ->setParameter('countrySpecificId', $countrySpecific ? $countrySpecific->getId() : null);
+
         return $qb->getQuery()
             ->getResult();
     }
@@ -428,6 +432,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $this->whereHouseHoldHead($qb);
         $this->whereGender($qb, $gender);
         $qb->andWhere('b.archived = 0');
+
         return $qb->getQuery()->getSingleScalarResult();
     }
 
@@ -475,11 +480,13 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
 
         if ('Mobile Money' === $modalityType) {
             $qb->innerJoin('db.transactions', 't', Join::WITH, 't.transactionStatus = 1');
-        } else if ($modalityType === 'QR Code Voucher') {
-            $qb->innerJoin('db.booklets', 'bo', Join::WITH, 'bo.status = 1 OR bo.status = 2');
         } else {
-            $qb->innerJoin('db.reliefPackages', 'rp', Join::WITH, 'rp.state = :distributed')
-                ->setParameter('distributed', ReliefPackageState::DISTRIBUTED);
+            if ($modalityType === 'QR Code Voucher') {
+                $qb->innerJoin('db.booklets', 'bo', Join::WITH, 'bo.status = 1 OR bo.status = 2');
+            } else {
+                $qb->innerJoin('db.reliefPackages', 'rp', Join::WITH, 'rp.state = :distributed')
+                    ->setParameter('distributed', ReliefPackageState::DISTRIBUTED);
+            }
         }
 
         return $qb->getQuery()->getSingleScalarResult();
@@ -569,9 +576,9 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
      * The household must respect the value of the country specific ($idCountrySpecific), depends on operator and value.
      *
      * @param QueryBuilder $qb
-     * @param $i
-     * @param $countryISO3
-     * @param array $filters
+     * @param              $i
+     * @param              $countryISO3
+     * @param array        $filters
      */
     protected function whereVulnerabilityCriterion(QueryBuilder &$qb, $i, $countryISO3, array $filters)
     {
@@ -585,9 +592,9 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
      * The household must respect the value of the country specific ($idCountrySpecific), depends on operator and value.
      *
      * @param QueryBuilder $qb
-     * @param $i
-     * @param $countryISO3
-     * @param array $filters
+     * @param              $i
+     * @param              $countryISO3
+     * @param array        $filters
      */
     protected function whereCountrySpecific(QueryBuilder &$qb, $i, $countryISO3, array $filters)
     {
@@ -609,8 +616,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             ->leftJoin('db.transactions', 't')
             ->leftJoin('db.reliefPackages', 'rp')
             ->andWhere('t.transactionStatus = 1 OR rp.state = :distributed OR bk.id IS NOT NULL')
-            ->setParameter('distributed', ReliefPackageState::DISTRIBUTED)
-        ;
+            ->setParameter('distributed', ReliefPackageState::DISTRIBUTED);
 
         return $qb->getQuery()->getSingleScalarResult();
     }
@@ -622,7 +628,6 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $householdRepository = $this->getEntityManager()->getRepository(Household::class);
         $householdRepository->whereHouseholdInCountry($qb, $countryISO3);
     }
-
 
     public function getDistributionBeneficiaries(CriteriaGroup $criteriaGroup, Project $project)
     {
@@ -639,7 +644,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         // If a beneficiary has a criterion, they are selectable, therefore every criterion has to go in a orX()
         $userConditionsStatement = $qb->expr()->andX();
         /**
-         * @var  $index
+         * @var                   $index
          * @var SelectionCriteria $criterion
          */
         foreach ($criteriaGroup->getCriteria() as $index => $criterion) {
@@ -655,30 +660,24 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             $isOther = $criterion->hasTypeOther();
 
             if ($forHousehold && $isCSO) {
-                $this->getHouseholdWithCountrySpecificCriterion($qb, $criterion->getField(), $condition, $criterion, $index, $userConditionsStatement);
-            }
-            elseif ($forHousehold && $isField) {
+                $this->getHouseholdWithCountrySpecificCriterion($qb, $criterion->getField(), $condition, $criterion, $index,
+                    $userConditionsStatement);
+            } elseif ($forHousehold && $isField) {
                 $this->getHouseholdWithTableFieldCriterion($qb, $criterion->getField(), $condition, $criterion, $index, $userConditionsStatement);
-            }
-            elseif ($forHousehold && $isOther) {
+            } elseif ($forHousehold && $isOther) {
                 $this->getHouseholdWithOtherCriterion($qb, $criterion->getField(), $condition, $criterion, $index, $userConditionsStatement);
-            }
-            elseif ($forIndividual && $isVulnerability) {
-                $this->addVulnerabilityCriterion($qb, 'b', (bool) $criterion->getValueString(), $criterion->getField(), $userConditionsStatement, $index);
-            }
-            elseif ($forIndividual && $isField) {
+            } elseif ($forIndividual && $isVulnerability) {
+                $this->addVulnerabilityCriterion($qb, 'b', (bool) $criterion->getValueString(), $criterion->getField(), $userConditionsStatement,
+                    $index);
+            } elseif ($forIndividual && $isField) {
                 $this->getBeneficiaryWithTableFieldCriterion($qb, $criterion->getField(), $condition, $criterion, $index, $userConditionsStatement);
-            }
-            elseif ($forIndividual && $isOther) {
+            } elseif ($forIndividual && $isOther) {
                 $this->getBeneficiaryWithOtherCriterion($qb, $criterion->getField(), $condition, $criterion, $index, $userConditionsStatement);
-            }
-            elseif ($forHead && $isVulnerability) {
+            } elseif ($forHead && $isVulnerability) {
                 $this->addVulnerabilityCriterion($qb, 'b', $condition, $criterion->getField(), $userConditionsStatement, $index);
-            }
-            elseif ($forHead && $isField) {
+            } elseif ($forHead && $isField) {
                 $this->getHeadWithFieldCriterion($qb, $criterion->getField(), $condition, $criterion, $index, $userConditionsStatement);
-            }
-            elseif ($forHead && $isOther) {
+            } elseif ($forHead && $isOther) {
                 $this->getHeadWithOtherCriterion($qb, $criterion->getField(), $condition, $criterion, $index, $userConditionsStatement);
             }
             if ($criterion->hasCountrySpecificType()) {
@@ -690,8 +689,14 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $qb->getQuery()->getResult();
     }
 
-    private function getHouseholdWithCountrySpecificCriterion(QueryBuilder &$qb, $field, $condition, SelectionCriteria $criterion, int $i, Andx &$userConditionsStatement)
-    {
+    private function getHouseholdWithCountrySpecificCriterion(
+        QueryBuilder      &$qb,
+                          $field,
+                          $condition,
+        SelectionCriteria $criterion,
+        int               $i,
+        Andx              &$userConditionsStatement
+    ) {
         // The selection criteria is a country Specific
         if (!$criterion->hasCountrySpecificType()) {
             throw new \InvalidArgumentException('Selection criterium isnt for CSO');
@@ -708,8 +713,14 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $qb->addSelect("cs$i.fieldString");
     }
 
-    private function getHouseholdWithTableFieldCriterion(QueryBuilder &$qb, $field, $condition, SelectionCriteria $criterion, int $i, Andx &$userConditionsStatement)
-    {
+    private function getHouseholdWithTableFieldCriterion(
+        QueryBuilder      &$qb,
+                          $field,
+                          $condition,
+        SelectionCriteria $criterion,
+        int               $i,
+        Andx              &$userConditionsStatement
+    ) {
         // The selection criteria is directly a field in the Household table
         if (!$criterion->hasTableFieldType()) {
             throw new \InvalidArgumentException('Selection criterium isnt for Table field criterium');
@@ -718,15 +729,21 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $qb->addSelect("(CASE WHEN hh.$field$condition :parameter$i THEN hh.$field ELSE :null END) AS $field$i")
             ->setParameter('null', null);
 
-        if($criterion->getField() === SelectionCriteriaField::LIVELIHOD){
+        if ($criterion->getField() === SelectionCriteriaField::LIVELIHOD) {
             $qb->setParameter("parameter$i", LivelihoodEnum::valueToDB($criterion->getValueString()));
-        }else{
+        } else {
             $qb->setParameter("parameter$i", $criterion->getValueString());
         }
     }
 
-    private function getHouseholdWithOtherCriterion(QueryBuilder &$qb, $field, $condition, SelectionCriteria $criterion, int $i, Andx &$userConditionsStatement)
-    {
+    private function getHouseholdWithOtherCriterion(
+        QueryBuilder      &$qb,
+                          $field,
+                          $condition,
+        SelectionCriteria $criterion,
+        int               $i,
+        Andx              &$userConditionsStatement
+    ) {
         if (!$criterion->hasTypeOther()) {
             throw new \InvalidArgumentException('Selection criterium isnt for other criterium');
         }
@@ -770,8 +787,14 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         }
     }
 
-    private function getBeneficiaryWithTableFieldCriterion(QueryBuilder &$qb, $field, $condition, SelectionCriteria $criterion, int $i, &$userConditionsStatement)
-    {
+    private function getBeneficiaryWithTableFieldCriterion(
+        QueryBuilder      &$qb,
+                          $field,
+                          $condition,
+        SelectionCriteria $criterion,
+        int               $i,
+                          &$userConditionsStatement
+    ) {
         if (!$criterion->hasTableFieldType()) {
             throw new \InvalidArgumentException('Selection criterium isnt for table field criterium');
         }
@@ -792,8 +815,14 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $qb->setParameter("parameter$i", $criterion->getValueString());
     }
 
-    private function getBeneficiaryWithOtherCriterion(QueryBuilder &$qb, $field, $condition, SelectionCriteria $criterion, int $i, &$userConditionsStatement)
-    {
+    private function getBeneficiaryWithOtherCriterion(
+        QueryBuilder      &$qb,
+                          $field,
+                          $condition,
+        SelectionCriteria $criterion,
+        int               $i,
+                          &$userConditionsStatement
+    ) {
         if (!$criterion->hasTypeOther()) {
             throw new \InvalidArgumentException('Selection criterium isnt for other criterium');
         }
@@ -803,7 +832,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
                     ->leftJoin("db$i.assistance", "d$i")
                     // If has criteria, add it to the select to calculate weight later
                     ->addSelect("(CASE WHEN d$i.dateDistribution < :parameter$i THEN d$i.dateDistribution WHEN SIZE(b.assistanceBeneficiary) = 0 THEN :noDistribution ELSE :null END) AS {$criterion->getField()}$i")
-                    ->having($criterion->getField().$i . " IS NOT NULL")
+                    ->having($criterion->getField().$i." IS NOT NULL")
                     ->setParameter('noDistribution', 'noDistribution')
                     ->setParameter('null', null)
                     ->setParameter("parameter$i", $criterion->getValueString());
@@ -812,8 +841,14 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
 
     }
 
-    private function addVulnerabilityCriterion(QueryBuilder &$qb, $on, bool $hasVulnerability, $vulnerabilityName, Andx &$userConditionsStatement, int $i)
-    {
+    private function addVulnerabilityCriterion(
+        QueryBuilder &$qb,
+                     $on,
+        bool         $hasVulnerability,
+                     $vulnerabilityName,
+        Andx         &$userConditionsStatement,
+        int          $i
+    ) {
         // Find a way to act directly on the join table beneficiary_vulnerability
         if ($hasVulnerability) {
             $qb->leftJoin("$on.vulnerabilityCriteria", "vc$i", Join::WITH, "vc$i.fieldString = :vulnerability$i");
@@ -849,8 +884,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             ->from(Smartcard::class, "sc$i")
             ->andWhere("IDENTITY(sc$i.beneficiary) = $on.id")
             ->andWhere("sc$i.state IN ('".SmartcardStates::ACTIVE."')")
-            ->getDQL()
-        ;
+            ->getDQL();
 
         if ($value) {
             $qb->andWhere("EXISTS($subQueryForSC)");
@@ -859,8 +893,14 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         }
     }
 
-    private function getHeadWithFieldCriterion(QueryBuilder &$qb, $field, $condition, SelectionCriteria $criterion, int $i, Andx &$userConditionsStatement)
-    {
+    private function getHeadWithFieldCriterion(
+        QueryBuilder      &$qb,
+                          $field,
+                          $condition,
+        SelectionCriteria $criterion,
+        int               $i,
+        Andx              &$userConditionsStatement
+    ) {
         // The selection criteria is directly a field in the Beneficiary table
         if (!$criterion->hasTableFieldType()) {
             throw new \InvalidArgumentException('Selection criterium isnt table field criterium');
@@ -905,7 +945,8 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
 
         switch ($field) {
             case SelectionCriteriaField::DISABLED_HEAD_OF_HOUSEHOLD:
-                $this->addVulnerabilityCriterion($qb, 'hhh'.$i, (bool) $criterion->getValueString(), VulnerabilityCriteria::DISABLED, $userConditionsStatement, $i);
+                $this->addVulnerabilityCriterion($qb, 'hhh'.$i, (bool) $criterion->getValueString(), VulnerabilityCriteria::DISABLED,
+                    $userConditionsStatement, $i);
                 break;
             case SelectionCriteriaField::HAS_VALID_SMARTCARD:
                 $this->hasValidSmartcardCriterion($qb, 'hhh'.$i, (bool) $criterion->getValueString(), $i);
@@ -958,13 +999,12 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
      * @return Paginator|Assistance[]
      */
     public function findByAssistance(
-        Assistance $assistance,
+        Assistance                  $assistance,
         ?BeneficiaryFilterInputType $filter,
-        ?BeneficiaryOrderInputType $orderBy = null,
-        ?Pagination $pagination = null,
-        ?array $context = null
-    ): Paginator
-    {
+        ?BeneficiaryOrderInputType  $orderBy = null,
+        ?Pagination                 $pagination = null,
+        ?array                      $context = null
+    ): Paginator {
         $qbr = $this->createQueryBuilder('b')
             ->join('b.assistanceBeneficiary', 'ab')
             ->leftJoin('b.person', 'p')

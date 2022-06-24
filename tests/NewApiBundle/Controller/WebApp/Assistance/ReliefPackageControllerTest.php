@@ -108,8 +108,8 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         $this->request('PATCH', "/api/basic/web-app/v1/assistances/{$assistance->getId()}/relief-packages/distribute",
             [
                 [
-                    "idNumber" => "PIN-1234"
-                ]
+                    "idNumber" => "PIN-1234",
+                ],
             ]);
 
         $this->assertTrue(
