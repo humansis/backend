@@ -513,20 +513,11 @@ class ImportTest extends KernelTestCase
 
         $this->userStartedFinishing($firstImport);
 
-        $this->assertQueueCount(1, $firstImport, [ImportQueueState::CREATED]);
-        $this->assertQueueCount(1, $secondImport, [ImportQueueState::VALID]);
-
-        $this->entityManager->refresh($firstImport);
-        $this->entityManager->refresh($secondImport);
         $this->assertEquals(ImportState::IDENTITY_CHECK_FAILED, $secondImport->getState());
 
         $firstImportBeneficiary = $firstImport->getImportBeneficiaries()[0]->getBeneficiary();
         $this->assertEquals(1, $firstImport->getImportBeneficiaries()->count());
         $this->assertEquals('John', $firstImportBeneficiary->getPerson()->getLocalGivenName());
-
-        //check identity again on second import
-        $this->userStartedIdentityCheck($secondImport, false);
-        $this->entityManager->refresh($secondImport);
 
         $this->assertQueueCount(1, $firstImport, [ImportQueueState::CREATED]);
         $this->assertQueueCount(1, $secondImport, [ImportQueueState::IDENTITY_CANDIDATE]);

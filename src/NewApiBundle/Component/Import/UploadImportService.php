@@ -40,8 +40,8 @@ class UploadImportService implements MessageHandlerInterface
     private $messageBus;
 
     public function __construct(
-        EntityManagerInterface     $em,
         string                     $uploadDirectory,
+        EntityManagerInterface     $em,
         ImportFileValidator        $importFileValidator,
         Integrity\DuplicityService $integrityDuplicityService,
         MessageBusInterface        $messageBus

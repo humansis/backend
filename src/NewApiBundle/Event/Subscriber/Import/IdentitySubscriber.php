@@ -46,9 +46,9 @@ class IdentitySubscriber implements EventSubscriberInterface
     private $batchSize;
 
     public function __construct(
+        int                    $batchSize,
         EntityManagerInterface $entityManager,
         IdentityChecker        $identityChecker,
-        int                    $batchSize,
         MessageBusInterface    $messageBus,
         ImportQueueRepository  $queueRepository
     ) {
@@ -85,28 +85,14 @@ class IdentitySubscriber implements EventSubscriberInterface
 
         foreach ($this->queueRepository->findBy([
             'import' => $import,
-            'state' => ImportQueueState::VALID,
+            // 'state' => ImportQueueState::VALID,
         ]) as $item) {
-            $this->messageBus->dispatch(ItemBatch::checkSingleItemIdentity($item));
+            // if ($item->getState() == ImportQueueState::VALID) {
+                $this->messageBus->dispatch(ItemBatch::checkSingleItemIdentity($item));
+            // }
         }
 
         $this->messageBus->dispatch(ImportCheck::checkIdentityComplete($import));
-    }
-
-    /**
-     * @param GuardEvent $guardEvent
-     */
-    public function guardAnyValidItems(GuardEvent $guardEvent): void
-    {
-        /** @var Import $import */
-        $import = $guardEvent->getSubject();
-
-        if (0 === $this->entityManager->getRepository(ImportQueue::class)->count([
-                'import' => $import,
-                'state' => ImportQueueState::VALID,
-            ])) {
-            $guardEvent->addTransitionBlocker(new TransitionBlocker('No valid queue items', '0'));
-        }
     }
 
     public function guardAllItemsChecked(GuardEvent $guardEvent): void

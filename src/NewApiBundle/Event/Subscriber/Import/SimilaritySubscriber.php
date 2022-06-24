@@ -47,10 +47,10 @@ class SimilaritySubscriber implements EventSubscriberInterface
     private $batchSize;
 
     public function __construct(
+        int                    $batchSize,
         EntityManagerInterface $entityManager,
         SimilarityChecker      $similarityChecker,
         ImportQueueRepository  $queueRepository,
-        int                    $batchSize,
         MessageBusInterface    $messageBus
     ) {
         $this->entityManager = $entityManager;
