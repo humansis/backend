@@ -29,7 +29,7 @@ class IdentityCheckerTest extends KernelTestCase
         $import = self::$entityManager->getRepository(Import::class)->findBy(['title' => 'test_fixtures'], ['id' => 'asc'])[0];
         $import->setState(ImportState::IDENTITY_CHECKING);
 
-        $checker = self::$container->get(\NewApiBundle\Component\Import\Identity\ItemCheckerService::class);
+        $checker = self::$container->get(\NewApiBundle\Component\Import\IdentityChecker::class);
         $checker->check($import);
 
         $count = self::$entityManager->createQueryBuilder()

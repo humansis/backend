@@ -3,9 +3,6 @@
 namespace NewApiBundle\Event\Subscriber\Import;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
-use Doctrine\Persistence\ObjectRepository;
-use NewApiBundle\Component\Import\Identity;
 use NewApiBundle\Component\Import\Message\ImportCheck;
 use NewApiBundle\Component\Import\Message\ItemBatch;
 use NewApiBundle\Entity\Import;
@@ -29,7 +26,7 @@ class IdentitySubscriber implements EventSubscriberInterface
     private $entityManager;
 
     /**
-     * @var Identity\ItemCheckerService
+     * @var \NewApiBundle\Component\Import\IdentityChecker
      */
     private $identityChecker;
 
@@ -47,11 +44,11 @@ class IdentitySubscriber implements EventSubscriberInterface
     private $batchSize;
 
     public function __construct(
-        EntityManagerInterface      $entityManager,
-        Identity\ItemCheckerService $identityChecker,
-        int                         $batchSize,
-        MessageBusInterface         $messageBus,
-        ImportQueueRepository       $queueRepository
+        EntityManagerInterface                         $entityManager,
+        \NewApiBundle\Component\Import\IdentityChecker $identityChecker,
+        int                                            $batchSize,
+        MessageBusInterface                            $messageBus,
+        ImportQueueRepository                          $queueRepository
     ) {
         $this->entityManager = $entityManager;
         $this->identityChecker = $identityChecker;

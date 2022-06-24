@@ -1,10 +1,7 @@
 <?php declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import\Message;
-use NewApiBundle\Component\Import\Finishing;
-use NewApiBundle\Component\Import\Identity;
 use NewApiBundle\Component\Import\ImportQueueLoggerTrait;
-use NewApiBundle\Component\Import\Integrity;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
@@ -19,30 +16,30 @@ class ItemBatchHandler implements MessageHandlerInterface
 
     /** @var ImportQueueRepository */
     private $queueRepository;
-    /** @var Integrity\ItemCheckerService */
+    /** @var \NewApiBundle\Component\Import\IntegrityChecker */
     private $integrityChecker;
-    /** @var Identity\ItemCheckerService */
+    /** @var \NewApiBundle\Component\Import\IdentityChecker */
     private $identityChecker;
-    /** @var Identity\ItemSimilarityCheckerService */
+    /** @var \NewApiBundle\Component\Import\SimilarityChecker */
     private $similarityChecker;
-    /** @var Finishing\ItemFinishService */
+    /** @var \NewApiBundle\Component\Import\ImportFinisher */
     private $finisher;
 
     /**
-     * @param LoggerInterface                       $importLogger
-     * @param ImportQueueRepository                 $queueRepository
-     * @param Integrity\ItemCheckerService          $integrityChecker
-     * @param Identity\ItemCheckerService           $identityChecker
-     * @param Identity\ItemSimilarityCheckerService $similarityChecker
-     * @param Finishing\ItemFinishService           $finisher
+     * @param LoggerInterface                                  $importLogger
+     * @param ImportQueueRepository                            $queueRepository
+     * @param \NewApiBundle\Component\Import\IntegrityChecker  $integrityChecker
+     * @param \NewApiBundle\Component\Import\IdentityChecker   $identityChecker
+     * @param \NewApiBundle\Component\Import\SimilarityChecker $similarityChecker
+     * @param \NewApiBundle\Component\Import\ImportFinisher    $finisher
      */
     public function __construct(
-        LoggerInterface                       $importLogger,
-        ImportQueueRepository                 $queueRepository,
-        Integrity\ItemCheckerService          $integrityChecker,
-        Identity\ItemCheckerService           $identityChecker,
-        Identity\ItemSimilarityCheckerService $similarityChecker,
-        Finishing\ItemFinishService           $finisher
+        LoggerInterface                                  $importLogger,
+        ImportQueueRepository                            $queueRepository,
+        \NewApiBundle\Component\Import\IntegrityChecker  $integrityChecker,
+        \NewApiBundle\Component\Import\IdentityChecker   $identityChecker,
+        \NewApiBundle\Component\Import\SimilarityChecker $similarityChecker,
+        \NewApiBundle\Component\Import\ImportFinisher    $finisher
     ) {
         $this->logger = $importLogger;
         $this->queueRepository = $queueRepository;

@@ -5,8 +5,6 @@ namespace NewApiBundle\Component\Import;
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
-use NewApiBundle\Component\Import\Identity\ItemCheckerService;
-use NewApiBundle\Component\Import\Identity\ItemSimilarityCheckerService;
 use NewApiBundle\Component\Import\Integrity;
 use NewApiBundle\Component\Import\ValueObject\ImportStatisticsValueObject;
 use NewApiBundle\Entity;
@@ -33,16 +31,16 @@ class ImportService
     /** @var HouseholdService */
     private $householdService;
 
-    /** @var ItemCheckerService */
+    /** @var IntegrityChecker */
     private $integrityChecker;
 
     /** @var ImportInvalidFileService */
     private $importInvalidFileService;
 
-    /** @var ItemCheckerService */
+    /** @var IdentityChecker */
     private $identityChecker;
 
-    /** @var ItemSimilarityCheckerService */
+    /** @var SimilarityChecker */
     private $similarityChecker;
 
     /** @var WorkflowInterface */
@@ -58,17 +56,17 @@ class ImportService
     private $integrityDuplicityService;
 
     public function __construct(
-        EntityManagerInterface       $em,
-        HouseholdService             $householdService,
-        LoggerInterface              $importLogger,
-        ItemCheckerService           $integrityChecker,
-        ImportInvalidFileService     $importInvalidFileService,
-        ItemCheckerService           $identityChecker,
-        ItemSimilarityCheckerService $similarityChecker,
-        WorkflowInterface            $importStateMachine,
-        WorkflowInterface            $importQueueStateMachine,
-        DuplicityResolver            $duplicityResolver,
-        Integrity\DuplicityService   $integrityDuplicityService
+        EntityManagerInterface     $em,
+        HouseholdService           $householdService,
+        LoggerInterface            $importLogger,
+        IntegrityChecker           $integrityChecker,
+        ImportInvalidFileService   $importInvalidFileService,
+        IdentityChecker            $identityChecker,
+        SimilarityChecker          $similarityChecker,
+        WorkflowInterface          $importStateMachine,
+        WorkflowInterface          $importQueueStateMachine,
+        DuplicityResolver          $duplicityResolver,
+        Integrity\DuplicityService $integrityDuplicityService
     )
     {
         $this->em = $em;

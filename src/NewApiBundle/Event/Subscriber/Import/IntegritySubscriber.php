@@ -6,11 +6,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectRepository;
 use NewApiBundle\Component\Import\ImportInvalidFileService;
-use NewApiBundle\Component\Import\Integrity;
 use NewApiBundle\Component\Import\Message\ImportCheck;
 use NewApiBundle\Component\Import\Message\ItemBatch;
 use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
@@ -31,7 +29,7 @@ class IntegritySubscriber implements EventSubscriberInterface
     private $entityManager;
 
     /**
-     * @var Integrity\ItemCheckerService
+     * @var \NewApiBundle\Component\Import\IntegrityChecker
      */
     private $integrityChecker;
 
@@ -54,12 +52,12 @@ class IntegritySubscriber implements EventSubscriberInterface
     private $batchSize;
 
     public function __construct(
-        EntityManagerInterface       $entityManager,
-        Integrity\ItemCheckerService $integrityChecker,
-        ImportInvalidFileService     $importInvalidFileService,
-        int                          $batchSize,
-        MessageBusInterface          $messageBus,
-        ImportQueueRepository        $queueRepository
+        EntityManagerInterface                          $entityManager,
+        \NewApiBundle\Component\Import\IntegrityChecker $integrityChecker,
+        ImportInvalidFileService                        $importInvalidFileService,
+        int                                             $batchSize,
+        MessageBusInterface                             $messageBus,
+        ImportQueueRepository                           $queueRepository
     ) {
         $this->entityManager = $entityManager;
         $this->integrityChecker = $integrityChecker;
