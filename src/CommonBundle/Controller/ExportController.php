@@ -2,6 +2,7 @@
 
 namespace CommonBundle\Controller;
 
+use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Entity\Organization;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Enum\AssistanceTargetType;
@@ -19,6 +20,7 @@ use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 
 /**
  * Class ExportController
+ *
  * @package CommonBundle\Controller
  *
  * @SWG\Parameter(
@@ -44,10 +46,19 @@ class ExportController extends Controller
      */
     private $assistanceService;
 
-    public function __construct(AssistanceRepository $assistanceRepository, AssistanceService $assistanceService)
-    {
+    /**
+     * @var HouseholdExportCSVService
+     */
+    private $householdExportCSVService;
+
+    public function __construct(
+        AssistanceRepository      $assistanceRepository,
+        AssistanceService         $assistanceService,
+        HouseholdExportCSVService $householdExportCSVService
+    ) {
         $this->assistanceRepository = $assistanceRepository;
         $this->assistanceService = $assistanceService;
+        $this->householdExportCSVService = $householdExportCSVService;
     }
 
     /**
@@ -110,12 +121,12 @@ class ExportController extends Controller
                 $filename = $this->get('distribution.assistance_beneficiary_service')->exportToCsv($arrayObjectBeneficiary, $type);
             } elseif ($request->query->get('householdsTemplate')) {
                 $countryIso3 = $request->request->get("__country");
-                $filename = $this->get('beneficiary.household_export_csv_service')->exportToCsv($type, $countryIso3);
+                $filename = $this->householdExportCSVService->exportToCsv($type, $countryIso3);
             } elseif ($request->query->get('transactionDistribution') ||
-                      $request->query->get('smartcardDistribution') ||
-                      $request->query->get('voucherDistribution') ||
-                      $request->query->get('generalreliefDistribution') ||
-                      $request->query->get('beneficiariesInDistribution')) {
+                $request->query->get('smartcardDistribution') ||
+                $request->query->get('voucherDistribution') ||
+                $request->query->get('generalreliefDistribution') ||
+                $request->query->get('beneficiariesInDistribution')) {
                 $idDistribution = $request->query->get('transactionDistribution') ??
                     $request->query->get('smartcardDistribution') ??
                     $request->query->get('voucherDistribution') ??
@@ -129,7 +140,8 @@ class ExportController extends Controller
                 }
                 $filename = $this->get('export.spreadsheet')->export($distribution, $organization, $type);
                 // raw export for legacy purpose
-                if ($type === 'xlsx' && in_array($distribution->getTargetType(), [AssistanceTargetType::HOUSEHOLD, AssistanceTargetType::INDIVIDUAL])) { // hack to enable raw export, will be forgotten with FE switch
+                if ($type === 'xlsx' && in_array($distribution->getTargetType(),
+                        [AssistanceTargetType::HOUSEHOLD, AssistanceTargetType::INDIVIDUAL])) { // hack to enable raw export, will be forgotten with FE switch
                     if ($request->query->has('transactionDistribution')) {
                         $filename = $this->get('transaction.transaction_service')->exportToCsv($distribution, 'xlsx');
                     }
@@ -170,12 +182,12 @@ class ExportController extends Controller
             }
 
             // Create binary file to send
-            $response = new BinaryFileResponse(getcwd() . '/' . $filename);
+            $response = new BinaryFileResponse(getcwd().'/'.$filename);
 
             $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
             $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
             if ($mimeTypeGuesser->isSupported()) {
-                $response->headers->set('Content-Type', $mimeTypeGuesser->guess(getcwd() . '/' . $filename));
+                $response->headers->set('Content-Type', $mimeTypeGuesser->guess(getcwd().'/'.$filename));
             } else {
                 $response->headers->set('Content-Type', 'text/plain');
             }

@@ -39,6 +39,14 @@ class NationalId
     private $idType;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="priority", type="integer")
+     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "FullInstitution"})
+     */
+    private $priority;
+
+    /**
      * @var Person
      *
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Person", inversedBy="nationalIds")
@@ -117,4 +125,21 @@ class NationalId
     {
         return $this->person;
     }
+
+    /**
+     * @return int
+     */
+    public function getPriority(): int
+    {
+        return $this->priority;
+    }
+
+    /**
+     * @param int $priority
+     */
+    public function setPriority(int $priority): void
+    {
+        $this->priority = $priority;
+    }
+
 }

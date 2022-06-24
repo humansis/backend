@@ -3,6 +3,7 @@
 namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Utils\BeneficiaryService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\AddHouseholdsToProjectInputType;
 use NewApiBundle\InputType\HouseholdCreateInputType;
@@ -21,6 +22,18 @@ use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 
 class HouseholdController extends AbstractController
 {
+
+    /** @var BeneficiaryService */
+    private $beneficiaryService;
+
+    /**
+     * @param BeneficiaryService $beneficiaryService
+     */
+    public function __construct(BeneficiaryService $beneficiaryService)
+    {
+        $this->beneficiaryService = $beneficiaryService;
+    }
+
     /**
      * @Rest\Get("/web-app/v1/households/exports")
      *
@@ -41,7 +54,7 @@ class HouseholdController extends AbstractController
         }
 
         try {
-            $filename = $this->get('beneficiary.beneficiary_service')->exportToCsv(
+            $filename = $this->beneficiaryService->exportToCsv(
                 $request->query->get('type'),
                 $request->headers->get('country'),
                 $filter, $pagination, $order
@@ -52,7 +65,7 @@ class HouseholdController extends AbstractController
                 'errors' => [[
                     'message' => $e->getMessage(),
                 ]],
-            ],Response::HTTP_BAD_REQUEST);
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         $response = new BinaryFileResponse(getcwd().'/'.$filename);

@@ -28,7 +28,9 @@ class HouseholdRepository extends AbstractCriteriaRepository
 {
     /**
      * Find all households in country
-     * @param  string $iso3
+     *
+     * @param string $iso3
+     *
      * @return QueryBuilder
      */
     public function findAllByCountry(string $iso3)
@@ -44,9 +46,9 @@ class HouseholdRepository extends AbstractCriteriaRepository
     {
         $qb = $this->createQueryBuilder("hh");
         $q = $qb->leftJoin("hh.projects", "p")
-                ->where("p = :project")
-                ->setParameter("project", $project)
-                ->andWhere("hh.archived = 0");
+            ->where("p = :project")
+            ->setParameter("project", $project)
+            ->andWhere("hh.archived = 0");
 
         return $q;
     }
@@ -59,8 +61,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
             ->leftJoin("hh.projects", "p")
             ->where("p.iso3 = :country")
             ->setParameter("country", $iso3)
-            ->andWhere("hh.archived = 0")
-        ;
+            ->andWhere("hh.archived = 0");
         try {
             return $qb->getQuery()->getSingleScalarResult();
         } catch (NoResultException $e) {
@@ -83,9 +84,11 @@ class HouseholdRepository extends AbstractCriteriaRepository
 
     /**
      * Return households which a Levenshtein distance with the stringToSearch under minimumTolerance
+     *
      * @param string $iso3
      * @param string $stringToSearch
-     * @param int $minimumTolerance
+     * @param int    $minimumTolerance
+     *
      * @return mixed
      */
     public function foundSimilarAddressLevenshtein(string $iso3, string $stringToSearch, int $minimumTolerance)
@@ -117,16 +120,18 @@ class HouseholdRepository extends AbstractCriteriaRepository
             ->orderBy("levenshtein", "ASC");
 
         $query = $q->getQuery();
-        $query->useResultCache(true,600);
+        $query->useResultCache(true, 600);
 
         return $query->getResult();
     }
 
     /**
      * Return households which a Levenshtein distance with the stringToSearch under minimumTolerance
+     *
      * @param string $iso3
      * @param string $stringToSearch
-     * @param int $minimumTolerance
+     * @param int    $minimumTolerance
+     *
      * @return mixed
      */
     public function foundSimilarCampLevenshtein(string $iso3, string $stringToSearch, int $minimumTolerance)
@@ -159,7 +164,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
             ->orderBy("levenshtein", "ASC");
 
         $query = $q->getQuery();
-        $query->useResultCache(true,600);
+        $query->useResultCache(true, 600);
 
         return $query->getResult();
     }
@@ -173,10 +178,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
      * @return Paginator|Household[]
      */
     public function findByParams(
-        string $iso3,
+        string                   $iso3,
         HouseholdFilterInputType $filter,
-        HouseholdOrderInputType $orderBy = null,
-        ?Pagination $pagination = null
+        HouseholdOrderInputType  $orderBy = null,
+        ?Pagination              $pagination = null
     ): Paginator {
         $qb = $this->createQueryBuilder('hh')
             ->leftJoin('hh.householdLocations', 'hl')
@@ -195,7 +200,9 @@ class HouseholdRepository extends AbstractCriteriaRepository
             ->leftJoin('hh.projects', 'p')
             ->leftJoin('b.vulnerabilityCriteria', 'vb')
             ->leftJoin('b.person', 'per')
-            ->leftJoin('per.nationalIds', 'ni')
+            ->leftJoin('per.nationalIds', 'ni', Join::WITH, 'ni.priority = 1')
+            ->leftJoin('per.nationalIds', 'ni2', Join::WITH, 'ni.priority = 2')
+            ->leftJoin('per.nationalIds', 'ni3', Join::WITH, 'ni.priority = 3')
             ->leftJoin('per.referral', 'r')
             ->leftJoin('hh.beneficiaries', 'head', Join::WITH, 'head.status = 1')
             ->leftJoin('head.person', 'headper')
@@ -314,11 +321,13 @@ class HouseholdRepository extends AbstractCriteriaRepository
 
     /**
      * Get all Household by country
-     * @param $iso3
-     * @param $begin
-     * @param $pageSize
-     * @param $sort
+     *
+     * @param       $iso3
+     * @param       $begin
+     * @param       $pageSize
+     * @param       $sort
      * @param array $filters
+     *
      * @return mixed
      */
     public function getAllBy($iso3, $begin, $pageSize, $sort, $filters = [])
@@ -331,15 +340,15 @@ class HouseholdRepository extends AbstractCriteriaRepository
 
         // We join information that is needed for the filters
         $q = $qb->leftJoin("hh.beneficiaries", "b")
-                ->leftJoin("hh.projects", "p")
-                ->leftJoin("b.vulnerabilityCriteria", "vb")
-                ->leftJoin("b.person", "per")
-                ->leftJoin("per.nationalIds", "ni")
-                ->leftJoin("per.referral", "r")
-                ->leftJoin("hh.beneficiaries", "head")
-                ->leftJoin("head.person", "headper")
-                ->andWhere("head.status = 1")
-                ->andWhere("hh.archived = 0");
+            ->leftJoin("hh.projects", "p")
+            ->leftJoin("b.vulnerabilityCriteria", "vb")
+            ->leftJoin("b.person", "per")
+            ->leftJoin("per.nationalIds", "ni")
+            ->leftJoin("per.referral", "r")
+            ->leftJoin("hh.beneficiaries", "head")
+            ->leftJoin("head.person", "headper")
+            ->andWhere("head.status = 1")
+            ->andWhere("hh.archived = 0");
 
         // If there is a sort, we recover the direction of the sort and the field that we want to sort
         if (array_key_exists("sort", $sort) && array_key_exists("direction", $sort)) {
@@ -349,28 +358,22 @@ class HouseholdRepository extends AbstractCriteriaRepository
             // If the field is the location, we sort it by the direction sent
             if ($value == "currentHouseholdLocation") {
                 $q->addGroupBy("adm1")->addOrderBy("adm1.name", $direction);
-            }
-            // If the field is the local first name, we sort it by the direction sent
+            } // If the field is the local first name, we sort it by the direction sent
             elseif ($value == "localFirstName") {
                 $q->addGroupBy("headper.localGivenName")->addOrderBy("headper.localGivenName", $direction);
-            }
-            // If the field is the local family name, we sort it by the direction sent
+            } // If the field is the local family name, we sort it by the direction sent
             elseif ($value == "localFamilyName") {
                 $q->addGroupBy("headper.localFamilyName")->addOrderBy("headper.localFamilyName", $direction);
-            }
-            // If the field is the number of dependents, we sort it by the direction sent
+            } // If the field is the number of dependents, we sort it by the direction sent
             elseif ($value == "dependents") {
                 $q->addOrderBy("COUNT(DISTINCT b)", $direction);
-            }
-            // If the field is the projects, we sort it by the direction sent
+            } // If the field is the projects, we sort it by the direction sent
             elseif ($value == "projects") {
                 $q->addGroupBy("p")->addOrderBy("p.name", $direction);
-            }
-            // If the field is the vulnerabilities, we sort it by the direction sent
+            } // If the field is the vulnerabilities, we sort it by the direction sent
             elseif ($value == "vulnerabilities") {
                 $q->addGroupBy("vb")->addOrderBy("vb.fieldString", $direction);
-            }
-            // If the field is the national ID, we sort it by the direction sent
+            } // If the field is the national ID, we sort it by the direction sent
             elseif ($value == "nationalId") {
                 $q->addGroupBy("ni")->addOrderBy("ni.idNumber", $direction);
             } elseif ($value == "id") {
@@ -403,7 +406,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
                             COALESCE(adm4.name, ''),
                             COALESCE(vb.fieldString, ''),
                             COALESCE(ni.idNumber, '')
-                        ) LIKE '%" . $filterValue . "%'");
+                        ) LIKE '%".$filterValue."%'");
                     }
                 } elseif ($category === "gender") {
                     // If the category is the gender only one option can be selected and filterValues is a string instead of an array
@@ -412,51 +415,50 @@ class HouseholdRepository extends AbstractCriteriaRepository
                 } elseif ($category === "projects" && count($filterValues) > 0) {
                     $orStatement = $q->expr()->orX();
                     foreach ($filterValues as $indexValue => $filterValue) {
-                        $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
-                        $orStatement->add($q->expr()->eq("p.id", ":filter" . $indexFilter . $indexValue));
+                        $q->setParameter("filter".$indexFilter.$indexValue, $filterValue);
+                        $orStatement->add($q->expr()->eq("p.id", ":filter".$indexFilter.$indexValue));
                     }
                     $q->andWhere($orStatement);
                 } elseif ($category === "vulnerabilities" && count($filterValues) > 0) {
                     $orStatement = $q->expr()->orX();
                     foreach ($filterValues as $indexValue => $filterValue) {
-                        $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
-                        $orStatement->add($q->expr()->eq("vb.id", ":filter" . $indexFilter . $indexValue));
+                        $q->setParameter("filter".$indexFilter.$indexValue, $filterValue);
+                        $orStatement->add($q->expr()->eq("vb.id", ":filter".$indexFilter.$indexValue));
                     }
                     $q->andWhere($orStatement);
                 } elseif ($category === "nationalId" && count($filterValues) > 0) {
                     $orStatement = $q->expr()->orX();
                     foreach ($filterValues as $indexValue => $filterValue) {
-                        $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
-                        $orStatement->add($q->expr()->eq("ni.id", ":filter" . $indexFilter . $indexValue));
+                        $q->setParameter("filter".$indexFilter.$indexValue, $filterValue);
+                        $orStatement->add($q->expr()->eq("ni.id", ":filter".$indexFilter.$indexValue));
                     }
                     $q->andWhere($orStatement);
                 } elseif ($category === "residency" && count($filterValues) > 0) {
                     $orStatement = $q->expr()->orX();
                     foreach ($filterValues as $indexValue => $filterValue) {
-                        $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
-                        $orStatement->add($q->expr()->eq("b.residencyStatus", ":filter" . $indexFilter . $indexValue));
+                        $q->setParameter("filter".$indexFilter.$indexValue, $filterValue);
+                        $orStatement->add($q->expr()->eq("b.residencyStatus", ":filter".$indexFilter.$indexValue));
                     }
                     $q->andWhere($orStatement);
                 } elseif ($category === "referral" && count($filterValues) > 0) {
                     $orStatement = $q->expr()->orX();
                     foreach ($filterValues as $indexValue => $filterValue) {
-                        $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
-                        $orStatement->add($q->expr()->eq("r.type", ":filter" . $indexFilter . $indexValue));
+                        $q->setParameter("filter".$indexFilter.$indexValue, $filterValue);
+                        $orStatement->add($q->expr()->eq("r.type", ":filter".$indexFilter.$indexValue));
                     }
                     $q->andWhere($orStatement);
-                }
-                elseif ($category === "livelihood" && count($filterValues) > 0) {
+                } elseif ($category === "livelihood" && count($filterValues) > 0) {
                     $orStatement = $q->expr()->orX();
                     foreach ($filterValues as $indexValue => $filterValue) {
-                        $q->setParameter("filter" . $indexFilter . $indexValue, $filterValue);
-                        $orStatement->add($q->expr()->eq("hh.livelihood", ":filter" . $indexFilter . $indexValue));
+                        $q->setParameter("filter".$indexFilter.$indexValue, $filterValue);
+                        $orStatement->add($q->expr()->eq("hh.livelihood", ":filter".$indexFilter.$indexValue));
                     }
                     $q->andWhere($orStatement);
                 } elseif ($category === "locations") {
                     // If the category is the location, filterValues is an array of adm ids
                     foreach ($filterValues as $adm => $id) {
-                        $q->andWhere($adm . " = :id" . $indexFilter)
-                            ->setParameter("id" . $indexFilter, $id);
+                        $q->andWhere($adm." = :id".$indexFilter)
+                            ->setParameter("id".$indexFilter, $id);
                     }
                 }
             }
@@ -471,7 +473,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
 
         if ($pageSize > -1) {
             $q->setFirstResult($begin)
-            ->setMaxResults($pageSize);
+                ->setMaxResults($pageSize);
         }
 
         $paginator = new Paginator($q, $fetchJoinCellection = true);
@@ -481,8 +483,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
 
     /**
      * Get all Household by country and id
+     *
      * @param string $iso3
      * @param array  $ids
+     *
      * @return mixed
      */
     public function getAllByIds(array $ids)
@@ -496,7 +500,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
             ->leftJoin('hh.countrySpecificAnswers', 'specificAnswers')
             ->andWhere('hh.archived = 0')
             ->andWhere('hh.id IN (:ids)')
-                ->setParameter('ids', $ids);
+            ->setParameter('ids', $ids);
 
         return $qb->getQuery()->getResult();
     }
@@ -520,35 +524,32 @@ class HouseholdRepository extends AbstractCriteriaRepository
             ->where('hh.archived = 0')
             ->andWhere('b.status = 1')
             ->andWhere('p.localGivenName = :givenName')
-                ->setParameter('givenName', $givenName)
+            ->setParameter('givenName', $givenName)
             ->andWhere('p.localFamilyName = :familyName')
-                ->setParameter('familyName', $familyName)
-        ;
+            ->setParameter('familyName', $familyName);
 
         if ($locationType === HouseholdLocation::LOCATION_TYPE_CAMP) {
             $qb
                 ->leftJoin('hl.campAddress', 'ca')
                 ->andWhere('ca.tentNumber = :tentNumber')
-                    ->setParameter('tentNumber', $tentNumber)
-            ;
-        }
-        else {
+                ->setParameter('tentNumber', $tentNumber);
+        } else {
             $qb
                 ->leftJoin('hl.address', 'ad')
                 ->andWhere('ad.street = :street')
-                    ->setParameter('street', $street)
+                ->setParameter('street', $street)
                 ->andWhere('ad.number = :number')
-                    ->setParameter('number', $number)
-            ;
+                ->setParameter('number', $number);
         }
 
         return $qb->getQuery()->getOneOrNullResult();
     }
 
     /**
-     * @param $onlyCount
-     * @param $countryISO3
+     * @param         $onlyCount
+     * @param         $countryISO3
      * @param Project $project
+     *
      * @return QueryBuilder
      */
     public function configurationQueryBuilder($onlyCount, $countryISO3, Project $project = null)
@@ -573,9 +574,9 @@ class HouseholdRepository extends AbstractCriteriaRepository
      * The household must have at least one beneficiary with the condition respected ($field $operator $value / Example: gender = 0)
      *
      * @param QueryBuilder $qb
-     * @param $i
-     * @param $countryISO3
-     * @param array $filters
+     * @param              $i
+     * @param              $countryISO3
+     * @param array        $filters
      */
     public function whereDefault(QueryBuilder &$qb, $i, $countryISO3, array $filters)
     {
@@ -601,9 +602,9 @@ class HouseholdRepository extends AbstractCriteriaRepository
      * The household must respect the value of the country specific ($idCountrySpecific), depends on operator and value
      *
      * @param QueryBuilder $qb
-     * @param $i
-     * @param $countryISO3
-     * @param array $filters
+     * @param              $i
+     * @param              $countryISO3
+     * @param array        $filters
      */
     protected function whereVulnerabilityCriterion(QueryBuilder &$qb, $i, $countryISO3, array $filters)
     {
@@ -640,9 +641,9 @@ class HouseholdRepository extends AbstractCriteriaRepository
      * The household must respect the value of the country specific ($idCountrySpecific), depends on operator and value
      *
      * @param QueryBuilder $qb
-     * @param $i
-     * @param $countryISO3
-     * @param array $filters
+     * @param              $i
+     * @param              $countryISO3
+     * @param array        $filters
      */
     protected function whereCountrySpecific(QueryBuilder &$qb, $i, $countryISO3, array $filters)
     {
@@ -678,7 +679,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
      * The household address location must be in the country ($countryISO3).
      *
      * @param QueryBuilder $qb
-     * @param $countryISO3
+     * @param              $countryISO3
      */
     public function whereHouseholdInCountry(QueryBuilder &$qb, $countryISO3)
     {

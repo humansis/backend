@@ -15,7 +15,7 @@ class BeneficiaryDecoratorBuilder
 
     public function buildBeneficiaryInputType(Import\Integrity\ImportLine $beneficiaryLine): BeneficiaryInputType
     {
-        $beneficiary = new BeneficiaryInputType();
+        $beneficiary = $this->buildBeneficiaryIdentityInputType($beneficiaryLine);
         $beneficiary->setDateOfBirth(ImportDateConverter::toIso($beneficiaryLine->getDateOfBirth()));
         $beneficiary->setLocalFamilyName($beneficiaryLine->localFamilyName);
         $beneficiary->setLocalGivenName($beneficiaryLine->localGivenName);
@@ -32,10 +32,6 @@ class BeneficiaryDecoratorBuilder
             $enumBuilder->setNullToEmptyArrayTransformation();
             $importedVulnerabilities = $enumBuilder->buildInputValues($beneficiaryLine->vulnerabilityCriteria);
             $beneficiary->setVulnerabilityCriteria($importedVulnerabilities);
-        }
-
-        if (!is_null($beneficiaryLine->idType)) {
-            $beneficiary->addNationalIdCard($this->buildIdentityType($beneficiaryLine->idType, (string) $beneficiaryLine->idNumber));
         }
 
         if (!is_null($beneficiaryLine->numberPhone1)) { //TODO check, that phone is filled completely in import
@@ -67,8 +63,15 @@ class BeneficiaryDecoratorBuilder
     public function buildBeneficiaryIdentityInputType(Import\Integrity\ImportLine $beneficiaryLine): BeneficiaryInputType
     {
         $beneficiary = new BeneficiaryInputType();
-        if (!is_null($beneficiaryLine->idType)) {
-            $beneficiary->addNationalIdCard($this->buildIdentityType($beneficiaryLine->idType, (string) $beneficiaryLine->idNumber));
+        if ($beneficiaryLine->hasPrimaryId()) {
+            $beneficiary->addNationalIdCard($this->buildIdentityType($beneficiaryLine->primaryIdType, (string) $beneficiaryLine->primaryIdNumber, 1));
+        }
+        if ($beneficiaryLine->hasSecondaryId()) {
+            $beneficiary->addNationalIdCard($this->buildIdentityType($beneficiaryLine->secondaryIdType,
+                (string) $beneficiaryLine->secondaryIdNumber, 2));
+        }
+        if ($beneficiaryLine->hasTernaryId()) {
+            $beneficiary->addNationalIdCard($this->buildIdentityType($beneficiaryLine->ternaryIdType, (string) $beneficiaryLine->ternaryIdNumber, 3));
         }
 
         return $beneficiary;
@@ -80,11 +83,12 @@ class BeneficiaryDecoratorBuilder
      *
      * @return NationalIdCardInputType
      */
-    private function buildIdentityType(string $idType, string $idNumber): NationalIdCardInputType
+    private function buildIdentityType(string $idType, string $idNumber, int $priority): NationalIdCardInputType
     {
         $nationalId = new NationalIdCardInputType();
         $nationalId->setType($idType);
         $nationalId->setNumber($idNumber);
+        $nationalId->setPriority($priority);
 
         return $nationalId;
     }
