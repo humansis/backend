@@ -5,6 +5,7 @@ namespace NewApiBundle\Controller;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
+use BeneficiaryBundle\Exception\CsvParserException;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use CommonBundle\Controller\ExportController;
 use CommonBundle\Entity\Organization;
@@ -12,7 +13,13 @@ use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceRepository;
+use DistributionBundle\Utils\AssistanceService;
+use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\ORMException;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Enum\EnumApiValueNoFoundException;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\BenefciaryPatchInputType;
@@ -40,37 +47,52 @@ class BeneficiaryController extends AbstractController
     private $assistanceSpreadsheetExport;
 
     /**
-     * @param AssistanceSpreadsheetExport $assistanceSpreadsheetExport
+     * @var AssistanceService
      */
-    public function __construct(AssistanceSpreadsheetExport $assistanceSpreadsheetExport)
+    private $assistanceService;
+
+    /**
+     * @param AssistanceSpreadsheetExport $assistanceSpreadsheetExport
+     * @param AssistanceService           $assistanceService
+     */
+    public function __construct(AssistanceSpreadsheetExport $assistanceSpreadsheetExport, AssistanceService $assistanceService)
     {
         $this->assistanceSpreadsheetExport = $assistanceSpreadsheetExport;
+        $this->assistanceService = $assistanceService;
     }
 
     /**
      * @Rest\Post("/web-app/v1/assistances/beneficiaries")
      *
      * @param AssistanceCreateInputType $inputType
-     * @param Pagination $pagination
+     * @param Pagination                $pagination
+     *
      * @return JsonResponse
+     * @throws EntityNotFoundException
      */
     public function precalculateBeneficiaries(AssistanceCreateInputType $inputType, Pagination $pagination): JsonResponse
     {
-        $beneficiaries = $this->get('distribution.assistance_service')->findByCriteria($inputType, $pagination);
+        $beneficiaries = $this->assistanceService->findByCriteria($inputType, $pagination);
 
         return $this->json($beneficiaries);
     }
+
     /**
      * @Rest\Post("/web-app/v1/assistances/vulnerability-scores")
      *
      * @param AssistanceCreateInputType $inputType
-     * @param Pagination $pagination
+     * @param Pagination                $pagination
      *
      * @return JsonResponse
+     * @throws EntityNotFoundException
+     * @throws CsvParserException
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     * @throws ORMException
      */
     public function vulnerabilityScores(AssistanceCreateInputType $inputType, Pagination $pagination): JsonResponse
     {
-        $vulnerabilities = $this->get('distribution.assistance_service')->findVulnerabilityScores($inputType, $pagination);
+        $vulnerabilities = $this->assistanceService->findVulnerabilityScores($inputType, $pagination);
 
         return $this->json($vulnerabilities);
     }
@@ -82,6 +104,8 @@ class BeneficiaryController extends AbstractController
      * @param BeneficiaryExportFilterInputType $inputType
      *
      * @return Response
+     * @throws EntityNotFoundException
+     * @throws EnumApiValueNoFoundException
      */
     public function exports(Request $request, BeneficiaryExportFilterInputType $inputType): Response
     {
@@ -90,7 +114,7 @@ class BeneficiaryController extends AbstractController
             foreach ($inputType->getIds() as $id) {
                 $bnf = $this->getDoctrine()->getRepository(Beneficiary::class)->find($id);
                 if (!$bnf) {
-                    throw new \Doctrine\ORM\EntityNotFoundException('Beneficiary with ID #'.$id.' does not exists.');
+                    throw new EntityNotFoundException('Beneficiary with ID #'.$id.' does not exists.');
                 }
 
                 $sample[] = [
@@ -129,12 +153,12 @@ class BeneficiaryController extends AbstractController
 
         try {
             // Create binary file to send
-            $response = new BinaryFileResponse(getcwd() . '/' . $filename);
+            $response = new BinaryFileResponse(getcwd().'/'.$filename);
 
             $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
             $mimeTypeGuesser = new \Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser();
             if ($mimeTypeGuesser->isSupported()) {
-                $response->headers->set('Content-Type', $mimeTypeGuesser->guess(getcwd() . '/' . $filename));
+                $response->headers->set('Content-Type', $mimeTypeGuesser->guess(getcwd().'/'.$filename));
             } else {
                 $response->headers->set('Content-Type', 'text/plain');
             }
@@ -156,14 +180,14 @@ class BeneficiaryController extends AbstractController
      */
     public function exportsByAssistanceRaw(Assistance $assistance, Request $request): Response
     {
-        $file = $this->get('distribution.assistance_service')->exportGeneralReliefDistributionToCsv($assistance, $request->query->get('type'));
+        $file = $this->assistanceService->exportGeneralReliefDistributionToCsv($assistance, $request->query->get('type'));
 
-        $response = new BinaryFileResponse(getcwd() . '/' . $file);
+        $response = new BinaryFileResponse(getcwd().'/'.$file);
 
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $file);
         $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
         if ($mimeTypeGuesser->isGuesserSupported()) {
-            $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType(getcwd() . '/' . $file));
+            $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType(getcwd().'/'.$file));
         } else {
             $response->headers->set('Content-Type', 'text/plain');
         }
@@ -276,21 +300,22 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/projects/{id}/targets/{target}/beneficiaries")
      *
-     * @param Project $project
-     * @param string $target
+     * @param Project                            $project
+     * @param string                             $target
      * @param BeneficiarySelectedFilterInputType $filter
-     * @param BeneficiaryRepository $beneficiaryRepository
-     * @param AssistanceRepository $assistanceRepository
+     * @param BeneficiaryRepository              $beneficiaryRepository
+     * @param AssistanceRepository               $assistanceRepository
      *
      * @return JsonResponse
      */
-    public function getBeneficiaries(Project $project,
-        string $target,
+    public function getBeneficiaries(
+        Project                            $project,
+        string                             $target,
         BeneficiarySelectedFilterInputType $filter,
-        BeneficiaryRepository $beneficiaryRepository,
-        AssistanceRepository $assistanceRepository
+        BeneficiaryRepository              $beneficiaryRepository,
+        AssistanceRepository               $assistanceRepository
     ): JsonResponse {
-        if (!in_array($target, AssistanceTargetType::values())){
+        if (!in_array($target, AssistanceTargetType::values())) {
             throw $this->createNotFoundException('Invalid target. Allowed are '.implode(', ', AssistanceTargetType::values()));
         }
 
@@ -302,7 +327,6 @@ class BeneficiaryController extends AbstractController
         } else {
             $beneficiaries = $beneficiaryRepository->getAllOfProject($project, $target);
         }
-
 
         return $this->json(new Paginator($beneficiaries));
     }

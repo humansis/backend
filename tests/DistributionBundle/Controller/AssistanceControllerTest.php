@@ -67,8 +67,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
                     "type" => "Mobile Money",
                     "unit" => "USD",
                     "value" => 150.1,
-                    "description" => null
-                ]
+                    "description" => null,
+                ],
             ],
             "date_distribution" => "13-09-2018",
             "location" => [
@@ -76,43 +76,42 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 'adm2' => $adm2->getId(),
                 'adm3' => null,
                 'adm4' => null,
-                "country_iso3"=> "KHM"
+                "country_iso3" => "KHM",
             ],
             "country_specific_answers" => [
                 [
                     "answer" => "MY_ANSWER_TEST1",
                     "country_specific" => [
-                        "id" => 1
-                    ]
-                ]
+                        "id" => 1,
+                    ],
+                ],
             ],
-            "location_name"=> "",
-            "name"=> "TEST_DISTRIBUTION_NAME_PHPUNIT",
-            "project"=> [
-                "donors"=> [],
-                "donors_name"=> [],
-                "id"=> 1,
-                "name"=> "",
-                "sectors"=> [],
-                "sectors_name"=> []
+            "location_name" => "",
+            "name" => "TEST_DISTRIBUTION_NAME_PHPUNIT",
+            "project" => [
+                "donors" => [],
+                "donors_name" => [],
+                "id" => 1,
+                "name" => "",
+                "sectors" => [],
+                "sectors_name" => [],
             ],
-            "selection_criteria"=> [
+            "selection_criteria" => [
                 [
                     [
-                        "condition_string"=> "true",
-                        "field_string"=> "disabled",
-                        "id_field"=> 1,
-                        "target"=> "Beneficiary",
-                        "table_string"=> "vulnerabilityCriteria",
-                        "weight"=> 1,
-                    ]
-                ]
+                        "condition_string" => "true",
+                        "field_string" => "disabled",
+                        "id_field" => 1,
+                        "target" => "Beneficiary",
+                        "table_string" => "vulnerabilityCriteria",
+                        "weight" => 1,
+                    ],
+                ],
             ],
-            "threshold"=> 1,
+            "threshold" => 1,
             'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
             'subsector' => \ProjectBundle\DBAL\SubSectorEnum::IN_KIND_FOOD,
         );
-
 
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
@@ -141,7 +140,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     /**
      * @depends testCreateDistribution
+     *
      * @param $distribution
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -154,7 +155,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('GET', '/api/wsse/distributions/'. $distribution['id'] .'/random?size=2');
+        $crawler = $this->request('GET', '/api/wsse/distributions/'.$distribution['id'].'/random?size=2');
         $randomBenef = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
@@ -166,7 +167,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     /**
      * @depends testCreateDistribution
+     *
      * @param $distribution
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -180,7 +183,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('POST', '/api/wsse/distributions/'. $distribution['id'] .'/validate', array());
+        $crawler = $this->request('POST', '/api/wsse/distributions/'.$distribution['id'].'/validate', array());
         $validate = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
 
@@ -202,10 +205,11 @@ class AssistanceControllerTest extends BMSServiceTestCase
         return $distribution['id'];
     }
 
-
     /**
      * @depends testCreateDistribution
+     *
      * @param $distribution
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -215,10 +219,11 @@ class AssistanceControllerTest extends BMSServiceTestCase
         // TODO: write test in proper way.
     }
 
-
     /**
      * @depends testCreateDistribution
+     *
      * @param $distribution
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -260,10 +265,11 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('commodities', $all[0]);
     }
 
-
     /**
      * @depends testCreateDistribution
+     *
      * @param $distribution
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -276,10 +282,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('GET', '/api/wsse/distributions/'. $distribution['id']);
+        $crawler = $this->request('GET', '/api/wsse/distributions/'.$distribution['id']);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $one = json_decode($this->client->getResponse()->getContent(), true);
-
 
         // Check if the second step succeed
         $this->assertArrayHasKey('id', $one);
@@ -312,7 +317,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('GET', '/api/wsse/distributions/household/'. $hhId);
+        $crawler = $this->request('GET', '/api/wsse/distributions/household/'.$hhId);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $hhsummaries = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -330,10 +335,11 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('commodities', $hhsummary);
     }
 
-
     /**
      * @depends testCreateDistribution
+     *
      * @param $distribution
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -347,7 +353,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('GET', '/api/wsse/distributions/'. $distribution['id'] .'/beneficiaries');
+        $crawler = $this->request('GET', '/api/wsse/distributions/'.$distribution['id'].'/beneficiaries');
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $beneficiaries = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -358,9 +364,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('transactions', $beneficiaries[0]);
     }
 
-
     /**
      * @depends testCreateDistribution
+     *
      * @param $distribution
      */
     public function testDistributionBeneficiariesVouchers($distribution)
@@ -376,7 +382,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $distributionRepo = $this->em->getRepository(AssistanceBeneficiary::class);
-        $firstAssistanceBeneficiary = $distributionRepo->findOneBy(['assistance'=>$distribution['id']], ['id' => 'asc']);
+        $firstAssistanceBeneficiary = $distributionRepo->findOneBy(['assistance' => $distribution['id']], ['id' => 'asc']);
         $bnfId = $firstAssistanceBeneficiary->getBeneficiary()->getId();
 
         $booklet = $bookletService->create('KHM', [
@@ -384,7 +390,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'number_booklets' => 1,
             'number_vouchers' => 10,
             'currency' => 'USD',
-            'individual_values' => range(100, 110)
+            'individual_values' => range(100, 110),
         ]);
         $booklet = $this->em->getRepository(Booklet::class)->find($booklet->getId());
         $bookletService->assign($booklet, $firstAssistanceBeneficiary->getAssistance(), $firstAssistanceBeneficiary->getBeneficiary());
@@ -394,7 +400,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'number_booklets' => 1,
             'number_vouchers' => 20,
             'currency' => 'EUR',
-            'individual_values' => range(200, 220)
+            'individual_values' => range(200, 220),
         ]);
         $bookletBig = $this->em->getRepository(Booklet::class)->find($bookletBig->getId());
         $bookletService->assign($bookletBig, $firstAssistanceBeneficiary->getAssistance(), $firstAssistanceBeneficiary->getBeneficiary());
@@ -409,7 +415,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $purchaseService->purchase($purchase);
 
         // Second step
-        $crawler = $this->request('GET', '/api/wsse/distributions/'. $distribution['id'] .'/beneficiaries');
+        $crawler = $this->request('GET', '/api/wsse/distributions/'.$distribution['id'].'/beneficiaries');
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $beneficiaries = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -433,7 +439,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         foreach ($pivotBeneficiary['booklets'][0]['vouchers'] as $id => $voucher) {
             $this->assertArrayHasKey('value', $voucher);
-            $this->assertEquals($voucher['value'], 100+$id, "Wrong voucher value");
+            $this->assertEquals($voucher['value'], 100 + $id, "Wrong voucher value");
             $this->assertArrayHasKey('used_at', $voucher);
             $this->assertNull($voucher['used_at']);
             $this->assertArrayHasKey('redeemed_at', $voucher);
@@ -453,7 +459,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     /**
      * @depends testCreateDistribution
+     *
      * @param $distribution
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -469,22 +477,22 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'date_distribution' => '09-12-2019',
             'id' => $distribution['id'],
             "location" => [
-                "adm1"=> 2,
-                "adm2"=> 2,
-                "adm3"=> 2,
-                "adm4"=> 2,
-                "country_iso3"=> "KHM"
+                "adm1" => 2,
+                "adm2" => 2,
+                "adm3" => 2,
+                "adm4" => 2,
+                "country_iso3" => "KHM",
             ],
             'name' => 'TEST_DISTRIBUTION_NAME_PHPUNIT',
-            "project"=> $distribution['project'],
-            "selection_criteria"=> $distribution['selection_criteria'],
+            "project" => $distribution['project'],
+            "selection_criteria" => $distribution['selection_criteria'],
             'target_type' => AssistanceTargetType::HOUSEHOLD,
             'updated_on' => '28-11-2018 11:11:11',
             'validated' => false,
         );
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('POST', '/api/wsse/distributions/'. $distribution['id'], $body);
+        $crawler = $this->request('POST', '/api/wsse/distributions/'.$distribution['id'], $body);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $update = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -502,10 +510,11 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('distribution_beneficiaries', $update);
     }
 
-
     /**
      * @depends testCreateDistribution
+     *
      * @param $distribution
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -518,13 +527,15 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('POST', '/api/wsse/distributions/'. $distribution['id'] . '/archive');
+        $crawler = $this->request('POST', '/api/wsse/distributions/'.$distribution['id'].'/archive');
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
     }
 
     /**
      * @depends testCreateDistribution
+     *
      * @param $d
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -537,7 +548,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('GET', '/api/wsse/web-app/v1/distributions/projects/'. $d['project']['id']);
+        $crawler = $this->request('GET', '/api/wsse/web-app/v1/distributions/projects/'.$d['project']['id']);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $distributions = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -565,7 +576,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     /**
      * @depends testCreateDistribution
+     *
      * @param $d
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -578,7 +591,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('GET', '/api/wsse/distributions/projects/'. $d['project']['id']);
+        $crawler = $this->request('GET', '/api/wsse/distributions/projects/'.$d['project']['id']);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $distributions = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -608,7 +621,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     /**
      * @depends testCreateDistribution
+     *
      * @param $distribution
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -644,7 +659,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         foreach ($justifiedTypes as $justifiedType) {
             $justifiedBeneficiaries = [];
             foreach ($import[$justifiedType] as $beneficiary) {
-                $beneficiary['justification'] = 'Justification ' . $justifiedType;
+                $beneficiary['justification'] = 'Justification '.$justifiedType;
                 array_push($justifiedBeneficiaries, $beneficiary);
             }
             $import[$justifiedType] = $justifiedBeneficiaries;
@@ -657,10 +672,11 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertEquals($save['result'], "Beneficiary list updated.");
     }
 
-
     /**
      * @depends testCreateDistribution
+     *
      * @param $distribution
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -672,11 +688,11 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $body = array(
-            'target' => 'Household'
+            'target' => 'Household',
         );
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('POST', '/api/wsse/distributions/beneficiaries/project/'. $distribution['project']['id'], $body);
+        $crawler = $this->request('POST', '/api/wsse/distributions/beneficiaries/project/'.$distribution['project']['id'], $body);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $beneficiaries = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -698,7 +714,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     /**
      * @depends testCreateDistribution
+     *
      * @param $distribution
+     *
      * @return void
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
@@ -711,12 +729,12 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
 
         $body = array(
-            'code' => '145891'
+            'code' => '145891',
         );
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('POST', '/api/wsse/transaction/distribution/'. $distribution['id'].'/send', $body);
+        $crawler = $this->request('POST', '/api/wsse/transaction/distribution/'.$distribution['id'].'/send', $body);
         // $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $sendMoney = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -731,7 +749,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     /**
      * @depends testCreateDistribution
+     *
      * @param $distribution
+     *
      * @return void
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
@@ -745,7 +765,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('POST', '/api/wsse/transaction/distribution/'. $distribution['id'].'/email');
+        $crawler = $this->request('POST', '/api/wsse/transaction/distribution/'.$distribution['id'].'/email');
         // $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $update = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -755,7 +775,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     /**
      * @depends testCreateDistribution
+     *
      * @param $distribution
+     *
      * @throws \Doctrine\Common\Persistence\Mapping\MappingException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
@@ -842,7 +864,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 [
                     [
                         'condition_string' => 'true',
-                        'field_string' => 'disabled',
+                        'field_string' => 'personWithDisability',
                         'id_field' => 1,
                         'target' => 'Beneficiary',
                         'table_string' => 'vulnerabilityCriteria',
@@ -1035,10 +1057,11 @@ class AssistanceControllerTest extends BMSServiceTestCase
         return $assistanceData['distribution']['id'];
     }
 
-
     /**
      * @depends testCreateDistributionForCommunity
+     *
      * @param $distributionId
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -1051,7 +1074,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('GET', '/api/wsse/distributions/'.$distributionId .'/communities');
+        $crawler = $this->request('GET', '/api/wsse/distributions/'.$distributionId.'/communities');
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $beneficiaries = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -1065,7 +1088,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     /**
      * @depends testCreateDistributionForInstitution
+     *
      * @param $distributionId
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -1078,7 +1103,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         // Second step
         // Create the user with the email and the salted password. The user should be enable
-        $crawler = $this->request('GET', '/api/wsse/distributions/'.$distributionId .'/institutions');
+        $crawler = $this->request('GET', '/api/wsse/distributions/'.$distributionId.'/institutions');
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
         $beneficiaries = json_decode($this->client->getResponse()->getContent(), true);
 

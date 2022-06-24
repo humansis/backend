@@ -68,7 +68,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             0 => [
                 0 => [
                     'condition_string' => 'true',
-                    'field_string' => 'disabled',
+                    'field_string' => 'personWithDisability',
                     'id_field' => 1,
                     'target' => 'Beneficiary',
                     'table_string' => 'vulnerabilityCriteria',
@@ -208,9 +208,12 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $institutions = $manager->getRepository(Institution::class)->getUnarchivedByProject($project);
         if (empty($institutions)) {
             echo '(no I)';
+
             return;
         }
-        $data['institutions'] = array_map(function (Institution $institution) { return $institution->getId(); }, $institutions);
+        $data['institutions'] = array_map(function (Institution $institution) {
+            return $institution->getId();
+        }, $institutions);
 
         $country = $this->countries->getCountry($project->getIso3());
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
@@ -234,9 +237,12 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $communities = $manager->getRepository(Community::class)->getUnarchivedByProject($project)->getQuery()->getResult();
         if (empty($communities)) {
             echo '(no C)';
+
             return;
         }
-        $data['communities'] = array_map(function (Community $community) { return $community->getId(); }, $communities);
+        $data['communities'] = array_map(function (Community $community) {
+            return $community->getId();
+        }, $communities);
 
         $country = $this->countries->getCountry($project->getIso3());
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
@@ -301,7 +307,6 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             ];
         }
 
-
         return $commodities;
     }
 
@@ -325,6 +330,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $date = new \DateTime();
         $date->modify('+100 days');
         $date->modify('-'.rand(1, 200).' days');
+
         return $date->format('d-m-Y');
     }
 }
