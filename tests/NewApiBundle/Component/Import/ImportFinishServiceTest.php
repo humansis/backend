@@ -177,7 +177,7 @@ class ImportFinishServiceTest extends KernelTestCase
       "numberFormat": "General"
     },
     "Vulnerability criteria": {
-      "value": "disabled",
+      "value": "personWithDisability",
       "dataType": "s",
       "numberFormat": "General"
     },
@@ -466,12 +466,12 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
 
         $originLinks = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
-            'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
+            'beneficiary' => $this->originHousehold->getHouseholdHead()->getId(),
         ]);
         $this->assertEmpty($originLinks, "Origin beneficiary shouldn't have any import link");
 
         $links = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
-            'import' => $this->import->getId()
+            'import' => $this->import->getId(),
         ]);
         $this->assertCount(0, $links, "There should be no link");
     }
@@ -489,12 +489,12 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->assertEquals(17, $bnfCount, "Wrong number of created beneficiaries");
 
         $originLinks = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
-            'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
+            'beneficiary' => $this->originHousehold->getHouseholdHead()->getId(),
         ]);
         $this->assertEmpty($originLinks, "Origin beneficiary shouldn't have any import link");
 
         $links = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
-            'import' => $this->import->getId()
+            'import' => $this->import->getId(),
         ]);
         $this->assertCount(16, $links, "There should be only one link");
     }
@@ -518,12 +518,12 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->assertEquals(17, $bnfCount, "Wrong number of created beneficiaries");
 
         $originLinks = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
-            'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
+            'beneficiary' => $this->originHousehold->getHouseholdHead()->getId(),
         ]);
         $this->assertEmpty($originLinks, "Origin beneficiary shouldn't have any import link");
 
         $links = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
-            'import' => $this->import->getId()
+            'import' => $this->import->getId(),
         ]);
         $this->assertCount(16, $links, "There should be only one link");
     }
@@ -544,12 +544,12 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->userStartedFinishing($this->import);
 
         $links = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
-            'import' => $this->import->getId()
+            'import' => $this->import->getId(),
         ]);
         $this->assertEquals(16, count($links), "Wrong number of created beneficiaries");
 
         $originLinks = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
-            'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
+            'beneficiary' => $this->originHousehold->getHouseholdHead()->getId(),
         ]);
         $this->assertCount(1, $originLinks, "Origin beneficiary should have one import link");
     }
@@ -573,7 +573,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
 
         $originLinks = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
-            'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
+            'beneficiary' => $this->originHousehold->getHouseholdHead()->getId(),
         ]);
         $this->assertCount(1, $originLinks, "Origin beneficiary should have one import link");
     }
@@ -591,7 +591,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
 
         $originLinks = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
-            'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
+            'beneficiary' => $this->originHousehold->getHouseholdHead()->getId(),
         ]);
         $this->assertEmpty($originLinks, "Origin beneficiary shouldn't have any import link");
     }
@@ -615,12 +615,12 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->assertEquals(1, $bnfCount, "Wrong number of created beneficiaries");
 
         $originLinks = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
-            'beneficiary' => $this->originHousehold->getHouseholdHead()->getId()
+            'beneficiary' => $this->originHousehold->getHouseholdHead()->getId(),
         ]);
         $this->assertEmpty($originLinks, "Origin beneficiary shouldn't have any import link");
 
         $links = $this->entityManager->getRepository(Entity\ImportBeneficiary::class)->findBy([
-            'import' => $this->import->getId()
+            'import' => $this->import->getId(),
         ]);
         $this->assertCount(0, $links, "There should be no link");
     }
