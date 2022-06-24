@@ -22,7 +22,6 @@ use NewApiBundle\Workflow\ImportTransitions;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
-use function NewApiBundle\Component\Import\Integrity\count;
 
 class IntegrityChecker
 {
