@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectRepository;
 use NewApiBundle\Component\Import\Message\ImportCheck;
 use NewApiBundle\Component\Import\Message\ItemBatch;
+use NewApiBundle\Component\Import\SimilarityChecker;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
@@ -28,7 +29,7 @@ class SimilaritySubscriber implements EventSubscriberInterface
     private $entityManager;
 
     /**
-     * @var \NewApiBundle\Component\Import\SimilarityChecker
+     * @var SimilarityChecker
      */
     private $similarityChecker;
 
@@ -46,14 +47,15 @@ class SimilaritySubscriber implements EventSubscriberInterface
     private $batchSize;
 
     public function __construct(
-        EntityManagerInterface                           $entityManager,
-        \NewApiBundle\Component\Import\SimilarityChecker $similarityChecker,
-        int                                              $batchSize,
-        MessageBusInterface                              $messageBus
+        EntityManagerInterface $entityManager,
+        SimilarityChecker      $similarityChecker,
+        ImportQueueRepository  $queueRepository,
+        int                    $batchSize,
+        MessageBusInterface    $messageBus
     ) {
         $this->entityManager = $entityManager;
         $this->similarityChecker = $similarityChecker;
-        $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
+        $this->queueRepository = $queueRepository;
         $this->batchSize = $batchSize;
         $this->messageBus = $messageBus;
     }

@@ -133,6 +133,8 @@ class ImportRepository extends EntityRepository
         $qb->select('i')
             ->andWhere('i.countryIso3 = :country')
             ->setParameter('country', $import->getCountryIso3())
+            ->andWhere('i != :pivotImport')
+            ->setParameter('pivotImport', $import)
         ;
 
         return $qb->getQuery()->getResult();
