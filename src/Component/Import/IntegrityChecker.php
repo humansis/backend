@@ -88,12 +88,13 @@ class IntegrityChecker
 
         if ($this->hasImportValidFile($import) === false) {
             $this->importStateMachine->apply($import, ImportTransitions::FAIL_INTEGRITY);
+
             return;
         }
 
         foreach ($this->queueRepository->getItemsToIntegrityCheck($import, $batchSize) as $i => $item) {
             $this->checkOne($item);
-            if (($i+1) % 500 === 0) {
+            if (($i + 1) % 500 === 0) {
                 $this->entityManager->flush();
             }
         }
@@ -200,7 +201,7 @@ class IntegrityChecker
         $queueSize = $this->entityManager->getRepository(ImportQueue::class)
             ->count([
                 'import' => $import,
-                'state' => [ImportQueueState::NEW, ImportQueueState::INVALID, ImportQueueState::VALID]
+                'state' => [ImportQueueState::NEW, ImportQueueState::INVALID, ImportQueueState::VALID],
             ]);
 
         return $queueSize == 0;
@@ -219,6 +220,7 @@ class IntegrityChecker
             }
         }
         $column = key_exists($property, $mapping) ? $mapping[$property] : $property;
+
         return Integrity\QueueViolation::create($lineIndex, $column, $violation->getMessage(), $violation->getInvalidValue());
     }
 
