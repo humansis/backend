@@ -12,7 +12,6 @@ use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportQueueTransitions;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
-use function NewApiBundle\Component\Import\Identity\count;
 
 class SimilarityChecker
 {
