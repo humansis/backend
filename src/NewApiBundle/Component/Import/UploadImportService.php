@@ -145,6 +145,10 @@ class UploadImportService implements MessageHandlerInterface
         $this->em->persist($importFile);
         $this->em->flush();
 
-        $this->messageBus->dispatch(new UploadFile($importFile));
+        if (!$importFile->getStructureViolations()) {
+            $this->messageBus->dispatch(new UploadFile($importFile));
+        } else {
+            throw new InvalidArgumentException('File has structural issues and cannot be imported.');
+        }
     }
 }
