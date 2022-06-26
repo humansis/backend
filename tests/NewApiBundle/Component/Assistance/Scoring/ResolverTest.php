@@ -6,6 +6,7 @@ namespace Tests\NewApiBundle\Component\Assistance\Scoring;
 use BeneficiaryBundle\Entity\Household;
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleType;
+use NewApiBundle\Component\Assistance\Scoring\Model\Factory\ScoringFactory;
 use NewApiBundle\Component\Assistance\Scoring\Model\Scoring;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRule;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRuleOption;
@@ -20,6 +21,9 @@ class ResolverTest extends KernelTestCase
     /** @var ObjectManager */
     private $objectManager;
 
+    /** @var ScoringFactory */
+    private $scoringFactory;
+
     public function __construct()
     {
         parent::__construct();
@@ -28,6 +32,7 @@ class ResolverTest extends KernelTestCase
 
         $this->resolver = $kernel->getContainer()->get(Resolver::class);
         $this->objectManager = $kernel->getContainer()->get('doctrine.orm.default_entity_manager');
+        $this->scoringFactory = $kernel->getContainer()->get(ScoringFactory::class);
     }
 
     public function testSimpleCountrySpecific(): void
@@ -48,6 +53,18 @@ class ResolverTest extends KernelTestCase
 
         $this->assertEquals(5, $protocol->getTotalScore());
         $this->assertEquals(5, $protocol->getCategoryScore('Test Rule'));
+    }
+
+    public function testUkrIDPScoring()
+    {
+        $scoring = $this->scoringFactory->getScoring('IDP');
+
+        /** @var Household $household */
+        $household = $this->objectManager->getRepository(Household::class)->findOneBy([]);
+
+        $protocol = $this->resolver->compute($household, $scoring, 'KHM');
+
+        //TODO rozšířit
     }
 }
 

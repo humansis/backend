@@ -30,9 +30,9 @@ final class ScoringFactory
     /** @var ValidatorInterface */
     private $validator;
 
-    public function __construct(Parser $parser, array $scoringConfigurations, ValidatorInterface $validator)
+    public function __construct(array $scoringConfigurations, ValidatorInterface $validator)
     {
-        $this->parser = $parser;
+        $this->parser = new Parser();
         $this->scoringConfigurations = $scoringConfigurations;
         $this->validator = $validator;
     }
@@ -52,7 +52,7 @@ final class ScoringFactory
 
         foreach ($this->scoringConfigurations as $configuration) {
             if ($configuration['name'] === $scoringType) {
-                $csvPath = $configuration['name'];
+                $csvPath = $configuration['csvFile'];
             }
         }
 

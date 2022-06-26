@@ -89,11 +89,11 @@ parameters:
         - name: IDP
           countries:
             - UKR
-          csvFile: UKR_IDP.csv
+          csvFile: '%kernel.project_dir%/src/NewApiBundle/Resources/Scoring/UKR_IDP.csv'
         - name: Community
           countries:
             - UKR
-          csvFile: UKR_community.csv
+          csvFile: '%kernel.project_dir%/src/NewApiBundle/Resources/Scoring/UKR_community.csv'
         - name: Default
           countries:
               - KHM

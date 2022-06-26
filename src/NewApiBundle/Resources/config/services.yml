@@ -469,6 +469,11 @@ services:
             - '@=service("doctrine.orm.entity_manager").getRepository("BeneficiaryBundle:CountrySpecific")'
             - '@=service("doctrine.orm.entity_manager").getRepository("BeneficiaryBundle:CountrySpecificAnswer")'
 
+    NewApiBundle\Component\Assistance\Scoring\Model\Factory\ScoringFactory:
+        public: true
+        arguments:
+            - '%scoringTypes%'
+
     BeneficiaryBundle\Model\Vulnerability\Resolver:
         public: true
         arguments:

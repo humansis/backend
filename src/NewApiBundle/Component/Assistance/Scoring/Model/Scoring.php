@@ -14,12 +14,6 @@ final class Scoring
 
     /**
      * @var ScoringRule[]
-     *
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Valid()
-     *     }
-     * )
      */
     private $rules;
 
