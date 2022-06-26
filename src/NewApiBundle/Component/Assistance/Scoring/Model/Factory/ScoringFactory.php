@@ -45,7 +45,7 @@ final class ScoringFactory
      * @throws CsvParserException
      * @throws \Exception
      */
-    public function getScoring(string $scoringType): Scoring
+    public function buildScoring(string $scoringType): Scoring
     {
         /** @var string|null $csvPath */
         $csvPath = null;

@@ -57,7 +57,7 @@ class ResolverTest extends KernelTestCase
 
     public function testUkrIDPScoring()
     {
-        $scoring = $this->scoringFactory->getScoring('IDP');
+        $scoring = $this->scoringFactory->buildScoring('IDP');
 
         /** @var Household $household */
         $household = $this->objectManager->getRepository(Household::class)->findOneBy([]);
