@@ -459,12 +459,21 @@ services:
             - '%logs.lifetime%'
 
     NewApiBundle\InputType\Assistance\Scoring\ScoringService:
-        arguments:
-          - '@NewApiBundle\Component\Assistance\Scoring\Resolver'
-  
+
+    NewApiBundle\Component\Assistance\Scoring\RulesCalculation:
+
     NewApiBundle\Component\Assistance\Scoring\Resolver:
+        public: true
         arguments:
-            $scoringFiles: [] #todo scoring files
+            - '@NewApiBundle\Component\Assistance\Scoring\RulesCalculation'
+            - '@=service("doctrine.orm.entity_manager").getRepository("BeneficiaryBundle:CountrySpecific")'
+            - '@=service("doctrine.orm.entity_manager").getRepository("BeneficiaryBundle:CountrySpecificAnswer")'
+
+    BeneficiaryBundle\Model\Vulnerability\Resolver:
+        public: true
+        arguments:
+            - 'test'
+            - 'test'
 
     NewApiBundle\Services\AssistanceDistributionService:
 
