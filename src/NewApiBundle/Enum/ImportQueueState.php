@@ -53,7 +53,7 @@ final class ImportQueueState
             self::TO_CREATE,
             self::TO_UPDATE,
             self::TO_LINK,
-            //self::TO_IGNORE,
+            self::TO_IGNORE,
         ];
     }
 
@@ -63,6 +63,7 @@ final class ImportQueueState
             self::CREATED,
             self::UPDATED,
             self::LINKED,
+            self::IGNORED,
         ];
     }
 }
