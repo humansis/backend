@@ -196,7 +196,9 @@ services:
             - '@NewApiBundle\Component\File\UploadService'
 
     NewApiBundle\Controller\AssistanceCodelistController:
-        arguments: ['@project.sector_service']
+        arguments: 
+            - '@project.sector_service'
+            - '%scoringTypes%'
 
     NewApiBundle\Controller\SectorsCodelistController:
         arguments:

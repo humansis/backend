@@ -29,6 +29,24 @@ class AssistanceCodelistControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
+    public function testGetScoringTypes()
+    {
+        $this->request('GET', '/api/basic/web-app/v1/scoring-types');
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('totalCount', $result);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertIsArray($result['data']);
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testGetTargets()
     {
         $this->request('GET', '/api/basic/web-app/v1/assistances/targets?filter[type]=' . AssistanceType::ACTIVITY);

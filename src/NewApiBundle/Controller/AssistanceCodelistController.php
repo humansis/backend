@@ -28,14 +28,34 @@ class AssistanceCodelistController extends AbstractController
     private $sectorService;
 
     /**
+     * @var array
+     */
+    private $scoringConfigurations;
+
+    /**
      * AssistanceCodelistController constructor.
      * @param SectorService $sectorService
+     * @param array $scoringConfigurations
      */
     public function __construct(
-        SectorService $sectorService
+        SectorService $sectorService,
+        array $scoringConfigurations
     )
     {
         $this->sectorService = $sectorService;
+        $this->scoringConfigurations = $scoringConfigurations;
+    }
+
+    /**
+     * @Rest\Get("/web-app/v1/scoring-types")
+     *
+     * @return JsonResponse
+     */
+    public function getScoringTypes(): JsonResponse
+    {
+        $scoringTypes = CodeLists::mapEnum(array_column($this->scoringConfigurations, 'name'));
+
+        return $this->json(new Paginator($scoringTypes));
     }
 
     /**
