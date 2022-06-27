@@ -85,11 +85,9 @@ class IdentitySubscriber implements EventSubscriberInterface
 
         foreach ($this->queueRepository->findBy([
             'import' => $import,
-            // 'state' => ImportQueueState::VALID,
+            'state' => ImportQueueState::VALID,
         ]) as $item) {
-            // if ($item->getState() == ImportQueueState::VALID) {
-                $this->messageBus->dispatch(ItemBatch::checkSingleItemIdentity($item));
-            // }
+            $this->messageBus->dispatch(ItemBatch::checkSingleItemIdentity($item));
         }
 
         $this->messageBus->dispatch(ImportCheck::checkIdentityComplete($import));
