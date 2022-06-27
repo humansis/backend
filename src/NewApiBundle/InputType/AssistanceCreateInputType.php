@@ -86,6 +86,13 @@ class AssistanceCreateInputType implements InputTypeInterface
      */
     private $subsector;
 
+    //TODO checkovat, jestli obsahuje hodnoty z enumu
+    /**
+     * @Assert\Type("string")
+     * @Assert\NotNull
+     */
+    private $scoringType;
+
     /**
      * @Assert\Type("array")
      * @Assert\Valid
@@ -385,6 +392,22 @@ class AssistanceCreateInputType implements InputTypeInterface
     public function setSubsector($subsector)
     {
         $this->subsector = $subsector;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getScoringType()
+    {
+        return $this->scoringType;
+    }
+
+    /**
+     * @param string $scoringType
+     */
+    public function setScoringType(string $scoringType): void
+    {
+        $this->scoringType = $scoringType;
     }
 
     /**
