@@ -477,8 +477,8 @@ services:
     BeneficiaryBundle\Model\Vulnerability\Resolver:
         public: true
         arguments:
-            - 'test'
-            - 'test'
+            - '%kernel.project_dir%/src/BeneficiaryBundle/Resources/config/vulnerability/weighting.csv'
+            - '%kernel.project_dir%/src/BeneficiaryBundle/Resources/config/vulnerability/scoring_<<COUNTRY>>.csv'
 
     NewApiBundle\Services\AssistanceDistributionService:
 

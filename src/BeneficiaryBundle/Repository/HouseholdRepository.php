@@ -551,6 +551,19 @@ class HouseholdRepository extends AbstractCriteriaRepository
         return $qb->getQuery()->getOneOrNullResult();
     }
 
+    public function findAllByHeadIds(array $ids)
+    {
+        $qb = $this->createQueryBuilder('hh')
+            ->select('hh')
+            ->innerJoin('hh.beneficiaries', 'b')
+            ->where('hh.archived = 0')
+            ->andWhere('b.status = 1')
+            ->andWhere('b.id IN (:ids)')
+            ->setParameter('ids', $ids);
+
+        return $qb->getQuery()->getResult();
+    }
+
     /**
      * @param $onlyCount
      * @param $countryISO3
