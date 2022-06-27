@@ -317,13 +317,15 @@ class AssistanceController extends AbstractController
      */
     public function vulnerabilityScoresExports(Assistance $assistance, Request $request, AssistanceFactory $factory): Response
     {
+        $urlPrefix = $request->getSchemeAndHttpHost();
+
         if (!$request->query->has('type')) {
             throw $this->createNotFoundException('Missing query attribute type');
         }
 
         $type = $request->query->get('type');
 
-        return $this->scoresFromAssistance($factory->hydrate($assistance), $type);
+        return $this->scoresFromAssistance($factory->hydrate($assistance), $type, $urlPrefix);
     }
 
     /**
@@ -336,14 +338,18 @@ class AssistanceController extends AbstractController
      */
     public function vulnerabilityScoresPreExport(AssistanceCreateInputType $inputType, AssistanceFactory $factory, Request $request)
     {
+        $urlPrefix = $request->getSchemeAndHttpHost();
+
         if (!$request->query->has('type')) {
             throw $this->createNotFoundException('Missing query attribute type');
         }
 
         $type = $request->query->get('type');
+        $threshold = $inputType->getThreshold();
+        $inputType->setThreshold(0);
         $assistance = $factory->create($inputType);
 
-        return $this->scoresFromAssistance($assistance, $type);
+        return $this->scoresFromAssistance($assistance, $type, $urlPrefix, $threshold);
     }
 
     /**
@@ -354,9 +360,9 @@ class AssistanceController extends AbstractController
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
-    private function scoresFromAssistance(DomainAssistance $assistance, string $type): Response
+    private function scoresFromAssistance(DomainAssistance $assistance, string $type, string $urlPrefix, int $threshold = null): Response
     {
-        $filename = $this->vulnerabilityScoreExport->export($assistance, $type);
+        $filename = $this->vulnerabilityScoreExport->export($assistance, $type, $urlPrefix, $threshold);
         if (!$filename) {
             throw $this->createNotFoundException();
         }
