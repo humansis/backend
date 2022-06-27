@@ -7,4 +7,12 @@ final class ScoringRuleType
 {
     public const COUNTRY_SPECIFIC = 'countrySpecific';
     public const CALCULATION = 'calculation';
+
+    public static function values(): array
+    {
+        return [
+            self::COUNTRY_SPECIFIC,
+            self::CALCULATION,
+        ];
+    }
 }

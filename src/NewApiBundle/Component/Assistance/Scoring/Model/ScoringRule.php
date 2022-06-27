@@ -3,21 +3,12 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Assistance\Scoring\Model;
 
-use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleType;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\GroupSequenceProviderInterface;
-
-/**
- * @Assert\GroupSequenceProvider()
- */
-final class ScoringRule implements GroupSequenceProviderInterface
+final class ScoringRule
 {
     /**
      * One of Enum\ScoringRuleType
      *
      * @var string
-     *
-     * @Assert\Choice(callback={"NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleType", "values"})
      */
     private $type;
 
@@ -26,8 +17,6 @@ final class ScoringRule implements GroupSequenceProviderInterface
      * $type = calculation: name of method which performs the calculation (in RulesCalculation)
      *
      * @var string
-     *
-     * @Assert\Choice(callback={"NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRulesEnum", "values"}, groups={"calculation"})
      */
     private $fieldName;
 
@@ -46,17 +35,6 @@ final class ScoringRule implements GroupSequenceProviderInterface
         $this->type = $type;
         $this->fieldName = $fieldName;
         $this->title = $title;
-    }
-
-    public function getGroupSequence(): array
-    {
-        $sequence = ['ScoringRule'];
-
-        if ($this->type = ScoringRuleType::CALCULATION) {
-            $sequence[] = 'calculation';
-        }
-
-        return $sequence;
     }
 
     public function addOption(ScoringRuleOption $option): void

@@ -1,8 +1,8 @@
 Rule type,Field Name,Title,Options,Points
 ,,,,
-calculation,vulnerabilityCriteria,Single Parent headed HH,Solo parent,2
+calculation,singleParentHeaded,Single Parent headed HH,Solo parent,2
 ,,,,
-calculation,vulnerabilityCriteria,Pregnant or lactating,pregnant,3
+calculation,pregnantOrLactating,Pregnant or lactating,Pregnant or lactating,3
 ,,,,
 countrySpecific,Elderly ,Single Elderly/elderlies ,Elderly,3
 ,,,,
@@ -14,5 +14,5 @@ countrySpecific,Disabled,Disability,1st degree ,3
 countrySpecific,No of chronically ill ,Chronical ilnesses and health issues ,1,2
 ,,,2 and more,3
 ,,,,
-calculation,dependecyRatio,Dependency Ratio (number of family members only),1 (mid.),2
+calculation,dependencyRatio,Dependency Ratio (number of family members only),1 (mid.),2
 ,,,>1 (hight dep.),3

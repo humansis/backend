@@ -3,8 +3,11 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Assistance\Scoring\Model;
 
-use Symfony\Component\Validator\Constraints as Assert;
+use NewApiBundle\Component\Assistance\Scoring\Validator\Scoring as ScoringConstraint;
 
+/**
+ * @ScoringConstraint();
+ */
 final class Scoring
 {
     /**
