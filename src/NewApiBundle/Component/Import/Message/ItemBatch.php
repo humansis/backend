@@ -103,6 +103,7 @@ class ItemBatch implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
+            'check' => $this->getCheckType(),
             'ids' => $this->getQueueItemIds(),
         ];
     }
