@@ -300,7 +300,7 @@ distribution:
             location: {
                 type: other,
                 target: Household,
-                returnFunction: !php/const NewApiBundle\Component\SelectionCriteria\Enum\CriteriaReturnFunctionEnum::CONVERT_TO_INT
+                valueTransformer: !php/const NewApiBundle\Component\SelectionCriteria\Enum\CriteriaValueTransformerEnum::CONVERT_TO_INT
             },
             locationType: {
                 type: other,

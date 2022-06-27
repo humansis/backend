@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Component\Assistance\Domain;
 
-use NewApiBundle\Component\SelectionCriteria\Enum\CriteriaReturnFunctionEnum;
+use NewApiBundle\Component\SelectionCriteria\Enum\CriteriaValueTransformerEnum;
 use NewApiBundle\Component\SelectionCriteria\Loader\CriterionConfiguration;
 use NewApiBundle\Entity\Assistance\SelectionCriteria as SelectionCriteriaEntity;
 
@@ -104,7 +104,7 @@ class SelectionCriteria
     public function getTypedValue()
     {
         switch ($this->configuration->getReturnType()) {
-            case CriteriaReturnFunctionEnum::CONVERT_TO_INT:
+            case CriteriaValueTransformerEnum::CONVERT_TO_INT:
                 return (int) $this->getValueString();
             default:
                 return $this->getValueString();

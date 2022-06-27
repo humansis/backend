@@ -4,7 +4,7 @@ namespace NewApiBundle\Component\SelectionCriteria\Enum;
 
 use NewApiBundle\Enum\EnumTrait;
 
-class CriteriaReturnFunctionEnum
+class CriteriaValueTransformerEnum
 {
     use EnumTrait;
 

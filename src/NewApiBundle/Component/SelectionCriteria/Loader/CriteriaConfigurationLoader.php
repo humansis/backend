@@ -2,10 +2,15 @@
 
 namespace NewApiBundle\Component\SelectionCriteria\Loader;
 
-use NewApiBundle\Component\SelectionCriteria\Enum\CriteriaReturnFunctionEnum;
+use NewApiBundle\Component\SelectionCriteria\Enum\CriteriaValueTransformerEnum;
 
 class CriteriaConfigurationLoader
 {
+    public const
+        TYPE_KEY = 'type',
+        TARGET_KEY = 'target',
+        VALUE_TRANSFORMER_KEY = 'valueTransformer';
+
     /**
      * @var array
      */
@@ -25,9 +30,9 @@ class CriteriaConfigurationLoader
     {
         return new CriterionConfiguration(
             $key,
-            $this->configuration[$key]['type'],
-            $this->configuration[$key]['target'],
-            $this->configuration[$key]['returnFunction'] ?? CriteriaReturnFunctionEnum::CONVERT_TO_STRING,
+            $this->configuration[$key][self::TYPE_KEY],
+            $this->configuration[$key][self::TARGET_KEY],
+            $this->configuration[$key][self::VALUE_TRANSFORMER_KEY] ?? CriteriaValueTransformerEnum::CONVERT_TO_STRING,
         );
     }
 }
