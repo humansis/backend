@@ -475,6 +475,11 @@ services:
         public: true
         arguments:
             - '%scoringTypes%'
+              
+    NewApiBundle\Component\Assistance\Scoring\Validator\ScoringTypeValidator:
+        public: true
+        arguments:
+            - '%scoringTypes%'
 
     BeneficiaryBundle\Model\Vulnerability\Resolver:
         public: true

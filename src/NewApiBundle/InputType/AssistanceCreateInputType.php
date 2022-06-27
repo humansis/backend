@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\Component\Assistance\Scoring\Validator\ScoringType;
 use NewApiBundle\Enum\SelectionCriteriaField;
 use NewApiBundle\InputType\Assistance\CommodityInputType;
 use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
@@ -86,10 +87,10 @@ class AssistanceCreateInputType implements InputTypeInterface
      */
     private $subsector;
 
-    //TODO checkovat, jestli obsahuje hodnoty z enumu
     /**
      * @Assert\Type("string")
      * @Assert\NotNull
+     * @ScoringType
      */
     private $scoringType;
 
