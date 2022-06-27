@@ -133,7 +133,10 @@ class FinishSubscriber implements EventSubscriberInterface
         /** @var Import $import */
         $import = $event->getSubject();
 
-        if ($this->queueRepository->countByImport($import) != $this->queueRepository->getTotalReadyForSave($import)) {
+        $entryToSave = $this->queueRepository->getTotalReadyForSave($import);
+        $entryToSave += $this->queueRepository->getTotalByImportAndStatus($import, ImportQueueState::INVALID_EXPORTED);
+
+        if ($this->queueRepository->countByImport($import) != $entryToSave) {
             $event->addTransitionBlocker(new TransitionBlocker("One or more item of import #{$import->getId()} are not ready for import.", '0'));
         }
     }
