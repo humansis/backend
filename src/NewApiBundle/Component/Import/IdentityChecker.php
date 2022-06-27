@@ -116,10 +116,7 @@ class IdentityChecker
 
             $item->setIdentityCheckedAt(new \DateTime());
             $this->queueRepository->save($item);
-            // $this->entityManager->persist($item);
         }
-
-        // $this->entityManager->flush();
     }
 
     /**
