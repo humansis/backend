@@ -174,7 +174,7 @@ class SmartcardDepositController extends AbstractOfflineAppController
             $depositFactory->create($serialNumber, $depositInputType, $this->getUser());
         } catch (NotFoundHttpException $e) {
             $this->writeData(
-                'depositV4',
+                'depositV5',
                 $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
                 $request->get('serialNumber', 'missing'),
                 json_encode($request->request->all())
