@@ -97,6 +97,9 @@ services:
     NewApiBundle\Mapper\Assistance\AssistanceMapper:
         tags: [ 'app.mapper' ]
 
+    NewApiBundle\Mapper\Assistance\WebApp\DistributeReliefPackagesMapper:
+        tags: [ 'app.mapper' ]
+
     NewApiBundle\Mapper\Assistance\OfflineApp\AssistanceMapper:
         arguments: [ "@=service('doctrine.orm.entity_manager').getRepository('NewApiBundle:AssistanceStatistics')" ]
         tags: [ 'app.mapper' ]
@@ -465,3 +468,4 @@ services:
             - '%logs.fieldAppPath%'
             - '%logs.lifetime%'
 
+    NewApiBundle\Services\AssistanceDistributionService:
