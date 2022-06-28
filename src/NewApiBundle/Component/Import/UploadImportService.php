@@ -131,7 +131,7 @@ class UploadImportService implements MessageHandlerInterface
      *
      * @return ImportFile
      */
-    public function uploadFile(Import $import, UploadedFile $uploadedFile, User $user): void
+    public function uploadFile(Import $import, UploadedFile $uploadedFile, User $user): ImportFile
     {
         $savedAsFilename = time().'-'.$uploadedFile->getClientOriginalName();
 
@@ -147,8 +147,8 @@ class UploadImportService implements MessageHandlerInterface
 
         if (!$importFile->getStructureViolations()) {
             $this->messageBus->dispatch(new UploadFile($importFile));
-        } else {
-            throw new InvalidArgumentException('File has structural issues and cannot be imported.');
         }
+
+        return $importFile;
     }
 }

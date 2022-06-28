@@ -97,6 +97,13 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $this->request('POST', "/api/basic/web-app/v1/imports/$id/files", [], [$file]);
 
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        // $this->request('GET', "/api/basic/web-app/v1/imports/$id/files");
+
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         if ($expectingViolation) {

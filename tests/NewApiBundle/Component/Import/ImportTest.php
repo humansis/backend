@@ -604,12 +604,7 @@ class ImportTest extends KernelTestCase
         $this->originHousehold = $this->createBlankHousehold($this->project);
         $import = $this->createImport('testIncorrectImportFileInIntegrityCheck', $this->project);
 
-        try {
-            $this->uploadFile($import, $fileName);
-            $this->fail('Upload of incorrect file should throw exception');
-        } catch (\InvalidArgumentException $exception) {
-            // it is expected
-        }
+        $this->uploadFile($import, $fileName);
 
         $this->userStartedIntegrityCheck($import, false);
         $this->assertQueueCount(0, $import);
