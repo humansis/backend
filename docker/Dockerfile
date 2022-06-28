@@ -16,7 +16,3 @@ COPY --chown=symfony:symfony docker/$ENV/php/messenger-worker.conf /etc/supervis
 # TODO: add --no-dev after composer.json is fixed
 RUN composer install --optimize-autoloader && \
   rm -rf var/cache/*
-
-RUN sudo supervisorctl reread
-RUN sudo supervisorctl update
-RUN sudo supervisorctl start messenger-consume:*
