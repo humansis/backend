@@ -130,7 +130,7 @@ class AssistanceDistributionService
         User                                         $distributor
     ) {
         $countrySpecific = $this->countrySpecificRepository->findOneBy(['fieldString' => self::COUNTRY_SPECIFIC_ID_NUMBER]);
-        $beneficiaries = $this->beneficiaryRepository->findByIdentityAndProject($packageData->getIdNumber(), $assistance->getProject(),
+        $beneficiaries = $this->beneficiaryRepository->findByIdentityAndAssistance($packageData->getIdNumber(), $assistance,
             $countrySpecific);
         if (count($beneficiaries) === 0) {
             return $distributeReliefPackageOutputType->addNotFound($packageData->getIdNumber());
