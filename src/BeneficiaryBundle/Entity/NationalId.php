@@ -54,6 +54,14 @@ class NationalId
     private $person;
 
     /**
+     * @param string $idNumber
+     */
+    public function __construct()
+    {
+        $this->priority = 1;
+    }
+
+    /**
      * Set idNumber.
      *
      * @param string $idNumber

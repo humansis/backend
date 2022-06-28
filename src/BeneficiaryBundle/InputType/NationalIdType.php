@@ -20,6 +20,12 @@ class NationalIdType implements InputTypeInterface
     private $number;
 
     /**
+     * @var int
+     * @Assert\Type("integer")
+     */
+    private $priority;
+
+    /**
      * @Assert\Choice(callback={"\NewApiBundle\Enum\NationalIdType", "values"}, strict=true, groups={"Strict"})
      * @return string|null
      */
@@ -51,6 +57,24 @@ class NationalIdType implements InputTypeInterface
     {
         $this->number = $number;
     }
+
+    /**
+     * @return int
+     */
+    public function getPriority(): int
+    {
+        return $this->priority;
+    }
+
+    /**
+     * @param int $priority
+     */
+    public function setPriority(int $priority): void
+    {
+        $this->priority = $priority;
+    }
+
+
 
     public function isEmpty(): bool
     {

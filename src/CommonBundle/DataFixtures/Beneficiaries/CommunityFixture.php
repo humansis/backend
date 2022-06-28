@@ -37,6 +37,7 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
             'national_id' => [
                 'type' => NationalIdType::NATIONAL_ID,
                 'number' => 'ID: 000-1234-5895-21',
+                'priority' => 1,
             ],
             'phone_type' => 'Mobile',
             'phone_prefix' => '+4234',
@@ -63,6 +64,7 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
             'national_id' => [
                 'type' => NationalIdType::FAMILY,
                 'number' => 'FML: 000-1234-5895-21',
+                'priority' => 1,
             ],
             'phone_type' => 'Mobile',
             'phone_prefix' => '+4234',
@@ -89,6 +91,7 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
             'national_id' => [
                 'type' => NationalIdType::CAMP_ID,
                 'number' => 'CMP: 000-1234-5895-21',
+                'priority' => 1,
             ],
             'phone_type' => 'Mobile',
             'phone_prefix' => '+4234',
