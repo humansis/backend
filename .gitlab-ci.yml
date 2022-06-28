@@ -151,11 +151,6 @@ deploy test - keep db:
     LOAD_FIXTURES: "false"
     CACHE_CLEAR_MODE: aggressive
   extends: .deploy
-  only:
-    - /^develop$/
-    - /^release\/.*$/
-  except:
-    - tags
   when: manual
 
 deploy test - clean fixtures:
@@ -170,11 +165,6 @@ deploy test - clean fixtures:
     LOAD_FIXTURES: "test"
     CACHE_CLEAR_MODE: aggressive
   extends: .deploy
-  only:
-    - /^develop$/
-    - /^release\/.*$/
-  except:
-    - tags
   when: manual
 
 deploy test - anonymized db:
@@ -189,11 +179,6 @@ deploy test - anonymized db:
     LOAD_FIXTURES: "false"
     CACHE_CLEAR_MODE: aggressive
   extends: .deploy
-  only:
-    - /^develop$/
-    - /^release\/.*$/
-  except:
-    - tags
   when: manual
 
 deploy stage:
