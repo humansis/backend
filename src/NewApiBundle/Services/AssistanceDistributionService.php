@@ -3,6 +3,7 @@
 namespace NewApiBundle\Services;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use BeneficiaryBundle\Repository\CountrySpecificRepository;
 use DistributionBundle\Entity\Assistance;
@@ -115,9 +116,13 @@ class AssistanceDistributionService
                                                              User       $distributor
     ): DistributeReliefPackagesOutputType {
         $distributeReliefPackageOutputType = new DistributeReliefPackagesOutputType();
+        $countrySpecific = $this->countrySpecificRepository->findOneBy([
+                'fieldString' => self::COUNTRY_SPECIFIC_ID_NUMBER,
+                'countryIso3' => $assistance->getProject()->getIso3()]
+        );
         foreach ($inputPackages as $packageData) {
             $distributeReliefPackageOutputType = $this->processPackageData($packageData, $distributeReliefPackageOutputType, $assistance,
-                $distributor);
+                $distributor, $countrySpecific);
         }
 
         return $distributeReliefPackageOutputType;
@@ -127,9 +132,10 @@ class AssistanceDistributionService
         DistributeBeneficiaryReliefPackagesInputType $packageData,
         DistributeReliefPackagesOutputType           $distributeReliefPackageOutputType,
         Assistance                                   $assistance,
-        User                                         $distributor
+        User                                         $distributor,
+        ?CountrySpecific                             $countrySpecific
     ) {
-        $countrySpecific = $this->countrySpecificRepository->findOneBy(['fieldString' => self::COUNTRY_SPECIFIC_ID_NUMBER]);
+
         $beneficiaries = $this->beneficiaryRepository->findByIdentityAndAssistance($packageData->getIdNumber(), $assistance,
             $countrySpecific);
         if (count($beneficiaries) === 0) {
