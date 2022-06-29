@@ -87,7 +87,7 @@ services:
             - "@service_container"
 
     export_csv_service:
-        class: CommonBundle\Utils\ExportService
+        alias: CommonBundle\Utils\ExportService
         public: true
 
     pdf_service:
@@ -396,5 +396,4 @@ services:
 
     CommonBundle\Utils\ExportService:
         class: CommonBundle\Utils\ExportService
-        autowire: true
         public: true

@@ -2653,6 +2653,180 @@
         <source>Zone</source>
         <target>Zone</target>
       </trans-unit>
+      <trans-unit id="5hTWbpW" resname="label_sector_">
+        <source>label_sector_</source>
+        <target>label_sector_</target>
+      </trans-unit>
+      <trans-unit id="NRNrkOq" resname="Distribution No.">
+        <source>Distribution No.</source>
+        <target>Distribution No.</target>
+      </trans-unit>
+      <trans-unit id="LmVsQDA" resname="Project &amp; Donor">
+        <source>Project &amp; Donor</source>
+        <target><![CDATA[Project & Donor]]></target>
+      </trans-unit>
+      <trans-unit id="zf5SHir" resname="Distributed item(s)">
+        <source>Distributed item(s)</source>
+        <target>Distributed item(s)</target>
+      </trans-unit>
+      <trans-unit id="zZVYrPw" resname="Round">
+        <source>Round</source>
+        <target>Round</target>
+      </trans-unit>
+      <trans-unit id="mtpcIrW" resname="Distributed by">
+        <source>Distributed by</source>
+        <target>Distributed by</target>
+      </trans-unit>
+      <trans-unit id="IgEqmFO" resname="(name, position, signature)">
+        <source>(name, position, signature)</source>
+        <target>(name, position, signature)</target>
+      </trans-unit>
+      <trans-unit id="joOMRgm" resname="Approved by">
+        <source>Approved by</source>
+        <target>Approved by</target>
+      </trans-unit>
+      <trans-unit id="RMSi1bj" resname="The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.">
+        <source>The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.</source>
+        <target>The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.</target>
+      </trans-unit>
+      <trans-unit id="OBeKILR" resname="No.">
+        <source>No.</source>
+        <target>No.</target>
+      </trans-unit>
+      <trans-unit id="SEdlPKY" resname="Second Name">
+        <source>Second Name</source>
+        <target>Second Name</target>
+      </trans-unit>
+      <trans-unit id="QbuaQ3d" resname="ID No.">
+        <source>ID No.</source>
+        <target>ID No.</target>
+      </trans-unit>
+      <trans-unit id="AXTb9dN" resname="Proxy First Name">
+        <source>Proxy First Name</source>
+        <target>Proxy First Name</target>
+      </trans-unit>
+      <trans-unit id="PvE3ers" resname="Proxy Second Name">
+        <source>Proxy Second Name</source>
+        <target>Proxy Second Name</target>
+      </trans-unit>
+      <trans-unit id="qAuVaUM" resname="Proxy ID No.">
+        <source>Proxy ID No.</source>
+        <target>Proxy ID No.</target>
+      </trans-unit>
+      <trans-unit id="UwOvjJH" resname="Distributed Item(s), Unit, Amount per beneficiary">
+        <source>Distributed Item(s), Unit, Amount per beneficiary</source>
+        <target>Distributed Item(s), Unit, Amount per beneficiary</target>
+      </trans-unit>
+      <trans-unit id="8ac_IgS" resname="Signature">
+        <source>Signature</source>
+        <target>Signature</target>
+      </trans-unit>
+      <trans-unit id="jFf9r_s" resname="CSI">
+        <source>CSI</source>
+        <target>CSI</target>
+      </trans-unit>
+      <trans-unit id="Am4vmvv" resname="Debt">
+        <source>Debt</source>
+        <target>Debt</target>
+      </trans-unit>
+      <trans-unit id="qODJnx_" resname="Dependency Ration">
+        <source>Dependency Ration</source>
+        <target>Dependency Ration</target>
+      </trans-unit>
+      <trans-unit id="i9BcDLP" resname="Displacement Status">
+        <source>Displacement Status</source>
+        <target>Displacement Status</target>
+      </trans-unit>
+      <trans-unit id="6r0RDr1" resname="FCS">
+        <source>FCS</source>
+        <target>FCS</target>
+      </trans-unit>
+      <trans-unit id="KquYCNw" resname="Head Gender">
+        <source>Head Gender</source>
+        <target>Head Gender</target>
+      </trans-unit>
+      <trans-unit id="picK5Uv" resname="Head Vulnerability">
+        <source>Head Vulnerability</source>
+        <target>Head Vulnerability</target>
+      </trans-unit>
+      <trans-unit id="eAe8g.a" resname="Members Vulnerability">
+        <source>Members Vulnerability</source>
+        <target>Members Vulnerability</target>
+      </trans-unit>
+      <trans-unit id="11NCzyQ" resname="Income Per Member">
+        <source>Income Per Member</source>
+        <target>Income Per Member</target>
+      </trans-unit>
+      <trans-unit id="w3wgHCs" resname="Residence Ownership">
+        <source>Residence Ownership</source>
+        <target>Residence Ownership</target>
+      </trans-unit>
+      <trans-unit id="WO_GuBT" resname="Total Score">
+        <source>Total Score</source>
+        <target>Total Score</target>
+      </trans-unit>
+      <trans-unit id="iqWCG3q" resname="BNFs">
+        <source>BNFs</source>
+        <target>BNFs</target>
+      </trans-unit>
+      <trans-unit id="JJ23pfc" resname="Cumulative BNFs">
+        <source>Cumulative BNFs</source>
+        <target>Cumulative BNFs</target>
+      </trans-unit>
+      <trans-unit id="yd6_5Ih" resname="Ordinal number">
+        <source>Ordinal number</source>
+        <target>Ordinal number</target>
+      </trans-unit>
+      <trans-unit id="bM5FLXe" resname="Recipient’s surname (Local family name)">
+        <source>Recipient’s surname (Local family name)</source>
+        <target>Recipient’s surname (Local family name)</target>
+      </trans-unit>
+      <trans-unit id="muMSGG7" resname="Recipient’s name (Local given name)">
+        <source>Recipient’s name (Local given name)</source>
+        <target>Recipient’s name (Local given name)</target>
+      </trans-unit>
+      <trans-unit id="VXLy1G." resname="Recipient’s patronymic (Local parent's name)">
+        <source>Recipient’s patronymic (Local parent's name)</source>
+        <target>Recipient’s patronymic (Local parent's name)</target>
+      </trans-unit>
+      <trans-unit id="OyC4RLx" resname="Recipient’s RNTRC (Tax Number)">
+        <source>Recipient’s RNTRC (Tax Number)</source>
+        <target>Recipient’s RNTRC (Tax Number)</target>
+      </trans-unit>
+      <trans-unit id="W4H3DVm" resname="Document type">
+        <source>Document type</source>
+        <target>Document type</target>
+      </trans-unit>
+      <trans-unit id="BjvpUmS" resname="Document number">
+        <source>Document number</source>
+        <target>Document number</target>
+      </trans-unit>
+      <trans-unit id="wyOry7C" resname="Remittance purpose">
+        <source>Remittance purpose</source>
+        <target>Remittance purpose</target>
+      </trans-unit>
+      <trans-unit id="OPm1uut" resname="Remittance amount">
+        <source>Remittance amount</source>
+        <target>Remittance amount</target>
+      </trans-unit>
+      <trans-unit id="vCa29SA" resname="Remittance currency">
+        <source>Remittance currency</source>
+        <target>Remittance currency</target>
+      </trans-unit>
+      <trans-unit id="9gUkUTu" resname="Recipient’s mobile telephone number">
+        <source>Recipient’s mobile telephone number</source>
+        <target>Recipient’s mobile telephone number</target>
+      </trans-unit>
+      <trans-unit id="zCVdfvw" resname="Smartcard code">
+        <source>Smartcard code</source>
+        <target>Smartcard code</target>
+      </trans-unit>
+      <trans-unit id="EUHpzYl" resname="The below listed person confirm by their signature of this Distribution List that they obtained and accepted&#10;the donation of the below specified items from People in Need.">
+        <source>The below listed person confirm by their signature of this Distribution List that they obtained and accepted
+the donation of the below specified items from People in Need.</source>
+        <target>__The below listed person confirm by their signature of this Distribution List that they obtained and accepted
+the donation of the below specified items from People in Need.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

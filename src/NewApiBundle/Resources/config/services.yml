@@ -181,6 +181,7 @@ services:
     NewApiBundle\Controller\CommonController:
         arguments:
             - '@NewApiBundle\Component\Country\Countries'
+            - '%app.translations_dir%'
 
     NewApiBundle\Controller\DonorController:
         arguments:
