@@ -186,6 +186,15 @@ class AssistanceCreateInputType implements InputTypeInterface
     private $allowedProductCategoryTypes;
 
     /**
+     * @Assert\IsTrue(groups="Strict", message="Expiration date must be greater than distribution date")
+     * @return bool
+     */
+    public function isExpirationDateValid(): bool
+    {
+        return $this->getDateExpiration() > $this->getDateDistribution();
+    }
+
+    /**
      * @Assert\IsTrue(groups="AdditionalChecks", message="Please add BNF has valid card criterion for each group")
      * @return bool
      */
