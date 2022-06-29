@@ -8,6 +8,7 @@ use NewApiBundle\InputType\FilterFragment\LocationFilterTrait;
 use NewApiBundle\InputType\FilterFragment\PrimaryIdFilterTrait;
 use NewApiBundle\InputType\FilterFragment\ProjectFilterTrait;
 use NewApiBundle\Request\FilterInputType\AbstractFilterInputType;
+use ProjectBundle\DBAL\LivelihoodEnum;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -142,6 +143,8 @@ class HouseholdFilterInputType extends AbstractFilterInputType
 
     public function getLivelihoods()
     {
-        return $this->livelihoods;
+        return array_map(static function ($livelihood) {
+            return LivelihoodEnum::valueToDB($livelihood);
+        }, $this->livelihoods);
     }
 }
