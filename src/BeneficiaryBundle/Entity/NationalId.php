@@ -7,6 +7,7 @@ use NewApiBundle\DBAL\NationalIdTypeEnum;
 use NewApiBundle\Entity\Helper\EnumTrait;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\NationalIdType;
+use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -150,4 +151,12 @@ class NationalId
         $this->priority = $priority;
     }
 
+    public static function fromNationalIdInputType(NationalIdCardInputType $inputType)
+    {
+        $nationalId = new NationalId();
+        $nationalId->setIdType($inputType->getType());
+        $nationalId->setIdNumber($inputType->getNumber());
+        $nationalId->setPriority($inputType->getPriority());
+        return $nationalId;
+    }
 }

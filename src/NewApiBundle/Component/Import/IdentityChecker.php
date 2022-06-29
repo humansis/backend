@@ -133,11 +133,27 @@ class IdentityChecker
     {
         $index = 0;
         foreach ($this->importLineFactory->createAll($item) as $line) {
-            if (empty($line->idType) || empty($line->idNumber)) continue;
-            $idType = NationalIdType::valueFromAPI($line->idType);
-            $hashSet->add($item, $index, (string) $idType, (string) $line->idNumber);
-            $index++;
+            if ($line->hasPrimaryId()) {
+                $idType = NationalIdType::valueFromAPI($line->primaryIdType);
+                $hashSet->add($item, $index, (string) $idType, (string) $line->primaryIdNumber);
+                $index++;
+            }
+            if ($line->hasSecondaryId()) {
+                $idType = NationalIdType::valueFromAPI($line->secondaryIdType);
+                $hashSet->add($item, $index, (string) $idType, (string) $line->secondaryIdNumber);
+                $index++;
+            }
+            if ($line->hasTernaryId()) {
+                $idType = NationalIdType::valueFromAPI($line->ternaryIdType);
+                $hashSet->add($item, $index, (string) $idType, (string) $line->ternaryIdNumber);
+                $index++;
+            }
         }
+    }
+
+    private function addId()
+    {
+
     }
 
     /**
