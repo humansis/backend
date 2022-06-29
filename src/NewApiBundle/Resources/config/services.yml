@@ -459,3 +459,8 @@ services:
             - '%logs.lifetime%'
 
     NewApiBundle\Services\AssistanceDistributionService:
+
+    NewApiBundle\Component\SelectionCriteria\Loader\CriteriaConfigurationLoader:
+        arguments:
+            - '%distribution.criteria%'
+

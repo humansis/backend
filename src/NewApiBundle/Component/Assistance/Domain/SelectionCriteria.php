@@ -2,20 +2,22 @@
 
 namespace NewApiBundle\Component\Assistance\Domain;
 
+use NewApiBundle\Component\SelectionCriteria\Enum\CriteriaValueTransformerEnum;
+use NewApiBundle\Component\SelectionCriteria\Loader\CriterionConfiguration;
 use NewApiBundle\Entity\Assistance\SelectionCriteria as SelectionCriteriaEntity;
 
 class SelectionCriteria
 {
     /** @var SelectionCriteriaEntity */
     private $criteriaRoot;
-    /** @var array */
+    /** @var CriterionConfiguration */
     private $configuration;
 
     /**
      * @param SelectionCriteriaEntity $criteriaRoot
-     * @param array                   $configuration
+     * @param CriterionConfiguration  $configuration
      */
-    public function __construct(SelectionCriteriaEntity $criteriaRoot, array $configuration)
+    public function __construct(SelectionCriteriaEntity $criteriaRoot, CriterionConfiguration $configuration)
     {
         $this->criteriaRoot = $criteriaRoot;
         $this->configuration = $configuration;
@@ -35,7 +37,7 @@ class SelectionCriteria
     public function getType(): string
     {
         if ($this->criteriaRoot->getTableString() === 'Personnal') {
-            return $this->configuration['type'];
+            return $this->configuration->getType();
         }
         return 'table_field';
     }
@@ -97,5 +99,15 @@ class SelectionCriteria
     public function hasVulnerabilityCriteriaType(): bool
     {
         return $this->criteriaRoot->getTableString() === 'vulnerabilityCriteria';
+    }
+
+    public function getTypedValue()
+    {
+        switch ($this->configuration->getReturnType()) {
+            case CriteriaValueTransformerEnum::CONVERT_TO_INT:
+                return (int) $this->getValueString();
+            default:
+                return $this->getValueString();
+        }
     }
 }

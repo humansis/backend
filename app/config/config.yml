@@ -297,25 +297,10 @@ distribution:
                 type: other,
                 target: Household
             },
-            currentLocation: {
+            location: {
                 type: other,
-                target: Household
-            },
-            currentAdm1: {
-                type: other,
-                target: Household
-            },
-            currentAdm2: {
-                type: other,
-                target: Household
-            },
-            currentAdm3: {
-                type: other,
-                target: Household
-            },
-            currentAdm4: {
-                type: other,
-                target: Household
+                target: Household,
+                valueTransformer: !php/const NewApiBundle\Component\SelectionCriteria\Enum\CriteriaValueTransformerEnum::CONVERT_TO_INT
             },
             locationType: {
                 type: other,

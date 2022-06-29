@@ -7,10 +7,11 @@ use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Repository\CountrySpecificRepository;
 use BeneficiaryBundle\Repository\VulnerabilityCriterionRepository;
 use CommonBundle\Repository\LocationRepository;
-use DistributionBundle\Utils\ConfigurationLoader;
+use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\Component\Assistance\Domain\SelectionCriteria;
 use NewApiBundle\Component\Assistance\DTO\CriteriaGroup;
+use NewApiBundle\Component\SelectionCriteria\Loader\CriteriaConfigurationLoader;
 use NewApiBundle\Entity\Assistance\SelectionCriteria as SelectionCriteriaEntity;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Enum\SelectionCriteriaField;
@@ -19,7 +20,7 @@ use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
 
 class SelectionCriteriaFactory
 {
-    /** @var ConfigurationLoader $configurationLoader */
+    /** @var CriteriaConfigurationLoader $configurationLoader */
     private $configurationLoader;
     /** @var CountrySpecificRepository */
     private $countrySpecificRepository;
@@ -29,13 +30,13 @@ class SelectionCriteriaFactory
     private $locationRepository;
 
     /**
-     * @param ConfigurationLoader              $configurationLoader
+     * @param CriteriaConfigurationLoader      $configurationLoader
      * @param CountrySpecificRepository        $countrySpecificRepository
      * @param VulnerabilityCriterionRepository $vulnerabilityCriterionRepository
      * @param LocationRepository               $locationRepository
      */
     public function __construct(
-        ConfigurationLoader              $configurationLoader,
+        CriteriaConfigurationLoader      $configurationLoader,
         CountrySpecificRepository        $countrySpecificRepository,
         VulnerabilityCriterionRepository $vulnerabilityCriterionRepository,
         LocationRepository               $locationRepository
@@ -71,7 +72,7 @@ class SelectionCriteriaFactory
                 $criterium->setTableString('countrySpecific');
                 return $criterium;
             }
-            if ('location' === $input->getField()) {
+            if (SelectionCriteriaField::CURRENT_LOCATION === $input->getField()) {
                 /** @var \CommonBundle\Entity\Location $location */
                 $location = $this->locationRepository->find($input->getValue());
                 if (!$location) {
@@ -98,13 +99,13 @@ class SelectionCriteriaFactory
     {
         switch ($criteriaEntity->getTableString()) {
             case SelectionCriteriaField::COUNTRY_SPECIFIC:
-                $configuration = $this->configurationLoader->criteria[SelectionCriteriaField::COUNTRY_SPECIFIC];
+                $configuration = $this->configurationLoader->getCriterionConfiguration(SelectionCriteriaField::COUNTRY_SPECIFIC);
                 break;
             case SelectionCriteriaField::VULNERABILITY_CRITERIA:
-                $configuration = $this->configurationLoader->criteria[SelectionCriteriaField::VULNERABILITY_CRITERIA];
+                $configuration = $this->configurationLoader->getCriterionConfiguration(SelectionCriteriaField::VULNERABILITY_CRITERIA);
                 break;
             default:
-                $configuration = $this->configurationLoader->criteria[$criteriaEntity->getFieldString()];
+                $configuration = $this->configurationLoader->getCriterionConfiguration($criteriaEntity->getFieldString());
         }
 
         return new SelectionCriteria($criteriaEntity, $configuration);
