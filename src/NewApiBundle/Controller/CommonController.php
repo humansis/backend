@@ -28,6 +28,9 @@ class CommonController extends AbstractController
 
     /** @var TranslatorInterface */
     private $translator;
+    
+    /** @var string */
+    private $translationsDir;
 
     public function __construct(Countries $countries, string $translationsDir, TranslatorInterface $translator)
     {
