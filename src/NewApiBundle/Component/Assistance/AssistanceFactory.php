@@ -2,6 +2,9 @@
 
 namespace NewApiBundle\Component\Assistance;
 
+use BeneficiaryBundle\Entity\AbstractBeneficiary;
+use BeneficiaryBundle\Entity\Community;
+use BeneficiaryBundle\Exception\CsvParserException;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use BeneficiaryBundle\Repository\CommunityRepository;
 use BeneficiaryBundle\Repository\InstitutionRepository;
@@ -14,6 +17,9 @@ use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use DistributionBundle\Repository\ModalityTypeRepository;
 use DistributionBundle\Utils\CriteriaAssistanceService;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\ORMException;
 use NewApiBundle\Component\Assistance\Domain;
 use NewApiBundle\Component\Assistance\DTO\CriteriaGroup;
 use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
@@ -23,8 +29,9 @@ use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\Repository\AssistanceStatisticsRepository;
 use NewApiBundle\Repository\ScoringBlueprintRepository;
+use ProjectBundle\Entity\Project;
 use ProjectBundle\Repository\ProjectRepository;
-use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -121,8 +128,23 @@ class AssistanceFactory
         $this->scoringBlueprintRepository = $scoringBlueprintRepository;
     }
 
+    /**
+     * @throws CsvParserException
+     * @throws ORMException
+     * @throws NonUniqueResultException
+     * @throws EntityNotFoundException
+     * @throws NoResultException
+     */
     public function create(AssistanceCreateInputType $inputType): Domain\Assistance
     {
+        /** @var Project $project */
+        $project = $this->projectRepository->find($inputType->getProjectId());
+        if (!$project) {
+            throw new EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
+        }
+
+        $this->checkExpirationDate($inputType, $project);
+
         $assistanceRoot = new Entity\Assistance();
         $assistanceRoot->setAssistanceType($inputType->getType());
         $assistanceRoot->setTargetType($inputType->getTarget());
@@ -140,14 +162,11 @@ class AssistanceFactory
         $assistanceRoot->setRemoteDistributionAllowed($inputType->getRemoteDistributionAllowed());
         $assistanceRoot->setAllowedProductCategoryTypes($inputType->getAllowedProductCategoryTypes());
 
+        /** @var Location $location */
         $location = $this->locationRepository->find($inputType->getLocationId());
         $assistanceRoot->setLocation($location);
         $assistanceRoot->setName(self::generateName($location, $inputType->getDateDistribution()));
 
-        $project = $this->projectRepository->find($inputType->getProjectId());
-        if (!$project) {
-            throw new EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
-        }
         $assistanceRoot->setProject($project);
 
         if (!is_null($inputType->getScoringBlueprintId())) {
@@ -168,12 +187,14 @@ class AssistanceFactory
         switch ($inputType->getTarget()) {
             case AssistanceTargetType::COMMUNITY:
                 foreach ($inputType->getCommunities() as $communityId) {
+                    /** @var Community $community */
                     $community = $this->communityRepository->find($communityId);
                     $assistance->addBeneficiary($community);
                 }
                 break;
             case AssistanceTargetType::INSTITUTION:
                 foreach ($inputType->getInstitutions() as $institutionId) {
+                    /** @var AbstractBeneficiary $individualOrHHH */
                     $individualOrHHH = $this->institutionRepository->find($institutionId);
                     $assistance->addBeneficiary($individualOrHHH);
                 }
@@ -201,12 +222,22 @@ class AssistanceFactory
                 );
                 foreach ($beneficiaryIds['finalArray'] as $beneficiaryId => $vulnerabilityScore) {
                     $individualOrHHH = $this->beneficiaryRepository->find($beneficiaryId);
+                    /** @var AbstractBeneficiary $individualOrHHH */
                     $assistance->addBeneficiary($individualOrHHH, null, $vulnerabilityScore);
                 }
                 break;
         }
 
         return $assistance;
+    }
+
+    private function checkExpirationDate(AssistanceCreateInputType $inputType, Project $project)
+    {
+        $dateToCheck = $inputType->getDateExpiration() === null ? $inputType->getDateDistribution() : $inputType->getDateExpiration();
+
+        if ($dateToCheck > $project->getEndDate()) {
+            throw new BadRequestHttpException('Expiration / Distribution date of assistance must be earlier than the end of project');
+        }
     }
 
     private static function generateName(Location $location, ?DateTimeInterface $date = null): string
