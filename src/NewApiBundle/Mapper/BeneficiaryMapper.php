@@ -7,6 +7,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Serializer\MapperInterface;
+use NewApiBundle\Utils\DateTime\DateOnlyFormat;
 
 class BeneficiaryMapper implements MapperInterface
 {
@@ -101,7 +102,7 @@ class BeneficiaryMapper implements MapperInterface
 
     public function getDateOfBirth(): ?string
     {
-        return $this->object->getPerson()->getDateOfBirth() ? $this->object->getPerson()->getDateOfBirth()->format(\DateTime::ISO8601) : null;
+        return $this->object->getPerson()->getDateOfBirth() ? $this->object->getPerson()->getDateOfBirth()->format(DateOnlyFormat::FORMAT) : null;
     }
 
     public function getLocalFamilyName(): string
