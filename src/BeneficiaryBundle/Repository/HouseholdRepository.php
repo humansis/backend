@@ -14,6 +14,7 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\InputType\HouseholdFilterInputType;
 use NewApiBundle\InputType\HouseholdOrderInputType;
 use NewApiBundle\Request\Pagination;
+use ProjectBundle\DBAL\LivelihoodEnum;
 use ProjectBundle\Entity\Project;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\Query\Expr\Join;
@@ -268,7 +269,9 @@ class HouseholdRepository extends AbstractCriteriaRepository
 
         if ($filter->hasLivelihoods()) {
             $qb->andWhere('hh.livelihood IN (:livelihoods)')
-                ->setParameter('livelihoods', $filter->getLivelihoods());
+                ->setParameter('livelihoods', array_map(static function ($livelihood) {
+                return LivelihoodEnum::valueToDB($livelihood);
+            }, $filter->getLivelihoods()));
         }
 
         if ($filter->hasLocations()) {
