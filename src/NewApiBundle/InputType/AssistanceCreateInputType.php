@@ -191,7 +191,7 @@ class AssistanceCreateInputType implements InputTypeInterface
      */
     public function isExpirationDateValid(): bool
     {
-        return $this->getDateExpiration() > $this->getDateDistribution();
+        return $this->getDateExpiration() == null || $this->getDateExpiration() > $this->getDateDistribution();
     }
 
     /**
