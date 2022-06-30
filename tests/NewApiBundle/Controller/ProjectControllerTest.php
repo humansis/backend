@@ -9,7 +9,7 @@ use Tests\BMSServiceTestCase;
 
 class ProjectControllerTest extends BMSServiceTestCase
 {
-    /** @var string  */
+    /** @var string */
     private $projectName;
 
     public function __construct($name = null, array $data = [], $dataName = '')
@@ -40,7 +40,7 @@ class ProjectControllerTest extends BMSServiceTestCase
             'iso3' => 'KHM',
             'target' => 10,
             'startDate' => '2010-10-10T00:00:00+0000',
-            'endDate' => '2011-10-10T00:00:00+0000',
+            'endDate' => '2022-10-10T00:00:00+0000',
             'sectors' => [SectorEnum::FOOD_SECURITY],
             'projectInvoiceAddressLocal' => 'Local invoice address',
             'projectInvoiceAddressEnglish' => 'English invoice address',
@@ -116,7 +116,7 @@ class ProjectControllerTest extends BMSServiceTestCase
             'iso3' => 'KHM',
             'target' => 10,
             'startDate' => '2010-10-10T00:00:00+0000',
-            'endDate' => '2011-10-10T00:00:00+0000',
+            'endDate' => '2022-10-10T00:00:00+0000',
             'sectors' => [SectorEnum::EARLY_RECOVERY, SectorEnum::CAMP_MANAGEMENT],
             'projectInvoiceAddressLocal' => 'Local invoice address',
             'projectInvoiceAddressEnglish' => 'English invoice address',
