@@ -162,7 +162,6 @@ class AssistanceFactory
         $assistanceRoot->setRemoteDistributionAllowed($inputType->getRemoteDistributionAllowed());
         $assistanceRoot->setAllowedProductCategoryTypes($inputType->getAllowedProductCategoryTypes());
 
-        /** @var Location $location */
         $location = $this->locationRepository->find($inputType->getLocationId());
         $assistanceRoot->setLocation($location);
         $assistanceRoot->setName(self::generateName($location, $inputType->getDateDistribution()));
@@ -187,7 +186,6 @@ class AssistanceFactory
         switch ($inputType->getTarget()) {
             case AssistanceTargetType::COMMUNITY:
                 foreach ($inputType->getCommunities() as $communityId) {
-                    /** @var Community $community */
                     $community = $this->communityRepository->find($communityId);
                     $assistance->addBeneficiary($community);
                 }
