@@ -133,19 +133,9 @@ class IdentityChecker
     {
         $index = 0;
         foreach ($this->importLineFactory->createAll($item) as $line) {
-            if ($line->hasPrimaryId()) {
-                $idType = NationalIdType::valueFromAPI($line->primaryIdType);
-                $hashSet->add($item, $index, (string) $idType, (string) $line->primaryIdNumber);
-                $index++;
-            }
-            if ($line->hasSecondaryId()) {
-                $idType = NationalIdType::valueFromAPI($line->secondaryIdType);
-                $hashSet->add($item, $index, (string) $idType, (string) $line->secondaryIdNumber);
-                $index++;
-            }
-            if ($line->hasTernaryId()) {
-                $idType = NationalIdType::valueFromAPI($line->ternaryIdType);
-                $hashSet->add($item, $index, (string) $idType, (string) $line->ternaryIdNumber);
+            foreach ($line->getFilledIds() as $id) {
+                $idType = NationalIdType::valueFromAPI($id['type']);
+                $hashSet->add($item, $index, (string) $idType, (string) $id['number']);
                 $index++;
             }
         }
@@ -193,7 +183,7 @@ class IdentityChecker
         );
 
         if (count($bnfDuplicities) > 0) {
-            $this->logImportInfo($item->getImport(), "Found ".count($bnfDuplicities)." duplicities for $IDType $IDNumber");
+            $this->logImportInfo($item->getImport(), "Found ".count($bnfDuplicities)." duplicities for $idType $idNumber");
         } else {
             $this->logImportDebug($item->getImport(), "Found no duplicities");
         }

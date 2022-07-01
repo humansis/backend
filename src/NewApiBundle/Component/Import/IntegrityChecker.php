@@ -20,6 +20,7 @@ use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
@@ -53,6 +54,8 @@ class IntegrityChecker
     /** @var DuplicityService */
     private $duplicityService;
 
+    private $logger;
+
     public function __construct(
         ValidatorInterface                    $validator,
         EntityManagerInterface                $entityManager,
@@ -61,7 +64,8 @@ class IntegrityChecker
         Integrity\ImportLineFactory           $importLineFactory,
         Integrity\DuplicityService            $duplicityService,
         Finishing\HouseholdDecoratorBuilder   $householdDecoratorBuilder,
-        Finishing\BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder
+        Finishing\BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder,
+        LoggerInterface $logger
     ) {
         $this->validator = $validator;
         $this->entityManager = $entityManager;
@@ -72,6 +76,7 @@ class IntegrityChecker
         $this->duplicityService = $duplicityService;
         $this->householdDecoratorBuilder = $householdDecoratorBuilder;
         $this->beneficiaryDecoratorBuilder = $beneficiaryDecoratorBuilder;
+        $this->logger = $logger;
     }
 
     /**
@@ -80,23 +85,28 @@ class IntegrityChecker
      */
     public function check(Import $import, ?int $batchSize = null): void
     {
-        if (ImportState::INTEGRITY_CHECKING !== $import->getState()) {
-            throw new \BadMethodCallException('Unable to execute checker. Import is not ready to integrity check.');
-        }
-
-        if ($this->hasImportValidFile($import) === false) {
-            $this->importStateMachine->apply($import, ImportTransitions::FAIL_INTEGRITY);
-
-            return;
-        }
-
-        foreach ($this->queueRepository->getItemsToIntegrityCheck($import, $batchSize) as $i => $item) {
-            $this->checkOne($item);
-            if (($i + 1) % 500 === 0) {
-                $this->entityManager->flush();
+        try {
+            if (ImportState::INTEGRITY_CHECKING !== $import->getState()) {
+                throw new \BadMethodCallException('Unable to execute checker. Import is not ready to integrity check.');
             }
+
+            if ($this->hasImportValidFile($import) === false) {
+                $this->importStateMachine->apply($import, ImportTransitions::FAIL_INTEGRITY);
+
+                return;
+            }
+
+            foreach ($this->queueRepository->getItemsToIntegrityCheck($import, $batchSize) as $i => $item) {
+                $this->checkOne($item);
+                if (($i + 1) % 500 === 0) {
+                    $this->entityManager->flush();
+                }
+            }
+            $this->entityManager->flush();
+        } catch (\Exception $ex) {
+            $this->logger->error($ex);
         }
-        $this->entityManager->flush();
+
     }
 
     /**
@@ -239,8 +249,8 @@ class IntegrityChecker
     private function checkFileDuplicity(ImportQueue $importQueue, int $index, BeneficiaryInputType $beneficiaryInputType): void
     {
         $cards = $beneficiaryInputType->getNationalIdCards();
-        if (count($cards) > 0) {
-            $idCard = $cards[0];
+
+        foreach ($cards as $idCard){
             $nationalIdCount = $this->duplicityService->getIdentityCount($importQueue->getImport(), $idCard);
             if ($nationalIdCount > 1) {
                 $importQueue->addViolation(Integrity\QueueViolation::create($index, HouseholdExportCSVService::PRIMARY_ID_TYPE,
@@ -253,3 +263,5 @@ class IntegrityChecker
         }
     }
 }
+
+

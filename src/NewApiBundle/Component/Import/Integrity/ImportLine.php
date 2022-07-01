@@ -689,31 +689,47 @@ class ImportLine
     /**
      * @return bool
      */
-    public function hasPrimaryId()
+    public function hasPrimaryId(): bool
     {
-        return isset($this->primaryIdNumber) && isset($this->primaryIdType);
+        return $this->hasId(0);
     }
 
     /**
      * @return bool
      */
-    public function hasSecondaryId()
+    public function hasSecondaryId(): bool
     {
-        return isset($this->secondaryIdNumber) && isset($this->secondaryIdType);
+        return $this->hasId(1);
     }
 
     /**
      * @return bool
      */
-    public function hasTernaryId()
+    public function hasTernaryId(): bool
     {
-        return isset($this->ternaryIdNumber) && isset($this->ternaryIdType);
+        return $this->hasId(2);
+    }
+
+    /**
+     * @param int $index
+     *
+     * @return bool
+     */
+    public function hasId(int $index): bool
+    {
+        $ids = $this->getIds();
+        $id = $ids[$index];
+        if ($index >= count($ids)) {
+            return false;
+        }
+        return isset($id['type']) && isset($id['number']);
     }
 
     /**
      * @return array[]
      */
-    public function getIds() {
+    public function getIds(): array
+    {
         return [
             [
                 'type' => $this->primaryIdType,
@@ -728,5 +744,20 @@ class ImportLine
                 'number' => $this->ternaryIdNumber,
             ]
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getFilledIds(): array
+    {
+        $ids = $this->getIds();
+        $filledIds = [];
+        for ($i = 0; $i < count($ids); $i++) {
+            if ($this->hasId($i)) {
+                $filledIds[] = $ids[$i];
+            }
+        }
+        return $filledIds;
     }
 }

@@ -34,10 +34,11 @@ class DuplicityService
                 ImportQueueState::VALID,
             ])) continue; // ignore non-importing states
             foreach ($this->lineFactory->createAll($item) as $memberIndex => $line) {
-                if ($line->isIdNumberCorrectlyFilled() && !empty($line->idNumber)) {
-                    $cardSerialization = self::serializeIDCard((string)$line->idType, (string)$line->idNumber);
+                foreach ($line->getFilledIds() as $idItem) {
+                    $cardSerialization = self::serializeIDCard((string)$idItem['type'], (string)$idItem['number']);
                     $identities[$cardSerialization][$item->getId()][] = $memberIndex;
                 }
+
             }
         }
         $fileName = $this->getFileName($import);

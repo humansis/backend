@@ -63,17 +63,9 @@ class BeneficiaryDecoratorBuilder
     public function buildBeneficiaryIdentityInputType(Import\Integrity\ImportLine $beneficiaryLine): BeneficiaryInputType
     {
         $beneficiary = new BeneficiaryInputType();
-        if ($beneficiaryLine->hasPrimaryId()) {
-            $beneficiary->addNationalIdCard($this->buildIdentityType($beneficiaryLine->primaryIdType, (string) $beneficiaryLine->primaryIdNumber, 1));
+        foreach ($beneficiaryLine->getFilledIds() as $index => $id) {
+            $beneficiary->addNationalIdCard($this->buildIdentityType((string) $id['type'], (string) $id['number'], $index));
         }
-        if ($beneficiaryLine->hasSecondaryId()) {
-            $beneficiary->addNationalIdCard($this->buildIdentityType($beneficiaryLine->secondaryIdType,
-                (string) $beneficiaryLine->secondaryIdNumber, 2));
-        }
-        if ($beneficiaryLine->hasTernaryId()) {
-            $beneficiary->addNationalIdCard($this->buildIdentityType($beneficiaryLine->ternaryIdType, (string) $beneficiaryLine->ternaryIdNumber, 3));
-        }
-
         return $beneficiary;
     }
 
