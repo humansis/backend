@@ -664,6 +664,8 @@ class SmartcardControllerTest extends BMSServiceTestCase
      */
     public function testBatchRedemption(): void
     {
+        $this->markTestSkipped('Test ald endpoint');
+
         $vendor = $this->em->getRepository(Vendor::class)->findOneBy([
             'name' => VendorFixtures::VENDOR_SYR_NAME,
         ], ['id' => 'asc']);
