@@ -397,8 +397,9 @@ class AssistanceBeneficiary
     public function setCommodityToDistribute(string $modalityName, string $unit, $value): void
     {
         foreach ($this->reliefPackages as $package) {
-            if ($package->getState() !== ReliefPackageState::TO_DISTRIBUTE) {
-                continue; // we can't change closed or started packages
+            if (($package->getState() !== ReliefPackageState::TO_DISTRIBUTE) &&
+                !($package->getModalityType() === $modalityName && $package->getUnit() === $unit)) {
+                continue; // we can't change closed or started packages && we can't create a new RP if it's already exist
             }
             if ($package->getModalityType() === $modalityName && $package->getUnit() === $unit) {
                 $package->setAmountToDistribute($value);
