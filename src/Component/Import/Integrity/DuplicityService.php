@@ -38,6 +38,7 @@ class DuplicityService
                     $cardSerialization = self::serializeIDCard((string)$idItem['type'], (string)$idItem['number']);
                     $identities[$cardSerialization][$item->getId()][] = $memberIndex;
                 }
+
             }
         }
         $fileName = $this->getFileName($import);
