@@ -6,6 +6,7 @@ namespace NewApiBundle\Component\Assistance\Scoring\Model;
 use NewApiBundle\Component\Assistance\Scoring\Validator\Scoring as ScoringConstraint;
 
 /**
+ * Some complex validation were necessary, so validation of whole Scoring is written in Validator\ScoringValidator.
  * @ScoringConstraint();
  */
 final class Scoring

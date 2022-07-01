@@ -11,8 +11,8 @@ countrySpecific,Disabled,Disability,1st degree ,3
 ,,,3rd degree ,2
 ,,,2 and more people with any disability ,3
 ,,,,
-countrySpecific,No of chronically ill ,Chronical ilnesses and health issues ,1,2
-,,,2 and more,3
+calculation,noOfChronicallyIll,Chronical ilnesses and health issues ,one,2
+,,,two and more,3
 ,,,,
 calculation,dependencyRatio,Dependency Ratio (number of family members only),1 (mid.),2
 ,,,>1 (hight dep.),3
