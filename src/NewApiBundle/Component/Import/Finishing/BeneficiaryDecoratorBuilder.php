@@ -64,7 +64,7 @@ class BeneficiaryDecoratorBuilder
     {
         $beneficiary = new BeneficiaryInputType();
         foreach ($beneficiaryLine->getFilledIds() as $index => $id) {
-            $beneficiary->addNationalIdCard($this->buildIdentityType((string) $id['type'], (string) $id['number'], $index));
+            $beneficiary->addNationalIdCard($this->buildIdentityType((string) $id['type'], (string) $id['number'], $index + 1));
         }
         return $beneficiary;
     }
