@@ -12,8 +12,25 @@ use NewApiBundle\InputType\VulnerabilityScoreInputType;
 
 final class ScoringService
 {
-    /** @var HouseholdRepository */
+    /**
+     * @var Resolver
+     */
+    private $resolver;
+
+    /**
+     * @var HouseholdRepository
+     */
     private $householdRepository;
+
+    /**
+     * @var OldResolver
+     */
+    private $oldResolver;
+
+    /**
+     * @var ScoringFactory
+     */
+    private $scoringFactory;
 
     public function __construct(
         Resolver $resolver,
