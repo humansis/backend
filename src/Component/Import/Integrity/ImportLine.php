@@ -757,4 +757,24 @@ class ImportLine
         }
         return $filledIds;
     }
+
+    /**
+     * @return array[]
+     */
+    public function getIds() {
+        return [
+            [
+                'type' => $this->primaryIdType,
+                'number' => $this->primaryIdNumber,
+            ],
+            [
+                'type' => $this->secondaryIdType,
+                'number' => $this->secondaryIdNumber,
+            ],
+            [
+                'type' => $this->ternaryIdType,
+                'number' => $this->ternaryIdNumber,
+            ]
+        ];
+    }
 }
