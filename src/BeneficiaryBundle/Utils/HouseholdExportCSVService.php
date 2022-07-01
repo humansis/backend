@@ -11,8 +11,8 @@ use NewApiBundle\Enum\NationalIdType;
 class HouseholdExportCSVService
 {
     public const
-        PRIMARY_ID_TYPE = 'Primary ID Type',
-        PRIMARY_ID_NUMBER = 'Primary ID Number',
+        PRIMARY_ID_TYPE = 'ID Type',
+        PRIMARY_ID_NUMBER = 'ID Number',
         SECONDARY_ID_TYPE = 'Secondary ID Type',
         SECONDARY_ID_NUMBER = 'Secondary ID Number',
         TERNARY_ID_TYPE = 'Ternary ID Type',

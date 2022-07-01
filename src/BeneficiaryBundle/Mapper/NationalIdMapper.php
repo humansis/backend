@@ -12,6 +12,7 @@ class NationalIdMapper
             "id" => $nationalId->getId(),
             "type" => $nationalId->getIdType(),
             "number" => $nationalId->getIdNumber(),
+            "priority" => $nationalId->getPriority(),
         ];
     }
 

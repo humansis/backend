@@ -16,6 +16,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use InvalidArgumentException;
+use NewApiBundle\Enum\NationalIdType;
+use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 use NewApiBundle\InputType\CommunityCreateInputType;
 use NewApiBundle\InputType\CommunityUpdateInputType;
 use ProjectBundle\Entity\Project;
@@ -134,7 +136,7 @@ class CommunityService
             $community->setNationalId(new NationalId());
             $community->getNationalId()->setIdNumber($communityType->getNationalId()->getNumber());
             $community->getNationalId()->setIdType($communityType->getNationalId()->getType());
-            $community->getNationalId()->setIdNumber($communityType->getNationalId()->getPriority());
+            $community->getNationalId()->setPriority($communityType->getNationalId()->getPriority());
         }
 
         if (null !== $communityType->getAddress()) {
@@ -213,7 +215,7 @@ class CommunityService
             }
             $community->getNationalId()->setIdType($communityType->getNationalId()->getType());
             $community->getNationalId()->setIdNumber($communityType->getNationalId()->getNumber());
-            $community->getNationalId()->setIdNumber($communityType->getNationalId()->getPriority());
+            $community->getNationalId()->setPriority($communityType->getNationalId()->getPriority());
         }
         if (null !== $newValue = $communityType->getContactName()) {
             $community->setContactName($newValue);
@@ -314,11 +316,7 @@ class CommunityService
         }
 
         if (!is_null($inputType->getNationalIdCard())) {
-            $nationalIdCard = new NationalId();
-
-            $nationalIdCard->setIdNumber($inputType->getNationalIdCard()->getNumber());
-            $nationalIdCard->setIdType($inputType->getNationalIdCard()->getType());
-
+            $nationalIdCard =  NationalId::fromNationalIdInputType($inputType->getNationalIdCard());
             $community->setNationalId($nationalIdCard);
         }
 

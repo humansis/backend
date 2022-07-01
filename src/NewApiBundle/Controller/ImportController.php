@@ -493,8 +493,8 @@ class ImportController extends AbstractController
                 "enGivenName" => $line->englishGivenName,
                 "enParentsName" => $line->englishParentsName,
                 "primaryIdCard" => [
-                    "number" => $line->idNumber,
-                    "type" => $line->idType
+                    "number" => $line->primaryIdNumber,
+                    "type" => $line->primaryIdType
                 ]
             ];
         }, $importQueues);

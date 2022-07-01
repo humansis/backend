@@ -495,10 +495,24 @@ class DistributionCSVService
             }
             $toUpdate->setNationalIds(null);
 
-            if (!empty($beneficiaryToUpdate['ID Number']) && !empty($beneficiaryToUpdate['ID Type'])) {
+            if (!empty($beneficiaryToUpdate[HouseholdExportCSVService::PRIMARY_ID_TYPE]) && !empty($beneficiaryToUpdate[HouseholdExportCSVService::PRIMARY_ID_NUMBER])) {
                 $newNationalId = new NationalId();
-                $newNationalId->setIdNumber($beneficiaryToUpdate['ID Number']);
-                $newNationalId->setIdType($beneficiaryToUpdate['ID Type']);
+                $newNationalId->setIdType($beneficiaryToUpdate[HouseholdExportCSVService::PRIMARY_ID_TYPE]);
+                $newNationalId->setIdNumber($beneficiaryToUpdate[HouseholdExportCSVService::PRIMARY_ID_NUMBER]);
+                $newNationalId->setPerson($toUpdate);
+                $toUpdate->addNationalId($newNationalId);
+            }
+            if (!empty($beneficiaryToUpdate[HouseholdExportCSVService::SECONDARY_ID_TYPE]) && !empty($beneficiaryToUpdate[HouseholdExportCSVService::SECONDARY_ID_NUMBER])) {
+                $newNationalId = new NationalId();
+                $newNationalId->setIdType($beneficiaryToUpdate[HouseholdExportCSVService::SECONDARY_ID_TYPE]);
+                $newNationalId->setIdNumber($beneficiaryToUpdate[HouseholdExportCSVService::SECONDARY_ID_NUMBER]);
+                $newNationalId->setPerson($toUpdate);
+                $toUpdate->addNationalId($newNationalId);
+            }
+            if (!empty($beneficiaryToUpdate[HouseholdExportCSVService::TERNARY_ID_TYPE]) && !empty($beneficiaryToUpdate[HouseholdExportCSVService::TERNARY_ID_NUMBER])) {
+                $newNationalId = new NationalId();
+                $newNationalId->setIdType($beneficiaryToUpdate[HouseholdExportCSVService::TERNARY_ID_TYPE]);
+                $newNationalId->setIdNumber($beneficiaryToUpdate[HouseholdExportCSVService::TERNARY_ID_NUMBER]);
                 $newNationalId->setPerson($toUpdate);
                 $toUpdate->addNationalId($newNationalId);
             }

@@ -28,7 +28,7 @@ class NationalIdCardInputType implements InputTypeInterface
      * @Assert\Type("integer")
      * @Assert\NotNull
      */
-    private $priority;
+    private $priority = 1;
 
     /**
      * @return string

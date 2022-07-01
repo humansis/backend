@@ -57,6 +57,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                         [
                             'number' => '022-33-1547',
                             'type' => NationalIdType::NATIONAL_ID,
+                            'priority' => 1,
                         ],
                     ],
                     'phones' => [
@@ -84,6 +85,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                         [
                             'number' => '022-33-1548',
                             'type' => NationalIdType::NATIONAL_ID,
+                            'priority' => 1,
                         ],
                     ],
                     'phones' => [
@@ -137,6 +139,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             'proxyNationalIdCard' => [
                 'number' => '022-33-1547',
                 'type' => NationalIdType::NATIONAL_ID,
+                'priority' => 1,
             ],
             'proxyPhone' => [
                 'prefix' => '420',
@@ -231,6 +234,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                         [
                             'number' => '022-33-1547',
                             'type' => NationalIdType::NATIONAL_ID,
+                            'priority' => 1,
                         ],
                     ],
                     'phones' => [
@@ -259,6 +263,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                         [
                             'number' => '022-33-1548',
                             'type' => NationalIdType::NATIONAL_ID,
+                            'priority' => 1,
                         ],
                     ],
                     'phones' => [
@@ -304,6 +309,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             'proxyNationalIdCard' => [
                 'number' => '022-33-1547',
                 'type' => NationalIdType::NATIONAL_ID,
+                'priority' => 1,
             ],
             'proxyPhone' => [
                 'prefix' => '420',

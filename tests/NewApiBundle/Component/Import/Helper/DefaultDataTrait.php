@@ -46,6 +46,7 @@ trait DefaultDataTrait
         $nationalId = new NationalId();
         $nationalId->setIdType(NationalIdType::NATIONAL_ID);
         $nationalId->setIdNumber('123456789');
+        $nationalId->setPriority(1);
         $hhh->getPerson()->addNationalId($nationalId);
         $nationalId->setPerson($hhh->getPerson());
 
