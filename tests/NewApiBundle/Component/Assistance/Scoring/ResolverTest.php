@@ -57,14 +57,14 @@ class ResolverTest extends KernelTestCase
 
     public function testUkrIDPScoring()
     {
+        $this->expectNotToPerformAssertions();
+
         $scoring = $this->scoringFactory->buildScoring('IDP');
 
         /** @var Household $household */
         $household = $this->objectManager->getRepository(Household::class)->findOneBy([]);
 
-        $protocol = $this->resolver->compute($household, $scoring, 'KHM');
-
-        //TODO rozšířit
+        $this->resolver->compute($household, $scoring, 'KHM');
     }
 }
 
