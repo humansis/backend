@@ -7,21 +7,21 @@ namespace TransactionBundle\Export;
 use CommonBundle\Entity\Organization;
 use CommonBundle\Utils\PdfService;
 use DistributionBundle\Entity\Assistance;
-use Symfony\Bundle\TwigBundle\TwigEngine;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Twig\Environment;
 
 class AssistancePdfExport
 {
     /** @var TranslatorInterface */
     private $translator;
 
-    /** @var TwigEngine */
+    /** @var Environment */
     private $twig;
 
     /** @var PdfService */
     private $pdfService;
 
-    public function __construct(TranslatorInterface $translator, TwigEngine $twig, PdfService $pdfService)
+    public function __construct(TranslatorInterface $translator, Environment $twig, PdfService $pdfService)
     {
         $this->translator = $translator;
         $this->twig = $twig;
