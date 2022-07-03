@@ -52,7 +52,7 @@ class ResolverTest extends KernelTestCase
         $protocol = $this->resolver->compute($household, $scoring, 'KHM');
 
         $this->assertEquals(5, $protocol->getTotalScore());
-        $this->assertEquals(5, $protocol->getCategoryScore('Test Rule'));
+        $this->assertEquals(5, $protocol->getScore('Test Rule'));
     }
 
     public function testUkrIDPScoring()

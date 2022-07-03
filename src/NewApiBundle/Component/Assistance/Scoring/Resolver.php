@@ -5,10 +5,10 @@ namespace NewApiBundle\Component\Assistance\Scoring;
 
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Model\Vulnerability\Protocol;
 use BeneficiaryBundle\Repository\CountrySpecificAnswerRepository;
 use BeneficiaryBundle\Repository\CountrySpecificRepository;
 use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleType;
+use NewApiBundle\Component\Assistance\Scoring\Model\Protocol;
 use NewApiBundle\Component\Assistance\Scoring\Model\Scoring;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRule;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRuleOption;

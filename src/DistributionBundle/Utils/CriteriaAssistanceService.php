@@ -93,7 +93,7 @@ class CriteriaAssistanceService
                 $protocol = $this->resolver->compute($beneficiary->getHousehold(), $project->getIso3(), $sector);
                 $scores = ['totalScore' => $protocol->getTotalScore()];
                 foreach (CategoryEnum::all() as $value) {
-                    $scores[$value] = $protocol->getCategoryScore($value);
+                    $scores[$value] = $protocol->getScore($value);
                 }
 
                 if ($protocol->getTotalScore() >= $threshold) {
