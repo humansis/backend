@@ -91,18 +91,14 @@ class CriteriaAssistanceService
                 $beneficiary = $this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $bnf['id']);
 
                 $protocol = $this->resolver->compute($beneficiary->getHousehold(), $project->getIso3(), $sector);
-                $scores = ['totalScore' => $protocol->getTotalScore()];
-                foreach (CategoryEnum::all() as $value) {
-                    $scores[$value] = $protocol->getScore($value);
-                }
 
                 if ($protocol->getTotalScore() >= $threshold) {
                     if (AssistanceTargetType::INDIVIDUAL === $targetType) {
                         $BNFId = $beneficiary->getId();
-                        $reachedBeneficiaries[$BNFId] = $scores;
+                        $reachedBeneficiaries[$BNFId] = $protocol;
                     } elseif (AssistanceTargetType::HOUSEHOLD === $targetType) {
                         $HHHId = $beneficiary->getHousehold()->getHouseholdHead()->getId();
-                        $reachedBeneficiaries[$HHHId] = $scores;
+                        $reachedBeneficiaries[$HHHId] = $protocol;
                     }
                 }
             }

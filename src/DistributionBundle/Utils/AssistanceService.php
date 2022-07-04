@@ -332,7 +332,7 @@ class AssistanceService
      */
     private function saveReceivers(Assistance $assistance, array $listReceivers)
     {
-        foreach ($listReceivers['finalArray'] as $receiver => $scores) {
+        foreach ($listReceivers['finalArray'] as $receiver => $scoreProtocol) {
             /** @var Beneficiary $beneficiary */
             $beneficiary = $this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $receiver);
 
@@ -340,7 +340,7 @@ class AssistanceService
                 ->setAssistance($assistance)
                 ->setBeneficiary($beneficiary)
                 ->setRemoved(0)
-                ->setVulnerabilityScores(json_encode($scores));
+                ->setVulnerabilityScores($scoreProtocol);
 
             $this->em->persist($assistanceBeneficiary);
         }

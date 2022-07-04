@@ -48,7 +48,9 @@ final class ScoringService
     /**
      * @param VulnerabilityScoreInputType $input
      * @param string $countryCode
-     * @return iterable
+     *
+     * @return VulnerabilityScore[]
+     *
      * @throws \BeneficiaryBundle\Exception\CsvParserException
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
@@ -69,7 +71,7 @@ final class ScoringService
                 //remove when SYR scoring is refactored as default
                 : $this->oldResolver->compute($household, $countryCode, $input->getSector());
 
-            $scores[] = new VulnerabilityScore($household, ['totalScore' => $protocol->getTotalScore()]);
+            $scores[] = new VulnerabilityScore($household, $protocol);
         }
         
         return $scores;
