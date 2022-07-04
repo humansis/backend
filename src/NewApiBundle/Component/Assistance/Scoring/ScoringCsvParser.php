@@ -8,7 +8,7 @@ use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringCsvColumns;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRule;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRuleOption;
 
-final class Parser extends AbstractCsvParser
+final class ScoringCsvParser extends AbstractCsvParser
 {
     protected function mandatoryColumns(): array
     {

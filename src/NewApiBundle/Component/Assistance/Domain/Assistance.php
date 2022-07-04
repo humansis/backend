@@ -18,7 +18,7 @@ use NewApiBundle\Component\Assistance\CommodityAssignBuilder;
 use NewApiBundle\Component\Assistance\DTO\CommoditySummary;
 use NewApiBundle\Component\Assistance\DTO\CriteriaGroup;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
-use NewApiBundle\Component\Assistance\Scoring\Model\Protocol;
+use NewApiBundle\Component\Assistance\Scoring\Model\ScoringProtocol;
 use NewApiBundle\Component\Assistance\SelectionCriteriaFactory;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\CacheTarget;
@@ -288,11 +288,11 @@ class Assistance
     /**
      * @param AbstractBeneficiary $beneficiary
      * @param string|null         $justification
-     * @param Protocol|null          $vulnerabilityScore
+     * @param ScoringProtocol|null          $vulnerabilityScore
      *
      * @return Assistance
      */
-    public function addBeneficiary(AbstractBeneficiary $beneficiary, ?string $justification = null, ?Protocol $vulnerabilityScore = null): self
+    public function addBeneficiary(AbstractBeneficiary $beneficiary, ?string $justification = null, ?ScoringProtocol $vulnerabilityScore = null): self
     {
         if ($this->assistanceRoot->getValidated() == 1) {
             throw new ManipulationOverValidatedAssistanceException("It is not possible to add a beneficiary to validated and locked assistance");

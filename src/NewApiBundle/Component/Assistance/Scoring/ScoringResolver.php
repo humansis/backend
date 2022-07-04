@@ -8,12 +8,12 @@ use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Repository\CountrySpecificAnswerRepository;
 use BeneficiaryBundle\Repository\CountrySpecificRepository;
 use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleType;
-use NewApiBundle\Component\Assistance\Scoring\Model\Protocol;
+use NewApiBundle\Component\Assistance\Scoring\Model\ScoringProtocol;
 use NewApiBundle\Component\Assistance\Scoring\Model\Scoring;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRule;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRuleOption;
 
-final class Resolver
+final class ScoringResolver
 {
     /**
      * @var RulesCalculation
@@ -37,9 +37,9 @@ final class Resolver
         $this->countrySpecificAnswerRepository = $countrySpecificAnswerRepository;
     }
 
-    public function compute(Household $household, Scoring $scoring, string $countryCode): Protocol
+    public function compute(Household $household, Scoring $scoring, string $countryCode): ScoringProtocol
     {
-        $protocol = new Protocol();
+        $protocol = new ScoringProtocol();
 
         foreach ($scoring->getRules() as $rule) {
             if ($rule->getType() === ScoringRuleType::CALCULATION) {

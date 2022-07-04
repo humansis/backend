@@ -7,13 +7,13 @@ use BeneficiaryBundle\Model\Vulnerability\Resolver as OldResolver;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use DistributionBundle\DTO\VulnerabilityScore;
 use NewApiBundle\Component\Assistance\Scoring\Model\Factory\ScoringFactory;
-use NewApiBundle\Component\Assistance\Scoring\Resolver;
+use NewApiBundle\Component\Assistance\Scoring\ScoringResolver;
 use NewApiBundle\InputType\VulnerabilityScoreInputType;
 
 final class ScoringService
 {
     /**
-     * @var Resolver
+     * @var ScoringResolver
      */
     private $resolver;
 
@@ -33,7 +33,7 @@ final class ScoringService
     private $beneficiaryRepository;
 
     public function __construct(
-        Resolver $resolver,
+        ScoringResolver $resolver,
         OldResolver $oldResolver,
         ScoringFactory $scoringFactory,
         BeneficiaryRepository $beneficiaryRepository

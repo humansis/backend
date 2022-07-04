@@ -6,12 +6,12 @@ namespace Tests\NewApiBundle\Component\Assistance\Scoring;
 use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleOptionsEnum;
 use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRulesEnum;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRule;
-use NewApiBundle\Component\Assistance\Scoring\Parser;
+use NewApiBundle\Component\Assistance\Scoring\ScoringCsvParser;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ParserTest extends KernelTestCase
 {
-    /** @var Parser */
+    /** @var ScoringCsvParser */
     private $parser;
 
     /** @var String */
@@ -21,7 +21,7 @@ class ParserTest extends KernelTestCase
     {
         parent::__construct();
 
-        $this->parser = new Parser();
+        $this->parser = new ScoringCsvParser();
         $kernel = $this->bootKernel();
         $this->projectDir = $kernel->getProjectDir();
     }

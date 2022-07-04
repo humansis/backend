@@ -5,7 +5,7 @@ namespace NewApiBundle\Component\Assistance\Scoring\Model;
 
 use \JsonException;
 
-final class Protocol implements \Serializable
+final class ScoringProtocol implements \Serializable
 {
     /** @var int[] */
     private $score = [];

@@ -12,7 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use NewApiBundle\Component\Assistance\DTO\CriteriaGroup;
 use NewApiBundle\Component\Assistance\Scoring\Model\Factory\ScoringFactory;
-use NewApiBundle\Component\Assistance\Scoring\Resolver;
+use NewApiBundle\Component\Assistance\Scoring\ScoringResolver;
 use NewApiBundle\Entity\Assistance\SelectionCriteria;
 use ProjectBundle\Entity\Project;
 
@@ -35,7 +35,7 @@ class CriteriaAssistanceService
     /** @var ScoringFactory */
     private $scoringFactory;
 
-    /** @var Resolver */
+    /** @var ScoringResolver */
     private $resolver;
 
     /**
@@ -50,7 +50,7 @@ class CriteriaAssistanceService
         ConfigurationLoader $configurationLoader,
         OldResolver $oldResolver,
         ScoringFactory $scoringFactory,
-        Resolver $resolver
+        ScoringResolver $resolver
     ) {
         $this->em = $entityManager;
         $this->configurationLoader = $configurationLoader;

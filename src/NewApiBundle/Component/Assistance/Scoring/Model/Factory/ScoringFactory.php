@@ -6,7 +6,7 @@ namespace NewApiBundle\Component\Assistance\Scoring\Model\Factory;
 use BeneficiaryBundle\Exception\CsvParserException;
 use NewApiBundle\Component\Assistance\Scoring\Exception\ScoreValidationException;
 use NewApiBundle\Component\Assistance\Scoring\Model\Scoring;
-use NewApiBundle\Component\Assistance\Scoring\Parser;
+use NewApiBundle\Component\Assistance\Scoring\ScoringCsvParser;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -18,7 +18,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 final class ScoringFactory
 {
     /**
-     * @var Parser
+     * @var ScoringCsvParser
      */
     private $parser;
 
@@ -32,7 +32,7 @@ final class ScoringFactory
 
     public function __construct(array $scoringConfigurations, ValidatorInterface $validator)
     {
-        $this->parser = new Parser();
+        $this->parser = new ScoringCsvParser();
         $this->scoringConfigurations = $scoringConfigurations;
         $this->validator = $validator;
     }

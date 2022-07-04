@@ -10,12 +10,12 @@ use NewApiBundle\Component\Assistance\Scoring\Model\Factory\ScoringFactory;
 use NewApiBundle\Component\Assistance\Scoring\Model\Scoring;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRule;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRuleOption;
-use NewApiBundle\Component\Assistance\Scoring\Resolver;
+use NewApiBundle\Component\Assistance\Scoring\ScoringResolver;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ResolverTest extends KernelTestCase
 {
-    /** @var Resolver */
+    /** @var ScoringResolver */
     private $resolver;
 
     /** @var ObjectManager */
@@ -30,7 +30,7 @@ class ResolverTest extends KernelTestCase
 
         $kernel = $this->bootKernel();
 
-        $this->resolver = $kernel->getContainer()->get(Resolver::class);
+        $this->resolver = $kernel->getContainer()->get(ScoringResolver::class);
         $this->objectManager = $kernel->getContainer()->get('doctrine.orm.default_entity_manager');
         $this->scoringFactory = $kernel->getContainer()->get(ScoringFactory::class);
     }
