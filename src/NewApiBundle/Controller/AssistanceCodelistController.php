@@ -1,11 +1,9 @@
 <?php
-
 declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
 use CommonBundle\Pagination\Paginator;
-use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -16,6 +14,7 @@ use NewApiBundle\InputType\AssistanceTypeFilterInputType;
 use ProjectBundle\Utils\SectorService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Cache(expires="+5 days", public=true)
@@ -51,9 +50,17 @@ class AssistanceCodelistController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function getScoringTypes(): JsonResponse
+    public function getScoringTypes(Request $request): JsonResponse
     {
-        $scoringTypes = CodeLists::mapEnum(array_column($this->scoringConfigurations, 'name'));
+        if (!$request->headers->has('country')) {
+            throw $this->createNotFoundException('Missing header attribute country');
+        }
+
+        $filteredScoringTypes = array_filter($this->scoringConfigurations, function (array $item) use ($request) {
+            return in_array($request->headers->get('country'), $item['countries']);
+        });
+
+        $scoringTypes = CodeLists::mapEnum(array_column($filteredScoringTypes, 'name'));
 
         return $this->json(new Paginator($scoringTypes));
     }
