@@ -442,7 +442,9 @@ class Household extends AbstractBeneficiary
      */
     public function getBeneficiaries()
     {
-        return $this->beneficiaries;
+        return $this->beneficiaries->filter(function (Beneficiary $beneficiary) {
+            return !$beneficiary->getArchived();
+        });
     }
 
     /**
@@ -749,6 +751,14 @@ class Household extends AbstractBeneficiary
     public function setProxy(?Person $proxy): void
     {
         $this->proxy = $proxy;
+    }
+
+    /**
+     * @param Beneficiary $beneficiary
+     */
+    public function addMember(Beneficiary $beneficiary)
+    {
+        $this->beneficiaries->add($beneficiary);
     }
 
 }

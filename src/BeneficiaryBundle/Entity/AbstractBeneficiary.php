@@ -163,7 +163,7 @@ abstract class AbstractBeneficiary
      *
      * @return self
      */
-    public function setArchived(bool $archived): self
+    public function setArchived(bool $archived = true): self
     {
         $this->archived = $archived;
 
