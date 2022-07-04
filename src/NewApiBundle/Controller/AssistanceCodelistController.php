@@ -26,43 +26,16 @@ class AssistanceCodelistController extends AbstractController
      */
     private $sectorService;
 
-    /**
-     * @var array
-     */
-    private $scoringConfigurations;
 
     /**
      * AssistanceCodelistController constructor.
      * @param SectorService $sectorService
-     * @param array $scoringConfigurations
      */
     public function __construct(
-        SectorService $sectorService,
-        array $scoringConfigurations
+        SectorService $sectorService
     )
     {
         $this->sectorService = $sectorService;
-        $this->scoringConfigurations = $scoringConfigurations;
-    }
-
-    /**
-     * @Rest\Get("/web-app/v1/scoring-types")
-     *
-     * @return JsonResponse
-     */
-    public function getScoringTypes(Request $request): JsonResponse
-    {
-        if (!$request->headers->has('country')) {
-            throw $this->createNotFoundException('Missing header attribute country');
-        }
-
-        $filteredScoringTypes = array_filter($this->scoringConfigurations, function (array $item) use ($request) {
-            return in_array($request->headers->get('country'), $item['countries']);
-        });
-
-        $scoringTypes = CodeLists::mapEnum(array_column($filteredScoringTypes, 'name'));
-
-        return $this->json(new Paginator($scoringTypes));
     }
 
     /**

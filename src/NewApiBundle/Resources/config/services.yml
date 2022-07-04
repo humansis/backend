@@ -201,6 +201,9 @@ services:
             - '@project.sector_service'
             - '%scoringTypes%'
 
+    NewApiBundle\Controller\ScoringController:
+        - '%scoringTypes%'
+
     NewApiBundle\Controller\SectorsCodelistController:
         arguments:
             - "@project.sector_service"
@@ -492,7 +495,13 @@ services:
 
     NewApiBundle\Services\AssistanceDistributionService:
 
+    NewApiBundle\Services\ScoringService:
+
     NewApiBundle\Component\SelectionCriteria\Loader\CriteriaConfigurationLoader:
         arguments:
             - '%distribution.criteria%'
 
+    NewApiBundle\Repository\ScoringRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - \NewApiBundle\Entity\Scoring

@@ -28,9 +28,10 @@ trait CreatedBy
     /**
      * @param User|null $createdBy
      */
-    public function setCreatedBy(?User $createdBy): void
+    public function setCreatedBy(?User $createdBy)
     {
         $this->createdBy = $createdBy;
+        return $this;
     }
 
 }

@@ -21,7 +21,7 @@ use UserBundle\Entity\User;
 /**
  * Class AssistanceDistributionService
  *
- * @package DistributionBundle\Utils
+ * @package NewBundle\Services
  */
 class AssistanceDistributionService
 {
