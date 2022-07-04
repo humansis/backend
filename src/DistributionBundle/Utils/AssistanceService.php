@@ -147,7 +147,7 @@ class AssistanceService
         }
 
         $selectionGroups = $this->selectionCriteriaFactory->createGroups($inputType->getSelectionCriteria());
-        $result = $this->criteriaAssistanceService->load($selectionGroups, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false);
+        $result = $this->criteriaAssistanceService->load($selectionGroups, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false,  $inputType->getScoringType());
         $ids = array_keys($result['finalArray']);
         $count = count($ids);
 
@@ -177,7 +177,7 @@ class AssistanceService
         }
 
         $selectionGroups = $this->selectionCriteriaFactory->createGroups($inputType->getSelectionCriteria());
-        $result = $this->criteriaAssistanceService->load($selectionGroups, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false);
+        $result = $this->criteriaAssistanceService->load($selectionGroups, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false, $inputType->getScoringType());
         $ids = array_keys($result['finalArray']);
         $count = count($ids);
 
@@ -305,7 +305,8 @@ class AssistanceService
                     $sector,
                     $subsector,
                     $distributionArray['threshold'],
-                    false
+                    false,
+                    'Default'
                 );
             $this->saveReceivers($distribution, $listReceivers);
         }

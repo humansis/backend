@@ -179,7 +179,8 @@ class AssistanceFactory
                     $assistanceRoot->getSector(),
                     $assistanceRoot->getSubSector(),
                     $inputType->getThreshold(),
-                    false
+                    false,
+                    $inputType->getScoringType()
                 );
                 foreach ($beneficiaryIds['finalArray'] as $beneficiaryId => $vulnerabilityScore) {
                     $individualOrHHH = $this->beneficiaryRepository->find($beneficiaryId);

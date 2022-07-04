@@ -43,11 +43,6 @@ services:
         public: true
 
     DistributionBundle\Utils\CriteriaAssistanceService:
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - '@distribution.configuration_loader'
-            - '@beneficiary.vulnerability_resolver'
-            - '@serializer'
 
     distribution.configuration_loader:
         alias: DistributionBundle\Utils\ConfigurationLoader
