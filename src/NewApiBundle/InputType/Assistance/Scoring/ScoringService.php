@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\InputType\Assistance\Scoring;
 
 use BeneficiaryBundle\Model\Vulnerability\Resolver as OldResolver;
-use BeneficiaryBundle\Repository\HouseholdRepository;
+use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use DistributionBundle\DTO\VulnerabilityScore;
 use NewApiBundle\Component\Assistance\Scoring\Model\Factory\ScoringFactory;
 use NewApiBundle\Component\Assistance\Scoring\Resolver;
@@ -18,11 +18,6 @@ final class ScoringService
     private $resolver;
 
     /**
-     * @var HouseholdRepository
-     */
-    private $householdRepository;
-
-    /**
      * @var OldResolver
      */
     private $oldResolver;
@@ -32,17 +27,22 @@ final class ScoringService
      */
     private $scoringFactory;
 
+    /**
+     * @var BeneficiaryRepository
+     */
+    private $beneficiaryRepository;
+
     public function __construct(
         Resolver $resolver,
         OldResolver $oldResolver,
-        HouseholdRepository $householdRepository,
-        ScoringFactory $scoringFactory
+        ScoringFactory $scoringFactory,
+        BeneficiaryRepository $beneficiaryRepository
     )
     {
         $this->resolver = $resolver;
         $this->oldResolver = $oldResolver;
-        $this->householdRepository = $householdRepository;
         $this->scoringFactory = $scoringFactory;
+        $this->beneficiaryRepository = $beneficiaryRepository;
     }
 
     /**
@@ -57,21 +57,26 @@ final class ScoringService
      */
     public function computeTotalScore(VulnerabilityScoreInputType $input, string $countryCode): iterable
     {
-        $households = $this->householdRepository->findAllByHeadIds($input->getBeneficiaryIds());
-        
         $scores = [];
-        foreach ($households as $household) {
-            
-            $protocol = ($countryCode === 'UKR')
-                ? $this->resolver->compute(
-                    $household,
+
+        foreach ($input->getBeneficiaryIds() as $beneficiaryId) {
+            $beneficiary = $this->beneficiaryRepository->find($beneficiaryId);
+
+            if ($input->getScoringType() === 'Default') {
+                $protocol = $this->oldResolver->compute($beneficiary->getHousehold(), $countryCode, $input->getSector());
+            } else {
+                $protocol = $this->resolver->compute(
+                    $beneficiary->getHousehold(),
                     $this->scoringFactory->buildScoring($input->getScoringType()),
                     $countryCode
-                  )
-                //remove when SYR scoring is refactored as default
-                : $this->oldResolver->compute($household, $countryCode, $input->getSector());
+                );
+            }
 
-            $scores[] = new VulnerabilityScore($household, $protocol);
+            if (!is_null($input->getThreshold()) && $protocol->getTotalScore() < $input->getThreshold()) {
+                continue;
+            }
+
+            $scores[] = new VulnerabilityScore($beneficiary, $protocol);
         }
         
         return $scores;
