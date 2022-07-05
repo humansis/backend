@@ -2,16 +2,14 @@
 
 namespace NewApiBundle\Services;
 
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use NewApiBundle\Entity\Scoring;
+use NewApiBundle\Entity\ScoringBlueprint;
 use NewApiBundle\InputType\ScoringInputType;
-use NewApiBundle\Repository\ScoringRepository;
+use NewApiBundle\Repository\ScoringBlueprintRepository;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Security\Core\Security;
 use UserBundle\Utils\UserService;
 
-class ScoringService
+class ScoringBlueprintService
 {
 
 
@@ -19,9 +17,9 @@ class ScoringService
     private $em;
 
     /**
-     * @var ScoringRepository $scoringRepository
+     * @var ScoringBlueprintRepository $scoringBlueprintRepository
      */
-    private $scoringRepository;
+    private $scoringBlueprintRepository;
 
     /**
      * @var UserService
@@ -29,18 +27,18 @@ class ScoringService
     private $userService;
 
     /**
-     * @param ScoringRepository $scoringRepository
+     * @param ScoringBlueprintRepository $scoringBlueprintRepository
      */
-    public function __construct(EntityManagerInterface  $em, ScoringRepository $scoringRepository, UserService $userService)
+    public function __construct(EntityManagerInterface  $em, ScoringBlueprintRepository $scoringBlueprintRepository, UserService $userService)
     {
-        $this->scoringRepository = $scoringRepository;
+        $this->scoringBlueprintRepository = $scoringBlueprintRepository;
         $this->userService = $userService;
         $this->em = $em;
     }
 
-    public function create(ScoringInputType $scoringInput, $iso3): Scoring
+    public function create(ScoringInputType $scoringInput, $iso3): ScoringBlueprint
     {
-        $scoring = new Scoring();
+        $scoring = new ScoringBlueprint();
         $scoring->setArchived(0)
             ->setName($scoringInput->getName())
             ->setContent($scoringInput->getContent())
@@ -51,7 +49,7 @@ class ScoringService
         return $scoring;
     }
 
-    public function archive(Scoring $scoring)
+    public function archive(ScoringBlueprint $scoring)
     {
         if ($scoring->isArchived()) {
             throw new BadRequestHttpException("Scoring '{$scoring->getName()}' is already archived.");

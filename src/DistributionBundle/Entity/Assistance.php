@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
 use NewApiBundle\Entity\Assistance\SelectionCriteria;
+use NewApiBundle\Entity\ScoringBlueprint;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
@@ -178,11 +179,12 @@ class Assistance implements ExportableInterface
     private $subSector;
 
     /**
-     * @var string|null
+     * @var ScoringBlueprint
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ScoringBlueprint")
      *
-     * @ORM\Column(name="scoring_type", type="string", nullable=true)
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
-    private $scoringType;
+    private $scoringBlueprint;
 
     /**
      * @var string|null
@@ -738,20 +740,45 @@ class Assistance implements ExportableInterface
     }
 
     /**
-     * @param string $scoringType
+     * @return ArrayCollection
      */
-    public function setScoringType(string $scoringType): void
+    public function getReportingDistribution(): ArrayCollection
     {
-        $this->scoringType = $scoringType;
+        return $this->reportingDistribution;
     }
 
     /**
-     * @return string|null
+     * @param ArrayCollection $reportingDistribution
+     *
+     * @return Assistance
      */
-    public function getScoringType(): ?string
+    public function setReportingDistribution(ArrayCollection $reportingDistribution): Assistance
     {
-        return $this->scoringType;
+        $this->reportingDistribution = $reportingDistribution;
+
+        return $this;
     }
+
+    /**
+     * @return ScoringBlueprint
+     */
+    public function getScoringBlueprint(): ScoringBlueprint
+    {
+        return $this->scoringBlueprint;
+    }
+
+    /**
+     * @param ScoringBlueprint $scoringBlueprint
+     *
+     * @return Assistance
+     */
+    public function setScoringBlueprint(ScoringBlueprint $scoringBlueprint): Assistance
+    {
+        $this->scoringBlueprint = $scoringBlueprint;
+
+        return $this;
+    }
+
 
     /**
      * @param string|null $description

@@ -7,7 +7,7 @@ use BeneficiaryBundle\Exception\CsvParserException;
 use NewApiBundle\Component\Assistance\Scoring\Exception\ScoreValidationException;
 use NewApiBundle\Component\Assistance\Scoring\Model\Scoring;
 use NewApiBundle\Component\Assistance\Scoring\ScoringCsvParser;
-use Symfony\Component\Config\Definition\Exception\Exception;
+use NewApiBundle\Entity\ScoringBlueprint;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -22,54 +22,35 @@ final class ScoringFactory
      */
     private $parser;
 
-    /**
-     * @var array
-     */
-    private $scoringConfigurations;
 
     /** @var ValidatorInterface */
     private $validator;
 
-    public function __construct(array $scoringConfigurations, ValidatorInterface $validator)
+    public function __construct(ValidatorInterface $validator)
     {
         $this->parser = new ScoringCsvParser();
-        $this->scoringConfigurations = $scoringConfigurations;
         $this->validator = $validator;
     }
 
     /**
-     * @param string $scoringType
+     * @param ScoringBlueprint $scoringBlueprint
      *
      * @return Scoring
      *
      * @throws CsvParserException
      * @throws \Exception
      */
-    public function buildScoring(string $scoringType): Scoring
+    public function buildScoring(ScoringBlueprint $scoringBlueprint): Scoring
     {
-        /** @var string|null $csvPath */
-        $csvPath = null;
-
-        foreach ($this->scoringConfigurations as $configuration) {
-            if ($configuration['name'] === $scoringType) {
-                $csvPath = $configuration['csvFile'];
-            }
-        }
-
-        if (is_null($csvPath)) {
-            throw new Exception("Scoring with name $scoringType was not found in configuration");
-        }
-
-        $scoringRules = $this->parser->parse($csvPath);
-
-        $scoring = new Scoring($scoringType, $scoringRules);
-
+        //print_r(var_dump($scoringBlueprint->getName()));
+        //die(var_dump(is_resource($scoringBlueprint->getContent())));
+        //die(var_dump(fgetcsv($scoringBlueprint->getContent())));
+        $scoringRules = $this->parser->parseStream($scoringBlueprint->getContent());
+        $scoring = new Scoring($scoringBlueprint->getName(), $scoringRules);
         $violations = $this->validator->validate($scoring);
-
         if ($violations->count() === 0) {
             return $scoring;
         }
-
-        throw new ScoreValidationException($scoringType, $violations);
+        throw new ScoreValidationException($scoringBlueprint->getName(), $violations);
     }
 }

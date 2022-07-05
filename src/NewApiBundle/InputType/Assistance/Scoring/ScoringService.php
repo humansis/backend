@@ -9,6 +9,7 @@ use DistributionBundle\DTO\VulnerabilityScore;
 use NewApiBundle\Component\Assistance\Scoring\Model\Factory\ScoringFactory;
 use NewApiBundle\Component\Assistance\Scoring\ScoringResolver;
 use NewApiBundle\InputType\VulnerabilityScoreInputType;
+use NewApiBundle\Repository\ScoringBlueprintRepository;
 
 final class ScoringService
 {
@@ -32,17 +33,24 @@ final class ScoringService
      */
     private $beneficiaryRepository;
 
+    /**
+     * @var ScoringBlueprintRepository
+     */
+    private $scoringBlueprintRepository;
+
     public function __construct(
         ScoringResolver $resolver,
         OldResolver $oldResolver,
         ScoringFactory $scoringFactory,
-        BeneficiaryRepository $beneficiaryRepository
+        BeneficiaryRepository $beneficiaryRepository,
+        ScoringBlueprintRepository $scoringBlueprintRepository
     )
     {
         $this->resolver = $resolver;
         $this->oldResolver = $oldResolver;
         $this->scoringFactory = $scoringFactory;
         $this->beneficiaryRepository = $beneficiaryRepository;
+        $this->scoringBlueprintRepository = $scoringBlueprintRepository;
     }
 
     /**
@@ -62,12 +70,13 @@ final class ScoringService
         foreach ($input->getBeneficiaryIds() as $beneficiaryId) {
             $beneficiary = $this->beneficiaryRepository->find($beneficiaryId);
 
-            if ($input->getScoringType() === 'Default') {
+            $scoringBlueprint = $this->scoringBlueprintRepository->findActive($input->getScoringBlueprint(), $countryCode);
+            if (isset($scoringBlueprint)) {
                 $protocol = $this->oldResolver->compute($beneficiary->getHousehold(), $countryCode, $input->getSector());
             } else {
                 $protocol = $this->resolver->compute(
                     $beneficiary->getHousehold(),
-                    $this->scoringFactory->buildScoring($input->getScoringType()),
+                    $this->scoringFactory->buildScoring($scoringBlueprint),
                     $countryCode
                 );
             }

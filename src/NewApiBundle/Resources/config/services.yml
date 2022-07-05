@@ -199,10 +199,8 @@ services:
     NewApiBundle\Controller\AssistanceCodelistController:
         arguments: 
             - '@project.sector_service'
-            - '%scoringTypes%'
 
-    NewApiBundle\Controller\ScoringController:
-        - '%scoringTypes%'
+    NewApiBundle\Controller\ScoringBlueprintController:
 
     NewApiBundle\Controller\SectorsCodelistController:
         arguments:
@@ -479,13 +477,9 @@ services:
 
     NewApiBundle\Component\Assistance\Scoring\Model\Factory\ScoringFactory:
         public: true
-        arguments:
-            - '%scoringTypes%'
               
     NewApiBundle\Component\Assistance\Scoring\Validator\ScoringTypeValidator:
         public: true
-        arguments:
-            - '%scoringTypes%'
 
     BeneficiaryBundle\Model\Vulnerability\Resolver:
         public: true
@@ -495,13 +489,13 @@ services:
 
     NewApiBundle\Services\AssistanceDistributionService:
 
-    NewApiBundle\Services\ScoringService:
+    NewApiBundle\Services\ScoringBlueprintService:
 
     NewApiBundle\Component\SelectionCriteria\Loader\CriteriaConfigurationLoader:
         arguments:
             - '%distribution.criteria%'
 
-    NewApiBundle\Repository\ScoringRepository:
+    NewApiBundle\Repository\ScoringBlueprintRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
-            - \NewApiBundle\Entity\Scoring
+            - \NewApiBundle\Entity\ScoringBlueprint

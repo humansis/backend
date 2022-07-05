@@ -130,9 +130,9 @@ class AssistanceMapper implements MapperInterface
         return $this->object->getSubSector();
     }
 
-    public function getScoringType(): ?string
+    public function getScoringBlueprint(): ?string
     {
-        return $this->object->getScoringType();
+        return $this->object->getScoringBluprint();
     }
 
     public function getCommodityIds(): array

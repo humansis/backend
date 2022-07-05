@@ -10,14 +10,15 @@ use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\CountryDependent;
 use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\CreatedBy;
+use phpDocumentor\Reflection\Types\Resource_;
 use UserBundle\Entity\User;
 
 /**
- * @ORM\Table(name="scoring")
- * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ScoringRepository")
+ * @ORM\Table(name="scoring_blueprint")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ScoringBlueprintRepository")
  * @ORM\HasLifecycleCallbacks()
  */
-class Scoring
+class ScoringBlueprint
 {
 
     use CreatedAt;
@@ -56,6 +57,14 @@ class Scoring
     private $content;
 
     /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
      * @return string
      */
     public function getName(): string
@@ -66,9 +75,9 @@ class Scoring
     /**
      * @param string $name
      *
-     * @return Scoring
+     * @return ScoringBlueprint
      */
-    public function setName(string $name): Scoring
+    public function setName(string $name): ScoringBlueprint
     {
         $this->name = $name;
 
@@ -86,9 +95,9 @@ class Scoring
     /**
      * @param bool $archived
      *
-     * @return Scoring
+     * @return ScoringBlueprint
      */
-    public function setArchived(bool $archived): Scoring
+    public function setArchived(bool $archived): ScoringBlueprint
     {
         $this->archived = $archived;
 
@@ -96,9 +105,9 @@ class Scoring
     }
 
     /**
-     * @return string
+     * @return resource
      */
-    public function getContent(): string
+    public function getContent()
     {
         return $this->content;
     }
@@ -106,9 +115,9 @@ class Scoring
     /**
      * @param string $content
      *
-     * @return Scoring
+     * @return ScoringBlueprint
      */
-    public function setContent(string $content): Scoring
+    public function setContent(string $content): ScoringBlueprint
     {
         $this->content = $content;
 
