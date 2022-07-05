@@ -85,6 +85,27 @@ parameters:
           adms: [ Region, District, Ward, Constituency ]
           archived: false
 
+    scoringTypes:
+        - name: IDP
+          countries:
+            - UKR
+          csvFile: '%kernel.project_dir%/src/NewApiBundle/Resources/Scoring/UKR_IDP.csv'
+        - name: Community
+          countries:
+            - UKR
+          csvFile: '%kernel.project_dir%/src/NewApiBundle/Resources/Scoring/UKR_community.csv'
+        - name: Default
+          countries:
+              - KHM
+              - SYR
+              - UKR
+              - UA1
+              - ETH
+              - MNG
+              - ARM
+              - ZMB
+          csvFile: #none csv file so far
+
     app.translations_dir: '%kernel.project_dir%/app/Resources/translations'
 
 framework:

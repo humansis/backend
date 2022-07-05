@@ -6,7 +6,7 @@ use BeneficiaryBundle\Exception\CsvParserException;
 
 abstract class AbstractCsvParser
 {
-    abstract protected function processCsv(array $csv): object;
+    abstract protected function processCsv(array $csv);
 
     abstract protected function mandatoryColumns(): array;
 
@@ -14,10 +14,9 @@ abstract class AbstractCsvParser
     /**
      * @param string $pathToCsv
      *
-     * @return object
      * @throws CsvParserException
      */
-    public function parse(string $pathToCsv): object
+    public function parse(string $pathToCsv)
     {
         if (!file_exists($pathToCsv)) {
             throw new CsvParserException($pathToCsv,'File not found');

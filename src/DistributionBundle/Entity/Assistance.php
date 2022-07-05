@@ -180,6 +180,13 @@ class Assistance implements ExportableInterface
     /**
      * @var string|null
      *
+     * @ORM\Column(name="scoring_type", type="string", nullable=true)
+     */
+    private $scoringType;
+
+    /**
+     * @var string|null
+     *
      * @ORM\Column(name="description", type="text", nullable=true)
      *
      * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
@@ -728,6 +735,22 @@ class Assistance implements ExportableInterface
     public function getSubSector(): ?string
     {
         return $this->subSector;
+    }
+
+    /**
+     * @param string $scoringType
+     */
+    public function setScoringType(string $scoringType): void
+    {
+        $this->scoringType = $scoringType;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getScoringType(): ?string
+    {
+        return $this->scoringType;
     }
 
     /**

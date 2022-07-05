@@ -1,0 +1,18 @@
+Rule type,Field Name,Title,Options,Points
+,,,,
+calculation,singleParentHeaded,Single Parent headed HH,Solo parent,2
+,,,,
+calculation,pregnantOrLactating,Pregnant or lactating,Pregnant or lactating,3
+,,,,
+countrySpecific,Elderly ,Single Elderly/elderlies ,Elderly,3
+,,,,
+countrySpecific,Disabled,Disability,1st degree ,3
+,,,2nd degree ,2
+,,,3rd degree ,2
+,,,2 and more people with any disability ,3
+,,,,
+calculation,noOfChronicallyIll,Chronical ilnesses and health issues ,one,2
+,,,two and more,3
+,,,,
+calculation,dependencyRatio,Dependency Ratio (number of family members only),1 (mid.),2
+,,,>1 (hight dep.),3

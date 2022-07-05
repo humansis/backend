@@ -1,0 +1,8 @@
+Rule type,Field Name,Title,Options,Points
+,,,,
+calculation,singleParentHeaded,Single Parent headed HH,Solo parent,1
+,,,,
+calculation,pregnantOrLactating,Pregnant or lactating,Pregnant or lactating,1
+,,,,
+calculation,dependencyRatio,Dependency Ratio (number of family members only),1 (mid.),1
+,,,>1 (hight dep.),1

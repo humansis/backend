@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\Component\Assistance\Scoring\Validator\ScoringType;
 use NewApiBundle\Enum\SelectionCriteriaField;
 use NewApiBundle\InputType\Assistance\CommodityInputType;
 use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
@@ -85,6 +86,13 @@ class AssistanceCreateInputType implements InputTypeInterface
      * @Assert\NotNull
      */
     private $subsector;
+
+    /**
+     * @Assert\Type("string")
+     * @Assert\NotNull
+     * @ScoringType
+     */
+    private $scoringType;
 
     /**
      * @Assert\Type("array")
@@ -385,6 +393,22 @@ class AssistanceCreateInputType implements InputTypeInterface
     public function setSubsector($subsector)
     {
         $this->subsector = $subsector;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getScoringType()
+    {
+        return $this->scoringType;
+    }
+
+    /**
+     * @param string $scoringType
+     */
+    public function setScoringType(string $scoringType): void
+    {
+        $this->scoringType = $scoringType;
     }
 
     /**

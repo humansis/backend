@@ -12,19 +12,18 @@ use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use DistributionBundle\Repository\ModalityTypeRepository;
 use DistributionBundle\Utils\Exception\RemoveBeneficiaryWithReliefException;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NoResultException;
 use NewApiBundle\Component\Assistance\CommodityAssignBuilder;
 use NewApiBundle\Component\Assistance\DTO\CommoditySummary;
 use NewApiBundle\Component\Assistance\DTO\CriteriaGroup;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
+use NewApiBundle\Component\Assistance\Scoring\Model\ScoringProtocol;
 use NewApiBundle\Component\Assistance\SelectionCriteriaFactory;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Exception\ManipulationOverValidatedAssistanceException;
 use NewApiBundle\InputType\Assistance\CommodityInputType;
-use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
 use NewApiBundle\Repository\AssistanceStatisticsRepository;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
 use Psr\Cache\InvalidArgumentException;
@@ -289,11 +288,11 @@ class Assistance
     /**
      * @param AbstractBeneficiary $beneficiary
      * @param string|null         $justification
-     * @param array|null          $vulnerabilityScore TODO: replace by class or serializable interface
+     * @param ScoringProtocol|null          $vulnerabilityScore
      *
      * @return Assistance
      */
-    public function addBeneficiary(AbstractBeneficiary $beneficiary, ?string $justification = null, ?array $vulnerabilityScore = null): self
+    public function addBeneficiary(AbstractBeneficiary $beneficiary, ?string $justification = null, ?ScoringProtocol $vulnerabilityScore = null): self
     {
         if ($this->assistanceRoot->getValidated() == 1) {
             throw new ManipulationOverValidatedAssistanceException("It is not possible to add a beneficiary to validated and locked assistance");
@@ -306,8 +305,8 @@ class Assistance
                 ->setBeneficiary($beneficiary)
                 ->setRemoved(false);
             $this->assistanceRoot->addAssistanceBeneficiary($target);
-            if (!empty($vulnerabilityScore)) {
-                $target->setVulnerabilityScores(json_encode($vulnerabilityScore));
+            if (!is_null($vulnerabilityScore)) {
+                $target->setVulnerabilityScores($vulnerabilityScore);
             }
         } else {
             $target->setRemoved(false);

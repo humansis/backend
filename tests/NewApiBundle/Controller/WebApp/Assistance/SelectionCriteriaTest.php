@@ -48,6 +48,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'dateDistribution' => '2021-03-10T13:45:32.988Z',
             'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
             'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
+            'scoringType' => 'Default',
             'type' => AssistanceType::DISTRIBUTION,
             'target' => \DistributionBundle\Enum\AssistanceTargetType::HOUSEHOLD,
             'threshold' => 1,

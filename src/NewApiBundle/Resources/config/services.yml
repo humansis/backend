@@ -197,7 +197,9 @@ services:
             - '@NewApiBundle\Component\File\UploadService'
 
     NewApiBundle\Controller\AssistanceCodelistController:
-        arguments: ['@project.sector_service']
+        arguments: 
+            - '@project.sector_service'
+            - '%scoringTypes%'
 
     NewApiBundle\Controller\SectorsCodelistController:
         arguments:
@@ -350,7 +352,7 @@ services:
         arguments:
             - '@export_csv_service'
             - '@translator'
-            - '@doctrine.orm.entity_manager'
+            - '@=service("doctrine.orm.entity_manager").getRepository("BeneficiaryBundle:Beneficiary")'
 
     NewApiBundle\Controller\ImportController:
         arguments:
@@ -458,6 +460,33 @@ services:
             - '%logs.vendorAppPath%'
             - '%logs.fieldAppPath%'
             - '%logs.lifetime%'
+
+    NewApiBundle\InputType\Assistance\Scoring\ScoringService:
+
+    NewApiBundle\Component\Assistance\Scoring\RulesCalculation:
+
+    NewApiBundle\Component\Assistance\Scoring\ScoringResolver:
+        public: true
+        arguments:
+            - '@NewApiBundle\Component\Assistance\Scoring\RulesCalculation'
+            - '@=service("doctrine.orm.entity_manager").getRepository("BeneficiaryBundle:CountrySpecific")'
+            - '@=service("doctrine.orm.entity_manager").getRepository("BeneficiaryBundle:CountrySpecificAnswer")'
+
+    NewApiBundle\Component\Assistance\Scoring\Model\Factory\ScoringFactory:
+        public: true
+        arguments:
+            - '%scoringTypes%'
+              
+    NewApiBundle\Component\Assistance\Scoring\Validator\ScoringTypeValidator:
+        public: true
+        arguments:
+            - '%scoringTypes%'
+
+    BeneficiaryBundle\Model\Vulnerability\Resolver:
+        public: true
+        arguments:
+            - '%kernel.project_dir%/src/BeneficiaryBundle/Resources/config/vulnerability/weighting.csv'
+            - '%kernel.project_dir%/src/BeneficiaryBundle/Resources/config/vulnerability/scoring_<<COUNTRY>>.csv'
 
     NewApiBundle\Services\AssistanceDistributionService:
 

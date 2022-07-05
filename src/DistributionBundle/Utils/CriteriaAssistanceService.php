@@ -5,16 +5,16 @@ namespace DistributionBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Camp;
-use BeneficiaryBundle\Model\Vulnerability\CategoryEnum;
-use BeneficiaryBundle\Model\Vulnerability\Resolver;
+use BeneficiaryBundle\Model\Vulnerability\Resolver as OldResolver;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use NewApiBundle\Component\Assistance\DTO\CriteriaGroup;
+use NewApiBundle\Component\Assistance\Scoring\Model\Factory\ScoringFactory;
+use NewApiBundle\Component\Assistance\Scoring\ScoringResolver;
 use NewApiBundle\Entity\Assistance\SelectionCriteria;
 use ProjectBundle\Entity\Project;
-use Symfony\Component\Serializer\Serializer;
 
 /**
  * Class CriteriaAssistanceService
@@ -29,29 +29,34 @@ class CriteriaAssistanceService
     /** @var ConfigurationLoader $configurationLoader */
     private $configurationLoader;
 
-    /** @var Resolver */
-    private $resolver;
+    /** @var OldResolver */
+    private $oldResolver;
 
-    /** @var Serializer */
-    private $serializer;
+    /** @var ScoringFactory */
+    private $scoringFactory;
+
+    /** @var ScoringResolver */
+    private $resolver;
 
     /**
      * CriteriaAssistanceService constructor.
      * @param EntityManagerInterface $entityManager
      * @param ConfigurationLoader    $configurationLoader
-     * @param Resolver               $resolver
+     * @param OldResolver               $oldResolver
      * @throws \Exception
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         ConfigurationLoader $configurationLoader,
-        Resolver $resolver,
-        Serializer $serializer
+        OldResolver $oldResolver,
+        ScoringFactory $scoringFactory,
+        ScoringResolver $resolver
     ) {
         $this->em = $entityManager;
         $this->configurationLoader = $configurationLoader;
+        $this->oldResolver = $oldResolver;
+        $this->scoringFactory = $scoringFactory;
         $this->resolver = $resolver;
-        $this->serializer = $serializer;
     }
 
     /**
@@ -70,7 +75,7 @@ class CriteriaAssistanceService
      * @throws \Doctrine\ORM\ORMException
      *@deprecated replace by new method with type control of incoming criteria objects and country code
      */
-    public function load(iterable $criteriaGroups, Project $project, string $targetType, string $sector, ?string $subsector, int $threshold, bool $isCount)
+    public function load(iterable $criteriaGroups, Project $project, string $targetType, string $sector, ?string $subsector, int $threshold, bool $isCount, string $scoringType)
     {
         if (!in_array($targetType, [
             AssistanceTargetType::INDIVIDUAL,
@@ -90,19 +95,23 @@ class CriteriaAssistanceService
                 /** @var Beneficiary $beneficiary */
                 $beneficiary = $this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $bnf['id']);
 
-                $protocol = $this->resolver->compute($beneficiary->getHousehold(), $project->getIso3(), $sector);
-                $scores = ['totalScore' => $protocol->getTotalScore()];
-                foreach (CategoryEnum::all() as $value) {
-                    $scores[$value] = $protocol->getCategoryScore($value);
+                if ($scoringType === 'Default') {
+                    $protocol = $this->oldResolver->compute($beneficiary->getHousehold(), $project->getIso3(), $sector);
+                } else {
+                    $protocol = $this->resolver->compute(
+                        $beneficiary->getHousehold(),
+                        $this->scoringFactory->buildScoring($scoringType),
+                        $project->getIso3()
+                    );
                 }
 
                 if ($protocol->getTotalScore() >= $threshold) {
                     if (AssistanceTargetType::INDIVIDUAL === $targetType) {
                         $BNFId = $beneficiary->getId();
-                        $reachedBeneficiaries[$BNFId] = $scores;
+                        $reachedBeneficiaries[$BNFId] = $protocol;
                     } elseif (AssistanceTargetType::HOUSEHOLD === $targetType) {
                         $HHHId = $beneficiary->getHousehold()->getHouseholdHead()->getId();
-                        $reachedBeneficiaries[$HHHId] = $scores;
+                        $reachedBeneficiaries[$HHHId] = $protocol;
                     }
                 }
             }

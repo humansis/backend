@@ -122,6 +122,7 @@ class AssistanceFactory
         $assistanceRoot->setDateExpiration($inputType->getDateExpiration());
         $assistanceRoot->setSector($inputType->getSector());
         $assistanceRoot->setSubSector($inputType->getSubsector());
+        $assistanceRoot->setScoringType($inputType->getScoringType());
         $assistanceRoot->setHouseholdsTargeted($inputType->getHouseholdsTargeted());
         $assistanceRoot->setIndividualsTargeted($inputType->getIndividualsTargeted());
         $assistanceRoot->setDescription($inputType->getDescription());
@@ -178,7 +179,8 @@ class AssistanceFactory
                     $assistanceRoot->getSector(),
                     $assistanceRoot->getSubSector(),
                     $inputType->getThreshold(),
-                    false
+                    false,
+                    $inputType->getScoringType()
                 );
                 foreach ($beneficiaryIds['finalArray'] as $beneficiaryId => $vulnerabilityScore) {
                     $individualOrHHH = $this->beneficiaryRepository->find($beneficiaryId);
