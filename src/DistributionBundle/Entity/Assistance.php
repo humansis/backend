@@ -762,7 +762,7 @@ class Assistance implements ExportableInterface
     /**
      * @return ScoringBlueprint
      */
-    public function getScoringBlueprint(): ScoringBlueprint
+    public function getScoringBlueprint(): ?ScoringBlueprint
     {
         return $this->scoringBlueprint;
     }

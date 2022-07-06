@@ -396,17 +396,17 @@ class AssistanceCreateInputType implements InputTypeInterface
     /**
      * @return int|null
      */
-    public function getScoringBlueprint()
+    public function getScoringBlueprint(): ?int
     {
         return $this->scoringBlueprint;
     }
 
     /**
-     * @param int $scoringBlueprint
+     * @param int|null $scoringBlueprint
      *
      * @return AssistanceCreateInputType
      */
-    public function setScoringBlueprint(int $scoringBlueprint): AssistanceCreateInputType
+    public function setScoringBlueprint(?int $scoringBlueprint): AssistanceCreateInputType
     {
         $this->scoringBlueprint = $scoringBlueprint;
 
