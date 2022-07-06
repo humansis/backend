@@ -8,6 +8,7 @@ use NewApiBundle\Component\Assistance\Scoring\Exception\ScoreValidationException
 use NewApiBundle\Component\Assistance\Scoring\Model\Scoring;
 use NewApiBundle\Component\Assistance\Scoring\ScoringCsvParser;
 use NewApiBundle\Entity\ScoringBlueprint;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -42,15 +43,42 @@ final class ScoringFactory
      */
     public function buildScoring(ScoringBlueprint $scoringBlueprint): Scoring
     {
-        //print_r(var_dump($scoringBlueprint->getName()));
-        //die(var_dump(is_resource($scoringBlueprint->getContent())));
-        //die(var_dump(fgetcsv($scoringBlueprint->getContent())));
         $scoringRules = $this->parser->parseStream($scoringBlueprint->getContent());
-        $scoring = new Scoring($scoringBlueprint->getName(), $scoringRules);
+        return $this->createScoring($scoringBlueprint->getName(), $scoringRules);
+    }
+
+    /**
+     * @param $name
+     * @param $csv
+     *
+     * @return bool
+     * @throws CsvParserException
+     * @throws ScoreValidationException
+     */
+    public function validateScoring($name, $csv)
+    {
+        $stream = fopen('php://memory','r+');
+        fwrite($stream, $csv);
+        rewind($stream);
+        $scoringRules = $this->parser->parseStream($stream);
+        $this->createScoring($name, $scoringRules);
+        return true;
+    }
+
+    /**
+     * @param $name
+     * @param $scoringRules
+     *
+     * @return Scoring
+     * @throws ScoreValidationException
+     */
+    private function createScoring($name, $scoringRules): Scoring
+    {
+        $scoring = new Scoring($name, $scoringRules);
         $violations = $this->validator->validate($scoring);
         if ($violations->count() === 0) {
             return $scoring;
         }
-        throw new ScoreValidationException($scoringBlueprint->getName(), $violations);
+        throw new ScoreValidationException($name, $violations);
     }
 }

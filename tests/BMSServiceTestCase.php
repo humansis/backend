@@ -19,8 +19,10 @@ use Doctrine\ORM\EntityManager;
 
 use ProjectBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\BrowserKit\Client;
+
+
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\HttpKernel\HttpKernelBrowser;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -29,7 +31,7 @@ use UserBundle\Security\Authentication\Token\WsseUserToken;
 
 class BMSServiceTestCase extends KernelTestCase
 {
-    /** @var Client $client */
+    /** @var HttpKernelBrowser $client */
     protected $client;
     const USER_PHPUNIT = 'phpunit';
     const USER_TESTER = 'test@example.org';

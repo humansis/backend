@@ -4,18 +4,23 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
+use BeneficiaryBundle\Exception\CsvParserException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Entity\ScoringBlueprint;
 use NewApiBundle\InputType\ScoringBlueprintFilterInputType;
 use NewApiBundle\InputType\ScoringInputType;
+use NewApiBundle\InputType\ScoringPatchInputType;
 use NewApiBundle\Repository\ScoringBlueprintRepository;
 use NewApiBundle\Services\ScoringBlueprintService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
+ * @Rest\Route("/web-app/v1/scoring-blueprints")
  * @Cache(expires="+1 hour", public=true)
  */
 class ScoringBlueprintController extends AbstractController
@@ -29,7 +34,7 @@ class ScoringBlueprintController extends AbstractController
     private $scoringBlueprintRepository;
 
     /**
-     * @param ScoringBlueprintService    $scoringService
+     * @param ScoringBlueprintService    $scoringBlueprintService
      * @param ScoringBlueprintRepository $scoringBlueprintRepository
      */
     public function __construct(
@@ -42,7 +47,7 @@ class ScoringBlueprintController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/web-app/v1/scorings")
+     * @Rest\Get()
      * @param Request                         $request
      * @param ScoringBlueprintFilterInputType $scoringFilterInputType
      *
@@ -55,7 +60,7 @@ class ScoringBlueprintController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/web-app/v1/scorings")
+     * @Rest\Post()
      * @param Request          $request
      * @param ScoringInputType $inputType
      *
@@ -63,12 +68,18 @@ class ScoringBlueprintController extends AbstractController
      */
     public function create(Request $request, ScoringInputType $inputType): JsonResponse
     {
-        $scoringBlueprint = $this->scoringBlueprintService->create($inputType, $this->getCountryCode($request));
-        return $this->json($this->scoringBlueprintRepository->find($scoringBlueprint), 201);
+        try {
+            $scoringBlueprint = $this->scoringBlueprintService->create($inputType, $this->getCountryCode($request));
+            return $this->json($this->scoringBlueprintRepository->find($scoringBlueprint), 201);
+        } catch (CsvParserException $ex) {
+            // This is because CsvParserException is mapped to 500 and case where Base64 is not CSV
+            throw new BadRequestHttpException($ex->getMessage());
+        }
+
     }
 
     /**
-     * @Rest\Get("/web-app/v1/scorings/{id}")
+     * @Rest\Get("/{id}")
      * @param ScoringBlueprint $scoringBlueprint
      *
      * @return JsonResponse
@@ -79,18 +90,50 @@ class ScoringBlueprintController extends AbstractController
     }
 
     /**
-     * @Rest\Delete("/web-app/v1/scorings/{id}")
+     * @Rest\Patch("/{id}")
+     * @param ScoringBlueprint      $scoringBlueprint
+     * @param ScoringPatchInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function patch(ScoringBlueprint $scoringBlueprint, ScoringPatchInputType $inputType): JsonResponse
+    {
+        $this->scoringBlueprintService->patch($inputType, $scoringBlueprint);
+        return $this->json($scoringBlueprint);
+    }
+
+    /**
+     * @Rest\Delete("/{id}")
      * @param ScoringBlueprint $scoringBlueprint
      *
      * @return JsonResponse
      */
     public function archive(ScoringBlueprint $scoringBlueprint): JsonResponse
     {
-
         $this->scoringBlueprintService->archive($scoringBlueprint);
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
+    /**
+     * @Rest\Get("/{id}/content")
+     * @param ScoringBlueprint $scoringBlueprint
+     *
+     * @return StreamedResponse
+     */
+    public function getContent(ScoringBlueprint $scoringBlueprint): StreamedResponse
+    {
+        $stream = $scoringBlueprint->getContent();
+        $filename = "scoring-".$scoringBlueprint->getName().".csv";
+        return new StreamedResponse(function () use ($stream) {
+            fpassthru($stream);
+            exit();
+        }, 200, [
+            'Content-Transfer-Encoding', 'binary',
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename='$filename'",
+            'Content-Length' => fstat($stream)['size'],
+        ]);
+    }
 
 
 

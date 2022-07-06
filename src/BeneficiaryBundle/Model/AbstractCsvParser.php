@@ -10,10 +10,10 @@ abstract class AbstractCsvParser
 
     abstract protected function mandatoryColumns(): array;
 
-
     /**
      * @param string $pathToCsv
      *
+     * @return mixed
      * @throws CsvParserException
      */
     public function parse(string $pathToCsv)
@@ -31,8 +31,8 @@ abstract class AbstractCsvParser
     }
 
     /**
-     * @param $csvStream
-     * @param $pathToCsv
+     * @param        $csvStream
+     * @param string $pathToCsv
      *
      * @return mixed
      * @throws CsvParserException

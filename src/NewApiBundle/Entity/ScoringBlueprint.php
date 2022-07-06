@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\CountryDependent;
 use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\CreatedBy;
+use NewApiBundle\Utils\Objects\PropertySetter;
 use phpDocumentor\Reflection\Types\Resource_;
 use UserBundle\Entity\User;
 
@@ -24,6 +25,7 @@ class ScoringBlueprint
     use CreatedAt;
     use CreatedBy;
     use CountryDependent;
+    use PropertySetter;
 
     /**
      * @var int
@@ -113,11 +115,11 @@ class ScoringBlueprint
     }
 
     /**
-     * @param string $content
+     * @param resource $content
      *
      * @return ScoringBlueprint
      */
-    public function setContent(string $content): ScoringBlueprint
+    public function setContent($content): ScoringBlueprint
     {
         $this->content = $content;
 

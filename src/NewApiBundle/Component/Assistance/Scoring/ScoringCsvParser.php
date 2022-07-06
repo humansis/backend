@@ -43,7 +43,10 @@ final class ScoringCsvParser extends AbstractCsvParser
             $currentRule->addOption(new ScoringRuleOption($row[ScoringCsvColumns::OPTIONS], (integer) $row[ScoringCsvColumns::POINTS]));
         }
 
-        $scoringRules[] = $currentRule;
+        if (!is_null($currentRule)) {
+            $scoringRules[] = $currentRule;
+        }
+
 
         return $scoringRules;
     }

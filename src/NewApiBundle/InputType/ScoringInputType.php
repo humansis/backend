@@ -13,6 +13,7 @@ class ScoringInputType implements InputTypeInterface
 
 
     /**
+     * @var string
      * @Assert\Type("string")
      * @Assert\Length(max="255")
      * @Assert\NotBlank
@@ -33,19 +34,19 @@ class ScoringInputType implements InputTypeInterface
     private $content;
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
     /**
-     * @param mixed $name
+     * @param string $name
      *
      * @return ScoringInputType
      */
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->name = $name;
 
