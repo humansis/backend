@@ -53,10 +53,12 @@ class VendorService
 
     /**
      * UserService constructor.
+     *
      * @param EntityManagerInterface $entityManager
-     * @param ValidatorInterface $validator
-     * @param ContainerInterface $container
-     * @param LocationService $locationService
+     * @param ValidatorInterface     $validator
+     * @param LocationService        $locationService
+     * @param ContainerInterface     $container
+     * @param Environment            $environment
      */
     public function __construct(
         EntityManagerInterface $entityManager,

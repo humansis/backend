@@ -37,7 +37,7 @@ services:
 
     voucher.vendor_service:
         class: VoucherBundle\Utils\VendorService
-        arguments: ['@doctrine.orm.entity_manager', '@validator', '@location_service', '@service_container']
+        arguments: ['@doctrine.orm.entity_manager', '@validator', '@location_service', '@service_container', '@Twig\Environment']
         public: true
 
     VoucherBundle\Utils\VendorService: '@voucher.vendor_service'
