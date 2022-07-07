@@ -54,7 +54,7 @@ services:
 
     voucher.voucher_service:
         class: VoucherBundle\Utils\VoucherService
-        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
+        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container', '@Twig\Environment']
         public: true
 
     voucher.product_service:

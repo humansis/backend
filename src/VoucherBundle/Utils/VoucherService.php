@@ -42,9 +42,11 @@ class VoucherService
 
     /**
      * UserService constructor.
+     *
      * @param EntityManagerInterface $entityManager
-     * @param ValidatorInterface $validator
-     * @param ContainerInterface $container
+     * @param ValidatorInterface     $validator
+     * @param ContainerInterface     $container
+     * @param Environment            $environment
      */
     public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container, Environment $environment)
     {
@@ -58,10 +60,12 @@ class VoucherService
      * Creates a new Voucher entity
      *
      * @param array $vouchersData
+     * @param bool  $flush
+     *
      * @return array
      * @throws \Exception
      */
-    public function create(array $vouchersData, $flush = true)
+    public function create(array $vouchersData, bool $flush = true)
     {
         $vouchers = [];
         try {
