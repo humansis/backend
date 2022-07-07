@@ -3,9 +3,8 @@ framework:
     reliefPackage:
       type: 'state_machine'
       marking_store:
-        type: 'single_state'
-        arguments:
-          - 'state'
+        type: 'method'
+        property: 'state'
       supports:
         - NewApiBundle\Entity\Assistance\ReliefPackage
       initial_marking: !php/const NewApiBundle\Enum\ReliefPackageState::TO_DISTRIBUTE
@@ -34,9 +33,8 @@ framework:
     synchronizationBatch:
       type: 'state_machine'
       marking_store:
-        type: 'single_state'
-        arguments:
-          - 'state'
+        type: 'method'
+        property: 'state'
       supports:
         - NewApiBundle\Entity\SynchronizationBatch
       initial_marking: !php/const NewApiBundle\Enum\SynchronizationBatchState::UPLOADED
