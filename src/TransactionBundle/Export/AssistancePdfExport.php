@@ -21,7 +21,7 @@ class AssistancePdfExport
     /** @var PdfService */
     private $pdfService;
 
-    public function __construct(TranslatorInterface $translator, Environment $twig, PdfService $pdfService)
+    public function __construct(TranslatorInterface $translator, PdfService $pdfService, Environment $twig)
     {
         $this->translator = $translator;
         $this->twig = $twig;

@@ -12,6 +12,7 @@ use Doctrine\ORM\Query;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Twig\Environment;
 use UserBundle\Entity\User;
 use VoucherBundle\DTO\RedemptionVoucherBatchCheck;
 use VoucherBundle\Entity\Booklet;
@@ -35,16 +36,22 @@ class VoucherService
     private $container;
 
     /**
+     * @var Environment
+     */
+    private $twig;
+
+    /**
      * UserService constructor.
      * @param EntityManagerInterface $entityManager
      * @param ValidatorInterface $validator
      * @param ContainerInterface $container
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container, Environment $environment)
     {
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
+        $this->twig = $environment;
     }
 
     /**
@@ -322,7 +329,7 @@ class VoucherService
         }
 
         try {
-            $html =  $this->container->get('templating')->render(
+            $html =  $this->twig->render(
                 '@Voucher/Pdf/codes.html.twig',
                 array_merge(
                     ['vouchers' => $exportableTable],

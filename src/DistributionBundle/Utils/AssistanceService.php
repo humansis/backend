@@ -44,6 +44,7 @@ use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Cache\CacheInterface;
+use Twig\Environment;
 use VoucherBundle\Entity\Voucher;
 
 /**
@@ -90,6 +91,11 @@ class AssistanceService
     private $scoringBlueprintRepository;
 
     /**
+     * @var Environment
+     */
+    private $twig;
+
+    /**
      * AssistanceService constructor.
      *
      * @param EntityManagerInterface    $entityManager
@@ -115,7 +121,8 @@ class AssistanceService
         CacheInterface            $cache,
         AssistanceFactory         $assistanceFactory,
         AssistanceRepository      $assistanceRepository,
-        SelectionCriteriaFactory  $selectionCriteriaFactory
+        SelectionCriteriaFactory  $selectionCriteriaFactory,
+        Environment               $environment
     ) {
         $this->em = $entityManager;
         $this->serializer = $serializer;
@@ -128,6 +135,7 @@ class AssistanceService
         $this->assistanceFactory = $assistanceFactory;
         $this->assistanceRepository = $assistanceRepository;
         $this->selectionCriteriaFactory = $selectionCriteriaFactory;
+        $this->twig = $environment;
     }
 
     /**
@@ -584,7 +592,7 @@ class AssistanceService
         $project = $this->em->getRepository(Project::class)->find($projectId);
 
         try {
-            $html =  $this->container->get('templating')->render(
+            $html =  $this->twig->render(
                 '@Distribution/Pdf/distributions.html.twig',
                 array_merge(
                     ['project' => $project,

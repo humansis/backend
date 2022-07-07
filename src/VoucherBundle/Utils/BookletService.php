@@ -12,6 +12,7 @@ use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Twig\Environment;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Voucher;
 use CommonBundle\InputType;
@@ -32,17 +33,24 @@ class BookletService
     private $generator;
 
     /**
+     * @var Environment
+     */
+    private $twig;
+
+    /**
      * @param EntityManagerInterface $entityManager
      * @param ValidatorInterface     $validator
      * @param ContainerInterface     $container
      * @param BookletGenerator       $generator
+     * @param Environment            $environment
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container, BookletGenerator $generator)
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container, BookletGenerator $generator, Environment $environment)
     {
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
         $this->generator = $generator;
+        $this->twig = $environment;
     }
 
     /**
@@ -470,7 +478,7 @@ class BookletService
             $totalValue += $voucher->getValue();
         }
 
-        $bookletHtml = $this->container->get('templating')->render(
+        $bookletHtml = $this->twig->render(
             '@Voucher/Pdf/booklet.html.twig',
             array_merge(
                 array(
@@ -489,7 +497,7 @@ class BookletService
         foreach ($vouchers as $voucher) {
             $voucherQrCode = $voucher->getCode();
 
-            $voucherHtml = $this->container->get('templating')->render(
+            $voucherHtml = $this->twig->render(
                 '@Voucher/Pdf/voucher.html.twig',
                 array(
                     'name' => $name,

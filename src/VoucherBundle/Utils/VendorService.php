@@ -26,6 +26,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Twig\Environment;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\VoucherPurchase;
@@ -46,6 +47,11 @@ class VendorService
     private $locationService;
 
     /**
+     * @var Environment
+     */
+    private $twig;
+
+    /**
      * UserService constructor.
      * @param EntityManagerInterface $entityManager
      * @param ValidatorInterface $validator
@@ -56,12 +62,14 @@ class VendorService
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
         LocationService $locationService,
-        ContainerInterface $container
+        ContainerInterface $container,
+        Environment $environment
     ) {
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
         $this->locationService = $locationService;
+        $this->twig = $environment;
     }
 
     /**
@@ -351,7 +359,7 @@ class VendorService
                 $province = null;
             }
 
-            $html = $this->container->get('templating')->render(
+            $html = $this->twig->render(
                 '@Voucher/Pdf/invoice.html.twig',
                 array_merge(
                     array(

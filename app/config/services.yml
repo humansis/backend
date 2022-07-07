@@ -33,3 +33,4 @@ services:
     gelf.formatter:
         class: Monolog\Formatter\GelfMessageFormatter
         arguments: [ "%gelf_server_name%" ]
+

@@ -61,5 +61,5 @@ services:
 
     export.pdf:
         class: TransactionBundle\Export\AssistancePdfExport
-        arguments: [ '@translator', '@templating', '@pdf_service' ]
+        arguments: [ '@translator', '@pdf_service' ]
         public: true
