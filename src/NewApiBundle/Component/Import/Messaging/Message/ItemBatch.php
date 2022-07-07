@@ -1,15 +1,23 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Component\Import\Message;
+namespace NewApiBundle\Component\Import\Messaging\Message;
 
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportState;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
-class ItemBatch implements \JsonSerializable
+class ItemBatch
 {
-    /** @var string */
+    /**
+     * @SerializedName("checkType")
+     * @var string
+     */
     private $checkType;
-    /** @var int[] */
+
+    /**
+     * @SerializedName("queueItemIds")
+     * @var array
+     */
     private $queueItemIds = [];
 
     /**
@@ -100,11 +108,4 @@ class ItemBatch implements \JsonSerializable
     }
 
 
-    public function jsonSerialize()
-    {
-        return [
-            'check' => $this->getCheckType(),
-            'ids' => $this->getQueueItemIds(),
-        ];
-    }
 }

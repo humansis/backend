@@ -1,10 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Component\Import\Message;
+namespace NewApiBundle\Component\Import\Messaging\Handler;
 use NewApiBundle\Component\Import\IdentityChecker;
 use NewApiBundle\Component\Import\ImportFinisher;
 use NewApiBundle\Component\Import\ImportQueueLoggerTrait;
 use NewApiBundle\Component\Import\IntegrityChecker;
+use NewApiBundle\Component\Import\Messaging\Message\ItemBatch;
 use NewApiBundle\Component\Import\SimilarityChecker;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
