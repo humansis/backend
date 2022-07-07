@@ -15,7 +15,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 /**
  * @Cache(expires="+5 days", public=true)
  */
-class InstitutionCodelistController extends Controller
+class InstitutionCodelistController extends AbstractController
 {
     /**
      * @Rest\Get("/web-app/v1/institutions/types")
