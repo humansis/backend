@@ -5,22 +5,33 @@ namespace NewApiBundle\Controller\WebApp\Assistance;
 
 use DistributionBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Controller\WebApp\AbstractWebAppController;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\InputType\Assistance\DistributeBeneficiaryReliefPackagesInputType;
 use NewApiBundle\InputType\Assistance\DistributeReliefPackagesInputType;
 use NewApiBundle\InputType\Assistance\ReliefPackageFilterInputType;
-use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
-use NewApiBundle\Workflow\ReliefPackageTransitions;
+use NewApiBundle\Services\AssistanceDistributionService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Workflow\Registry;
-use Symfony\Contracts\Cache\CacheInterface;
 
 class ReliefPackageController extends AbstractWebAppController
 {
+
+    /**
+     * @var AssistanceDistributionService
+     */
+    private $assistanceDistributionService;
+
+    /**
+     * @param AssistanceDistributionService $assistanceDistributionService
+     */
+    public function __construct(AssistanceDistributionService $assistanceDistributionService)
+    {
+        $this->assistanceDistributionService = $assistanceDistributionService;
+    }
+
     /**
      * @Rest\Get("/web-app/v1/assistances/{id}/relief-packages")
      *
@@ -66,37 +77,32 @@ class ReliefPackageController extends AbstractWebAppController
      * @ParamConverter(class="NewApiBundle\InputType\Assistance\DistributeReliefPackagesInputType[]", name="packages", converter="input_type_converter")
      *
      * @param DistributeReliefPackagesInputType[] $packages
-     * @param ReliefPackageRepository             $repository
-     * @param Registry                            $registry
      *
      * @return JsonResponse
      */
     public function distributePackages(
-        array                   $packages,
-        ReliefPackageRepository $repository,
-        Registry                $registry
+        array $packages
     ): JsonResponse {
-        foreach ($packages as $packageUpdate) {
-            /** @var ReliefPackage $package */
-            $package = $repository->find($packageUpdate->getId());
-            if ($packageUpdate->getAmountDistributed() === null) {
-                $package->distributeRest();
-            } else {
-                $package->addAmountOfDistributed($packageUpdate->getAmountDistributed());
-            }
-            $package->setDistributedBy($this->getUser());
+        $result = $this->assistanceDistributionService->distributeByReliefIds($packages, $this->getUser());
 
-            // Assistance statistic cache is invalidated by workflow transition
-            // for partially distribution process of invalidation cache should be changed
+        return $this->json($result);
+    }
 
-            $reliefPackageWorkflow = $registry->get($package);
-            if ($reliefPackageWorkflow->can($package, ReliefPackageTransitions::DISTRIBUTE)) {
-                $reliefPackageWorkflow->apply($package, ReliefPackageTransitions::DISTRIBUTE);
-            }
+    /**
+     * @Rest\Patch("/web-app/v1/assistances/{id}/relief-packages/distribute")
+     * @ParamConverter(class="NewApiBundle\InputType\Assistance\DistributeBeneficiaryReliefPackagesInputType[]", name="packages", converter="input_type_converter")
+     *
+     * @param Assistance                                     $assistance
+     * @param DistributeBeneficiaryReliefPackagesInputType[] $packages
+     *
+     * @return JsonResponse
+     */
+    public function distributeBeneficiaryPackages(
+        Assistance $assistance,
+        array      $packages
+    ): JsonResponse {
+        $result = $this->assistanceDistributionService->distributeByBeneficiaryIdAndAssistanceId($packages, $assistance, $this->getUser());
 
-            $repository->save($package);
-        }
-
-        return $this->json(true);
+        return $this->json($result);
     }
 }

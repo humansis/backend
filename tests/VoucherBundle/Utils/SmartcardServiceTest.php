@@ -72,12 +72,6 @@ class SmartcardServiceTest extends KernelTestCase
                 [],
                 []
             ],
-            'purchase alone' => [
-                [
-                    [$beneficiaryA1, 'purchase', 300.1, 'USD'],
-                ],
-                [] // purchase without project cant be redeemed
-            ],
             'deposit alone' => [
                 [
                     [$beneficiaryA1, 'register', $assistanceA1],
@@ -89,7 +83,7 @@ class SmartcardServiceTest extends KernelTestCase
                 [
                     [$beneficiaryA1, 'register', $assistanceA1],
                     [$beneficiaryA1, 'deposit', 300.1, 'USD', $assistanceA1],
-                    [$beneficiaryA1, 'purchase', 500.8, 'USD'],
+                    [$beneficiaryA1, 'purchase', 500.8, 'USD', $assistanceA1],
                 ],
                 [
                     [500.8, 'USD', $projectA],
@@ -99,10 +93,10 @@ class SmartcardServiceTest extends KernelTestCase
                 [
                     [$beneficiaryA1, 'register', $assistanceA1],
                     [$beneficiaryA1, 'deposit', 100, 'USD', $assistanceA1],
-                    [$beneficiaryA1, 'purchase', 200, 'USD'],
+                    [$beneficiaryA1, 'purchase', 200, 'USD', $assistanceA1],
                     [$beneficiaryB1, 'register', $assistanceB1],
                     [$beneficiaryB1, 'deposit', 20, 'USD', $assistanceB1],
-                    [$beneficiaryB1, 'purchase', 40, 'USD'],
+                    [$beneficiaryB1, 'purchase', 40, 'USD', $assistanceB1],
                 ],
                 [
                     [200, 'USD', $projectA],
@@ -113,9 +107,9 @@ class SmartcardServiceTest extends KernelTestCase
                 [
                     [$beneficiaryA1, 'register', $assistanceA1],
                     [$beneficiaryA1, 'deposit', 100, 'USD', $assistanceA1],
-                    [$beneficiaryA1, 'purchase', 200, 'USD'],
+                    [$beneficiaryA1, 'purchase', 200, 'USD', $assistanceA1],
                     [$beneficiaryA1, 'deposit', 20, 'SYP', $assistanceA2],
-                    [$beneficiaryA1, 'purchase', 40, 'SYP'],
+                    [$beneficiaryA1, 'purchase', 40, 'SYP', $assistanceA1],
                 ],
                 [
                     [200, 'USD', $projectA],
@@ -126,10 +120,10 @@ class SmartcardServiceTest extends KernelTestCase
                 [
                     [$beneficiaryA1, 'register', $assistanceA2],
                     [$beneficiaryA1, 'deposit', 100, 'SYP', $assistanceA2],
-                    [$beneficiaryA1, 'purchase', 200, 'SYP'],
+                    [$beneficiaryA1, 'purchase', 200, 'SYP', $assistanceA1],
                     [$beneficiaryA1, 'register', $assistanceB1],
                     [$beneficiaryA1, 'deposit', 20, 'USD', $assistanceB1],
-                    [$beneficiaryA1, 'purchase', 40, 'USD'],
+                    [$beneficiaryA1, 'purchase', 40, 'USD', $assistanceB1],
                 ],
                 [
                     [200, 'SYP', $projectA],
@@ -140,23 +134,23 @@ class SmartcardServiceTest extends KernelTestCase
                 [
                     [$beneficiaryA1, 'register', $assistanceA1],
                     [$beneficiaryA1, 'deposit', 100, 'USD', $assistanceA1],
-                    [$beneficiaryA1, 'purchase', 10, 'USD'],
-                    [$beneficiaryA1, 'purchase', 20, 'USD'],
-                    [$beneficiaryA1, 'purchase', 30, 'USD'],
-                    [$beneficiaryA1, 'purchase', 40, 'USD'],
+                    [$beneficiaryA1, 'purchase', 10, 'USD', $assistanceA1],
+                    [$beneficiaryA1, 'purchase', 20, 'USD', $assistanceA1],
+                    [$beneficiaryA1, 'purchase', 30, 'USD', $assistanceA1],
+                    [$beneficiaryA1, 'purchase', 40, 'USD', $assistanceA1],
                     [$beneficiaryA2, 'register', $assistanceA2],
                     [$beneficiaryA2, 'deposit', 20, 'SYP', $assistanceA2],
-                    [$beneficiaryA2, 'purchase', 40, 'SYP'],
+                    [$beneficiaryA2, 'purchase', 40, 'SYP', $assistanceA2],
                     [$beneficiaryB1, 'register', $assistanceB1],
                     [$beneficiaryB1, 'deposit', 500, 'USD', $assistanceB1],
-                    [$beneficiaryB1, 'purchase', 40, 'USD'],
+                    [$beneficiaryB1, 'purchase', 40, 'USD', $assistanceB1],
                     [$beneficiaryB1, 'deposit', 500, 'USD', $assistanceB1],
-                    [$beneficiaryB1, 'purchase', 40, 'USD'],
+                    [$beneficiaryB1, 'purchase', 40, 'USD', $assistanceB1],
                     [$beneficiaryA1, 'register', $assistanceA2],
                     [$beneficiaryA1, 'deposit', 1000, 'SYP', $assistanceA2],
-                    [$beneficiaryA1, 'purchase', 100, 'SYP'],
-                    [$beneficiaryA1, 'purchase', 100, 'SYP'],
-                    [$beneficiaryA1, 'purchase', 100, 'SYP'],
+                    [$beneficiaryA1, 'purchase', 100, 'SYP', $assistanceA2],
+                    [$beneficiaryA1, 'purchase', 100, 'SYP', $assistanceA2],
+                    [$beneficiaryA1, 'purchase', 100, 'SYP', $assistanceA2],
                 ],
                 [
                     [100, 'USD', $projectA],
@@ -170,12 +164,18 @@ class SmartcardServiceTest extends KernelTestCase
     /**
      * @dataProvider validSmartcardCashflows
      *
-     * @param $actions
-     * @param $expectedResults
+     * @param array $actions
+     * @param array $expectedResults
+     *
+     * @throws \Doctrine\ORM\EntityNotFoundException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     public function testSmartcardCashflows(array $actions, array $expectedResults): void
     {
         $admin = $this->em->getRepository(User::class)->find(1);
+        $assistanceRepository = $this->em->getRepository(Assistance::class);
         $product = $this->em->getRepository(Product::class)->findOneBy(['countryISO3'=>'SYR'], ['id' => 'asc']);
 
         $date = \DateTime::createFromFormat('Y-m-d', '2000-01-01');
@@ -189,7 +189,7 @@ class SmartcardServiceTest extends KernelTestCase
                     $this->smartcardService->register($this->smartcardNumber, $beneficiaryId, $date);
                     break;
                 case 'purchase':
-                    [$beneficiaryId, $action, $value, $currency] = $actionData;
+                    [$beneficiaryId, $action, $value, $currency, $assistanceId] = $actionData;
                     $purchase = new SmartcardPurchase();
                     $purchase->setVendorId($this->vendor->getId());
                     $purchase->setCreatedAt($date);
@@ -200,7 +200,10 @@ class SmartcardServiceTest extends KernelTestCase
                         'currency' => $currency,
                     ]]);
                     $purchase->setBeneficiaryId($beneficiaryId);
-                    $this->smartcardService->purchase($this->smartcardNumber, $purchase);
+                    $purchase = $this->smartcardService->purchase($this->smartcardNumber, $purchase);
+                    $purchase->setAssistance($assistanceRepository->find($assistanceId));
+                    $this->em->persist($purchase);
+                    $this->em->flush();
                     break;
                 case 'deposit':
                     [$beneficiaryId, $action, $value, $currency, $assistanceId] = $actionData;
@@ -402,8 +405,7 @@ class SmartcardServiceTest extends KernelTestCase
                     $beneficiary3 => ['distributed'=>0, 'purchased' => 10],
                 ],
                 [
-                    // $vendorA => ['purchases'=>3, 'records'=>6, 'value'=>30], I'm not sure if it is correct
-                    $vendorA => null,
+                    $vendorA => ['purchases'=>3, 'records'=>6, 'value'=>30],
                     $vendorB => null,
                 ]
             ],
@@ -422,10 +424,8 @@ class SmartcardServiceTest extends KernelTestCase
                     $beneficiary3 => ['distributed'=>0, 'purchased' => 20],
                 ],
                 [
-                    // $vendorA => ['purchases'=>3, 'records'=>6, 'value'=>30], I'm not sure if it is correct
-                    // $vendorB => ['purchases'=>3, 'records'=>6, 'value'=>30], I'm not sure if it is correct
-                    $vendorA => null,
-                    $vendorB => null,
+                    $vendorA => ['purchases'=>3, 'records'=>6, 'value'=>30],
+                    $vendorB => ['purchases'=>3, 'records'=>6, 'value'=>30],
                 ]
             ],
         ];
@@ -437,6 +437,11 @@ class SmartcardServiceTest extends KernelTestCase
      * @param array $actions
      * @param array $expectedBeneficiaryResults
      * @param array $expectedVendorResults
+     *
+     * @throws \Doctrine\ORM\EntityNotFoundException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     public function testSmartcardReuseFlows(array $actions, array $expectedBeneficiaryResults, array $expectedVendorResults): void
     {
@@ -523,7 +528,10 @@ class SmartcardServiceTest extends KernelTestCase
                                 'currency' => 'USD',
                             ]
                         ]);
-                        $this->smartcardService->purchase($serialNumber, $purchaseData);
+                        $purchase = $this->smartcardService->purchase($serialNumber, $purchaseData);
+                        $purchase->setAssistance($this->em->getRepository(Assistance::class)->find($assistanceId));
+                        $this->em->persist($purchase);
+                        $this->em->flush();
                         break;
                     default:
                         $this->fail('Wrong test data. Unknown action '.$action);

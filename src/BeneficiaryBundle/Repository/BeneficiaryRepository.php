@@ -2,6 +2,7 @@
 
 namespace BeneficiaryBundle\Repository;
 
+use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Repository\LocationRepository;
 use DistributionBundle\Entity\Assistance;
@@ -263,6 +264,28 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             $qb->andWhere('hh.id = :hhId')
                 ->setParameter('hhId', $household->getId());
         }
+
+        return $qb->getQuery()
+            ->getResult();
+    }
+
+    public function findByIdentityAndAssistance($idNumber, Assistance $assistance, ?CountrySpecific $countrySpecific)
+    {
+        $qb = $this->createQueryBuilder('b')
+            ->join('b.person', 'p')
+            ->join('b.household', 'hh')
+            ->join('b.assistanceBeneficiary', 'ab', Join::WITH, 'ab.removed=0')
+
+            ->leftJoin('p.nationalIds', 'id')
+            ->leftJoin('hh.countrySpecificAnswers', 'countrySpecificAnswer', Join::WITH,
+                'IDENTITY(countrySpecificAnswer.countrySpecific) = :countrySpecificId')
+            ->andWhere('ab.assistance = :assistance')
+            ->andWhere('b.archived = 0')
+            ->andWhere('hh.archived = 0')
+            ->andWhere('id.idNumber = :idNumber OR countrySpecificAnswer.answer = :idNumber')
+            ->setParameter('idNumber', $idNumber)
+            ->setParameter('assistance', $assistance)
+            ->setParameter('countrySpecificId', $countrySpecific ? $countrySpecific->getId() : null);
 
         return $qb->getQuery()
             ->getResult();

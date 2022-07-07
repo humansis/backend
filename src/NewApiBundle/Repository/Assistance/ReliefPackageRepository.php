@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Repository\Assistance;
 
-
 use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
@@ -67,7 +66,7 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
             ->join('rp.assistanceBeneficiary', 'ab', Join::WITH, 'ab.removed = 0')
             ->join('ab.assistance', 'a')
             ->join('ab.beneficiary', 'abstB')
-            ->join(Beneficiary::class,  'b', Join::WITH, 'b.id=abstB.id AND b.archived = 0')
+            ->join(Beneficiary::class, 'b', Join::WITH, 'b.id=abstB.id AND b.archived = 0')
             ->join('b.smartcards', 's', Join::WITH, 's.beneficiary=b AND s.state=:smartcardStateActive') //filter only bnf with active card
             ->join('a.location', 'l')
             ->leftJoin('l.adm4', 'adm4')
@@ -77,8 +76,7 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
             ->leftJoin(Adm3::class, 'adm3', Join::WITH, 'adm3.id = COALESCE(IDENTITY(adm4.adm3, \'id\'), locAdm3.id)')
             ->leftJoin(Adm2::class, 'adm2', Join::WITH, 'adm2.id = COALESCE(IDENTITY(adm3.adm2, \'id\'), locAdm2.id)')
             ->leftJoin(Adm1::class, 'adm1', Join::WITH, 'adm1.id = COALESCE(IDENTITY(adm2.adm1, \'id\'), locAdm1.id)')
-            ->setParameter('smartcardStateActive', SmartcardStates::ACTIVE)
-            ;
+            ->setParameter('smartcardStateActive', SmartcardStates::ACTIVE);
 
         //if both vendor and assistance has at least adm2 filled, try to filter by adm2. If not, filter by adm1.
         if (null !== $vendor->getLocation()->getAdm2Id()) {
@@ -109,16 +107,34 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
     {
         $qb = $this->createQueryBuilder('rp')
             ->join('rp.assistanceBeneficiary', 'ab', Join::WITH, 'ab.removed = 0')
-            ->join('ab.beneficiary', 'abstB',Join::WITH, 'abstB.archived = 0')
+            ->join('ab.beneficiary', 'abstB', Join::WITH, 'abstB.archived = 0')
             ->andWhere('IDENTITY(ab.assistance) = :assistance')
-            ->setParameter('assistance', $assistance->getId())
-        ;
+            ->setParameter('assistance', $assistance->getId());
         if ($filter && $filter->hasIds()) {
             $qb->andWhere('rp.id IN (:ids)')
                 ->setParameter('ids', $filter->getIds());
         }
 
         return new Paginator($qb);
+    }
+
+    /**
+     * @param Assistance  $assistance
+     * @param Beneficiary $beneficiary
+     *
+     * @return float|int|mixed|string|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function findByAssistanceAndBeneficiary(Assistance $assistance, Beneficiary $beneficiary)
+    {
+        return $this->createQueryBuilder('rp')
+            ->join('rp.assistanceBeneficiary', 'ab', Join::WITH, 'ab.removed = 0')
+            ->join('ab.beneficiary', 'abstB', Join::WITH, 'abstB.archived = 0')
+            ->andWhere('ab.assistance = :assistance')
+            ->andWhere('ab.beneficiary = :beneficiary')
+            ->setParameter('assistance', $assistance)
+            ->setParameter('beneficiary', $beneficiary)
+            ->getQuery()->getResult();
     }
 
     public function save(ReliefPackage $package): void

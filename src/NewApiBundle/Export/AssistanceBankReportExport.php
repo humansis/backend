@@ -16,8 +16,8 @@ use Symfony\Component\Translation\TranslatorInterface;
 class AssistanceBankReportExport
 {
 
-    const COUNTRY_SPECIFIC_ID_NUMBER = 'Secondary ID Type';
-    const COUNTRY_SPECIFIC_ID_TYPE = 'Secondary ID Number';
+    const COUNTRY_SPECIFIC_ID_NUMBER = 'Secondary ID Number';
+    const COUNTRY_SPECIFIC_ID_TYPE = 'Secondary ID Type';
 
     /** @var TranslatorInterface */
     private $translator;
@@ -45,8 +45,8 @@ class AssistanceBankReportExport
         $filename = sys_get_temp_dir().'/bank-report.'.$filetype;
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
-        $countrySpecific1 = $this->countrySpecificRepository->findOneBy(['fieldString' => self::COUNTRY_SPECIFIC_ID_NUMBER]);
-        $countrySpecific2 = $this->countrySpecificRepository->findOneBy(['fieldString' => self::COUNTRY_SPECIFIC_ID_TYPE]);
+        $countrySpecific1 = $this->countrySpecificRepository->findOneBy(['fieldString' => self::COUNTRY_SPECIFIC_ID_TYPE, 'countryIso3' => $assistance->getProject()->getIso3()]);
+        $countrySpecific2 = $this->countrySpecificRepository->findOneBy(['fieldString' => self::COUNTRY_SPECIFIC_ID_NUMBER, 'countryIso3' => $assistance->getProject()->getIso3()]);
         $this->build($worksheet, $this->assistanceBeneficiaryRepository->getBeneficiaryReliefCompilation($assistance, $countrySpecific1, $countrySpecific2));
         $writer = IOFactory::createWriter($spreadsheet, ucfirst($filetype));
         $writer->save($filename);
