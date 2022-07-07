@@ -5,7 +5,6 @@ namespace CommonBundle\Utils;
 use CommonBundle\Entity\Organization;
 use CommonBundle\Entity\OrganizationServices;
 use Doctrine\ORM\EntityManagerInterface;
-use NewApiBundle\InputType\OrganizationServicesInputType;
 use NewApiBundle\InputType\OrganizationUpdateInputType;
 use Psr\Container\ContainerInterface;
 use Twig\Environment;

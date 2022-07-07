@@ -49,6 +49,7 @@ services:
             - '@validator'
             - '@service_container'
             - '@VoucherBundle\Utils\BookletGenerator'
+            - '@Twig\Environment'
         public: true
 
     voucher.voucher_service:
@@ -100,3 +101,6 @@ services:
     VoucherBundle\Utils\BookletGenerator:
         public: true
         arguments: [ '@doctrine.orm.entity_manager' ]
+
+
+

@@ -30,6 +30,7 @@ services:
             - '@distribution.commodity_service'
             - '@distribution.criteria_assistance_service'
             - '@service_container'
+            - '@Twig\Environment'
 
     distribution.assistance_beneficiary_service:
         class: DistributionBundle\Utils\AssistanceBeneficiaryService

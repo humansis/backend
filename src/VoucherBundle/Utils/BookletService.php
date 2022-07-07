@@ -42,15 +42,21 @@ class BookletService
      * @param ValidatorInterface     $validator
      * @param ContainerInterface     $container
      * @param BookletGenerator       $generator
-     * @param Environment            $environment
+     * @param Environment            $twig
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container, BookletGenerator $generator, Environment $environment)
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        ValidatorInterface     $validator,
+        ContainerInterface     $container,
+        BookletGenerator       $generator,
+        Environment            $twig
+    )
     {
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
         $this->generator = $generator;
-        $this->twig = $environment;
+        $this->twig = $twig;
     }
 
     /**

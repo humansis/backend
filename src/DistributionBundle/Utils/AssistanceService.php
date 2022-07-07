@@ -118,11 +118,11 @@ class AssistanceService
         CommodityService          $commodityService,
         CriteriaAssistanceService $criteriaAssistanceService,
         ContainerInterface        $container,
+        Environment               $environment,
         CacheInterface            $cache,
         AssistanceFactory         $assistanceFactory,
         AssistanceRepository      $assistanceRepository,
-        SelectionCriteriaFactory  $selectionCriteriaFactory,
-        Environment               $environment
+        SelectionCriteriaFactory  $selectionCriteriaFactory
     ) {
         $this->em = $entityManager;
         $this->serializer = $serializer;
