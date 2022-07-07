@@ -4,8 +4,8 @@ namespace NewApiBundle\Event\Subscriber\Import;
 
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\IdentityChecker;
-use NewApiBundle\Component\Import\Message\ImportCheck;
-use NewApiBundle\Component\Import\Message\ItemBatch;
+use NewApiBundle\Component\Import\Messaging\Message\ImportCheck;
+use NewApiBundle\Component\Import\Messaging\Message\ItemBatch;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
@@ -14,7 +14,6 @@ use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportTransitions;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Workflow\Event\CompletedEvent;
 use Symfony\Component\Workflow\Event\EnteredEvent;
 use Symfony\Component\Workflow\Event\GuardEvent;
 use Symfony\Component\Workflow\TransitionBlocker;

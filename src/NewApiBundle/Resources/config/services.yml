@@ -290,10 +290,10 @@ services:
             - "@beneficiary.household_service"
             - '@monolog.logger.import'
 
-    NewApiBundle\Component\Import\Message\ItemBatchHandler:
+    NewApiBundle\Component\Import\Messaging\Handler\ItemBatchHandler:
         tags: [ 'messenger.message_handler' ]
 
-    NewApiBundle\Component\Import\Message\ImportCheckHandler:
+    NewApiBundle\Component\Import\Messaging\Handler\ImportCheckHandler:
         tags: [ 'messenger.message_handler' ]
 
     NewApiBundle\Component\Import\UploadImportService:

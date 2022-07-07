@@ -6,7 +6,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use NewApiBundle\Component\Import\DBAL\InsertQueryCollection;
 use NewApiBundle\Component\Import\Integrity;
-use NewApiBundle\Component\Import\Message\UploadFile;
+use NewApiBundle\Component\Import\Messaging\Message\ImportCheck;
+use NewApiBundle\Component\Import\Messaging\Message\UploadFile;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
 use Symfony\Component\Filesystem\Filesystem;
@@ -67,6 +68,7 @@ class UploadImportService implements MessageHandlerInterface
     {
         $importFile = $this->em->getRepository(ImportFile::class)->find($uploadFile->getImportFileId());
         $this->load($importFile);
+        $this->messageBus->dispatch(ImportCheck::checkIntegrityStart($importFile->getImport()));
     }
 
     /**
@@ -146,7 +148,7 @@ class UploadImportService implements MessageHandlerInterface
         $this->em->flush();
 
         if (!$importFile->getStructureViolations()) {
-            $this->messageBus->dispatch(new UploadFile($importFile));
+            $this->messageBus->dispatch(new UploadFile($importFile->getId()));
         }
 
         return $importFile;

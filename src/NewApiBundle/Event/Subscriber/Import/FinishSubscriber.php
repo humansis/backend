@@ -3,10 +3,9 @@
 namespace NewApiBundle\Event\Subscriber\Import;
 
 use NewApiBundle\Component\Import\ImportReset;
-use NewApiBundle\Component\Import\Message\ImportCheck;
-use NewApiBundle\Component\Import\Message\ItemBatch;
+use NewApiBundle\Component\Import\Messaging\Message\ImportCheck;
+use NewApiBundle\Component\Import\Messaging\Message\ItemBatch;
 use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;

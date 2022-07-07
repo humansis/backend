@@ -1,8 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Component\Import\Message;
+namespace NewApiBundle\Component\Import\Messaging\Handler;
 
 use NewApiBundle\Component\Import\ImportLoggerTrait;
+use NewApiBundle\Component\Import\Messaging\Message\ImportCheck;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportRepository;

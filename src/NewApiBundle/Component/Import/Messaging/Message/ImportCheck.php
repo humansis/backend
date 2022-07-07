@@ -1,16 +1,23 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Component\Import\Message;
+namespace NewApiBundle\Component\Import\Messaging\Message;
 
 use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportState;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
-class ImportCheck implements \JsonSerializable
+class ImportCheck
 {
-    /** @var string */
+    /**
+     * @SerializedName("checkType")
+     * @var string
+     */
     private $checkType;
-    /** @var int */
+
+    /**
+     * @SerializedName("importId")
+     * @var int
+     */
     private $importId;
 
     /**
@@ -21,6 +28,16 @@ class ImportCheck implements \JsonSerializable
     {
         $this->importId = $importId;
         $this->checkType = $checkType;
+    }
+
+    /**
+     * @param Import $import
+     *
+     * @return static
+     */
+    public static function checkIntegrityStart(Import $import): self
+    {
+        return new self(ImportState::NEW, $import->getId());
     }
 
     /**
@@ -96,11 +113,4 @@ class ImportCheck implements \JsonSerializable
     }
 
 
-    public function jsonSerialize()
-    {
-        return [
-            'type' => $this->getCheckType(),
-            'id' => $this->getImportId(),
-        ];
-    }
 }
