@@ -57,6 +57,7 @@ class ResolverTest extends KernelTestCase
 
     public function testUkrIDPScoring()
     {
+        $this->markTestSkipped();
         $this->expectNotToPerformAssertions();
 
         $scoring = $this->scoringFactory->buildScoring('IDP');
