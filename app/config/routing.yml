@@ -16,7 +16,7 @@ fos_user_change_password:
 control_path:
     path: /
     defaults:
-        _controller: FrameworkBundle:Template:template
+        _controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController::templateAction
         template:    default/index.html.twig
 
 rest_user:
