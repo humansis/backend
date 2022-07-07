@@ -33,7 +33,7 @@ class DistributeBeneficiaryReliefPackagesInputType implements InputTypeInterface
      */
     public function setIdNumber($idNumber): void
     {
-        $this->idNumber = $idNumber;
+        $this->idNumber = trim($idNumber);
     }
 
     /**

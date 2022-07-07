@@ -61,18 +61,7 @@ class SmartcardPurchaseRepository extends EntityRepository
     {
         $purchasePreAggregation = "SELECT
             sp.id AS purchaseId,
-            (
-                SELECT
-                    a.project_id AS project_id
-                FROM
-                    assistance AS a
-                        INNER JOIN distribution_beneficiary AS db ON a.id = db.assistance_id
-                        LEFT JOIN assistance_relief_package abc ON abc.assistance_beneficiary_id=db.id
-                        INNER JOIN smartcard_deposit AS sd ON abc.id = sd.relief_package_id AND sp.used_at > DATE_SUB(sd.distributed_at, INTERVAL 1 HOUR)
-                WHERE s.id = sd.smartcard_id
-                ORDER BY sd.distributed_at DESC, sd.id DESC 
-                LIMIT 1
-            ) AS projectId,
+            a.project_id AS projectId,
             SUM(spr.value) as purchaseValue,
             spr.currency AS currency,
             sp.vendor_id as vendorId
@@ -80,6 +69,7 @@ class SmartcardPurchaseRepository extends EntityRepository
             smartcard AS s
                 INNER JOIN smartcard_purchase AS sp on s.id = sp.smartcard_id
                 INNER JOIN smartcard_purchase_record AS spr ON sp.id = spr.smartcard_purchase_id
+                INNER JOIN assistance a on sp.assistance_id = a.id
         WHERE sp.redemption_batch_id IS NULL
         GROUP BY sp.id, spr.currency, projectId, vendorId
         ORDER BY sp.id, spr.currency, projectId, vendorId";
