@@ -75,6 +75,7 @@ class IntegrityChecker
     }
 
     /**
+     * @deprecated This was reworked to queues if you want to use this beaware of flush at checkOne method
      * @param Import   $import
      * @param int|null $batchSize if null => all
      */
@@ -117,6 +118,7 @@ class IntegrityChecker
         }
 
         $this->entityManager->persist($item);
+        $this->entityManager->flush();
     }
 
     /**

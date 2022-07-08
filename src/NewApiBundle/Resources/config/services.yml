@@ -168,6 +168,11 @@ services:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - NewApiBundle\Entity\Import
+            -
+    NewApiBundle\Repository\ImportFileRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\ImportFile
 
     NewApiBundle\Repository\ImportQueueRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]

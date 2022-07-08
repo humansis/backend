@@ -3,9 +3,7 @@
 namespace NewApiBundle\Component\Import;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ObjectRepository;
 use http\Exception\BadMethodCallException;
-use NewApiBundle\Component\Import\Message\ItemBatch;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportState;
@@ -13,9 +11,7 @@ use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Repository\ImportRepository;
 use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
-use NewApiBundle\Workflow\WorkflowTool;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 
 class ImportReset

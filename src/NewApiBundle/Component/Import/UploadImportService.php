@@ -10,6 +10,7 @@ use NewApiBundle\Component\Import\Messaging\Message\ImportCheck;
 use NewApiBundle\Component\Import\Messaging\Message\UploadFile;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
+use NewApiBundle\Repository\ImportFileRepository;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -40,12 +41,16 @@ class UploadImportService implements MessageHandlerInterface
     /** @var MessageBusInterface */
     private $messageBus;
 
+    /** @var ImportFileRepository */
+    private $importFileRepository;
+
     public function __construct(
         string                     $uploadDirectory,
         EntityManagerInterface     $em,
         ImportFileValidator        $importFileValidator,
         Integrity\DuplicityService $integrityDuplicityService,
-        MessageBusInterface        $messageBus
+        MessageBusInterface        $messageBus,
+        ImportFileRepository       $importFileRepository
     )
     {
         $this->parser = new ImportParser();
@@ -55,6 +60,7 @@ class UploadImportService implements MessageHandlerInterface
         $this->importFileValidator = $importFileValidator;
         $this->integrityDuplicityService = $integrityDuplicityService;
         $this->messageBus = $messageBus;
+        $this->importFileRepository = $importFileRepository;
     }
 
     /**
@@ -66,9 +72,9 @@ class UploadImportService implements MessageHandlerInterface
      */
     public function __invoke(UploadFile $uploadFile): void
     {
-        $importFile = $this->em->getRepository(ImportFile::class)->find($uploadFile->getImportFileId());
+        $importFile = $this->importFileRepository->find($uploadFile->getImportFileId());
         $this->load($importFile);
-        $this->messageBus->dispatch(ImportCheck::checkIntegrityStart($importFile->getImport()));
+        $this->messageBus->dispatch(ImportCheck::checkUploadingComplete($importFile->getImport()));
     }
 
     /**
