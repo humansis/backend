@@ -325,7 +325,6 @@ services:
 
     NewApiBundle\Component\Import\ImportFinisher:
         arguments:
-            - "%import.batch_size.finalization%"
             - "@doctrine.orm.entity_manager"
             - "@beneficiary.household_service"
             - '@monolog.logger.import'
