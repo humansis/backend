@@ -400,6 +400,14 @@ class AssistanceService
         $this->em->flush();
     }
 
+    public function updateNote(Assistance $assistance, ?string $note): void
+    {
+        $assistance->setNote($note);
+
+        $this->em->persist($assistance);
+        $this->em->flush();
+    }
+
     /**
      * @param int $projectId
      * @param string $type
