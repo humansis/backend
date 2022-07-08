@@ -45,11 +45,6 @@ parameters:
     logs.fieldAppPath: 'field_app/%environment%/user-<<email>>_<<userId>>/<<datetime>>/'
     logs.lifetime: 42 #in days. (6 weeks)
 
-    import.batch_size.integrity_check: '%env(BATCH_SIZE_INTEGRITY_CHECK)%'
-    import.batch_size.identity_check: '%env(BATCH_SIZE_IDENTITY_CHECK)%'
-    import.batch_size.similarity_check: '%env(BATCH_SIZE_INTEGRITY_CHECK)%'
-    import.batch_size.finalization: '%env(BATCH_SIZE_FINALIZATION)%'
-
     default_account: admin@example.org
     default_account_encoded_password: '%env(DEFAULT_ACCOUNT_PASSWORD)%'
     default_account_salt: '%env(DEFAULT_ACCOUNT_SALT)%'
