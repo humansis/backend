@@ -2,7 +2,6 @@
 
 namespace NewApiBundle\Event\Subscriber\Import;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectRepository;
 use NewApiBundle\Component\Import\ImportInvalidFileService;
@@ -25,10 +24,6 @@ use Symfony\Component\Workflow\TransitionBlocker;
 
 class IntegritySubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
 
     /**
      * @var IntegrityChecker
@@ -48,24 +43,15 @@ class IntegritySubscriber implements EventSubscriberInterface
     /** @var MessageBusInterface */
     private $messageBus;
 
-    /**
-     * @var int
-     */
-    private $batchSize;
-
     public function __construct(
-        int                      $batchSize,
-        EntityManagerInterface   $entityManager,
         IntegrityChecker         $integrityChecker,
         ImportInvalidFileService $importInvalidFileService,
         MessageBusInterface      $messageBus,
         ImportQueueRepository    $queueRepository
     ) {
-        $this->entityManager = $entityManager;
         $this->integrityChecker = $integrityChecker;
         $this->queueRepository = $queueRepository;
         $this->importInvalidFileService = $importInvalidFileService;
-        $this->batchSize = $batchSize;
         $this->messageBus = $messageBus;
     }
 

@@ -443,22 +443,16 @@ services:
 
     workflow.import.integrity_subscriber:
         class: NewApiBundle\Event\Subscriber\Import\IntegritySubscriber
-        arguments:
-            - '%import.batch_size.integrity_check%'
         tags:
             - { name: kernel.event_subscriber }
 
     workflow.import.identity_subscriber:
         class: NewApiBundle\Event\Subscriber\Import\IdentitySubscriber
-        arguments:
-            - '%import.batch_size.identity_check%'
         tags:
             - { name: kernel.event_subscriber }
 
     workflow.import.similarity_subscriber:
         class: NewApiBundle\Event\Subscriber\Import\SimilaritySubscriber
-        arguments:
-            - '%import.batch_size.similarity_check%'
         tags:
             - { name: kernel.event_subscriber }
 
