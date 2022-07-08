@@ -2,7 +2,6 @@
 
 namespace NewApiBundle\Event\Subscriber\Import;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectRepository;
 use NewApiBundle\Component\Import\Messaging\Message\ImportCheck;
@@ -24,11 +23,6 @@ use Symfony\Component\Workflow\TransitionBlocker;
 class SimilaritySubscriber implements EventSubscriberInterface
 {
     /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
      * @var SimilarityChecker
      */
     private $similarityChecker;
@@ -41,22 +35,14 @@ class SimilaritySubscriber implements EventSubscriberInterface
     /** @var MessageBusInterface */
     private $messageBus;
 
-    /**
-     * @var int
-     */
-    private $batchSize;
 
     public function __construct(
-        int                    $batchSize,
-        EntityManagerInterface $entityManager,
         SimilarityChecker      $similarityChecker,
         ImportQueueRepository  $queueRepository,
         MessageBusInterface    $messageBus
     ) {
-        $this->entityManager = $entityManager;
         $this->similarityChecker = $similarityChecker;
         $this->queueRepository = $queueRepository;
-        $this->batchSize = $batchSize;
         $this->messageBus = $messageBus;
     }
 
@@ -75,23 +61,15 @@ class SimilaritySubscriber implements EventSubscriberInterface
             'workflow.import.guard.'.ImportTransitions::REDO_SIMILARITY => ['guardSomeItemsLeft'],
             'workflow.import.guard.'.ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES => ['guardIfImportHasNotSuspiciousItems'],
             'workflow.import.entered.'.ImportTransitions::COMPLETE_SIMILARITY => ['completeSimilarity'],
-            'workflow.import.completed.'.ImportTransitions::REDO_SIMILARITY => ['checkSimilarity'],
+            'workflow.import.completed.'.ImportTransitions::REDO_SIMILARITY => ['checkSimilarityAgain'],
         ];
     }
 
-    public function fillQueue(EnteredEvent $event): void
+    public function checkSimilarity(EnteredEvent $event): void
     {
         /** @var Import $import */
         $import = $event->getSubject();
-
-        foreach ($this->queueRepository->findBy([
-            'import' => $import,
-            'state' => [ImportQueueState::NEW],
-        ]) as $item) {
-            $this->messageBus->dispatch(ItemBatch::checkSingleItemSimilarity($item));
-        }
-        $this->messageBus->dispatch(ImportCheck::checkSimilarityComplete($import), [new DelayStamp(5000)]);
-
+        $this->fillQueue($import);
     }
 
     public function guardNothingLeft(GuardEvent $guardEvent): void
@@ -155,11 +133,11 @@ class SimilaritySubscriber implements EventSubscriberInterface
     /**
      * @param CompletedEvent $enteredEvent
      */
-    public function checkSimilarity(CompletedEvent $enteredEvent): void
+    public function checkSimilarityAgain(CompletedEvent $enteredEvent): void
     {
         /** @var Import $import */
         $import = $enteredEvent->getSubject();
-        $this->similarityChecker->check($import, $this->batchSize);
+        $this->fillQueue($import);
     }
 
     /**
@@ -170,5 +148,16 @@ class SimilaritySubscriber implements EventSubscriberInterface
     private function checkImportSimilarity(Import $import): bool
     {
         return count($this->queueRepository->getSuspiciousItemsToUserCheck($import)) > 0;
+    }
+
+    private function fillQueue(Import $import)
+    {
+        foreach ($this->queueRepository->findBy([
+            'import' => $import,
+            'state' => [ImportQueueState::NEW],
+        ]) as $item) {
+            $this->messageBus->dispatch(ItemBatch::checkSingleItemSimilarity($item));
+        }
+        $this->messageBus->dispatch(ImportCheck::checkSimilarityComplete($import), [new DelayStamp(5000)]);
     }
 }

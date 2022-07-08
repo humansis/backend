@@ -40,13 +40,7 @@ class IdentitySubscriber implements EventSubscriberInterface
     /** @var MessageBusInterface */
     private $messageBus;
 
-    /**
-     * @var int
-     */
-    private $batchSize;
-
     public function __construct(
-        int                    $batchSize,
         EntityManagerInterface $entityManager,
         IdentityChecker        $identityChecker,
         MessageBusInterface    $messageBus,
@@ -54,7 +48,6 @@ class IdentitySubscriber implements EventSubscriberInterface
     ) {
         $this->entityManager = $entityManager;
         $this->identityChecker = $identityChecker;
-        $this->batchSize = $batchSize;
         $this->messageBus = $messageBus;
         $this->queueRepository = $queueRepository;
     }
