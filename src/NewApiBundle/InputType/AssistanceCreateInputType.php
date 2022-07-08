@@ -175,6 +175,11 @@ class AssistanceCreateInputType implements InputTypeInterface
     private $remoteDistributionAllowed;
 
     /**
+     * @Assert\Type("string")
+     */
+    private $note;
+
+    /**
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
@@ -654,6 +659,19 @@ class AssistanceCreateInputType implements InputTypeInterface
     public function setAllowedProductCategoryTypes($allowedProductCategoryTypes): void
     {
         $this->allowedProductCategoryTypes = $allowedProductCategoryTypes;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getNote(): ?string
+    {
+        return $this->note;
+    }
+
+    public function setNote(?string $note = null): void
+    {
+        $this->note = $note;
     }
 
 }

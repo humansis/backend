@@ -256,6 +256,14 @@ class Assistance implements ExportableInterface
     private $smartcardPurchases;
 
     /**
+     * @var string|null
+     *
+     * @ORM\Column(name="note", type="text", length=65535, nullable=true)
+     */
+    private $note;
+
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -833,12 +841,28 @@ class Assistance implements ExportableInterface
     }
 
     /**
+     * @return string|null
+     */
+    public function getNote(): ?string
+    {
+        return $this->note;
+    }
+
+    /**
+     * @param string|null $note
+     */
+    public function setNote(?string $note): void
+    {
+        $this->note = $note;
+    }
+
+    /**
      * @param string|null $subSector
      */
     public function setSubSector(?string $subSector): void
     {
         if (null !== $subSector && !in_array($subSector, SubSectorEnum::all())) {
-            throw new InvalidArgumentException("Invalid subBector: '$subSector'");
+            throw new InvalidArgumentException("Invalid subSector: '$subSector'");
         }
 
         $this->subSector = $subSector;

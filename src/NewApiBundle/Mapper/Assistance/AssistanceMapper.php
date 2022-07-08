@@ -195,6 +195,11 @@ class AssistanceMapper implements MapperInterface
         return $this->object->isRemoteDistributionAllowed();
     }
 
+    public function getNote(): ?string
+    {
+        return $this->object->getNote();
+    }
+
     /**
      * @return string|null
      */

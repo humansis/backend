@@ -135,4 +135,9 @@ class AssistanceMapper implements MapperInterface
     {
         return $this->statsRepository->findByAssistance($this->object)->getNumberOfBeneficiaries();
     }
+
+    public function getNote(): ?string
+    {
+        return $this->object->getNote();
+    }
 }
