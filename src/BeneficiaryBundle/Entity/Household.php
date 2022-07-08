@@ -5,6 +5,7 @@ namespace BeneficiaryBundle\Entity;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\DBAL\HouseholdAssetsEnum;
 use NewApiBundle\DBAL\HouseholdShelterStatusEnum;
@@ -440,11 +441,13 @@ class Household extends AbstractBeneficiary
      *
      * @return Collection|Beneficiary[]
      */
-    public function getBeneficiaries()
+    public function getBeneficiaries(bool $showArchived = false)
     {
-        return $this->beneficiaries->filter(function (Beneficiary $beneficiary) {
-            return !$beneficiary->getArchived();
-        });
+        $criteria = Criteria::create();
+        if (!$showArchived) {
+            $criteria->where(Criteria::expr()->eq('archived', false));
+        }
+        return $this->beneficiaries->matching($criteria);
     }
 
     /**
