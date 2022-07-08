@@ -224,6 +224,7 @@ class ImportController extends AbstractController
 
         $importFiles = [];
 
+        $this->importService->updateStatus($import, ImportState::UPLOADING);
         foreach ($files as $file) {
             $importFiles[] = $this->uploadImportService->uploadFile($import, $file, $user);
         }

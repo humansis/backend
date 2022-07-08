@@ -15,6 +15,7 @@ use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportTransitions;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Symfony\Component\Workflow\Event\CompletedEvent;
 use Symfony\Component\Workflow\Event\EnteredEvent;
 use Symfony\Component\Workflow\Event\GuardEvent;
@@ -89,7 +90,8 @@ class SimilaritySubscriber implements EventSubscriberInterface
         ]) as $item) {
             $this->messageBus->dispatch(ItemBatch::checkSingleItemSimilarity($item));
         }
-        $this->messageBus->dispatch(ImportCheck::checkSimilarityComplete($import));
+        $this->messageBus->dispatch(ImportCheck::checkSimilarityComplete($import), [new DelayStamp(5000)]);
+
     }
 
     public function guardNothingLeft(GuardEvent $guardEvent): void

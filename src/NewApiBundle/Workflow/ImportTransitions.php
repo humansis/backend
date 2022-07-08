@@ -7,6 +7,9 @@ use NewApiBundle\Enum\ImportState;
 final class ImportTransitions
 {
     public const
+        UPLOAD = ImportState::UPLOADING,
+        COMPLETE_UPLOAD = 'upload_complete',
+        FAIL_UPLOAD = ImportState::UPLOADING_FAILED,
         CHECK_INTEGRITY = ImportState::INTEGRITY_CHECKING,
         COMPLETE_INTEGRITY = ImportState::INTEGRITY_CHECK_CORRECT,
         FAIL_INTEGRITY = ImportState::INTEGRITY_CHECK_FAILED,

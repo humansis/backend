@@ -13,6 +13,7 @@ use NewApiBundle\Repository\ImportRepository;
 use NewApiBundle\Workflow\ImportTransitions;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Symfony\Component\Workflow\Event\CompletedEvent;
 use Symfony\Component\Workflow\Event\EnteredEvent;
 use Symfony\Component\Workflow\Event\GuardEvent;
@@ -90,7 +91,8 @@ class FinishSubscriber implements EventSubscriberInterface
             $this->messageBus->dispatch(ItemBatch::finishSingleItem($item));
         }
 
-        $this->messageBus->dispatch(ImportCheck::checkImportingComplete($import));
+        $this->messageBus->dispatch(ImportCheck::checkImportingComplete($import), [new DelayStamp(5000)]);
+
     }
 
     public function guardAllItemsAreImported(GuardEvent $event)

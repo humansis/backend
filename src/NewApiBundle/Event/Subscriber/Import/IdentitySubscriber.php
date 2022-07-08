@@ -14,6 +14,7 @@ use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportTransitions;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Symfony\Component\Workflow\Event\EnteredEvent;
 use Symfony\Component\Workflow\Event\GuardEvent;
 use Symfony\Component\Workflow\TransitionBlocker;
@@ -89,7 +90,7 @@ class IdentitySubscriber implements EventSubscriberInterface
             $this->messageBus->dispatch(ItemBatch::checkSingleItemIdentity($item));
         }
 
-        $this->messageBus->dispatch(ImportCheck::checkIdentityComplete($import));
+        $this->messageBus->dispatch(ImportCheck::checkIdentityComplete($import), [new DelayStamp(5000)]);
     }
 
     public function guardAllItemsChecked(GuardEvent $guardEvent): void

@@ -30,14 +30,15 @@ class ImportCheck
         $this->checkType = $checkType;
     }
 
+
     /**
      * @param Import $import
      *
      * @return static
      */
-    public static function checkIntegrityStart(Import $import): self
+    public static function checkUploadingComplete(Import $import): self
     {
-        return new self(ImportState::NEW, $import->getId());
+        return new self(ImportState::UPLOADING, $import->getId());
     }
 
     /**
