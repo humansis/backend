@@ -54,14 +54,11 @@ class ImportFinisher
      */
     private $queueRepository;
 
-    /** @var integer */
-    private $totalBatchSize;
 
     /** @var ManagerRegistry */
     private $managerRegistry;
 
     public function __construct(
-        int                                 $totalBatchSize,
         EntityManagerInterface              $em,
         HouseholdService                    $householdService,
         LoggerInterface                     $logger,
@@ -77,7 +74,6 @@ class ImportFinisher
         $this->householdService = $householdService;
         $this->queueRepository = $queueRepository;
         $this->logger = $logger;
-        $this->totalBatchSize = $totalBatchSize;
         $this->householdDecoratorBuilder = $householdDecoratorBuilder;
         $this->managerRegistry = $managerRegistry;
     }

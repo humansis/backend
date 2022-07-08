@@ -9,7 +9,7 @@ final class ImportState
 
     const NEW = 'New';
     const UPLOADING = 'Uploading';
-    const UPLOADING_FAILED = 'Uploading Failed';
+    const UPLOAD_FAILED = 'Upload Failed';
     const INTEGRITY_CHECKING = 'Integrity Checking';
     const INTEGRITY_CHECK_CORRECT = 'Integrity Check Correct';
     const INTEGRITY_CHECK_FAILED = 'Integrity Check Failed';
@@ -28,7 +28,7 @@ final class ImportState
         return [
             self::NEW,
             self::UPLOADING,
-            self::UPLOADING_FAILED,
+            self::UPLOAD_FAILED,
             self::INTEGRITY_CHECKING,
             self::INTEGRITY_CHECK_CORRECT,
             self::INTEGRITY_CHECK_FAILED,

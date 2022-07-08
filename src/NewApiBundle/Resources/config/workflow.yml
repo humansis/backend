@@ -72,7 +72,7 @@ framework:
       places:
         - !php/const NewApiBundle\Enum\ImportState::NEW
         - !php/const NewApiBundle\Enum\ImportState::UPLOADING
-        - !php/const NewApiBundle\Enum\ImportState::UPLOADING_FAILED
+        - !php/const NewApiBundle\Enum\ImportState::UPLOAD_FAILED
         - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECKING
         - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_CORRECT
         - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_FAILED
@@ -96,7 +96,7 @@ framework:
           to: !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECKING
         !php/const NewApiBundle\Workflow\ImportTransitions::FAIL_UPLOAD:
           from: !php/const NewApiBundle\Enum\ImportState::UPLOADING
-          to: !php/const NewApiBundle\Enum\ImportState::UPLOADING_FAILED
+          to: !php/const NewApiBundle\Enum\ImportState::UPLOAD_FAILED
 
         # INTEGRITY
         !php/const NewApiBundle\Workflow\ImportTransitions::CHECK_INTEGRITY:
@@ -170,7 +170,7 @@ framework:
         !php/const NewApiBundle\Workflow\ImportTransitions::CANCEL:
           from:
             - !php/const NewApiBundle\Enum\ImportState::NEW
-            - !php/const NewApiBundle\Enum\ImportState::UPLOADING_FAILED
+            - !php/const NewApiBundle\Enum\ImportState::UPLOAD_FAILED
             - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECKING
             - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_CORRECT
             - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_FAILED
