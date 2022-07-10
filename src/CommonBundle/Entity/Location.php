@@ -16,7 +16,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *      @ORM\Index(name="search_country_name", columns={"countryISO3", "name"}),
  *      @ORM\Index(name="search_subtree", columns={"countryISO3", "nested_tree_level", "nested_tree_left", "nested_tree_right"}),
  *      @ORM\Index(name="search_superpath", columns={"nested_tree_level", "nested_tree_left", "nested_tree_right"}),
- *      @ORM\Index(name="search_level", columns={"countryISO3", "nested_tree_left"}),
+ *      @ORM\Index(name="search_level", columns={"countryISO3", "nested_tree_level"}),
  *     })
  * @ORM\Entity(repositoryClass="CommonBundle\Repository\LocationRepository")
  */
@@ -76,42 +76,6 @@ class Location implements TreeInterface
      * @ORM\Column(name="enum_normalized_name", type="string", length=255, nullable=false, unique=true)
      */
     private $enumNormalizedName;
-
-    /**
-     * @deprecated use nested tree
-     * @var Adm1
-     *
-     * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm1", mappedBy="location")
-     * @SymfonyGroups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullAssistance", "FullInstitution", "SmallAssistance", "FullVendor"})
-     */
-    private $adm1;
-
-    /**
-     * @deprecated use nested tree
-     * @var Adm2
-     *
-     * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm2", mappedBy="location")
-     * @SymfonyGroups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullAssistance", "FullInstitution", "SmallAssistance", "FullVendor"})
-     */
-    private $adm2;
-
-    /**
-     * @deprecated use nested tree
-     * @var Adm3
-     *
-     * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm3", mappedBy="location")
-     * @SymfonyGroups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullAssistance", "FullInstitution", "SmallAssistance", "FullVendor"})
-     */
-    private $adm3;
-
-    /**
-     * @deprecated use nested tree
-     * @var Adm4
-     *
-     * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Adm4", mappedBy="location")
-     * @SymfonyGroups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullAssistance", "FullInstitution", "SmallAssistance", "FullVendor"})
-     */
-    private $adm4;
 
     /**
      * @param string      $countryISO3
@@ -213,229 +177,22 @@ class Location implements TreeInterface
         $this->code = $code;
     }
 
-    /**
-     * Set adm1.
-     *
-     * @param \CommonBundle\Entity\Adm1|null $adm1
-     *
-     * @return Location
-     */
-    public function setAdm1(\CommonBundle\Entity\Adm1 $adm1 = null)
+    public function getLocationByLevel(int $level): ?Location
     {
-        $this->adm1 = $adm1;
-
-        return $this;
-    }
-
-    /**
-     * Get adm1.
-     *
-     * @return \CommonBundle\Entity\Adm1|null
-     */
-    public function getAdm1()
-    {
-        return $this->adm1;
-    }
-
-    /**
-     * Set adm2.
-     *
-     * @param \CommonBundle\Entity\Adm2|null $adm2
-     *
-     * @return Location
-     */
-    public function setAdm2(\CommonBundle\Entity\Adm2 $adm2 = null)
-    {
-        $this->adm2 = $adm2;
-
-        return $this;
-    }
-
-    /**
-     * Get adm2.
-     *
-     * @return \CommonBundle\Entity\Adm2|null
-     */
-    public function getAdm2()
-    {
-        return $this->adm2;
-    }
-
-    /**
-     * Set adm3.
-     *
-     * @param \CommonBundle\Entity\Adm3|null $adm3
-     *
-     * @return Location
-     */
-    public function setAdm3(\CommonBundle\Entity\Adm3 $adm3 = null)
-    {
-        $this->adm3 = $adm3;
-
-        return $this;
-    }
-
-    /**
-     * Get adm3.
-     *
-     * @return \CommonBundle\Entity\Adm3|null
-     */
-    public function getAdm3()
-    {
-        return $this->adm3;
-    }
-
-    /**
-     * Set adm4.
-     *
-     * @param \CommonBundle\Entity\Adm4|null $adm4
-     *
-     * @return Location
-     */
-    public function setAdm4(\CommonBundle\Entity\Adm4 $adm4 = null)
-    {
-        $this->adm4 = $adm4;
-
-        return $this;
-    }
-
-    /**
-     * Get adm4.
-     *
-     * @return \CommonBundle\Entity\Adm4|null
-     */
-    public function getAdm4()
-    {
-        return $this->adm4;
-    }
-
-    public function getAdm1Id(): ?int
-    {
-        if (null !== $this->getAdm1()) {
-            return $this->getAdm1()->getId();
-        } elseif (null !== $this->getAdm2()) {
-            return $this->getAdm2()->getAdm1()->getId();
-        } elseif (null !== $this->getAdm3()) {
-            return $this->getAdm3()->getAdm2()->getAdm1()->getId();
-        } elseif (null !== $this->getAdm4()) {
-            return $this->getAdm4()->getAdm3()->getAdm2()->getAdm1()->getId();
+        if ($level > $this->getLvl()) {
+            return null;
         }
 
-        return null;
-    }
-
-    public function getAdm2Id(): ?int
-    {
-        if (null !== $this->getAdm2()) {
-            return $this->getAdm2()->getId();
-        } elseif (null !== $this->getAdm3()) {
-            return $this->getAdm3()->getAdm2()->getId();
-        } elseif (null !== $this->getAdm4()) {
-            return $this->getAdm4()->getAdm3()->getAdm2()->getId();
+        if ($level === $this->getLvl()) {
+            return $this;
         }
 
-        return null;
-    }
-
-    public function getAdm3Id(): ?int
-    {
-        if (null !== $this->getAdm3()) {
-            return $this->getAdm3()->getId();
-        } elseif (null !== $this->getAdm4()) {
-            return $this->getAdm4()->getAdm3()->getId();
+        $location = $this;
+        while ($level < $location->getLvl()) {
+            $location = $location->getParent();
         }
 
-        return null;
-    }
-
-    public function getAdm4Id(): ?int
-    {
-        if (null !== $this->getAdm4()) {
-            return $this->getAdm4()->getId();
-        }
-
-        return null;
-    }
-
-    public function getAdm1Name()
-    {
-        if (null !== $this->getAdm1()) {
-            return $this->getAdm1()->getName();
-        } elseif (null !== $this->getAdm2()) {
-            return $this->getAdm2()->getAdm1()->getName();
-        } elseif (null !== $this->getAdm3()) {
-            return $this->getAdm3()->getAdm2()->getAdm1()->getName();
-        } elseif (null !== $this->getAdm4()) {
-            return $this->getAdm4()->getAdm3()->getAdm2()->getAdm1()->getName();
-        } else {
-            return "";
-        }
-    }
-
-    public function getAdm2Name()
-    {
-        if (null !== $this->getAdm2()) {
-            return $this->getAdm2()->getName();
-        } elseif (null !== $this->getAdm3()) {
-            return $this->getAdm3()->getAdm2()->getName();
-        } elseif (null !== $this->getAdm4()) {
-            return $this->getAdm4()->getAdm3()->getAdm2()->getName();
-        } else {
-            return "";
-        }
-    }
-
-    public function getAdm3Name()
-    {
-        if (null !== $this->getAdm3()) {
-            return $this->getAdm3()->getName();
-        } elseif (null !== $this->getAdm4()) {
-            return $this->getAdm4()->getAdm3()->getName();
-        } else {
-            return "";
-        }
-    }
-
-    public function getAdm4Name()
-    {
-        if (null !== $this->getAdm4()) {
-            return $this->getAdm4()->getName();
-        } else {
-            return "";
-        }
-    }
-
-    /**
-     * @return Adm1|Adm2|Adm3|Adm4|null
-     */
-    public function getAdm()
-    {
-        if ($this->getAdm1()) {
-            return $this->getAdm1();
-        } elseif ($this->getAdm2()) {
-            return $this->getAdm2();
-        } elseif ($this->getAdm3()) {
-            return $this->getAdm3();
-        } elseif ($this->getAdm4()) {
-            return $this->getAdm4();
-        }
-
-        return null;
-    }
-
-    public function getLocationName(): string
-    {
-        if ($this->getAdm4()) {
-            return $this->getAdm4()->getName();
-        } elseif ($this->getAdm3()) {
-            return $this->getAdm3()->getName();
-        } elseif ($this->getAdm2()) {
-            return $this->getAdm2()->getName();
-        } elseif ($this->getAdm1()) {
-            return $this->getAdm1()->getName();
-        } else {
-            return '';
-        }
+        return $location;
     }
 
     public function getParent(): ?TreeInterface
@@ -455,4 +212,64 @@ class Location implements TreeInterface
     {
         return $this->enumNormalizedName;
     }
+
+    //region backward compatibility
+    public function getAdm1Name(): string
+    {
+        return $this->getAdmName(1);
+    }
+
+    public function getAdm2Name(): string
+    {
+        return $this->getAdmName(2);
+    }
+
+    public function getAdm3Name(): string
+    {
+        return $this->getAdmName(3);
+    }
+
+    public function getAdm4Name(): string
+    {
+        return $this->getAdmName(4);
+    }
+
+    public function getAdm1Id(): ?int
+    {
+        return $this->getAdmId(1);
+    }
+
+    public function getAdm2Id(): ?int
+    {
+        return $this->getAdmId(2);
+    }
+
+    public function getAdm3Id(): ?int
+    {
+        return $this->getAdmId(3);
+    }
+
+    public function getAdm4Id(): ?int
+    {
+        return $this->getAdmId(4);
+    }
+
+    private function getAdmName(int $level): string
+    {
+        $location = $this->getLocationByLevel($level);
+
+        return $location
+            ? $location->getName()
+            : '';
+    }
+
+    private function getAdmId(int $level): ?int
+    {
+        $location = $this->getLocationByLevel($level);
+
+        return $location
+            ? $location->getId()
+            : null;
+    }
+    //endregion
 }

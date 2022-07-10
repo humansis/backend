@@ -20,6 +20,8 @@ use BeneficiaryBundle\Entity\Camp;
 /**
  * Class LocationController
  * @package CommonBundle\Controller
+ * 
+ * @deprecated use NewApiBundle\Controller\LocationController
  *
  * @SWG\Parameter(
  *     name="country",
