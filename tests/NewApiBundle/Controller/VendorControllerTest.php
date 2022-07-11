@@ -6,6 +6,7 @@ use CommonBundle\Entity\Adm1;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Exception;
+use NewApiBundle\Enum\VendorInvoicingState;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Vendor;
@@ -216,7 +217,8 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        $this->request('GET', '/api/basic/web-app/v1/vendors?filter[id][]=1&filter[isInvoiced]=false&sort[]=name.asc');
+        $toRedeemInvoicingState = VendorInvoicingState::TO_REDEEM;
+        $this->request('GET', "/api/basic/web-app/v1/vendors?filter[id][]=1&filter[invoicing]=$toRedeemInvoicingState&sort[]=name.asc");
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

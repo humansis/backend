@@ -10,9 +10,9 @@ use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
+use VoucherBundle\Repository\SmartcardPurchaseRepository;
 
 class SmartcardPurchaseController extends AbstractWebAppController
 {
@@ -30,30 +30,36 @@ class SmartcardPurchaseController extends AbstractWebAppController
      *
      * @param SmartcardPurchaseFilterInputType $filter
      * @param Pagination                       $pagination
+     * @param SmartcardPurchaseRepository      $smartcardPurchaseRepository
      *
      * @return JsonResponse
      */
-    public function purchases(SmartcardPurchaseFilterInputType $filter, Pagination $pagination): JsonResponse
-    {
-        $purchases = $this->getDoctrine()->getRepository(SmartcardPurchase::class)
-            ->findByParams($filter, $pagination);
+    public function purchases(
+        SmartcardPurchaseFilterInputType $filter,
+        Pagination                       $pagination,
+        SmartcardPurchaseRepository      $smartcardPurchaseRepository
+    ): JsonResponse {
+        $purchases = $smartcardPurchaseRepository->findByParams($filter, $pagination);
 
         return $this->json($purchases);
     }
 
     /**
      * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/smartcard-purchases")
-     * @ParamConverter("redemptionBatch", class="Invoice")
+     * @ParamConverter("redemptionBatch", class="VoucherBundle\Entity\Invoice")
      *
-     * @param Invoice    $redemptionBatch
-     * @param Pagination $pagination
+     * @param Invoice                     $redemptionBatch
+     * @param Pagination                  $pagination
+     * @param SmartcardPurchaseRepository $smartcardPurchaseRepository
      *
      * @return JsonResponse
      */
-    public function purchasesByRedemptionBatch(Invoice $redemptionBatch, Pagination $pagination): JsonResponse
-    {
-        $purchases = $this->getDoctrine()->getRepository(SmartcardPurchase::class)
-            ->findByBatch($redemptionBatch, $pagination);
+    public function purchasesByRedemptionBatch(
+        Invoice                     $redemptionBatch,
+        Pagination                  $pagination,
+        SmartcardPurchaseRepository $smartcardPurchaseRepository
+    ): JsonResponse {
+        $purchases = $smartcardPurchaseRepository->findByBatch($redemptionBatch, $pagination);
 
         return $this->json($purchases);
     }

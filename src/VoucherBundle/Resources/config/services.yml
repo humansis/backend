@@ -6,6 +6,13 @@ services:
         autowire: true
         tags: [ 'app.controller' ]
 
+    VoucherBundle\Controller\SmartcardController:
+        arguments:
+            - '@DistributionBundle\Export\SmartcardInvoiceExport'
+            - '@CommonBundle\Repository\OrganizationRepository'
+            - '@NewApiBundle\Component\Country\Countries'
+        public: true
+
     VoucherBundle\Repository\VendorRepository:
         class: Doctrine\ORM\EntityRepository
         calls:
@@ -63,6 +70,9 @@ services:
         class: VoucherBundle\Model\PurchaseService
         public: true
         arguments: [ '@doctrine.orm.entity_manager', '@logger' ]
+
+    VoucherBundle\Utils\SmartcardService:
+        alias: smartcard_service
 
     smartcard_service:
         class: VoucherBundle\Utils\SmartcardService

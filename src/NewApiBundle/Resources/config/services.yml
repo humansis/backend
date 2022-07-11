@@ -470,8 +470,6 @@ services:
             - '%logs.fieldAppPath%'
             - '%logs.lifetime%'
 
-    NewApiBundle\Services\AssistanceDistributionService:
-    
     NewApiBundle\InputType\Assistance\Scoring\ScoringService:
 
     NewApiBundle\Component\Assistance\Scoring\RulesCalculation:

@@ -607,6 +607,8 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
     public function testGetBatchToRedemption(): void
     {
+        $this->markTestSkipped('Testing old endpoint that will be removed.');
+
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
