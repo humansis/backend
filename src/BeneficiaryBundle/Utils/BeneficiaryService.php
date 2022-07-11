@@ -105,16 +105,6 @@ class BeneficiaryService
         $this->profileRepository = $profileRepository;
     }
 
-
-    /**
-     * Get all vulnerability criteria
-     * @return array
-     */
-    public function getAllVulnerabilityCriteria(): array
-    {
-        return $this->vulnerabilityCriterionRepository->findAllActive();
-    }
-
     public function createPhone(PhoneInputType $inputType): Phone
     {
         $phone = new Phone();
