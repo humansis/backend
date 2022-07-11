@@ -43,7 +43,7 @@ final class ScoringFactory
      */
     public function buildScoring(ScoringBlueprint $scoringBlueprint): Scoring
     {
-        $scoringRules = $this->parser->parseStream($scoringBlueprint->getContent());
+        $scoringRules = $this->parser->parseStream($scoringBlueprint->getStream());
         return $this->createScoring($scoringBlueprint->getName(), $scoringRules);
     }
 

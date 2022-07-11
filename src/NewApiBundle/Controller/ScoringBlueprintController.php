@@ -122,7 +122,7 @@ class ScoringBlueprintController extends AbstractController
      */
     public function getContent(ScoringBlueprint $scoringBlueprint): StreamedResponse
     {
-        $stream = $scoringBlueprint->getContent();
+        $stream = $scoringBlueprint->getStream();
         $filename = "scoring-".$scoringBlueprint->getName().".csv";
         return new StreamedResponse(function () use ($stream) {
             fpassthru($stream);

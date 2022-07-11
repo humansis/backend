@@ -3,16 +3,11 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\CountryDependent;
 use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\CreatedBy;
 use NewApiBundle\Utils\Objects\PropertySetter;
-use phpDocumentor\Reflection\Types\Resource_;
-use UserBundle\Entity\User;
 
 /**
  * @ORM\Table(name="scoring_blueprint")
@@ -112,6 +107,18 @@ class ScoringBlueprint
     public function getContent()
     {
         return $this->content;
+    }
+
+    /**
+     * @return resource
+     */
+    public function getStream() {
+
+        $cache = fopen('php://memory', 'r+');
+        stream_copy_to_stream($this->getContent(), $cache);
+        rewind($cache);
+        rewind($this->content);
+        return $cache;
     }
 
     /**
