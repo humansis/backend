@@ -71,7 +71,7 @@ final class ScoringService
             $beneficiary = $this->beneficiaryRepository->find($beneficiaryId);
 
             $scoringBlueprint = $this->scoringBlueprintRepository->findActive($input->getScoringBlueprint(), $countryCode);
-            if (isset($scoringBlueprint)) {
+            if (!isset($scoringBlueprint)) {
                 $protocol = $this->oldResolver->compute($beneficiary->getHousehold(), $countryCode, $input->getSector());
             } else {
                 $protocol = $this->resolver->compute(
