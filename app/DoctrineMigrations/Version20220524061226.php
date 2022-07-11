@@ -14,8 +14,6 @@ final class Version20220524061226 extends AbstractMigration
     {
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('DROP VIEW view_smartcard_preliminary_invoice');
-
         $this->addSql('
             CREATE VIEW view_smartcard_preliminary_invoice AS
                 SELECT IF(a.project_id IS NOT NULL, CONCAT(sp.vendor_id, "_", spr.currency, "_", a.project_id),
