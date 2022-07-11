@@ -81,28 +81,6 @@ class InstitutionService
         $this->container= $container;
     }
 
-    /**
-     * @param GlobalInputType\Country $country
-     * @param GlobalInputType\DataTableType $dataTableType
-     * @return mixed
-     */
-    public function getAll(GlobalInputType\Country $country, GlobalInputType\DataTableType $dataTableType)
-    {
-        $limitMinimum = $dataTableType->pageIndex * $dataTableType->pageSize;
-
-        $institutions = $this->em->getRepository(Institution::class)->getAllBy(
-            $country,
-            $limitMinimum,
-            $dataTableType->pageSize,
-            $dataTableType->getSort(),
-            $dataTableType->getFilter()
-        );
-        $length = $institutions[0];
-        $institutions = $institutions[1];
-
-        return [$length, $institutions];
-    }
-
     public function create(InstitutionCreateInputType $inputType): Institution
     {
         $institution = new Institution();
@@ -222,48 +200,6 @@ class InstitutionService
         return $institution;
     }
 
-    public function removeMany(array $institutionIds)
-    {
-        foreach ($institutionIds as $institutionId) {
-            $institution = $this->em->getRepository(Institution::class)->find($institutionId);
-            $institution->setArchived(true);
-            $this->em->persist($institution);
-        }
-        $this->em->flush();
-        return "Institutions have been archived";
-    }
-
-
-    /**
-     * @return mixed
-     */
-    public function exportToCsv()
-    {
-        $exportableTable = $this->em->getRepository(Institution::class)->findAll();
-        return  $this->container->get('export_csv_service')->export($exportableTable);
-    }
-
-    /**
-     * @param array $institutionsArray
-     * @return array
-     */
-    public function getAllImported(array $institutionsArray)
-    {
-        $institutionsId = $institutionsArray['institutions'];
-
-        $institutions = array();
-
-        foreach ($institutionsId as $institutionId) {
-            $institution = $this->em->getRepository(Institution::class)->find($institutionId);
-
-            if ($institution instanceof Institution) {
-                array_push($institutions, $institution);
-            }
-        }
-
-        return $institutions;
-    }
-
     public function update(Institution $institution, InstitutionUpdateInputType $inputType)
     {
         $institution->setName($inputType->getName());
@@ -337,93 +273,5 @@ class InstitutionService
         $this->em->flush();
 
         return $institution;
-    }
-
-    /**
-     * @param GlobalInputType\Country         $iso3
-     * @param Institution                     $institution
-     * @param InputType\UpdateInstitutionType $institutionType
-     *
-     * @return Institution
-     * @throws \InvalidArgumentException
-     *
-     * @deprecated
-     */
-    public function updateDeprecated(GlobalInputType\Country $iso3, Institution $institution, InputType\UpdateInstitutionType $institutionType): Institution
-    {
-        if ($institution->getContact() == null) {
-            $institution->setContact(new Person());
-        }
-        if (null !== $newValue = $institutionType->getName()) {
-            $institution->setName($newValue);
-        }
-        if (null !== $newValue = $institutionType->getLongitude()) {
-            $institution->setLongitude($newValue);
-        }
-        if (null !== $newValue = $institutionType->getLatitude()) {
-            $institution->setLatitude($newValue);
-        }
-        if (null !== $newValue = $institutionType->getType()) {
-            $institution->setType($newValue);
-        }
-
-        if ($institutionType->getNationalId() !== null) {
-            if ($institution->getNationalId() == null) {
-                $institution->setNationalId(new NationalId());
-            }
-            $institution->getNationalId()->setIdType($institutionType->getNationalId()->getType());
-            $institution->getNationalId()->setIdNumber($institutionType->getNationalId()->getNumber());
-        }
-        if (null !== $newValue = $institutionType->getContactName()) {
-            $institution->setContactName($newValue);
-        }
-        if (null !== $newValue = $institutionType->getContactFamilyName()) {
-            $institution->setContactFamilyName($newValue);
-        }
-        if (null !== $institutionType->getPhoneNumber()) {
-            if ($institution->getPhone() == null) {
-                $institution->setPhone(new Phone());
-            }
-            $institution->getPhone()->setType($institutionType->getPhoneType());
-            $institution->getPhone()->setPrefix($institutionType->getPhonePrefix());
-            $institution->getPhone()->setNumber($institutionType->getPhoneNumber());
-        }
-
-        /** @var InputType\BeneficiaryAddressType $address */
-        if (null !== $address = $institutionType->getAddress()) {
-            $location = null;
-            if ($address->getLocation() !== null) {
-                $location = $this->locationService->getLocationByInputType($address->getLocation());
-            }
-            $this->updateAddress($institution, Address::create(
-                $address->getStreet(),
-                $address->getNumber(),
-                $address->getPostcode(),
-                $location
-                ));
-        }
-
-        $institution->setProjects(new ArrayCollection());
-        foreach ($institutionType->getProjects() as $projectId) {
-            $project = $this->em->getRepository(Project::class)->find($projectId);
-            if (null === $project) {
-                throw new \InvalidArgumentException("Project $projectId doesn't exist");
-            }
-            $institution->addProject($project);
-        }
-
-        return $institution;
-    }
-
-    private function updateAddress(Institution $institution, Address $newAddress)
-    {
-        if (null === $institution->getAddress()) {
-            $institution->setAddress($newAddress);
-            return;
-        }
-        if (! $institution->getAddress()->equals($newAddress)) {
-            $this->em->remove($institution->getAddress());
-            $institution->setAddress($newAddress);
-        }
     }
 }
