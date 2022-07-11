@@ -369,7 +369,7 @@ class ImportLine
                     $this->$property = trim($this->$property);
 
                     // back retype to int if there is only numbers
-                    if (ctype_digit($this->$property)) {
+                    if (ctype_digit($this->$property) && !(substr($this->$property, 0, 1) === '0')) {
                         $this->$property = (int) $this->$property;
                     }
                 } else {
