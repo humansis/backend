@@ -109,7 +109,7 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
     public function findByAssistance(Assistance $assistance, ?ReliefPackageFilterInputType $filter = null): Paginator
     {
         $qb = $this->createQueryBuilder('rp')
-            ->join('rp.assistanceBeneficiary', 'ab', Join::WITH, 'ab.removed = 0')
+            ->join('rp.assistanceBeneficiary', 'ab')
             ->join('ab.beneficiary', 'abstB', Join::WITH, 'abstB.archived = 0')
             ->andWhere('IDENTITY(ab.assistance) = :assistance')
             ->setParameter('assistance', $assistance->getId());

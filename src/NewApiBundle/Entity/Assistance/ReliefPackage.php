@@ -326,4 +326,22 @@ class ReliefPackage
         $this->distributedBy = $distributedBy;
     }
 
+    /**
+     * @return bool
+     */
+    public function isOnStartupState(): bool
+    {
+        return in_array($this->state, ReliefPackageState::startupValues());
+    }
+
+    /**
+     * @param string $modalityName
+     * @param string $unit
+     *
+     * @return bool
+     */
+    public function isSameModalityAndUnit(string $modalityName, string $unit): bool
+    {
+        return $this->getModalityType() === $modalityName && $this->getUnit() === $unit;
+    }
 }
