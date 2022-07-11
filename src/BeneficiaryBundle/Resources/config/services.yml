@@ -43,12 +43,7 @@ services:
         class: BeneficiaryBundle\Utils\CommunityService
         arguments:
             - "@doctrine.orm.entity_manager"
-            - "@serializer"
-            - "@beneficiary.beneficiary_service"
-            - "@request_validator"
             - "@location_service"
-            - "@validator"
-            - "@service_container"
             - "@CommonBundle\\Mapper\\LocationMapper"
         public: true
 
