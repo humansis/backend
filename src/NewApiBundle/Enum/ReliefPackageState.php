@@ -23,4 +23,11 @@ final class ReliefPackageState
             self::CANCELED,
         ];
     }
+
+    public static function startupValues(): array
+    {
+        return [
+            self::TO_DISTRIBUTE,
+        ];
+    }
 }
