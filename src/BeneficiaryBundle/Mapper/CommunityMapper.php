@@ -76,11 +76,4 @@ class CommunityMapper
         }
         return $this->locationMapper->toName($community->getAddress()->getLocation());
     }
-
-    public function toFullArrays(array $communities)
-    {
-        foreach ($communities as $community) {
-            yield $this->toFullArray($community);
-        }
-    }
 }
