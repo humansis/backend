@@ -179,20 +179,6 @@ services:
             - "@beneficiary.repository"
         public: true
 
-
-#######################################################################################
-##                                      IMPORT                                       ##
-#######################################################################################
-
-    beneficiary.khm_api_provider_idpoor:
-        class: BeneficiaryBundle\Utils\ImportProvider\KHM\KHMIDPoorAPIProvider
-        public: true
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - "@validator"
-            - "@service_container"
-
-
 #######################################################################################
 ##                                        CSV                                        ##
 #######################################################################################
