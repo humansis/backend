@@ -151,7 +151,7 @@ class AssistanceService
         }
 
         $selectionGroups = $this->selectionCriteriaFactory->createGroups($inputType->getSelectionCriteria());
-        $result = $this->criteriaAssistanceService->load($selectionGroups, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false,  $inputType->getScoringBlueprint());
+        $result = $this->criteriaAssistanceService->load($selectionGroups, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false,  $inputType->getScoringBlueprintId());
         $ids = array_keys($result['finalArray']);
         $count = count($ids);
 
@@ -181,7 +181,7 @@ class AssistanceService
         }
 
         $selectionGroups = $this->selectionCriteriaFactory->createGroups($inputType->getSelectionCriteria());
-        $result = $this->criteriaAssistanceService->load($selectionGroups, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false, $inputType->getScoringBlueprint());
+        $result = $this->criteriaAssistanceService->load($selectionGroups, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false, $inputType->getScoringBlueprintId());
         $ids = array_keys($result['finalArray']);
         $count = count($ids);
 

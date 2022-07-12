@@ -17,7 +17,6 @@ class ScoringInputType implements InputTypeInterface
      * @Assert\Type("string")
      * @Assert\Length(max="255")
      * @Assert\NotBlank
-     * @Assert\NotNull
      */
     private $name;
 
@@ -42,11 +41,11 @@ class ScoringInputType implements InputTypeInterface
     }
 
     /**
-     * @param string $name
+     * @param $name
      *
      * @return ScoringInputType
      */
-    public function setName(string $name)
+    public function setName($name)
     {
         $this->name = $name;
 
@@ -62,11 +61,11 @@ class ScoringInputType implements InputTypeInterface
     }
 
     /**
-     * @param bool $archived
+     * @param $archived
      *
      * @return ScoringInputType
      */
-    public function setArchived(bool $archived): ScoringInputType
+    public function setArchived($archived): ScoringInputType
     {
         $this->archived = $archived;
 

@@ -6,6 +6,7 @@ namespace NewApiBundle\Component\Assistance\Scoring\Model\Factory;
 use BeneficiaryBundle\Exception\CsvParserException;
 use NewApiBundle\Component\Assistance\Scoring\Exception\ScoreValidationException;
 use NewApiBundle\Component\Assistance\Scoring\Model\Scoring;
+use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRule;
 use NewApiBundle\Component\Assistance\Scoring\ScoringCsvParser;
 use NewApiBundle\Entity\ScoringBlueprint;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -48,14 +49,14 @@ final class ScoringFactory
     }
 
     /**
-     * @param $name
-     * @param $csv
+     * @param string   $name
+     * @param string   $csv
      *
      * @return bool
      * @throws CsvParserException
      * @throws ScoreValidationException
      */
-    public function validateScoring($name, $csv)
+    public function validateScoring(string $name,string $csv): bool
     {
         $stream = fopen('php://memory','r+');
         fwrite($stream, $csv);
@@ -66,13 +67,13 @@ final class ScoringFactory
     }
 
     /**
-     * @param $name
-     * @param $scoringRules
+     * @param string        $name
+     * @param ScoringRule[] $scoringRules
      *
      * @return Scoring
      * @throws ScoreValidationException
      */
-    private function createScoring($name, $scoringRules): Scoring
+    private function createScoring(string $name, array $scoringRules): Scoring
     {
         $scoring = new Scoring($name, $scoringRules);
         $violations = $this->validator->validate($scoring);

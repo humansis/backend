@@ -3,6 +3,7 @@
 namespace BeneficiaryBundle\Model;
 
 use BeneficiaryBundle\Exception\CsvParserException;
+use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRule;
 
 abstract class AbstractCsvParser
 {

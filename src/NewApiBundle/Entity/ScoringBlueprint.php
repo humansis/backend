@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\CountryDependent;
 use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\CreatedBy;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Utils\Objects\PropertySetter;
 
 /**
@@ -17,19 +18,11 @@ use NewApiBundle\Utils\Objects\PropertySetter;
 class ScoringBlueprint
 {
 
+    use StandardizedPrimaryKey;
     use CreatedAt;
     use CreatedBy;
     use CountryDependent;
     use PropertySetter;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
 
 
     /**
@@ -47,7 +40,7 @@ class ScoringBlueprint
     private $archived = false;
 
     /**
-     * @var string
+     * @var string|resource
      *
      * @ORM\Column(name="content", type="blob", nullable=false)
      */
@@ -112,8 +105,8 @@ class ScoringBlueprint
     /**
      * @return resource
      */
-    public function getStream() {
-
+    public function getStream()
+    {
         $cache = fopen('php://memory', 'r+');
         stream_copy_to_stream($this->getContent(), $cache);
         rewind($cache);
@@ -123,13 +116,11 @@ class ScoringBlueprint
 
     /**
      * @param resource $content
-     *
      * @return ScoringBlueprint
      */
     public function setContent($content): ScoringBlueprint
     {
         $this->content = $content;
-
         return $this;
     }
 

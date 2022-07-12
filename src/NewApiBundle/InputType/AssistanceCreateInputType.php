@@ -90,7 +90,7 @@ class AssistanceCreateInputType implements InputTypeInterface
      * @var int
      * @Assert\Type("integer")
      */
-    private $scoringBlueprint;
+    private $scoringBlueprintId;
 
     /**
      * @Assert\Type("array")
@@ -396,19 +396,19 @@ class AssistanceCreateInputType implements InputTypeInterface
     /**
      * @return int|null
      */
-    public function getScoringBlueprint(): ?int
+    public function getScoringBlueprintId(): ?int
     {
-        return $this->scoringBlueprint;
+        return $this->scoringBlueprintId;
     }
 
     /**
-     * @param int|null $scoringBlueprint
+     * @param int|null $scoringBlueprintId
      *
      * @return AssistanceCreateInputType
      */
-    public function setScoringBlueprint(?int $scoringBlueprint): AssistanceCreateInputType
+    public function setScoringBlueprintId(?int $scoringBlueprintId): AssistanceCreateInputType
     {
-        $this->scoringBlueprint = $scoringBlueprint;
+        $this->scoringBlueprintId = $scoringBlueprintId;
 
         return $this;
     }

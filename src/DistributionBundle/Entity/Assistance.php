@@ -179,7 +179,7 @@ class Assistance implements ExportableInterface
     private $subSector;
 
     /**
-     * @var ScoringBlueprint
+     * @var ScoringBlueprint|null
      * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ScoringBlueprint")
      *
      * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
@@ -760,7 +760,7 @@ class Assistance implements ExportableInterface
     }
 
     /**
-     * @return ScoringBlueprint
+     * @return ScoringBlueprint|null
      */
     public function getScoringBlueprint(): ?ScoringBlueprint
     {
@@ -768,11 +768,11 @@ class Assistance implements ExportableInterface
     }
 
     /**
-     * @param ScoringBlueprint $scoringBlueprint
+     * @param ScoringBlueprint|null $scoringBlueprint
      *
      * @return Assistance
      */
-    public function setScoringBlueprint(ScoringBlueprint $scoringBlueprint): Assistance
+    public function setScoringBlueprint(?ScoringBlueprint $scoringBlueprint): Assistance
     {
         $this->scoringBlueprint = $scoringBlueprint;
 

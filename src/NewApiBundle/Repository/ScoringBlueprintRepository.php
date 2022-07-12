@@ -12,7 +12,14 @@ use NewApiBundle\Request\Pagination;
 class ScoringBlueprintRepository extends EntityRepository
 {
 
-    public function findByParams(?string $countryIso3,
+    /**
+     * @param string|null                          $countryIso3
+     * @param Pagination|null                      $pagination
+     * @param ScoringBlueprintFilterInputType|null $filter
+     *
+     * @return Paginator
+     */
+    public function findByParams(?string $countryIso3 = null,
                                  ?Pagination $pagination = null,
                                  ?ScoringBlueprintFilterInputType $filter = null): Paginator
     {
@@ -40,12 +47,12 @@ class ScoringBlueprintRepository extends EntityRepository
     }
 
     /**
-     * @param $id
-     * @param $iso3
+     * @param int $id
+     * @param string $iso3
      *
      * @return ScoringBlueprint|object|null
      */
-    public function findActive($id, $iso3)
+    public function findActive(int $id, string $iso3)
     {
         return $this->findOneBy(['id' => $id, 'archived' => false, 'countryIso3' => $iso3]);
     }

@@ -150,10 +150,10 @@ class AssistanceFactory
         }
         $assistanceRoot->setProject($project);
 
-        if (!is_null($inputType->getScoringBlueprint())) {
-            $scoringBlueprint = $this->scoringBlueprintRepository->findActive($inputType->getScoringBlueprint(), $location->getCountryISO3());
+        if (!is_null($inputType->getScoringBlueprintId())) {
+            $scoringBlueprint = $this->scoringBlueprintRepository->findActive($inputType->getScoringBlueprintId(), $location->getCountryISO3());
             if (!$scoringBlueprint) {
-                throw new EntityNotFoundException('Scoring blueprint #'.$inputType->getScoringBlueprint().' does not exists.');
+                throw new EntityNotFoundException('Scoring blueprint #'.$inputType->getScoringBlueprintId().' does not exists.');
             }
             $assistanceRoot->setScoringBlueprint($scoringBlueprint);
         }
@@ -197,7 +197,7 @@ class AssistanceFactory
                     $assistanceRoot->getSubSector(),
                     $inputType->getThreshold(),
                     false,
-                    $inputType->getScoringBlueprint()
+                    $inputType->getScoringBlueprintId()
                 );
                 foreach ($beneficiaryIds['finalArray'] as $beneficiaryId => $vulnerabilityScore) {
                     $individualOrHHH = $this->beneficiaryRepository->find($beneficiaryId);

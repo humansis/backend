@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace NewApiBundle\Services;
 
@@ -19,8 +20,6 @@ class ScoringBlueprintService
     /** @var EntityManagerInterface $em */
     private $em;
 
-    /** @var ScoringBlueprintRepository $scoringBlueprintRepository */
-    private $scoringBlueprintRepository;
 
     /** @var UserService */
     private $userService;
@@ -29,16 +28,16 @@ class ScoringBlueprintService
     private $scoringFactory;
 
     /**
-     * @param ScoringBlueprintRepository $scoringBlueprintRepository
+     * @param EntityManagerInterface $em
+     * @param UserService            $userService
+     * @param ScoringFactory         $scoringFactory
      */
     public function __construct(
         EntityManagerInterface  $em,
-        ScoringBlueprintRepository $scoringBlueprintRepository,
         UserService $userService,
         ScoringFactory $scoringFactory
     )
     {
-        $this->scoringBlueprintRepository = $scoringBlueprintRepository;
         $this->userService = $userService;
         $this->em = $em;
         $this->scoringFactory = $scoringFactory;
@@ -46,13 +45,13 @@ class ScoringBlueprintService
 
     /**
      * @param ScoringInputType $scoringInput
-     * @param                  $iso3
+     * @param string           $iso3
      *
      * @return ScoringBlueprint
      * @throws CsvParserException
      * @throws \NewApiBundle\Component\Assistance\Scoring\Exception\ScoreValidationException
      */
-    public function create(ScoringInputType $scoringInput, $iso3): ScoringBlueprint
+    public function create(ScoringInputType $scoringInput,string $iso3): ScoringBlueprint
     {
             $this->scoringFactory->validateScoring($scoringInput->getName(), $scoringInput->getContent());
             $scoringBlueprint = new ScoringBlueprint();
@@ -69,14 +68,21 @@ class ScoringBlueprintService
 
     }
 
-    public function patch(ScoringPatchInputType $scoringInput, ScoringBlueprint $blueprint)
+    /**
+     * @param ScoringPatchInputType $scoringInput
+     * @param ScoringBlueprint      $blueprint
+     */
+    public function patch(ScoringPatchInputType $scoringInput, ScoringBlueprint $blueprint): void
     {
         $blueprint->setValues($scoringInput->getFilledValues());
         $this->em->persist($blueprint);
         $this->em->flush();
     }
 
-    public function archive(ScoringBlueprint $scoring)
+    /**
+     * @param ScoringBlueprint $scoring
+     */
+    public function archive(ScoringBlueprint $scoring): void
     {
         if ($scoring->isArchived()) {
             throw new BadRequestHttpException("Scoring '{$scoring->getName()}' is already archived.");
