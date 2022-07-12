@@ -6,22 +6,14 @@ namespace BeneficiaryBundle\Utils;
 use BeneficiaryBundle\Entity\Address;
 use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Entity\Phone;
-use BeneficiaryBundle\Form\InstitutionConstraints;
 use CommonBundle\Entity\Location;
 use CommonBundle\Utils\LocationService;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\InputType\InstitutionCreateInputType;
 use NewApiBundle\InputType\InstitutionUpdateInputType;
 use ProjectBundle\Entity\Project;
-use RA\RequestValidatorBundle\RequestValidator\ValidationException;
-use Symfony\Component\Serializer\SerializerInterface as Serializer;
-use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use CommonBundle\InputType as GlobalInputType;
 use BeneficiaryBundle\InputType;
 
@@ -34,51 +26,20 @@ class InstitutionService
     /** @var EntityManagerInterface $em */
     private $em;
 
-    /** @var Serializer $serializer */
-    private $serializer;
-
-    /** @var BeneficiaryService $beneficiaryService */
-    private $beneficiaryService;
-
-    /** @var RequestValidator $requestValidator */
-    private $requestValidator;
-
     /** @var LocationService $locationService */
     private $locationService;
-
-    /** @var ValidatorInterface $validator */
-    private $validator;
-
-    /** @var ContainerInterface $container */
-    private $container;
-
 
     /**
      * InstitutionService constructor.
      * @param EntityManagerInterface $entityManager
-     * @param Serializer $serializer
-     * @param BeneficiaryService $beneficiaryService
-     * @param RequestValidator $requestValidator
      * @param LocationService $locationService
-     * @param ValidatorInterface $validator
-     * @param ContainerInterface $container
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        Serializer $serializer,
-        BeneficiaryService $beneficiaryService,
-        RequestValidator $requestValidator,
-        LocationService $locationService,
-        ValidatorInterface $validator,
-        ContainerInterface $container
+        LocationService $locationService
     ) {
         $this->em = $entityManager;
-        $this->serializer = $serializer;
-        $this->beneficiaryService = $beneficiaryService;
-        $this->requestValidator = $requestValidator;
         $this->locationService = $locationService;
-        $this->validator = $validator;
-        $this->container= $container;
     }
 
     public function create(InstitutionCreateInputType $inputType): Institution
