@@ -7,11 +7,6 @@ services:
         autoconfigure: true
         public: false
 
-    BeneficiaryBundle\Controller\:
-        resource: '../../Controller'
-        public: true
-        tags: [ 'app.controller' ]
-
 #######################################################################################
 ##                                       CRUD                                        ##
 #######################################################################################
@@ -189,15 +184,6 @@ services:
 ##                                      IMPORT                                       ##
 #######################################################################################
 
-    beneficiary.api_import_service:
-        class: BeneficiaryBundle\Utils\APIImportService
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - "@service_container"
-        public: true
-        autowire: true
-
-
     beneficiary.khm_api_provider_idpoor:
         class: BeneficiaryBundle\Utils\ImportProvider\KHM\KHMIDPoorAPIProvider
         public: true
@@ -220,25 +206,10 @@ services:
         alias: BeneficiaryBundle\Utils\HouseholdExportCSVService
         public: true
 
-    beneficiary.household_csv_service:
-        class: BeneficiaryBundle\Utils\HouseholdCSVService
-        arguments:
-            - "@doctrine.orm.entity_manager"
-            - "@beneficiary.household_service"
-            - "@beneficiary.beneficiary_service"
-            - "@beneficiary.csv_to_array_mapper"
-            - "@service_container"
-        public: true
-
     beneficiary.csv_to_array_mapper:
         class: BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper
         arguments:
             - "@doctrine.orm.entity_manager"
-        public: true
-
-    beneficiary.syria_file_to_template_mapper:
-        class: BeneficiaryBundle\Utils\Mapper\SyriaFileToTemplateMapper
-        autowire: true
         public: true
 
     household.activity_listerer:
