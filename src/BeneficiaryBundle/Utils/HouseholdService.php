@@ -15,7 +15,6 @@ use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Person;
 use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\Profile;
-use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use CommonBundle\Entity\Location;
@@ -26,7 +25,6 @@ use Doctrine\ORM\EntityNotFoundException;
 use Exception;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
-use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\Beneficiary\Address\CampAddressInputType;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
@@ -38,12 +36,9 @@ use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\InputType\Helper\EnumsBuilder;
 use NewApiBundle\InputType\HouseholdCreateInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
-use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Class HouseholdService
@@ -659,208 +654,6 @@ class HouseholdService
         $this->em->flush();
 
         return $household;
-    }
-
-    public function removeMany(array $householdIds)
-    {
-        foreach ($householdIds as $householdId) {
-            $household = $this->em->getRepository(Household::class)->find($householdId);
-            $household->setArchived(true);
-            $this->em->persist($household);
-        }
-        $this->em->flush();
-        return "Households have been archived";
-    }
-
-    /**
-     * @param array $householdsArray
-     * @return array
-     */
-    public function getAllImported(array $householdsArray)
-    {
-        $householdsId = $householdsArray['households'];
-
-        $households = array();
-
-        foreach ($householdsId as $householdId) {
-            $household = $this->em->getRepository(Household::class)->find($householdId);
-
-            if ($household instanceof Household) {
-                array_push($households, $household);
-            }
-        }
-
-        return $households;
-    }
-
-    private function fallbackMap(HouseholdUpdateInputType $inputType)
-    {
-        $countrySpecificAnswers = [];
-        foreach ($inputType->getCountrySpecificAnswers() as $countrySpecificAnswer) {
-            $countrySpecificAnswers[] = [
-                'country_specific' => ['id' => $countrySpecificAnswer->getCountrySpecificId()],
-                'answer' => $countrySpecificAnswer->getAnswer(),
-            ];
-        }
-
-        $data = [
-            '__country' => $inputType->getIso3(),
-            'notes' => $inputType->getNotes(),
-            'livelihood' => $inputType->getLivelihood(),
-            'longitude' => $inputType->getLongitude(),
-            'latitude' => $inputType->getLatitude(),
-            'income' => $inputType->getIncome(),
-            'coping_strategies_index' => $inputType->getCopingStrategiesIndex(),
-            'food_consumption_score' => $inputType->getFoodConsumptionScore(),
-            'assets' => $inputType->getAssets(),
-            'shelter_status' => $inputType->getShelterStatus(),
-            'debt_level' => $inputType->getDebtLevel(),
-            'support_received_types' => $inputType->getSupportReceivedTypes(),
-            'support_date_received' => $inputType->getSupportDateReceived() ? $inputType->getSupportDateReceived()->format('d-m-Y') : null,
-            'support_organization_name' => $inputType->getSupportOrganizationName(),
-            'income_spent_on_food' => $inputType->getIncomeSpentOnFood(),
-            'household_income' => $inputType->getHouseIncome(),
-            'enumerator_name' => $inputType->getEnumeratorName(),
-            'country_specific_answers' => $countrySpecificAnswers,
-        ];
-
-        if ($inputType->getResidenceAddress()) {
-            $location = $this->em->getRepository(Location::class)->find($inputType->getResidenceAddress()->getLocationId());
-            if (!$location) {
-                throw new EntityNotFoundException(sprintf('Location #%s does not exists', $inputType->getResidenceAddress()->getLocationId()));
-            }
-
-            $data['household_locations'][] = [
-                'location_group' => HouseholdLocation::LOCATION_GROUP_CURRENT,
-                'type' => HouseholdLocation::LOCATION_TYPE_RESIDENCE,
-                'address' => [
-                    'location' => [
-                        'adm1' => $location->getAdm1Id(),
-                        'adm2' => $location->getAdm2Id(),
-                        'adm3' => $location->getAdm3Id(),
-                        'adm4' => $location->getAdm4Id(),
-                    ],
-                    'street' => $inputType->getResidenceAddress()->getStreet(),
-                    'number' => $inputType->getResidenceAddress()->getNumber(),
-                    'postcode' => $inputType->getResidenceAddress()->getPostcode(),
-                ],
-            ];
-        }
-
-        if ($inputType->getTemporarySettlementAddress()) {
-            $location = $this->em->getRepository(Location::class)->find($inputType->getTemporarySettlementAddress()->getLocationId());
-            if (!$location) {
-                throw new EntityNotFoundException(sprintf('Location #%s does not exists', $inputType->getTemporarySettlementAddress()->getLocationId()));
-            }
-
-            $data['household_locations'][] = [
-                'location_group' => HouseholdLocation::LOCATION_GROUP_CURRENT,
-                'type' => HouseholdLocation::LOCATION_TYPE_SETTLEMENT,
-                'address' => [
-                    'location' => [
-                        'adm1' => $location->getAdm1Id(),
-                        'adm2' => $location->getAdm2Id(),
-                        'adm3' => $location->getAdm3Id(),
-                        'adm4' => $location->getAdm4Id(),
-                    ],
-                    'street' => $inputType->getTemporarySettlementAddress()->getStreet(),
-                    'number' => $inputType->getTemporarySettlementAddress()->getNumber(),
-                    'postcode' => $inputType->getTemporarySettlementAddress()->getPostcode(),
-                ],
-            ];
-        }
-
-        if ($inputType->getCampAddress()) {
-            $campName = $location = null;
-            if ($inputType->getCampAddress()->getCampId()) {
-                /** @var Camp $camp */
-                $camp = $this->em->getRepository(Camp::class)->find($inputType->getCampAddress()->getCampId());
-                $campName = $camp->getName();
-                $location = $camp->getLocation();
-            } else {
-                $campName = $inputType->getCampAddress()->getCamp()->getName();
-                $location = $this->em->getRepository(Location::class)->find($inputType->getCampAddress()->getCamp()->getLocationId());
-                if (!$location) {
-                    throw new EntityNotFoundException(sprintf('Location #%s does not exists', $inputType->getCampAddress()->getCamp()->getLocationId()));
-                }
-            }
-
-
-            $data['household_locations'][] = [
-                'location_group' => HouseholdLocation::LOCATION_GROUP_CURRENT,
-                'type' => HouseholdLocation::LOCATION_TYPE_CAMP,
-                'camp_address' => [
-                    'tent_number' => $inputType->getCampAddress()->getTentNumber(),
-                    'camp' => [
-                        'location' => [
-                            'adm1' => $location->getAdm1Id(),
-                            'adm2' => $location->getAdm2Id(),
-                            'adm3' => $location->getAdm3Id(),
-                            'adm4' => $location->getAdm4Id(),
-                        ],
-                        'name' => $campName,
-                    ],
-                ],
-            ];
-        }
-
-        foreach ($inputType->getBeneficiaries() as $bnf) {
-            $vulnerabilityCriteria = [];
-            foreach ($bnf->getVulnerabilityCriteria() as $name) {
-                $criterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy(['fieldString' => $name]);
-                $vulnerabilityCriteria[] = ['id' => $criterion->getId()];
-            }
-
-            $phones = [];
-            foreach ($bnf->getPhones() as $phone) {
-                $phones[] = [
-                    'type' => $phone->getType(),
-                    'prefix' => $phone->getPrefix(),
-                    'number' => $phone->getNumber(),
-                    'proxy' => $phone->getProxy(),
-                ];
-            }
-
-            $nationalIds = [];
-            foreach ($bnf->getNationalIdCards() as $nationalIdCard) {
-                $nationalIds[] = [
-                    'id_type' => $nationalIdCard->getType(),
-                    'id_number' => $nationalIdCard->getNumber(),
-                ];
-            }
-
-            $data['beneficiaries'][] = [
-                'gender' => $bnf->getGender() ? PersonGender::valueToAPI($bnf->getGender()) : null,
-                'date_of_birth' => $bnf->getDateOfBirth()->format('d-m-Y'),
-                'en_family_name' => $bnf->getEnFamilyName(),
-                'en_given_name' => $bnf->getEnGivenName(),
-                'en_parents_name' => $bnf->getEnParentsName(),
-                'local_family_name' => $bnf->getLocalFamilyName(),
-                'local_given_name' => $bnf->getLocalGivenName(),
-                'local_parents_name' => $bnf->getLocalParentsName(),
-                'status' => $bnf->isHead() ? 1 : 0,
-                'residency_status' => $bnf->getResidencyStatus(),
-                'vulnerability_criteria' => $vulnerabilityCriteria,
-                'phones' => $phones,
-                'national_ids' => $nationalIds,
-                'referral_type' => $bnf->getReferralType(),
-                'referral_comment' => $bnf->getReferralComment(),
-                'profile' => ['photo' => ''],
-            ];
-        }
-
-        $data['proxy'] = [
-            'localFamilyName' => $inputType->getProxyLocalFamilyName(),
-            'localGivenName' => $inputType->getProxyLocalGivenName(),
-            'localParentsName' => $inputType->getProxyLocalParentsName(),
-            'enFamilyName' => $inputType->getProxyEnFamilyName(),
-            'enGivenName' => $inputType->getProxyEnGivenName(),
-            'enParentsName' => $inputType->getProxyEnParentsName(),
-            'nationalIdCard' => $inputType->getProxyNationalIdCard(),
-            'phone' => $inputType->getProxyPhone(),
-        ];
-
-        return $data;
     }
 
     /**
