@@ -47,12 +47,12 @@ class ScoringBlueprintRepository extends EntityRepository
     }
 
     /**
-     * @param int $id
+     * @param int|null $id
      * @param string $iso3
      *
      * @return ScoringBlueprint|object|null
      */
-    public function findActive(int $id, string $iso3)
+    public function findActive(?int $id, string $iso3)
     {
         return $this->findOneBy(['id' => $id, 'archived' => false, 'countryIso3' => $iso3]);
     }
