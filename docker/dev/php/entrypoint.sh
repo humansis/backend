@@ -27,8 +27,8 @@ fi
 # Generate JWT private/public keys
 bin/console lexik:jwt:generate-keypair --skip-if-exists
 
-supervisorctl reread
-supervisorctl update
-supervisorctl start messenger-consume:*
+# supervisorctl reread
+# supervisorctl update
+# supervisorctl start messenger-consume:*
 
 php-fpm
