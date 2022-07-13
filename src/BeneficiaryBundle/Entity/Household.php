@@ -32,7 +32,6 @@ class Household extends AbstractBeneficiary
      * @var string|null
      *
      * @ORM\Column(name="livelihood", type="enum_livelihood", nullable=true)
-     * @SymfonyGroups({"FullHousehold", "Activity"})
      */
     private $livelihood;
 
@@ -40,7 +39,6 @@ class Household extends AbstractBeneficiary
      * @var int[]
      *
      * @ORM\Column(name="assets", type="array", nullable=true)
-     * @SymfonyGroups({"FullHousehold", "Activity"})
      */
     private $assets;
 
@@ -49,7 +47,6 @@ class Household extends AbstractBeneficiary
      * @var int
      *
      * @ORM\Column(name="shelter_status", type="integer", nullable=true)
-     * @SymfonyGroups({"FullHousehold", "Activity"})
      */
     private $shelterStatus;
 
@@ -57,7 +54,6 @@ class Household extends AbstractBeneficiary
      * @var string
      *
      * @ORM\Column(name="notes", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullHousehold", "Activity"})
      */
     private $notes;
 
@@ -65,7 +61,6 @@ class Household extends AbstractBeneficiary
      * @var string
      *
      * @ORM\Column(name="latitude", type="string", length=45, nullable=true)
-     * @SymfonyGroups({"FullHousehold", "Activity"})
      */
     private $latitude;
 
@@ -73,7 +68,6 @@ class Household extends AbstractBeneficiary
      * @var string
      *
      * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
-     * @SymfonyGroups({"FullHousehold", "Activity"})
      */
     private $longitude;
 
@@ -81,7 +75,6 @@ class Household extends AbstractBeneficiary
      * @var CountrySpecificAnswer
      *
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\CountrySpecificAnswer", mappedBy="household", cascade={"persist", "remove"})
-     * @SymfonyGroups({"FullHousehold"})
      */
     private $countrySpecificAnswers;
 
@@ -89,7 +82,6 @@ class Household extends AbstractBeneficiary
      * @var Collection|Beneficiary[]
      *
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Beneficiary", mappedBy="household", cascade={"persist"})
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers"})
      */
     private $beneficiaries;
 
@@ -97,7 +89,6 @@ class Household extends AbstractBeneficiary
      * @var int|null
      *
      * @ORM\Column(name="income", type="integer", nullable=true)
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $income;
 
@@ -105,7 +96,6 @@ class Household extends AbstractBeneficiary
      * @var int
      *
      * @ORM\Column(name="foodConsumptionScore", type="integer", nullable=true)
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $foodConsumptionScore;
 
@@ -113,13 +103,11 @@ class Household extends AbstractBeneficiary
      * @var int
      *
      * @ORM\Column(name="copingStrategiesIndex", type="integer", nullable=true)
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $copingStrategiesIndex;
 
     /**
      * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\HouseholdLocation", mappedBy="household", cascade={"persist", "remove"})
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
      */
     private $householdLocations;
 
@@ -127,7 +115,6 @@ class Household extends AbstractBeneficiary
      * @var int
      *
      * @ORM\Column(name="debt_level", type="integer", nullable=true)
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $debtLevel;
 
@@ -135,7 +122,6 @@ class Household extends AbstractBeneficiary
      * @var int[]
      *
      * @ORM\Column(name="support_received_types", type="array", nullable=true)
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $supportReceivedTypes;
 
@@ -143,7 +129,6 @@ class Household extends AbstractBeneficiary
      * @var string|null
      *
      * @ORM\Column(name="support_organization_name", type="string", nullable=true)
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
      */
     private $supportOrganizationName;
 
@@ -151,7 +136,6 @@ class Household extends AbstractBeneficiary
      * @var DateTimeInterface
      *
      * @ORM\Column(name="support_date_received", type="date", nullable=true)
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "Activity"})
      */
     private $supportDateReceived;
 
@@ -159,7 +143,6 @@ class Household extends AbstractBeneficiary
      * @var int|null
      *
      * @ORM\Column(name="income_spent_on_food", type="integer", nullable=true)
-     * @SymfonyGroups({"FullHousehold"})
      */
     private $incomeSpentOnFood;
 
@@ -167,7 +150,6 @@ class Household extends AbstractBeneficiary
      * @var int|null
      *
      * @ORM\Column(name="household_income", type="integer", nullable=true)
-     * @SymfonyGroups({"FullHousehold"})
      */
     private $householdIncome;
 
@@ -175,7 +157,6 @@ class Household extends AbstractBeneficiary
      * @var string|null
      *
      * @ORM\Column(name="enumerator_name", type="string", nullable=true)
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
      */
     private $enumeratorName = null;
 
