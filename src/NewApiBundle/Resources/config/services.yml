@@ -442,11 +442,12 @@ services:
     NewApiBundle\Component\Smartcard\Deposit\DepositFactory:
         public: true
         arguments:
-            - '@NewApiBundle\Component\Smartcard\SmartcardDepositService'
+            - '@VoucherBundle\Repository\SmartcardDepositRepository'
             - '@smartcard_service'
             - '@NewApiBundle\Repository\Assistance\ReliefPackageRepository'
             - '@cache.app'
             - '@NewApiBundle\Component\ReliefPackage\ReliefPackageService'
+            - '@logger'
 
     NewApiBundle\Export\SmartcardPurchasedItemSpreadsheet:
         arguments:

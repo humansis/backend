@@ -73,16 +73,16 @@ class SmartcardDepositService
     }
 
     /**
-     * @param string        $serialNumber
+     * @param string        $smartcardSerialNumber
      * @param int           $timestamp
      * @param               $value
      * @param ReliefPackage $reliefPackage
      *
      * @return string
      */
-    public function generateDepositHash(string $serialNumber, int $timestamp, $value, ReliefPackage $reliefPackage): string
+    public static function generateDepositHash(string $smartcardSerialNumber, int $timestamp, $value, ReliefPackage $reliefPackage): string
     {
-        return md5($serialNumber.
+        return md5($smartcardSerialNumber.
             '-'.
             $timestamp.
             '-'.
@@ -92,22 +92,6 @@ class SmartcardDepositService
             '-'.
             $reliefPackage->getId()
         );
-    }
-
-    /**
-     * @param string $hash
-     *
-     * @return void
-     * @throws DoubledDepositException
-     */
-    public function checkDepositDuplicity(string $hash): void
-    {
-        $deposit = $this->smartcardDepositRepository->findByHash($hash);
-
-        if ($deposit) {
-            $this->logger->info("Creation of deposit with hash {$deposit->getHash()} was omitted. It's already set in Deposit #{$deposit->getId()}");
-            throw new DoubledDepositException($deposit);
-        }
     }
 
     /**
