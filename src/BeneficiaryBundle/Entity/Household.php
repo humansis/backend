@@ -16,7 +16,6 @@ use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use ProjectBundle\DBAL\LivelihoodEnum;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Household

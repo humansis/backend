@@ -14,7 +14,6 @@ use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use NewApiBundle\Enum\PersonGender;
 use ProjectBundle\Enum\Livelihood;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
 use VoucherBundle\Entity\Smartcard;
 
