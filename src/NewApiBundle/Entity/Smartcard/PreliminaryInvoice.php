@@ -78,9 +78,9 @@ class PreliminaryInvoice
     }
 
     /**
-     * @return float
+     * @return string
      */
-    public function getValue(): float
+    public function getValue(): string
     {
         return $this->value;
     }
