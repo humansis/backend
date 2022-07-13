@@ -7,7 +7,6 @@ use NewApiBundle\DBAL\NationalIdTypeEnum;
 use NewApiBundle\Entity\Helper\EnumTrait;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\NationalIdType;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * NationalId
