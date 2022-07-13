@@ -59,7 +59,7 @@ class Adm1
     /**
      * @var Location
      *
-     * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Location", inversedBy="adm1", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="CommonBundle\Entity\Location", cascade={"persist"})
      */
     private $location;
 

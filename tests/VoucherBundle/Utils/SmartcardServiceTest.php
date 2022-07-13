@@ -3,8 +3,7 @@
 namespace VoucherBundle\Tests\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use CommonBundle\Entity\Adm1;
-use CommonBundle\Entity\Adm2;
+use CommonBundle\Entity\Location;
 use DateTime;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
@@ -584,8 +583,7 @@ class SmartcardServiceTest extends KernelTestCase
     private function createTempVendor(EntityManagerInterface $em): void
     {
         $id = substr(md5(uniqid()), 0, 5)."_";
-        $adm1 = $this->em->getRepository(Adm1::class)->findOneBy(['countryISO3' => 'SYR'], ['id' => 'asc']);
-        $adm2 = $this->em->getRepository(Adm2::class)->findOneBy(['adm1' => $adm1], ['id' => 'asc']);
+        $adm2 = $this->em->getRepository(Location::class)->findOneBy(['countryISO3' => 'SYR', 'lvl' => 2], ['id' => 'asc']);
 
         $user = new User();
         $user->injectObjectManager($em);
@@ -607,7 +605,7 @@ class SmartcardServiceTest extends KernelTestCase
             ->setAddressPostcode('12345')
             ->setArchived(false)
             ->setUser($user)
-            ->setLocation($adm2->getLocation());
+            ->setLocation($adm2);
         $this->vendor->setName("Test Vendor for ".__CLASS__);
     }
 }
