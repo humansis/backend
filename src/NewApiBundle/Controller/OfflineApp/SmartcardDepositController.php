@@ -97,12 +97,12 @@ class SmartcardDepositController extends AbstractOfflineAppController
     public function depositLegacy(
         string                          $serialNumber,
         Request                         $request,
-        DepositInputType                $depositInputType,
         DepositFactory                  $depositFactory,
         ReliefPackageRepository         $reliefPackageRepository,
         AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository
     ): Response {
 
+        $depositInputType = new DepositInputType();
         $assistanceId = $request->request->getInt('assistanceId');
         $beneficiaryId = $request->request->getInt('beneficiaryId');
 
@@ -128,6 +128,9 @@ class SmartcardDepositController extends AbstractOfflineAppController
                 throw new NotFoundHttpException($message);
             }
 
+            $depositInputType->setCreatedAt($request->request->get('createdAt'));
+            $depositInputType->setValue($request->request->get('value'));
+            $depositInputType->setBalance($request->request->get('balanceBefore'));
             $depositInputType->setReliefPackageId($reliefPackage->getId());
             $deposit = $depositFactory->create($serialNumber, $depositInputType, $this->getUser());
         } catch (DoubledDepositException $exception) {
