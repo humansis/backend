@@ -105,10 +105,6 @@ class SmartcardDeposit
      */
     private $hash;
 
-    protected function __construct()
-    {
-    }
-
     public static function create(
         Smartcard         $smartcard,
         User              $distributedBy,
@@ -116,6 +112,7 @@ class SmartcardDeposit
                           $value,
                           $balance,
         DateTimeInterface $distributedAt,
+        string            $hash,
         bool              $suspicious = false,
         ?array            $message = null
     ): SmartcardDeposit {
@@ -127,6 +124,7 @@ class SmartcardDeposit
         $entity->balance = $balance;
         $entity->smartcard = $smartcard;
         $entity->suspicious = $suspicious;
+        $entity->hash = $hash;
         $entity->message = $message;
 
         $smartcard->addDeposit($entity);
@@ -232,6 +230,16 @@ class SmartcardDeposit
     public function setMessage(?array $message): void
     {
         $this->message = $message;
+    }
+
+    /**
+     * @param string $message
+     *
+     * @return void
+     */
+    public function addMessage(string $message): void
+    {
+        $this->message[] = $message;
     }
 
     /**

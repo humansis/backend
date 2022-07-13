@@ -2,25 +2,20 @@
 
 namespace NewApiBundle\Component\Smartcard\Deposit;
 
-use DateTimeInterface;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use NewApiBundle\Component\ReliefPackage\ReliefPackageService;
 use NewApiBundle\Component\Smartcard\Deposit\Exception\DoubledDepositException;
+use NewApiBundle\Component\Smartcard\SmartcardDepositService;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\InputType\Smartcard\DepositInputType;
 use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
-use NewApiBundle\Workflow\ReliefPackageTransitions;
 use Psr\Cache\InvalidArgumentException;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Cache\CacheInterface;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
-use VoucherBundle\Repository\SmartcardDepositRepository;
-use VoucherBundle\Repository\SmartcardRepository;
 use VoucherBundle\Utils\SmartcardService;
 
 class DepositFactory
@@ -29,11 +24,6 @@ class DepositFactory
      * @var SmartcardService
      */
     private $smartcardService;
-
-    /**
-     * @var Registry
-     */
-    private $workflowRegistry;
 
     /**
      * @var ReliefPackageRepository
@@ -46,21 +36,6 @@ class DepositFactory
     private $cache;
 
     /**
-     * @var SmartcardRepository
-     */
-    private $smartcardRepository;
-
-    /**
-     * @var SmartcardDepositRepository
-     */
-    private $smartcardDepositRepository;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * @var array
      */
     private $messages = [];
@@ -70,22 +45,28 @@ class DepositFactory
      */
     private $suspicious = false;
 
+    /**
+     * @var ReliefPackageService
+     */
+    private $reliefPackageService;
+
+    /**
+     * @var SmartcardDepositService
+     */
+    private $smartcardDepositService;
+
     public function __construct(
-        SmartcardDepositRepository $smartcardDepositRepository,
-        SmartcardService           $smartcardService,
-        SmartcardRepository        $smartcardRepository,
-        Registry                   $workflowRegistry,
-        ReliefPackageRepository    $reliefPackageRepository,
-        CacheInterface             $cache,
-        LoggerInterface            $logger
+        SmartcardDepositService $smartcardDepositService,
+        SmartcardService        $smartcardService,
+        ReliefPackageRepository $reliefPackageRepository,
+        CacheInterface          $cache,
+        ReliefPackageService    $reliefPackageService
     ) {
-        $this->smartcardDepositRepository = $smartcardDepositRepository;
         $this->smartcardService = $smartcardService;
-        $this->workflowRegistry = $workflowRegistry;
         $this->reliefPackageRepository = $reliefPackageRepository;
         $this->cache = $cache;
-        $this->smartcardRepository = $smartcardRepository;
-        $this->logger = $logger;
+        $this->reliefPackageService = $reliefPackageService;
+        $this->smartcardDepositService = $smartcardDepositService;
     }
 
     /**
@@ -102,43 +83,27 @@ class DepositFactory
      */
     public function create(string $smartcardSerialNumber, DepositInputType $depositInputType, User $user): SmartcardDeposit
     {
-        $reliefPackage = $this->getReliefPackage($depositInputType->getReliefPackageId());
-        $hash = $this->generateHash($smartcardSerialNumber, $depositInputType->getCreatedAt()->getTimestamp(),
+        $reliefPackage = $this->reliefPackageRepository->find($depositInputType->getReliefPackageId());
+        $hash = $this->smartcardDepositService->generateDepositHash($smartcardSerialNumber, $depositInputType->getCreatedAt()->getTimestamp(),
             $depositInputType->getValue(),
             $reliefPackage);
-        $smartcard = $this->getSmartcard($smartcardSerialNumber, $depositInputType->getCreatedAt(), $reliefPackage);
-        $deposit = $this->smartcardDepositRepository->findByHash($hash);
-
-        if ($deposit) {
-            $this->logger->info("Creation of deposit with hash {$deposit->getHash()} was omitted. It's already set in Deposit #{$deposit->getId()}");
-            throw new DoubledDepositException($deposit);
-        } else {
-            $reliefPackage->addAmountOfDistributed($depositInputType->getValue());
-            $reliefPackage->setDistributedBy($user);
-            $this->checkReliefPackageWorkflow($reliefPackage);
-        }
-
-        $deposit = $this->createNewDepositRoot($smartcard, $user, $reliefPackage, $depositInputType);
-
-        $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
-        if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
-            $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::DISTRIBUTE);
-        }
-
+        $this->smartcardDepositService->checkDepositDuplicity($hash);
+        $smartcard = $this->smartcardService->getActualSmartcard($smartcardSerialNumber, $reliefPackage->getAssistanceBeneficiary()->getBeneficiary(),
+            $depositInputType->getCreatedAt());
+        $deposit = $this->createNewDepositRoot($smartcard, $user, $reliefPackage, $depositInputType, $hash);
+        $this->reliefPackageService->addDeposit($reliefPackage, $deposit);
         $this->smartcardService->setMissingCurrency($smartcard, $reliefPackage);
-        $this->smartcardService->setMissingCurrencyToPurchases($smartcard);
-        $this->smartcardRepository->save($smartcard);
         $this->cache->delete(CacheTarget::assistanceId($reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId()));
 
         return $deposit;
     }
-
 
     /**
      * @param Smartcard        $smartcard
      * @param User             $user
      * @param ReliefPackage    $reliefPackage
      * @param DepositInputType $depositInputType
+     * @param string           $hash
      *
      * @return SmartcardDeposit
      */
@@ -146,7 +111,8 @@ class DepositFactory
         Smartcard        $smartcard,
         User             $user,
         ReliefPackage    $reliefPackage,
-        DepositInputType $depositInputType
+        DepositInputType $depositInputType,
+        string           $hash
     ): SmartcardDeposit {
         $deposit = SmartcardDeposit::create(
             $smartcard,
@@ -155,94 +121,18 @@ class DepositFactory
             (float) $depositInputType->getValue(),
             null !== $depositInputType->getBalance() ? (float) $depositInputType->getBalance() : null,
             $depositInputType->getCreatedAt(),
+            $hash,
             $this->suspicious,
             $this->messages
         );
+
         $smartcard->addDeposit($deposit);
+        if (!$smartcard->getBeneficiary()) {
+            $deposit->setSuspicious(true);
+            $deposit->addMessage('Smartcard does not have assigned beneficiary.');
+        }
 
         return $deposit;
     }
 
-    /**
-     * @param int $reliefPackageId
-     *
-     * @return ReliefPackage
-     */
-    private function getReliefPackage(int $reliefPackageId): ReliefPackage
-    {
-        $reliefPackage = $this->reliefPackageRepository->find($reliefPackageId);
-        if (null === $reliefPackage) {
-            throw new NotFoundHttpException("Relief package #$reliefPackageId does not exist.");
-        }
-
-        return $reliefPackage;
-    }
-
-    /**
-     * @param string            $serialNumber
-     * @param DateTimeInterface $createdAt
-     * @param ReliefPackage     $reliefPackage
-     *
-     * @return Smartcard
-     */
-    private function getSmartcard(string $serialNumber, DateTimeInterface $createdAt, ReliefPackage $reliefPackage): Smartcard
-    {
-        $smartcard = $this->smartcardService->getActualSmartcard($serialNumber, $reliefPackage->getAssistanceBeneficiary()->getBeneficiary(),
-            $createdAt);
-        if (!$smartcard->getBeneficiary()) {
-            $this->suspicious = true;
-            $this->addMessage('Smartcard does not have assigned beneficiary.');
-        }
-
-        return $smartcard;
-    }
-
-    /**
-     * @param ReliefPackage $reliefPackage
-     *
-     * @return void
-     */
-    private function checkReliefPackageWorkflow(ReliefPackage $reliefPackage): void
-    {
-        $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
-
-        if ($reliefPackage->getAmountDistributed() > $reliefPackage->getAmountToDistribute()) {
-            $this->suspicious = true;
-            $this->addMessage(sprintf('Relief package #%s amount of distributed (%s) is over to distribute (%s).', $reliefPackage->getId(),
-                $reliefPackage->getAmountDistributed(), $reliefPackage->getAmountToDistribute()));
-        }
-
-        if (!$reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
-            $this->suspicious = true;
-            $this->addMessage("Relief package #{$reliefPackage->getId()} is in invalid state ({$reliefPackage->getState()}).");
-        }
-    }
-
-    /**
-     * @param string $message
-     *
-     * @return void
-     */
-    private function addMessage(string $message): void
-    {
-        $this->messages[] = $message;
-    }
-
-    /**
-     * @param string        $serialNumber
-     * @param int           $timestamp
-     * @param               $value
-     * @param ReliefPackage $reliefPackage
-     *
-     * @return string
-     */
-    private function generateHash(string $serialNumber, int $timestamp, $value, ReliefPackage $reliefPackage): string
-    {
-        return md5($serialNumber.
-            $timestamp.
-            $value.
-            $reliefPackage->getUnit().
-            $reliefPackage->getId()
-        );
-    }
 }
