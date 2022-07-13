@@ -6,7 +6,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ProjectBundle\Entity\Project;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * @ORM\Entity()

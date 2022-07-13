@@ -11,7 +11,6 @@ use Exception;
 use NewApiBundle\DBAL\PersonGenderEnum;
 use NewApiBundle\Entity\Helper\EnumTrait;
 use NewApiBundle\Enum\PersonGender;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
