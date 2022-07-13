@@ -256,7 +256,7 @@ class SmartcardInvoiceLegacyExport
         self::setSmallBorder($worksheet,'B13:J13');
     }
 
-    private static function buildBody(Worksheet $worksheet, TranslatorInterface $translator, Invoice $batch, int $lineStart): int
+    private static function buildBody(Worksheet $worksheet, TranslatorInterface $translator, Invoice $invoice, int $lineStart): int
     {
         // ----------------------- Food items
         // structure
@@ -264,7 +264,7 @@ class SmartcardInvoiceLegacyExport
         $worksheet->mergeCells('H'.$lineStart.':I'.$lineStart);
         // data
         $currency = '';
-        foreach ($batch->getPurchases() as $purchase) {
+        foreach ($invoice->getPurchases() as $purchase) {
             $currency = $purchase->getSmartcard()->getCurrency();
             break;
         }
@@ -272,7 +272,7 @@ class SmartcardInvoiceLegacyExport
             $translator->trans('redemption_payment_items', [], 'invoice'),
             $translator->trans('redemption_payment_items_description', [], 'invoice')
         ));
-        $worksheet->setCellValue('H'.$lineStart, sprintf('%.2f', $batch->getValue()));
+        $worksheet->setCellValue('H'.$lineStart, sprintf('%.2f', $invoice->getValue()));
         $worksheet->setCellValue('J'.$lineStart, $currency);
         // style
         $worksheet->getRowDimension($lineStart)->setRowHeight(50);
@@ -306,7 +306,7 @@ class SmartcardInvoiceLegacyExport
         $worksheet->mergeCells('H'.$lineStart.':I'.$lineStart);
         // data
         $worksheet->setCellValue('B'.$lineStart, $translator->trans('total_to_pay', [], 'invoice'));
-        $worksheet->setCellValue('H'.$lineStart, sprintf('%.2f', $batch->getValue()));
+        $worksheet->setCellValue('H'.$lineStart, sprintf('%.2f', $invoice->getValue()));
         $worksheet->setCellValue('J'.$lineStart, $currency);
         // style
         $worksheet->getRowDimension($lineStart)->setRowHeight(22.52);

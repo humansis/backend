@@ -78,17 +78,17 @@ class PreliminaryInvoice
     }
 
     /**
-     * @return mixed
+     * @return float
      */
-    public function getValue()
+    public function getValue(): float
     {
         return $this->value;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getCurrency()
+    public function getCurrency(): string
     {
         return $this->currency;
     }
