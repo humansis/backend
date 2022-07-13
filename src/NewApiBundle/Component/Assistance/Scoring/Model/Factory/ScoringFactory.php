@@ -49,31 +49,13 @@ final class ScoringFactory
     }
 
     /**
-     * @param string   $name
-     * @param string   $csv
-     *
-     * @return bool
-     * @throws CsvParserException
-     * @throws ScoreValidationException
-     */
-    public function validateScoring(string $name,string $csv): bool
-    {
-        $stream = fopen('php://memory','r+');
-        fwrite($stream, $csv);
-        rewind($stream);
-        $scoringRules = $this->parser->parseStream($stream);
-        $this->createScoring($name, $scoringRules);
-        return true;
-    }
-
-    /**
      * @param string        $name
      * @param ScoringRule[] $scoringRules
      *
      * @return Scoring
      * @throws ScoreValidationException
      */
-    private function createScoring(string $name, array $scoringRules): Scoring
+    public function createScoring(string $name, array $scoringRules): Scoring
     {
         $scoring = new Scoring($name, $scoringRules);
         $violations = $this->validator->validate($scoring);

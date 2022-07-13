@@ -3,10 +3,13 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType\Assistance\Scoring;
 
+use BeneficiaryBundle\Exception\CsvParserException;
 use BeneficiaryBundle\Model\Vulnerability\Resolver as OldResolver;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use DistributionBundle\DTO\VulnerabilityScore;
+use NewApiBundle\Component\Assistance\Scoring\Exception\ScoreValidationException;
 use NewApiBundle\Component\Assistance\Scoring\Model\Factory\ScoringFactory;
+use NewApiBundle\Component\Assistance\Scoring\ScoringCsvParser;
 use NewApiBundle\Component\Assistance\Scoring\ScoringResolver;
 use NewApiBundle\InputType\VulnerabilityScoreInputType;
 use NewApiBundle\Repository\ScoringBlueprintRepository;
@@ -38,6 +41,11 @@ final class ScoringService
      */
     private $scoringBlueprintRepository;
 
+    /**
+     * @var ScoringCsvParser
+     */
+    private $parser;
+
     public function __construct(
         ScoringResolver $resolver,
         OldResolver $oldResolver,
@@ -51,6 +59,7 @@ final class ScoringService
         $this->scoringFactory = $scoringFactory;
         $this->beneficiaryRepository = $beneficiaryRepository;
         $this->scoringBlueprintRepository = $scoringBlueprintRepository;
+        $this->parser = new ScoringCsvParser();
     }
 
     /**
@@ -89,5 +98,23 @@ final class ScoringService
         }
         
         return $scores;
+    }
+
+    /**
+     * @param string   $name
+     * @param string   $csv
+     *
+     * @return bool
+     * @throws CsvParserException
+     * @throws ScoreValidationException
+     */
+    public function validateScoring(string $name,string $csv): bool
+    {
+        $stream = fopen('php://memory','r+');
+        fwrite($stream, $csv);
+        rewind($stream);
+        $scoringRules = $this->parser->parseStream($stream);
+        $this->scoringFactory->createScoring($name, $scoringRules);
+        return true;
     }
 }

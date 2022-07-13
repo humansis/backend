@@ -5,8 +5,10 @@ namespace NewApiBundle\Services;
 
 use BeneficiaryBundle\Exception\CsvParserException;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Component\Assistance\Scoring\Exception\ScoreValidationException;
 use NewApiBundle\Component\Assistance\Scoring\Model\Factory\ScoringFactory;
 use NewApiBundle\Entity\ScoringBlueprint;
+use NewApiBundle\InputType\Assistance\Scoring\ScoringService;
 use NewApiBundle\InputType\ScoringInputType;
 use NewApiBundle\InputType\ScoringPatchInputType;
 use NewApiBundle\Repository\ScoringBlueprintRepository;
@@ -24,23 +26,23 @@ class ScoringBlueprintService
     /** @var UserService */
     private $userService;
 
-    /** @var ScoringFactory */
-    private $scoringFactory;
+    /** @var ScoringService */
+    private $scoringService;
 
     /**
      * @param EntityManagerInterface $em
      * @param UserService            $userService
-     * @param ScoringFactory         $scoringFactory
+     * @param ScoringService         $scoringService
      */
     public function __construct(
         EntityManagerInterface  $em,
         UserService $userService,
-        ScoringFactory $scoringFactory
+        ScoringService $scoringService
     )
     {
         $this->userService = $userService;
         $this->em = $em;
-        $this->scoringFactory = $scoringFactory;
+        $this->scoringService = $scoringService;
     }
 
     /**
@@ -49,11 +51,11 @@ class ScoringBlueprintService
      *
      * @return ScoringBlueprint
      * @throws CsvParserException
-     * @throws \NewApiBundle\Component\Assistance\Scoring\Exception\ScoreValidationException
+     * @throws ScoreValidationException
      */
     public function create(ScoringInputType $scoringInput,string $iso3): ScoringBlueprint
     {
-            $this->scoringFactory->validateScoring($scoringInput->getName(), $scoringInput->getContent());
+            $this->scoringService->validateScoring($scoringInput->getName(), $scoringInput->getContent());
             $scoringBlueprint = new ScoringBlueprint();
             $scoringBlueprint->setArchived(false)
                 ->setName($scoringInput->getName())
