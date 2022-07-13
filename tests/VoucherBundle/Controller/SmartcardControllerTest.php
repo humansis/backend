@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\DataFixtures\VendorFixtures;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
+use NewApiBundle\Component\Smartcard\SmartcardDepositService;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\Smartcard\PreliminaryInvoice;
 use NewApiBundle\Enum\ModalityType;
@@ -22,6 +23,11 @@ use VoucherBundle\InputType\SmartcardInvoice;
 
 class SmartcardControllerTest extends BMSServiceTestCase
 {
+    /**
+     * @var SmartcardDepositService
+     */
+    private $smartcardDepositService;
+
     public function setUp()
     {
         parent::setUpFunctionnal();
@@ -32,6 +38,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
+        $this->smartcardDepositService = self::$container->get(SmartcardDepositService::class);
     }
 
     protected function tearDown()
@@ -135,7 +142,9 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         $this->em->persist($reliefPackage);
 
-        $deposit = SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 1000, null, new \DateTime('now'));
+        $date = new \DateTime('now');
+        $hash = $this->smartcardDepositService->generateDepositHash($smartcard->getSerialNumber(), $date->getTimestamp(), 1000, $reliefPackage);
+        $deposit = SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 1000, null, $date, $hash);
         $smartcard->addDeposit($deposit);
 
         $this->em->persist($smartcard);
@@ -160,7 +169,9 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         $reliefPackage = $this->createReliefPackage($assistanceBeneficiary);
 
-        $deposit = SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 600, null, new \DateTime('now'));
+        $date = new \DateTime('now');
+        $hash = $this->smartcardDepositService->generateDepositHash($smartcard->getSerialNumber(), $date->getTimestamp(), 600, $reliefPackage);
+        $deposit = SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 600, null, $date, $hash);
         $smartcard->addDeposit($deposit);
 
         $this->em->persist($smartcard);
@@ -203,7 +214,9 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         $reliefPackage = $this->createReliefPackage($assistanceBeneficiary);
 
-        $deposit = SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 600, null, new \DateTime('now'));
+        $date = new \DateTime('now');
+        $hash = $this->smartcardDepositService->generateDepositHash($smartcard->getSerialNumber(), $date->getTimestamp(), 600, $reliefPackage);
+        $deposit = SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 600, null, $date, $hash);
         $smartcard->addDeposit($deposit);
 
         $this->em->persist($smartcard);
@@ -248,7 +261,9 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
         $smartcard->setState(SmartcardStates::INACTIVE);
-        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 100, null, new \DateTime('now')));
+        $date = new \DateTime('now');
+        $hash = $this->smartcardDepositService->generateDepositHash($smartcard->getSerialNumber(), $date->getTimestamp(), 100, $reliefPackage);
+        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 100, null, $date, $hash));
 
         $this->em->persist($smartcard);
         $this->em->flush();
@@ -292,7 +307,9 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
         $smartcard->setState(SmartcardStates::INACTIVE);
-        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 100, null, new \DateTime('now')));
+        $date = new \DateTime('now');
+        $hash = $this->smartcardDepositService->generateDepositHash($smartcard->getSerialNumber(), $date->getTimestamp(), 100, $reliefPackage);
+        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 100, null, $date, $hash));
 
         $this->em->persist($smartcard);
         $this->em->flush();
@@ -816,7 +833,9 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $reliefPackage = $this->createReliefPackage($assistanceBeneficiary);
 
         $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
-        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 600, null, new \DateTime('now')));
+        $date = new \DateTime('now');
+        $hash = $this->smartcardDepositService->generateDepositHash($smartcard->getSerialNumber(), $date->getTimestamp(), 600, $reliefPackage);
+        $smartcard->addDeposit(SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 600, null, $date, $hash));
 
         $this->em->persist($smartcard);
         $this->em->flush();

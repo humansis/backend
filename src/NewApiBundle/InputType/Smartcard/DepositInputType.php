@@ -3,19 +3,28 @@
 namespace NewApiBundle\InputType\Smartcard;
 
 use DateTimeInterface;
+use Happyr\Validator\Constraint\EntityExist;
 use NewApiBundle\Request\InputTypeInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 final class DepositInputType implements InputTypeInterface
 {
 
-    /** @var int */
+    /**
+     * @var int
+     * @Assert\NotBlank
+     * @EntityExist(entity="NewApiBundle\Entity\Assistance\ReliefPackage")
+     */
     private $reliefPackageId;
 
     private $value = null;
 
     private $balance = null;
 
-    /** @var DateTimeInterface */
+    /**
+     * @var DateTimeInterface
+     * @Assert\DateTime
+     */
     private $createdAt;
 
     public static function create(int $reliefPackageId, $value, $balance, DateTimeInterface $createdAt): self

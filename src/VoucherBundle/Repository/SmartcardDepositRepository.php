@@ -39,4 +39,17 @@ class SmartcardDepositRepository extends EntityRepository
     {
         return $this->findOneBy(['hash' => $hash]);
     }
+
+    /**
+     * @param SmartcardDeposit $deposit
+     *
+     * @return void
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function save(SmartcardDeposit $deposit)
+    {
+        $this->_em->persist($deposit);
+        $this->_em->flush();
+    }
 }

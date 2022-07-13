@@ -20,7 +20,7 @@ final class Version20220601060717 extends AbstractMigration
             UPDATE smartcard_deposit sd
                 INNER JOIN smartcard s on sd.smartcard_id = s.id
                 INNER JOIN assistance_relief_package arp on sd.relief_package_id = arp.id
-            SET sd.hash = MD5(CONCAT(s.code, sd.distributed_at, sd.value, arp.unit, arp.id));
+            SET sd.hash = MD5(CONCAT(s.code, "-", sd.distributed_at, "-", sd.value, "-", arp.unit, "-", arp.id));
         ');
     }
 

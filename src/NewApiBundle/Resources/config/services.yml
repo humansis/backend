@@ -203,7 +203,7 @@ services:
     NewApiBundle\Controller\DonorController:
         arguments:
             - '@NewApiBundle\Component\File\UploadService'
-              
+
     NewApiBundle\Controller\InstitutionCodelistController:
         arguments:
             - '@NewApiBundle\Services\CodeListService'
@@ -211,7 +211,7 @@ services:
     NewApiBundle\Controller\LocationController:
         arguments:
             - '@NewApiBundle\Component\Country\Countries'
-  
+
     NewApiBundle\Controller\ModalityCodelistController:
         arguments:
             - '@NewApiBundle\Services\CodeListService'
@@ -243,12 +243,12 @@ services:
     NewApiBundle\Controller\SelectionCriterionController:
         arguments:
             - '@NewApiBundle\Services\CodeListService'
-      
+
 
     NewApiBundle\Controller\SmartcardPurchaseController:
         arguments:
             - '@NewApiBundle\Component\Smartcard\SmartcardPurchaseService'
-              
+
     NewApiBundle\Controller\TransactionController:
         arguments:
             - '@NewApiBundle\Services\CodeListService'
@@ -256,7 +256,7 @@ services:
     NewApiBundle\Controller\BeneficiaryCodelistController:
         public: true
         arguments:
-            - '@NewApiBundle\Services\CodeListService' 
+            - '@NewApiBundle\Services\CodeListService'
               
     NewApiBundle\Controller\HouseholdCodelistController:
         arguments:
@@ -441,16 +441,16 @@ services:
             - '@NewApiBundle\Component\Smartcard\Deposit\DepositFactory'
             - '@NewApiBundle\Repository\Assistance\ReliefPackageRepository'
             - '@logger'
+            - '@VoucherBundle\Repository\SmartcardDepositRepository'
 
     NewApiBundle\Component\Smartcard\Deposit\DepositFactory:
         public: true
         arguments:
-            - '@VoucherBundle\Repository\SmartcardDepositRepository'
+            - '@NewApiBundle\Component\Smartcard\SmartcardDepositService'
             - '@smartcard_service'
-            - '@VoucherBundle\Repository\SmartcardRepository'
-            - '@workflow.registry'
             - '@NewApiBundle\Repository\Assistance\ReliefPackageRepository'
             - '@cache.app'
+            - '@NewApiBundle\Component\ReliefPackage\ReliefPackageService'
 
     NewApiBundle\Export\SmartcardPurchasedItemSpreadsheet:
         arguments:
@@ -525,7 +525,7 @@ services:
 
     NewApiBundle\Component\Assistance\Scoring\Model\Factory\ScoringFactory:
         public: true
-              
+
     NewApiBundle\Component\Assistance\Scoring\Validator\ScoringTypeValidator:
         public: true
 
@@ -536,13 +536,13 @@ services:
             - '%kernel.project_dir%/src/BeneficiaryBundle/Resources/config/vulnerability/scoring_<<COUNTRY>>.csv'
 
     NewApiBundle\Services\AssistanceDistributionService:
-    
+
     NewApiBundle\Services\CodeListService:
         arguments:
           - '@translator'
 
     NewApiBundle\Services\ScoringBlueprintService:
-    
+
     NewApiBundle\Services\TranslationExportService:
         arguments:
             - '@CommonBundle\Utils\ExportService'
@@ -552,6 +552,8 @@ services:
     NewApiBundle\Component\SelectionCriteria\Loader\CriteriaConfigurationLoader:
         arguments:
             - '%distribution.criteria%'
+
+    NewApiBundle\Component\ReliefPackage\ReliefPackageService:
 
     NewApiBundle\Repository\ScoringBlueprintRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
