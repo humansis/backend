@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
+use BeneficiaryBundle\Exception\CsvParserException;
 use CommonBundle\Controller\ExportController;
 use CommonBundle\Pagination\Paginator;
 use DateTimeInterface;
@@ -11,6 +12,10 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Repository\AssistanceRepository;
 use DistributionBundle\Utils\AssistanceService;
+use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\ORMException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Component\Assistance\AssistanceQuery;
@@ -54,9 +59,12 @@ class AssistanceController extends AbstractController
     /** @var SerializerInterface */
     private $serializer;
 
-
-    public function __construct(VulnerabilityScoreExport $vulnerabilityScoreExport, AssistanceService $assistanceService, AssistanceBankReportExport $assistanceBankReportExport, SerializerInterface $serializer)
-    {
+    public function __construct(
+        VulnerabilityScoreExport   $vulnerabilityScoreExport,
+        AssistanceService          $assistanceService,
+        AssistanceBankReportExport $assistanceBankReportExport,
+        SerializerInterface        $serializer
+    ) {
         $this->vulnerabilityScoreExport = $vulnerabilityScoreExport;
         $this->assistanceService = $assistanceService;
         $this->assistanceBankReportExport = $assistanceBankReportExport;
@@ -80,8 +88,8 @@ class AssistanceController extends AbstractController
         }
 
         $statistics = [];
-        if($filter->hasIds()){
-            foreach($filter->getIds() as $key => $id){
+        if ($filter->hasIds()) {
+            foreach ($filter->getIds() as $key => $id) {
                 $statistics[] = $assistanceQuery->find($id)->getStatistics($countryIso3);
             }
         } else {
@@ -90,7 +98,6 @@ class AssistanceController extends AbstractController
 
             $statistics = $this->getDoctrine()->getRepository(AssistanceStatistics::class)->findByParams($countryIso3, $filter);
         }
-
 
         return $this->json(new Paginator($statistics));
     }
@@ -122,12 +129,11 @@ class AssistanceController extends AbstractController
      * @return JsonResponse
      */
     public function assistances(
-        Request $request,
+        Request                   $request,
         AssistanceFilterInputType $filter,
-        Pagination $pagination,
-        AssistanceOrderInputType $orderBy
-    ): JsonResponse
-    {
+        Pagination                $pagination,
+        AssistanceOrderInputType  $orderBy
+    ): JsonResponse {
         $countryIso3 = $request->headers->get('country', false);
         if (!$countryIso3) {
             throw new BadRequestHttpException('Missing country header');
@@ -146,7 +152,11 @@ class AssistanceController extends AbstractController
      * @param AssistanceRepository      $repository
      *
      * @return JsonResponse
-     * @throws \Doctrine\ORM\EntityNotFoundException
+     * @throws CsvParserException
+     * @throws EntityNotFoundException
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     * @throws ORMException
      */
     public function create(AssistanceCreateInputType $inputType, AssistanceFactory $factory, AssistanceRepository $repository): JsonResponse
     {
@@ -254,7 +264,7 @@ class AssistanceController extends AbstractController
      * @Rest\Get("/web-app/v1/assistances/{id}/bank-report/exports")
      *
      * @param Assistance $assistance
-     * @param Request $request
+     * @param Request    $request
      *
      * @return Response
      */
@@ -278,7 +288,8 @@ class AssistanceController extends AbstractController
             $response = new BinaryFileResponse($filename);
             $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
             $response->deleteFileAfterSend(true);
-            return  $response;
+
+            return $response;
         } catch (\Exception $exception) {
             return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
@@ -304,11 +315,11 @@ class AssistanceController extends AbstractController
      * @Rest\Get("/web-app/v1/assistances/{id}/vulnerability-scores/exports")
      *
      * @param Assistance $assistance
-     * @param Request $request
+     * @param Request    $request
      *
      * @return Response
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
     public function vulnerabilityScoresExports(Assistance $assistance, Request $request, AssistanceFactory $factory): Response
@@ -328,9 +339,9 @@ class AssistanceController extends AbstractController
      * @Rest\Post("/web-app/v1/assistances/vulnerability-scores/exports")
      *
      * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\EntityNotFoundException
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     * @throws EntityNotFoundException
      */
     public function vulnerabilityScoresPreExport(AssistanceCreateInputType $inputType, AssistanceFactory $factory, Request $request)
     {
@@ -350,10 +361,11 @@ class AssistanceController extends AbstractController
 
     /**
      * @param DomainAssistance $assistance
-     * @param string $type
+     * @param string           $type
+     *
      * @return Response
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
     private function scoresFromAssistance(DomainAssistance $assistance, string $type, string $urlPrefix, int $threshold = null): Response
@@ -386,12 +398,11 @@ class AssistanceController extends AbstractController
      * @return JsonResponse
      */
     public function getProjectAssistances(
-        Project $project,
-        Pagination $pagination,
+        Project                           $project,
+        Pagination                        $pagination,
         ProjectsAssistanceFilterInputType $filter,
-        AssistanceOrderInputType $orderBy
-    ): JsonResponse
-    {
+        AssistanceOrderInputType          $orderBy
+    ): JsonResponse {
         /** @var AssistanceRepository $repository */
         $repository = $this->getDoctrine()->getRepository(Assistance::class);
 
