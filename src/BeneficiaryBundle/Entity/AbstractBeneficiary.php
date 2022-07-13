@@ -28,15 +28,12 @@ abstract class AbstractBeneficiary
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedAssistance", "FullProject", "FullBeneficiary", "SmartcardOverview", "FullSmartcard"})
-     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
      */
     protected $id;
 
     /**
      * @var Project[]|Collection
      * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project", inversedBy="households", cascade={"persist"})
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
      */
     private $projects;
 
@@ -50,7 +47,6 @@ abstract class AbstractBeneficiary
     /**
      * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", mappedBy="beneficiary", cascade={"remove"})
      * @ORM\JoinColumn(name="distribution_beneficiary_id")
-     * @SymfonyGroups({"FullReceivers", "FullBeneficiary"})
      *
      * @var AssistanceBeneficiary $assistanceBeneficiary
      */

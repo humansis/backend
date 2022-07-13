@@ -26,13 +26,11 @@ class CampAddress
      * @var string
      *
      * @ORM\Column(name="tentNumber", type="string", length=45)
-     * @SymfonyGroups({"FullHousehold"})
      */
     private $tentNumber;
 
      /**
      * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Camp", cascade={"persist"})
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
      */
     private $camp;
 

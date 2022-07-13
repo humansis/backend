@@ -19,7 +19,6 @@ class Camp
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullHousehold", "FullCamp"})
      */
     private $id;
 
@@ -27,13 +26,11 @@ class Camp
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=45)
-     * @SymfonyGroups({"FullHousehold", "FullCamp"})
      */
     private $name;
 
     /**
      * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold"})
      */
     private $location;
 

@@ -26,7 +26,6 @@ class NationalId
      * @var string
      *
      * @ORM\Column(name="id_number", type="string", length=255)
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedAssistance", "FullInstitution"})
      */
     private $idNumber;
 
@@ -34,7 +33,6 @@ class NationalId
      * @var string
      *
      * @ORM\Column(name="id_type", type="enum_national_id_type")
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "FullInstitution"})
      */
     private $idType;
 
