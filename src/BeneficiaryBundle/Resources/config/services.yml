@@ -26,12 +26,7 @@ services:
         class: BeneficiaryBundle\Utils\InstitutionService
         arguments:
             - "@doctrine.orm.entity_manager"
-            - "@serializer"
-            - "@beneficiary.beneficiary_service"
-            - "@request_validator"
             - "@location_service"
-            - "@validator"
-            - "@service_container"
         public: true
 
     beneficiary.community_service:
