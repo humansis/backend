@@ -13,6 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Role\RoleHierarchyInterface;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validation;
@@ -74,6 +75,9 @@ class UserService
      */
     private $roleHierarchy;
 
+    /** @var Security $security */
+    private $security;
+
     /**
      * UserService constructor.
      *
@@ -90,7 +94,8 @@ class UserService
         EntityManagerInterface $entityManager,
         ValidatorInterface     $validator,
         ContainerInterface     $container,
-        RoleHierarchyInterface $roleHierarchy
+        RoleHierarchyInterface $roleHierarchy,
+        Security $security
     ) {
         $this->googleClient = $googleClient;
         $this->humanitarianSecret = $humanitarianSecret;
@@ -99,6 +104,7 @@ class UserService
         $this->container = $container;
         $this->email = $this->container->getParameter('email');
         $this->roleHierarchy = $roleHierarchy;
+        $this->security = $security;
     }
 
     /**
@@ -938,5 +944,13 @@ class UserService
     private function generateSalt()
     {
         return rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
+    }
+
+    /**
+     * @return object|User|null
+     */
+    public function getCurrentUser()
+    {
+        return $this->em->getRepository(User::class)->findOneBy(['username' => $this->security->getUser()->getUsername()]);
     }
 }

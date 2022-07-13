@@ -33,6 +33,7 @@ use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
 use NewApiBundle\InputType\AssistanceCreateInputType;
+use NewApiBundle\Repository\ScoringBlueprintRepository;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
@@ -84,6 +85,9 @@ class AssistanceService
 
     /** @var SelectionCriteriaFactory */
     private $selectionCriteriaFactory;
+
+    /** @var ScoringBlueprintRepository */
+    private $scoringBlueprintRepository;
 
     /**
      * AssistanceService constructor.
@@ -147,7 +151,7 @@ class AssistanceService
         }
 
         $selectionGroups = $this->selectionCriteriaFactory->createGroups($inputType->getSelectionCriteria());
-        $result = $this->criteriaAssistanceService->load($selectionGroups, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false,  $inputType->getScoringType());
+        $result = $this->criteriaAssistanceService->load($selectionGroups, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false,  $inputType->getScoringBlueprintId());
         $ids = array_keys($result['finalArray']);
         $count = count($ids);
 
@@ -177,7 +181,7 @@ class AssistanceService
         }
 
         $selectionGroups = $this->selectionCriteriaFactory->createGroups($inputType->getSelectionCriteria());
-        $result = $this->criteriaAssistanceService->load($selectionGroups, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false, $inputType->getScoringType());
+        $result = $this->criteriaAssistanceService->load($selectionGroups, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false, $inputType->getScoringBlueprintId());
         $ids = array_keys($result['finalArray']);
         $count = count($ids);
 
@@ -305,8 +309,7 @@ class AssistanceService
                     $sector,
                     $subsector,
                     $distributionArray['threshold'],
-                    false,
-                    'Default'
+                    false
                 );
             $this->saveReceivers($distribution, $listReceivers);
         }

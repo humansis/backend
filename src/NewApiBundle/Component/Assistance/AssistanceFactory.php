@@ -18,9 +18,11 @@ use NewApiBundle\Component\Assistance\Domain;
 use NewApiBundle\Component\Assistance\DTO\CriteriaGroup;
 use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
 use NewApiBundle\Entity\Assistance\SelectionCriteria;
+use NewApiBundle\Entity\ScoringBlueprint;
 use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\Repository\AssistanceStatisticsRepository;
+use NewApiBundle\Repository\ScoringBlueprintRepository;
 use ProjectBundle\Repository\ProjectRepository;
 use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -68,6 +70,9 @@ class AssistanceFactory
     /** @var SelectionCriteriaFactory */
     private $selectionCriteriaFactory;
 
+    /** @var ScoringBlueprintRepository */
+    private $scoringBlueprintRepository;
+
     /**
      * @param CacheInterface                  $cache
      * @param CriteriaAssistanceService       $criteriaAssistanceService
@@ -82,6 +87,7 @@ class AssistanceFactory
      * @param Registry                        $workflowRegistry
      * @param AssistanceBeneficiaryRepository $targetRepository
      * @param SelectionCriteriaFactory        $selectionCriteriaFactory
+     * @param ScoringBlueprintRepository      $scoringBlueprintRepository
      */
     public function __construct(
         CacheInterface                  $cache,
@@ -96,7 +102,8 @@ class AssistanceFactory
         AssistanceStatisticsRepository  $assistanceStatisticRepository,
         Registry                        $workflowRegistry,
         AssistanceBeneficiaryRepository $targetRepository,
-        SelectionCriteriaFactory        $selectionCriteriaFactory
+        SelectionCriteriaFactory        $selectionCriteriaFactory,
+        ScoringBlueprintRepository      $scoringBlueprintRepository
     ) {
         $this->cache = $cache;
         $this->criteriaAssistanceService = $criteriaAssistanceService;
@@ -111,6 +118,7 @@ class AssistanceFactory
         $this->workflowRegistry = $workflowRegistry;
         $this->targetRepository = $targetRepository;
         $this->selectionCriteriaFactory = $selectionCriteriaFactory;
+        $this->scoringBlueprintRepository = $scoringBlueprintRepository;
     }
 
     public function create(AssistanceCreateInputType $inputType): Domain\Assistance
@@ -122,7 +130,7 @@ class AssistanceFactory
         $assistanceRoot->setDateExpiration($inputType->getDateExpiration());
         $assistanceRoot->setSector($inputType->getSector());
         $assistanceRoot->setSubSector($inputType->getSubsector());
-        $assistanceRoot->setScoringType($inputType->getScoringType());
+
         $assistanceRoot->setHouseholdsTargeted($inputType->getHouseholdsTargeted());
         $assistanceRoot->setIndividualsTargeted($inputType->getIndividualsTargeted());
         $assistanceRoot->setDescription($inputType->getDescription());
@@ -141,6 +149,15 @@ class AssistanceFactory
             throw new EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
         }
         $assistanceRoot->setProject($project);
+
+        if (!is_null($inputType->getScoringBlueprintId())) {
+            $scoringBlueprint = $this->scoringBlueprintRepository->findActive($inputType->getScoringBlueprintId(), $location->getCountryISO3());
+            if (!$scoringBlueprint) {
+                throw new EntityNotFoundException('Scoring blueprint #'.$inputType->getScoringBlueprintId().' does not exists.');
+            }
+            $assistanceRoot->setScoringBlueprint($scoringBlueprint);
+        }
+
 
         $assistance = $this->hydrate($assistanceRoot);
 
@@ -180,7 +197,7 @@ class AssistanceFactory
                     $assistanceRoot->getSubSector(),
                     $inputType->getThreshold(),
                     false,
-                    $inputType->getScoringType()
+                    $inputType->getScoringBlueprintId()
                 );
                 foreach ($beneficiaryIds['finalArray'] as $beneficiaryId => $vulnerabilityScore) {
                     $individualOrHHH = $this->beneficiaryRepository->find($beneficiaryId);

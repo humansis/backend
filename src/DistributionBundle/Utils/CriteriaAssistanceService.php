@@ -14,6 +14,8 @@ use NewApiBundle\Component\Assistance\DTO\CriteriaGroup;
 use NewApiBundle\Component\Assistance\Scoring\Model\Factory\ScoringFactory;
 use NewApiBundle\Component\Assistance\Scoring\ScoringResolver;
 use NewApiBundle\Entity\Assistance\SelectionCriteria;
+use NewApiBundle\Entity\ScoringBlueprint;
+use NewApiBundle\Repository\ScoringBlueprintRepository;
 use ProjectBundle\Entity\Project;
 
 /**
@@ -38,11 +40,16 @@ class CriteriaAssistanceService
     /** @var ScoringResolver */
     private $resolver;
 
+    /** @var ScoringBlueprintRepository */
+    private $scoringBlueprintRepository;
+
     /**
      * CriteriaAssistanceService constructor.
-     * @param EntityManagerInterface $entityManager
-     * @param ConfigurationLoader    $configurationLoader
-     * @param OldResolver               $oldResolver
+     * @param EntityManagerInterface        $entityManager
+     * @param ConfigurationLoader           $configurationLoader
+     * @param OldResolver                   $oldResolver
+     * @param ScoringResolver               $resolver
+     * @param ScoringBlueprintRepository    $scoringBlueprintRepository
      * @throws \Exception
      */
     public function __construct(
@@ -50,13 +57,15 @@ class CriteriaAssistanceService
         ConfigurationLoader $configurationLoader,
         OldResolver $oldResolver,
         ScoringFactory $scoringFactory,
-        ScoringResolver $resolver
+        ScoringResolver $resolver,
+        ScoringBlueprintRepository $scoringBlueprintRepository
     ) {
         $this->em = $entityManager;
         $this->configurationLoader = $configurationLoader;
         $this->oldResolver = $oldResolver;
         $this->scoringFactory = $scoringFactory;
         $this->resolver = $resolver;
+        $this->scoringBlueprintRepository = $scoringBlueprintRepository;
     }
 
     /**
@@ -75,7 +84,7 @@ class CriteriaAssistanceService
      * @throws \Doctrine\ORM\ORMException
      *@deprecated replace by new method with type control of incoming criteria objects and country code
      */
-    public function load(iterable $criteriaGroups, Project $project, string $targetType, string $sector, ?string $subsector, int $threshold, bool $isCount, string $scoringType)
+    public function load(iterable $criteriaGroups, Project $project, string $targetType, string $sector, ?string $subsector, int $threshold, bool $isCount, int $scoringBlueprintId = null)
     {
         if (!in_array($targetType, [
             AssistanceTargetType::INDIVIDUAL,
@@ -85,7 +94,8 @@ class CriteriaAssistanceService
         }
 
         $reachedBeneficiaries = [];
-
+        $scoringBlueprint = $this->scoringBlueprintRepository->findActive($scoringBlueprintId, $project->getIso3());
+        $scoring = isset($scoringBlueprint) ? $this->scoringFactory->buildScoring($scoringBlueprint) : null;
         foreach ($criteriaGroups as $group)
         {
             $selectableBeneficiaries = $this->em->getRepository(Beneficiary::class)
@@ -95,12 +105,12 @@ class CriteriaAssistanceService
                 /** @var Beneficiary $beneficiary */
                 $beneficiary = $this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $bnf['id']);
 
-                if ($scoringType === 'Default') {
+                if (!isset($scoring)) {
                     $protocol = $this->oldResolver->compute($beneficiary->getHousehold(), $project->getIso3(), $sector);
                 } else {
                     $protocol = $this->resolver->compute(
                         $beneficiary->getHousehold(),
-                        $this->scoringFactory->buildScoring($scoringType),
+                        $scoring,
                         $project->getIso3()
                     );
                 }

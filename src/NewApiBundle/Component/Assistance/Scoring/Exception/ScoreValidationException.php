@@ -8,9 +8,9 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class ScoreValidationException extends \Exception
 {
-    public function __construct(string $scoringType, ConstraintViolationListInterface $violationList)
+    public function __construct(string $scoringBlueprintName, ConstraintViolationListInterface $violationList)
     {
-        $message = "Scoring $scoringType could not be loaded because some values in source CSV are not correct: ";
+        $message = "Scoring $scoringBlueprintName could not be loaded because some values in source CSV are not correct: ";
 
         /** @var ConstraintViolationInterface $violation */
         foreach ($violationList as $violation) {
