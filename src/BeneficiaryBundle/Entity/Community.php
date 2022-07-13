@@ -30,7 +30,6 @@ class Community extends AbstractBeneficiary
 
     /**
      * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Address", cascade={"persist", "remove"})
-     * @SymfonyGroups({"FullBeneficiary", "FullCommunity"})
      */
     private $address;
 
@@ -38,7 +37,6 @@ class Community extends AbstractBeneficiary
      * @var string
      *
      * @ORM\Column(name="latitude", type="string", length=45, nullable=true)
-     * @SymfonyGroups({"FullBeneficiary", "FullCommunity"})
      */
     private $latitude;
 
@@ -46,7 +44,6 @@ class Community extends AbstractBeneficiary
      * @var string
      *
      * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
-     * @SymfonyGroups({"FullBeneficiary", "FullCommunity"})
      */
     private $longitude;
 

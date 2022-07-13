@@ -19,7 +19,6 @@ class Phone
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedAssistance"})
      */
     private $id;
 
@@ -27,7 +26,6 @@ class Phone
      * @var string
      *
      * @ORM\Column(name="number", type="string", length=45)
-     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedAssistance"})
      */
     private $number;
 
@@ -35,7 +33,6 @@ class Phone
      * @var string|null
      *
      * @ORM\Column(name="type", type="string", length=45, nullable=true)
-     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedAssistance"})
      */
     private $type;
 
@@ -43,7 +40,6 @@ class Phone
      * @var string
      *
      * @ORM\Column(name="prefix", type="string", length=45)
-     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedAssistance"})
      */
     private $prefix;
 
@@ -51,7 +47,6 @@ class Phone
      * @var boolean
      *
      * @ORM\Column(name="proxy", type="boolean")
-     * @SymfonyGroups({"FullHousehold", "FullReceivers", "ValidatedAssistance"})
      */
     private $proxy = false;
 

@@ -19,7 +19,6 @@ class Profile
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullHousehold"})
      */
     private $id;
 
@@ -27,7 +26,6 @@ class Profile
      * @var string
      *
      * @ORM\Column(name="photo", type="string", length=255)
-     * @SymfonyGroups({"FullHousehold"})
      */
     private $photo;
 
