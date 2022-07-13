@@ -3,6 +3,7 @@
 namespace VoucherBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use DateTime;
 use DateTimeInterface;
 use DistributionBundle\Entity\AssistanceBeneficiary;
@@ -27,6 +28,7 @@ use VoucherBundle\InputType\SmartcardPurchaseDeprecated as SmartcardPurchaseDepr
 use VoucherBundle\Model\PurchaseService;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
 use VoucherBundle\InputType\SmartcardInvoice as RedemptionBatchInput;
+use VoucherBundle\Repository\SmartcardRepository;
 
 class SmartcardService
 {
@@ -36,18 +38,46 @@ class SmartcardService
     /** @var PurchaseService */
     private $purchaseService;
 
+    /**
+     * @var SmartcardRepository
+     */
+    private $smartcardRepository;
+
+    /**
+     * @var SmartcardPurchaseRepository
+     */
+    private $smartcardPurchaseRepository;
+
+    /**
+     * @var BeneficiaryRepository
+     */
+    private $beneficiaryRepository;
+
+    /**
+     * @var ProjectRepository
+     */
+    private $projectRepository;
+
     public function __construct(
-        EntityManager                   $em,
-        PurchaseService                 $purchaseService
+        EntityManager               $em,
+        PurchaseService             $purchaseService,
+        SmartcardRepository         $smartcardRepository,
+        SmartcardPurchaseRepository $smartcardPurchaseRepository,
+        BeneficiaryRepository       $beneficiaryRepository,
+        ProjectRepository           $projectRepository
     ) {
         $this->em = $em;
         $this->purchaseService = $purchaseService;
+        $this->smartcardRepository = $smartcardRepository;
+        $this->smartcardPurchaseRepository = $smartcardPurchaseRepository;
+        $this->beneficiaryRepository = $beneficiaryRepository;
+        $this->projectRepository = $projectRepository;
     }
 
     public function register(string $serialNumber, string $beneficiaryId, DateTime $createdAt): Smartcard
     {
         /** @var Beneficiary $beneficiary */
-        $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryId);
+        $beneficiary = $this->beneficiaryRepository->find($beneficiaryId);
         $smartcard = $this->getActualSmartcard($serialNumber, $beneficiary, $createdAt);
         $smartcard->setSuspicious(false, null);
 
@@ -57,8 +87,8 @@ class SmartcardService
             $smartcard->setSuspicious(true, "Beneficiary #$beneficiaryId does not exists");
         }
 
-        $this->em->persist($smartcard);
-        $this->em->flush();
+        $this->smartcardRepository->save($smartcard);
+
         return $smartcard;
     }
 
@@ -72,7 +102,7 @@ class SmartcardService
             throw new \InvalidArgumentException('Argument 3 must be of type '.SmartcardPurchaseInput::class.' or '.SmartcardPurchaseDeprecatedInput::class);
         }
 
-        $smartcard = $this->em->getRepository(Smartcard::class)->findOneBy(['serialNumber' => $serialNumber]);
+        $smartcard = $this->smartcardRepository->findOneBy(['serialNumber' => $serialNumber]);
         if (!$smartcard) {
             $smartcard = $this->createSuspiciousSmartcard($serialNumber, $data->getCreatedAt());
         }
@@ -108,7 +138,7 @@ class SmartcardService
         if (!$data instanceof SmartcardPurchaseInput && !$data instanceof SmartcardPurchaseInputType) {
             throw new \InvalidArgumentException('Argument 2 must be of type '.SmartcardPurchaseInput::class . 'or ' . SmartcardPurchaseInputType::class);
         }
-        $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy([
+        $beneficiary = $this->beneficiaryRepository->findOneBy([
             'id' => $data->getBeneficiaryId(),
             'archived' => false,
         ]);
@@ -122,8 +152,7 @@ class SmartcardService
 
     public function getActualSmartcard(string $serialNumber, ?Beneficiary $beneficiary, DateTimeInterface $dateOfEvent): Smartcard
     {
-        $repo = $this->em->getRepository(Smartcard::class);
-        $smartcard = $repo->findBySerialNumberAndBeneficiary($serialNumber, $beneficiary);
+        $smartcard = $this->smartcardRepository->findBySerialNumberAndBeneficiary($serialNumber, $beneficiary);
 
         if ($smartcard
             && $smartcard->getBeneficiary()
@@ -141,7 +170,7 @@ class SmartcardService
             }
         }
 
-        $repo->disableBySerialNumber($serialNumber, SmartcardStates::REUSED, $dateOfEvent);
+        $this->smartcardRepository->disableBySerialNumber($serialNumber, SmartcardStates::REUSED, $dateOfEvent);
 
         $smartcard = new Smartcard($serialNumber, $dateOfEvent);
         $smartcard->setState(SmartcardStates::ACTIVE);
@@ -163,12 +192,12 @@ class SmartcardService
      *
      * @return Invoice
      * @throws \InvalidArgumentException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function redeem(Vendor $vendor, RedemptionBatchInput $inputBatch, User $redeemedBy): Invoice
     {
-        /** @var SmartcardPurchaseRepository $repository */
-        $repository = $this->em->getRepository(SmartcardPurchase::class);
-        $purchases = $repository->findBy([
+        $purchases = $this->smartcardPurchaseRepository->findBy([
             'id' => $inputBatch->getPurchases(),
         ], ['id'=>'asc']);
 
@@ -200,18 +229,15 @@ class SmartcardService
             }
         }
 
-        /** @var ProjectRepository $projectRepository */
-        $projectRepository = $this->em->getRepository(Project::class);
-
         /** @var Project|null $project */
-        $project = $projectRepository->find($projectId);
+        $project = $this->projectRepository->find($projectId);
 
         $redemptionBath = new Invoice(
             $vendor,
             $project,
             new \DateTime(),
             $redeemedBy,
-            $repository->countPurchasesValue($purchases),
+            $this->smartcardPurchaseRepository->countPurchasesValue($purchases),
             $currency,
             $vendor->getContractNo(),
             $vendor->getVendorNo(),
@@ -275,9 +301,7 @@ class SmartcardService
         $smartcard = new Smartcard($serialNumber, $createdAt);
         $smartcard->setState(SmartcardStates::ACTIVE);
         $smartcard->setSuspicious(true, 'Smartcard does not exists in database');
-
-        $this->em->persist($smartcard);
-        $this->em->flush();
+        $this->smartcardRepository->save($smartcard);
 
         return $smartcard;
     }
@@ -299,22 +323,16 @@ class SmartcardService
      * @param ReliefPackage $reliefPackage
      *
      * @return void
+     * @throws \Doctrine\ORM\ORMException
      */
     public function setMissingCurrency(Smartcard $smartcard, ReliefPackage $reliefPackage)
     {
+        // set missing currency to smartcard
         if (null === $smartcard->getCurrency()) {
             $smartcard->setCurrency(SmartcardService::findCurrency($reliefPackage->getAssistanceBeneficiary()));
         }
-    }
 
-    /**
-     * @param Smartcard $smartcard
-     *
-     * @return void
-     * @throws \Doctrine\ORM\ORMException
-     */
-    public function setMissingCurrencyToPurchases(Smartcard $smartcard)
-    {
+        // set missing currency to purchases
         foreach ($smartcard->getPurchases() as $purchase) {
             foreach ($purchase->getRecords() as $record) {
                 if (null === $record->getCurrency()) {
@@ -323,5 +341,8 @@ class SmartcardService
                 }
             }
         }
+
+        $this->smartcardRepository->save($smartcard);
     }
+
 }

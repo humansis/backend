@@ -6,6 +6,8 @@ namespace NewApiBundle\Component\Smartcard;
 use CommonBundle\InputType\RequestConverter;
 use Doctrine\ORM\EntityManager;
 use NewApiBundle\Component\Smartcard\Deposit\DepositFactory;
+use NewApiBundle\Component\Smartcard\Deposit\Exception\DoubledDepositException;
+use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\SynchronizationBatch\Deposits;
 use NewApiBundle\InputType\Smartcard\DepositInputType;
 use NewApiBundle\InputType\SynchronizationBatch\CreateDepositInputType;
@@ -18,6 +20,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\TransitionBlocker;
 use UserBundle\Entity\User;
+use VoucherBundle\Repository\SmartcardDepositRepository;
 
 class SmartcardDepositService
 {
@@ -45,13 +48,19 @@ class SmartcardDepositService
      */
     private $logger;
 
+    /**
+     * @var SmartcardDepositRepository
+     */
+    private $smartcardDepositRepository;
+
     public function __construct(
-        EntityManager           $em,
-        Registry                $workflowRegistry,
-        ValidatorInterface      $validator,
-        DepositFactory          $depositFactory,
-        ReliefPackageRepository $reliefPackageRepository,
-        LoggerInterface         $logger
+        EntityManager              $em,
+        Registry                   $workflowRegistry,
+        ValidatorInterface         $validator,
+        DepositFactory             $depositFactory,
+        ReliefPackageRepository    $reliefPackageRepository,
+        LoggerInterface            $logger,
+        SmartcardDepositRepository $smartcardDepositRepository
     )
     {
         $this->em = $em;
@@ -60,6 +69,45 @@ class SmartcardDepositService
         $this->depositFactory = $depositFactory;
         $this->reliefPackageRepository = $reliefPackageRepository;
         $this->logger = $logger;
+        $this->smartcardDepositRepository = $smartcardDepositRepository;
+    }
+
+    /**
+     * @param string        $serialNumber
+     * @param int           $timestamp
+     * @param               $value
+     * @param ReliefPackage $reliefPackage
+     *
+     * @return string
+     */
+    public function generateDepositHash(string $serialNumber, int $timestamp, $value, ReliefPackage $reliefPackage): string
+    {
+        return md5($serialNumber.
+            '-'.
+            $timestamp.
+            '-'.
+            $value.
+            '-'.
+            $reliefPackage->getUnit().
+            '-'.
+            $reliefPackage->getId()
+        );
+    }
+
+    /**
+     * @param string $hash
+     *
+     * @return void
+     * @throws DoubledDepositException
+     */
+    public function checkDepositDuplicity(string $hash): void
+    {
+        $deposit = $this->smartcardDepositRepository->findByHash($hash);
+
+        if ($deposit) {
+            $this->logger->info("Creation of deposit with hash {$deposit->getHash()} was omitted. It's already set in Deposit #{$deposit->getId()}");
+            throw new DoubledDepositException($deposit);
+        }
     }
 
     /**
