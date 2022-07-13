@@ -67,7 +67,7 @@ class SmartcardPurchaseRepository extends EntityRepository
         }
     }
 
-    public function countPurchasesRecordsByBatch(Invoice $batch): array
+    public function countPurchasesRecordsByInvoice(Invoice $invoice): array
     {
         $qb = $this->createQueryBuilder('p')
             ->select('prod.name as name, pr.currency as currency, SUM(pr.value) as value, SUM(pr.quantity) as quantity, prod.unit as unit, MAX(category.type) as categoryType')
@@ -75,14 +75,14 @@ class SmartcardPurchaseRepository extends EntityRepository
             ->join('pr.product', 'prod')
             ->join('prod.productCategory', 'category')
             ->where('p.id IN (:purchases)')
-            ->setParameter('purchases', $batch->getPurchases())
+            ->setParameter('purchases', $invoice->getPurchases())
             ->groupBy('prod.name, pr.currency, prod.unit')
         ;
 
         return $qb->getQuery()->getArrayResult();
     }
 
-    public function sumPurchasesRecordsByCategoryType(Invoice $batch, $productCategoryType): ?string
+    public function sumPurchasesRecordsByCategoryType(Invoice $invoice, $productCategoryType): ?string
     {
         $qb = $this->createQueryBuilder('p')
             ->select('SUM(pr.value) as value')
@@ -93,8 +93,8 @@ class SmartcardPurchaseRepository extends EntityRepository
             ->andWhere('category.type = :type')
             ->andWhere('pr.currency = :currency')
             ->setParameter('type', $productCategoryType)
-            ->setParameter('currency', $batch->getCurrency())
-            ->setParameter('batch', $batch)
+            ->setParameter('currency', $invoice->getCurrency())
+            ->setParameter('batch', $invoice)
             ->groupBy('p.redemptionBatch')
         ;
 
@@ -108,11 +108,11 @@ class SmartcardPurchaseRepository extends EntityRepository
     }
 
     /**
-     * @param Invoice $batch
+     * @param Invoice $invoice
      *
      * @return PurchaseDetail[]
      */
-    public function getDetailsByBatch(Invoice $batch): array
+    public function getDetailsByBatch(Invoice $invoice): array
     {
         $qb = $this->createQueryBuilder('p')
             ->select(
@@ -131,7 +131,7 @@ class SmartcardPurchaseRepository extends EntityRepository
             ->join('s.beneficiary', 'b')
             ->join('b.person', 'person')
             ->andWhere('p.redemptionBatch = :batch')
-            ->setParameter('batch', $batch)
+            ->setParameter('batch', $invoice)
             ->groupBy('p.id');
 
         $details = [];
@@ -151,16 +151,16 @@ class SmartcardPurchaseRepository extends EntityRepository
     }
 
     /**
-     * @param Invoice         $redemptionBatch
+     * @param Invoice         $invoice
      * @param Pagination|null $pagination
      *
      * @return Paginator|SmartcardPurchase[]
      */
-    public function findByBatch(Invoice $redemptionBatch, ?Pagination $pagination = null)
+    public function findByBatch(Invoice $invoice, ?Pagination $pagination = null)
     {
         $qbr = $this->createQueryBuilder('sp')
             ->andWhere('sp.redemptionBatch = :redemptionBatch')
-            ->setParameter('redemptionBatch', $redemptionBatch);
+            ->setParameter('redemptionBatch', $invoice);
 
         if ($pagination) {
             $qbr->setMaxResults($pagination->getLimit())

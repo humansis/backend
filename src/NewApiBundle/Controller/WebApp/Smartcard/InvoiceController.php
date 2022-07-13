@@ -22,13 +22,13 @@ class InvoiceController extends AbstractWebAppController
      * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/exports")
      * @ParamConverter("redemptionBatch", class="Invoice")
      *
-     * @param Invoice $redemptionBatch
+     * @param Invoice $invoice
      *
      * @return JsonResponse
      */
-    public function export(Invoice $redemptionBatch): Response
+    public function export(Invoice $invoice): Response
     {
-        return $this->forward(SmartcardController::class.'::export', ['batch' => $redemptionBatch]);
+        return $this->forward(SmartcardController::class.'::export', ['batch' => $invoice]);
     }
 
     /**
@@ -88,9 +88,9 @@ class InvoiceController extends AbstractWebAppController
         $newInvoice = new \VoucherBundle\InputType\SmartcardInvoice();
         $newInvoice->setPurchases($inputType->getPurchaseIds());
 
-        $redemptionBath = $smartcardService->redeem($vendor, $newInvoice, $this->getUser());
+        $invoice = $smartcardService->redeem($vendor, $newInvoice, $this->getUser());
 
-        return $this->json($redemptionBath);
+        return $this->json($invoice);
     }
 
     /**

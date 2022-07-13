@@ -41,26 +41,26 @@ class SmartcardInvoiceLegacyExport
         $this->locationMapper = $locationMapper;
     }
 
-    public function export(Invoice $batch, Organization $organization, User $user)
+    public function export(Invoice $invoice, Organization $organization, User $user)
     {
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
 
         self::formatCells($worksheet);
 
-        $lastRow = self::buildHeader($worksheet, $this->translator, $organization, $batch, $this->locationMapper);
-        $lastRow = self::buildBody($worksheet, $this->translator, $batch, $lastRow + 1);
+        $lastRow = self::buildHeader($worksheet, $this->translator, $organization, $invoice, $this->locationMapper);
+        $lastRow = self::buildBody($worksheet, $this->translator, $invoice, $lastRow + 1);
         $lastRow = self::buildFooter($worksheet, $this->translator, $organization, $user, $lastRow + 3);
-        $lastRow = self::buildAnnex($worksheet, $this->translator, $batch, $lastRow + 2);
+        $lastRow = self::buildAnnex($worksheet, $this->translator, $invoice, $lastRow + 2);
         self::buildFooter($worksheet, $this->translator, $organization, $user, $lastRow + 3);
 
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
 
         $slugger = new AsciiSlugger();
 
-        $countryIso3 = self::extractCountryIso3($batch->getVendor());
-        $id = sprintf('%05d', $batch->getId());
-        $vendorName = $slugger->slug($batch->getVendor()->getName());
+        $countryIso3 = self::extractCountryIso3($invoice->getVendor());
+        $id = sprintf('%05d', $invoice->getId());
+        $vendorName = $slugger->slug($invoice->getVendor()->getName());
         $invoiceName = "{$countryIso3}LEGACY{$id}{$vendorName}.xlsx";
 
         $writer->save($invoiceName);
@@ -89,17 +89,17 @@ class SmartcardInvoiceLegacyExport
             ->setVertical(Alignment::VERTICAL_CENTER);
     }
 
-    private static function buildHeader(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $batch, LocationMapper $locationMapper): int
+    private static function buildHeader(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $invoice, LocationMapper $locationMapper): int
     {
-        self::buildHeaderFirstLineBoxes($worksheet, $translator, $organization, $batch);
+        self::buildHeaderFirstLineBoxes($worksheet, $translator, $organization, $invoice);
 
-        self::buildHeaderSecondLine($worksheet, $translator, $organization, $batch, $locationMapper);
-        self::buildHeaderThirdLine($worksheet, $translator, $organization, $batch);
-        self::buildHeaderFourthLine($worksheet, $translator, $organization, $batch);
+        self::buildHeaderSecondLine($worksheet, $translator, $organization, $invoice, $locationMapper);
+        self::buildHeaderThirdLine($worksheet, $translator, $organization, $invoice);
+        self::buildHeaderFourthLine($worksheet, $translator);
 
         self::setSmallBorder($worksheet, 'B7:J10');
 
-        self::buildBodyHeader($worksheet, $translator, $organization, $batch);
+        self::buildBodyHeader($worksheet, $translator);
 
         return 13;
     }
@@ -110,11 +110,11 @@ class SmartcardInvoiceLegacyExport
      * @param Worksheet           $worksheet
      * @param TranslatorInterface $translator
      * @param Organization        $organization
-     * @param Invoice             $batch
+     * @param Invoice             $invoice
      *
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
-    private static function buildHeaderFirstLineBoxes(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $batch): void
+    private static function buildHeaderFirstLineBoxes(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $invoice): void
     {
         $worksheet->getRowDimension('2')->setRowHeight(24.02);
         $worksheet->getRowDimension('3')->setRowHeight(19.70);
@@ -129,7 +129,7 @@ class SmartcardInvoiceLegacyExport
         $worksheet->mergeCells('D2:E2');
         $worksheet->mergeCells('D3:E3');
         $worksheet->setCellValue('D2', 'Humansis Vendor Username');
-        $worksheet->setCellValue('D3', $batch->getVendor()->getUser()->getUsername());
+        $worksheet->setCellValue('D3', $invoice->getVendor()->getUser()->getUsername());
         self::setSmallHeadline($worksheet, 'D2:E3');
         self::setSmallBorder($worksheet, 'D2:E3');
 
@@ -164,7 +164,7 @@ class SmartcardInvoiceLegacyExport
         }
     }
 
-    private static function buildHeaderSecondLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $batch, LocationMapper $locationMapper): void
+    private static function buildHeaderSecondLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $invoice, LocationMapper $locationMapper): void
     {
         // structure
         $worksheet->mergeCells('C7:D7');
@@ -173,8 +173,8 @@ class SmartcardInvoiceLegacyExport
         // data
         $worksheet->setCellValue('B7', $translator->trans('customer', [], 'invoice'));
         $worksheet->setCellValue('C7', $organization->getName());
-        $worksheet->setCellValue('E7', $locationMapper->toName($batch->getVendor()->getLocation()));
-        $worksheet->setCellValue('I7', $batch->getInvoicedAt()->format('j-n-y'));
+        $worksheet->setCellValue('E7', $locationMapper->toName($invoice->getVendor()->getLocation()));
+        $worksheet->setCellValue('I7', $invoice->getInvoicedAt()->format('j-n-y'));
         $worksheet->setCellValue('H7', $translator->trans('invoice_date', [], 'invoice'));
         // style
         $worksheet->getRowDimension('7')->setRowHeight(50);
@@ -186,14 +186,14 @@ class SmartcardInvoiceLegacyExport
         self::setImportantFilledInfo($worksheet, 'I7:J7');
     }
 
-    private static function buildHeaderThirdLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $batch): void
+    private static function buildHeaderThirdLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $invoice): void
     {
         // structure
         $worksheet->mergeCells('C8:G8');
         $worksheet->mergeCells('I8:J8');
         // data
         $worksheet->setCellValue('B8', $translator->trans('supplier_name', [], 'invoice'));
-        $worksheet->setCellValue('C8', $batch->getVendor()->getName());
+        $worksheet->setCellValue('C8', $invoice->getVendor()->getName());
         $worksheet->setCellValue('H8', $translator->trans('supplier_no', [], 'invoice'));
         // style
         $worksheet->getRowDimension('8')->setRowHeight(25);
@@ -203,7 +203,7 @@ class SmartcardInvoiceLegacyExport
         self::setSmallHeadline($worksheet, 'H8');
     }
 
-    private static function buildHeaderFourthLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $batch): void
+    private static function buildHeaderFourthLine(Worksheet $worksheet, TranslatorInterface $translator): void
     {
         // structure
         $worksheet->mergeCells('B9:B10');
@@ -235,7 +235,7 @@ class SmartcardInvoiceLegacyExport
         self::setImportantFilledInfo($worksheet, 'J10');
     }
 
-    private static function buildBodyHeader(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $batch): void
+    private static function buildBodyHeader(Worksheet $worksheet, TranslatorInterface $translator): void
     {
         // structure
         $worksheet->mergeCells('B13:G13');
@@ -322,7 +322,7 @@ class SmartcardInvoiceLegacyExport
     }
 
 
-    private static function buildAnnex(Worksheet $worksheet, TranslatorInterface $translator, Invoice $batch, int $lineStart): int
+    private static function buildAnnex(Worksheet $worksheet, TranslatorInterface $translator, Invoice $invoice, int $lineStart): int
     {
         // header
         $worksheet->setCellValue('B'.$lineStart, $translator->trans('annex', [], 'invoice'));
@@ -346,7 +346,7 @@ class SmartcardInvoiceLegacyExport
         $worksheet->getStyle('B'.$lineStart.':J'.$lineStart)->getAlignment()->setWrapText(true);
 
         // table with purchases
-        foreach ($batch->getPurchases() as $purchase) {
+        foreach ($invoice->getPurchases() as $purchase) {
             foreach ($purchase->getRecords() as $record) {
                 ++$lineStart;
                 $worksheet->setCellValue('B'.$lineStart, $purchase->getSmartcard()->getBeneficiary()->getId());
@@ -367,12 +367,12 @@ class SmartcardInvoiceLegacyExport
         ++$lineStart;
         $worksheet->mergeCells('F'.$lineStart.':H'.$lineStart);
         $currency = '';
-        foreach ($batch->getPurchases() as $purchase) {
+        foreach ($invoice->getPurchases() as $purchase) {
             $currency = $purchase->getSmartcard()->getCurrency();
             break;
         }
         $worksheet->setCellValue('F'.$lineStart, $translator->trans('purchase_total', [], 'invoice'));
-        $worksheet->setCellValue('I'.$lineStart, sprintf('%.2f', $batch->getValue()));
+        $worksheet->setCellValue('I'.$lineStart, sprintf('%.2f', $invoice->getValue()));
         $worksheet->setCellValue('J'.$lineStart, $currency);
         self::setSmallHeadline($worksheet,'F'.$lineStart);
 

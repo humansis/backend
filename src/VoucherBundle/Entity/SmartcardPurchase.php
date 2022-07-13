@@ -171,11 +171,11 @@ class SmartcardPurchase
     }
 
     /**
-     * @param Invoice $redemptionBatch
+     * @param Invoice $invoice
      */
-    public function setRedemptionBatch(Invoice $redemptionBatch): void
+    public function setRedemptionBatch(Invoice $invoice): void
     {
-        $this->redemptionBatch = $redemptionBatch;
+        $this->redemptionBatch = $invoice;
     }
 
     /**

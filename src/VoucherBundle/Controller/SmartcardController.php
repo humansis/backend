@@ -683,13 +683,13 @@ class SmartcardController extends Controller
      *
      * @SWG\Response(response=200)
      *
-     * @param Invoice $batch
+     * @param Invoice $invoice
      *
      * @return Response
      */
-    public function getBatchesDetails(Invoice $batch): Response
+    public function getBatchesDetails(Invoice $invoice): Response
     {
-        return $this->json($batch);
+        return $this->json($invoice);
     }
 
     /**
@@ -706,15 +706,15 @@ class SmartcardController extends Controller
      *     description="All vendor purchases",
      * )
      *
-     * @param Invoice $batch
+     * @param Invoice $invoice
      *
      * @return Response
      */
-    public function getRedeemBatchesDetails(Invoice $batch): Response
+    public function getRedeemBatchesDetails(Invoice $invoice): Response
     {
         /** @var SmartcardPurchaseRepository $repository */
         $repository = $this->getDoctrine()->getManager()->getRepository(SmartcardPurchase::class);
-        $details = $repository->getDetailsByBatch($batch);
+        $details = $repository->getDetailsByBatch($invoice);
 
         return $this->json($details);
     }
@@ -775,18 +775,18 @@ class SmartcardController extends Controller
      *     description="invalid redeemed batch"
      * )
      *
-     * @param Invoice $batch
+     * @param Invoice $invoice
      *
      * @return Response
      *
      * @throws
      */
-    public function exportLegacy(Invoice $batch): Response
+    public function exportLegacy(Invoice $invoice): Response
     {
         // todo find organisation by relation to smartcard
         $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
 
-        $filename = $this->get('distribution.export_legacy.smartcard_invoice')->export($batch, $organization, $this->getUser());
+        $filename = $this->get('distribution.export_legacy.smartcard_invoice')->export($invoice, $organization, $this->getUser());
 
         $response = new BinaryFileResponse(getcwd().'/'.$filename);
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
@@ -815,19 +815,19 @@ class SmartcardController extends Controller
      *     description="invalid redeemed batch"
      * )
      *
-     * @param Invoice $batch
+     * @param Invoice $invoice
      *
      * @return Response
      *
      */
-    public function export(Invoice $batch): Response
+    public function export(Invoice $invoice): Response
     {
-        $country = $this->countries->getCountry($batch->getProject()->getIso3());
+        $country = $this->countries->getCountry($invoice->getProject()->getIso3());
 
         // todo find organisation by relation to smartcard
         $organization = $this->organizationRepository->findOneBy([]);
         $filename = $this->exporter->export(
-            $batch,
+            $invoice,
             $organization,
             $this->getUser(),
             $country->getLanguage()
