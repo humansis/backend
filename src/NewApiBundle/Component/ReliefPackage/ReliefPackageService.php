@@ -89,7 +89,7 @@ class ReliefPackageService
         $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
         if (!$reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
             $deposit->setSuspicious(true);
-            $message = "Relief package #{$reliefPackage->getId()} could not be set as Distributed because of invalid state ({$reliefPackage->getState()}).";
+            $message = "Relief package #{$reliefPackage->getId()} is in invalid state ({$reliefPackage->getState()}).";
             $deposit->addMessage($message);
             $this->logger->info($message);
         }

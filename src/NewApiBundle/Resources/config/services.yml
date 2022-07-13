@@ -438,12 +438,13 @@ services:
     NewApiBundle\Component\Smartcard\Deposit\DepositFactory:
         public: true
         arguments:
-            - '@VoucherBundle\Repository\SmartcardDepositRepository'
+            - '@NewApiBundle\Component\Smartcard\SmartcardDepositService'
             - '@smartcard_service'
             - '@NewApiBundle\Repository\Assistance\ReliefPackageRepository'
             - '@cache.app'
             - '@NewApiBundle\Component\ReliefPackage\ReliefPackageService'
             - '@logger'
+            - '@NewApiBundle\Component\ReliefPackage\ReliefPackageService'
 
     NewApiBundle\Export\SmartcardPurchasedItemSpreadsheet:
         arguments:
@@ -566,3 +567,4 @@ services:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - \NewApiBundle\Entity\ScoringBlueprint
+
