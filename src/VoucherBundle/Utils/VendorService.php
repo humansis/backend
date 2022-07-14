@@ -58,20 +58,20 @@ class VendorService
      * @param ValidatorInterface     $validator
      * @param LocationService        $locationService
      * @param ContainerInterface     $container
-     * @param Environment            $environment
+     * @param Environment            $twig
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
         LocationService $locationService,
         ContainerInterface $container,
-        Environment $environment
+        Environment $twig
     ) {
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
         $this->locationService = $locationService;
-        $this->twig = $environment;
+        $this->twig = $twig;
     }
 
     /**
