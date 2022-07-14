@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Repository;
 
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
@@ -100,7 +102,7 @@ class SmartcardPurchasedItemRepository  extends EntityRepository
                 }
 
                 $qbr = $locationRepository->joinChildrenLocationsQueryBuilder($qbr, $location, 'pi', 'l', true);
-                
+
             }
             if ($filter->hasVendors()) {
                 $qbr->andWhere('pi.vendor IN (:vendors)')

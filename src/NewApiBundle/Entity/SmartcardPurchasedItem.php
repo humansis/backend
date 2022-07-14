@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Entity;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Household;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
 use ProjectBundle\Entity\Project;
@@ -45,14 +45,14 @@ class SmartcardPurchasedItem
     /**
      * @var Beneficiary
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Beneficiary")
      */
     private $beneficiary;
 
     /**
      * @var Household
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Household")
      */
     private $household;
 

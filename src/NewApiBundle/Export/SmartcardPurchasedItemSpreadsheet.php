@@ -3,9 +3,13 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Export;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Phone;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\NationalId;
+use NewApiBundle\Entity\Phone;
+use CommonBundle\Entity\Adm1;
+use CommonBundle\Entity\Adm2;
+use CommonBundle\Entity\Adm3;
+use CommonBundle\Entity\Adm4;
 use DistributionBundle\Entity\Assistance;
 use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Component\Country\Country;
@@ -188,12 +192,12 @@ class SmartcardPurchasedItemSpreadsheet
     {
         $location = $assistance->getLocation();
         $names = array_fill(0, 4 , null);
-        
+
         while ($location) {
             $names[$location->getLvl() - 1] = $location->getName();
             $location = $location->getParent();
         }
-        
+
         return $names;
     }
 }

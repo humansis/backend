@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper\Assistance\OfflineApp;
 
-use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Mapper\Assistance\AbstractTargetMapper;
 use NewApiBundle\Mapper\MapperContextTrait;
 use VoucherBundle\Entity\Booklet;

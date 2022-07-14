@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Component\Assistance\Scoring;
 
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRulesEnum;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use DateTime;
@@ -34,7 +36,7 @@ class RulesComputationTest extends KernelTestCase
         $container = self::$kernel->getContainer()->get('test.service_container');
 
         $this->rulesCalculation = $container->get(RulesCalculation::class);
-        
+
         $this->rulesEnum = $container->get(RulesEnum::class);
     }
 
@@ -135,9 +137,9 @@ class RulesComputationTest extends KernelTestCase
         $scoringRule->addOption(new ScoringRuleOption('House/Apartment - Moderately Damaged',4));
         $scoringRule->addOption(new ScoringRuleOption('House/Apartment - Severely Damaged',5));
 
-        
+
         $household = new Household();
-        
+
         //value defined both enum and scoring
         $household->setShelterStatus(HouseholdShelterStatus::HOUSE_APARTMENT_MODERATELY_DAMAGED);
         $result = $this->rulesEnum->getScore($household, $scoringRule);

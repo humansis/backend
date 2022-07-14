@@ -2,7 +2,7 @@
 
 namespace CommonBundle\DataFixtures;
 
-use BeneficiaryBundle\Entity\Camp;
+use NewApiBundle\Entity\Camp;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;

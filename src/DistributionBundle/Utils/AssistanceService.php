@@ -2,10 +2,10 @@
 
 namespace DistributionBundle\Utils;
 
-use BeneficiaryBundle\Entity\AbstractBeneficiary;
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Community;
-use BeneficiaryBundle\Entity\Institution;
+use NewApiBundle\Entity\AbstractBeneficiary;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Community;
+use NewApiBundle\Entity\Institution;
 use BeneficiaryBundle\Exception\CsvParserException;
 use CommonBundle\Pagination\Paginator;
 use CommonBundle\Utils\LocationService;
@@ -396,7 +396,7 @@ class AssistanceService
     {
         foreach ($listReceivers['finalArray'] as $receiver => $scoreProtocol) {
             /** @var Beneficiary $beneficiary */
-            $beneficiary = $this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $receiver);
+            $beneficiary = $this->em->getReference(Beneficiary::class, $receiver);
 
             $assistanceBeneficiary = (new AssistanceBeneficiary())
                 ->setAssistance($assistance)

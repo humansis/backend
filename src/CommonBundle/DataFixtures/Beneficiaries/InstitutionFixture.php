@@ -1,7 +1,7 @@
 <?php
 namespace CommonBundle\DataFixtures\Beneficiaries;
 
-use BeneficiaryBundle\Entity\Institution;
+use NewApiBundle\Entity\Institution;
 use BeneficiaryBundle\InputType\NewInstitutionType;
 use BeneficiaryBundle\Utils\InstitutionService;
 use CommonBundle\DataFixtures\LocationFixtures;

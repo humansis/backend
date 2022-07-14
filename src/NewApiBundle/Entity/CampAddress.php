@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -29,7 +29,7 @@ class CampAddress
     private $tentNumber;
 
      /**
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Camp", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Camp", cascade={"persist"})
      */
     private $camp;
 
@@ -71,11 +71,11 @@ class CampAddress
     /**
      * Set camp.
      *
-     * @param \BeneficiaryBundle\Entity\Camp|null $camp
+     * @param \NewApiBundle\Entity\Camp|null $camp
      *
      * @return CampAddress
      */
-    public function setCamp(\BeneficiaryBundle\Entity\Camp $camp = null)
+    public function setCamp(\NewApiBundle\Entity\Camp $camp = null)
     {
         $this->camp = $camp;
 
@@ -85,7 +85,7 @@ class CampAddress
     /**
      * Get camp.
      *
-     * @return \BeneficiaryBundle\Entity\Camp|null
+     * @return \NewApiBundle\Entity\Camp|null
      */
     public function getCamp()
     {

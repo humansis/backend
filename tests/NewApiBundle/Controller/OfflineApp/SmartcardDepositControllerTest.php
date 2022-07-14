@@ -2,7 +2,7 @@
 
 namespace Tests\NewApiBundle\Controller\OfflineApp;
 
-use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Component\Smartcard\Deposit\DepositFactory;

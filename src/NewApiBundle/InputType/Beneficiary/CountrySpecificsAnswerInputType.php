@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType\Beneficiary;
 
-use BeneficiaryBundle\Entity\CountrySpecific;
+use NewApiBundle\Entity\CountrySpecific;
 use NewApiBundle\Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use NewApiBundle\Validator\Constraints\CountrySpecificDataType;

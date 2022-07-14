@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
-use BeneficiaryBundle\Entity\Address;
+use NewApiBundle\Entity\Address;
 use NewApiBundle\Serializer\MapperInterface;
 
 class AddressMapper implements MapperInterface

@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Mapper;
 
-use BeneficiaryBundle\Entity\Institution;
+use NewApiBundle\Entity\Institution;
 use NewApiBundle\Serializer\MapperInterface;
 
 class InstitutionMapper implements MapperInterface

@@ -2,7 +2,7 @@
 
 namespace Tests\NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\CountrySpecificAnswer;
+use NewApiBundle\Entity\CountrySpecificAnswer;
 use Exception;
 use Tests\BMSServiceTestCase;
 

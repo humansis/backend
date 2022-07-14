@@ -3,10 +3,10 @@
 
 namespace BeneficiaryBundle\Utils;
 
-use BeneficiaryBundle\Entity\Address;
-use BeneficiaryBundle\Entity\Institution;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Phone;
+use NewApiBundle\Entity\Address;
+use NewApiBundle\Entity\Institution;
+use NewApiBundle\Entity\NationalId;
+use NewApiBundle\Entity\Phone;
 use CommonBundle\Entity\Location;
 use CommonBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;

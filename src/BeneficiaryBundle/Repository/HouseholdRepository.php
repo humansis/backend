@@ -2,6 +2,11 @@
 
 namespace BeneficiaryBundle\Repository;
 
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Entity\HouseholdLocation;
+use CommonBundle\Entity\Adm1;
+use CommonBundle\Entity\Adm2;
+use CommonBundle\Entity\Adm3;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use CommonBundle\Repository\LocationRepository;
@@ -213,11 +218,11 @@ class HouseholdRepository extends AbstractCriteriaRepository
         }
 
         if ($filter->hasFulltext()) {
-            
+
             $qbl1 = $this->locationRepository->addParentLocationFulltextSubQueryBuilder(1, 'l', 'l1');
             $qbl2 = $this->locationRepository->addParentLocationFulltextSubQueryBuilder(2, 'l', 'l2');
             $qbl3 = $this->locationRepository->addParentLocationFulltextSubQueryBuilder(3, 'l', 'l3');
-            
+
             $qb->andWhere($qb->expr()->orX(
                     $qb->expr()->like("CONCAT(
                             COALESCE(hh.id, ''),

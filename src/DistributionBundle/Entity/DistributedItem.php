@@ -2,7 +2,7 @@
 
 namespace DistributionBundle\Entity;
 
-use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Beneficiary;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -51,7 +51,7 @@ class DistributedItem implements \JsonSerializable
     /**
      * @var Beneficiary
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Beneficiary")
      */
     private $beneficiary;
 

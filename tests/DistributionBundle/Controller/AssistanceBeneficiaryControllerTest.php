@@ -3,7 +3,7 @@
 
 namespace Tests\DistributionBundle\Controller;
 
-use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Tests\BMSServiceTestCase;

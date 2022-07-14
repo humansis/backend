@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace BeneficiaryBundle\Mapper;
 
-use BeneficiaryBundle\Entity\AbstractBeneficiary;
-use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\AbstractBeneficiary;
+use NewApiBundle\Entity\Beneficiary;
 use Symfony\Component\Serializer\Serializer;
 
 class BeneficiaryMapper

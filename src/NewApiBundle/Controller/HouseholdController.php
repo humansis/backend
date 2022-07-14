@@ -2,6 +2,7 @@
 
 namespace NewApiBundle\Controller;
 
+use NewApiBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Repository\HouseholdRepository;
 use BeneficiaryBundle\Utils\HouseholdService;

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Community;
-use BeneficiaryBundle\Entity\Institution;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Community;
+use NewApiBundle\Entity\Institution;
 use CommonBundle\Controller\ExportController;
 use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;

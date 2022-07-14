@@ -3,6 +3,10 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\CountrySpecificAnswer;
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;

@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Component\Import\Identity;
 
-use BeneficiaryBundle\Entity\NationalId;
+use NewApiBundle\Entity\NationalId;
 use NewApiBundle\Entity\ImportQueue;
 
 class NationalIdHashSet

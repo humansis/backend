@@ -2,7 +2,7 @@
 
 namespace Tests\BeneficiaryBundle\Controller;
 
-use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Beneficiary;
 use CommonBundle\Utils\ExportService;
 use Tests\BMSServiceTestCase;
 

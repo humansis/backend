@@ -34,8 +34,8 @@ distribution:
     criteria: {
         gender: boolean,
         dateOfBirth: date,
-        vulnerabilityCriteria: BeneficiaryBundle\Entity\VulnerabilityCriterion,
-        countrySpecific: BeneficiaryBundle\Entity\CountrySpecific
+        vulnerabilityCriteria: NewApiBundle\Entity\VulnerabilityCriterion,
+        countrySpecific: NewApiBundle\Entity\CountrySpecific
         }
 ```
 
@@ -94,7 +94,7 @@ specified in the config.yml file, with the pattern : whereClassName.
 
 Config :
 ```yaml
-vulnerabilityCriteria: BeneficiaryBundle\Entity\VulnerabilityCriterion,
+vulnerabilityCriteria: NewApiBundle\Entity\VulnerabilityCriterion,
 ``` 
 
 In each repositories (Household and Beneficiary), we have to create a method called whereVulnerabilityCriterion.

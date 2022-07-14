@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace VoucherBundle\Entity;
 
-use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Beneficiary;
 use DateTime;
 use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;

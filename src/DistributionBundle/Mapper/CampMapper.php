@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DistributionBundle\Mapper;
 
-use BeneficiaryBundle\Entity\Camp;
+use NewApiBundle\Entity\Camp;
 
 class CampMapper
 {

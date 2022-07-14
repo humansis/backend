@@ -2,9 +2,9 @@
 
 namespace Tests\NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Community;
-use BeneficiaryBundle\Entity\Institution;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Community;
+use NewApiBundle\Entity\Institution;
 use Doctrine\ORM\NoResultException;
 use Exception;
 use ProjectBundle\Entity\Project;

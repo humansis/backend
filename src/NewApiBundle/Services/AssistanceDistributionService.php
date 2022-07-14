@@ -2,8 +2,8 @@
 
 namespace NewApiBundle\Services;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\CountrySpecific;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use BeneficiaryBundle\Repository\CountrySpecificRepository;
 use DistributionBundle\Entity\Assistance;

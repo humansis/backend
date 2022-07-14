@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper\Assistance;
 
-use BeneficiaryBundle\Entity\Institution;
+use NewApiBundle\Entity\Institution;
 use TransactionBundle\Entity\Transaction;
 use VoucherBundle\Entity\SmartcardDeposit;
 

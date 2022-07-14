@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Entity;
 
-use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Beneficiary;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 
@@ -32,7 +32,7 @@ class ImportBeneficiaryDuplicity
     /**
      * @var Beneficiary
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Beneficiary")
      */
     private $beneficiary;
 

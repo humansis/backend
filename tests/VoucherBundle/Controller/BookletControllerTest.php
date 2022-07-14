@@ -1,7 +1,7 @@
 <?php
 namespace VoucherBundle\Tests\Controller;
 
-use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use Tests\BMSServiceTestCase;

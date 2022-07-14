@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -36,14 +36,14 @@ class CountrySpecificAnswer
     /**
      * @var CountrySpecific
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\CountrySpecific", inversedBy="countrySpecificAnswers")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\CountrySpecific", inversedBy="countrySpecificAnswers")
      */
     private $countrySpecific;
 
     /**
      * @var Household
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household", inversedBy="countrySpecificAnswers")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Household", inversedBy="countrySpecificAnswers")
      */
     private $household;
 
@@ -84,11 +84,11 @@ class CountrySpecificAnswer
     /**
      * Set countrySpecific.
      *
-     * @param \BeneficiaryBundle\Entity\CountrySpecific|null $countrySpecific
+     * @param \NewApiBundle\Entity\CountrySpecific|null $countrySpecific
      *
      * @return CountrySpecificAnswer
      */
-    public function setCountrySpecific(\BeneficiaryBundle\Entity\CountrySpecific $countrySpecific = null)
+    public function setCountrySpecific(\NewApiBundle\Entity\CountrySpecific $countrySpecific = null)
     {
         $this->countrySpecific = $countrySpecific;
 
@@ -98,7 +98,7 @@ class CountrySpecificAnswer
     /**
      * Get countrySpecific.
      *
-     * @return \BeneficiaryBundle\Entity\CountrySpecific|null
+     * @return \NewApiBundle\Entity\CountrySpecific|null
      */
     public function getCountrySpecific()
     {
@@ -108,11 +108,11 @@ class CountrySpecificAnswer
     /**
      * Set household.
      *
-     * @param \BeneficiaryBundle\Entity\Household|null $household
+     * @param \NewApiBundle\Entity\Household|null $household
      *
      * @return CountrySpecificAnswer
      */
-    public function setHousehold(\BeneficiaryBundle\Entity\Household $household = null)
+    public function setHousehold(\NewApiBundle\Entity\Household $household = null)
     {
         $this->household = $household;
 
@@ -122,7 +122,7 @@ class CountrySpecificAnswer
     /**
      * Get household.
      *
-     * @return \BeneficiaryBundle\Entity\Household|null
+     * @return \NewApiBundle\Entity\Household|null
      */
     public function getHousehold()
     {

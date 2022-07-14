@@ -2,8 +2,8 @@
 
 namespace DistributionBundle\Repository;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Household;
 use DistributionBundle\Entity\DistributedItem;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;

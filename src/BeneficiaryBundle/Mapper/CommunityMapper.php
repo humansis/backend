@@ -2,7 +2,7 @@
 
 namespace BeneficiaryBundle\Mapper;
 
-use BeneficiaryBundle\Entity\Community;
+use NewApiBundle\Entity\Community;
 use CommonBundle\Mapper\LocationMapper;
 use ProjectBundle\Mapper\ProjectMapper;
 

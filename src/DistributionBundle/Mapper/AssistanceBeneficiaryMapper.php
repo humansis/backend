@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace DistributionBundle\Mapper;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Household;
 use BeneficiaryBundle\Mapper\BeneficiaryMapper;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use TransactionBundle\Entity\Transaction;

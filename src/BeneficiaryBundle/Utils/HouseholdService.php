@@ -3,18 +3,18 @@
 
 namespace BeneficiaryBundle\Utils;
 
-use BeneficiaryBundle\Entity\Address;
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Camp;
-use BeneficiaryBundle\Entity\CampAddress;
-use BeneficiaryBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Entity\CountrySpecificAnswer;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\HouseholdLocation;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Person;
-use BeneficiaryBundle\Entity\Phone;
-use BeneficiaryBundle\Entity\Profile;
+use NewApiBundle\Entity\Address;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Camp;
+use NewApiBundle\Entity\CampAddress;
+use NewApiBundle\Entity\CountrySpecific;
+use NewApiBundle\Entity\CountrySpecificAnswer;
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Entity\HouseholdLocation;
+use NewApiBundle\Entity\NationalId;
+use NewApiBundle\Entity\Person;
+use NewApiBundle\Entity\Phone;
+use NewApiBundle\Entity\Profile;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use CommonBundle\Entity\Location;

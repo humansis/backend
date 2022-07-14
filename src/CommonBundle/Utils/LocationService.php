@@ -6,6 +6,7 @@ namespace CommonBundle\Utils;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use BeneficiaryBundle\InputType\LocationType;
 use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Camp;
 use CommonBundle\InputType\Country;
 use CommonBundle\Repository\LocationRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,7 +23,7 @@ class LocationService
 
     /** @var EntityManagerInterface $em */
     private $em;
-    
+
     /** @var LocationRepository $locationRepository */
     private $locationRepository;
 
@@ -77,18 +78,18 @@ class LocationService
             $locationArray,
             'any'
         );
-        
+
         $location = null;
         for ($i = 4; $i > 0; $i--) {
             $admKey = 'adm' . $i;
             if ($locationArray[$admKey] === null) {
                 continue;
             }
-            
+
             $location = $this->locationRepository->find($locationArray[$admKey]);
             break;
         }
-        
+
         return $location;
     }
 
@@ -101,7 +102,7 @@ class LocationService
         if (!$locationType) {
             return null;
         }
-        
+
         for ($i = 4; $i > 0; $i--) {
             $locationId = $locationType->getAdmByLevel($i);
             if ($locationId !== null) {

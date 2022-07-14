@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use CommonBundle\Utils\ExportableInterface;
 use DateTime;
@@ -26,7 +26,7 @@ use VoucherBundle\Entity\Smartcard;
 class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 {
     /**
-     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Person", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="NewApiBundle\Entity\Person", cascade={"persist", "remove"})
      */
     private $person;
 
@@ -56,14 +56,14 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * @var Household
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household", inversedBy="beneficiaries")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Household", inversedBy="beneficiaries")
      */
     private $household;
 
     /**
      * @var VulnerabilityCriterion
      *
-     * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\VulnerabilityCriterion", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity="NewApiBundle\Entity\VulnerabilityCriterion", cascade={"persist"})
      */
     private $vulnerabilityCriteria;
 

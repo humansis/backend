@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Entity\CountrySpecificAnswer;
+use NewApiBundle\Entity\CountrySpecific;
+use NewApiBundle\Entity\CountrySpecificAnswer;
 use CommonBundle\Controller\ExportController;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use FOS\RestBundle\Controller\Annotations as Rest;

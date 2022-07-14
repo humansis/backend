@@ -2,7 +2,7 @@
 
 namespace VoucherBundle\Repository;
 
-use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;

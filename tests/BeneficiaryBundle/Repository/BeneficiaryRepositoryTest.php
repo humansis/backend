@@ -4,8 +4,8 @@
 namespace Tests\BeneficiaryBundle\Repository;
 
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Household;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;

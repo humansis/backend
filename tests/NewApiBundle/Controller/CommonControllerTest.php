@@ -2,10 +2,10 @@
 
 namespace Tests\NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\HouseholdLocation;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Phone;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\HouseholdLocation;
+use NewApiBundle\Entity\NationalId;
+use NewApiBundle\Entity\Phone;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Tests\BMSServiceTestCase;

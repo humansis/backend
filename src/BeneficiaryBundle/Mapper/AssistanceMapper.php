@@ -2,7 +2,7 @@
 
 namespace BeneficiaryBundle\Mapper;
 
-use BeneficiaryBundle\Entity\AbstractBeneficiary;
+use NewApiBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;

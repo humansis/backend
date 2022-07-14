@@ -2,8 +2,8 @@
 
 namespace TransactionBundle\Utils;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Household;
 use DateTime;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;

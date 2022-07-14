@@ -2,9 +2,9 @@
 
 namespace BeneficiaryBundle\Repository;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\CountrySpecific;
+use NewApiBundle\Entity\Household;
 use CommonBundle\Repository\LocationRepository;
 use DistributionBundle\Entity\Assistance;
 use CommonBundle\Entity\Location;
@@ -95,7 +95,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
      */
     public function getNotSelectedBeneficiariesOfProject(Project $project, string $target, Assistance $excludedAssistance)
     {
-        $excludedAssistanceDQL = "SELECT ben.id FROM DistributionBundle\Entity\AssistanceBeneficiary db LEFT JOIN db.beneficiary ab INNER JOIN BeneficiaryBundle\Entity\Beneficiary ben WITH ben.id = ab.id WHERE db.assistance = :assistance";
+        $excludedAssistanceDQL = "SELECT ben.id FROM DistributionBundle\Entity\AssistanceBeneficiary db LEFT JOIN db.beneficiary ab INNER JOIN NewApiBundle\Entity\Beneficiary ben WITH ben.id = ab.id WHERE db.assistance = :assistance";
         $projectId = $project->getId();
 
         $qb = $this->createQueryBuilder('b');

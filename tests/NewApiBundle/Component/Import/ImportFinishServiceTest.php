@@ -2,8 +2,8 @@
 
 namespace Tests\NewApiBundle\Component\Import;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Household;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Entity;

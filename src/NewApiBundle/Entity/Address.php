@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;

@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use CommonBundle\Utils\ExportableInterface;
 use DistributionBundle\Model\Criteria;
@@ -49,7 +49,7 @@ class CountrySpecific extends Criteria implements ExportableInterface
     /**
      * @var CountrySpecificAnswer
      *
-     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\CountrySpecificAnswer", mappedBy="countrySpecific", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\CountrySpecificAnswer", mappedBy="countrySpecific", cascade={"remove"})
      */
     private $countrySpecificAnswers;
 
@@ -128,11 +128,11 @@ class CountrySpecific extends Criteria implements ExportableInterface
     /**
      * Add countrySpecificAnswer.
      *
-     * @param \BeneficiaryBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer
+     * @param \NewApiBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer
      *
      * @return CountrySpecific
      */
-    public function addCountrySpecificAnswer(\BeneficiaryBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer)
+    public function addCountrySpecificAnswer(\NewApiBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer)
     {
         $this->countrySpecificAnswers[] = $countrySpecificAnswer;
 
@@ -142,11 +142,11 @@ class CountrySpecific extends Criteria implements ExportableInterface
     /**
      * Remove countrySpecificAnswer.
      *
-     * @param \BeneficiaryBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer
+     * @param \NewApiBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeCountrySpecificAnswer(\BeneficiaryBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer)
+    public function removeCountrySpecificAnswer(\NewApiBundle\Entity\CountrySpecificAnswer $countrySpecificAnswer)
     {
         return $this->countrySpecificAnswers->removeElement($countrySpecificAnswer);
     }

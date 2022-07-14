@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
-use BeneficiaryBundle\Entity\Community;
+use NewApiBundle\Entity\Community;
 use InvalidArgumentException;
 use NewApiBundle\Serializer\MapperInterface;
 

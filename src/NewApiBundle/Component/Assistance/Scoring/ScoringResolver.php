@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Assistance\Scoring;
 
+use NewApiBundle\Entity\CountrySpecific;
+use NewApiBundle\Entity\Household;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
@@ -20,7 +22,7 @@ final class ScoringResolver
      * @var RulesCalculation
      */
     private $customComputation;
-    
+
     /** @var RulesEnum */
     private $enumResolver;
 

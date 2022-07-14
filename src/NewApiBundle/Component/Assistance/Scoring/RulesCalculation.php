@@ -3,6 +3,10 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Assistance\Scoring;
 
+use NewApiBundle\Entity\CountrySpecificAnswer;
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Entity\VulnerabilityCriterion;
+use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleOptionsEnum;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;

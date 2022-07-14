@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Component\Import\Integrity;
 
-use BeneficiaryBundle\Entity\CountrySpecific;
+use NewApiBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;

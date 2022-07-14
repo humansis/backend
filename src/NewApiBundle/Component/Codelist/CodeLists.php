@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Codelist;
 
+use NewApiBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use NewApiBundle\Enum\Domain;
 use ProjectBundle\DBAL\SubSectorEnum;
@@ -42,7 +43,7 @@ class CodeLists
             $translation = $translator !== null
                 ? $translator->trans($value, [], $domain)
                 : $value;
-            
+
             $data[] = new CodeItem($key, $translation);
         }
 

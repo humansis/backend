@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Entity;
 
-use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Beneficiary;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\CreatedBy;
@@ -31,7 +31,7 @@ class ImportBeneficiary
     /**
      * @var Beneficiary
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary", inversedBy="importBeneficiaries", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Beneficiary", inversedBy="importBeneficiaries", cascade={"persist"})
      * @ORM\JoinColumn(name="beneficiary_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $beneficiary;

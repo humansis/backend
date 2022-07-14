@@ -2,8 +2,8 @@
 
 namespace Tests\BeneficiaryBundle\Utils;
 
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\HouseholdLocation;
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Enum\ResidencyStatus;
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\Common\Persistence\ObjectManager;

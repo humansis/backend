@@ -2,7 +2,7 @@
 
 namespace Tests\ProjectBundle\Controller;
 
-use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Entity\Household;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;

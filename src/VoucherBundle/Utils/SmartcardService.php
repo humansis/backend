@@ -2,6 +2,8 @@
 
 namespace VoucherBundle\Utils;
 
+use NewApiBundle\Entity\Beneficiary;
+use DateTime;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use DateTimeInterface;

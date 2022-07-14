@@ -2,7 +2,7 @@
 
 namespace DistributionBundle\Repository;
 
-use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\GeneralReliefItem;
 use Doctrine\ORM\Tools\Pagination\Paginator;

@@ -2,9 +2,9 @@
 
 namespace NewApiBundle\Component\Assistance\Domain;
 
-use BeneficiaryBundle\Entity\AbstractBeneficiary;
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Entity\AbstractBeneficiary;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Household;
 use DistributionBundle\Entity;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Enum\AssistanceTargetType;

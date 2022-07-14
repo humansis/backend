@@ -1,34 +1,59 @@
 <?php
 
-namespace BeneficiaryBundle\Entity;
+namespace NewApiBundle\Entity;
 
-use CommonBundle\Entity\Location;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Community
+ * Institution
  *
- * @ORM\Table(name="community")
- * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\CommunityRepository")
+ * @ORM\Table(name="institution")
+ * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\InstitutionRepository")
  */
-class Community extends AbstractBeneficiary
+class Institution extends AbstractBeneficiary
 {
+    const TYPE_SCHOOL = 'school';
+    const TYPE_HEALTH_CENTER = 'health';
+    const TYPE_COMMUNITY_CENTER = 'community_center';
+    const TYPE_GOVERNMENT = 'government';
+    const TYPE_PRODUCTION = 'production';
+    const TYPE_COMMERCE = 'commerce';
+
+    const TYPE_ALL = [
+        self::TYPE_SCHOOL,
+        self::TYPE_HEALTH_CENTER,
+        self::TYPE_COMMUNITY_CENTER,
+        self::TYPE_GOVERNMENT,
+        self::TYPE_PRODUCTION,
+        self::TYPE_COMMERCE,
+    ];
+
     /**
      * @var string
-     * @ORM\Column(name="name", type="string", length=100, nullable=false)
+     *
+     * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
     private $name;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="type", type="string", length=255)
+     * @Assert\Choice(choices=NewApiBundle\Entity\Institution::TYPE_ALL)
+     */
+    private $type;
+
+    /**
      * @var Person|null
-     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Person", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="NewApiBundle\Entity\Person", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="contact_person_id", referencedColumnName="id", nullable=true)
      */
     private $contact;
 
     /**
-     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Address", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="NewApiBundle\Entity\Address", cascade={"persist", "remove"})
      */
     private $address;
 
@@ -46,8 +71,10 @@ class Community extends AbstractBeneficiary
      */
     private $longitude;
 
+
+
     /**
-     * Community constructor.
+     * Institution constructor.
      */
     public function __construct()
     {
@@ -69,6 +96,26 @@ class Community extends AbstractBeneficiary
     public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    /**
+     * Set type.
+     *
+     * @param string $type
+     */
+    public function setType(string $type): void
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * Get type.
+     *
+     * @return string|null
+     */
+    public function getType(): ?string
+    {
+        return $this->type;
     }
 
     /**
@@ -246,4 +293,5 @@ class Community extends AbstractBeneficiary
     {
         return $this->longitude;
     }
+
 }

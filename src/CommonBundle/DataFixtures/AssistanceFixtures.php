@@ -2,8 +2,8 @@
 
 namespace CommonBundle\DataFixtures;
 
-use BeneficiaryBundle\Entity\Community;
-use BeneficiaryBundle\Entity\Institution;
+use NewApiBundle\Entity\Community;
+use NewApiBundle\Entity\Institution;
 use CommonBundle\DataFixtures\Beneficiaries\BeneficiaryFixtures;
 use CommonBundle\Entity\Location;
 use CommonBundle\Mapper\LocationMapper;
