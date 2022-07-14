@@ -32,7 +32,7 @@ monolog:
         import:
             type: stream
             path: '%kernel.logs_dir%/imports.log'
-            level: info
+            level: debug
         # uncomment to get logging in your browser
         # you may have to allow bigger header sizes in your Web server configuration
         #firephp:

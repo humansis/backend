@@ -46,14 +46,14 @@ class VoucherService
      * @param EntityManagerInterface $entityManager
      * @param ValidatorInterface     $validator
      * @param ContainerInterface     $container
-     * @param Environment            $environment
+     * @param Environment            $twig
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container, Environment $environment)
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container, Environment $twig)
     {
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
-        $this->twig = $environment;
+        $this->twig = $twig;
     }
 
     /**
