@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-use BeneficiaryBundle\Repository\BeneficiaryRepository;
-use BeneficiaryBundle\Repository\CommunityRepository;
-use BeneficiaryBundle\Repository\InstitutionRepository;
+use NewApiBundle\Repository\BeneficiaryRepository;
+use NewApiBundle\Repository\CommunityRepository;
+use NewApiBundle\Repository\InstitutionRepository;
 use DistributionBundle\Entity;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;

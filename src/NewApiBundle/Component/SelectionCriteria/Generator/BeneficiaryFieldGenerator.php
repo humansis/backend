@@ -5,7 +5,7 @@ namespace NewApiBundle\Component\SelectionCriteria\Generator;
 
 use NewApiBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;
-use BeneficiaryBundle\Repository\VulnerabilityCriterionRepository;
+use NewApiBundle\Repository\VulnerabilityCriterionRepository;
 use NewApiBundle\Component\SelectionCriteria\FieldGeneratorInterface;
 use NewApiBundle\Component\SelectionCriteria\Structure\Field;
 

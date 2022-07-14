@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Export;
 
 
-use BeneficiaryBundle\Repository\CountrySpecificRepository;
+use NewApiBundle\Repository\CountrySpecificRepository;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use PhpOffice\PhpSpreadsheet\IOFactory;

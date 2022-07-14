@@ -4,8 +4,8 @@ namespace NewApiBundle\Component\Assistance;
 
 use NewApiBundle\Entity\CountrySpecific;
 use NewApiBundle\Entity\VulnerabilityCriterion;
-use BeneficiaryBundle\Repository\CountrySpecificRepository;
-use BeneficiaryBundle\Repository\VulnerabilityCriterionRepository;
+use NewApiBundle\Repository\CountrySpecificRepository;
+use NewApiBundle\Repository\VulnerabilityCriterionRepository;
 use CommonBundle\Repository\LocationRepository;
 use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\Component\Assistance\Domain\SelectionCriteria;

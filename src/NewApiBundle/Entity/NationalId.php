@@ -14,7 +14,7 @@ use NewApiBundle\Enum\NationalIdType;
  * @ORM\Table(name="national_id", indexes={
  *     @ORM\Index(name="duplicity_check_idx", columns={"id_type", "id_number"})
  * })
- * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\NationalIdRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\NationalIdRepository")
  */
 class NationalId
 {

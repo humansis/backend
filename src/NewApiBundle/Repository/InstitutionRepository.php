@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace BeneficiaryBundle\Repository;
+namespace NewApiBundle\Repository;
 
 use CommonBundle\Entity\Location;
 use DistributionBundle\Entity\Assistance;

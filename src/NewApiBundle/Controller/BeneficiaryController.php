@@ -6,7 +6,7 @@ use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\NationalId;
 use NewApiBundle\Entity\Phone;
 use BeneficiaryBundle\Exception\CsvParserException;
-use BeneficiaryBundle\Repository\BeneficiaryRepository;
+use NewApiBundle\Repository\BeneficiaryRepository;
 use BeneficiaryBundle\Utils\BeneficiaryService;
 use CommonBundle\Controller\ExportController;
 use CommonBundle\Entity\Organization;

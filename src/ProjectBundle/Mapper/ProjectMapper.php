@@ -3,7 +3,7 @@
 namespace ProjectBundle\Mapper;
 
 use BeneficiaryBundle\Mapper\AssistanceMapper;
-use BeneficiaryBundle\Repository\BeneficiaryRepository;
+use NewApiBundle\Repository\BeneficiaryRepository;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use ProjectBundle\Entity\Project;

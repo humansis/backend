@@ -5,6 +5,8 @@ namespace NewApiBundle\Component\Assistance\Scoring;
 
 use NewApiBundle\Entity\CountrySpecific;
 use NewApiBundle\Entity\Household;
+use NewApiBundle\Repository\CountrySpecificAnswerRepository;
+use NewApiBundle\Repository\CountrySpecificRepository;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;

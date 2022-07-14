@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Profile
  *
  * @ORM\Table(name="profile")
- * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\ProfileRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ProfileRepository")
  */
 class Profile
 {

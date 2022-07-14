@@ -2,6 +2,9 @@
 
 namespace NewApiBundle\Component\Assistance;
 
+use NewApiBundle\Repository\BeneficiaryRepository;
+use NewApiBundle\Repository\CommunityRepository;
+use NewApiBundle\Repository\InstitutionRepository;
 use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Exception\CsvParserException;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
@@ -163,7 +166,7 @@ class AssistanceFactory
         $location = $this->locationRepository->find($inputType->getLocationId());
         $assistanceRoot->setLocation($location);
         $assistanceRoot->setName(self::generateName($location, $inputType->getDateDistribution()));
-        
+
         if (!is_null($inputType->getScoringBlueprintId())) {
             $scoringBlueprint = $this->scoringBlueprintRepository->findActive($inputType->getScoringBlueprintId(), $location->getCountryISO3());
             if (!$scoringBlueprint) {

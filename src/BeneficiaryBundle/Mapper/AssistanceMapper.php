@@ -3,7 +3,7 @@
 namespace BeneficiaryBundle\Mapper;
 
 use NewApiBundle\Entity\AbstractBeneficiary;
-use BeneficiaryBundle\Repository\BeneficiaryRepository;
+use NewApiBundle\Repository\BeneficiaryRepository;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Enum\AssistanceTargetType;

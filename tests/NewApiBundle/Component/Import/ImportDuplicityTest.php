@@ -3,7 +3,7 @@
 namespace Tests\NewApiBundle\Component\Import;
 
 use NewApiBundle\Entity\NationalId;
-use BeneficiaryBundle\Repository\BeneficiaryRepository;
+use NewApiBundle\Repository\BeneficiaryRepository;
 use NewApiBundle\Component\Import\ImportFileValidator;
 use NewApiBundle\Component\Import\Integrity\DuplicityService;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;

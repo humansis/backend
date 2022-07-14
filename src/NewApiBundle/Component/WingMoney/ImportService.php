@@ -5,7 +5,7 @@ namespace NewApiBundle\Component\WingMoney;
 
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Phone;
-use BeneficiaryBundle\Repository\PhoneRepository;
+use NewApiBundle\Repository\PhoneRepository;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManagerInterface;

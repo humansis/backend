@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Institution
  *
  * @ORM\Table(name="institution")
- * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\InstitutionRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\InstitutionRepository")
  */
 class Institution extends AbstractBeneficiary
 {

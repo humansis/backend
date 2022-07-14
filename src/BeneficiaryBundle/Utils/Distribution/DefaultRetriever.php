@@ -5,8 +5,8 @@ namespace BeneficiaryBundle\Utils\Distribution;
 
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Household;
-use BeneficiaryBundle\Repository\BeneficiaryRepository;
-use BeneficiaryBundle\Repository\HouseholdRepository;
+use NewApiBundle\Repository\BeneficiaryRepository;
+use NewApiBundle\Repository\HouseholdRepository;
 use DistributionBundle\Utils\Retriever\AbstractRetriever;
 use Doctrine\ORM\EntityManagerInterface;
 

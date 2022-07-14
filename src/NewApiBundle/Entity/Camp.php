@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Camp
  *
  * @ORM\Table(name="camp")
- * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\CampRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\CampRepository")
  */
 class Camp
 {

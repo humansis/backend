@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Repository;
+namespace NewApiBundle\Repository;
 
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\InputType\NationalIdFilterInputType;

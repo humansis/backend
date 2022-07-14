@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Referral
  *
  * @ORM\Table(name="referral")
- * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\ReferralRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ReferralRepository")
  */
 class Referral
 {

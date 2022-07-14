@@ -21,7 +21,7 @@ use ProjectBundle\DBAL\LivelihoodEnum;
  * Household
  *
  * @ORM\Table(name="household")
- * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\HouseholdRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\HouseholdRepository")
  */
 class Household extends AbstractBeneficiary
 {

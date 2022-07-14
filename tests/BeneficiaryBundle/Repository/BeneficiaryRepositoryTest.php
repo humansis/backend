@@ -6,7 +6,7 @@ namespace Tests\BeneficiaryBundle\Repository;
 
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Household;
-use BeneficiaryBundle\Repository\BeneficiaryRepository;
+use NewApiBundle\Repository\BeneficiaryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
