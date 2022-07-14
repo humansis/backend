@@ -156,41 +156,4 @@ class CommunityControllerTest extends BMSServiceTestCase
         // item list
         $this->assertIsArray($listCommunity[1]);
     }
-
-    /**
-     * @depends testCreateCommunity
-     * @return bool|void
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function testGetCommunityByPaginator()
-    {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-        
-        $body = [
-            "pageIndex" => 0,
-            "pageSize" => 1,
-            "filter" => [],
-            "sort" => []
-        ];
-        $crawler = $this->request('POST', '/api/wsse/communities/get/all', $body);
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
-        $communitiesArray = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame(1, count($communitiesArray[1]));
-        $communities = $communitiesArray[1];
-        if (!empty($communities)) {
-            $community = current($communities);
-
-            $this->assertArrayHasKey('longitude', $community,"Part of answer missing: longitude");
-            $this->assertArrayHasKey('latitude', $community,"Part of answer missing: latitude");
-            $this->assertArrayHasKey('address', $community,"Part of answer missing: address");
-        } else {
-            $this->markTestIncomplete("You currently don't have any community in your database.");
-        }
-    }
-
 }
