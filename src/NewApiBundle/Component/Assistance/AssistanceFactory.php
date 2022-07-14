@@ -167,9 +167,7 @@ class AssistanceFactory
         $location = $this->locationRepository->find($inputType->getLocationId());
         $assistanceRoot->setLocation($location);
         $assistanceRoot->setName(self::generateName($location, $inputType->getDateDistribution()));
-
-        $assistanceRoot->setProject($project);
-
+        
         if (!is_null($inputType->getScoringBlueprintId())) {
             $scoringBlueprint = $this->scoringBlueprintRepository->findActive($inputType->getScoringBlueprintId(), $location->getCountryISO3());
             if (!$scoringBlueprint) {
