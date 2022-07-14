@@ -2,8 +2,8 @@
 
 namespace NewApiBundle\Component\Assistance;
 
-use BeneficiaryBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use NewApiBundle\Entity\CountrySpecific;
+use NewApiBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Repository\CountrySpecificRepository;
 use BeneficiaryBundle\Repository\VulnerabilityCriterionRepository;
 use CommonBundle\Repository\LocationRepository;

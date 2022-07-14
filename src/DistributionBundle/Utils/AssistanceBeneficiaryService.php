@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace DistributionBundle\Utils;
 
-use BeneficiaryBundle\Entity\AbstractBeneficiary;
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Community;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\Institution;
+use NewApiBundle\Entity\AbstractBeneficiary;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Community;
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Entity\Institution;
 use DateTime;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;

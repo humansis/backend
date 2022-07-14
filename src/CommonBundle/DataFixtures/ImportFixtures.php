@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CommonBundle\DataFixtures;
 
-use BeneficiaryBundle\Entity\NationalId;
+use NewApiBundle\Entity\NationalId;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;

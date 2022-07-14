@@ -2,7 +2,7 @@
 
 namespace BeneficiaryBundle\Model\Household\HouseholdChange\Factory;
 
-use BeneficiaryBundle\Entity\HouseholdActivity;
+use NewApiBundle\Entity\HouseholdActivity;
 use BeneficiaryBundle\Model\Household\HouseholdChange\FilteredHouseholdChange;
 
 class FilteredHouseholdChangeFactory implements HouseholdChangeFactoryInterface

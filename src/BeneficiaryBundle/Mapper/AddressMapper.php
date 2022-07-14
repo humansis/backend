@@ -1,7 +1,7 @@
 <?php
 namespace BeneficiaryBundle\Mapper;
 
-use BeneficiaryBundle\Entity\Address;
+use NewApiBundle\Entity\Address;
 use CommonBundle\Mapper\LocationMapper;
 
 class AddressMapper

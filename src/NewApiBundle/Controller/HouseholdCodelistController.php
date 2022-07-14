@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Entity\HouseholdLocation;
+use NewApiBundle\Entity\Referral;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\Referral;
 use CommonBundle\Pagination\Paginator;

@@ -2,10 +2,10 @@
 
 namespace BeneficiaryBundle\Utils;
 
-use BeneficiaryBundle\Entity\Address;
-use BeneficiaryBundle\Entity\Community;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Phone;
+use NewApiBundle\Entity\Address;
+use NewApiBundle\Entity\Community;
+use NewApiBundle\Entity\NationalId;
+use NewApiBundle\Entity\Phone;
 use BeneficiaryBundle\InputType;
 use CommonBundle\Entity\Location;
 use CommonBundle\InputType as GeneralInputType;

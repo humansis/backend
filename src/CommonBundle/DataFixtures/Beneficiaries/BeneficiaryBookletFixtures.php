@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace CommonBundle\DataFixtures\Beneficiaries;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Household;
 use CommonBundle\Controller\CountryController;
 use CommonBundle\DataFixtures\BeneficiaryTestFixtures;
 use CommonBundle\DataFixtures\BookletFixtures;

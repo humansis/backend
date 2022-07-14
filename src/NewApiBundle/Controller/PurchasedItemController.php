@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Household;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Entity\SmartcardPurchasedItem;
 use NewApiBundle\Export\SmartcardPurchasedItemSpreadsheet;

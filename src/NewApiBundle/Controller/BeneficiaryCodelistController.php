@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
+use NewApiBundle\Entity\NationalId;
+use NewApiBundle\Entity\Referral;
+use NewApiBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Entity\Referral;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;

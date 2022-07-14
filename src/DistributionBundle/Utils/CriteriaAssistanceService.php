@@ -3,8 +3,8 @@
 
 namespace DistributionBundle\Utils;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Camp;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Camp;
 use BeneficiaryBundle\Model\Vulnerability\Resolver as OldResolver;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Enum\AssistanceTargetType;
@@ -103,7 +103,7 @@ class CriteriaAssistanceService
 
             foreach ($selectableBeneficiaries as $bnf) {
                 /** @var Beneficiary $beneficiary */
-                $beneficiary = $this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $bnf['id']);
+                $beneficiary = $this->em->getReference(Beneficiary::class, $bnf['id']);
 
                 if (!isset($scoring)) {
                     $protocol = $this->oldResolver->compute($beneficiary->getHousehold(), $project->getIso3(), $sector);

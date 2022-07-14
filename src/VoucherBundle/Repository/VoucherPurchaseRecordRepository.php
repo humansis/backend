@@ -2,7 +2,7 @@
 
 namespace VoucherBundle\Repository;
 
-use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityRepository;
 use VoucherBundle\Entity\Voucher;
 

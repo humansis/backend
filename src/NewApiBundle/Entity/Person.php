@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -86,25 +86,25 @@ class Person
 
     /**
      * @var Profile|null
-     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Profile", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="NewApiBundle\Entity\Profile", cascade={"persist", "remove"})
      */
     private $profile;
 
     /**
      * @var Phone[]|Collection
-     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Phone", mappedBy="person", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\Phone", mappedBy="person", cascade={"persist", "remove"})
      */
     private $phones;
 
     /**
      * @var NationalId[]|Collection
-     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\NationalId", mappedBy="person", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\NationalId", mappedBy="person", cascade={"persist", "remove"})
      */
     private $nationalIds;
 
     /**
      * @var Referral|null
-     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Referral", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="NewApiBundle\Entity\Referral", cascade={"persist", "remove"})
      */
     private $referral;
 

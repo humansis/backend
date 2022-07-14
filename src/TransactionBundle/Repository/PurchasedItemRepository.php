@@ -2,8 +2,8 @@
 
 namespace TransactionBundle\Repository;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Household;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use TransactionBundle\Entity\PurchasedItem;
 

@@ -2,9 +2,9 @@
 
 namespace Tests\NewApiBundle\Component\Import\Helper;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\NationalId;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Entity\NationalId;
 use NewApiBundle\Entity;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportState;

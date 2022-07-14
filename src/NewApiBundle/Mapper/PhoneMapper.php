@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
-use BeneficiaryBundle\Entity\Phone;
+use NewApiBundle\Entity\Phone;
 use NewApiBundle\Serializer\MapperInterface;
 
 class PhoneMapper implements MapperInterface

@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
@@ -51,19 +51,19 @@ class HouseholdLocation
     private $type;
 
     /**
-     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Address", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="NewApiBundle\Entity\Address", cascade={"persist", "remove"})
      */
     private $address;
 
      /**
-     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\CampAddress", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="NewApiBundle\Entity\CampAddress", cascade={"persist", "remove"})
      */
     private $campAddress;
 
      /**
      * @var Household
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household", inversedBy="householdLocations")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Household", inversedBy="householdLocations")
      */
     private $household;
 
@@ -128,11 +128,11 @@ class HouseholdLocation
     /**
      * Set address.
      *
-     * @param \BeneficiaryBundle\Entity\Address|null $address
+     * @param \NewApiBundle\Entity\Address|null $address
      *
      * @return HouseholdLocation
      */
-    public function setAddress(\BeneficiaryBundle\Entity\Address $address = null)
+    public function setAddress(\NewApiBundle\Entity\Address $address = null)
     {
         $this->address = $address;
 
@@ -142,7 +142,7 @@ class HouseholdLocation
     /**
      * Get address.
      *
-     * @return \BeneficiaryBundle\Entity\Address|null
+     * @return \NewApiBundle\Entity\Address|null
      */
     public function getAddress()
     {
@@ -152,11 +152,11 @@ class HouseholdLocation
     /**
      * Set campAddress.
      *
-     * @param \BeneficiaryBundle\Entity\CampAddress|null $campAddress
+     * @param \NewApiBundle\Entity\CampAddress|null $campAddress
      *
      * @return HouseholdLocation
      */
-    public function setCampAddress(\BeneficiaryBundle\Entity\CampAddress $campAddress = null)
+    public function setCampAddress(\NewApiBundle\Entity\CampAddress $campAddress = null)
     {
         $this->campAddress = $campAddress;
 
@@ -166,7 +166,7 @@ class HouseholdLocation
     /**
      * Get campAddress.
      *
-     * @return \BeneficiaryBundle\Entity\CampAddress|null
+     * @return \NewApiBundle\Entity\CampAddress|null
      */
     public function getCampAddress()
     {
@@ -176,11 +176,11 @@ class HouseholdLocation
     /**
      * Set household.
      *
-     * @param \BeneficiaryBundle\Entity\Household|null $household
+     * @param \NewApiBundle\Entity\Household|null $household
      *
      * @return HouseholdLocation
      */
-    public function setHousehold(\BeneficiaryBundle\Entity\Household $household = null)
+    public function setHousehold(\NewApiBundle\Entity\Household $household = null)
     {
         $this->household = $household;
 
@@ -190,7 +190,7 @@ class HouseholdLocation
     /**
      * Get household.
      *
-     * @return \BeneficiaryBundle\Entity\Household|null
+     * @return \NewApiBundle\Entity\Household|null
      */
     public function getHousehold()
     {

@@ -2,8 +2,8 @@
 
 namespace Tests\BeneficiaryBundle\Model\Household;
 
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\HouseholdActivity;
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Entity\HouseholdActivity;
 use BeneficiaryBundle\Model\Household\HouseholdActivityChangesCollection;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use UserBundle\Entity\User;

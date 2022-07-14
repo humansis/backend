@@ -44,52 +44,52 @@ services:
     BeneficiaryBundle\Repository\ProfileRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
-            - BeneficiaryBundle\Entity\Profile
+            - NewApiBundle\Entity\Profile
 
     BeneficiaryBundle\Repository\NationalIdRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
-            - BeneficiaryBundle\Entity\NationalId
+            - NewApiBundle\Entity\NationalId
 
     BeneficiaryBundle\Repository\PhoneRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
-            - BeneficiaryBundle\Entity\Phone
+            - NewApiBundle\Entity\Phone
 
     BeneficiaryBundle\Repository\VulnerabilityCriterionRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
-            - BeneficiaryBundle\Entity\VulnerabilityCriterion
+            - NewApiBundle\Entity\VulnerabilityCriterion
 
 
     BeneficiaryBundle\Repository\HouseholdRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
-            - BeneficiaryBundle\Entity\Household
+            - NewApiBundle\Entity\Household
         calls:
-          - injectLocationRepository: [ '@CommonBundle\Repository\LocationRepository' ]
+            - injectLocationRepository: [ '@CommonBundle\Repository\LocationRepository' ]
 
     BeneficiaryBundle\Repository\BeneficiaryRepository:
         factory: ['@doctrine.orm.default_entity_manager', getRepository]
         arguments:
-            - BeneficiaryBundle\Entity\Beneficiary
+            - NewApiBundle\Entity\Beneficiary
         calls:
             - injectLocationRepository: ['@CommonBundle\Repository\LocationRepository']
 
     BeneficiaryBundle\Repository\CountrySpecificRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
-            - BeneficiaryBundle\Entity\CountrySpecific
+            - NewApiBundle\Entity\CountrySpecific
 
     BeneficiaryBundle\Repository\CommunityRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
-            - BeneficiaryBundle\Entity\Community
+            - NewApiBundle\Entity\Community
 
     BeneficiaryBundle\Repository\InstitutionRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
-            - BeneficiaryBundle\Entity\Institution
+            - NewApiBundle\Entity\Institution
 
     BeneficiaryBundle\Mapper\CommunityMapper:
         arguments:
@@ -125,7 +125,7 @@ services:
         arguments:
             - '@BeneficiaryBundle\Mapper\BeneficiaryMapper'
             - "@=service('doctrine.orm.entity_manager').getRepository('DistributionBundle:AssistanceBeneficiary')"
-            - "@=service('doctrine.orm.entity_manager').getRepository('BeneficiaryBundle:Beneficiary')"
+            - "@=service('doctrine.orm.entity_manager').getRepository('NewApiBundle:Beneficiary')"
         public: true
 
     BeneficiaryBundle\Mapper\PhoneMapper:

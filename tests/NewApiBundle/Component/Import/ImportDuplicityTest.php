@@ -2,7 +2,7 @@
 
 namespace Tests\NewApiBundle\Component\Import;
 
-use BeneficiaryBundle\Entity\NationalId;
+use NewApiBundle\Entity\NationalId;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use NewApiBundle\Component\Import\ImportFileValidator;
 use NewApiBundle\Component\Import\Integrity\DuplicityService;
@@ -19,8 +19,8 @@ use NewApiBundle\InputType\Import\Duplicity\ResolveSingleDuplicityInputType;
 use ProjectBundle\Enum\Livelihood;
 use ProjectBundle\Utils\ProjectService;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Household;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\ImportService;
 use NewApiBundle\Component\Import\UploadImportService;

@@ -2,10 +2,10 @@
 
 namespace CommonBundle\DataFixtures;
 
-use BeneficiaryBundle\Entity\Address;
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\HouseholdLocation;
+use NewApiBundle\Entity\Address;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Utils\HouseholdService;
 use CommonBundle\Entity\Location;
 use Doctrine\Bundle\FixturesBundle\Fixture;

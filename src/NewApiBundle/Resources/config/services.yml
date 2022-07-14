@@ -39,12 +39,12 @@ parameters:
         !php/const ProjectBundle\DBAL\SectorEnum::EARLY_RECOVERY: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080"><title>ico-early-recovery</title><path class="a" d="M418.2,308.7l82.4-81.5-8.9-8.8a146.4,146.4,0,0,0-207.2-.9l-147,144.4L249.9,474.3,333.2,392,819.4,879.9c23,23,61.1,23,84.1,0h0c23-23,23-61.1,0-84.1Z"/><path class="a" d="M813.2,393.7l-85.1-85,97.5-97.4-23.1-23L698,201.6l-.9.9A182.4,182.4,0,0,0,644,346.8l3.6,41.6-38.8,37.9,84.1,84.1L734.3,469l36.3,3.5c54.1,5.4,108.1-14.1,147-52.2h0l16-101-23-23Z"/><path class="a" d="M453.8,582.2l-62.2,61.3-36.3-3.6c-54-5.3-108,14.2-147,52.3l-15,102.7,23,23,97.4-97.4,85,85-97.4,97.4,23,23,104.5-13.2.9-.9a181.9,181.9,0,0,0,53.1-144.4l-3.5-41.6,59.5-58.6Z"/></svg>'
 
     icons_vulnerability_criteria:
-        !php/const BeneficiaryBundle\Entity\VulnerabilityCriterion::CRITERION_DISABLED: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" fit="" height="100%" width="100%" preserveAspectRatio="xMidYMid meet" focusable="false"><defs><style>.a{fill:#132F30;fill-rule:evenodd;} </style></defs><title>ico-disabled</title><path class="a" d="M813.9,475.8H637.4L747.5,365.7v-.5a50.3,50.3,0,0,0,9.5-30,44.3,44.3,0,0,0-.2-5.2A88,88,0,1,0,698,247a85.9,85.9,0,0,0,4.1,26.5L506.4,161v.4a50.7,50.7,0,0,0-20.9-4.5c-13.1,0-24.3,4.2-33.7,12.7L348.5,272.9c-9.1,10-13.6,21.5-13.6,34.6a51.2,51.2,0,0,0,14.5,36.3c9.7,9.8,21.6,14.6,35.5,14.6s25.7-4.7,35.1-14.1l1.3-.5,72.8-72.7L556,306.5,416.8,445.8q-63.3,15.9-112.4,65-73.2,73.6-73.2,177t73.2,176.9q73.2,73.6,177,73.7t176.9-73.7Q732,792,732,687.8q0-60.1-24.6-110.6h56.5v207a51.4,51.4,0,0,0,14.5,36.4c9.7,9.7,21.6,14.5,35.5,14.5s26.2-4.8,35.9-14.5,15-21.9,15-36.4V526.3q0-20.5-15-36C840.1,480.6,828.1,475.8,813.9,475.8ZM619.2,781a245,245,0,0,1-18.7,20.9,211.1,211.1,0,0,1-21.3,18.7q-42.3,30.9-96.5,30.9-69.6,0-119.2-49.6T314.4,684.1q0-55.1,30.9-97.3a167.9,167.9,0,0,1,18.2-21.9,237.5,237.5,0,0,1,21.4-18.2q42.3-30.9,97.8-30.9,68.3,0,117.4,48.7l.4.4q49.7,49.6,49.6,119.2Q650.1,738.7,619.2,781Z"></path></svg>'
-        !php/const BeneficiaryBundle\Entity\VulnerabilityCriterion::CRITERION_SOLO_PARENT: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" fit="" height="100%" width="100%"preserveAspectRatio="xMidYMid meet" focusable="false"><defs><style>.a{fill:#132F30;}.a,.c{fill - rule:evenodd;}.b,.c{fill:#fff;} </style></defs><title>ico-single-parent</title><path className="a"d="M655.2,469.3a156.9,156.9,0,1,0-82.6,0C440.3,489.4,338,604.4,338,742.1v181H889.8v-181C889.8,604.4,787.5,489.4,655.2,469.3Z"></path><circle className="b" cx="315" cy="577" r="143"></circle><path className="c" d="M520,966V810c0-87.4-71.6-159-159-159H256c-87.4,0-159,71.6-159,159V966Z"></path><path className="a"d="M339.8,668.8a92.5,92.5,0,1,0-48.7,0c-78,11.8-138.3,79.6-138.3,160.8V922H478.1V829.6C478.1,748.4,417.8,680.6,339.8,668.8Z"></path><circle className="b" cx="808.7" cy="642.8" r="118.8"></circle><path className="c"d="M979,966V836.4c0-72.7-59.5-132.1-132.1-132.1H759.7c-72.7,0-132.1,59.4-132.1,132.1V966Z"></path><path className="a"d="M829.3,719.1a76.9,76.9,0,1,0-40.5,0c-64.8,9.8-114.9,66.1-114.9,133.6v76.7H944.2V852.7C944.2,785.2,894.1,728.9,829.3,719.1Z"></path></svg>'
-        !php/const BeneficiaryBundle\Entity\VulnerabilityCriterion::CRITERION_LACTATING: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" fit="" height="100%" width="100%"preserveAspectRatio="xMidYMid meet" focusable="false"><defs><style>.a{fill:#132F30;} </style></defs><title>ico-lactating</title><path className="a"d="M732.7,308.9H687.8c-18.6-38.4-52.6-65.7-76.8-82.1a20.9,20.9,0,0,1-9.2-17.4V181.9a65.9,65.9,0,0,0-131.8,0v27.5a21.1,21.1,0,0,1-8.9,17.2C435,245,408.7,272,394.7,308.9H351.1a39.1,39.1,0,0,0-39,39v71.3a39.1,39.1,0,0,0,39,39H732.7a39.1,39.1,0,0,0,39-39V347.9A39.1,39.1,0,0,0,732.7,308.9Z"></path><path className="a"d="M368.8,507.2l-4.3-.2V851.7a74.8,74.8,0,0,0,74.7,74.7H653a74.8,74.8,0,0,0,74.7-74.7V507.2ZM477.5,862.5H418.7v-66h58.8Zm0-117H418.7v-66h58.8Z"></path></svg>'
-        !php/const BeneficiaryBundle\Entity\VulnerabilityCriterion::CRITERION_PREGNANT: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" fit="" height="100%" width="100%"preserveAspectRatio="xMidYMid meet" focusable="false"><defs><style>.a{fill:#132F30;}.a{fill - rule:evenodd;} </style></defs><title>ico-pregnant</title><path className="a"d="M544.3,743.9a98.7,98.7,0,1,1,46.9-22.6c80.5-24.8,169.9,12.4,207.5,90.5l30.1,62.3v-169c0-137.7-102.3-252.7-234.6-272.8a156.9,156.9,0,1,0-82.6,0C379.3,452.4,277,567.4,277,705.1v181H468.8C469.3,830.3,496.8,776.4,544.3,743.9Z"></path></svg>'
-        !php/const BeneficiaryBundle\Entity\VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL: '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100;" xml:space="preserve"><path d="M9,76h4v6c0,1.1-0.9,2-2,2s-2-0.9-2-2V76z M87,82c0,1.1,0.9,2,2,2s2-0.9,2-2v-6h-4V82z M33,60H9v12h27.1  c-1.9-2.1-3.1-4.9-3.1-8V60z M15,32H9v24h6V32z M26,56c3.9,0,7-3.1,7-7s-3.1-7-7-7s-7,3.1-7,7S22.1,56,26,56z M37,48v16  c0,4.4,3.6,8,8,8h46V48H37z M50,29.1l7.1-7.3c1.2-1.2,1.1-2.7,0.8-3.8c-0.5-1.3-1.6-2.1-2.9-2.1c-0.1,0-0.1,0-0.2,0  c-1.2,0-2.4,0.5-3.3,1.4c-0.8,0.8-2.1,0.8-2.9,0c-0.9-1-2.2-1.4-3.5-1.4s-2.4,0.9-2.9,2.1c-0.1,0.4-0.2,0.8-0.2,1.3  c0,0.8,0.3,1.7,1,2.4L50,29.1z"/></svg>'
-        #todo !php/const BeneficiaryBundle\Entity\VulnerabilityCriterion::CRITERION_NUTRITIONAL_ISSUES: ''
+        !php/const NewApiBundle\Entity\VulnerabilityCriterion::CRITERION_DISABLED: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" fit="" height="100%" width="100%" preserveAspectRatio="xMidYMid meet" focusable="false"><defs><style>.a{fill:#132F30;fill-rule:evenodd;} </style></defs><title>ico-disabled</title><path class="a" d="M813.9,475.8H637.4L747.5,365.7v-.5a50.3,50.3,0,0,0,9.5-30,44.3,44.3,0,0,0-.2-5.2A88,88,0,1,0,698,247a85.9,85.9,0,0,0,4.1,26.5L506.4,161v.4a50.7,50.7,0,0,0-20.9-4.5c-13.1,0-24.3,4.2-33.7,12.7L348.5,272.9c-9.1,10-13.6,21.5-13.6,34.6a51.2,51.2,0,0,0,14.5,36.3c9.7,9.8,21.6,14.6,35.5,14.6s25.7-4.7,35.1-14.1l1.3-.5,72.8-72.7L556,306.5,416.8,445.8q-63.3,15.9-112.4,65-73.2,73.6-73.2,177t73.2,176.9q73.2,73.6,177,73.7t176.9-73.7Q732,792,732,687.8q0-60.1-24.6-110.6h56.5v207a51.4,51.4,0,0,0,14.5,36.4c9.7,9.7,21.6,14.5,35.5,14.5s26.2-4.8,35.9-14.5,15-21.9,15-36.4V526.3q0-20.5-15-36C840.1,480.6,828.1,475.8,813.9,475.8ZM619.2,781a245,245,0,0,1-18.7,20.9,211.1,211.1,0,0,1-21.3,18.7q-42.3,30.9-96.5,30.9-69.6,0-119.2-49.6T314.4,684.1q0-55.1,30.9-97.3a167.9,167.9,0,0,1,18.2-21.9,237.5,237.5,0,0,1,21.4-18.2q42.3-30.9,97.8-30.9,68.3,0,117.4,48.7l.4.4q49.7,49.6,49.6,119.2Q650.1,738.7,619.2,781Z"></path></svg>'
+        !php/const NewApiBundle\Entity\VulnerabilityCriterion::CRITERION_SOLO_PARENT: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" fit="" height="100%" width="100%"preserveAspectRatio="xMidYMid meet" focusable="false"><defs><style>.a{fill:#132F30;}.a,.c{fill - rule:evenodd;}.b,.c{fill:#fff;} </style></defs><title>ico-single-parent</title><path className="a"d="M655.2,469.3a156.9,156.9,0,1,0-82.6,0C440.3,489.4,338,604.4,338,742.1v181H889.8v-181C889.8,604.4,787.5,489.4,655.2,469.3Z"></path><circle className="b" cx="315" cy="577" r="143"></circle><path className="c" d="M520,966V810c0-87.4-71.6-159-159-159H256c-87.4,0-159,71.6-159,159V966Z"></path><path className="a"d="M339.8,668.8a92.5,92.5,0,1,0-48.7,0c-78,11.8-138.3,79.6-138.3,160.8V922H478.1V829.6C478.1,748.4,417.8,680.6,339.8,668.8Z"></path><circle className="b" cx="808.7" cy="642.8" r="118.8"></circle><path className="c"d="M979,966V836.4c0-72.7-59.5-132.1-132.1-132.1H759.7c-72.7,0-132.1,59.4-132.1,132.1V966Z"></path><path className="a"d="M829.3,719.1a76.9,76.9,0,1,0-40.5,0c-64.8,9.8-114.9,66.1-114.9,133.6v76.7H944.2V852.7C944.2,785.2,894.1,728.9,829.3,719.1Z"></path></svg>'
+        !php/const NewApiBundle\Entity\VulnerabilityCriterion::CRITERION_LACTATING: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" fit="" height="100%" width="100%"preserveAspectRatio="xMidYMid meet" focusable="false"><defs><style>.a{fill:#132F30;} </style></defs><title>ico-lactating</title><path className="a"d="M732.7,308.9H687.8c-18.6-38.4-52.6-65.7-76.8-82.1a20.9,20.9,0,0,1-9.2-17.4V181.9a65.9,65.9,0,0,0-131.8,0v27.5a21.1,21.1,0,0,1-8.9,17.2C435,245,408.7,272,394.7,308.9H351.1a39.1,39.1,0,0,0-39,39v71.3a39.1,39.1,0,0,0,39,39H732.7a39.1,39.1,0,0,0,39-39V347.9A39.1,39.1,0,0,0,732.7,308.9Z"></path><path className="a"d="M368.8,507.2l-4.3-.2V851.7a74.8,74.8,0,0,0,74.7,74.7H653a74.8,74.8,0,0,0,74.7-74.7V507.2ZM477.5,862.5H418.7v-66h58.8Zm0-117H418.7v-66h58.8Z"></path></svg>'
+        !php/const NewApiBundle\Entity\VulnerabilityCriterion::CRITERION_PREGNANT: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" fit="" height="100%" width="100%"preserveAspectRatio="xMidYMid meet" focusable="false"><defs><style>.a{fill:#132F30;}.a{fill - rule:evenodd;} </style></defs><title>ico-pregnant</title><path className="a"d="M544.3,743.9a98.7,98.7,0,1,1,46.9-22.6c80.5-24.8,169.9,12.4,207.5,90.5l30.1,62.3v-169c0-137.7-102.3-252.7-234.6-272.8a156.9,156.9,0,1,0-82.6,0C379.3,452.4,277,567.4,277,705.1v181H468.8C469.3,830.3,496.8,776.4,544.3,743.9Z"></path></svg>'
+        !php/const NewApiBundle\Entity\VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL: '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100;" xml:space="preserve"><path d="M9,76h4v6c0,1.1-0.9,2-2,2s-2-0.9-2-2V76z M87,82c0,1.1,0.9,2,2,2s2-0.9,2-2v-6h-4V82z M33,60H9v12h27.1  c-1.9-2.1-3.1-4.9-3.1-8V60z M15,32H9v24h6V32z M26,56c3.9,0,7-3.1,7-7s-3.1-7-7-7s-7,3.1-7,7S22.1,56,26,56z M37,48v16  c0,4.4,3.6,8,8,8h46V48H37z M50,29.1l7.1-7.3c1.2-1.2,1.1-2.7,0.8-3.8c-0.5-1.3-1.6-2.1-2.9-2.1c-0.1,0-0.1,0-0.2,0  c-1.2,0-2.4,0.5-3.3,1.4c-0.8,0.8-2.1,0.8-2.9,0c-0.9-1-2.2-1.4-3.5-1.4s-2.4,0.9-2.9,2.1c-0.1,0.4-0.2,0.8-0.2,1.3  c0,0.8,0.3,1.7,1,2.4L50,29.1z"/></svg>'
+        #todo !php/const NewApiBundle\Entity\VulnerabilityCriterion::CRITERION_NUTRITIONAL_ISSUES: ''
 
     icons_product_category_types:
         !php/const \NewApiBundle\Enum\ProductCategoryType::FOOD: '<svg fill="#000000" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 92.967 100" enable-background="new 0 0 92.967 100" xml:space="preserve"><path d="M83.281,10.474l-13.139,12.24H22.824L9.692,10.474c0,0,6.537-9.134,17.312-10.332C37.551-1.031,41.21,5.441,46.49,5.688  c5.268-0.248,8.952-6.719,19.479-5.547C76.757,1.339,83.281,10.474,83.281,10.474z"></path><path d="M73.698,30.578H19.276c0,0-26.126,20.566-17.546,58.471c0,0,2.858,10.95,15.997,10.95h57.54  c13.112,0,15.971-10.95,15.971-10.95C99.818,51.145,73.698,30.578,73.698,30.578z M68.528,42.173c0,0-6.374,18.848-12.298,12.93  C50.332,49.205,66.582,42.603,68.528,42.173z M53.352,38.547c0,0-4.245,3.359-1.309,11.133c3.294,8.718-2.917,10.755-5.41,8.255  C41.06,52.356,51.333,39.217,53.352,38.547z M45.318,46.568c0,0-4.245,3.373-1.309,11.133c3.301,8.73-2.917,10.769-5.417,8.275  C33,60.39,43.3,47.238,45.318,46.568z M32.395,81.919l-7.787,6.557c-1.562,1.575-3.47-1.621-2.728-2.37l6.614-8.079  c0.671-0.684,0.951,0.794,2.025,1.881C31.594,80.969,33.065,81.25,32.395,81.919z M30.311,74.244  c-5.586-5.566,4.694-18.718,6.739-19.388c0,0-4.251,3.359-1.315,11.133C39.035,74.707,32.798,76.757,30.311,74.244z M36.32,80.259  c-2.52-2.513-0.475-8.736,8.255-5.442c7.754,2.942,11.133-1.296,11.133-1.296C55.051,75.527,41.894,85.827,36.32,80.259z   M44.589,71.972c-2.513-2.5-0.456-8.718,8.255-5.443c7.78,2.943,11.146-1.282,11.146-1.282  C63.313,67.258,50.168,77.551,44.589,71.972z M52.623,63.938c-2.5-2.5-0.475-8.725,8.275-5.43c7.74,2.956,11.133-1.296,11.133-1.296  C71.354,59.238,58.196,69.517,52.623,63.938z"></path></svg>'
@@ -291,7 +291,7 @@ services:
     generator.household:
         class: NewApiBundle\Component\SelectionCriteria\Generator\HouseholdFieldGenerator
         arguments:
-            - "@=service('doctrine.orm.entity_manager').getRepository('BeneficiaryBundle:CountrySpecific')"
+            - "@=service('doctrine.orm.entity_manager').getRepository('NewApiBundle:CountrySpecific')"
             - "@request_stack"
 
     generator.household_head:
@@ -299,7 +299,7 @@ services:
 
     generator.beneficiary:
         class: NewApiBundle\Component\SelectionCriteria\Generator\BeneficiaryFieldGenerator
-        arguments: [ "@=service('doctrine.orm.entity_manager').getRepository('BeneficiaryBundle:VulnerabilityCriterion')" ]
+        arguments: [ "@=service('doctrine.orm.entity_manager').getRepository('NewApiBundle:VulnerabilityCriterion')" ]
 
     NewApiBundle\Component\SelectionCriteria\SelectionCriterionService: "@service.selection_criterion"
 
@@ -401,7 +401,7 @@ services:
             - '%frontendUrl%'
             - '@export_csv_service'
             - '@translator'
-            - '@=service("doctrine.orm.entity_manager").getRepository("BeneficiaryBundle:Beneficiary")'
+            - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:Beneficiary")'
 
     NewApiBundle\Controller\ImportController:
         arguments:
@@ -428,7 +428,7 @@ services:
     NewApiBundle\Component\WingMoney\ImportService:
         arguments:
             - '@=service("doctrine.orm.entity_manager").getRepository("TransactionBundle:Transaction")'
-            - '@=service("doctrine.orm.entity_manager").getRepository("BeneficiaryBundle:Phone")'
+            - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:Phone")'
 
     NewApiBundle\Component\Smartcard\SmartcardPurchaseService:
         arguments: [ '@smartcard_purchase.repository' ]
@@ -509,7 +509,7 @@ services:
     NewApiBundle\InputType\Assistance\Scoring\ScoringService:
 
     NewApiBundle\Component\Assistance\Scoring\RulesCalculation:
-      
+
     NewApiBundle\Component\Assistance\Scoring\RulesEnum:
 
     NewApiBundle\Component\Assistance\Scoring\ScoringResolver:
@@ -517,8 +517,8 @@ services:
         arguments:
             - '@NewApiBundle\Component\Assistance\Scoring\RulesCalculation'
             - '@NewApiBundle\Component\Assistance\Scoring\RulesEnum'
-            - '@=service("doctrine.orm.entity_manager").getRepository("BeneficiaryBundle:CountrySpecific")'
-            - '@=service("doctrine.orm.entity_manager").getRepository("BeneficiaryBundle:CountrySpecificAnswer")'
+            - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:CountrySpecific")'
+            - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:CountrySpecificAnswer")'
 
     NewApiBundle\Component\Assistance\Scoring\Model\Factory\ScoringFactory:
         public: true

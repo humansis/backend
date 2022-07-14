@@ -6,7 +6,7 @@ use BeneficiaryBundle\Utils\BeneficiaryService;
 use DistributionBundle\Repository\AssistanceRepository;
 use ProjectBundle\Utils\ProjectService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Entity\Household;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;

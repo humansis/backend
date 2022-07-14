@@ -16,7 +16,7 @@ class UpdateInstitutionType implements InputTypeInterface
     /**
      * @var string|null
      * @Assert\Length(max="255")
-     * @Assert\Choice(choices=BeneficiaryBundle\Entity\Institution::TYPE_ALL)
+     * @Assert\Choice(choices=NewApiBundle\Entity\Institution::TYPE_ALL)
      */
     protected $type;
     /**

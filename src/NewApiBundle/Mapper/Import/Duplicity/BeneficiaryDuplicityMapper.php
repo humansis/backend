@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Mapper\Import\Duplicity;
 
-use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Component\Import\CellParameters;
 use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
 use NewApiBundle\Component\Import\ValueObject\BeneficiaryCompare;

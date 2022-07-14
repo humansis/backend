@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
-use BeneficiaryBundle\Entity\HouseholdLocation;
+use NewApiBundle\Entity\HouseholdLocation;
 use NewApiBundle\Serializer\MapperInterface;
 
 class TemporarySettlementAddressMapper implements MapperInterface

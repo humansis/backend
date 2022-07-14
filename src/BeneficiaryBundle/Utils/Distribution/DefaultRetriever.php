@@ -3,8 +3,8 @@
 
 namespace BeneficiaryBundle\Utils\Distribution;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Household;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use BeneficiaryBundle\Repository\HouseholdRepository;
 use DistributionBundle\Utils\Retriever\AbstractRetriever;

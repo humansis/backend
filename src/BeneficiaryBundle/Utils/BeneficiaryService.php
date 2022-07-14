@@ -2,13 +2,13 @@
 
 namespace BeneficiaryBundle\Utils;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Phone;
-use BeneficiaryBundle\Entity\Profile;
-use BeneficiaryBundle\Entity\Referral;
-use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Entity\NationalId;
+use NewApiBundle\Entity\Phone;
+use NewApiBundle\Entity\Profile;
+use NewApiBundle\Entity\Referral;
+use NewApiBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use BeneficiaryBundle\Repository\HouseholdRepository;

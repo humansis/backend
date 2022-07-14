@@ -2,7 +2,7 @@
 
 namespace BeneficiaryBundle\Repository;
 
-use BeneficiaryBundle\Entity\Phone;
+use NewApiBundle\Entity\Phone;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\InputType\PhoneFilterInputType;
 

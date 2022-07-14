@@ -3,6 +3,10 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Repository\Assistance;
 
+use NewApiBundle\Entity\Beneficiary;
+use CommonBundle\Entity\Adm1;
+use CommonBundle\Entity\Adm2;
+use CommonBundle\Entity\Adm3;
 use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
@@ -63,7 +67,7 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
      * 
      * @return Paginator
      */
-    
+
     public function getForVendor(Vendor $vendor, string $country): Paginator
     {
         $vendorLocation = $vendor->getLocation();
@@ -73,7 +77,7 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
 
         /** @var LocationRepository $locationRepository */
         $locationRepository = $this->getEntityManager()->getRepository(Location::class);
-        
+
         $qb = $this->createQueryBuilder('rp')
             ->join('rp.assistanceBeneficiary', 'ab', Join::WITH, 'ab.removed = 0')
             ->join('ab.assistance', 'a')
@@ -82,26 +86,26 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
             ->join('b.smartcards', 's', Join::WITH, 's.beneficiary=b AND s.state=:smartcardStateActive') //filter only bnf with active card
             ->join('a.location', 'l');
 
-        //if vendor has adm >= 2 filled, try to filter by adm2        
+        //if vendor has adm >= 2 filled, try to filter by adm2
         if (null !== $vendorLocation->getAdm2Id()) {
 
             /** @var Location $vendorLocationAdm2 */
             $vendorLocationAdm2 = $vendorLocation->getLvl() === 2
                 ? $vendorLocation
                 : $vendorLocation->getLocationByLevel(2);
-            
+
             $qbLoc = $locationRepository->addChildrenLocationsQueryBuilder($vendorLocationAdm2);
-            
+
             $qb->andWhere($qb->expr()->orX(
                 $qb->expr()->eq('l.id', ':adm2Id'), //assistance in adm2
                 $qb->expr()->eq('l.id', ':adm1Id'),  //assistance in adm1 only
-                $qb->expr()->exists($qbLoc->getDQL()) //assistance in adm > 2 
+                $qb->expr()->exists($qbLoc->getDQL()) //assistance in adm > 2
             ))->setParameters([
                 'adm2Id' => $vendorLocationAdm2->getId(),
                 'adm1Id' => $vendorLocationAdm2->getParentLocation()->getId(),
             ]);
         }
-        //vendor location is adm1, filter by assistance in same or children location  
+        //vendor location is adm1, filter by assistance in same or children location
         else {
 
             $qbLoc = $locationRepository->addChildrenLocationsQueryBuilder($vendorLocation, 'lc', true);

@@ -2,8 +2,8 @@
 
 namespace Tests\NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\HouseholdLocation;
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Entity\HouseholdLocation;
 use Exception;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;

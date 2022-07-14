@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace DistributionBundle\Utils\Exception;
 
-use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Beneficiary;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 
 class RemoveBeneficiaryWithReliefException extends \InvalidArgumentException implements ConstraintViolationInterface

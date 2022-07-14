@@ -2,10 +2,10 @@
 
 namespace NewApiBundle\Mapper\Import\Duplicity;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Person;
-use BeneficiaryBundle\Entity\Phone;
-use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Person;
+use NewApiBundle\Entity\Phone;
+use NewApiBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;
 use NewApiBundle\Component\Import\ValueObject\BeneficiaryCompare;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;

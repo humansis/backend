@@ -1,5 +1,5 @@
 <?php
-namespace BeneficiaryBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Common\Collections\ArrayCollection;

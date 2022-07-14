@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DistributionBundle\Mapper;
 
-use BeneficiaryBundle\Entity\Institution;
+use NewApiBundle\Entity\Institution;
 use BeneficiaryBundle\Mapper\InstitutionMapper;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use TransactionBundle\Mapper\TransactionMapper;

@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Repository;
 
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Entity\Location;
@@ -74,7 +77,7 @@ class DistributedItemRepository extends EntityRepository
                 /** @var LocationRepository $locationRepository */
                 $locationRepository = $this->_em->getRepository(Location::class);
                 $location = $locationRepository->find($filter->getLocations()[0]);
-                
+
                 if ($location === null || $location->getCountryISO3() !== $countryIso3) {
                     throw new \InvalidArgumentException("Location not found or in different country");
                 }

@@ -2,8 +2,8 @@
 
 namespace BeneficiaryBundle\Repository;
 
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\HouseholdActivity;
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Entity\HouseholdActivity;
 use Doctrine\ORM\EntityRepository;
 
 class HouseholdActivityRepository extends EntityRepository

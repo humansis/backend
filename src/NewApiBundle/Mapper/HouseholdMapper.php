@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\CountrySpecificAnswer;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\HouseholdLocation;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\CountrySpecificAnswer;
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Entity\HouseholdLocation;
 use NewApiBundle\Serializer\MapperInterface;
 
 class HouseholdMapper implements MapperInterface

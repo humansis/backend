@@ -2,8 +2,8 @@
 
 namespace NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\Address;
-use BeneficiaryBundle\Entity\HouseholdLocation;
+use NewApiBundle\Entity\Address;
+use NewApiBundle\Entity\HouseholdLocation;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\AddressFilterInputType;
 use NewApiBundle\InputType\CampAddressFilterInputType;

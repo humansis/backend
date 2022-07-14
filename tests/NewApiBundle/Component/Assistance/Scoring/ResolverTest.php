@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Component\Assistance\Scoring;
 
-use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Entity\Household;
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleType;
 use NewApiBundle\Component\Assistance\Scoring\Model\Factory\ScoringFactory;

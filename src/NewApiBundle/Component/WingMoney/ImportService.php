@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\WingMoney;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Phone;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Phone;
 use BeneficiaryBundle\Repository\PhoneRepository;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;

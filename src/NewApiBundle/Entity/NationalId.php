@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace BeneficiaryBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\DBAL\NationalIdTypeEnum;
@@ -38,7 +38,7 @@ class NationalId
     /**
      * @var Person
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Person", inversedBy="nationalIds")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Person", inversedBy="nationalIds")
      */
     private $person;
 
@@ -94,11 +94,11 @@ class NationalId
     /**
      * Set beneficiary.
      *
-     * @param \BeneficiaryBundle\Entity\Person|null $person
+     * @param \NewApiBundle\Entity\Person|null $person
      *
      * @return NationalId
      */
-    public function setPerson(\BeneficiaryBundle\Entity\Person $person = null)
+    public function setPerson(\NewApiBundle\Entity\Person $person = null)
     {
         $this->person = $person;
 
@@ -108,7 +108,7 @@ class NationalId
     /**
      * Get beneficiary.
      *
-     * @return \BeneficiaryBundle\Entity\Person|null
+     * @return \NewApiBundle\Entity\Person|null
      */
     public function getPerson()
     {

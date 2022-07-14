@@ -2,7 +2,7 @@
 
 namespace VoucherBundle\Entity;
 
-use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -43,7 +43,7 @@ class Smartcard
     /**
      * @var Beneficiary
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary", inversedBy="smartcards")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Beneficiary", inversedBy="smartcards")
      * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
      */
     private $beneficiary;

@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -73,7 +73,7 @@ class Household extends AbstractBeneficiary
     /**
      * @var CountrySpecificAnswer
      *
-     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\CountrySpecificAnswer", mappedBy="household", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\CountrySpecificAnswer", mappedBy="household", cascade={"persist", "remove"})
      */
     private $countrySpecificAnswers;
 
@@ -107,7 +107,7 @@ class Household extends AbstractBeneficiary
     private $copingStrategiesIndex;
 
     /**
-     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\HouseholdLocation", mappedBy="household", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\HouseholdLocation", mappedBy="household", cascade={"persist", "remove"})
      */
     private $householdLocations;
 
@@ -163,7 +163,7 @@ class Household extends AbstractBeneficiary
     /**
      * @var Person|null
      *
-     * @ORM\OneToOne(targetEntity="BeneficiaryBundle\Entity\Person")
+     * @ORM\OneToOne(targetEntity="NewApiBundle\Entity\Person")
      * @ORM\JoinColumn(name="proxy_id")
      */
     private $proxy;

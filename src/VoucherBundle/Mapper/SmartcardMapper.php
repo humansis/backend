@@ -1,7 +1,7 @@
 <?php
 namespace VoucherBundle\Mapper;
 
-use BeneficiaryBundle\Entity\Community;
+use NewApiBundle\Entity\Community;
 use CommonBundle\Mapper\LocationMapper;
 use VoucherBundle\Entity\Smartcard;
 
