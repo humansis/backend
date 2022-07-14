@@ -10,7 +10,8 @@ RUN apt-get update && \
     libicu-dev \
     cron \
     supervisor \
-    sudo
+    sudo \
+    p7zip-full
 
 
 RUN docker-php-ext-configure gd --with-jpeg-dir=/usr/include/ && \
@@ -30,7 +31,7 @@ RUN pecl install xdebug && \
     docker-php-ext-enable xdebug
 
 # Install Composer
-RUN curl https://getcomposer.org/composer-1.phar --output /usr/local/bin/composer && \
+RUN curl https://getcomposer.org/composer-2.phar --output /usr/local/bin/composer && \
     chmod a+x /usr/local/bin/composer
 
 # Set timezone

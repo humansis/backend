@@ -71,7 +71,7 @@
 		"twig/twig": "^1.0||^2.0"
 	},
 	"require-dev": {
-		"doctrine/coding-standard": "^5.0",
+		"doctrine/coding-standard": "^9.0",
 		"mashape/unirest-php": "^3.0",
 		"phpunit/phpunit": "~7.0",
 		"symfony/phpunit-bridge": "^4.0",
