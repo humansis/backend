@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Component\SelectionCriteria\Generator;
 
 use NewApiBundle\Entity\VulnerabilityCriterion;
-use BeneficiaryBundle\Enum\ResidencyStatus;
+use NewApiBundle\Enum\ResidencyStatus;
 use NewApiBundle\Repository\VulnerabilityCriterionRepository;
 use NewApiBundle\Component\SelectionCriteria\FieldGeneratorInterface;
 use NewApiBundle\Component\SelectionCriteria\Structure\Field;

@@ -1,8 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Enum;
-
-use NewApiBundle\Enum\EnumTrait;
+namespace NewApiBundle\Enum;
 
 class ResidencyStatus
 {

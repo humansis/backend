@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType\Beneficiary;
 
-use BeneficiaryBundle\Enum\ResidencyStatus;
+use NewApiBundle\Enum\ResidencyStatus;
 use NewApiBundle\Enum\HouseholdHead;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Request\InputTypeInterface;

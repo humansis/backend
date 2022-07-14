@@ -5,7 +5,7 @@ namespace Tests\NewApiBundle\Controller;
 use NewApiBundle\Entity\NationalId;
 use NewApiBundle\Entity\Referral;
 use NewApiBundle\Entity\VulnerabilityCriterion;
-use BeneficiaryBundle\Enum\ResidencyStatus;
+use NewApiBundle\Enum\ResidencyStatus;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use NewApiBundle\Enum\BeneficiaryType;

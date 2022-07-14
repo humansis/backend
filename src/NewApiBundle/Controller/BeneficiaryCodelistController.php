@@ -7,6 +7,7 @@ namespace NewApiBundle\Controller;
 use NewApiBundle\Entity\NationalId;
 use NewApiBundle\Entity\Referral;
 use NewApiBundle\Entity\VulnerabilityCriterion;
+use NewApiBundle\Enum\ResidencyStatus;
 use BeneficiaryBundle\Entity\Referral;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;

@@ -6,7 +6,7 @@ use NewApiBundle\Entity\Camp;
 use NewApiBundle\Entity\Household;
 use NewApiBundle\Entity\NationalId;
 use NewApiBundle\Entity\VulnerabilityCriterion;
-use BeneficiaryBundle\Enum\ResidencyStatus;
+use NewApiBundle\Enum\ResidencyStatus;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
