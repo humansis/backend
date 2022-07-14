@@ -26,8 +26,6 @@ class CampFixtures extends Fixture implements DependentFixtureInterface
 
     public function getDependencies()
     {
-        return [
-            LocationTestFixtures::class,
-        ];
+        return [];
     }
 }

@@ -12,10 +12,6 @@ services:
             - { name: 'console.command' }
         arguments:
             - '@doctrine.orm.default_entity_manager'
-            - '@CommonBundle\Repository\Adm1Repository'
-            - '@CommonBundle\Repository\Adm2Repository'
-            - '@CommonBundle\Repository\Adm3Repository'
-            - '@CommonBundle\Repository\Adm4Repository'
             - '@CommonBundle\Repository\LocationRepository'
 
     CommonBundle\Command\AdmCSV2XMLCommand:
@@ -37,30 +33,6 @@ services:
         factory: ['@doctrine.orm.default_entity_manager', getRepository]
         arguments:
             - CommonBundle\Entity\Location
-
-    CommonBundle\Repository\Adm1Repository:
-        class: Doctrine\ORM\EntityRepository
-        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
-        arguments:
-            - CommonBundle\Entity\Adm1
-
-    CommonBundle\Repository\Adm2Repository:
-        class: Doctrine\ORM\EntityRepository
-        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
-        arguments:
-            - CommonBundle\Entity\Adm2
-
-    CommonBundle\Repository\Adm3Repository:
-        class: Doctrine\ORM\EntityRepository
-        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
-        arguments:
-            - CommonBundle\Entity\Adm3
-
-    CommonBundle\Repository\Adm4Repository:
-        class: Doctrine\ORM\EntityRepository
-        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
-        arguments:
-            - CommonBundle\Entity\Adm4
 
     CommonBundle\Repository\OrganizationRepository:
         class: Doctrine\ORM\EntityRepository
@@ -151,10 +123,6 @@ services:
     CommonBundle\DataFixtures\LocationFixtures:
         public: true
         arguments:
-            - '@CommonBundle\Repository\Adm1Repository'
-            - '@CommonBundle\Repository\Adm2Repository'
-            - '@CommonBundle\Repository\Adm3Repository'
-            - '@CommonBundle\Repository\Adm4Repository'
             - '@CommonBundle\Repository\LocationRepository'
             - '@NewApiBundle\Component\Country\Countries'
         tags:
@@ -165,13 +133,6 @@ services:
         arguments:
             - "@kernel"
             - "@beneficiary.household_service"
-        tags:
-            - { name: doctrine.fixture.orm }
-
-    CommonBundle\DataFixtures\LocationTestFixtures:
-        public: true
-        arguments:
-            - "@kernel"
         tags:
             - { name: doctrine.fixture.orm }
 
