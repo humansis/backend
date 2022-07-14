@@ -179,9 +179,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $qb = $this->createQueryBuilder('hh');
         $this->getHouseholdLocation($qb);
         
-        $qb->leftJoin(Location::class, 'l3', Join::WITH, 'l3.id = l.parentLocation') //todo fix join
-            ->leftJoin(Location::class, 'l2', Join::WITH, 'l2.id = l3.parentLocation')
-            ->leftJoin(Location::class, 'l1', Join::WITH, 'l1.id = l2.parentLocation')
+        $qb->leftJoin(Location::class, 'l4', Join::WITH, 'l.id = l4.id AND l4.lvl = 4')
+            ->leftJoin(Location::class, 'l3', Join::WITH, '(l.id = l3.id OR l.lft BETWEEN l3.lft AND l3.rgt) AND l3.lvl = 3')
+            ->leftJoin(Location::class, 'l2', Join::WITH, '(l.id = l2.id OR l.lft BETWEEN l2.lft AND l2.rgt) AND l2.lvl = 2')
+            ->leftJoin(Location::class, 'l1', Join::WITH, '(l.id = l1.id OR l.lft BETWEEN l1.lft AND l1.rgt) AND l1.lvl = 1')
             ->leftJoin('hh.beneficiaries', 'b')
             ->leftJoin('hh.projects', 'p')
             ->leftJoin('b.vulnerabilityCriteria', 'vb')
@@ -334,9 +335,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
                 ->leftJoin("per.referral", "r")
                 ->leftJoin("hh.beneficiaries", "head")
                 ->leftJoin("head.person", "headper")
-                ->leftJoin(Location::class, 'l3', Join::WITH, 'l3.id = l.parentLocation') //todo fix join
-                ->leftJoin(Location::class, 'l2', Join::WITH, 'l2.id = l3.parentLocation')
-                ->leftJoin(Location::class, 'l1', Join::WITH, 'l1.id = l2.parentLocation')
+                ->leftJoin(Location::class, 'l4', Join::WITH, 'l.id = l4.id AND l4.lvl = 4')
+                ->leftJoin(Location::class, 'l3', Join::WITH, '(l.id = l3.id OR l.lft BETWEEN l3.lft AND l3.rgt) AND l3.lvl = 3')
+                ->leftJoin(Location::class, 'l2', Join::WITH, '(l.id = l2.id OR l.lft BETWEEN l2.lft AND l2.rgt) AND l2.lvl = 2')
+                ->leftJoin(Location::class, 'l1', Join::WITH, '(l.id = l1.id OR l.lft BETWEEN l1.lft AND l1.rgt) AND l1.lvl = 1')
                 ->andWhere("head.status = 1")
                 ->andWhere("hh.archived = 0");
 

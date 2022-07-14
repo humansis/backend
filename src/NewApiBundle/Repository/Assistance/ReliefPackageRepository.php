@@ -70,17 +70,17 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
             ->join(Beneficiary::class, 'b', Join::WITH, 'b.id=abstB.id AND b.archived = 0')
             ->join('b.smartcards', 's', Join::WITH, 's.beneficiary=b AND s.state=:smartcardStateActive') //filter only bnf with active card
             ->join('a.location', 'l')
-            ->leftJoin(Location::class, 'locAdm2', Join::WITH, 'locAdm2.lvl = 2 AND (l.id BETWEEN locAdm2.lft AND locAdm2.rgt)') //todo what if l.lvl = 1?
-            ->leftJoin(Location::class, 'locAdm1', Join::WITH, 'locAdm1.lvl = 1 AND (l.id BETWEEN locAdm1.lft AND locAdm1.rgt)')
+            ->leftJoin(Location::class, 'l2', Join::WITH, '(l.id = l2.id OR l.lft BETWEEN l2.lft AND l2.rgt) AND l2.lvl = 2')
+            ->leftJoin(Location::class, 'l1', Join::WITH, '(l.id = l1.id OR l.lft BETWEEN l1.lft AND l1.rgt) AND l1.lvl = 1')
             ->setParameter('smartcardStateActive', SmartcardStates::ACTIVE);
 
         //if both vendor and assistance has at least adm2 filled, try to filter by adm2. If not, filter by adm1.
         if (null !== $vendor->getLocation()->getAdm2Id()) {
-            $qb->andWhere('( (locAdm2.id IS NOT NULL AND locAdm2.id = :vendorAdm2Id) OR (locAdm2.id IS NULL AND locAdm1.id = :vendorAdm1Id) )')
+            $qb->andWhere('( (l2.id IS NOT NULL AND l2.id = :vendorAdm2Id) OR (l2.id IS NULL AND l1.id = :vendorAdm1Id) )')
                 ->setParameter('vendorAdm1Id', $vendor->getLocation()->getAdm1Id())
                 ->setParameter('vendorAdm2Id', $vendor->getLocation()->getAdm2Id());
         } else {
-            $qb->andWhere('locAdm1.id = :vendorAdm1Id')
+            $qb->andWhere('l1.id = :vendorAdm1Id')
                 ->setParameter('vendorAdm1Id', $vendor->getLocation()->getAdm1Id());
         }
 
