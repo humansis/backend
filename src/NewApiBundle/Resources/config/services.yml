@@ -73,6 +73,10 @@ services:
         resource: '../../Command'
         public: true
         tags: [ 'console.command' ]
+        
+    NewApiBundle\Command\TranslationsUpdateGenerateCommand:
+        arguments:
+          - '%app.translations_dir%'
 
     NewApiBundle\Component\Assistance\AssistanceFactory:
         arguments:
