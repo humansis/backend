@@ -241,6 +241,22 @@ class AssistanceController extends AbstractController
 
             $this->assistanceService->updateDateExpiration($assistanceRoot, $date);
         }
+
+        if ($request->request->has('note')) {
+            if ($assistanceRoot->getCompleted()) {
+                throw new ConstraintViolationException(new ConstraintViolation(
+                    "note cannot be updated on completed assistance",
+                    null,
+                    [],
+                    [],
+                    'note',
+                    $request->request->get('note')
+                ));
+            }
+            $note = is_null($request->request->get('note')) ? null : strval($request->request->get('note'));
+            $this->assistanceService->updateNote($assistanceRoot, $note);
+        }
+
         $repository->save($assistance);
 
         return $this->json($assistance);

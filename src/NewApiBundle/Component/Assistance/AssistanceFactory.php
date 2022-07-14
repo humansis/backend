@@ -146,6 +146,7 @@ class AssistanceFactory
         $this->checkExpirationDate($inputType, $project);
 
         $assistanceRoot = new Entity\Assistance();
+        $assistanceRoot->setProject($project);
         $assistanceRoot->setAssistanceType($inputType->getType());
         $assistanceRoot->setTargetType($inputType->getTarget());
         $assistanceRoot->setDateDistribution($inputType->getDateDistribution());
@@ -161,13 +162,12 @@ class AssistanceFactory
         $assistanceRoot->setCashbackLimit($inputType->getCashbackLimit());
         $assistanceRoot->setRemoteDistributionAllowed($inputType->getRemoteDistributionAllowed());
         $assistanceRoot->setAllowedProductCategoryTypes($inputType->getAllowedProductCategoryTypes());
+        $assistanceRoot->setNote($inputType->getNote());
 
         $location = $this->locationRepository->find($inputType->getLocationId());
         $assistanceRoot->setLocation($location);
         $assistanceRoot->setName(self::generateName($location, $inputType->getDateDistribution()));
-
-        $assistanceRoot->setProject($project);
-
+        
         if (!is_null($inputType->getScoringBlueprintId())) {
             $scoringBlueprint = $this->scoringBlueprintRepository->findActive($inputType->getScoringBlueprintId(), $location->getCountryISO3());
             if (!$scoringBlueprint) {
