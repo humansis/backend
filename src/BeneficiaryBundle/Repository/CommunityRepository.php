@@ -103,74 +103,6 @@ class CommunityRepository extends EntityRepository
     }
 
     /**
-     * Get all Community by country
-     *
-     * @param       $iso3
-     * @param       $begin
-     * @param       $pageSize
-     * @param       $sort
-     * @param array $filters
-     *
-     * @return mixed
-     */
-    public function getAllBy(string $iso3, $begin, $pageSize, $sort, $filters = [])
-    {
-        // Recover global information for the page
-        $qb = $this->createQueryBuilder("comm");
-
-        // We join information that is needed for the filters
-        $q = $qb->andWhere("comm.archived = 0");
-
-        $this->whereCommunityInCountry($q, $iso3);
-
-        $filterIndex = 0;
-        foreach ($filters as $filter) {
-            if (is_array($filter['filter'])) {
-                $values = $filter['filter'];
-            } else {
-                $values = [$filter['filter']];
-            }
-            switch ($filter['category']) {
-                case 'projectName':
-                    $projectAlias = "project$filterIndex";
-                    $q->join('comm.projects', $projectAlias);
-                    foreach ($values as $value) {
-                        $q->orWhere("$projectAlias.name LIKE :projectName$filterIndex");
-                        $q->setParameter('projectName'.$filterIndex, $value);
-                        ++$filterIndex;
-                    }
-                    break;
-                case 'name':
-                    foreach ($values as $value) {
-                        $q->andWhere('comm.name LIKE :name'.$filterIndex);
-                        $q->setParameter('name'.$filterIndex, $value);
-                        ++$filterIndex;
-                    }
-                    break;
-            }
-            ++$filterIndex;
-        }
-
-        if (is_null($begin)) {
-            $begin = 0;
-        }
-        if (is_null($pageSize)) {
-            $pageSize = 0;
-        }
-
-        if ($pageSize > -1) {
-            $q->setFirstResult($begin)
-                ->setMaxResults($pageSize);
-        }
-
-        $paginator = new Paginator($q, true);
-
-        $query = $q->getQuery();
-
-        return [count($paginator), $query->getResult()];
-    }
-
-    /**
      * Get all Community by country and id
      *
      * @param string $iso3
@@ -192,37 +124,6 @@ class CommunityRepository extends EntityRepository
             ->setParameter('ids', $ids);
 
         return $qb->getQuery()->getResult();
-    }
-
-    /**
-     *
-     */
-    public function getByHeadAndLocation(
-        string $givenName,
-        string $familyName,
-        string $locationType,
-        string $street = null,
-        string $number = null,
-        string $tentNumber = null
-    ) {
-        $qb = $this->createQueryBuilder('comm')
-            ->select('comm')
-            ->innerJoin('comm.beneficiaries', 'b')
-            ->innerJoin('comm.location', 'hl')
-            ->where('comm.archived = 0')
-            ->andWhere('b.localGivenName = :givenName')
-            ->setParameter('givenName', $givenName)
-            ->andWhere('b.localFamilyName = :familyName')
-            ->setParameter('familyName', $familyName);
-
-        $qb
-            ->leftJoin('hl.address', 'ad')
-            ->andWhere('ad.street = :street')
-            ->setParameter('street', $street)
-            ->andWhere('ad.number = :number')
-            ->setParameter('number', $number);
-
-        return $qb->getQuery()->getOneOrNullResult();
     }
 
     /**
