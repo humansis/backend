@@ -2,11 +2,11 @@
 
 namespace ReportingBundle\Utils\DataFillers\Project;
 
-use \BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Beneficiary;
 
-use \BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\Person;
-use \BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Entity\Person;
+use NewApiBundle\Entity\VulnerabilityCriterion;
 use \DistributionBundle\Entity\AssistanceBeneficiary;
 
 use NewApiBundle\DBAL\PersonGenderEnum;

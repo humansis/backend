@@ -2,7 +2,7 @@
 
 namespace Tests\NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\Camp;
+use NewApiBundle\Entity\Camp;
 use Doctrine\ORM\NoResultException;
 use Exception;
 use Tests\BMSServiceTestCase;

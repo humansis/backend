@@ -2,7 +2,7 @@
 
 namespace BeneficiaryBundle\Model\Household;
 
-use BeneficiaryBundle\Entity\HouseholdActivity;
+use NewApiBundle\Entity\HouseholdActivity;
 use BeneficiaryBundle\Model\Household\HouseholdChange\Factory\HouseholdChangeFactoryInterface;
 use BeneficiaryBundle\Model\Household\HouseholdChange\Factory\SimpleHouseholdChangeFactory;
 use JsonSerializable;

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\SelectionCriteria\Generator;
 
-use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use NewApiBundle\Entity\VulnerabilityCriterion;
 use NewApiBundle\Component\SelectionCriteria\FieldGeneratorInterface;
 use NewApiBundle\Component\SelectionCriteria\Structure\Field;
 use NewApiBundle\Enum\EnumValueNoFoundException;

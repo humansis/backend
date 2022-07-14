@@ -2,7 +2,7 @@
 
 namespace BeneficiaryBundle\Repository;
 
-use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Entity\Household;
 
 /**
  * CountrySpecificAnswerRepository

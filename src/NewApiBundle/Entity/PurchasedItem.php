@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Entity;
 
-use BeneficiaryBundle\Entity\AbstractBeneficiary;
+use NewApiBundle\Entity\AbstractBeneficiary;
 use CommonBundle\Entity\Location;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\Commodity;
@@ -45,7 +45,7 @@ class PurchasedItem
     /**
      * @var AbstractBeneficiary
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\AbstractBeneficiary")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\AbstractBeneficiary")
      */
     private $beneficiary;
 

@@ -1,10 +1,10 @@
 <?php
 namespace BeneficiaryBundle\Mapper;
 
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Person;
-use BeneficiaryBundle\Entity\Phone;
-use BeneficiaryBundle\Entity\Profile;
+use NewApiBundle\Entity\NationalId;
+use NewApiBundle\Entity\Person;
+use NewApiBundle\Entity\Phone;
+use NewApiBundle\Entity\Profile;
 
 class ProfileMapper
 {

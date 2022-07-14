@@ -2,6 +2,7 @@
 
 namespace VoucherBundle\Controller;
 
+use NewApiBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Organization;
 use CommonBundle\Repository\OrganizationRepository;
 use DistributionBundle\Export\SmartcardInvoiceExport;

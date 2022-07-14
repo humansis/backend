@@ -2,9 +2,9 @@
 
 namespace Tests\NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Referral;
-use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use NewApiBundle\Entity\NationalId;
+use NewApiBundle\Entity\Referral;
+use NewApiBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;

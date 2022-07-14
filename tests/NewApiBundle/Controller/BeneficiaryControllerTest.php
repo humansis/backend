@@ -2,9 +2,9 @@
 
 namespace Tests\NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Phone;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\NationalId;
+use NewApiBundle\Entity\Phone;
 use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -98,7 +98,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
             ->getSingleScalarResult();
 
         $this->request('PATCH', '/api/basic/web-app/v1/beneficiaries/'.$bnfId, [
-            'referralType' => \BeneficiaryBundle\Entity\Referral::types()[0],
+            'referralType' => \NewApiBundle\Entity\Referral::types()[0],
             'referralComment' => 'test status',
         ]);
 

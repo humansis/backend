@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
-use BeneficiaryBundle\Entity\Camp;
+use NewApiBundle\Entity\Camp;
 use NewApiBundle\Serializer\MapperInterface;
 
 class CampMapper implements MapperInterface

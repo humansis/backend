@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class BenefciaryPatchInputType implements InputTypeInterface
 {
     /**
-     * @Assert\Choice(callback={"BeneficiaryBundle\Entity\Referral", "types"})
+     * @Assert\Choice(callback={"NewApiBundle\Entity\Referral", "types"})
      * @Assert\Length(max="255")
      */
     private $referralType;

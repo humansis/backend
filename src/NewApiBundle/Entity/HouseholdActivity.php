@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use UserBundle\Entity\User;
@@ -25,7 +25,7 @@ class HouseholdActivity
     /**
      * @var Household
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Household")
      */
     private $household;
 

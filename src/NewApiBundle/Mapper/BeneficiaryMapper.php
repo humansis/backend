@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\VulnerabilityCriterion;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Serializer\MapperInterface;
 use NewApiBundle\Utils\DateTime\DateOnlyFormat;

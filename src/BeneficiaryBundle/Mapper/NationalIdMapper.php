@@ -1,7 +1,7 @@
 <?php
 namespace BeneficiaryBundle\Mapper;
 
-use BeneficiaryBundle\Entity\NationalId;
+use NewApiBundle\Entity\NationalId;
 
 class NationalIdMapper
 {

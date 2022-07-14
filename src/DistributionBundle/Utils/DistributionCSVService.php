@@ -2,12 +2,14 @@
 
 namespace DistributionBundle\Utils;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Person;
-use BeneficiaryBundle\Entity\Phone;
-use BeneficiaryBundle\Entity\Camp;
-use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Entity\NationalId;
+use NewApiBundle\Entity\Person;
+use NewApiBundle\Entity\Phone;
+use NewApiBundle\Entity\Camp;
+use NewApiBundle\Entity\VulnerabilityCriterion;
+use BeneficiaryBundle\Form\HouseholdConstraints;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
 use DistributionBundle\Entity\AssistanceBeneficiary;
@@ -22,7 +24,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper;
-use BeneficiaryBundle\Entity\HouseholdLocation;
+use NewApiBundle\Entity\HouseholdLocation;
 
 /**
  * Class DistributionCSVService

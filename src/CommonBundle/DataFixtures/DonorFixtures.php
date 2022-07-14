@@ -2,6 +2,7 @@
 
 namespace CommonBundle\DataFixtures;
 
+use NewApiBundle\Entity\Camp;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use ProjectBundle\Entity\Donor;

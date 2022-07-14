@@ -2,7 +2,7 @@
 
 namespace Tests\NewApiBundle\Controller\WebApp\Smartcards;
 
-use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Beneficiary;
 use Exception;
 use Tests\BMSServiceTestCase;
 use VoucherBundle\Entity\Smartcard;

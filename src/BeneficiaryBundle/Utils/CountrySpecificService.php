@@ -3,7 +3,7 @@
 
 namespace BeneficiaryBundle\Utils;
 
-use BeneficiaryBundle\Entity\CountrySpecific;
+use NewApiBundle\Entity\CountrySpecific;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

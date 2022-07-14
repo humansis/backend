@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace CommonBundle\DataFixtures;
 
+use NewApiBundle\Entity\Beneficiary;
+use DistributionBundle\Entity\Assistance;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;

@@ -2,8 +2,8 @@
 
 namespace DistributionBundle\Entity;
 
-use BeneficiaryBundle\Entity\AbstractBeneficiary;
-use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\AbstractBeneficiary;
+use NewApiBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -40,7 +40,7 @@ class AssistanceBeneficiary
     /**
      * @var AbstractBeneficiary
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\AbstractBeneficiary", inversedBy="assistanceBeneficiary")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\AbstractBeneficiary", inversedBy="assistanceBeneficiary")
      * @ORM\JoinColumn(name="beneficiary_id")
      * @SymfonyGroups({"FullAssistanceBeneficiary", "FullAssistance", "SmallAssistance", "ValidatedAssistance", "FullBooklet", "FullProject"})
      * @SymfonyMaxDepth(3)

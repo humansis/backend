@@ -2,6 +2,17 @@
 
 namespace NewApiBundle\Component\Import;
 
+use BadMethodCallException;
+use NewApiBundle\Entity\AbstractBeneficiary;
+use NewApiBundle\Entity\Address;
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Entity\HouseholdActivity;
+use NewApiBundle\Entity\HouseholdLocation;
+use NewApiBundle\Entity\NationalId;
+use NewApiBundle\Entity\Person;
+use NewApiBundle\Entity\Phone;
+use NewApiBundle\Entity\Profile;
+use NewApiBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\ORM\EntityManagerInterface;

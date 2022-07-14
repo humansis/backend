@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\Institution;
+use NewApiBundle\Entity\Institution;
 use CommonBundle\Pagination\Paginator;
 use NewApiBundle\Services\CodeListService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;

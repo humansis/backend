@@ -2,9 +2,9 @@
 
 namespace TransactionBundle\Controller;
 
-use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Assistance;
-use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Entity\Household;
 use DistributionBundle\Mapper\AssistanceBeneficiaryMapper;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Psr\Log\LoggerInterface;

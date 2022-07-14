@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Entity;
 
-use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Location;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\Commodity;
@@ -37,7 +37,7 @@ class DistributedItem
     /**
      * @var Beneficiary
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Beneficiary")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Beneficiary")
      */
     private $beneficiary;
 

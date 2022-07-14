@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\Institution;
+use NewApiBundle\Entity\Institution;
 use DistributionBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\AssistanceInstitutionsFilterInputType;

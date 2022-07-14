@@ -1,9 +1,9 @@
 <?php
 namespace BeneficiaryBundle\Mapper;
 
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Person;
-use BeneficiaryBundle\Entity\Phone;
+use NewApiBundle\Entity\NationalId;
+use NewApiBundle\Entity\Person;
+use NewApiBundle\Entity\Phone;
 
 class PhoneMapper
 {

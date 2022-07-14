@@ -97,7 +97,7 @@ class BeneficiaryInputType implements InputTypeInterface
     private $residencyStatus;
 
     /**
-     * @Assert\Choice(callback={"\BeneficiaryBundle\Entity\Referral", "types"}, strict=true, groups={"Strict"})
+     * @Assert\Choice(callback={"\NewApiBundle\Entity\Referral", "types"}, strict=true, groups={"Strict"})
      * @Assert\Length(max="255")
      */
     private $referralType;

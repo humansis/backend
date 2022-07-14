@@ -2,9 +2,9 @@
 
 namespace NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Phone;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\NationalId;
+use NewApiBundle\Entity\Phone;
 use BeneficiaryBundle\Exception\CsvParserException;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use BeneficiaryBundle\Utils\BeneficiaryService;

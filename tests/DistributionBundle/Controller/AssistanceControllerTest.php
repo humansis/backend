@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\DistributionBundle\Controller;
 
-use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Entity\Household;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Commodity;
@@ -907,7 +907,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     {
         $this->markTestSkipped('Old endpoint');
         /** @var \BeneficiaryBundle\Repository\CommunityRepository $communityRepo */
-        $communityRepo = self::$container->get('doctrine')->getRepository(\BeneficiaryBundle\Entity\Community::class);
+        $communityRepo = self::$container->get('doctrine')->getRepository(\NewApiBundle\Entity\Community::class);
         $community = $communityRepo->findBy([], ['id' => 'asc'])[0];
 
         $body = [
@@ -980,7 +980,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     {
         $this->markTestSkipped('Old endpoint');
         /** @var \BeneficiaryBundle\Repository\InstitutionRepository $institutionRepo */
-        $institutionRepo = self::$container->get('doctrine')->getRepository(\BeneficiaryBundle\Entity\Institution::class);
+        $institutionRepo = self::$container->get('doctrine')->getRepository(\NewApiBundle\Entity\Institution::class);
         $institution = $institutionRepo->findBy([], ['id' => 'asc'])[0];
 
         $body = [

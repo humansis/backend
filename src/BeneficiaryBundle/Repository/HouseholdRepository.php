@@ -2,8 +2,11 @@
 
 namespace BeneficiaryBundle\Repository;
 
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\HouseholdLocation;
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Entity\HouseholdLocation;
+use CommonBundle\Entity\Adm1;
+use CommonBundle\Entity\Adm2;
+use CommonBundle\Entity\Adm3;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;

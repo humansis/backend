@@ -2,7 +2,7 @@
 
 namespace BeneficiaryBundle\Mapper;
 
-use BeneficiaryBundle\Entity\Institution;
+use NewApiBundle\Entity\Institution;
 use ProjectBundle\Mapper\ProjectMapper;
 
 class InstitutionMapper

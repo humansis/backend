@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
-use BeneficiaryBundle\Entity\NationalId;
+use NewApiBundle\Entity\NationalId;
 use NewApiBundle\Serializer\MapperInterface;
 
 class NationalIdMapper implements MapperInterface

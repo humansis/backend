@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
-use BeneficiaryBundle\Entity\CountrySpecificAnswer;
+use NewApiBundle\Entity\CountrySpecificAnswer;
 use NewApiBundle\Serializer\MapperInterface;
 
 class CountrySpecificAnswerMapper implements MapperInterface

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace TransactionBundle\Export;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Community;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\Institution;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Person;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Community;
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Entity\Institution;
+use NewApiBundle\Entity\NationalId;
+use NewApiBundle\Entity\Person;
 use CommonBundle\Entity\Organization;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;

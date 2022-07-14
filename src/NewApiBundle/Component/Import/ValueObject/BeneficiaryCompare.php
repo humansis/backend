@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Component\Import\ValueObject;
 
-use BeneficiaryBundle\Entity;
+use NewApiBundle\Entity;
 use NewApiBundle\Component\Import\Integrity;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 

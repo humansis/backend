@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Repository\Assistance;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Beneficiary;
+use CommonBundle\Entity\Adm1;
+use CommonBundle\Entity\Adm2;
+use CommonBundle\Entity\Adm3;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Enum\AssistanceTargetType;

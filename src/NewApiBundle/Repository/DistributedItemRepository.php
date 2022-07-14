@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Repository;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\NationalId;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Entity\NationalId;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;

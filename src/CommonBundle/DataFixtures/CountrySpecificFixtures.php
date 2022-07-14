@@ -6,7 +6,7 @@ namespace CommonBundle\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-use BeneficiaryBundle\Entity\CountrySpecific;
+use NewApiBundle\Entity\CountrySpecific;
 
 class CountrySpecificFixtures extends Fixture
 {

@@ -2,7 +2,7 @@
 
 namespace BeneficiaryBundle\Repository;
 
-use BeneficiaryBundle\Entity\HouseholdLocation;
+use NewApiBundle\Entity\HouseholdLocation;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\InputType\CampAddressFilterInputType;
 use NewApiBundle\InputType\ResidenceAddressFilterInputType;

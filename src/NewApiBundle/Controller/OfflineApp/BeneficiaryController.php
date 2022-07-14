@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Controller\OfflineApp;
 
-use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Beneficiary;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\Serializer\MapperInterface;

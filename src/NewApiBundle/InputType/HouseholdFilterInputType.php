@@ -62,7 +62,7 @@ class HouseholdFilterInputType extends AbstractFilterInputType
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *         @Assert\Choice(callback={"BeneficiaryBundle\Entity\Referral", "types"})
+     *         @Assert\Choice(callback={"NewApiBundle\Entity\Referral", "types"})
      *     },
      *     groups={"Strict"}
      * )
@@ -82,7 +82,7 @@ class HouseholdFilterInputType extends AbstractFilterInputType
 
     public static function vulnerabilities(): array
     {
-        return array_keys(\BeneficiaryBundle\Entity\VulnerabilityCriterion::all());
+        return array_keys(\NewApiBundle\Entity\VulnerabilityCriterion::all());
     }
 
     public function hasGender(): bool

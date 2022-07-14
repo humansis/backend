@@ -2,8 +2,8 @@
 
 namespace NewApiBundle\Mapper\Import\Duplicity;
 
-use BeneficiaryBundle\Entity\CountrySpecificAnswer;
-use BeneficiaryBundle\Entity\HouseholdLocation;
+use NewApiBundle\Entity\CountrySpecificAnswer;
+use NewApiBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Repository\CountrySpecificRepository;
 use CommonBundle\Repository\LocationRepository;
 use NewApiBundle\Component\Import\Finishing\HouseholdDecoratorBuilder;

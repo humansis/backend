@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\Camp;
+use NewApiBundle\Entity\Camp;
 use CommonBundle\Entity\Location;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;

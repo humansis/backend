@@ -3,14 +3,14 @@
 
 namespace Tests;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Entity\CountrySpecificAnswer;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Phone;
-use BeneficiaryBundle\Entity\Profile;
-use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\CountrySpecific;
+use NewApiBundle\Entity\CountrySpecificAnswer;
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Entity\NationalId;
+use NewApiBundle\Entity\Phone;
+use NewApiBundle\Entity\Profile;
+use NewApiBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Utils\HouseholdService;
 use DistributionBundle\Utils\CommodityService;
 use DistributionBundle\Utils\ConfigurationLoader;

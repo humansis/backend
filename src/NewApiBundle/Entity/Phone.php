@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -52,7 +52,7 @@ class Phone
     /**
      * @var Person
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Person", inversedBy="phones")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Person", inversedBy="phones")
      */
     private $person;
 

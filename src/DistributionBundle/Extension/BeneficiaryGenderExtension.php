@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace DistributionBundle\Extension;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Person;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Person;
 use NewApiBundle\Enum\PersonGender;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;

@@ -2,7 +2,7 @@
 
 namespace BeneficiaryBundle\Model\Household\HouseholdChange;
 
-use BeneficiaryBundle\Entity\HouseholdActivity;
+use NewApiBundle\Entity\HouseholdActivity;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**

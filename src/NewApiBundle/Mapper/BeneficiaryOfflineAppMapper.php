@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Mapper;
 
-use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Serializer\MapperInterface;
 
 class BeneficiaryOfflineAppMapper implements MapperInterface

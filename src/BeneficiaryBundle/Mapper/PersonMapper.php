@@ -1,7 +1,7 @@
 <?php
 namespace BeneficiaryBundle\Mapper;
 
-use BeneficiaryBundle\Entity\Person;
+use NewApiBundle\Entity\Person;
 use NewApiBundle\Enum\PersonGender;
 
 class PersonMapper

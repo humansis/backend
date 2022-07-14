@@ -2,7 +2,7 @@
 
 namespace ProjectBundle\Utils;
 
-use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Entity\Household;
 use dateTime;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;

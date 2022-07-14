@@ -339,11 +339,11 @@ distribution:
                 target: Household
             },
             vulnerabilityCriteria: {
-                type: BeneficiaryBundle\Entity\VulnerabilityCriterion,
+                type: NewApiBundle\Entity\VulnerabilityCriterion,
                 target: Beneficiary
             },
             countrySpecific: {
-                type: BeneficiaryBundle\Entity\CountrySpecific,
+                type: NewApiBundle\Entity\CountrySpecific,
                 target: Household
             }
         }

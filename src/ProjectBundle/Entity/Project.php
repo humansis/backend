@@ -2,7 +2,7 @@
 
 namespace ProjectBundle\Entity;
 
-use BeneficiaryBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -14,7 +14,7 @@ use NewApiBundle\Enum\ProductCategoryType;
 use ProjectBundle\DTO\Sector;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
-use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Entity\Household;
 
 /**
  * Project
@@ -142,7 +142,7 @@ class Project implements ExportableInterface
     private $reportingProject;
 
     /**
-     * @ORM\ManyToMany(targetEntity="BeneficiaryBundle\Entity\AbstractBeneficiary", mappedBy="projects")
+     * @ORM\ManyToMany(targetEntity="NewApiBundle\Entity\AbstractBeneficiary", mappedBy="projects")
      */
     private $households;
 
@@ -610,11 +610,11 @@ class Project implements ExportableInterface
     /**
      * Add household.
      *
-     * @param \BeneficiaryBundle\Entity\Household $household
+     * @param \NewApiBundle\Entity\Household $household
      *
      * @return Project
      */
-    public function addHousehold(\BeneficiaryBundle\Entity\Household $household)
+    public function addHousehold(\NewApiBundle\Entity\Household $household)
     {
         $this->households->add($household);
         return $this;
@@ -623,11 +623,11 @@ class Project implements ExportableInterface
     /**
      * Remove household.
      *
-     * @param \BeneficiaryBundle\Entity\Household $household
+     * @param \NewApiBundle\Entity\Household $household
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeHousehold(\BeneficiaryBundle\Entity\Household $household)
+    public function removeHousehold(\NewApiBundle\Entity\Household $household)
     {
         return $this->households->removeElement($household);
     }

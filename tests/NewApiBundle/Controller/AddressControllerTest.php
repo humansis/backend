@@ -2,8 +2,8 @@
 
 namespace Tests\NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\Address;
-use BeneficiaryBundle\Entity\HouseholdLocation;
+use NewApiBundle\Entity\Address;
+use NewApiBundle\Entity\HouseholdLocation;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Tests\BMSServiceTestCase;

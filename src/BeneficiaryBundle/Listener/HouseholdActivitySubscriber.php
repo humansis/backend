@@ -2,8 +2,8 @@
 
 namespace BeneficiaryBundle\Listener;
 
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\HouseholdActivity;
+use NewApiBundle\Entity\Household;
+use NewApiBundle\Entity\HouseholdActivity;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;

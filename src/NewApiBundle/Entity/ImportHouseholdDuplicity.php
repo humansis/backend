@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Entity;
 
-use BeneficiaryBundle\Entity\Household;
+use NewApiBundle\Entity\Household;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
@@ -28,7 +28,7 @@ class ImportHouseholdDuplicity
     /**
      * @var Household
      *
-     * @ORM\ManyToOne(targetEntity="BeneficiaryBundle\Entity\Household")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Household")
      */
     private $theirs;
 

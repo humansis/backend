@@ -2,8 +2,8 @@
 
 namespace NewApiBundle\Component\Import;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\NationalId;
+use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\NationalId;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\Identity\NationalIdHashSet;
 use NewApiBundle\Component\Import\Integrity;

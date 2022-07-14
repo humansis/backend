@@ -2,7 +2,7 @@
 
 namespace Tests\NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\Community;
+use NewApiBundle\Entity\Community;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NoResultException;
