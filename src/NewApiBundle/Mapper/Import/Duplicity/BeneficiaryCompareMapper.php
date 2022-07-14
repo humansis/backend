@@ -6,7 +6,7 @@ use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Person;
 use NewApiBundle\Entity\Phone;
 use NewApiBundle\Entity\VulnerabilityCriterion;
-use BeneficiaryBundle\Enum\ResidencyStatus;
+use NewApiBundle\Enum\ResidencyStatus;
 use NewApiBundle\Component\Import\ValueObject\BeneficiaryCompare;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;

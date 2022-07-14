@@ -5,7 +5,7 @@ namespace Tests\NewApiBundle\Component\WingMoney;
 
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Phone;
-use BeneficiaryBundle\Enum\ResidencyStatus;
+use NewApiBundle\Enum\ResidencyStatus;
 use DateTime;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
