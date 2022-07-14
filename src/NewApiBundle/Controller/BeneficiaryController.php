@@ -5,7 +5,7 @@ namespace NewApiBundle\Controller;
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\NationalId;
 use NewApiBundle\Entity\Phone;
-use BeneficiaryBundle\Exception\CsvParserException;
+use NewApiBundle\Exception\CsvParserException;
 use NewApiBundle\Repository\BeneficiaryRepository;
 use BeneficiaryBundle\Utils\BeneficiaryService;
 use CommonBundle\Controller\ExportController;

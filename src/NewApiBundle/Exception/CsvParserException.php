@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Exception;
+namespace NewApiBundle\Exception;
 
 use Exception;
 use Throwable;

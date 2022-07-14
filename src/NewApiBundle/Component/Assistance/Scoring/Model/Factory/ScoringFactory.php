@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Assistance\Scoring\Model\Factory;
 
-use BeneficiaryBundle\Exception\CsvParserException;
+use NewApiBundle\Exception\CsvParserException;
 use NewApiBundle\Component\Assistance\Scoring\Exception\ScoreValidationException;
 use NewApiBundle\Component\Assistance\Scoring\Model\Scoring;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRule;

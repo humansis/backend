@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Model\Household\HouseholdChange;
+namespace NewApiBundle\Model\Household\HouseholdChange;
 
 use NewApiBundle\Entity\HouseholdActivity;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;

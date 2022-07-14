@@ -92,7 +92,7 @@ class BeneficiaryInputType implements InputTypeInterface
 
     /**
      * @Assert\NotNull()
-     * @Enum(enumClass="BeneficiaryBundle\Enum\ResidencyStatus")
+     * @Enum(enumClass="NewApiBundle\Enum\ResidencyStatus")
      */
     private $residencyStatus;
 

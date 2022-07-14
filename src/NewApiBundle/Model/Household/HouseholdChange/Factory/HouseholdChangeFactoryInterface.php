@@ -1,9 +1,9 @@
 <?php
 
-namespace BeneficiaryBundle\Model\Household\HouseholdChange\Factory;
+namespace NewApiBundle\Model\Household\HouseholdChange\Factory;
 
 use NewApiBundle\Entity\HouseholdActivity;
-use BeneficiaryBundle\Model\Household\HouseholdChange\AbstractHouseholdChange;
+use NewApiBundle\Model\Household\HouseholdChange\AbstractHouseholdChange;
 
 interface HouseholdChangeFactoryInterface
 {

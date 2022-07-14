@@ -4,7 +4,7 @@ namespace Tests\BeneficiaryBundle\Model\Household;
 
 use NewApiBundle\Entity\Household;
 use NewApiBundle\Entity\HouseholdActivity;
-use BeneficiaryBundle\Model\Household\HouseholdChange\SimpleHouseholdChange;
+use NewApiBundle\Model\Household\HouseholdChange\SimpleHouseholdChange;
 use PHPUnit\Framework\TestCase;
 use UserBundle\Entity\User;
 

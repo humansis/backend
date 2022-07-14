@@ -1,10 +1,10 @@
 <?php
 
-namespace BeneficiaryBundle\Model\Household;
+namespace NewApiBundle\Model\Household;
 
 use NewApiBundle\Entity\HouseholdActivity;
-use BeneficiaryBundle\Model\Household\HouseholdChange\Factory\HouseholdChangeFactoryInterface;
-use BeneficiaryBundle\Model\Household\HouseholdChange\Factory\SimpleHouseholdChangeFactory;
+use NewApiBundle\Model\Household\HouseholdChange\Factory\HouseholdChangeFactoryInterface;
+use NewApiBundle\Model\Household\HouseholdChange\Factory\SimpleHouseholdChangeFactory;
 use JsonSerializable;
 
 class HouseholdActivityChangesCollection implements JsonSerializable, \IteratorAggregate

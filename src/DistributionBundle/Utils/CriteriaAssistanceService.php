@@ -5,7 +5,7 @@ namespace DistributionBundle\Utils;
 
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Camp;
-use BeneficiaryBundle\Model\Vulnerability\Resolver as OldResolver;
+use NewApiBundle\Model\Vulnerability\Resolver as OldResolver;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -78,7 +78,7 @@ class CriteriaAssistanceService
      * @param bool            $isCount
      *
      * @return array
-     * @throws \BeneficiaryBundle\Exception\CsvParserException
+     * @throws \NewApiBundle\Exception\CsvParserException
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Doctrine\ORM\ORMException

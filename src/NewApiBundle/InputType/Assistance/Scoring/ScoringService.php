@@ -3,8 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType\Assistance\Scoring;
 
-use BeneficiaryBundle\Exception\CsvParserException;
-use BeneficiaryBundle\Model\Vulnerability\Resolver as OldResolver;
+use NewApiBundle\Model\Vulnerability\Resolver as OldResolver;
 use NewApiBundle\Repository\BeneficiaryRepository;
 use DistributionBundle\DTO\VulnerabilityScore;
 use NewApiBundle\Component\Assistance\Scoring\Exception\ScoreValidationException;
@@ -68,7 +67,7 @@ final class ScoringService
      *
      * @return VulnerabilityScore[]
      *
-     * @throws \BeneficiaryBundle\Exception\CsvParserException
+     * @throws \NewApiBundle\Exception\CsvParserException
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      */

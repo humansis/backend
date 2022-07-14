@@ -167,12 +167,15 @@ services:
         public: true
 
     beneficiary.vulnerability_resolver:
-        class: BeneficiaryBundle\Model\Vulnerability\Resolver
+        class: NewApiBundle\Model\Vulnerability\Resolver
         arguments:
             - "%vulnerability_weightingFile%"
             - "%vulnerability_scoringFileTemplate%"
             - "@beneficiary.repository"
         public: true
+
+    NewApiBundle\Model\Vulnerability\Resolver:
+        alias: beneficiary.vulnerability_resolver
 
 #######################################################################################
 ##                                        CSV                                        ##
