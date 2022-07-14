@@ -403,6 +403,7 @@ class AssistanceService
     public function updateNote(Assistance $assistance, ?string $note): void
     {
         $assistance->setNote($note);
+        $assistance->setUpdatedOn(new DateTime());
 
         $this->em->persist($assistance);
         $this->em->flush();
