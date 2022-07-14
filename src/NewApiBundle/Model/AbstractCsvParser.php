@@ -1,8 +1,8 @@
 <?php
 
-namespace BeneficiaryBundle\Model;
+namespace NewApiBundle\Model;
 
-use BeneficiaryBundle\Exception\CsvParserException;
+use NewApiBundle\Exception\CsvParserException;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRule;
 
 abstract class AbstractCsvParser

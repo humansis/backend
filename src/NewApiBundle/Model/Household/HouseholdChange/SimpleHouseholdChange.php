@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Model\Household\HouseholdChange;
+namespace NewApiBundle\Model\Household\HouseholdChange;
 
 /**
  * Class SimpleHouseholdChange provides standard diff between activities.

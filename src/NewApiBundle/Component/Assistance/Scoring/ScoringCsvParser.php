@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Assistance\Scoring;
 
-use BeneficiaryBundle\Model\AbstractCsvParser;
+use NewApiBundle\Model\AbstractCsvParser;
 use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringCsvColumns;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRule;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRuleOption;

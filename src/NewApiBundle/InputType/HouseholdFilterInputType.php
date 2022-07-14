@@ -51,7 +51,7 @@ class HouseholdFilterInputType extends AbstractFilterInputType
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
-     *         @Assert\Choice(callback={"BeneficiaryBundle\Enum\ResidencyStatus", "all"})
+     *         @Assert\Choice(callback={"NewApiBundle\Enum\ResidencyStatus", "all"})
      *     },
      *     groups={"Strict"}
      * )

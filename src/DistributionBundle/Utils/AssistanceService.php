@@ -6,6 +6,8 @@ use NewApiBundle\Entity\AbstractBeneficiary;
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Community;
 use NewApiBundle\Entity\Institution;
+use NewApiBundle\Exception\CsvParserException;
+use CommonBundle\Entity\Location;
 use BeneficiaryBundle\Exception\CsvParserException;
 use CommonBundle\Pagination\Paginator;
 use CommonBundle\Utils\LocationService;

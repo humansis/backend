@@ -164,7 +164,7 @@ class ImportLine
 
     /**
      * @Assert\NotNull(groups={"household", "member"})
-     * @Enum(enumClass="BeneficiaryBundle\Enum\ResidencyStatus", groups={"household", "member"})
+     * @Enum(enumClass="NewApiBundle\Enum\ResidencyStatus", groups={"household", "member"})
      */
     public $residencyStatus;
 

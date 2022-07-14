@@ -1,3 +1,3 @@
 parameters:
-  vulnerability_weightingFile:        '%kernel.project_dir%/src/BeneficiaryBundle/Resources/config/vulnerability/weighting.csv'
-  vulnerability_scoringFileTemplate:  '%kernel.project_dir%/src/BeneficiaryBundle/Resources/config/vulnerability/scoring_<<COUNTRY>>.csv'
+  vulnerability_weightingFile:        '%kernel.project_dir%/src/NewApiBundle/Resources/config/vulnerability/weighting.csv'
+  vulnerability_scoringFileTemplate:  '%kernel.project_dir%/src/NewApiBundle/Resources/config/vulnerability/scoring_<<COUNTRY>>.csv'
