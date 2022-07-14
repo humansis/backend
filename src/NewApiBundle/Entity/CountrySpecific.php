@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="country_specific", uniqueConstraints={
  *     @ORM\UniqueConstraint(name="duplicity_check_idx", columns={"field_string", "country_iso3"})
  * })
- * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\CountrySpecificRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\CountrySpecificRepository")
  */
 class CountrySpecific extends Criteria implements ExportableInterface
 {

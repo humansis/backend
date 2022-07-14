@@ -2,7 +2,6 @@
 
 namespace NewApiBundle\Entity;
 
-use CommonBundle\Entity\Location;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -10,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Community
  *
  * @ORM\Table(name="community")
- * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\CommunityRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\CommunityRepository")
  */
 class Community extends AbstractBeneficiary
 {

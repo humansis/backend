@@ -9,7 +9,7 @@ use UserBundle\Entity\User;
  * Household activity.
  *
  * @ORM\Table(name="household_activity")
- * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\HouseholdActivityRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\HouseholdActivityRepository")
  */
 class HouseholdActivity
 {

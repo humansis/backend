@@ -4,7 +4,7 @@ namespace NewApiBundle\Mapper\Import\Duplicity;
 
 use NewApiBundle\Entity\CountrySpecificAnswer;
 use NewApiBundle\Entity\HouseholdLocation;
-use BeneficiaryBundle\Repository\CountrySpecificRepository;
+use NewApiBundle\Repository\CountrySpecificRepository;
 use CommonBundle\Repository\LocationRepository;
 use NewApiBundle\Component\Import\Finishing\HouseholdDecoratorBuilder;
 use NewApiBundle\Component\Import\ValueObject\HouseholdCompare;

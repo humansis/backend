@@ -4,8 +4,8 @@ namespace NewApiBundle\Services;
 
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Repository\BeneficiaryRepository;
-use BeneficiaryBundle\Repository\CountrySpecificRepository;
+use NewApiBundle\Repository\BeneficiaryRepository;
+use NewApiBundle\Repository\CountrySpecificRepository;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\NonUniqueResultException;
 use NewApiBundle\Entity\Assistance\ReliefPackage;

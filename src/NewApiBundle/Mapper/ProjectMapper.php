@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
-use BeneficiaryBundle\Repository\BeneficiaryRepository;
+use NewApiBundle\Repository\BeneficiaryRepository;
 use DateTimeInterface;
 use InvalidArgumentException;
 use NewApiBundle\Serializer\MapperInterface;

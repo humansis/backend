@@ -16,7 +16,7 @@ use NewApiBundle\Entity\Person;
 use NewApiBundle\Entity\Phone;
 use NewApiBundle\Entity\Profile;
 use BeneficiaryBundle\Form\HouseholdConstraints;
-use BeneficiaryBundle\Repository\BeneficiaryRepository;
+use NewApiBundle\Repository\BeneficiaryRepository;
 use CommonBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
 use CommonBundle\Utils\LocationService;

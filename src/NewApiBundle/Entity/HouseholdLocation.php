@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * HouseholdLocation
  *
  * @ORM\Table(name="household_location")
- * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\HouseholdLocationRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\HouseholdLocationRepository")
  */
 class HouseholdLocation
 {

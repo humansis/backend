@@ -906,7 +906,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testCreateDistributionForCommunity()
     {
         $this->markTestSkipped('Old endpoint');
-        /** @var \BeneficiaryBundle\Repository\CommunityRepository $communityRepo */
+        /** @var \NewApiBundle\Repository\CommunityRepository $communityRepo */
         $communityRepo = self::$container->get('doctrine')->getRepository(\NewApiBundle\Entity\Community::class);
         $community = $communityRepo->findBy([], ['id' => 'asc'])[0];
 
@@ -979,7 +979,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testCreateDistributionForInstitution()
     {
         $this->markTestSkipped('Old endpoint');
-        /** @var \BeneficiaryBundle\Repository\InstitutionRepository $institutionRepo */
+        /** @var \NewApiBundle\Repository\InstitutionRepository $institutionRepo */
         $institutionRepo = self::$container->get('doctrine')->getRepository(\NewApiBundle\Entity\Institution::class);
         $institution = $institutionRepo->findBy([], ['id' => 'asc'])[0];
 

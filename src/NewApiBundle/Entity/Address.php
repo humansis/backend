@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Address
  *
  * @ORM\Table(name="address")
- * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\AddressRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\AddressRepository")
  */
 class Address
 {

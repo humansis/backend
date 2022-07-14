@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Component\SelectionCriteria\Generator;
 
 use NewApiBundle\Entity\HouseholdLocation;
-use BeneficiaryBundle\Repository\CountrySpecificRepository;
+use NewApiBundle\Repository\CountrySpecificRepository;
 use NewApiBundle\Component\SelectionCriteria\FieldGeneratorInterface;
 use NewApiBundle\Component\SelectionCriteria\Structure\Field;
 use NewApiBundle\Enum\SelectionCriteriaTarget;

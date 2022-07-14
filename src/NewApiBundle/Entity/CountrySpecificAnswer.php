@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  *        @ORM\UniqueConstraint(name="only_one_household_answer", columns={"country_specific_id", "household_id"})
  *    }
  * )
- * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\CountrySpecificAnswerRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\CountrySpecificAnswerRepository")
  */
 class CountrySpecificAnswer
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Repository;
+namespace NewApiBundle\Repository;
 
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\CountrySpecific;

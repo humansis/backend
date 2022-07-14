@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use NewApiBundle\Entity\Community;
-use BeneficiaryBundle\Repository\CommunityRepository;
+use NewApiBundle\Repository\CommunityRepository;
 use BeneficiaryBundle\Utils\CommunityService;
 use DistributionBundle\Entity\Assistance;
 use NewApiBundle\InputType\AssistanceCommunitiesFilterInputType;

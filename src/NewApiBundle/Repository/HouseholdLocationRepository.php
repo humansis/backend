@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Repository;
+namespace NewApiBundle\Repository;
 
 use NewApiBundle\Entity\HouseholdLocation;
 use Doctrine\ORM\Tools\Pagination\Paginator;

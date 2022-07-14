@@ -21,7 +21,7 @@ use VoucherBundle\Entity\Smartcard;
  * Beneficiary
  *
  * @ORM\Table(name="beneficiary")
- * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\BeneficiaryRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\BeneficiaryRepository")
  */
 class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 {

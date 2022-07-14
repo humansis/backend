@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Repository;
+namespace NewApiBundle\Repository;
 
 use NewApiBundle\Entity\Phone;
 use Doctrine\ORM\Tools\Pagination\Paginator;
