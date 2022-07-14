@@ -121,19 +121,6 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $q->getQuery()->getResult();
     }
 
-    public function findByUnarchived(array $byArray)
-    {
-        $qb = $this->createQueryBuilder('b');
-        $q = $qb->leftJoin('b.household', 'hh')
-            ->where('hh.archived = 0');
-        foreach ($byArray as $key => $value) {
-            $q = $q->andWhere('b.'.$key.' = :value'.$key)
-                ->setParameter('value'.$key, $value);
-        }
-
-        return $q->getQuery()->getResult();
-    }
-
     /**
      * @param Project $project
      *
@@ -620,40 +607,6 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
     {
         $qb->andWhere("b.{$filters['field_string']} {$filters['condition_string']} :val$i")
             ->setParameter("val$i", $filters['value_string']);
-    }
-
-    /**
-     * Create sub request. The main request while found household inside the subrequest (and others subrequest)
-     * The household must respect the value of the country specific ($idCountrySpecific), depends on operator and value.
-     *
-     * @param QueryBuilder $qb
-     * @param              $i
-     * @param              $countryISO3
-     * @param array        $filters
-     */
-    protected function whereVulnerabilityCriterion(QueryBuilder &$qb, $i, $countryISO3, array $filters)
-    {
-        $qb->leftJoin('b.vulnerabilityCriteria', "vc$i")
-            ->andWhere("vc$i.id = :idvc$i")
-            ->setParameter("idvc$i", $filters['id_field']);
-    }
-
-    /**
-     * Create sub request. The main request while found household inside the subrequest (and others subrequest)
-     * The household must respect the value of the country specific ($idCountrySpecific), depends on operator and value.
-     *
-     * @param QueryBuilder $qb
-     * @param              $i
-     * @param              $countryISO3
-     * @param array        $filters
-     */
-    protected function whereCountrySpecific(QueryBuilder &$qb, $i, $countryISO3, array $filters)
-    {
-        $qb->leftJoin('hh.countrySpecificAnswers', "csa$i")
-            ->andWhere("csa$i.countrySpecific = :countrySpecific$i")
-            ->setParameter("countrySpecific$i", $filters['id_field'])
-            ->andWhere("csa$i.answer {$filters['condition_string']} :value$i")
-            ->setParameter("value$i", $filters['value_string']);
     }
 
     public function countServedInCountry($iso3)
