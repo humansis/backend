@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Listener;
+namespace NewApiBundle\Listener;
 
 use NewApiBundle\Entity\Household;
 use NewApiBundle\Entity\HouseholdActivity;

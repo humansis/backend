@@ -194,7 +194,7 @@ services:
         public: true
 
     household.activity_listerer:
-        class: BeneficiaryBundle\Listener\HouseholdActivitySubscriber
+        class: NewApiBundle\Listener\HouseholdActivitySubscriber
         autowire: true
         tags:
             - { name: 'doctrine.event_subscriber', priority: 500 }
