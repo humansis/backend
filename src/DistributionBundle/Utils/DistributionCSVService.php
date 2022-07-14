@@ -9,7 +9,7 @@ use NewApiBundle\Entity\Person;
 use NewApiBundle\Entity\Phone;
 use NewApiBundle\Entity\Camp;
 use NewApiBundle\Entity\VulnerabilityCriterion;
-use BeneficiaryBundle\Form\HouseholdConstraints;
+use NewApiBundle\Form\HouseholdConstraints;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use BeneficiaryBundle\Utils\HouseholdService;
 use DistributionBundle\Entity\AssistanceBeneficiary;

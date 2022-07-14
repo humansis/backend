@@ -9,7 +9,7 @@ use NewApiBundle\Entity\Phone;
 use NewApiBundle\Entity\Profile;
 use NewApiBundle\Entity\Referral;
 use NewApiBundle\Entity\VulnerabilityCriterion;
-use BeneficiaryBundle\Form\HouseholdConstraints;
+use NewApiBundle\Form\HouseholdConstraints;
 use NewApiBundle\Repository\BeneficiaryRepository;
 use NewApiBundle\Repository\HouseholdRepository;
 use NewApiBundle\Repository\NationalIdRepository;

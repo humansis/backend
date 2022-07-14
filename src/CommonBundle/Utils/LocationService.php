@@ -3,7 +3,7 @@
 
 namespace CommonBundle\Utils;
 
-use BeneficiaryBundle\Form\HouseholdConstraints;
+use NewApiBundle\Form\HouseholdConstraints;
 use BeneficiaryBundle\InputType\LocationType;
 use CommonBundle\Entity\Location;
 use NewApiBundle\Entity\Camp;

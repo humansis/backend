@@ -1,7 +1,7 @@
 <?php
 
 
-namespace BeneficiaryBundle\Form;
+namespace NewApiBundle\Form;
 
 use RA\RequestValidatorBundle\RequestValidator\Constraints as RequestValidatorConstraints;
 use Symfony\Component\Validator\Constraints\Collection;
