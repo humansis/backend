@@ -118,7 +118,7 @@ class AssistanceService
         CommodityService          $commodityService,
         CriteriaAssistanceService $criteriaAssistanceService,
         ContainerInterface        $container,
-        Environment               $environment,
+        Environment               $twig,
         CacheInterface            $cache,
         AssistanceFactory         $assistanceFactory,
         AssistanceRepository      $assistanceRepository,
@@ -135,7 +135,7 @@ class AssistanceService
         $this->assistanceFactory = $assistanceFactory;
         $this->assistanceRepository = $assistanceRepository;
         $this->selectionCriteriaFactory = $selectionCriteriaFactory;
-        $this->twig = $environment;
+        $this->twig = $twig;
     }
 
     /**

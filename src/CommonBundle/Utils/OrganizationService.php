@@ -28,13 +28,13 @@ class OrganizationService
      *
      * @param EntityManagerInterface $entityManager
      * @param ContainerInterface     $container
-     * @param Environment            $environment
+     * @param Environment            $twig
      */
-    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container, Environment $environment)
+    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container, Environment $twig)
     {
         $this->em = $entityManager;
         $this->container = $container;
-        $this->twig = $environment;
+        $this->twig = $twig;
     }
 
     /**

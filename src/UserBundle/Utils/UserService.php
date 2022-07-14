@@ -93,6 +93,8 @@ class UserService
      * @param ValidatorInterface     $validator
      * @param ContainerInterface     $container
      * @param RoleHierarchyInterface $roleHierarchy
+     * @param Security               $security
+     * @param Environment            $twig
      */
     public function __construct(
         string                 $googleClient,
@@ -101,8 +103,8 @@ class UserService
         ValidatorInterface     $validator,
         ContainerInterface     $container,
         RoleHierarchyInterface $roleHierarchy,
-        Security $security,
-        Environment            $environment
+        Security               $security,
+        Environment            $twig
     ) {
         $this->googleClient = $googleClient;
         $this->humanitarianSecret = $humanitarianSecret;
@@ -112,7 +114,7 @@ class UserService
         $this->email = $this->container->getParameter('email');
         $this->roleHierarchy = $roleHierarchy;
         $this->security = $security;
-        $this->twig = $environment;
+        $this->twig = $twig;
     }
 
     /**
