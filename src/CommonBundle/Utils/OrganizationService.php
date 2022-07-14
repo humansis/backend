@@ -5,9 +5,9 @@ namespace CommonBundle\Utils;
 use CommonBundle\Entity\Organization;
 use CommonBundle\Entity\OrganizationServices;
 use Doctrine\ORM\EntityManagerInterface;
-use NewApiBundle\InputType\OrganizationServicesInputType;
 use NewApiBundle\InputType\OrganizationUpdateInputType;
 use Psr\Container\ContainerInterface;
+use Twig\Environment;
 use UserBundle\Entity\User;
 
 class OrganizationService
@@ -19,13 +19,22 @@ class OrganizationService
     private $container;
 
     /**
-     * OrganizationService constructor.
-     * @param EntityManagerInterface $entityManager
+     * @var Environment
      */
-    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
+    private $twig;
+
+    /**
+     * OrganizationService constructor.
+     *
+     * @param EntityManagerInterface $entityManager
+     * @param ContainerInterface     $container
+     * @param Environment            $twig
+     */
+    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container, Environment $twig)
     {
         $this->em = $entityManager;
         $this->container = $container;
+        $this->twig = $twig;
     }
 
     /**
@@ -85,7 +94,7 @@ class OrganizationService
     public function printTemplate()
     {
         try {
-            $html = $this->container->get('templating')->render(
+            $html = $this->twig->render(
                 '@Common/Pdf/template.html.twig',
                 $this->container->get('pdf_service')->getInformationStyle()
             );
@@ -96,8 +105,6 @@ class OrganizationService
         } catch (\Exception $e) {
             throw $e;
         }
-
-        return new Response('');
     }
 
     public function getOrganizationServices(Organization $organization)

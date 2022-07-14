@@ -19,6 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use TransactionBundle\Entity\Transaction;
 use TransactionBundle\Utils\Provider\DefaultFinancialProvider;
+use Twig\Environment;
 use UserBundle\Entity\User;
 
 /**
@@ -48,19 +49,26 @@ class TransactionService
     private $cache;
 
     /**
+     * @var Environment
+     */
+    private $twig;
+
+    /**
      * TransactionService constructor.
      *
      * @param EntityManagerInterface $entityManager
      * @param ContainerInterface     $container
      * @param CacheInterface         $cache
+     * @param Environment            $twig
      */
-    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container, CacheInterface $cache)
+    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container, CacheInterface $cache, Environment $twig)
     {
         $this->em = $entityManager;
         $this->container = $container;
         $this->email = $this->container->getParameter('email');
         $this->logger = $container->get('monolog.logger.mobile');
         $this->cache = $cache;
+        $this->twig = $twig;
     }
 
     /**
@@ -138,7 +146,7 @@ class TransactionService
             ->setFrom($this->email)
             ->setTo($user->getEmail())
             ->setBody(
-                $this->container->get('templating')->render(
+                $this->twig->render(
                     'Emails/confirm_transaction.html.twig',
                     array(
                         'distribution' => $assistance->getName(),
@@ -175,7 +183,7 @@ class TransactionService
                 ->setFrom($this->email)
                 ->setTo($user->getEmail())
                 ->setBody(
-                    $this->container->get('templating')->render(
+                    $this->twig->render(
                         'Emails/logs_transaction.html.twig',
                         array(
                             'user' => $user->getUsername(),
@@ -190,7 +198,7 @@ class TransactionService
                 ->setFrom($this->email)
                 ->setTo($user->getEmail())
                 ->setBody(
-                    $this->container->get('templating')->render(
+                    $this->twig->render(
                         'Emails/no_logs_transaction.html.twig',
                         array(
                             'user' => $user->getUsername(),

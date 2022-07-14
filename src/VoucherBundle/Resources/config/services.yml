@@ -37,7 +37,7 @@ services:
 
     voucher.vendor_service:
         class: VoucherBundle\Utils\VendorService
-        arguments: ['@doctrine.orm.entity_manager', '@validator', '@location_service', '@service_container']
+        arguments: ['@doctrine.orm.entity_manager', '@validator', '@location_service', '@service_container', '@Twig\Environment']
         public: true
 
     VoucherBundle\Utils\VendorService: '@voucher.vendor_service'
@@ -49,11 +49,12 @@ services:
             - '@validator'
             - '@service_container'
             - '@VoucherBundle\Utils\BookletGenerator'
+            - '@Twig\Environment'
         public: true
 
     voucher.voucher_service:
         class: VoucherBundle\Utils\VoucherService
-        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
+        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container', '@Twig\Environment']
         public: true
 
     voucher.product_service:
@@ -100,3 +101,6 @@ services:
     VoucherBundle\Utils\BookletGenerator:
         public: true
         arguments: [ '@doctrine.orm.entity_manager' ]
+
+
+

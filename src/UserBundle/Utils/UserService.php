@@ -18,6 +18,7 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Twig\Environment;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
 use UserBundle\Entity\UserProject;
@@ -79,6 +80,11 @@ class UserService
     private $security;
 
     /**
+     * @var Environment
+     */
+    private $twig;
+
+    /**
      * UserService constructor.
      *
      * @param string                 $googleClient
@@ -87,6 +93,8 @@ class UserService
      * @param ValidatorInterface     $validator
      * @param ContainerInterface     $container
      * @param RoleHierarchyInterface $roleHierarchy
+     * @param Security               $security
+     * @param Environment            $twig
      */
     public function __construct(
         string                 $googleClient,
@@ -95,7 +103,8 @@ class UserService
         ValidatorInterface     $validator,
         ContainerInterface     $container,
         RoleHierarchyInterface $roleHierarchy,
-        Security $security
+        Security               $security,
+        Environment            $twig
     ) {
         $this->googleClient = $googleClient;
         $this->humanitarianSecret = $humanitarianSecret;
@@ -105,6 +114,7 @@ class UserService
         $this->email = $this->container->getParameter('email');
         $this->roleHierarchy = $roleHierarchy;
         $this->security = $security;
+        $this->twig = $twig;
     }
 
     /**
@@ -553,7 +563,7 @@ class UserService
                 ->setFrom($this->email)
                 ->setTo($emailConnected->getEmail())
                 ->setBody(
-                    $this->container->get('templating')->render(
+                    $this->twig->render(
                         'Emails/logs.html.twig',
                         array(
                             'user' => $emailConnected->getUsername(),
@@ -568,7 +578,7 @@ class UserService
                 ->setFrom($this->email)
                 ->setTo($emailConnected->getEmail())
                 ->setBody(
-                    $this->container->get('templating')->render(
+                    $this->twig->render(
                         'Emails/no_logs.html.twig',
                         array(
                             'user' => $emailConnected->getUsername(),

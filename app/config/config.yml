@@ -98,15 +98,13 @@ framework:
     serializer:
         enable_annotations: true
         name_converter: 'serializer.name_converter.camel_case_to_snake_case'
-    templating:
-        engines: ['twig']
+    fragments: ~
     default_locale: '%locale%'
     trusted_hosts: ~
     session:
         # https://symfony.com/doc/current/reference/configuration/framework.html#handler-id
         handler_id: session.handler.native_file
         save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
-    fragments: ~
     http_method_override: true
     assets: ~
     php_errors:
@@ -121,6 +119,7 @@ sensio_framework_extra:
 twig:
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
+    exception_controller: null
 
 # Doctrine Configuration
 doctrine:
@@ -208,6 +207,8 @@ fos_user:
     from_email:
         address: "%email%"
         sender_name: "BMS Support"
+    service:
+        mailer: fos_user.mailer.twig_swift
 
 fos_rest:
     param_fetcher_listener: true
