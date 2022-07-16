@@ -19,7 +19,7 @@ use NewApiBundle\Request\InputTypeInterface;
 use NewApiBundle\Utils\DateTime\Iso8601Converter;
 use NewApiBundle\Validator\Constraints\Country;
 use NewApiBundle\Validator\Constraints\Iso8601;
-use ProjectBundle\Enum\Livelihood;
+use NewApiBundle\Enum\Livelihood;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\GroupSequenceProviderInterface;
 use NewApiBundle\Validator\Constraints\Enum;
@@ -63,7 +63,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     private $iso3;
 
     /**
-     * @Enum(enumClass="ProjectBundle\Enum\Livelihood")
+     * @Enum(enumClass="NewApiBundle\Enum\Livelihood")
      */
     private $livelihood;
 

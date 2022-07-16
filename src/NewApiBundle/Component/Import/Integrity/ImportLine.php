@@ -57,7 +57,7 @@ class ImportLine
     public $tentNumber;
 
     /**
-     * @Enum(enumClass="ProjectBundle\Enum\Livelihood", groups={"household", "member"})
+     * @Enum(enumClass="NewApiBundle\Enum\Livelihood", groups={"household", "member"})
      */
     public $livelihood;
 

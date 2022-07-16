@@ -8,7 +8,7 @@ use Exception;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
-use ProjectBundle\Enum\Livelihood;
+use NewApiBundle\Enum\Livelihood;
 use Tests\BMSServiceTestCase;
 
 class HouseholdCodelistControllerTest extends BMSServiceTestCase

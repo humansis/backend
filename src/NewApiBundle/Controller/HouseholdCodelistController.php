@@ -14,6 +14,7 @@ use NewApiBundle\Enum\Domain;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
+use NewApiBundle\Enum\Livelihood;
 use NewApiBundle\Services\CodeListService;
 use ProjectBundle\Enum\Livelihood;
 use FOS\RestBundle\Controller\Annotations as Rest;

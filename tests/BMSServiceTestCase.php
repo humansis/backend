@@ -71,7 +71,7 @@ class BMSServiceTestCase extends KernelTestCase
     protected $namefullnameHousehold = "NOTES_TEST";
 
     protected $bodyHousehold = [
-        "livelihood" => \ProjectBundle\Enum\Livelihood::FARMING_LIVESTOCK,
+        "livelihood" => \NewApiBundle\Enum\Livelihood::FARMING_LIVESTOCK,
         "notes" => "NOTES_TEST",
         "latitude" => "1.1544",
         "longitude" => "120.12",

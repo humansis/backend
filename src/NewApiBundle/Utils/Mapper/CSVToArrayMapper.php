@@ -13,11 +13,7 @@ use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Utils\ExcelColumnsGenerator;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
-use NewApiBundle\Enum\EnumTrait;
-use NewApiBundle\Enum\HouseholdAssets;
-use NewApiBundle\Enum\HouseholdShelterStatus;
-use NewApiBundle\Enum\HouseholdSupportReceivedType;
-use ProjectBundle\Enum\Livelihood;
+use NewApiBundle\Enum\Livelihood;
 
 /**
  * @deprecated will be removed (at least lots of methods here) with DistributionBundle

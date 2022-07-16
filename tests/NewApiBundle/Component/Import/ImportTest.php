@@ -18,7 +18,7 @@ use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\Import\Duplicity\ResolveSingleDuplicityInputType;
-use ProjectBundle\Enum\Livelihood;
+use NewApiBundle\Enum\Livelihood;
 use NewApiBundle\Utils\ProjectService;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use NewApiBundle\Entity\Beneficiary;

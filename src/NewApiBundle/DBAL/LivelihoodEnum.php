@@ -3,8 +3,7 @@
 namespace NewApiBundle\DBAL;
 
 use CommonBundle\DBAL\AbstractEnum;
-use NewApiBundle\DBAL\EnumTrait;
-use ProjectBundle\Enum\Livelihood;
+use NewApiBundle\Enum\Livelihood;
 
 class LivelihoodEnum extends AbstractEnum
 {
