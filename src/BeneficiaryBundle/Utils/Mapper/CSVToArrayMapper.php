@@ -19,6 +19,9 @@ use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use ProjectBundle\Enum\Livelihood;
 
+/**
+ * @deprecated will be removed (at least lots of methods here) with DistributionBundle
+ */
 class CSVToArrayMapper
 {
     private $adms = [];
