@@ -11,7 +11,7 @@
 
 {% macro getNationalId(person) -%}
     {% for nationalId in person.nationalIds %}
-        {% if nationalId.idType is constant('BeneficiaryBundle\\Entity\\NationalId::TYPE_NATIONAL_ID') %}
+        {% if nationalId.idType is constant('NewApiBundle\\Entity\\NationalId::TYPE_NATIONAL_ID') %}
             {{ nationalId.idNumber }}
         {% endif %}
     {% endfor %}

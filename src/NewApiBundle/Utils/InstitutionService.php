@@ -19,7 +19,7 @@ use NewApiBundle\InputType\Deprecated;
 
 /**
  * Class InstitutionService
- * @package BeneficiaryBundle\Utils
+ * @package NewApiBundle\Utils
  */
 class InstitutionService
 {

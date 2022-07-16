@@ -25,7 +25,6 @@ before that the controller process.
 See [translations step by step](translations.md).
 
 #### Specific Documentation
-- [Beneficiary Bundle](src/BeneficiaryBundle/README.md)
 - [Distribution Bundle](src/DistributionBundle/README.md)
 - [Project Bundle](src/ProjectBundle/README.md)
 - [Reporting Bundle](src/ReportingBundle/README.md)

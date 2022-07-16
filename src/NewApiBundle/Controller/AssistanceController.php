@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-use BeneficiaryBundle\Exception\CsvParserException;
 use CommonBundle\Controller\ExportController;
 use CommonBundle\Pagination\Paginator;
 use DateTimeInterface;
@@ -22,6 +21,7 @@ use NewApiBundle\Component\Assistance\AssistanceQuery;
 use NewApiBundle\Entity\AssistanceStatistics;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Exception\ConstraintViolationException;
+use NewApiBundle\Exception\CsvParserException;
 use NewApiBundle\Export\AssistanceBankReportExport;
 use NewApiBundle\Export\VulnerabilityScoreExport;
 use NewApiBundle\InputType\Assistance\UpdateAssistanceInputType;
