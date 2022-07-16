@@ -14,24 +14,24 @@ services:
 #######################################################################################
 
     project.project_service:
-        alias: ProjectBundle\Utils\ProjectService
+        alias: NewApiBundle\Utils\ProjectService
         public: true
 
-    ProjectBundle\Utils\ProjectService:
+    NewApiBundle\Utils\ProjectService:
         arguments: ['@doctrine.orm.entity_manager', '@service_container']
 
     project.donor_service:
-        alias: ProjectBundle\Utils\DonorService
+        alias: NewApiBundle\Utils\DonorService
         public: true
 
-    ProjectBundle\Utils\DonorService:
+    NewApiBundle\Utils\DonorService:
         arguments: ['@doctrine.orm.entity_manager', '@service_container']
 
     project.sector_service:
-        alias: ProjectBundle\Utils\SectorService
+        alias: NewApiBundle\Utils\SectorService
         public: true
 
-    ProjectBundle\Utils\SectorService:
+    NewApiBundle\Utils\SectorService:
 
     ProjectBundle\Mapper\ProjectMapper:
         arguments:

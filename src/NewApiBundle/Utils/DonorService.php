@@ -1,6 +1,6 @@
 <?php
 
-namespace ProjectBundle\Utils;
+namespace NewApiBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\InputType\DonorCreateInputType;

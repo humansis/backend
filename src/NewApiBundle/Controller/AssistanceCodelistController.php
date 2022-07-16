@@ -10,6 +10,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 use NewApiBundle\InputType\AssistanceTargetFilterInputType;
 use NewApiBundle\InputType\AssistanceTypeFilterInputType;
+use NewApiBundle\Utils\SectorService;
 use NewApiBundle\Services\CodeListService;
 use ProjectBundle\Utils\SectorService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;

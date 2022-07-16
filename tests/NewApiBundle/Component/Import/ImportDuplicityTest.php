@@ -17,7 +17,7 @@ use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\Import\Duplicity\ResolveAllDuplicitiesInputType;
 use NewApiBundle\InputType\Import\Duplicity\ResolveSingleDuplicityInputType;
 use ProjectBundle\Enum\Livelihood;
-use ProjectBundle\Utils\ProjectService;
+use NewApiBundle\Utils\ProjectService;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Household;
