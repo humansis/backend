@@ -2,13 +2,13 @@
 
 namespace NewApiBundle\Repository;
 
-use BeneficiaryBundle\Entity\Community;
 use CommonBundle\Entity\Location;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use InvalidArgumentException;
+use NewApiBundle\Entity\Community;
 use NewApiBundle\InputType\AssistanceCommunitiesFilterInputType;
 use NewApiBundle\InputType\CommunityFilterType;
 use NewApiBundle\InputType\CommunityOrderInputType;

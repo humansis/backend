@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType\Assistance\Scoring;
 
+use NewApiBundle\Exception\CsvParserException;
 use NewApiBundle\Model\Vulnerability\Resolver as OldResolver;
 use NewApiBundle\Repository\BeneficiaryRepository;
 use DistributionBundle\DTO\VulnerabilityScore;

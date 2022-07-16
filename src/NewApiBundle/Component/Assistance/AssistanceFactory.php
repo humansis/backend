@@ -2,14 +2,11 @@
 
 namespace NewApiBundle\Component\Assistance;
 
+use NewApiBundle\Entity\AbstractBeneficiary;
+use NewApiBundle\Exception\CsvParserException;
 use NewApiBundle\Repository\BeneficiaryRepository;
 use NewApiBundle\Repository\CommunityRepository;
 use NewApiBundle\Repository\InstitutionRepository;
-use BeneficiaryBundle\Entity\AbstractBeneficiary;
-use BeneficiaryBundle\Exception\CsvParserException;
-use BeneficiaryBundle\Repository\BeneficiaryRepository;
-use BeneficiaryBundle\Repository\CommunityRepository;
-use BeneficiaryBundle\Repository\InstitutionRepository;
 use CommonBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
 use DateTimeInterface;
