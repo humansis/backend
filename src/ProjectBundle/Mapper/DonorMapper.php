@@ -3,8 +3,10 @@
 namespace ProjectBundle\Mapper;
 
 use NewApiBundle\Entity\Donor;
-use NewApiBundle\Entity\Project;
 
+/**
+ * @deprecated
+ */
 class DonorMapper
 {
     public function toMinimalArray(?Donor $donor): ?array

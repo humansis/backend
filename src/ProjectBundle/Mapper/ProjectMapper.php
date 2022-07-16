@@ -4,11 +4,11 @@ namespace ProjectBundle\Mapper;
 
 use NewApiBundle\MapperDeprecated\AssistanceMapper;
 use NewApiBundle\Repository\BeneficiaryRepository;
-use DistributionBundle\Entity\AssistanceBeneficiary;
-use DistributionBundle\Entity\Assistance;
 use NewApiBundle\Entity\Project;
-use NewApiBundle\Utils\SectorService;
 
+/**
+ * @deprecated
+ */
 class ProjectMapper
 {
     /** @var DonorMapper */
@@ -16,9 +16,6 @@ class ProjectMapper
 
     /** @var SectorMapper */
     private $sectorMapper;
-
-    /** @var SectorService */
-    private $sectorService;
 
     /** @var AssistanceMapper */
     private $assistanceMapper;
@@ -33,20 +30,17 @@ class ProjectMapper
      * @param SectorMapper          $sectorMapper
      * @param AssistanceMapper      $assistanceMapper
      * @param BeneficiaryRepository $beneficiaryRepo
-     * @param SectorService         $sectorService
      */
     public function __construct(
         DonorMapper $donorMapper,
         SectorMapper $sectorMapper,
         AssistanceMapper $assistanceMapper,
-        BeneficiaryRepository $beneficiaryRepo,
-        SectorService $sectorService
+        BeneficiaryRepository $beneficiaryRepo
     ) {
         $this->donorMapper = $donorMapper;
         $this->sectorMapper = $sectorMapper;
         $this->assistanceMapper = $assistanceMapper;
         $this->beneficiaryRepo = $beneficiaryRepo;
-        $this->sectorService = $sectorService;
     }
 
     public function toFullArray(?Project $project): ?array
@@ -76,13 +70,6 @@ class ProjectMapper
     {
         foreach ($projects as $project) {
             yield $this->toFullArray($project);
-        }
-    }
-
-    public function toIdArray(iterable $projects): iterable
-    {
-        foreach ($projects as $project) {
-            yield $project->getId();
         }
     }
 }
