@@ -11,7 +11,7 @@ use NewApiBundle\InputType\VendorOrderInputType;
 use NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository;
 use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 /**
  * VendorRepository.

@@ -13,7 +13,7 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Twig\Environment;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 use VoucherBundle\DTO\RedemptionVoucherBatchCheck;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Product;

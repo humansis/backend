@@ -7,9 +7,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Role\RoleHierarchy;
-use UserBundle\Entity\User;
-use UserBundle\Entity\UserCountry;
-use UserBundle\Entity\UserProject;
+use NewApiBundle\Entity\User;
+use NewApiBundle\Entity\UserCountry;
+use NewApiBundle\Entity\UserProject;
 use VoucherBundle\Entity\Vendor;
 
 /**

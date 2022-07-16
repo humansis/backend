@@ -12,7 +12,7 @@ use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\Request\Pagination;
 use Tests\BMSServiceTestCase;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Enum\SmartcardStates;
 

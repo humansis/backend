@@ -11,6 +11,7 @@ use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Component\Smartcard\Deposit\DepositFactory;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ModalityType;
+use NewApiBundle\Entity\User;
 use NewApiBundle\InputType\Smartcard\DepositInputType;
 use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
 use UserBundle\Entity\User;

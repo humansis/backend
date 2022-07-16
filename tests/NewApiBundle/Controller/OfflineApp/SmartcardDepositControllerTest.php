@@ -10,6 +10,7 @@ use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\InputType\Smartcard\DepositInputType;
 use Tests\BMSServiceTestCase;
+use NewApiBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Enum\SmartcardStates;

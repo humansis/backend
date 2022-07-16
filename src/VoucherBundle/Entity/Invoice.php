@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Entity\Project;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 /**
  * Smartcard purchase batch for redemption feature.
@@ -48,7 +48,7 @@ class Invoice implements JsonSerializable
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\User")
      * @ORM\JoinColumn(name="redeemed_by", nullable=false)
      */
     private $invoicedBy;

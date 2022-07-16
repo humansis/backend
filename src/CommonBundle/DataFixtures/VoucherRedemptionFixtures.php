@@ -5,7 +5,7 @@ namespace CommonBundle\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Voucher;
 use VoucherBundle\InputType\VoucherRedemptionBatch;

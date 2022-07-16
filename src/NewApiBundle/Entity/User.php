@@ -1,6 +1,6 @@
 <?php
 
-namespace UserBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use CommonBundle\Utils\ExportableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -10,7 +10,6 @@ use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
 use FOS\UserBundle\Model\User as BaseUser;
 use InvalidArgumentException;
-use NewApiBundle\Entity\Role;
 use RuntimeException;
 use Symfony\Component\Validator\Constraints as Assert;
 use TransactionBundle\Entity\Transaction;
@@ -20,7 +19,7 @@ use Doctrine\Common\Persistence\ObjectManagerAware;
  * User
  *
  * @ORM\Table(name="`user")
- * @ORM\Entity(repositoryClass="UserBundle\Repository\UserRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\UserRepository")
  */
 class User extends BaseUser implements ExportableInterface, ObjectManagerAware
 {
@@ -54,12 +53,12 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     protected $password;
 
     /**
-     * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserCountry", mappedBy="user", cascade={"persist","remove"})
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\UserCountry", mappedBy="user", cascade={"persist","remove"})
      */
     private $countries;
 
     /**
-     * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserProject", mappedBy="user", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\UserProject", mappedBy="user", cascade={"remove"})
      */
     private $projects;
 
@@ -161,11 +160,11 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     /**
      * Add country.
      *
-     * @param \UserBundle\Entity\UserCountry $country
+     * @param \NewApiBundle\Entity\UserCountry $country
      *
      * @return User
      */
-    public function addCountry(\UserBundle\Entity\UserCountry $country)
+    public function addCountry(\NewApiBundle\Entity\UserCountry $country)
     {
         $this->countries->add($country);
 
@@ -175,11 +174,11 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     /**
      * Remove country.
      *
-     * @param \UserBundle\Entity\UserCountry $country
+     * @param \NewApiBundle\Entity\UserCountry $country
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeCountry(\UserBundle\Entity\UserCountry $country)
+    public function removeCountry(\NewApiBundle\Entity\UserCountry $country)
     {
         return $this->countries->removeElement($country);
     }
@@ -197,11 +196,11 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     /**
      * Add userProject.
      *
-     * @param \UserBundle\Entity\UserProject $userProject
+     * @param \NewApiBundle\Entity\UserProject $userProject
      *
      * @return User
      */
-    public function addUserProject(\UserBundle\Entity\UserProject $userProject)
+    public function addUserProject(\NewApiBundle\Entity\UserProject $userProject)
     {
         $this->projects[] = $userProject;
 
@@ -211,11 +210,11 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     /**
      * Remove userProject.
      *
-     * @param \UserBundle\Entity\UserProject $userProject
+     * @param \NewApiBundle\Entity\UserProject $userProject
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeUserProject(\UserBundle\Entity\UserProject $userProject)
+    public function removeUserProject(\NewApiBundle\Entity\UserProject $userProject)
     {
         return $this->projects->removeElement($userProject);
     }

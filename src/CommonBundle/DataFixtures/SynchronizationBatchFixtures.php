@@ -11,6 +11,9 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Component\Smartcard\SmartcardDepositService;
 use NewApiBundle\Entity\SynchronizationBatch\Deposits;
+use TransactionBundle\Entity\Transaction;
+use TransactionBundle\Utils\Provider\KHMFinancialProvider;
+use NewApiBundle\Entity\User;
 
 class SynchronizationBatchFixtures extends Fixture implements DependentFixtureInterface
 {

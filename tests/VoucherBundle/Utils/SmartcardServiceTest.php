@@ -18,7 +18,7 @@ use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\InputType\Smartcard\DepositInputType;
 use NewApiBundle\InputType\Smartcard\SmartcardRegisterInputType;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;

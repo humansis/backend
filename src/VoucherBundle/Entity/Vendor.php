@@ -84,7 +84,7 @@ class Vendor implements ExportableInterface
     private $archived;
 
     /**
-     * @ORM\OneToOne(targetEntity="\UserBundle\Entity\User", inversedBy="vendor", cascade={"persist","remove"})
+     * @ORM\OneToOne(targetEntity="\NewApiBundle\Entity\User", inversedBy="vendor", cascade={"persist","remove"})
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      * @SymfonyGroups({"FullVendor"})
      */
@@ -319,11 +319,11 @@ class Vendor implements ExportableInterface
     /**
      * Set user.
      *
-     * @param \UserBundle\Entity\User|null $user
+     * @param \NewApiBundle\Entity\User|null $user
      *
      * @return Vendor
      */
-    public function setUser(\UserBundle\Entity\User $user = null)
+    public function setUser(\NewApiBundle\Entity\User $user = null)
     {
         $this->user = $user;
         $user->setVendor($this);
@@ -334,7 +334,7 @@ class Vendor implements ExportableInterface
     /**
      * Get user.
      *
-     * @return \UserBundle\Entity\User|null
+     * @return \NewApiBundle\Entity\User|null
      */
     public function getUser()
     {

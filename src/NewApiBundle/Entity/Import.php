@@ -13,7 +13,7 @@ use NewApiBundle\Entity\Helper\EnumTrait;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Entity\Project;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 /**
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ImportRepository")

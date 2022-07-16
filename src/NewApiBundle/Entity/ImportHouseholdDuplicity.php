@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ImportDuplicityState;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 /**
  * Information about duplicity between queue record and household.
@@ -49,7 +49,7 @@ class ImportHouseholdDuplicity
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="importBeneficiaryDuplicities")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\User", inversedBy="importBeneficiaryDuplicities")
      */
     private $decideBy;
 

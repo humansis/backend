@@ -16,7 +16,7 @@ use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\Registry;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 /**
  * Class AssistanceDistributionService

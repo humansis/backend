@@ -18,7 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use TransactionBundle\Entity\Transaction;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 use function Matrix\trace;
 
 class TestReportImportCommand extends KernelTestCase

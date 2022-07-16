@@ -7,8 +7,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Entity\Project;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Role\RoleHierarchy;
-use UserBundle\Entity\User;
-use UserBundle\Entity\UserProject;
+use NewApiBundle\Entity\User;
+use NewApiBundle\Entity\UserProject;
 
 /**
  * Class ProjectVoter

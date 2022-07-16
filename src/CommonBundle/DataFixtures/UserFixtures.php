@@ -11,10 +11,10 @@ use NewApiBundle\Entity\Project;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\HttpKernel\Kernel;
 use Tests\BMSServiceTestCase;
-use UserBundle\Entity\User;
-use UserBundle\Entity\UserCountry;
+use NewApiBundle\Entity\User;
+use NewApiBundle\Entity\UserCountry;
 use Doctrine\Persistence\ObjectManager;
-use UserBundle\Entity\UserProject;
+use NewApiBundle\Entity\UserProject;
 use NewApiBundle\Utils\UserService;
 
 /**

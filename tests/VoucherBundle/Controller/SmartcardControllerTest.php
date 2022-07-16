@@ -14,7 +14,7 @@ use NewApiBundle\InputType\Smartcard\ChangeSmartcardInputType;
 use NewApiBundle\InputType\Smartcard\SmartcardRegisterInputType;
 use NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository;
 use Tests\BMSServiceTestCase;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;

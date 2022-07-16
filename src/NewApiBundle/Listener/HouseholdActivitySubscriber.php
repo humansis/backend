@@ -10,7 +10,7 @@ use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Serializer\SerializerInterface;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 class HouseholdActivitySubscriber implements EventSubscriber
 {

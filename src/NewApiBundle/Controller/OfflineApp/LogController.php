@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
 class LogController extends AbstractOfflineAppController

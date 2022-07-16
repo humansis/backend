@@ -5,7 +5,7 @@ namespace TransactionBundle\Entity;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 // use Symfony\Component\Serializer\Annotation as JMS_Type;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
@@ -131,7 +131,7 @@ class Transaction
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="transactions", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\User", inversedBy="transactions", cascade={"persist"})
      */
     private $sentBy;
 

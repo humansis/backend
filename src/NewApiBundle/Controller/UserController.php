@@ -18,8 +18,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\ConstraintViolation;
-use UserBundle\Entity\User;
-use UserBundle\Repository\UserRepository;
+use NewApiBundle\Entity\User;
+use NewApiBundle\Repository\UserRepository;
 use NewApiBundle\Utils\UserService;
 
 class UserController extends AbstractController

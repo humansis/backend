@@ -7,9 +7,9 @@ use NewApiBundle\Component\Country\Country;
 use NewApiBundle\Serializer\MapperInterface;
 use NewApiBundle\Entity\Project;
 use NewApiBundle\Repository\ProjectRepository;
-use UserBundle\Entity\User;
-use UserBundle\Entity\UserCountry;
-use UserBundle\Entity\UserProject;
+use NewApiBundle\Entity\User;
+use NewApiBundle\Entity\UserCountry;
+use NewApiBundle\Entity\UserProject;
 
 class UserMapper implements MapperInterface
 {

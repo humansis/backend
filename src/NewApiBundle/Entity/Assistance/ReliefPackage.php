@@ -11,7 +11,7 @@ use NewApiBundle\Entity\Helper\LastModifiedAt;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 use VoucherBundle\Entity\SmartcardDeposit;
 
 /**
@@ -95,7 +95,7 @@ class ReliefPackage
     /**
      * @var User|null
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\User")
      * @ORM\JoinColumn(nullable=true)
      */
     private $distributedBy;

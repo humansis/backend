@@ -9,7 +9,7 @@ use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\InputType\FilterFragment\PrimaryIdFilterTrait;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 /**
  * Imformation about duplicity between two queue records.
@@ -45,7 +45,7 @@ class ImportQueueDuplicity
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\User")
      */
     private $decideBy;
 

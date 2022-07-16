@@ -27,7 +27,7 @@ use Symfony\Component\Validator\Validation;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Twig\Environment;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\VoucherPurchase;
 

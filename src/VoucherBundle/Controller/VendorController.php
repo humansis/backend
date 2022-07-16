@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use NewApiBundle\Utils\UserService;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Booklet;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 use VoucherBundle\Utils\VendorService;
 
 /**

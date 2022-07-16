@@ -35,7 +35,7 @@ use NewApiBundle\Workflow\WorkflowTool;
 use NewApiBundle\Entity\Project;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 class ImportFinisher
 {

@@ -117,7 +117,7 @@ class Project implements ExportableInterface
     private $archived = 0;
 
     /**
-     * @ORM\OneToMany(targetEntity="UserBundle\Entity\UserProject", mappedBy="project", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\UserProject", mappedBy="project", cascade={"remove"})
      */
     private $usersProject;
 
@@ -523,11 +523,11 @@ class Project implements ExportableInterface
     /**
      * Add usersProject.
      *
-     * @param \UserBundle\Entity\UserProject $usersProject
+     * @param \NewApiBundle\Entity\UserProject $usersProject
      *
      * @return Project
      */
-    public function addUsersProject(\UserBundle\Entity\UserProject $usersProject)
+    public function addUsersProject(\NewApiBundle\Entity\UserProject $usersProject)
     {
         $this->usersProject[] = $usersProject;
         return $this;
@@ -536,11 +536,11 @@ class Project implements ExportableInterface
     /**
      * Remove usersProject.
      *
-     * @param \UserBundle\Entity\UserProject $usersProject
+     * @param \NewApiBundle\Entity\UserProject $usersProject
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeUsersProject(\UserBundle\Entity\UserProject $usersProject)
+    public function removeUsersProject(\NewApiBundle\Entity\UserProject $usersProject)
     {
         return $this->usersProject->removeElement($usersProject);
     }

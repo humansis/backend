@@ -4,7 +4,7 @@ namespace NewApiBundle\Model\Household\HouseholdChange;
 
 use NewApiBundle\Entity\HouseholdActivity;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 abstract class AbstractHouseholdChange
 {

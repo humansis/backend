@@ -13,7 +13,7 @@ use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Workflow\ImportTransitions;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 class DuplicityResolver
 {

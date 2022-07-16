@@ -1,6 +1,6 @@
 <?php
 
-namespace UserBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * UserCountry
  *
  * @ORM\Table(name="user_country")
- * @ORM\Entity(repositoryClass="UserBundle\Repository\UserCountryRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\UserCountryRepository")
  */
 class UserCountry
 {
@@ -38,7 +38,7 @@ class UserCountry
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="countries", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\User", inversedBy="countries", cascade={"persist"})
      */
     private $user;
 
@@ -104,11 +104,11 @@ class UserCountry
     /**
      * Set user.
      *
-     * @param \UserBundle\Entity\User|null $user
+     * @param \NewApiBundle\Entity\User|null $user
      *
      * @return UserCountry
      */
-    public function setUser(\UserBundle\Entity\User $user = null)
+    public function setUser(\NewApiBundle\Entity\User $user = null)
     {
         $this->user = $user;
 
@@ -118,7 +118,7 @@ class UserCountry
     /**
      * Get user.
      *
-     * @return \UserBundle\Entity\User|null
+     * @return \NewApiBundle\Entity\User|null
      */
     public function getUser()
     {

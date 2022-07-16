@@ -5,14 +5,14 @@ namespace NewApiBundle\Entity\Helper;
 
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Enum\SourceType;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 trait CreatedBy
 {
     /**
      * @var User|null
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\User")
      * @ORM\JoinColumn(name="created_by_user_id")
      */
     private $createdBy;

@@ -17,8 +17,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use UserBundle\Entity\User;
-use UserBundle\Entity\UserCountry;
+use NewApiBundle\Entity\User;
+use NewApiBundle\Entity\UserCountry;
 
 /**
  * @Cache(expires="+5 days", public=true)
