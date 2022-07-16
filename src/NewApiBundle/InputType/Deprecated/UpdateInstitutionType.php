@@ -1,37 +1,50 @@
-<?php
-namespace BeneficiaryBundle\InputType;
+<?php declare(strict_types=1);
+
+namespace NewApiBundle\InputType\Deprecated;
 
 use CommonBundle\InputType\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-class UpdateCommunityType implements InputTypeInterface
+class UpdateInstitutionType implements InputTypeInterface
 {
+    /**
+     * @var string
+     * @Assert\Length(max="255")
+     */
+    protected $name;
+    /**
+     * @var string|null
+     * @Assert\Length(max="255")
+     * @Assert\Choice(choices=NewApiBundle\Entity\Institution::TYPE_ALL)
+     */
+    protected $type;
     /**
      * @var BeneficiaryAddressType|null
      * @Assert\Valid()
      */
-    public $address;
+    private $address;
     /**
      * @var string|null
      * @Assert\Length(max="255")
      */
-    public $latitude;
+    private $latitude;
     /**
      * @var string|null
      * @Assert\Length(max="255")
      */
-    public $longitude;
+    private $longitude;
     /**
      * @var NationalIdType|null
      * @Assert\Valid()
      */
-    public $national_id;
+    private $national_id;
     /**
      * @var string|null
      * @Assert\Length(max="255")
      * @Assert\Expression("this.getPhoneNumber() == null or value != null")
      */
-    public $phone_prefix;
+    private $phone_prefix;
     /**
      * @var string|null
      * @Assert\Length(max="255")
@@ -42,23 +55,55 @@ class UpdateCommunityType implements InputTypeInterface
      * @var string|null
      * @Assert\Length(max="255")
      */
-    public $phone_number;
+    private $phone_number;
     /**
      * @var string|null
      * @Assert\Length(max="255")
      */
-    public $contact_name;
+    private $contact_name;
     /**
      * @var string|null
      * @Assert\Length(max="255")
      */
-    public $contact_family_name;
+    private $contact_family_name;
     /**
      * @var int[]
      * @Assert\NotNull
      * @Assert\Count(min="1")
      */
     public $projects;
+
+    /**
+     * @return string|null
+     */
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string|null $name
+     */
+    public function setName(?string $name): void
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string|null $type
+     */
+    public function setType(?string $type): void
+    {
+        $this->type = $type;
+    }
 
     /**
      * @return BeneficiaryAddressType|null
@@ -213,9 +258,9 @@ class UpdateCommunityType implements InputTypeInterface
     }
 
     /**
-     * @param int[] $projects
+     * @param int[]|null $projects
      */
-    public function setProjects(array $projects): void
+    public function setProjects(?array $projects): void
     {
         $this->projects = $projects;
     }

@@ -2,7 +2,7 @@
 namespace CommonBundle\DataFixtures\Beneficiaries;
 
 use NewApiBundle\Entity\Institution;
-use BeneficiaryBundle\InputType\NewInstitutionType;
+use NewApiBundle\InputType\Deprecated\NewInstitutionType;
 use BeneficiaryBundle\Utils\InstitutionService;
 use CommonBundle\DataFixtures\LocationFixtures;
 use CommonBundle\DataFixtures\ProjectFixtures;

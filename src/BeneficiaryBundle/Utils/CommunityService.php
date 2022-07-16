@@ -6,7 +6,7 @@ use NewApiBundle\Entity\Address;
 use NewApiBundle\Entity\Community;
 use NewApiBundle\Entity\NationalId;
 use NewApiBundle\Entity\Phone;
-use BeneficiaryBundle\InputType;
+use NewApiBundle\InputType\Deprecated;
 use CommonBundle\Entity\Location;
 use CommonBundle\InputType as GeneralInputType;
 use CommonBundle\Mapper\LocationMapper;
@@ -51,16 +51,16 @@ class CommunityService
     }
 
     /**
-     * @deprecated Since added method createCommunity TODO Remove after migrate new application
-     *
      * @param GeneralInputType\Country   $country
-     * @param InputType\NewCommunityType $communityType
+     * @param Deprecated\NewCommunityType $communityType
      *
      * @return Community
      *
      * @throws InvalidArgumentException
+     *@deprecated Since added method createCommunity TODO Remove after migrate new application
+     *
      */
-    public function createDeprecated(GeneralInputType\Country $country, InputType\NewCommunityType $communityType): Community
+    public function createDeprecated(GeneralInputType\Country $country, Deprecated\NewCommunityType $communityType): Community
     {
         $community = new Community();
         $community->setLongitude($communityType->getLongitude() ?? '');

@@ -1,7 +1,7 @@
 <?php
 namespace CommonBundle\DataFixtures\Beneficiaries;
 
-use BeneficiaryBundle\InputType\NewCommunityType;
+use NewApiBundle\InputType\Deprecated\NewCommunityType;
 use BeneficiaryBundle\Utils\CommunityService;
 use CommonBundle\DataFixtures\LocationFixtures;
 use CommonBundle\DataFixtures\ProjectFixtures;
