@@ -33,25 +33,26 @@ services:
 
     NewApiBundle\Utils\SectorService:
 
-    ProjectBundle\Mapper\ProjectMapper:
+    NewApiBundle\MapperDeprecated\ProjectMapper:
         arguments:
-            - '@ProjectBundle\Mapper\DonorMapper'
-            - '@ProjectBundle\Mapper\SectorMapper'
+            - '@NewApiBundle\MapperDeprecated\DonorMapper'
+            - '@NewApiBundle\MapperDeprecated\SectorMapper'
             - '@NewApiBundle\MapperDeprecated\AssistanceMapper'
             - '@beneficiary.repository'
             - '@project.sector_service'
+            - '@beneficiary.repository'
         public: true
 
-    ProjectBundle\Mapper\DonorMapper:
+    NewApiBundle\MapperDeprecated\DonorMapper:
         public: true
 
-    ProjectBundle\Mapper\SectorMapper:
+    NewApiBundle\MapperDeprecated\SectorMapper:
         arguments:
             - '@translator'
         public: true
 
     project.sector_mapper:
-        class: ProjectBundle\Mapper\SectorMapper
+        class: NewApiBundle\Mapper\SectorMapper
         arguments: []
         public: true
 

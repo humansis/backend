@@ -1,8 +1,7 @@
 <?php declare(strict_types=1);
 
-namespace ProjectBundle\Mapper;
+namespace NewApiBundle\MapperDeprecated;
 
-use NewApiBundle\MapperDeprecated\AssistanceMapper;
 use NewApiBundle\Repository\BeneficiaryRepository;
 use NewApiBundle\Entity\Project;
 

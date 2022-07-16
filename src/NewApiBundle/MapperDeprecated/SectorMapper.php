@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ProjectBundle\Mapper;
+namespace NewApiBundle\MapperDeprecated;
 
 use NewApiBundle\Entity\ProjectSector;
 use NewApiBundle\Enum\Domain;
