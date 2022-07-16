@@ -34,7 +34,6 @@ class UserProject
      * @var Project
      *
      * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Project", inversedBy="usersProject")
-     * @SymfonyGroups({"FullUser"})
      */
     private $project;
 
