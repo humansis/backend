@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Tests\BeneficiaryBundle\Repository;
+namespace Tests\NewApiBundle\Repository;
 
 
 use NewApiBundle\Entity\Beneficiary;
