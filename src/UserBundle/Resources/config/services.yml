@@ -14,11 +14,11 @@ services:
 #######################################################################################
 
     user.user_service:
-        class: UserBundle\Utils\UserService
+        class: NewApiBundle\Utils\UserService
         arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container', '@security.role_hierarchy']
         public: true
 
-    UserBundle\Utils\UserService: '@user.user_service'
+    NewApiBundle\Utils\UserService: '@user.user_service'
 
 
 #######################################################################################

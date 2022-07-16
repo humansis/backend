@@ -11,7 +11,7 @@ use NewApiBundle\InputType\Assistance\Scoring\ScoringService;
 use NewApiBundle\InputType\ScoringInputType;
 use NewApiBundle\InputType\ScoringPatchInputType;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use UserBundle\Utils\UserService;
+use NewApiBundle\Utils\UserService;
 
 class ScoringBlueprintService
 {

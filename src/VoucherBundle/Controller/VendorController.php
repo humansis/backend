@@ -12,7 +12,7 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use UserBundle\Utils\UserService;
+use NewApiBundle\Utils\UserService;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Booklet;
 use UserBundle\Entity\User;
