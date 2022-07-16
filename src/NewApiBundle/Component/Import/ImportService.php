@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Component\Import;
 
-use BeneficiaryBundle\Utils\HouseholdService;
+use NewApiBundle\Utils\HouseholdService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;

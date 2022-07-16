@@ -2,7 +2,7 @@
 
 namespace CommonBundle\Controller;
 
-use BeneficiaryBundle\Utils\BeneficiaryService;
+use NewApiBundle\Utils\BeneficiaryService;
 use DistributionBundle\Repository\AssistanceRepository;
 use ProjectBundle\Utils\ProjectService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;

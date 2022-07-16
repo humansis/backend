@@ -10,8 +10,8 @@ use NewApiBundle\Entity\Phone;
 use NewApiBundle\Entity\Camp;
 use NewApiBundle\Entity\VulnerabilityCriterion;
 use NewApiBundle\Form\HouseholdConstraints;
-use BeneficiaryBundle\Utils\HouseholdExportCSVService;
-use BeneficiaryBundle\Utils\HouseholdService;
+use NewApiBundle\Utils\HouseholdExportCSVService;
+use NewApiBundle\Utils\HouseholdService;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use NewApiBundle\DBAL\PersonGenderEnum;
@@ -23,7 +23,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper;
+use NewApiBundle\Utils\Mapper\CSVToArrayMapper;
 use NewApiBundle\Entity\HouseholdLocation;
 
 /**

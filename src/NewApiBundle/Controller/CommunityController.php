@@ -6,7 +6,7 @@ namespace NewApiBundle\Controller;
 
 use NewApiBundle\Entity\Community;
 use NewApiBundle\Repository\CommunityRepository;
-use BeneficiaryBundle\Utils\CommunityService;
+use NewApiBundle\Utils\CommunityService;
 use DistributionBundle\Entity\Assistance;
 use NewApiBundle\InputType\AssistanceCommunitiesFilterInputType;
 use NewApiBundle\InputType\CommunityCreateInputType;

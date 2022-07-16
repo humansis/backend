@@ -13,6 +13,7 @@ use NewApiBundle\Entity\Person;
 use NewApiBundle\Entity\Phone;
 use NewApiBundle\Entity\Profile;
 use NewApiBundle\Entity\VulnerabilityCriterion;
+use NewApiBundle\Utils\HouseholdService;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\ORM\EntityManagerInterface;

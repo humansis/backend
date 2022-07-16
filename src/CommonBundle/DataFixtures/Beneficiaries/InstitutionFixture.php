@@ -3,7 +3,7 @@ namespace CommonBundle\DataFixtures\Beneficiaries;
 
 use NewApiBundle\Entity\Institution;
 use NewApiBundle\InputType\Deprecated\NewInstitutionType;
-use BeneficiaryBundle\Utils\InstitutionService;
+use NewApiBundle\Utils\InstitutionService;
 use CommonBundle\DataFixtures\LocationFixtures;
 use CommonBundle\DataFixtures\ProjectFixtures;
 use CommonBundle\InputType\Country;

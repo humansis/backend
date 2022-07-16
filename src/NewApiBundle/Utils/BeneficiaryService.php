@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Utils;
+namespace NewApiBundle\Utils;
 
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Household;

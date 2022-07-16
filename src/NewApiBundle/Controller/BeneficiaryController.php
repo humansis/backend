@@ -7,7 +7,7 @@ use NewApiBundle\Entity\NationalId;
 use NewApiBundle\Entity\Phone;
 use NewApiBundle\Exception\CsvParserException;
 use NewApiBundle\Repository\BeneficiaryRepository;
-use BeneficiaryBundle\Utils\BeneficiaryService;
+use NewApiBundle\Utils\BeneficiaryService;
 use CommonBundle\Controller\ExportController;
 use CommonBundle\Entity\Organization;
 use CommonBundle\Pagination\Paginator;

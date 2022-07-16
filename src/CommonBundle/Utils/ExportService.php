@@ -2,7 +2,7 @@
 
 namespace CommonBundle\Utils;
 
-use BeneficiaryBundle\Utils\ExcelColumnsGenerator;
+use NewApiBundle\Utils\ExcelColumnsGenerator;
 use CommonBundle\Utils\Exception\ExportNoDataException;
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Cell\Hyperlink;

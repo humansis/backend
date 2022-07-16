@@ -5,7 +5,7 @@ namespace Tests\BeneficiaryBundle\Utils;
 use NewApiBundle\Entity\Household;
 use NewApiBundle\Entity\HouseholdLocation;
 use NewApiBundle\Enum\ResidencyStatus;
-use BeneficiaryBundle\Utils\HouseholdService;
+use NewApiBundle\Utils\HouseholdService;
 use Doctrine\Common\Persistence\ObjectManager;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;

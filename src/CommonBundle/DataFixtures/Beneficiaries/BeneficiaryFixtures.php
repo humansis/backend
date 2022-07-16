@@ -3,7 +3,7 @@
 
 namespace CommonBundle\DataFixtures\Beneficiaries;
 
-use BeneficiaryBundle\Utils\HouseholdService;
+use NewApiBundle\Utils\HouseholdService;
 use CommonBundle\DataFixtures\ProjectFixtures;
 use CommonBundle\DataFixtures\VulnerabilityCriterionFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
