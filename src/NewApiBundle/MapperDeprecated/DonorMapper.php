@@ -1,6 +1,6 @@
 <?php
 
-namespace ProjectBundle\Mapper;
+namespace NewApiBundle\MapperDeprecated;
 
 use NewApiBundle\Entity\Donor;
 
