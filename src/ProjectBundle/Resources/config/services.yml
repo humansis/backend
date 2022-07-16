@@ -55,7 +55,7 @@ services:
         arguments: []
         public: true
 
-    ProjectBundle\Repository\ProjectRepository:
+    NewApiBundle\Repository\ProjectRepository:
         factory: ['@doctrine.orm.default_entity_manager', getRepository]
         calls:
             - injectSecurity: [ "@security.authorization_checker"]

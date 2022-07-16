@@ -21,6 +21,8 @@ use NewApiBundle\InputType\SmartcardPurchaseInputType;
 use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
 use NewApiBundle\Entity\Project;
+use NewApiBundle\Repository\ProjectRepository;
+use Psr\Log\LoggerInterface;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Repository\ProjectRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

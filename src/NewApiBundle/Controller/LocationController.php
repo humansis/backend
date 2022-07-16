@@ -12,7 +12,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Enum\RoleType;
 use NewApiBundle\InputType\LocationFilterInputType;
-use ProjectBundle\Repository\ProjectRepository;
+use NewApiBundle\Repository\ProjectRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

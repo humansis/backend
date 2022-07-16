@@ -6,7 +6,7 @@ use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Component\Country\Country;
 use NewApiBundle\Serializer\MapperInterface;
 use NewApiBundle\Entity\Project;
-use ProjectBundle\Repository\ProjectRepository;
+use NewApiBundle\Repository\ProjectRepository;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
 use UserBundle\Entity\UserProject;

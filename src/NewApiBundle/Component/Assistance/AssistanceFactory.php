@@ -26,7 +26,7 @@ use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\Repository\AssistanceStatisticsRepository;
 use NewApiBundle\Repository\ScoringBlueprintRepository;
 use NewApiBundle\Entity\Project;
-use ProjectBundle\Repository\ProjectRepository;
+use NewApiBundle\Repository\ProjectRepository;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Workflow\Registry;

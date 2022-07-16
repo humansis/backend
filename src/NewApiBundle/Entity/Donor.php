@@ -12,7 +12,7 @@ use CommonBundle\Utils\ExportableInterface;
  * Donor
  *
  * @ORM\Table(name="donor")
- * @ORM\Entity(repositoryClass="ProjectBundle\Repository\DonorRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\DonorRepository")
  * @ORM\HasLifecycleCallbacks()
  */
 class Donor implements ExportableInterface

@@ -1,6 +1,6 @@
 <?php
 
-namespace ProjectBundle\Repository;
+namespace NewApiBundle\Repository;
 
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Enum\RoleType;

@@ -12,7 +12,7 @@ use NewApiBundle\DBAL\SubSectorEnum;
  * @ORM\Table(name="project_sector", uniqueConstraints={
  *      @ORM\UniqueConstraint(name="uniq_sector_project", columns={"sector", "subsector", "project_id"})})
  * })
- * @ORM\Entity(repositoryClass="ProjectBundle\Repository\SectorRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\SectorRepository")
  */
 class ProjectSector
 {

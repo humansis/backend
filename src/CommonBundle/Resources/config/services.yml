@@ -176,7 +176,7 @@ services:
             - "@kernel"
             - '@NewApiBundle\Component\Country\Countries'
             - "@voucher.booklet_service"
-            - '@ProjectBundle\Repository\ProjectRepository'
+            - '@NewApiBundle\Repository\ProjectRepository'
             - '@beneficiary.repository'
         tags:
             - { name: doctrine.fixture.orm }
@@ -203,7 +203,7 @@ services:
             - "@=service('kernel').getEnvironment()"
             - '@NewApiBundle\Component\Country\Countries'
             - "@beneficiary.institution_service"
-            - '@ProjectBundle\Repository\ProjectRepository'
+            - '@NewApiBundle\Repository\ProjectRepository'
         tags:
             - { name: doctrine.fixture.orm }
 
@@ -213,7 +213,7 @@ services:
             - "@=service('kernel').getEnvironment()"
             - '@NewApiBundle\Component\Country\Countries'
             - "@beneficiary.community_service"
-            - '@ProjectBundle\Repository\ProjectRepository'
+            - '@NewApiBundle\Repository\ProjectRepository'
         tags:
             - { name: doctrine.fixture.orm }
 
