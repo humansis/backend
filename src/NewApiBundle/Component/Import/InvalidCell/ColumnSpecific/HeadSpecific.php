@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Component\Import\InvalidCell\ColumnSpecific;
 
-use BeneficiaryBundle\Utils\HouseholdExportCSVService;
+use NewApiBundle\Utils\HouseholdExportCSVService;
 
 final class HeadSpecific implements ColumnSpecific
 {

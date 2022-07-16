@@ -11,7 +11,7 @@ use NewApiBundle\Entity\NationalId;
 use NewApiBundle\Entity\Phone;
 use NewApiBundle\Entity\Profile;
 use NewApiBundle\Entity\VulnerabilityCriterion;
-use BeneficiaryBundle\Utils\HouseholdService;
+use NewApiBundle\Utils\HouseholdService;
 use DistributionBundle\Utils\CommodityService;
 use DistributionBundle\Utils\ConfigurationLoader;
 use DistributionBundle\Utils\CriteriaAssistanceService;

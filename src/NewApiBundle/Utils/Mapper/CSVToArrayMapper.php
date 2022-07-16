@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Utils\Mapper;
+namespace NewApiBundle\Utils\Mapper;
 
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;

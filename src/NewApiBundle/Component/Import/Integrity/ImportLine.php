@@ -3,7 +3,7 @@
 namespace NewApiBundle\Component\Import\Integrity;
 
 use NewApiBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Utils\HouseholdExportCSVService;
+use NewApiBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\CellError\CellError;

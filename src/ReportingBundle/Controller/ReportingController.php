@@ -2,7 +2,7 @@
 
 namespace ReportingBundle\Controller;
 
-use BeneficiaryBundle\Utils\HouseholdExportCSVService;
+use NewApiBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Utils\ExportService;
 use phpDocumentor\Reflection\TypeResolver;
 use ReportingBundle\Utils\Formatters\Formatter;

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace BeneficiaryBundle\Utils;
+namespace NewApiBundle\Utils;
 
 use NewApiBundle\Entity\CountrySpecific;
 use Doctrine\ORM\EntityManagerInterface;

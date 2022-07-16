@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Utils;
+namespace NewApiBundle\Utils;
 
 use NewApiBundle\Entity\Address;
 use NewApiBundle\Entity\Community;

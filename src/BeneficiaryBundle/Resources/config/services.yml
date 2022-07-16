@@ -12,7 +12,7 @@ services:
 #######################################################################################
 
     beneficiary.household_service:
-        class: BeneficiaryBundle\Utils\HouseholdService
+        class: NewApiBundle\Utils\HouseholdService
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@beneficiary.beneficiary_service"
@@ -23,14 +23,14 @@ services:
     BeneficiaryBundle\Utils\HouseholdService: '@beneficiary.household_service'
 
     beneficiary.institution_service:
-        class: BeneficiaryBundle\Utils\InstitutionService
+        class: NewApiBundle\Utils\InstitutionService
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@location_service"
         public: true
 
     beneficiary.community_service:
-        class: BeneficiaryBundle\Utils\CommunityService
+        class: NewApiBundle\Utils\CommunityService
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@location_service"
@@ -105,7 +105,7 @@ services:
 
 
     beneficiary.beneficiary_service:
-        class: BeneficiaryBundle\Utils\BeneficiaryService
+        class: NewApiBundle\Utils\BeneficiaryService
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@request_validator"
@@ -119,11 +119,11 @@ services:
             - '@NewApiBundle\Repository\ProfileRepository'
         public: true
 
-    BeneficiaryBundle\Utils\BeneficiaryService:
+    NewApiBundle\Utils\BeneficiaryService:
         alias: beneficiary.beneficiary_service
 
     beneficiary.country_specific_service:
-        class: BeneficiaryBundle\Utils\CountrySpecificService
+        class: NewApiBundle\Utils\CountrySpecificService
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@service_container"
@@ -144,17 +144,17 @@ services:
 ##                                        CSV                                        ##
 #######################################################################################
 
-    BeneficiaryBundle\Utils\HouseholdExportCSVService:
+    NewApiBundle\Utils\HouseholdExportCSVService:
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@export_csv_service"
 
     beneficiary.household_export_csv_service:
-        alias: BeneficiaryBundle\Utils\HouseholdExportCSVService
+        alias: NewApiBundle\Utils\HouseholdExportCSVService
         public: true
 
     beneficiary.csv_to_array_mapper:
-        class: BeneficiaryBundle\Utils\Mapper\CSVToArrayMapper
+        class: NewApiBundle\Utils\Mapper\CSVToArrayMapper
         arguments:
             - "@doctrine.orm.entity_manager"
         public: true

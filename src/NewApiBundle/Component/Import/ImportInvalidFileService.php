@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Component\Import;
 
-use BeneficiaryBundle\Utils\HouseholdExportCSVService;
+use NewApiBundle\Utils\HouseholdExportCSVService;
 use CommonBundle\Utils\ExportService;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\InvalidCell\InvalidCell;

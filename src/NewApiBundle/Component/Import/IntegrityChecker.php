@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Component\Import;
 
 use NewApiBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Utils\HouseholdExportCSVService;
+use NewApiBundle\Utils\HouseholdExportCSVService;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\Finishing;
 use NewApiBundle\Component\Import\Integrity;

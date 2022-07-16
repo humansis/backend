@@ -1,6 +1,6 @@
 <?php
 
-namespace BeneficiaryBundle\Utils;
+namespace NewApiBundle\Utils;
 
 /**
  * ExcelColumnsGenerator generates list of excel columns index, eg. A, B, C, ..., Y, Z, AA, AB ...

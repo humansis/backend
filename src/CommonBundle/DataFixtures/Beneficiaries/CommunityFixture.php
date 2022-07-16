@@ -2,7 +2,7 @@
 namespace CommonBundle\DataFixtures\Beneficiaries;
 
 use NewApiBundle\InputType\Deprecated\NewCommunityType;
-use BeneficiaryBundle\Utils\CommunityService;
+use NewApiBundle\Utils\CommunityService;
 use CommonBundle\DataFixtures\LocationFixtures;
 use CommonBundle\DataFixtures\ProjectFixtures;
 use CommonBundle\InputType\Country;

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Import;
 
-use BeneficiaryBundle\Utils\HouseholdExportCSVService;
+use NewApiBundle\Utils\HouseholdExportCSVService;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class ImportTemplate

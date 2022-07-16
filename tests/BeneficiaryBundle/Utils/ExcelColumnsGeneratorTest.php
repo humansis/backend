@@ -2,7 +2,7 @@
 
 namespace Tests\BeneficiaryBundle\Utils;
 
-use BeneficiaryBundle\Utils\ExcelColumnsGenerator;
+use NewApiBundle\Utils\ExcelColumnsGenerator;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ExcelColumnsGeneratorTest extends KernelTestCase
