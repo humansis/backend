@@ -3,15 +3,13 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Services;
 
-use BeneficiaryBundle\Exception\CsvParserException;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Assistance\Scoring\Exception\ScoreValidationException;
-use NewApiBundle\Component\Assistance\Scoring\Model\Factory\ScoringFactory;
 use NewApiBundle\Entity\ScoringBlueprint;
+use NewApiBundle\Exception\CsvParserException;
 use NewApiBundle\InputType\Assistance\Scoring\ScoringService;
 use NewApiBundle\InputType\ScoringInputType;
 use NewApiBundle\InputType\ScoringPatchInputType;
-use NewApiBundle\Repository\ScoringBlueprintRepository;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use UserBundle\Utils\UserService;
 
