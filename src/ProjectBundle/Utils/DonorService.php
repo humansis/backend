@@ -5,10 +5,7 @@ namespace ProjectBundle\Utils;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\InputType\DonorCreateInputType;
 use NewApiBundle\InputType\DonorUpdateInputType;
-use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use ProjectBundle\Entity\Donor;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -17,15 +14,8 @@ use Psr\Container\ContainerInterface;
  */
 class DonorService
 {
-
     /** @var EntityManagerInterface $em */
     private $em;
-
-    /** @var Serializer $serializer */
-    private $serializer;
-
-    /** @var ValidatorInterface $validator */
-    private $validator;
 
     /** @var ContainerInterface $container */
     private $container;
@@ -33,61 +23,12 @@ class DonorService
     /**
      * DonorService constructor.
      * @param EntityManagerInterface $entityManager
-     * @param Serializer $serializer
-     * @param ValidatorInterface $validator
      * @param ContainerInterface $container
      */
-    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator, ContainerInterface $container)
+    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
     {
         $this->em = $entityManager;
-        $this->serializer = $serializer;
-        $this->validator = $validator;
         $this->container = $container;
-    }
-
-
-    /**
-     * Return all donors
-     *
-     * @return array
-     */
-    public function findAll()
-    {
-        return $this->em->getRepository(Donor::class)->findAll();
-    }
-
-    /**
-     * Create a new donor from an array. The array will be deserialized with JMS
-     *
-     * @param array $donorArray
-     * @return mixed
-     * @throws \Exception
-     * @deprecated
-     */
-    public function createFromArray(array $donorArray)
-    {
-        $donor = new Donor();
-
-        $donor->setFullname($donorArray["fullname"])
-            ->setShortname($donorArray["shortname"])
-            ->setNotes($donorArray["notes"])
-            ->setLogo($donorArray["logo"]);
-
-        $donor->setDateAdded(new \DateTime());
-
-        $errors = $this->validator->validate($donor);
-        if (count($errors) > 0) {
-            $errorsArray = [];
-            foreach ($errors as $error) {
-                $errorsArray[] = $error->getMessage();
-            }
-            throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
-        }
-
-        $this->em->persist($donor);
-        $this->em->flush();
-
-        return $donor;
     }
 
     public function create(DonorCreateInputType $inputType): Donor
@@ -115,38 +56,6 @@ class DonorService
 
         $this->em->persist($donor);
         $this->em->flush();
-    }
-
-    /**
-     * @param Donor $donor
-     * @param array $donorArray
-     * @return Donor
-     * @throws \Exception
-     * @deprecated
-     */
-    public function edit(Donor $donor, array $donorArray)
-    {
-        /** @var Donor $editedDonor */
-    $donor->setFullname($donorArray["fullname"])
-        ->setShortname($donorArray["shortname"])
-        ->setNotes($donorArray["notes"])
-        ->setLogo($donorArray["logo"]);
-
-
-        $errors = $this->validator->validate($donor);
-        if (count($errors) > 0)
-        {
-            $errorsArray = [];
-            foreach ($errors as $error) {
-                $errorsArray[] = $error->getMessage();
-            }
-            throw new \Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
-        }
-
-        $this->em->persist($donor);
-        $this->em->flush();
-
-        return $donor;
     }
 
     /**

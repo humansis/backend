@@ -6,17 +6,14 @@ namespace ProjectBundle\Utils;
 
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
-use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use NewApiBundle\Component\Codelist\CodeItem;
 use NewApiBundle\Services\CodeListService;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Entity\ProjectSector;
-use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use NewApiBundle\DBAL\SectorEnum;
 use NewApiBundle\DBAL\SubSectorEnum;
 use ProjectBundle\DTO\Sector;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Class SectorService
@@ -348,18 +345,6 @@ class SectorService
             default:
                 return null;
         }
-    }
-
-    /**
-     * @return Sector[]
-     */
-    public function findAll(): iterable
-    {
-        $sectors = [];
-        foreach (SubSectorEnum::all() as $subSectorName) {
-            $sectors[] = $this->findBySubSector($subSectorName);
-        }
-        return $sectors;
     }
 
     /**
