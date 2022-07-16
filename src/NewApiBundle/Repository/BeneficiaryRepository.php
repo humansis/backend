@@ -28,7 +28,7 @@ use NewApiBundle\Enum\VulnerabilityCriteria;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\Request\Pagination;
-use ProjectBundle\DBAL\LivelihoodEnum;
+use NewApiBundle\DBAL\LivelihoodEnum;
 use ProjectBundle\Entity\Project;
 use Doctrine\ORM\Query\Expr\Join;
 use VoucherBundle\Entity\Smartcard;

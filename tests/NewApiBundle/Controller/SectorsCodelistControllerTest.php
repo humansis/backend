@@ -3,7 +3,7 @@
 namespace Tests\NewApiBundle\Controller;
 
 use Exception;
-use ProjectBundle\DBAL\SectorEnum;
+use NewApiBundle\DBAL\SectorEnum;
 use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
 

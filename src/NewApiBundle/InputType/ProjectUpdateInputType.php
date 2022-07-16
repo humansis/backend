@@ -69,7 +69,7 @@ class ProjectUpdateInputType implements InputTypeInterface
      * @Assert\Count(min=1, groups={"Strict"})
      * @Assert\All(
      *     constraints={
-     *         @Assert\Choice(callback={"ProjectBundle\DBAL\SectorEnum", "all"}, strict=true, groups={"Strict"})
+     *         @Assert\Choice(callback={"NewApiBundle\DBAL\SectorEnum", "all"}, strict=true, groups={"Strict"})
      *     },
      *     groups={"Strict"}
      * )

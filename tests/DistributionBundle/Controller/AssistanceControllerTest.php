@@ -109,8 +109,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 ]
             ],
             "threshold"=> 1,
-            'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
-            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::IN_KIND_FOOD,
+            'sector' => \NewApiBundle\DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => \NewApiBundle\DBAL\SubSectorEnum::IN_KIND_FOOD,
         );
 
 
@@ -851,8 +851,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 ],
             ],
             'threshold' => 1,
-            'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
-            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::IN_KIND_FOOD,
+            'sector' => \NewApiBundle\DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => \NewApiBundle\DBAL\SubSectorEnum::IN_KIND_FOOD,
         ];
 
         $user = $this->getTestUser(self::USER_TESTER);
@@ -959,8 +959,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'communities' => [$community->getId()],
             'households_targeted' => 3,
             'individuals_targeted' => 5,
-            'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
-            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::IN_KIND_FOOD,
+            'sector' => \NewApiBundle\DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => \NewApiBundle\DBAL\SubSectorEnum::IN_KIND_FOOD,
         ];
 
         $user = $this->getTestUser(self::USER_TESTER);
@@ -1018,8 +1018,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 'sectors_name' => [],
             ],
             'institutions' => [$institution->getId()],
-            'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
-            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::IN_KIND_FOOD,
+            'sector' => \NewApiBundle\DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => \NewApiBundle\DBAL\SubSectorEnum::IN_KIND_FOOD,
         ];
 
         $user = $this->getTestUser(self::USER_TESTER);

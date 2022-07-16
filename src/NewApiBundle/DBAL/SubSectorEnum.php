@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ProjectBundle\DBAL;
+namespace NewApiBundle\DBAL;
 
 use CommonBundle\DBAL\AbstractEnum;
 

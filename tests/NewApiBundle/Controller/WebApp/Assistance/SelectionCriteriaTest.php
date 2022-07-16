@@ -15,7 +15,7 @@ use Exception;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 use NewApiBundle\DBAL\ModalityTypeEnum;
 use NewApiBundle\Enum\ProductCategoryType;
-use ProjectBundle\DBAL\SubSectorEnum;
+use NewApiBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
 
@@ -46,8 +46,8 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'projectId' => 8,
             'locationId' => 30,
             'dateDistribution' => '2021-03-10T13:45:32.988Z',
-            'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
-            'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
+            'sector' => \NewApiBundle\DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => \NewApiBundle\DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
             'scoringType' => 'Default',
             'type' => AssistanceType::DISTRIBUTION,
             'target' => \DistributionBundle\Enum\AssistanceTargetType::HOUSEHOLD,

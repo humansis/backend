@@ -13,8 +13,8 @@ use NewApiBundle\Services\CodeListService;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Entity\ProjectSector;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
-use ProjectBundle\DBAL\SectorEnum;
-use ProjectBundle\DBAL\SubSectorEnum;
+use NewApiBundle\DBAL\SectorEnum;
+use NewApiBundle\DBAL\SubSectorEnum;
 use ProjectBundle\DTO\Sector;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 

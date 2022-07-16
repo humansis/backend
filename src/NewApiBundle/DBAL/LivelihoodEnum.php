@@ -1,6 +1,6 @@
 <?php
 
-namespace ProjectBundle\DBAL;
+namespace NewApiBundle\DBAL;
 
 use CommonBundle\DBAL\AbstractEnum;
 use NewApiBundle\DBAL\EnumTrait;
