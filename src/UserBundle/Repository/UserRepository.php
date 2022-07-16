@@ -17,25 +17,6 @@ use UserBundle\Entity\User;
  */
 class UserRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function edit(User $user, array $arrayData)
-    {
-        if (empty($arrayData)) {
-            return $user;
-        }
-
-        $qb = $this->_em->createQueryBuilder();
-        $builder = $qb->update("UserBundle:User", 'u');
-
-        foreach ($arrayData as $column => $value) {
-            $builder->set("u.$column", $qb->expr()->literal($value));
-        }
-
-        $builder->andWhere("u.id = :user")
-        ->setParameter('user', $user->getId());
-
-        return $builder->getQuery()->execute();
-    }
-
     public function toggleTwoFA(bool $enable) {
         if ($enable) {
             return;

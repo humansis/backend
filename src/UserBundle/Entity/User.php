@@ -12,7 +12,6 @@ use FOS\UserBundle\Model\User as BaseUser;
 use InvalidArgumentException;
 use NewApiBundle\Entity\Role;
 use RuntimeException;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
 use TransactionBundle\Entity\Transaction;
 use Doctrine\Common\Persistence\ObjectManagerAware;

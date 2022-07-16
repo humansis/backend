@@ -4,7 +4,6 @@ namespace UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Project;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * UserProject
