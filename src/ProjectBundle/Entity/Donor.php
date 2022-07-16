@@ -6,7 +6,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\LastModifiedAt;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
 
 /**
@@ -28,7 +27,6 @@ class Donor implements ExportableInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @SymfonyGroups({"FullDonor", "FullProject"})
      */
     private $id;
 
@@ -37,7 +35,6 @@ class Donor implements ExportableInterface
      *
      * @ORM\Column(name="fullname", type="string", length=255)
      *
-     * @SymfonyGroups({"FullDonor", "FullProject"})
      */
     private $fullname;
 
@@ -46,7 +43,6 @@ class Donor implements ExportableInterface
      *
      * @ORM\Column(name="shortname", type="string", length=255, nullable=true)
      *
-     * @SymfonyGroups({"FullDonor", "FullProject"})
      */
     private $shortname;
 
@@ -55,7 +51,6 @@ class Donor implements ExportableInterface
      *
      * @ORM\Column(name="dateAdded", type="datetime")
      *
-     * @SymfonyGroups({"FullDonor"})
      */
     private $dateAdded;
 
@@ -64,14 +59,12 @@ class Donor implements ExportableInterface
      *
      * @ORM\Column(name="notes", type="string", length=255, nullable=true)
      *
-     * @SymfonyGroups({"FullDonor"})
      */
     private $notes;
 
     /**
      * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project", mappedBy="donors")
      *
-     * @SymfonyGroups({"FullDonor"})
      */
     private $projects;
 
@@ -79,7 +72,6 @@ class Donor implements ExportableInterface
      * @var string
      *
      * @ORM\Column(name="logo", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullDonor"})
      */
     private $logo;
 
