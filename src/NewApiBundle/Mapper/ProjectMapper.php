@@ -10,7 +10,7 @@ use InvalidArgumentException;
 use NewApiBundle\Serializer\MapperInterface;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Entity\ProjectSector;
-use ProjectBundle\Utils\ProjectService;
+use NewApiBundle\Utils\ProjectService;
 
 class ProjectMapper implements MapperInterface
 {

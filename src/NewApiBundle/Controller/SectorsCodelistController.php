@@ -12,7 +12,7 @@ use NewApiBundle\Enum\Domain;
 use NewApiBundle\Services\CodeListService;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\Entity\Project;
-use ProjectBundle\Utils\SectorService;
+use NewApiBundle\Utils\SectorService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 

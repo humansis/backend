@@ -1,6 +1,6 @@
 <?php
 
-namespace ProjectBundle\Utils;
+namespace NewApiBundle\Utils;
 
 use NewApiBundle\Entity\Household;
 use DistributionBundle\Entity\Assistance;

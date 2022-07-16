@@ -7,7 +7,7 @@ use NewApiBundle\Repository\BeneficiaryRepository;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use ProjectBundle\Entity\Project;
-use ProjectBundle\Utils\SectorService;
+use NewApiBundle\Utils\SectorService;
 
 class ProjectMapper
 {

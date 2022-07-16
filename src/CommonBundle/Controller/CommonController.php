@@ -4,7 +4,7 @@ namespace CommonBundle\Controller;
 
 use NewApiBundle\Utils\BeneficiaryService;
 use DistributionBundle\Repository\AssistanceRepository;
-use ProjectBundle\Utils\ProjectService;
+use NewApiBundle\Utils\ProjectService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use NewApiBundle\Entity\Household;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ProjectBundle\Utils;
+namespace NewApiBundle\Utils;
 
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
