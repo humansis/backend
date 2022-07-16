@@ -10,7 +10,7 @@ use Psr\Container\ContainerInterface;
 
 /**
  * Class DonorService
- * @package ProjectBundle\Utils
+ * @package NewApiBundle\Utils
  */
 class DonorService
 {

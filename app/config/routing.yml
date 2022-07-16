@@ -25,12 +25,6 @@ rest_user:
     resource: '@UserBundle/Controller'
     defaults: { _format: 'json' }
 
-rest_project:
-    type: annotation
-    prefix: /api/{firewall}
-    resource: '@ProjectBundle/Controller'
-    defaults: { _format: 'json' }
-
 rest_distribution:
     type: annotation
     prefix: /api/{firewall}

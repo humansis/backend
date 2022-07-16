@@ -20,7 +20,7 @@ use NewApiBundle\DTO\Sector;
 
 /**
  * Class SectorService
- * @package ProjectBundle\Utils
+ * @package NewApiBundle\Utils
  */
 class SectorService
 {

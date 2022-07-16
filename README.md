@@ -26,7 +26,6 @@ See [translations step by step](translations.md).
 
 #### Specific Documentation
 - [Distribution Bundle](src/DistributionBundle/README.md)
-- [Project Bundle](src/ProjectBundle/README.md)
 - [Reporting Bundle](src/ReportingBundle/README.md)
 
 #### General Information

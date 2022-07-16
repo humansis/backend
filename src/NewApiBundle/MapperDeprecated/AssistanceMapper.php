@@ -9,7 +9,7 @@ use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use NewApiBundle\Enum\ProductCategoryType;
 
 /**
- * @deprecated TODO remove methods while removing DistributionBundle and ProjectBundle
+ * @deprecated TODO remove methods while removing DistributionBundle
  */
 class AssistanceMapper
 {

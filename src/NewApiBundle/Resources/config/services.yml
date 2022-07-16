@@ -720,3 +720,61 @@ services:
         autowire: true
         tags:
             - { name: 'doctrine.event_subscriber', priority: 500 }
+
+
+
+#From ProjectBundle:
+    #######################################################################################
+    ##                                       CRUD                                        ##
+    #######################################################################################
+
+    project.project_service:
+        alias: NewApiBundle\Utils\ProjectService
+        public: true
+
+    NewApiBundle\Utils\ProjectService:
+        arguments: ['@doctrine.orm.entity_manager', '@service_container']
+
+    project.donor_service:
+        alias: NewApiBundle\Utils\DonorService
+        public: true
+
+    NewApiBundle\Utils\DonorService:
+        arguments: ['@doctrine.orm.entity_manager', '@service_container']
+
+    project.sector_service:
+        alias: NewApiBundle\Utils\SectorService
+        public: true
+
+    NewApiBundle\Utils\SectorService:
+
+    NewApiBundle\MapperDeprecated\ProjectMapper:
+        arguments:
+            - '@NewApiBundle\MapperDeprecated\DonorMapper'
+            - '@NewApiBundle\MapperDeprecated\SectorMapper'
+            - '@NewApiBundle\MapperDeprecated\AssistanceMapper'
+            - '@beneficiary.repository'
+            - '@project.sector_service'
+            - '@beneficiary.repository'
+        public: true
+
+    NewApiBundle\MapperDeprecated\DonorMapper:
+        public: true
+
+    NewApiBundle\MapperDeprecated\SectorMapper:
+        arguments:
+            - '@translator'
+        public: true
+
+    project.sector_mapper:
+        class: NewApiBundle\MapperDeprecated\SectorMapper
+        arguments: []
+        public: true
+
+    NewApiBundle\Repository\ProjectRepository:
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        calls:
+            - injectSecurity: [ "@security.authorization_checker"]
+        arguments:
+            - NewApiBundle\Entity\Project
+        public: true
