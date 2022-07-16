@@ -16,7 +16,7 @@ use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\File\File;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 class IntegrityCheckerTest extends KernelTestCase
 {

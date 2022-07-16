@@ -3,7 +3,7 @@
 namespace NewApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 /**
  * Household activity.
@@ -32,7 +32,7 @@ class HouseholdActivity
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\User")
      */
     private $author;
 

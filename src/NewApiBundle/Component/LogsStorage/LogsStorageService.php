@@ -10,7 +10,7 @@ use NewApiBundle\Factory\LogsStorageConfigFactory;
 use NewApiBundle\Utils\FileSystem\PathConstructor;
 use NewApiBundle\Utils\FileSystem\Zip;
 use Symfony\Component\HttpFoundation\File\File;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 use VoucherBundle\Entity\Vendor;
 
 class LogsStorageService

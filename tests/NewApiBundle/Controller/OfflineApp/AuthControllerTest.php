@@ -7,8 +7,8 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ObjectRepository;
 use Tests\BMSServiceTestCase;
-use UserBundle\Entity\User;
-use UserBundle\Repository\UserRepository;
+use NewApiBundle\Entity\User;
+use NewApiBundle\Repository\UserRepository;
 
 class AuthControllerTest extends BMSServiceTestCase
 {

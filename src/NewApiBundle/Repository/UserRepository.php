@@ -1,13 +1,12 @@
 <?php
 
-namespace UserBundle\Repository;
+namespace NewApiBundle\Repository;
 
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use InvalidArgumentException;
 use NewApiBundle\InputType\UserFilterInputType;
 use NewApiBundle\InputType\UserOrderInputType;
 use NewApiBundle\Request\Pagination;
-use UserBundle\Entity\User;
 
 /**
  * UserRepository
@@ -22,7 +21,7 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
             return;
         }
         $qb = $this->_em->createQueryBuilder();
-        $builder = $qb->update("UserBundle:User", 'u')
+        $builder = $qb->update("NewApiBundle:User", 'u')
                 ->set('u.twoFactorAuthentication', ':enable')
                 ->where('u.twoFactorAuthentication = true')
                 ->setParameter('enable', $enable);

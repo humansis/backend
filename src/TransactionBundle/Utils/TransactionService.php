@@ -20,7 +20,7 @@ use Symfony\Contracts\Cache\CacheInterface;
 use TransactionBundle\Entity\Transaction;
 use TransactionBundle\Utils\Provider\DefaultFinancialProvider;
 use Twig\Environment;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 /**
  * Class TransactionService

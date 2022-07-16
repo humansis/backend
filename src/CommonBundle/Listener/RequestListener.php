@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 use VoucherBundle\Entity\Vendor;
 
 class RequestListener

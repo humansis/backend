@@ -12,7 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\WingMoney\ValueObject\ReportEntry;
 use TransactionBundle\Entity\Transaction;
 use TransactionBundle\Repository\TransactionRepository;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 class ImportService
 {

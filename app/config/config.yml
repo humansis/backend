@@ -228,7 +228,7 @@ doctrine_migrations:
 fos_user:
     db_driver: orm
     firewall_name: main
-    user_class: UserBundle\Entity\User
+    user_class: NewApiBundle\Entity\User
     from_email:
         address: "%email%"
         sender_name: "BMS Support"

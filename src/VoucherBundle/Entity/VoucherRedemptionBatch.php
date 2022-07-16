@@ -6,7 +6,7 @@ use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 /**
  * Class VoucherRedemptionBatch.
@@ -43,7 +43,7 @@ class VoucherRedemptionBatch
     /**
      * @var User|null
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\User")
      * @ORM\JoinColumn(name="redeemed_by", nullable=true)
      */
     private $redeemedBy;

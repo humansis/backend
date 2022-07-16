@@ -8,7 +8,7 @@ use NewApiBundle\InputType\ProjectFilterInputType;
 use NewApiBundle\InputType\ProjectOrderInputType;
 use NewApiBundle\Request\Pagination;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 /**
  * ProjectRepository

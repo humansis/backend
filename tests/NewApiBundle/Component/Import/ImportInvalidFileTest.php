@@ -11,7 +11,7 @@ use NewApiBundle\Entity\ImportFile;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 class ImportInvalidFileTest extends KernelTestCase
 {

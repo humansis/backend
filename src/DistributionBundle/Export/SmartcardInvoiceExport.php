@@ -17,7 +17,7 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Translation\TranslatorInterface;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;

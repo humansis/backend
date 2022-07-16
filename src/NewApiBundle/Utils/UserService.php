@@ -14,10 +14,10 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Role\RoleHierarchyInterface;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use UserBundle\Entity\User;
-use UserBundle\Entity\UserCountry;
-use UserBundle\Entity\UserProject;
-use UserBundle\Repository\UserRepository;
+use NewApiBundle\Entity\User;
+use NewApiBundle\Entity\UserCountry;
+use NewApiBundle\Entity\UserProject;
+use NewApiBundle\Repository\UserRepository;
 
 /**
  * Class UserService

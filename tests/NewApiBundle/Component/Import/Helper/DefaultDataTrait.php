@@ -14,7 +14,7 @@ use NewApiBundle\InputType\Import;
 use NewApiBundle\Entity\Project;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 trait DefaultDataTrait
 {

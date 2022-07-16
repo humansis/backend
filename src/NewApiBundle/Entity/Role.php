@@ -6,7 +6,7 @@ namespace NewApiBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 /**
  * @ORM\Table(name="role")
@@ -54,7 +54,7 @@ class Role
     /**
      * @var Collection|User[]
      *
-     * @ORM\ManyToMany(targetEntity="UserBundle\Entity\User", mappedBy="roles")
+     * @ORM\ManyToMany(targetEntity="NewApiBundle\Entity\User", mappedBy="roles")
      */
     private $users;
 

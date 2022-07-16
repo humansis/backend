@@ -5,7 +5,7 @@ namespace Tests\CommonBundle\Controller;
 use NewApiBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
-use UserBundle\Entity\UserProject;
+use NewApiBundle\Entity\UserProject;
 
 class ExportControllerTest extends BMSServiceTestCase
 {

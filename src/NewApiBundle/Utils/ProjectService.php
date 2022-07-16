@@ -16,8 +16,8 @@ use NewApiBundle\Entity\Donor;
 use NewApiBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Validator\ConstraintViolation;
-use UserBundle\Entity\User;
-use UserBundle\Entity\UserProject;
+use NewApiBundle\Entity\User;
+use NewApiBundle\Entity\UserProject;
 
 /**
  * Class ProjectService

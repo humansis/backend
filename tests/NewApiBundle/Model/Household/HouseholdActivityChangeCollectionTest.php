@@ -6,7 +6,7 @@ use NewApiBundle\Entity\Household;
 use NewApiBundle\Entity\HouseholdActivity;
 use NewApiBundle\Model\Household\HouseholdActivityChangesCollection;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 class HouseholdActivityChangeCollectionTest extends KernelTestCase
 {

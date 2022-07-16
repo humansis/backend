@@ -6,7 +6,7 @@ use NewApiBundle\Entity\Household;
 use NewApiBundle\Entity\HouseholdActivity;
 use NewApiBundle\Model\Household\HouseholdChange\SimpleHouseholdChange;
 use PHPUnit\Framework\TestCase;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 class HouseholdActivityChangeTest extends TestCase
 {

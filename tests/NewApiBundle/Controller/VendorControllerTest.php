@@ -8,7 +8,7 @@ use Doctrine\ORM\ORMException;
 use Exception;
 use NewApiBundle\Enum\VendorInvoicingState;
 use Tests\BMSServiceTestCase;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 use VoucherBundle\Entity\Vendor;
 
 class VendorControllerTest extends BMSServiceTestCase

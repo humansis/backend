@@ -22,6 +22,8 @@ use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\TransitionBlocker;
+use NewApiBundle\Entity\User;
+use VoucherBundle\Utils\SmartcardService;
 use UserBundle\Entity\User;
 use VoucherBundle\Repository\SmartcardDepositRepository;
 

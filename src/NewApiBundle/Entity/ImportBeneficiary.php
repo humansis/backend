@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\CreatedBy;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 /**
  * This entity tracks source (import) of beneficiary being updated.

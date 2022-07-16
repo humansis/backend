@@ -9,7 +9,7 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\Commodity;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Project;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 /**
  * Read only entity.
@@ -100,7 +100,7 @@ class DistributedItem
     /**
      * @var User|null
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\User")
      */
     private $fieldOfficer;
 

@@ -8,7 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\InputType\OrganizationUpdateInputType;
 use Psr\Container\ContainerInterface;
 use Twig\Environment;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 class OrganizationService
 {

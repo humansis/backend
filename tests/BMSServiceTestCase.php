@@ -26,7 +26,7 @@ use Symfony\Component\HttpKernel\HttpKernelBrowser;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 use UserBundle\Security\Authentication\Token\WsseUserToken;
 
 class BMSServiceTestCase extends KernelTestCase

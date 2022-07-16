@@ -7,7 +7,7 @@ use CommonBundle\Repository\LocationRepository;
 use Exception;
 use NewApiBundle\Component\Country\Countries;
 use Tests\BMSServiceTestCase;
-use UserBundle\Entity\UserProject;
+use NewApiBundle\Entity\UserProject;
 
 class LocationControllerTest extends BMSServiceTestCase
 {

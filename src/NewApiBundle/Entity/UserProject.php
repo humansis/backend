@@ -1,6 +1,6 @@
 <?php
 
-namespace UserBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Project;
@@ -9,7 +9,7 @@ use NewApiBundle\Entity\Project;
  * UserProject
  *
  * @ORM\Table(name="user_project")
- * @ORM\Entity(repositoryClass="UserBundle\Repository\UserProjectRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\UserProjectRepository")
  */
 class UserProject
 {
@@ -25,7 +25,7 @@ class UserProject
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="projects", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\User", inversedBy="projects", cascade={"persist"})
      */
     private $user;
 
@@ -80,11 +80,11 @@ class UserProject
     /**
      * Set user.
      *
-     * @param \UserBundle\Entity\User|null $user
+     * @param \NewApiBundle\Entity\User|null $user
      *
      * @return UserProject
      */
-    public function setUser(\UserBundle\Entity\User $user = null)
+    public function setUser(\NewApiBundle\Entity\User $user = null)
     {
         $this->user = $user;
 
@@ -94,7 +94,7 @@ class UserProject
     /**
      * Get user.
      *
-     * @return \UserBundle\Entity\User|null
+     * @return \NewApiBundle\Entity\User|null
      */
     public function getUser()
     {

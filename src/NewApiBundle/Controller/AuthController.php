@@ -6,7 +6,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Profiler\Profiler;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 class AuthController extends AbstractController
 {

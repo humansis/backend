@@ -14,6 +14,7 @@ use NewApiBundle\Repository\ImportFileRepository;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use NewApiBundle\Entity\User;
 use Symfony\Component\Messenger\MessageBusInterface;
 use UserBundle\Entity\User;
 

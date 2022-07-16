@@ -9,7 +9,7 @@ use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 /**
  * Smartcard deposit.
@@ -46,7 +46,7 @@ class SmartcardDeposit
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\User")
      * @ORM\JoinColumn(nullable=false)
      *
      * @SymfonyGroups({"FullSmartcard"})

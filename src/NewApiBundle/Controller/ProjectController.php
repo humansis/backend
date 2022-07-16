@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use UserBundle\Entity\User;
+use NewApiBundle\Entity\User;
 
 class ProjectController extends AbstractController
 {
@@ -174,7 +174,7 @@ class ProjectController extends AbstractController
     public function userProjects(User $user): JsonResponse
     {
         if ($user->getProjects()->count() > 0) {
-            $projects = array_values(array_map(function (\UserBundle\Entity\UserProject $item) {
+            $projects = array_values(array_map(function (\NewApiBundle\Entity\UserProject $item) {
                 return $item->getProject();
             }, $user->getProjects()->toArray()));
 
@@ -182,7 +182,7 @@ class ProjectController extends AbstractController
         }
 
         if ($user->getCountries()->count() > 0) {
-            $countries = array_values(array_map(function (\UserBundle\Entity\UserCountry $item) {
+            $countries = array_values(array_map(function (\NewApiBundle\Entity\UserCountry $item) {
                 return $item->getId();
             }, $user->getCountries()->toArray()));
 
