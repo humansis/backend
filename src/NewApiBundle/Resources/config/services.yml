@@ -190,7 +190,7 @@ services:
     NewApiBundle\Controller\OfflineApp\AssistanceController:
         arguments:
             - '@assistance.repository'
-            - '@BeneficiaryBundle\Mapper\AssistanceMapper'
+            - '@NewApiBundle\MapperDeprecated\AssistanceMapper'
             - '@serializer'
 
     NewApiBundle\Controller\AssistanceController:

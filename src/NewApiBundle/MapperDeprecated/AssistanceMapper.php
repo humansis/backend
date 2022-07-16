@@ -1,16 +1,16 @@
 <?php
 
-namespace BeneficiaryBundle\Mapper;
+namespace NewApiBundle\MapperDeprecated;
 
-use NewApiBundle\Entity\AbstractBeneficiary;
 use NewApiBundle\Repository\BeneficiaryRepository;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
-use NewApiBundle\Entity\Assistance\SelectionCriteria;
 use NewApiBundle\Enum\ProductCategoryType;
 
+/**
+ * @deprecated TODO remove methods while removing DistributionBundle and ProjectBundle
+ */
 class AssistanceMapper
 {
     const TARGET_TYPE_TO_TYPE_MAPPING = [
@@ -64,39 +64,6 @@ class AssistanceMapper
     {
         foreach ($assistances as $assistance) {
             yield $this->toMinimalArray($assistance);
-        }
-    }
-
-    public function toBeneficiaryOnlyArray(?Assistance $assistance): ?array
-    {
-        if (!$assistance) {
-            return null;
-        }
-        /** @var AbstractBeneficiary[] $bnfs */
-        $bnfs = $assistance->getDistributionBeneficiaries()->map(
-            function (AssistanceBeneficiary $db) {
-                return $db->getBeneficiary();
-            }
-        );
-        $dbs = [];
-        foreach ($assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
-            $dbs[] = [
-                'beneficiary' => $this->beneficiaryMapper->toMinimalArrays($bnfs),
-            ];
-        }
-
-        return [
-            'id' => $assistance->getId(),
-            'name' => $assistance->getName(),
-            'beneficiaries' => $this->beneficiaryMapper->toMinimalArrays($bnfs),
-            'distribution_beneficiaries' => $dbs,
-        ];
-    }
-
-    public function toBeneficiaryOnlyArrays(iterable $assistances): iterable
-    {
-        foreach ($assistances as $assistance) {
-            yield $this->toBeneficiaryOnlyArray($assistance);
         }
     }
 

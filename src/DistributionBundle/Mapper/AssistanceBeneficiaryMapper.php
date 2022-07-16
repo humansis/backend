@@ -6,7 +6,7 @@ namespace DistributionBundle\Mapper;
 
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Household;
-use BeneficiaryBundle\Mapper\BeneficiaryMapper;
+use NewApiBundle\MapperDeprecated\BeneficiaryMapper;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use TransactionBundle\Entity\Transaction;
 use TransactionBundle\Mapper\TransactionMapper;
@@ -115,7 +115,7 @@ class AssistanceBeneficiaryMapper
         $flatBase = $this->toBaseArray($assistanceBeneficiary);
 
         return array_merge($flatBase, [
-            'beneficiary' => $this->beneficiaryMapper->toFullBeneficiaryGroup($beneficiary),
+            'beneficiary' => [],
         ]);
     }
 

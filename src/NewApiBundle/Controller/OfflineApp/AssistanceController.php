@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller\OfflineApp;
 
-use BeneficiaryBundle\Mapper\AssistanceMapper;
+use NewApiBundle\MapperDeprecated\AssistanceMapper;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Repository\AssistanceRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;

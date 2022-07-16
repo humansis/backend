@@ -91,55 +91,18 @@ services:
         arguments:
             - NewApiBundle\Entity\Institution
 
-    BeneficiaryBundle\Mapper\CommunityMapper:
-        arguments:
-            - '@BeneficiaryBundle\Mapper\AddressMapper'
-            - '@BeneficiaryBundle\Mapper\NationalIdMapper'
-            - '@CommonBundle\Mapper\LocationMapper'
-            - '@BeneficiaryBundle\Mapper\PersonMapper'
-            - '@ProjectBundle\Mapper\ProjectMapper'
-        public: true
-
-    BeneficiaryBundle\Mapper\InstitutionMapper:
-        arguments:
-            - '@BeneficiaryBundle\Mapper\AddressMapper'
-            - '@BeneficiaryBundle\Mapper\NationalIdMapper'
-            - '@BeneficiaryBundle\Mapper\PersonMapper'
-            - '@ProjectBundle\Mapper\ProjectMapper'
-        public: true
-
-    BeneficiaryBundle\Mapper\AddressMapper:
-        arguments:
-            - '@CommonBundle\Mapper\LocationMapper'
-        public: true
-
-    BeneficiaryBundle\Mapper\NationalIdMapper:
-        public: true
-
-    BeneficiaryBundle\Mapper\BeneficiaryMapper:
+    NewApiBundle\MapperDeprecated\BeneficiaryMapper:
         arguments:
             - "@serializer"
         public: true
 
-    BeneficiaryBundle\Mapper\AssistanceMapper:
+    NewApiBundle\MapperDeprecated\AssistanceMapper:
         arguments:
-            - '@BeneficiaryBundle\Mapper\BeneficiaryMapper'
+            - '@NewApiBundle\MapperDeprecated\BeneficiaryMapper'
             - "@=service('doctrine.orm.entity_manager').getRepository('DistributionBundle:AssistanceBeneficiary')"
             - "@=service('doctrine.orm.entity_manager').getRepository('NewApiBundle:Beneficiary')"
         public: true
 
-    BeneficiaryBundle\Mapper\PhoneMapper:
-        public: false
-
-    BeneficiaryBundle\Mapper\PersonMapper:
-        arguments:
-            - '@BeneficiaryBundle\Mapper\PhoneMapper'
-            - '@BeneficiaryBundle\Mapper\NationalIdMapper'
-            - '@BeneficiaryBundle\Mapper\ProfileMapper'
-        public: false
-
-    BeneficiaryBundle\Mapper\ProfileMapper:
-        public: false
 
     beneficiary.beneficiary_service:
         class: BeneficiaryBundle\Utils\BeneficiaryService

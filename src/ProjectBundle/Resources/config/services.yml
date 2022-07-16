@@ -38,7 +38,7 @@ services:
         arguments:
             - '@ProjectBundle\Mapper\DonorMapper'
             - '@ProjectBundle\Mapper\SectorMapper'
-            - '@BeneficiaryBundle\Mapper\AssistanceMapper'
+            - '@NewApiBundle\MapperDeprecated\AssistanceMapper'
             - '@beneficiary.repository'
             - '@project.sector_service'
         public: true

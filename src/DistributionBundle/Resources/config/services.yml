@@ -68,18 +68,12 @@ services:
 
     DistributionBundle\Mapper\AssistanceBeneficiaryMapper:
         arguments:
-            - '@BeneficiaryBundle\Mapper\BeneficiaryMapper'
+            - '@NewApiBundle\MapperDeprecated\BeneficiaryMapper'
         public: true
 
     DistributionBundle\Mapper\AssistanceCommunityMapper:
-        arguments:
-            - '@BeneficiaryBundle\Mapper\CommunityMapper'
-        public: true
 
     DistributionBundle\Mapper\AssistanceInstitutionMapper:
-        arguments:
-            - '@BeneficiaryBundle\Mapper\InstitutionMapper'
-        public: true
 
     DistributionBundle\Mapper\CampMapper:
         public: true
