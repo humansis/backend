@@ -5,20 +5,13 @@ declare(strict_types=1);
 namespace DistributionBundle\Mapper;
 
 use NewApiBundle\Entity\Institution;
-use BeneficiaryBundle\Mapper\InstitutionMapper;
+use NewApiBundle\MapperDeprecated\InstitutionMapper;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use TransactionBundle\Mapper\TransactionMapper;
 use VoucherBundle\Mapper\BookletMapper;
 
 class AssistanceInstitutionMapper extends AssistanceBeneficiaryMapper
 {
-    /** @var InstitutionMapper */
-    private $institutionMapper;
-
-    public function __construct(InstitutionMapper $institutionMapper) {
-        parent::__construct( null);
-        $this->institutionMapper = $institutionMapper;
-    }
 
     public function toFullArray(?AssistanceBeneficiary $assistanceInstitution): ?array
     {
@@ -35,7 +28,7 @@ class AssistanceInstitutionMapper extends AssistanceBeneficiaryMapper
         $flatBase = $this->toBaseArray($assistanceInstitution);
 
         return array_merge($flatBase, [
-            'institution' => $this->institutionMapper->toFullArray($institution),
+            'institution' => [],
         ]);
     }
 

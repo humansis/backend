@@ -4,7 +4,7 @@ namespace DistributionBundle\Controller;
 
 use NewApiBundle\Entity\AbstractBeneficiary;
 use NewApiBundle\Entity\Household;
-use BeneficiaryBundle\Mapper\AssistanceMapper;
+use NewApiBundle\MapperDeprecated\AssistanceMapper;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\GeneralReliefItem;
 use DistributionBundle\Enum\AssistanceTargetType;
