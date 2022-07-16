@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Component\Codelist;
 
 use NewApiBundle\Entity\VulnerabilityCriterion;
+use NewApiBundle\DBAL\SubSectorEnum;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use NewApiBundle\Enum\Domain;
 use ProjectBundle\DBAL\SubSectorEnum;

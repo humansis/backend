@@ -8,7 +8,7 @@ use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use Exception;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
-use ProjectBundle\DBAL\SubSectorEnum;
+use NewApiBundle\DBAL\SubSectorEnum;
 use Tests\BMSServiceTestCase;
 
 class AssistanceCodelistControllerTest extends BMSServiceTestCase

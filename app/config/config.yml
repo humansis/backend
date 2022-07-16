@@ -163,9 +163,9 @@ doctrine:
             enum_source_type: NewApiBundle\DBAL\SourceEnum
             enum_assistance_type: DistributionBundle\DBAL\AssistanceTypeEnum
             enum_assistance_target_type: DistributionBundle\DBAL\AssistanceTargetTypeEnum
-            enum_livelihood: ProjectBundle\DBAL\LivelihoodEnum
-            enum_sector: ProjectBundle\DBAL\SectorEnum
-            enum_sub_sector: ProjectBundle\DBAL\SubSectorEnum
+            enum_livelihood: NewApiBundle\DBAL\LivelihoodEnum
+            enum_sector: NewApiBundle\DBAL\SectorEnum
+            enum_sub_sector: NewApiBundle\DBAL\SubSectorEnum
             enum_import_state: NewApiBundle\DBAL\ImportStateEnum
             enum_import_queue_state: NewApiBundle\DBAL\ImportStateQueueEnum
             enum_import_duplicity_state: NewApiBundle\DBAL\ImportDuplicityStateEnum

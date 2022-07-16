@@ -4,7 +4,7 @@ namespace Tests\NewApiBundle\Controller;
 
 use Exception;
 use NewApiBundle\Enum\ProductCategoryType;
-use ProjectBundle\DBAL\SectorEnum;
+use NewApiBundle\DBAL\SectorEnum;
 use Tests\BMSServiceTestCase;
 
 class ProjectControllerTest extends BMSServiceTestCase

@@ -4,8 +4,8 @@ namespace ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
-use ProjectBundle\DBAL\SectorEnum;
-use ProjectBundle\DBAL\SubSectorEnum;
+use NewApiBundle\DBAL\SectorEnum;
+use NewApiBundle\DBAL\SubSectorEnum;
 
 /**
  * Sector

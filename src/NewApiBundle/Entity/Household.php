@@ -15,7 +15,7 @@ use NewApiBundle\Entity\ImportHouseholdDuplicity;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
-use ProjectBundle\DBAL\LivelihoodEnum;
+use NewApiBundle\DBAL\LivelihoodEnum;
 
 /**
  * Household

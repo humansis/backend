@@ -73,14 +73,14 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     private $type;
 
     /**
-     * @Assert\Choice(callback={"ProjectBundle\DBAL\SectorEnum", "all"})
+     * @Assert\Choice(callback={"NewApiBundle\DBAL\SectorEnum", "all"})
      * @Assert\NotBlank
      * @Assert\NotNull
      */
     private $sector;
 
     /**
-     * @Assert\Choice(callback={"ProjectBundle\DBAL\SubSectorEnum", "all"})
+     * @Assert\Choice(callback={"NewApiBundle\DBAL\SubSectorEnum", "all"})
      * @Assert\NotBlank
      * @Assert\NotNull
      */
