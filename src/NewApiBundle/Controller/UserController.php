@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\ConstraintViolation;
 use UserBundle\Entity\User;
 use UserBundle\Repository\UserRepository;
-use UserBundle\Utils\UserService;
+use NewApiBundle\Utils\UserService;
 
 class UserController extends AbstractController
 {

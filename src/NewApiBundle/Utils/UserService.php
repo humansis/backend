@@ -1,6 +1,6 @@
 <?php
 
-namespace UserBundle\Utils;
+namespace NewApiBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;

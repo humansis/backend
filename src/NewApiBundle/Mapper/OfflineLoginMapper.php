@@ -6,7 +6,7 @@ use InvalidArgumentException;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use NewApiBundle\Serializer\MapperInterface;
 use UserBundle\Entity\User;
-use UserBundle\Utils\UserService;
+use NewApiBundle\Utils\UserService;
 
 class OfflineLoginMapper implements MapperInterface
 {

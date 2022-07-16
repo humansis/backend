@@ -15,7 +15,7 @@ use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
 use Doctrine\Persistence\ObjectManager;
 use UserBundle\Entity\UserProject;
-use UserBundle\Utils\UserService;
+use NewApiBundle\Utils\UserService;
 
 /**
  * @see VendorFixtures for check vendor username(s) is same
