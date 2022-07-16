@@ -8,7 +8,7 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\InputType\BookletBatchCreateInputType;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;

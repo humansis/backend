@@ -2,7 +2,7 @@
 
 namespace Tests\CommonBundle\Controller;
 
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\UserProject;

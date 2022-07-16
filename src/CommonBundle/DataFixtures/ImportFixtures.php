@@ -12,7 +12,7 @@ use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\NationalIdType;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use UserBundle\Entity\User;
 
 class ImportFixtures extends Fixture implements DependentFixtureInterface

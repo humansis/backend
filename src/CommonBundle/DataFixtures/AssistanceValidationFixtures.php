@@ -8,7 +8,7 @@ use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Component\Country\Countries;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
 
 class AssistanceValidationFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface

@@ -26,7 +26,7 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use ProjectBundle\Entity\Donor;
+use NewApiBundle\Entity\Donor;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class AssistanceSpreadsheetExport

@@ -8,7 +8,7 @@ use CommonBundle\Entity\Location;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\Commodity;
 use Doctrine\ORM\Mapping as ORM;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use UserBundle\Entity\User;
 
 /**
@@ -30,7 +30,7 @@ class DistributedItem
     /**
      * @var Project
      *
-     * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Project")
      */
     private $project;
 

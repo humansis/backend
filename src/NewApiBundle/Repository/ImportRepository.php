@@ -11,7 +11,7 @@ use NewApiBundle\Enum\ImportState;
 use NewApiBundle\InputType\Import\FilterInputType;
 use NewApiBundle\InputType\Import\OrderInputType;
 use NewApiBundle\Request\Pagination;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 
 class ImportRepository extends EntityRepository
 {

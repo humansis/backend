@@ -11,7 +11,7 @@ use NewApiBundle\Entity\Household;
 use NewApiBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Location;
 use ReportingBundle\Entity\ReportingCountry;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use DistributionBundle\Entity\Assistance;
 use \TransactionBundle\Entity\Transaction;
 use Exception;

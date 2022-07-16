@@ -1,6 +1,6 @@
 <?php
 
-namespace ProjectBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\DBAL\SectorEnum;
@@ -45,7 +45,7 @@ class ProjectSector
     /**
      * @var Project
      *
-     * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project", inversedBy="sectors")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Project", inversedBy="sectors")
      */
     private $project;
 

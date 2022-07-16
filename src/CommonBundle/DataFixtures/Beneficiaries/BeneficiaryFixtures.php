@@ -9,7 +9,7 @@ use CommonBundle\DataFixtures\VulnerabilityCriterionFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use NewApiBundle\Enum\Livelihood;
 use Symfony\Component\HttpKernel\Kernel;
 

@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use UserBundle\Entity\User;
 
 /**
@@ -33,7 +33,7 @@ class Invoice implements JsonSerializable
     /**
      * @var Project|null
      *
-     * @ORM\ManyToOne(targetEntity="\ProjectBundle\Entity\Project")
+     * @ORM\ManyToOne(targetEntity="\NewApiBundle\Entity\Project")
      * @ORM\JoinColumn(nullable=true)
      */
     private $project;

@@ -32,7 +32,7 @@ use NewApiBundle\InputType\ProjectsAssistanceFilterInputType;
 use NewApiBundle\Request\Pagination;
 use NewApiBundle\Utils\DateTime\Iso8601Converter;
 use NewApiBundle\DBAL\SubSectorEnum;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;

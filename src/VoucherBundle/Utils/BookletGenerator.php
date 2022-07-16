@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace VoucherBundle\Utils;
 
 use Doctrine\ORM\EntityManager;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use VoucherBundle\Entity\Booklet;
 
 class BookletGenerator

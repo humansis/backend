@@ -7,7 +7,7 @@ use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Household;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use DistributionBundle\Entity\Assistance;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Vendor;
@@ -31,7 +31,7 @@ class SmartcardPurchasedItem
     /**
      * @var Project
      *
-     * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Project")
      */
     private $project;
 

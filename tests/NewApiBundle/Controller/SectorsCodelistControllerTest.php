@@ -4,7 +4,7 @@ namespace Tests\NewApiBundle\Controller;
 
 use Exception;
 use NewApiBundle\DBAL\SectorEnum;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
 
 class SectorsCodelistControllerTest extends BMSServiceTestCase

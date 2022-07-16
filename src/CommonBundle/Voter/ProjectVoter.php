@@ -4,7 +4,7 @@
 namespace CommonBundle\Voter;
 
 use Doctrine\ORM\EntityManagerInterface;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Role\RoleHierarchy;
 use UserBundle\Entity\User;

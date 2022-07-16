@@ -60,5 +60,5 @@ services:
         calls:
             - injectSecurity: [ "@security.authorization_checker"]
         arguments:
-            - ProjectBundle\Entity\Project
+            - NewApiBundle\Entity\Project
         public: true

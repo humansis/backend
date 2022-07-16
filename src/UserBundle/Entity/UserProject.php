@@ -3,7 +3,7 @@
 namespace UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -33,7 +33,7 @@ class UserProject
     /**
      * @var Project
      *
-     * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project", inversedBy="usersProject")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Project", inversedBy="usersProject")
      * @SymfonyGroups({"FullUser"})
      */
     private $project;
@@ -106,11 +106,11 @@ class UserProject
     /**
      * Set project.
      *
-     * @param \ProjectBundle\Entity\Project|null $project
+     * @param \NewApiBundle\Entity\Project|null $project
      *
      * @return UserProject
      */
-    public function setProject(\ProjectBundle\Entity\Project $project = null)
+    public function setProject(\NewApiBundle\Entity\Project $project = null)
     {
         $this->project = $project;
 
@@ -120,7 +120,7 @@ class UserProject
     /**
      * Get project.
      *
-     * @return \ProjectBundle\Entity\Project|null
+     * @return \NewApiBundle\Entity\Project|null
      */
     public function getProject()
     {

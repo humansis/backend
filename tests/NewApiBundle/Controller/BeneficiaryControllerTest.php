@@ -8,7 +8,7 @@ use NewApiBundle\Entity\Phone;
 use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
 
 class BeneficiaryControllerTest extends BMSServiceTestCase

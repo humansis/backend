@@ -13,7 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\InputType\InstitutionCreateInputType;
 use NewApiBundle\InputType\InstitutionUpdateInputType;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use CommonBundle\InputType as GlobalInputType;
 use NewApiBundle\InputType\Deprecated;
 

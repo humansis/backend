@@ -12,7 +12,7 @@ use NewApiBundle\Entity\Helper\CountryDependent;
 use NewApiBundle\Entity\Helper\EnumTrait;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ImportState;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use UserBundle\Entity\User;
 
 /**
@@ -44,7 +44,7 @@ class Import
     /**
      * @var Project[]|Collection
      *
-     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity="NewApiBundle\Entity\Project", cascade={"persist"})
      * @ORM\JoinTable(name="import_project",
      *     joinColumns={@ORM\JoinColumn(name="import_id", referencedColumnName="id")},
      *     inverseJoinColumns={@ORM\JoinColumn(name="project_id", referencedColumnName="id")}

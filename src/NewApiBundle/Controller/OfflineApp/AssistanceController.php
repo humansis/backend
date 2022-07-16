@@ -11,7 +11,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Controller\AbstractController;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\InputType\AssistanceByProjectOfflineAppFilterInputType;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

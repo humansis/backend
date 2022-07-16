@@ -12,7 +12,7 @@ use NewApiBundle\InputType\DistributedItemFilterInputType;
 use NewApiBundle\InputType\DistributedItemOrderInputType;
 use NewApiBundle\Repository\DistributedItemRepository;
 use NewApiBundle\Request\Pagination;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;

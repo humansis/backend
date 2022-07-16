@@ -2,8 +2,8 @@
 
 namespace ProjectBundle\Mapper;
 
-use ProjectBundle\Entity\Donor;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Donor;
+use NewApiBundle\Entity\Project;
 
 class DonorMapper
 {

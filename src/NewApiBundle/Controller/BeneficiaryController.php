@@ -32,7 +32,7 @@ use NewApiBundle\InputType\NationalIdFilterInputType;
 use NewApiBundle\InputType\PhoneFilterInputType;
 use NewApiBundle\InputType\VulnerabilityScoreInputType;
 use NewApiBundle\Request\Pagination;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

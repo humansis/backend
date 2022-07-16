@@ -3,7 +3,7 @@
 namespace NewApiBundle\Component\Smartcard;
 
 use NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
 

@@ -23,7 +23,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use DistributionBundle\Entity\Assistance;
 use NewApiBundle\Entity\Beneficiary;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;

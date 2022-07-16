@@ -12,7 +12,7 @@ trait ProjectFilterTrait
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("integer", groups={"Strict"}),
-     *         @EntityExist(entity="\ProjectBundle\Entity\Project", groups={"Strict"})
+     *         @EntityExist(entity="\NewApiBundle\Entity\Project", groups={"Strict"})
      *     },
      *     groups={"Strict"}
      * )

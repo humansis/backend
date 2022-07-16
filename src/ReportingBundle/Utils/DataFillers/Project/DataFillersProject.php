@@ -11,8 +11,8 @@ use \DistributionBundle\Entity\AssistanceBeneficiary;
 
 use NewApiBundle\DBAL\PersonGenderEnum;
 use NewApiBundle\Enum\PersonGender;
-use \ProjectBundle\Entity\Donor;
-use \ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Donor;
+use NewApiBundle\Entity\Project;
 use \ReportingBundle\Entity\ReportingIndicator;
 use \ReportingBundle\Entity\ReportingProject;
 use \ReportingBundle\Entity\ReportingValue;

@@ -7,7 +7,7 @@ use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 
 abstract class AbstractCriteriaRepository extends EntityRepository implements InterfaceCriteriaRepository
 {

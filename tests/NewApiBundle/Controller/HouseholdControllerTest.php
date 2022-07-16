@@ -11,7 +11,7 @@ use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use NewApiBundle\Enum\NationalIdType;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use NewApiBundle\Enum\Livelihood;
 use Tests\BMSServiceTestCase;
 

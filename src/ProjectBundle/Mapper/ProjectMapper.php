@@ -6,7 +6,7 @@ use NewApiBundle\MapperDeprecated\AssistanceMapper;
 use NewApiBundle\Repository\BeneficiaryRepository;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use NewApiBundle\Utils\SectorService;
 
 class ProjectMapper

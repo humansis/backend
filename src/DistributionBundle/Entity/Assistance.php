@@ -14,7 +14,7 @@ use NewApiBundle\Entity\Assistance\SelectionCriteria;
 use NewApiBundle\Entity\ScoringBlueprint;
 use NewApiBundle\DBAL\SectorEnum;
 use NewApiBundle\DBAL\SubSectorEnum;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use VoucherBundle\Entity\SmartcardPurchase;
 
@@ -91,7 +91,7 @@ class Assistance implements ExportableInterface
     /**
      * @var Project
      *
-     * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project", inversedBy="distributions")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Project", inversedBy="distributions")
      *
      * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
@@ -502,11 +502,11 @@ class Assistance implements ExportableInterface
     /**
      * Set project.
      *
-     * @param \ProjectBundle\Entity\Project|null $project
+     * @param \NewApiBundle\Entity\Project|null $project
      *
      * @return Assistance
      */
-    public function setProject(\ProjectBundle\Entity\Project $project = null)
+    public function setProject(\NewApiBundle\Entity\Project $project = null)
     {
         $this->project = $project;
 
@@ -516,7 +516,7 @@ class Assistance implements ExportableInterface
     /**
      * Get project.
      *
-     * @return \ProjectBundle\Entity\Project|null
+     * @return \NewApiBundle\Entity\Project|null
      */
     public function getProject()
     {

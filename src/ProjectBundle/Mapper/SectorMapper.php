@@ -7,6 +7,7 @@ namespace ProjectBundle\Mapper;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use NewApiBundle\DTO\Sector;
+use NewApiBundle\Entity\ProjectSector;
 use NewApiBundle\Enum\Domain;
 use ProjectBundle\DTO\Sector;
 use ProjectBundle\Entity\ProjectSector;

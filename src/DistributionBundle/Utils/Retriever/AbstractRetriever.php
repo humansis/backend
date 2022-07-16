@@ -3,7 +3,7 @@
 
 namespace DistributionBundle\Utils\Retriever;
 
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 
 /**
  * Class AbstractRetriever

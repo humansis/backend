@@ -11,7 +11,7 @@ use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\InputType\Import;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use NewApiBundle\Utils\ProjectService;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

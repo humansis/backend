@@ -16,7 +16,7 @@ use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;

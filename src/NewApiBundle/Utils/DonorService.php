@@ -5,7 +5,7 @@ namespace NewApiBundle\Utils;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\InputType\DonorCreateInputType;
 use NewApiBundle\InputType\DonorUpdateInputType;
-use ProjectBundle\Entity\Donor;
+use NewApiBundle\Entity\Donor;
 use Psr\Container\ContainerInterface;
 
 /**
