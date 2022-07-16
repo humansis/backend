@@ -21,7 +21,7 @@ use UserBundle\Entity\UserProject;
 
 /**
  * Class ProjectService
- * @package ProjectBundle\Utils
+ * @package NewApiBundle\Utils
  */
 class ProjectService
 {
