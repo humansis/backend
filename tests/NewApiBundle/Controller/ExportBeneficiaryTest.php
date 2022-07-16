@@ -1,11 +1,14 @@
 <?php
 
-namespace Tests\BeneficiaryBundle\Controller;
+namespace Tests\NewApiBundle\Controller;
 
 use NewApiBundle\Entity\Beneficiary;
 use CommonBundle\Utils\ExportService;
 use Tests\BMSServiceTestCase;
 
+/**
+ * @deprecated This does not belong to Controller, for sure
+ */
 class ExportBeneficiaryTest extends BMSServiceTestCase
 {
     public function setUp()

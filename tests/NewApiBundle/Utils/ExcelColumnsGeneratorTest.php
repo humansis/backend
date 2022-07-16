@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\BeneficiaryBundle\Utils;
+namespace Tests\NewApiBundle\Utils;
 
 use NewApiBundle\Utils\ExcelColumnsGenerator;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

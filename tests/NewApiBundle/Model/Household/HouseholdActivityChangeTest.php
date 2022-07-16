@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\BeneficiaryBundle\Model\Household;
+namespace Tests\NewApiBundle\Model\Household;
 
 use NewApiBundle\Entity\Household;
 use NewApiBundle\Entity\HouseholdActivity;
