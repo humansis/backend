@@ -26,17 +26,6 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
     public function injectSecurity(AuthorizationCheckerInterface $security){
         $this->security = $security;
     }
-    
-    public function getAllOfUser(User $user)
-    {
-        $qb = $this->createQueryBuilder("p");
-        $q = $qb->leftJoin("p.usersProject", "up")
-            ->where("up.user = :user")
-            ->andWhere("p.archived = 0")
-            ->setParameter("user", $user);
-
-        return $q->getQuery()->getResult();
-    }
 
     public function getAllOfCountry($iso3)
     {
