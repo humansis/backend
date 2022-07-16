@@ -37,6 +37,7 @@ use NewApiBundle\InputType\Assistance\UpdateAssistanceInputType;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\Repository\ScoringBlueprintRepository;
 use NewApiBundle\Request\Pagination;
+use NewApiBundle\Entity\Project;
 use ProjectBundle\Entity\Project;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Container\ContainerInterface;

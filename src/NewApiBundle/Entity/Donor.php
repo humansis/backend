@@ -1,6 +1,6 @@
 <?php
 
-namespace ProjectBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -63,7 +63,7 @@ class Donor implements ExportableInterface
     private $notes;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project", mappedBy="donors")
+     * @ORM\ManyToMany(targetEntity="NewApiBundle\Entity\Project", mappedBy="donors")
      *
      */
     private $projects;
@@ -206,11 +206,11 @@ class Donor implements ExportableInterface
     /**
      * Add project.
      *
-     * @param \ProjectBundle\Entity\Project $project
+     * @param \NewApiBundle\Entity\Project $project
      *
      * @return Donor
      */
-    public function addProject(\ProjectBundle\Entity\Project $project)
+    public function addProject(\NewApiBundle\Entity\Project $project)
     {
         $this->projects[] = $project;
 
@@ -220,11 +220,11 @@ class Donor implements ExportableInterface
     /**
      * Remove project.
      *
-     * @param \ProjectBundle\Entity\Project $project
+     * @param \NewApiBundle\Entity\Project $project
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeProject(\ProjectBundle\Entity\Project $project)
+    public function removeProject(\NewApiBundle\Entity\Project $project)
     {
         return $this->projects->removeElement($project);
     }

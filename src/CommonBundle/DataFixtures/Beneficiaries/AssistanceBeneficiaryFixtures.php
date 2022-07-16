@@ -16,7 +16,7 @@ use DistributionBundle\Utils\AssistanceService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
 
 class AssistanceBeneficiaryFixtures extends Fixture implements DependentFixtureInterface//, FixtureGroupInterface

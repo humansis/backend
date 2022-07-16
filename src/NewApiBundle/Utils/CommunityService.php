@@ -16,7 +16,7 @@ use Doctrine\ORM\EntityNotFoundException;
 use InvalidArgumentException;
 use NewApiBundle\InputType\CommunityCreateInputType;
 use NewApiBundle\InputType\CommunityUpdateInputType;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 
 
 /**

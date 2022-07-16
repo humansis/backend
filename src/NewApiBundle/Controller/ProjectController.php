@@ -13,7 +13,7 @@ use NewApiBundle\InputType\ProjectFilterInputType;
 use NewApiBundle\InputType\ProjectOrderInputType;
 use NewApiBundle\InputType\ProjectUpdateInputType;
 use NewApiBundle\Request\Pagination;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use ProjectBundle\Repository\ProjectRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;

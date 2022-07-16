@@ -5,7 +5,7 @@ namespace Tests\NewApiBundle\Controller\OfflineApp;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NoResultException;
 use Exception;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
 
 class AssistanceControllerTest extends BMSServiceTestCase

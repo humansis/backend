@@ -131,7 +131,7 @@ services:
     NewApiBundle\Mapper\UserMapper:
         arguments:
             - '@NewApiBundle\Component\Country\Countries'
-            - '@=service("doctrine.orm.entity_manager").getRepository("ProjectBundle:Project")'
+            - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:Project")'
         tags: [ 'app.mapper' ]
 
     NewApiBundle\Mapper\VendorLoginMapper:

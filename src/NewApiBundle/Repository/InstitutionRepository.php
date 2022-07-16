@@ -13,7 +13,7 @@ use NewApiBundle\InputType\AssistanceInstitutionsFilterInputType;
 use NewApiBundle\InputType\InstitutionFilterInputType;
 use NewApiBundle\InputType\InstitutionOrderInputType;
 use NewApiBundle\Request\Pagination;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 
 /**
  * InstitutionRepository.

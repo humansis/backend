@@ -33,6 +33,7 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use NewApiBundle\Entity\Donor;
 use ProjectBundle\Entity\Donor;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Translation\TranslatorInterface;

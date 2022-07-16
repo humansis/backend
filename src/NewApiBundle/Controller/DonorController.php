@@ -12,7 +12,7 @@ use NewApiBundle\InputType\DonorFilterInputType;
 use NewApiBundle\InputType\DonorOrderInputType;
 use NewApiBundle\InputType\DonorUpdateInputType;
 use NewApiBundle\Request\Pagination;
-use ProjectBundle\Entity\Donor;
+use NewApiBundle\Entity\Donor;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;

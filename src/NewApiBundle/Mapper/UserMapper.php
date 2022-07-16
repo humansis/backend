@@ -5,7 +5,7 @@ namespace NewApiBundle\Mapper;
 use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Component\Country\Country;
 use NewApiBundle\Serializer\MapperInterface;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use ProjectBundle\Repository\ProjectRepository;
 use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;

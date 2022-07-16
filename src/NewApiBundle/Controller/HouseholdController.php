@@ -13,7 +13,7 @@ use NewApiBundle\InputType\HouseholdFilterInputType;
 use NewApiBundle\InputType\HouseholdOrderInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
 use NewApiBundle\Request\Pagination;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

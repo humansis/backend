@@ -15,7 +15,7 @@ use NewApiBundle\Enum\ImportState;
 use NewApiBundle\InputType\Import;
 use NewApiBundle\Repository\ImportBeneficiaryDuplicityRepository;
 use NewApiBundle\Repository\ImportQueueRepository;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Workflow\TransitionBlocker;

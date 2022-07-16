@@ -36,7 +36,7 @@ use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\InputType\Helper\EnumsBuilder;
 use NewApiBundle\InputType\HouseholdCreateInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 

@@ -9,7 +9,7 @@ use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\InputType\SmartcardPurchaseFilterInputType;
 use NewApiBundle\Request\Pagination;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use VoucherBundle\DTO\PurchaseDetail;
 use VoucherBundle\DTO\PreliminaryInvoice;
 use VoucherBundle\DTO\PurchaseSummary;

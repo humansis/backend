@@ -25,7 +25,7 @@ use NewApiBundle\Entity\ScoringBlueprint;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\Repository\AssistanceStatisticsRepository;
 use NewApiBundle\Repository\ScoringBlueprintRepository;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use ProjectBundle\Repository\ProjectRepository;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\SerializerInterface;

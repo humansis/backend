@@ -22,7 +22,7 @@ class ReportingProject
     private $id;
 
     /**
-     *@ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project", inversedBy="reportingProject")
+     *@ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Project", inversedBy="reportingProject")
      * @ORM\JoinColumn(nullable=true)
      **/
     private $project;
@@ -99,7 +99,7 @@ class ReportingProject
     /**
      * Set reportingProject
      *
-     * @param \ProjectBundle\Entity\Project $project
+     * @param \NewApiBundle\Entity\Project $project
      * @return ReportingProject
      */
     public function setProject($project)
@@ -112,7 +112,7 @@ class ReportingProject
     /**
      * Get project
      *
-     * @return \ProjectBundle\Entity\Project
+     * @return \NewApiBundle\Entity\Project
      */
     public function getProject()
     {

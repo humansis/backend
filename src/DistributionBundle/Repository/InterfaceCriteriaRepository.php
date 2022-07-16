@@ -4,7 +4,7 @@
 namespace DistributionBundle\Repository;
 
 use Doctrine\ORM\QueryBuilder;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 
 interface InterfaceCriteriaRepository
 {

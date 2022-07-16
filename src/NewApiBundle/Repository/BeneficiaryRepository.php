@@ -29,7 +29,7 @@ use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\Request\Pagination;
 use NewApiBundle\DBAL\LivelihoodEnum;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Doctrine\ORM\Query\Expr\Join;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Enum\SmartcardStates;

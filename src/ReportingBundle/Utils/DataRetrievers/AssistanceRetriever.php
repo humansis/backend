@@ -5,7 +5,7 @@ namespace ReportingBundle\Utils\DataRetrievers;
 use Doctrine\ORM\EntityManager;
 
 use ReportingBundle\Entity\ReportingAssistance;
-use \ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use \DistributionBundle\Entity\Assistance;
 
 /**

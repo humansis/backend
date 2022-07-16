@@ -7,7 +7,7 @@ use NewApiBundle\Component\Smartcard\SmartcardPurchaseService;
 use NewApiBundle\Controller\WebApp\AbstractWebAppController;
 use NewApiBundle\InputType\SmartcardPurchaseFilterInputType;
 use NewApiBundle\Request\Pagination;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use VoucherBundle\Entity\Invoice;

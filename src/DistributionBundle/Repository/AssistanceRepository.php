@@ -16,7 +16,7 @@ use NewApiBundle\InputType\AssistanceFilterInputType;
 use NewApiBundle\InputType\AssistanceOrderInputType;
 use NewApiBundle\InputType\ProjectsAssistanceFilterInputType;
 use NewApiBundle\Request\Pagination;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 
 /**
  * AssistanceRepository

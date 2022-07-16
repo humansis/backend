@@ -16,7 +16,7 @@ use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 use NewApiBundle\DBAL\ModalityTypeEnum;
 use NewApiBundle\Enum\ProductCategoryType;
 use NewApiBundle\DBAL\SubSectorEnum;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
 
 class SelectionCriteriaTest extends BMSServiceTestCase

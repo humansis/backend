@@ -18,7 +18,7 @@ use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
 use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\InputType\HouseholdCreateInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;

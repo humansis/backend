@@ -7,7 +7,7 @@ use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Enum\ProductCategoryType;
 use NewApiBundle\DBAL\SectorEnum;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
 
 class ProjectFixtures extends Fixture implements FixtureGroupInterface

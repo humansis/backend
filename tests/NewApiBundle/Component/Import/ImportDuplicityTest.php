@@ -27,7 +27,7 @@ use NewApiBundle\Component\Import\UploadImportService;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Enum\ImportState;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;

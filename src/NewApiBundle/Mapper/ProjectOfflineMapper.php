@@ -7,8 +7,8 @@ namespace NewApiBundle\Mapper;
 use DateTimeInterface;
 use InvalidArgumentException;
 use NewApiBundle\Serializer\MapperInterface;
-use ProjectBundle\Entity\Project;
-use ProjectBundle\Entity\ProjectSector;
+use NewApiBundle\Entity\Project;
+use NewApiBundle\Entity\ProjectSector;
 
 class ProjectOfflineMapper implements MapperInterface
 {

@@ -13,7 +13,7 @@ use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\File\File;
 use UserBundle\Entity\User;

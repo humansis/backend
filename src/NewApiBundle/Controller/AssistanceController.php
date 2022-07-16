@@ -33,6 +33,7 @@ use NewApiBundle\InputType\ProjectsAssistanceFilterInputType;
 use NewApiBundle\Request\Pagination;
 use NewApiBundle\Utils\DateTime\Iso8601Converter;
 use NewApiBundle\DBAL\SubSectorEnum;
+use NewApiBundle\Entity\Project;
 use ProjectBundle\Entity\Project;
 use Psr\Cache\InvalidArgumentException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;

@@ -5,7 +5,7 @@ namespace NewApiBundle\Mapper\Import;
 
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Serializer\MapperInterface;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 
 class ImportMapper implements MapperInterface
 {

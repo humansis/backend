@@ -2,7 +2,7 @@
 
 namespace VoucherBundle\DTO;
 
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 
 /**
  * stores statistics from repository

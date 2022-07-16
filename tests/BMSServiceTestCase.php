@@ -17,7 +17,7 @@ use DistributionBundle\Utils\ConfigurationLoader;
 use DistributionBundle\Utils\CriteriaAssistanceService;
 use Doctrine\ORM\EntityManager;
 
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 

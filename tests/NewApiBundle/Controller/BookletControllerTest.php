@@ -7,7 +7,7 @@ use NewApiBundle\Entity\Community;
 use NewApiBundle\Entity\Institution;
 use Doctrine\ORM\NoResultException;
 use Exception;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
 use VoucherBundle\Entity\Booklet;
 

@@ -6,7 +6,7 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\InputType\DonorFilterInputType;
 use NewApiBundle\InputType\DonorOrderInputType;
 use NewApiBundle\Request\Pagination;
-use ProjectBundle\Entity\Donor;
+use NewApiBundle\Entity\Donor;
 
 /**
  * DonorRepository

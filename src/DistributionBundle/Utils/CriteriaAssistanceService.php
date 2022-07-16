@@ -16,7 +16,7 @@ use NewApiBundle\Component\Assistance\Scoring\ScoringResolver;
 use NewApiBundle\Entity\Assistance\SelectionCriteria;
 use NewApiBundle\Entity\ScoringBlueprint;
 use NewApiBundle\Repository\ScoringBlueprintRepository;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 
 /**
  * Class CriteriaAssistanceService

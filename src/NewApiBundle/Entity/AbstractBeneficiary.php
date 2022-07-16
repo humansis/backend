@@ -5,7 +5,7 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 
 /**
  * @ORM\Entity()
@@ -32,7 +32,7 @@ abstract class AbstractBeneficiary
 
     /**
      * @var Project[]|Collection
-     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Project", inversedBy="households", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity="NewApiBundle\Entity\Project", inversedBy="households", cascade={"persist"})
      */
     private $projects;
 

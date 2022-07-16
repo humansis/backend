@@ -14,7 +14,7 @@ use NewApiBundle\InputType\CommunityFilterType;
 use NewApiBundle\InputType\CommunityOrderInputType;
 use NewApiBundle\InputType\CommunityUpdateInputType;
 use NewApiBundle\Request\Pagination;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations as Rest;

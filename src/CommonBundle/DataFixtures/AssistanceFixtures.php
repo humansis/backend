@@ -21,7 +21,7 @@ use NewApiBundle\Component\Country\Country;
 use NewApiBundle\Enum\ProductCategoryType;
 use NewApiBundle\DBAL\SectorEnum;
 use NewApiBundle\DBAL\SubSectorEnum;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
 use UserBundle\Entity\User;
 

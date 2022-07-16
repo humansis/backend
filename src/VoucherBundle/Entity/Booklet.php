@@ -10,7 +10,7 @@ use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 
 /**
  * Booklet
@@ -38,7 +38,7 @@ class Booklet implements ExportableInterface
     /**
      * @var Project|null
      *
-     * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Project")
      * @SymfonyGroups({"FullBooklet", "ValidatedAssistance"})
      */
     private $project;

@@ -3,7 +3,7 @@
 namespace VoucherBundle\Tests\Utils;
 
 use Doctrine\Persistence\ObjectManager;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use VoucherBundle\Entity\Booklet;
 

@@ -13,7 +13,7 @@ use NewApiBundle\InputType\AssistanceCommunitiesFilterInputType;
 use NewApiBundle\InputType\CommunityFilterType;
 use NewApiBundle\InputType\CommunityOrderInputType;
 use NewApiBundle\Request\Pagination;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 
 /**
  * CommunityRepository

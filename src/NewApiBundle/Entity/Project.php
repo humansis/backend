@@ -1,6 +1,6 @@
 <?php
 
-namespace ProjectBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use NewApiBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\Collection;
@@ -98,13 +98,13 @@ class Project implements ExportableInterface
     private $iso3;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ProjectBundle\Entity\Donor", inversedBy="projects")
+     * @ORM\ManyToMany(targetEntity="NewApiBundle\Entity\Donor", inversedBy="projects")
      *
      */
     private $donors;
 
     /**
-     * @ORM\OneToMany(targetEntity="ProjectBundle\Entity\ProjectSector", mappedBy="project", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ProjectSector", mappedBy="project", cascade={"persist"}, orphanRemoval=true)
      *
      */
     private $sectors;
@@ -411,11 +411,11 @@ class Project implements ExportableInterface
     /**
      * Add donor.
      *
-     * @param \ProjectBundle\Entity\Donor $donor
+     * @param \NewApiBundle\Entity\Donor $donor
      *
      * @return Project
      */
-    public function addDonor(\ProjectBundle\Entity\Donor $donor)
+    public function addDonor(\NewApiBundle\Entity\Donor $donor)
     {
         $this->donors->add($donor);
 
@@ -425,11 +425,11 @@ class Project implements ExportableInterface
     /**
      * Remove donor.
      *
-     * @param \ProjectBundle\Entity\Donor $donor
+     * @param \NewApiBundle\Entity\Donor $donor
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeDonor(\ProjectBundle\Entity\Donor $donor)
+    public function removeDonor(\NewApiBundle\Entity\Donor $donor)
     {
         return $this->donors->removeElement($donor);
     }

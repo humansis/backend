@@ -8,7 +8,7 @@ use InvalidArgumentException;
 use NewApiBundle\InputType\UserCreateInputType;
 use NewApiBundle\InputType\UserUpdateInputType;
 use NewApiBundle\InputType\UserInitializeInputType;
-use ProjectBundle\Entity\Project;
+use NewApiBundle\Entity\Project;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
