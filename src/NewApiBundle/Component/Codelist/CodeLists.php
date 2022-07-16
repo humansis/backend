@@ -6,6 +6,7 @@ namespace NewApiBundle\Component\Codelist;
 
 use NewApiBundle\Entity\VulnerabilityCriterion;
 use NewApiBundle\DBAL\SubSectorEnum;
+use NewApiBundle\DTO\Sector;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use NewApiBundle\Enum\Domain;
 use ProjectBundle\DBAL\SubSectorEnum;
@@ -73,7 +74,7 @@ class CodeLists
                 $translation = $translator !== null
                     ? $translator->trans(VulnerabilityCriterion::all()[$criterion->getFieldString()])
                     : VulnerabilityCriterion::all()[$criterion->getFieldString()];
-                
+
                 $data[] = new CodeItem($criterion->getFieldString(), $translation);
             }
         }

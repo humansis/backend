@@ -13,7 +13,7 @@ use ProjectBundle\Entity\Project;
 use ProjectBundle\Entity\ProjectSector;
 use NewApiBundle\DBAL\SectorEnum;
 use NewApiBundle\DBAL\SubSectorEnum;
-use ProjectBundle\DTO\Sector;
+use NewApiBundle\DTO\Sector;
 
 /**
  * Class SectorService
