@@ -33,7 +33,6 @@ class UserCountry
      * @var string
      *
      * @ORM\Column(name="iso3", type="string", length=3)
-     * @SymfonyGroups({"FullUser"})
      */
     private $iso3;
 
