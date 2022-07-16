@@ -11,7 +11,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Exception;
 use NewApiBundle\Component\Country\Countries;
-use ProjectBundle\Repository\ProjectRepository;
+use NewApiBundle\Repository\ProjectRepository;
 use Symfony\Component\HttpKernel\Kernel;
 use VoucherBundle\Utils\BookletService;
 

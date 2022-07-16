@@ -13,7 +13,7 @@ use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Entity\Project;
-use ProjectBundle\Repository\ProjectRepository;
+use NewApiBundle\Repository\ProjectRepository;
 
 class CommunityFixture extends Fixture implements DependentFixtureInterface
 {

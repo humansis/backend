@@ -17,7 +17,7 @@ use NewApiBundle\Entity\Household;
  * Project
  *
  * @ORM\Table(name="project")
- * @ORM\Entity(repositoryClass="ProjectBundle\Repository\ProjectRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ProjectRepository")
  * @ORM\HasLifecycleCallbacks()
  */
 class Project implements ExportableInterface
