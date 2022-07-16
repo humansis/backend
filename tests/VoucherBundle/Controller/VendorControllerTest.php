@@ -137,6 +137,8 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testGetAllVendors()
     {
+        $this->markTestSkipped('Will be removed with VoucherBundle');
+
         // Log a user in order to go through the security firewall
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);
