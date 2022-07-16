@@ -18,21 +18,20 @@ services:
         public: true
 
     ProjectBundle\Utils\ProjectService:
-        arguments: ['@doctrine.orm.entity_manager', '@serializer', '@validator' , '@service_container']
+        arguments: ['@doctrine.orm.entity_manager', '@service_container']
 
     project.donor_service:
         alias: ProjectBundle\Utils\DonorService
         public: true
 
     ProjectBundle\Utils\DonorService:
-        arguments: ['@doctrine.orm.entity_manager', '@serializer', '@validator', '@service_container']
+        arguments: ['@doctrine.orm.entity_manager', '@service_container']
 
     project.sector_service:
         alias: ProjectBundle\Utils\SectorService
         public: true
 
     ProjectBundle\Utils\SectorService:
-        arguments: ['@doctrine.orm.entity_manager', '@serializer', '@validator']
 
     ProjectBundle\Mapper\ProjectMapper:
         arguments:
