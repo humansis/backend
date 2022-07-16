@@ -33,6 +33,7 @@ class VendorControllerTest extends BMSServiceTestCase
       */
     public function testGetSalt()
     {
+        $this->markTestSkipped('Will be removed with VoucherBundle');
         $crawler = $this->request('GET', '/api/wsse/initialize/' . $this->username);
         $data = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
@@ -46,6 +47,8 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testCreateVendor()
     {
+        $this->markTestSkipped('Will be removed with VoucherBundle');
+
         // First step
         // Get salt for a new vendor => save the username with the salt in database (user disabled for now)
         $return = self::$container->get('user.user_service')->getSaltOld($this->username);
