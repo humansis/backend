@@ -12,7 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use NewApiBundle\Enum\NationalIdType;
 use ProjectBundle\Entity\Project;
-use ProjectBundle\Enum\Livelihood;
+use NewApiBundle\Enum\Livelihood;
 use Tests\BMSServiceTestCase;
 
 class HouseholdControllerTest extends BMSServiceTestCase

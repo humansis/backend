@@ -895,7 +895,7 @@ class Assistance implements ExportableInterface
 
             // Then we make the string coherent
             if ($field === 'livelihood') {
-                $value = \ProjectBundle\Enum\Livelihood::translate($value);
+                $value = \NewApiBundle\Enum\Livelihood::translate($value);
             } elseif ($field === 'camp Name') {
                 $field = 'camp Id';
             }

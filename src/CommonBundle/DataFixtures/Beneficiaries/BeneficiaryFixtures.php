@@ -10,7 +10,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use ProjectBundle\Entity\Project;
-use ProjectBundle\Enum\Livelihood;
+use NewApiBundle\Enum\Livelihood;
 use Symfony\Component\HttpKernel\Kernel;
 
 class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface

@@ -18,7 +18,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Enum\PersonGender;
 use ProjectBundle\Entity\Project;
-use ProjectBundle\Enum\Livelihood;
+use NewApiBundle\Enum\Livelihood;
 use Symfony\Component\HttpKernel\Kernel;
 
 class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface

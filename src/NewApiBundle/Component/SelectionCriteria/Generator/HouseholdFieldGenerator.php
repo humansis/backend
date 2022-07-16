@@ -8,7 +8,7 @@ use NewApiBundle\Repository\CountrySpecificRepository;
 use NewApiBundle\Component\SelectionCriteria\FieldGeneratorInterface;
 use NewApiBundle\Component\SelectionCriteria\Structure\Field;
 use NewApiBundle\Enum\SelectionCriteriaTarget;
-use ProjectBundle\Enum\Livelihood;
+use NewApiBundle\Enum\Livelihood;
 
 class HouseholdFieldGenerator implements FieldGeneratorInterface
 {

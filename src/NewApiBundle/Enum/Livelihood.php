@@ -1,9 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace ProjectBundle\Enum;
-
-use NewApiBundle\Enum\EnumTrait;
+namespace NewApiBundle\Enum;
 
 final class Livelihood
 {
