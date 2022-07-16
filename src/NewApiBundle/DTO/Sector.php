@@ -1,6 +1,6 @@
 <?php
 
-namespace ProjectBundle\DTO;
+namespace NewApiBundle\DTO;
 
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Community;
