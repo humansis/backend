@@ -31,12 +31,6 @@ rest_project:
     resource: '@ProjectBundle/Controller'
     defaults: { _format: 'json' }
 
-rest_beneficiary:
-    type: annotation
-    prefix: /api/{firewall}
-    resource: '@BeneficiaryBundle/Controller'
-    defaults: { _format: 'json' }
-
 rest_distribution:
     type: annotation
     prefix: /api/{firewall}

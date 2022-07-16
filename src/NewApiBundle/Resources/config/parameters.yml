@@ -3,3 +3,7 @@ parameters:
         import.uploadedFilesDirectory: '%kernel.project_dir%/var/imports/uploaded'
         cache.import_duplicity_hashmap: '%kernel.project_dir%/var/imports/identities-hashmap-import-<<importId>>.json'
         import.maxFileSizeToLoad: 5 #in MB
+
+#From BeneficiaryBundle:
+        vulnerability_weightingFile:        '%kernel.project_dir%/src/NewApiBundle/Resources/config/vulnerability/weighting.csv'
+        vulnerability_scoringFileTemplate:  '%kernel.project_dir%/src/NewApiBundle/Resources/config/vulnerability/scoring_<<COUNTRY>>.csv'

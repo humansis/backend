@@ -526,12 +526,6 @@ services:
     NewApiBundle\Component\Assistance\Scoring\Validator\ScoringTypeValidator:
         public: true
 
-    BeneficiaryBundle\Model\Vulnerability\Resolver:
-        public: true
-        arguments:
-            - '%kernel.project_dir%/src/BeneficiaryBundle/Resources/config/vulnerability/weighting.csv'
-            - '%kernel.project_dir%/src/BeneficiaryBundle/Resources/config/vulnerability/scoring_<<COUNTRY>>.csv'
-
     NewApiBundle\Services\AssistanceDistributionService:
 
     NewApiBundle\Services\CodeListService:
@@ -556,3 +550,159 @@ services:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - \NewApiBundle\Entity\ScoringBlueprint
+
+
+#From BeneficiaryBundle:
+    #######################################################################################
+    ##                                       CRUD                                        ##
+    #######################################################################################
+
+    beneficiary.household_service:
+        class: NewApiBundle\Utils\HouseholdService
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@beneficiary.beneficiary_service"
+            - "@request_validator"
+            - "@location_service"
+        public: true
+
+    beneficiary.institution_service:
+        class: NewApiBundle\Utils\InstitutionService
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@location_service"
+        public: true
+
+    beneficiary.community_service:
+        class: NewApiBundle\Utils\CommunityService
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@location_service"
+            - "@CommonBundle\\Mapper\\LocationMapper"
+        public: true
+
+    beneficiary.repository:
+        alias: NewApiBundle\Repository\BeneficiaryRepository
+        public: true
+
+    NewApiBundle\Repository\ProfileRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\Profile
+
+    NewApiBundle\Repository\NationalIdRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\NationalId
+
+    NewApiBundle\Repository\PhoneRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\Phone
+
+    NewApiBundle\Repository\VulnerabilityCriterionRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\VulnerabilityCriterion
+
+
+    NewApiBundle\Repository\HouseholdRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\Household
+
+    NewApiBundle\Repository\BeneficiaryRepository:
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        arguments:
+            - NewApiBundle\Entity\Beneficiary
+        calls:
+            - injectLocationRepository: ['@CommonBundle\Repository\LocationRepository']
+
+    NewApiBundle\Repository\CountrySpecificRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\CountrySpecific
+
+    NewApiBundle\Repository\CommunityRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\Community
+
+    NewApiBundle\Repository\InstitutionRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\Institution
+
+    NewApiBundle\MapperDeprecated\BeneficiaryMapper:
+        arguments:
+            - "@serializer"
+        public: true
+
+    NewApiBundle\MapperDeprecated\AssistanceMapper:
+        arguments:
+            - '@NewApiBundle\MapperDeprecated\BeneficiaryMapper'
+            - "@=service('doctrine.orm.entity_manager').getRepository('DistributionBundle:AssistanceBeneficiary')"
+            - "@=service('doctrine.orm.entity_manager').getRepository('NewApiBundle:Beneficiary')"
+        public: true
+
+
+    beneficiary.beneficiary_service:
+        class: NewApiBundle\Utils\BeneficiaryService
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@request_validator"
+            - "@validator"
+            - '@CommonBundle\Utils\ExportService'
+            - '@NewApiBundle\Repository\BeneficiaryRepository'
+            - '@NewApiBundle\Repository\HouseholdRepository'
+            - '@NewApiBundle\Repository\VulnerabilityCriterionRepository'
+            - '@NewApiBundle\Repository\PhoneRepository'
+            - '@NewApiBundle\Repository\NationalIdRepository'
+            - '@NewApiBundle\Repository\ProfileRepository'
+        public: true
+
+    NewApiBundle\Utils\BeneficiaryService:
+        alias: beneficiary.beneficiary_service
+
+    beneficiary.country_specific_service:
+        class: NewApiBundle\Utils\CountrySpecificService
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@service_container"
+        public: true
+
+    beneficiary.vulnerability_resolver:
+        class: NewApiBundle\Model\Vulnerability\Resolver
+        arguments:
+            - "%vulnerability_weightingFile%"
+            - "%vulnerability_scoringFileTemplate%"
+            - "@beneficiary.repository"
+        public: true
+
+    NewApiBundle\Model\Vulnerability\Resolver:
+        alias: beneficiary.vulnerability_resolver
+
+    #######################################################################################
+    ##                                        CSV                                        ##
+    #######################################################################################
+
+    NewApiBundle\Utils\HouseholdExportCSVService:
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@export_csv_service"
+
+    beneficiary.household_export_csv_service:
+        alias: NewApiBundle\Utils\HouseholdExportCSVService
+        public: true
+
+    beneficiary.csv_to_array_mapper:
+        class: NewApiBundle\Utils\Mapper\CSVToArrayMapper
+        arguments:
+            - "@doctrine.orm.entity_manager"
+        public: true
+
+    household.activity_listerer:
+        class: NewApiBundle\Listener\HouseholdActivitySubscriber
+        autowire: true
+        tags:
+            - { name: 'doctrine.event_subscriber', priority: 500 }

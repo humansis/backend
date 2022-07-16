@@ -42,7 +42,7 @@ use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 
 /**
  * Class HouseholdService
- * @package BeneficiaryBundle\Utils
+ * @package NewApiBundle\Utils
  */
 class HouseholdService
 {

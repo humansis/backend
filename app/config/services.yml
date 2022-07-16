@@ -1,5 +1,4 @@
 imports:
-    - { resource: ../../src/BeneficiaryBundle/Resources/config/services.yml }
     - { resource: ../../src/DistributionBundle/Resources/config/services.yml }
     - { resource: ../../src/ProjectBundle/Resources/config/services.yml }
     - { resource: ../../src/UserBundle/Resources/config/services.yml }
