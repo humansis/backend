@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-use BeneficiaryBundle\Exception\CsvParserException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Entity\ScoringBlueprint;
+use NewApiBundle\Exception\CsvParserException;
 use NewApiBundle\InputType\ScoringBlueprintFilterInputType;
 use NewApiBundle\InputType\ScoringInputType;
 use NewApiBundle\InputType\ScoringPatchInputType;

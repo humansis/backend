@@ -15,7 +15,7 @@ use NewApiBundle\InputType\InstitutionCreateInputType;
 use NewApiBundle\InputType\InstitutionUpdateInputType;
 use ProjectBundle\Entity\Project;
 use CommonBundle\InputType as GlobalInputType;
-use BeneficiaryBundle\InputType;
+use NewApiBundle\InputType\Deprecated;
 
 /**
  * Class InstitutionService
@@ -98,14 +98,14 @@ class InstitutionService
 
     /**
      * @param GlobalInputType\Country      $country
-     * @param InputType\NewInstitutionType $institutionType
+     * @param Deprecated\NewInstitutionType $institutionType
      *
      * @return Institution
      * @throws \InvalidArgumentException
      *
      * @deprecated
      */
-    public function createDeprecated(GlobalInputType\Country $country, InputType\NewInstitutionType $institutionType): Institution
+    public function createDeprecated(GlobalInputType\Country $country, Deprecated\NewInstitutionType $institutionType): Institution
     {
         $institution = new Institution();
         $institution->setName($institutionType->getName());
