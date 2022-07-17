@@ -1,13 +1,13 @@
 <?php
-namespace UserBundle\Security\Factory;
+namespace NewApiBundle\Security\Factory;
 
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\SecurityFactoryInterface;
-use UserBundle\Security\Authentication\Provider\WsseProvider;
-use UserBundle\Security\Firewall\WsseListener;
+use NewApiBundle\Security\Authentication\Provider\WsseProvider;
+use NewApiBundle\Security\Firewall\WsseListener;
 
 class WsseFactory implements SecurityFactoryInterface
 {
