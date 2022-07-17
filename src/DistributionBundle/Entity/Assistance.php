@@ -125,11 +125,6 @@ class Assistance implements ExportableInterface
     private $validatedBy = null;
 
     /**
-     * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingAssistance", mappedBy="distribution", cascade={"persist", "remove"})
-     **/
-    private $reportingDistribution;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="target_type", type="enum_assistance_target_type")
@@ -276,9 +271,8 @@ class Assistance implements ExportableInterface
      */
     public function __construct()
     {
-        $this->reportingDistribution = new ArrayCollection();
-        $this->distributionBeneficiaries = new ArrayCollection();
-        $this->commodities = new ArrayCollection();
+        $this->distributionBeneficiaries = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->commodities = new \Doctrine\Common\Collections\ArrayCollection();
         $this->assistanceSelection = new AssistanceSelection();
         $this->setUpdatedOn(new \DateTime());
         $this->allowedProductCategoryTypes = [];
@@ -576,42 +570,6 @@ class Assistance implements ExportableInterface
     }
 
     /**
-     * Add reportingDistribution.
-     *
-     * @param \ReportingBundle\Entity\ReportingAssistance $reportingDistribution
-     *
-     * @return Assistance
-     */
-    public function addReportingAssistance(\ReportingBundle\Entity\ReportingAssistance $reportingDistribution)
-    {
-        $this->reportingDistribution[] = $reportingDistribution;
-
-        return $this;
-    }
-
-    /**
-     * Remove reportingDistribution.
-     *
-     * @param \ReportingBundle\Entity\ReportingAssistance $reportingDistribution
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeReportingAssistance(\ReportingBundle\Entity\ReportingAssistance $reportingDistribution)
-    {
-        return $this->reportingDistribution->removeElement($reportingDistribution);
-    }
-
-    /**
-     * Get reportingDistribution.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getReportingAssistance()
-    {
-        return $this->reportingDistribution;
-    }
-
-    /**
      * Add commodity.
      *
      * @param \DistributionBundle\Entity\Commodity $commodity
@@ -753,26 +711,6 @@ class Assistance implements ExportableInterface
     public function getSubSector(): ?string
     {
         return $this->subSector;
-    }
-
-    /**
-     * @return ArrayCollection
-     */
-    public function getReportingDistribution(): ArrayCollection
-    {
-        return $this->reportingDistribution;
-    }
-
-    /**
-     * @param ArrayCollection $reportingDistribution
-     *
-     * @return Assistance
-     */
-    public function setReportingDistribution(ArrayCollection $reportingDistribution): Assistance
-    {
-        $this->reportingDistribution = $reportingDistribution;
-
-        return $this;
     }
 
     /**
