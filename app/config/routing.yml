@@ -19,12 +19,6 @@ control_path:
         _controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController::templateAction
         template:    default/index.html.twig
 
-rest_user:
-    type: annotation
-    prefix: /api/{firewall}
-    resource: '@UserBundle/Controller'
-    defaults: { _format: 'json' }
-
 rest_distribution:
     type: annotation
     prefix: /api/{firewall}

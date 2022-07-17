@@ -21,7 +21,7 @@ use NewApiBundle\Repository\UserRepository;
 
 /**
  * Class UserService
- * @package UserBundle\Utils
+ * @package NewApiBundle\Utils
  */
 class UserService
 {

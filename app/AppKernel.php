@@ -43,7 +43,6 @@ class AppKernel extends Kernel
             new FOS\RestBundle\FOSRestBundle(),
             new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
             new Nelmio\CorsBundle\NelmioCorsBundle(),
-            new UserBundle\UserBundle(),
             new DistributionBundle\DistributionBundle(),
             new TransactionBundle\TransactionBundle(),
             new RA\RequestValidatorBundle\RARequestValidatorBundle(),
