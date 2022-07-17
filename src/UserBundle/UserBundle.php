@@ -3,7 +3,7 @@
 namespace UserBundle;
 
 use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
-use UserBundle\Security\Factory\WsseFactory;
+use NewApiBundle\Security\Factory\WsseFactory;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 

@@ -1,5 +1,5 @@
 <?php
-namespace UserBundle\Security\Firewall;
+namespace NewApiBundle\Security\Firewall;
 
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 use Symfony\Component\HttpFoundation\Response;
@@ -8,7 +8,7 @@ use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterfac
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Firewall\ListenerInterface;
-use UserBundle\Security\Authentication\Token\WsseUserToken;
+use NewApiBundle\Security\Authentication\Token\WsseUserToken;
 
 class WsseListener implements ListenerInterface
 {

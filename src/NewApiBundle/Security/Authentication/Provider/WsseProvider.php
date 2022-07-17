@@ -1,12 +1,12 @@
 <?php
-namespace UserBundle\Security\Authentication\Provider;
+namespace NewApiBundle\Security\Authentication\Provider;
 
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\AuthenticationExpiredException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
-use UserBundle\Security\Authentication\Token\WsseUserToken;
+use NewApiBundle\Security\Authentication\Token\WsseUserToken;
 
 class WsseProvider implements AuthenticationProviderInterface
 {
