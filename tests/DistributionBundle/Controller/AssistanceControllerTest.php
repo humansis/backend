@@ -234,6 +234,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
      */
     public function testGetAll()
     {
+        $this->markTestSkipped('Will be removed with Distribution bundle');
+
         // Fake connection with a token for the user tester (ADMIN)
         $user = $this->getTestUser(self::USER_TESTER);
         $token = $this->getUserToken($user);

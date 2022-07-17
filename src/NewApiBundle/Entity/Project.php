@@ -122,11 +122,6 @@ class Project implements ExportableInterface
     private $usersProject;
 
     /**
-    * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingProject", mappedBy="project", cascade={"persist", "remove"})
-    **/
-    private $reportingProject;
-
-    /**
      * @ORM\ManyToMany(targetEntity="NewApiBundle\Entity\AbstractBeneficiary", mappedBy="projects")
      */
     private $households;
@@ -553,42 +548,6 @@ class Project implements ExportableInterface
     public function getUsersProject()
     {
         return $this->usersProject;
-    }
-
-    /**
-     * Get reportingProject
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getReportingProject()
-    {
-        return $this->reportingProject;
-    }
-
-    /**
-     * Add reportingProject.
-     *
-     * @param \ReportingBundle\Entity\ReportingProject $reportingProject
-     *
-     * @return Project
-     */
-    public function addReportingProject(\ReportingBundle\Entity\ReportingProject $reportingProject)
-    {
-        $this->reportingProject[] = $reportingProject;
-
-        return $this;
-    }
-
-    /**
-     * Remove reportingProject.
-     *
-     * @param \ReportingBundle\Entity\ReportingProject $reportingProject
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeReportingProject(\ReportingBundle\Entity\ReportingProject $reportingProject)
-    {
-        return $this->reportingProject->removeElement($reportingProject);
     }
 
     /**
