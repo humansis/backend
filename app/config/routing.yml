@@ -25,12 +25,6 @@ rest_distribution:
     resource: '@DistributionBundle/Controller'
     defaults: { _format: 'json' }
 
-rest_reporting:
-    type: annotation
-    prefix: /api/{firewall}
-    resource: '@ReportingBundle/Controller'
-    defaults: { _format: 'json' }
-
 rest_common:
     type: annotation
     prefix: /api/{firewall}
