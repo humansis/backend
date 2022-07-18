@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DistributionBundle\Extension;
+namespace NewApiBundle\Extension;
 
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Person;
