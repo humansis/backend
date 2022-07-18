@@ -16,6 +16,7 @@ use NewApiBundle\Repository\ImportQueueRepository;
 use ProjectBundle\Entity\Project;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Workflow\TransitionBlocker;
 use Symfony\Component\Workflow\WorkflowInterface;
 use UserBundle\Entity\User;
 
@@ -145,7 +146,15 @@ class ImportService
             $this->em->flush();
         }else{
             $this->logImportTransitionConstraints($this->importStateMachine, $import, $status);
-            throw new BadRequestHttpException("You can't do transition '$status' state from '$before'.");
+            $reasons = [];
+            foreach ($this->importStateMachine->buildTransitionBlockerList($import,$status)->getIterator() as $reason) {
+                /**
+                 * @var $reason TransitionBlocker
+                 */
+                $reasons[] = $reason->getMessage();
+            }
+
+            throw new BadRequestHttpException("You can't do transition '$status' state from '$before'. ". join(',' , $reasons));
         }
     }
 

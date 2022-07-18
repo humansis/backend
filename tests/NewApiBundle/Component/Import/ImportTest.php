@@ -130,6 +130,8 @@ class ImportTest extends KernelTestCase
         $this->originHousehold = $this->createBlankHousehold($this->project);
         $import = $this->createImport("testMinimalWorkflow", $this->project, $filename);
 
+        $this->userStartedUploading($import, true);
+
         $this->assertQueueCount($expectedHouseholdCount, $import);
 
         $this->userStartedIntegrityCheck($import, true);
@@ -161,6 +163,8 @@ class ImportTest extends KernelTestCase
         $this->project = $this->createBlankProject($country, [__METHOD__, $filename]);
         $this->originHousehold = $this->createBlankHousehold($this->project);
         $import = $this->createImport("testMinimalWorkflow", $this->project, $filename);
+
+        $this->userStartedUploading($import, true);
 
         $this->assertQueueCount($expectedHouseholdCount, $import);
 
@@ -217,9 +221,13 @@ class ImportTest extends KernelTestCase
         $this->originHousehold = $this->createBlankHousehold($this->project);
         $import = $this->createImport("testFixIntegrityErrors", $this->project, $integrityWrongFile);
 
+        $this->userStartedUploading($import, true);
+
         $this->userStartedIntegrityCheck($import, false);
 
         $this->uploadFile($import, $fixedFile);
+
+        $this->userStartedUploading($import, true);
 
         $this->userStartedIntegrityCheck($import, true);
 
@@ -252,6 +260,8 @@ class ImportTest extends KernelTestCase
         $this->project = $this->createBlankProject($country, [__METHOD__, $filename]);
         $this->originHousehold = $this->createBlankHousehold($this->project);
         $import = $this->createImport("testCountrySpecifics", $this->project, $filename);
+
+        $this->userStartedUploading($import, true);
 
         $this->assertQueueCount($expectedHouseholdCount, $import);
 
@@ -304,6 +314,7 @@ class ImportTest extends KernelTestCase
         $this->originHousehold = $this->createBlankHousehold($this->project);
         $import = $this->createImport("testMinimalWorkflow", $this->project, $filename);
 
+        $this->userStartedUploading($import, true);
         $this->userStartedIntegrityCheck($import, true);
         $this->userStartedIdentityCheck($import, true);
         $this->userStartedSimilarityCheck($import, true);
@@ -416,6 +427,7 @@ class ImportTest extends KernelTestCase
         foreach (['first', 'second'] as $runName) {
             $import = $this->createImport("testRepeatedUploadSameFile[$runName]", $this->project, $filename);
 
+            $this->userStartedUploading($import, true);
             $this->userStartedIntegrityCheck($import, true, $this->getBatchCount($import, 'integrity_check'));
             $this->userStartedIdentityCheck($import, true, $this->getBatchCount($import, 'identity_check'));
             $this->userStartedSimilarityCheck($import, true, $this->getBatchCount($import, 'similarity_check'));
@@ -497,6 +509,7 @@ class ImportTest extends KernelTestCase
         foreach (['first', 'second'] as $runName) {
             $import = $this->createImport("testUpdateSimpleDuplicity[$runName]", $this->project, $testFiles[$runName]);
 
+            $this->userStartedUploading($import, true);
             $this->userStartedIntegrityCheck($import, true);
             $this->userStartedIdentityCheck($import, true);
             $this->userStartedSimilarityCheck($import, true);
@@ -566,6 +579,7 @@ class ImportTest extends KernelTestCase
         $import = $this->createImport('testErrorInIntegrityCheck', $this->project, 'KHM-WrongDateImport-2HH-3HHM.csv');
 
         // start integrity check
+        $this->userStartedUploading($import, true);
         $this->userStartedIntegrityCheck($import, false);
     }
 
@@ -589,6 +603,7 @@ class ImportTest extends KernelTestCase
 
         $import = $this->createImport('testWrongCountryIntegrityCheck', $project, $filename);
 
+        $this->userStartedUploading($import, true);
         $this->userStartedIntegrityCheck($import, false, $this->getBatchCount($import, 'integrity_check'));
 
         $this->cli('app:import:clean', $import);
@@ -606,6 +621,7 @@ class ImportTest extends KernelTestCase
 
         $this->uploadFile($import, $fileName);
 
+        $this->userStartedUploading($import, true);
         $this->userStartedIntegrityCheck($import, false);
         $this->assertQueueCount(0, $import);
     }

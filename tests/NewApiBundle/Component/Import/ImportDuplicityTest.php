@@ -169,6 +169,7 @@ class ImportDuplicityTest extends KernelTestCase
         foreach (['first', 'second'] as $runName) {
             $import = $this->createImport("testUpdateSimpleDuplicity[$runName]", $project, $testFiles[$runName]);
 
+            $this->userStartedUploading($import, true);
             $this->userStartedIntegrityCheck($import, true);
             $this->userStartedIdentityCheck($import, true);
             $this->userStartedSimilarityCheck($import, true);

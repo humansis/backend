@@ -49,7 +49,7 @@ class SimilaritySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.import.entered.'.ImportState::SIMILARITY_CHECKING => ['fillQueue'],
+            'workflow.import.entered.'.ImportState::SIMILARITY_CHECKING => ['checkSimilarity'],
             'workflow.import.guard.'.ImportTransitions::COMPLETE_SIMILARITY => [
                 ['guardNothingLeft', -10],
                 ['guardIfImportHasNotSuspiciousItems', 0],

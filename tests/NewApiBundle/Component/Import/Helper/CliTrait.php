@@ -9,6 +9,17 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 trait CliTrait
 {
+
+    private function userStartedUploading(Import $import, bool $shouldEndCorrect): void
+    {
+        $this->importService->updateStatus($import, ImportState::UPLOADING);
+        if ($shouldEndCorrect) {
+            $this->assertEquals(ImportState::UPLOADING, $import->getState());
+        } else {
+            $this->assertEquals(ImportState::UPLOAD_FAILED, $import->getState());
+        }
+    }
+
     private function userStartedIntegrityCheck(Import $import, bool $shouldEndCorrect, int $commandCallCount = 1): void
     {
         $this->importService->updateStatus($import, ImportState::INTEGRITY_CHECKING);
