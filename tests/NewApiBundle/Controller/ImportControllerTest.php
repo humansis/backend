@@ -86,8 +86,9 @@ class ImportControllerTest extends BMSServiceTestCase
      * @depends testCreate
      * @dataProvider uploadFilesDataProvider
      */
-    public function testUploadFile(string $filename, bool $expectingViolation, int $id)
+    public function testUploadFile(string $filename, bool $expectingViolation)
     {
+        $createdProjectId = $this->testCreate();
         $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
 
         $fs = new Filesystem();
@@ -95,7 +96,7 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $file = new UploadedFile($uploadedFilePath, $filename, null, null, true);
 
-        $this->request('POST', "/api/basic/web-app/v1/imports/$id/files", [], [$file]);
+        $this->request('POST', "/api/basic/web-app/v1/imports/$createdProjectId/files", [], [$file]);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
