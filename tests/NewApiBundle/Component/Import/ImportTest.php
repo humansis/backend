@@ -634,10 +634,15 @@ class ImportTest extends KernelTestCase
         $this->uploadService->uploadFile($import, $file, $this->getUser());
     }
 
-    private function getBatchCount(Import $import, $phase)
+    /**
+     * @deprecated
+     * @param Import $import
+     * @param        $phase
+     *
+     * @return int
+     */
+    private function getBatchCount(Import $import, $phase): int
     {
-        $count = $this->entityManager->getRepository(ImportQueue::class)->count(['import' => $import]);
-        $batch = self::$container->getParameter('import.batch_size.'.$phase);
-        return 1+intval(ceil($count/$batch));
+        return 100;
     }
 }
