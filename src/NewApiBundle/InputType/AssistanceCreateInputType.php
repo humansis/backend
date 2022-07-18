@@ -59,14 +59,14 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     private $locationId;
 
     /**
-     * @Assert\Choice(callback={"DistributionBundle\Enum\AssistanceTargetType", "values"})
+     * @Assert\Choice(callback={"NewApiBundle\Enum\AssistanceTargetType", "values"})
      * @Assert\NotBlank
      * @Assert\NotNull
      */
     private $target;
 
     /**
-     * @Assert\Choice(callback={"DistributionBundle\Enum\AssistanceType", "values"})
+     * @Assert\Choice(callback={"NewApiBundle\Enum\AssistanceType", "values"})
      * @Assert\NotBlank
      * @Assert\NotNull
      */

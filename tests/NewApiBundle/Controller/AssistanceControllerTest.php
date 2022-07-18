@@ -8,7 +8,7 @@ use DateTime;
 use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
-use DistributionBundle\Enum\AssistanceType;
+use NewApiBundle\Enum\AssistanceType;
 use DistributionBundle\Repository\AssistanceRepository;
 use DistributionBundle\Repository\ModalityTypeRepository;
 use Doctrine\Common\Collections\Criteria;
@@ -373,7 +373,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'subsector' => \NewApiBundle\DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
             'scoringBlueprint' => null,
             'type' => AssistanceType::DISTRIBUTION,
-            'target' => \DistributionBundle\Enum\AssistanceTargetType::HOUSEHOLD,
+            'target' => \NewApiBundle\Enum\AssistanceTargetType::HOUSEHOLD,
             'threshold' => 1,
             'commodities' => [$commodity['commodity']],
             'selectionCriteria' => [
@@ -460,7 +460,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'subsector' => \NewApiBundle\DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
             'scoringBlueprint' => null,
             'type' => AssistanceType::DISTRIBUTION,
-            'target' => \DistributionBundle\Enum\AssistanceTargetType::HOUSEHOLD,
+            'target' => \NewApiBundle\Enum\AssistanceTargetType::HOUSEHOLD,
             'threshold' => 1,
             'commodities' => [
                 ['modalityType' => $smartcardModalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
@@ -581,7 +581,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'subsector' => \NewApiBundle\DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
             'scoringBlueprint' => null,
             'type' => AssistanceType::DISTRIBUTION,
-            'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
+            'target' => \NewApiBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
                 ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000, 'division' => null],
@@ -650,7 +650,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'subsector' => \NewApiBundle\DBAL\SubSectorEnum::SKILLS_TRAINING,
             'scoringBlueprint' => null,
             'type' => AssistanceType::ACTIVITY,
-            'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
+            'target' => \NewApiBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
                 ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000, 'division' => null],
@@ -717,7 +717,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'subsector' => \NewApiBundle\DBAL\SubSectorEnum::CONSTRUCTION,
             //'scoringBlueprint' => null,
             'type' => AssistanceType::ACTIVITY,
-            'target' => \DistributionBundle\Enum\AssistanceTargetType::COMMUNITY,
+            'target' => \NewApiBundle\Enum\AssistanceTargetType::COMMUNITY,
             'commodities' => [
                 ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000, 'division' => null],
             ],
@@ -773,7 +773,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'subsector' => \NewApiBundle\DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
             'scoringBlueprint' => null,
             'type' => AssistanceType::DISTRIBUTION,
-            'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
+            'target' => \NewApiBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
                 ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000, 'division' => null],
@@ -860,7 +860,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'subsector' => \NewApiBundle\DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
             'scoringBlueprint' => null,
             'type' => AssistanceType::DISTRIBUTION,
-            'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
+            'target' => \NewApiBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
                 ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000, 'division' => null],

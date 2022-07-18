@@ -11,7 +11,7 @@ use CommonBundle\DataFixtures\BeneficiaryTestFixtures;
 use CommonBundle\DataFixtures\BookletFixtures;
 use CommonBundle\DataFixtures\ProjectFixtures;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Enum\AssistanceTargetType;
+use NewApiBundle\Enum\AssistanceTargetType;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;

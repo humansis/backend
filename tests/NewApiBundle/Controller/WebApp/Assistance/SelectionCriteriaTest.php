@@ -8,7 +8,7 @@ use DateTime;
 use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\ModalityType;
-use DistributionBundle\Enum\AssistanceType;
+use NewApiBundle\Enum\AssistanceType;
 use DistributionBundle\Repository\AssistanceRepository;
 use DistributionBundle\Repository\ModalityTypeRepository;
 use Exception;
@@ -50,7 +50,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'subsector' => \NewApiBundle\DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
             'scoringType' => 'Default',
             'type' => AssistanceType::DISTRIBUTION,
-            'target' => \DistributionBundle\Enum\AssistanceTargetType::HOUSEHOLD,
+            'target' => \NewApiBundle\Enum\AssistanceTargetType::HOUSEHOLD,
             'threshold' => 1,
             'commodities' => [
                 ['modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD, 'unit' => 'CZK', 'value' => 1000],

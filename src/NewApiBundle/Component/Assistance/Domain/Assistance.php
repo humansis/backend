@@ -7,7 +7,7 @@ use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Household;
 use DistributionBundle\Entity;
 use DistributionBundle\Entity\AssistanceBeneficiary;
-use DistributionBundle\Enum\AssistanceTargetType;
+use NewApiBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use DistributionBundle\Repository\ModalityTypeRepository;
 use DistributionBundle\Utils\Exception\RemoveBeneficiaryWithReliefException;

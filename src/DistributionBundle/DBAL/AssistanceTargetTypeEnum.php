@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace DistributionBundle\DBAL;
 
 use CommonBundle\DBAL\AbstractEnum;
-use DistributionBundle\Enum\AssistanceTargetType;
+use NewApiBundle\Enum\AssistanceTargetType;
 
 final class AssistanceTargetTypeEnum extends AbstractEnum
 {

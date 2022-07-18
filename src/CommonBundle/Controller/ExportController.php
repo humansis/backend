@@ -4,7 +4,7 @@ namespace CommonBundle\Controller;
 
 use CommonBundle\Entity\Organization;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Enum\AssistanceTargetType;
+use NewApiBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceRepository;
 use DistributionBundle\Utils\AssistanceService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;

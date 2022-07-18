@@ -12,7 +12,7 @@ class AssistanceByProjectOfflineAppFilterInputType extends AbstractFilterInputTy
     use ModalityTypeFilterTrait;
 
     /**
-     * @Assert\Choice(callback={"DistributionBundle\Enum\AssistanceType", "values"})
+     * @Assert\Choice(callback={"NewApiBundle\Enum\AssistanceType", "values"})
      */
     protected $type;
 

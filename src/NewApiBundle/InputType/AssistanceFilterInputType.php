@@ -23,7 +23,7 @@ class AssistanceFilterInputType extends AbstractFilterInputType
     protected $upcoming;
 
     /**
-     * @Assert\Choice(callback={"DistributionBundle\Enum\AssistanceType", "values"})
+     * @Assert\Choice(callback={"NewApiBundle\Enum\AssistanceType", "values"})
      */
     protected $type;
 
