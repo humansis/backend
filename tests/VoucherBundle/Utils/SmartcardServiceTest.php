@@ -2,9 +2,8 @@
 
 namespace VoucherBundle\Tests\Utils;
 
+use CommonBundle\Entity\Location;
 use NewApiBundle\Entity\Beneficiary;
-use CommonBundle\Entity\Adm1;
-use CommonBundle\Entity\Adm2;
 use DateTime;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;

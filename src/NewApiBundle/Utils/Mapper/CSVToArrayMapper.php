@@ -2,17 +2,9 @@
 
 namespace NewApiBundle\Utils\Mapper;
 
-use CommonBundle\Entity\Adm1;
-use CommonBundle\Entity\Adm2;
-use CommonBundle\Entity\Adm3;
-use CommonBundle\Entity\Adm4;
-use BeneficiaryBundle\Entity\Camp;
-use BeneficiaryBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Entity\HouseholdLocation;
-use BeneficiaryBundle\Entity\VulnerabilityCriterion;
-use BeneficiaryBundle\Utils\ExcelColumnsGenerator;
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Enum\EnumTrait;
 use NewApiBundle\Enum\Livelihood;
 
 /**

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Repository\Assistance;
 
+use CommonBundle\Entity\Location;
 use NewApiBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
