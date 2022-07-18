@@ -9,7 +9,7 @@ services:
         public: true
         tags: [ 'app.controller' ]
 
-    DistributionBundle\Extension\BeneficiaryGenderExtension:
+    NewApiBundle\Extension\BeneficiaryGenderExtension:
         tags:
             - { name: twig.extension }
 
