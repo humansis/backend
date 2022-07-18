@@ -21,40 +21,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
  */
 class ModalityController extends Controller
 {
-
-    /**
-     * @Rest\Get("/modalities")
-     * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE') or is_granted('ROLE_DISTRIBUTION_CREATE')")
-     *
-     * @SWG\Tag(name="Modalities")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="All modalities",
-     *     @SWG\Schema(
-     *          type="array",
-     *          @SWG\Items(ref=@Model(type=Modality::class))
-     *     )
-     * )
-     *
-     * @return Response
-     */
-    public function getAllAction()
-    {
-        /** @var ModalityService $modalityService */
-        $modalityService = $this->get('distribution.modality_service');
-        $all = $modalityService->getAll();
-
-        $json = $this->get('serializer')
-            ->serialize(
-                $all,
-                'json',
-                ['groups' => ["FullModality"]]
-            );
-
-        return new Response($json);
-    }
-
     /**
      * @Rest\Get("/modalities/{id}/types")
      * @Security("is_granted('ROLE_PROJECT_MANAGEMENT_WRITE') or is_granted('ROLE_DISTRIBUTION_CREATE')")
