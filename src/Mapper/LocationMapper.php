@@ -3,17 +3,16 @@
 namespace Mapper;
 
 use Entity\Location;
-use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class LocationMapper implements MapperInterface
 {
     /** @var Location */
     private $object;
-
+    
     public function supports(object $object, $format = null, array $context = null): bool
     {
-        return $object instanceof Location && isset($context[self::NEW_API]) && true === $context[self::NEW_API];
+        return $object instanceof Location  && isset($context[self::NEW_API]) && true === $context[self::NEW_API];
     }
 
     public function populate(object $object)
@@ -24,8 +23,8 @@ class LocationMapper implements MapperInterface
             return;
         }
 
-        throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Location::class . ', ' . get_class($object) . ' given.'
+        throw new \InvalidArgumentException(
+            'Invalid argument. It should be instance of '.Location::class.', '.get_class($object).' given.'
         );
     }
 
@@ -44,13 +43,27 @@ class LocationMapper implements MapperInterface
         return $this->object->getCode();
     }
 
+    /** @deprecated ? */
     public function getCountryIso3(): string
     {
         return $this->object->getCountryIso3();
     }
 
+    /** @deprecated use $this->getId() */
     public function getLocationId(): int
     {
         return $this->object->getId();
+    }
+
+    public function getParentId(): ?int
+    {
+        return $this->object->getParentLocation()
+            ? $this->object->getParentLocation()->getId()
+            : null;
+    }
+
+    public function getHasDuplicity(): bool
+    {
+        return $this->object->getDuplicityCount() > 0;
     }
 }
