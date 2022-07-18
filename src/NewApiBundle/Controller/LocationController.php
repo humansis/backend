@@ -7,6 +7,7 @@ namespace NewApiBundle\Controller;
 use CommonBundle\Entity\Location;
 use CommonBundle\Pagination\Paginator;
 use CommonBundle\Repository\LocationRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator as OrmPaginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Enum\RoleType;
@@ -298,8 +299,7 @@ class LocationController extends AbstractController
         return $this->json($locations);
     }
 
-    
-    private function getAdmList(Request $request, LocationFilterInputType $inputType, int $level, $parent = null)
+    private function getAdmList(Request $request, LocationFilterInputType $inputType, int $level, $parent = null): OrmPaginator
     {
         $countryIso3 = $request->headers->get('country', false);
         if (!$countryIso3) {

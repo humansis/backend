@@ -76,18 +76,17 @@ class LocationService
     }
 
     /**
-     * @param Country $country
      * @param LocationType|null $locationType
      * @return Location|null
      */
-    public function getLocationByInputType(Country $country, ?LocationType $locationType): ?Location
+    public function getLocationByInputType(?LocationType $locationType): ?Location
     {
         if (!$locationType) {
             return null;
         }
         
         for ($i = 4; $i > 0; $i--) {
-            $locationId = $locationType->{'getAdm' . $i}();
+            $locationId = $locationType->getAdmByLevel($i);
             if ($locationId !== null) {
                 return $this->locationRepository->find($locationId);
             }

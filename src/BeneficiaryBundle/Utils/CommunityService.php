@@ -138,7 +138,7 @@ class CommunityService
 
         if (null !== $communityType->getAddress()) {
             $addressType = $communityType->getAddress();
-            $location = $this->locationService->getLocationByInputType($country, $addressType->getLocation());
+            $location = $this->locationService->getLocationByInputType($addressType->getLocation());
 
             $community->setAddress(Address::create(
                 $addressType->getStreet(),
@@ -232,7 +232,7 @@ class CommunityService
         if (null !== $address = $communityType->getAddress()) {
             $location = null;
             if (null !== $address->getLocation()) {
-                $location = $this->locationService->getLocationByInputType($country, $address->getLocation());
+                $location = $this->locationService->getLocationByInputType($address->getLocation());
             }
 
             $this->updateAddress($community, Address::create(
