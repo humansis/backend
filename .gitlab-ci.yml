@@ -44,7 +44,7 @@ stages:
     - dind
 
 static_analysis:
-  image: php:7.4-fpm
+  image: php:7.3-fpm
   stage: static_analysis
   script:
     - apt-get update
