@@ -6,7 +6,7 @@ namespace NewApiBundle\InputType\Assistance\Scoring;
 use NewApiBundle\Exception\CsvParserException;
 use NewApiBundle\Model\Vulnerability\Resolver as OldResolver;
 use NewApiBundle\Repository\BeneficiaryRepository;
-use DistributionBundle\DTO\VulnerabilityScore;
+use NewApiBundle\DTO\VulnerabilityScore;
 use NewApiBundle\Component\Assistance\Scoring\Exception\ScoreValidationException;
 use NewApiBundle\Component\Assistance\Scoring\Model\Factory\ScoringFactory;
 use NewApiBundle\Component\Assistance\Scoring\ScoringCsvParser;

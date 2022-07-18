@@ -13,7 +13,7 @@ use CommonBundle\Pagination\Paginator;
 use CommonBundle\Utils\LocationService;
 use DateTime;
 use DateTimeInterface;
-use DistributionBundle\DTO\VulnerabilityScore;
+use NewApiBundle\DTO\VulnerabilityScore;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\ModalityType;
