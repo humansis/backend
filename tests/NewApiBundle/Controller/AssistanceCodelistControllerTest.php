@@ -2,7 +2,7 @@
 
 namespace Tests\NewApiBundle\Controller;
 
-use DistributionBundle\DBAL\AssistanceTypeEnum;
+use NewApiBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\Assistance;
 use NewApiBundle\Enum\AssistanceTargetType;
 use NewApiBundle\Enum\AssistanceType;
