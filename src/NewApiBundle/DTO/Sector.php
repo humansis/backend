@@ -7,8 +7,8 @@ use NewApiBundle\Entity\Community;
 use NewApiBundle\Entity\Household;
 use NewApiBundle\Entity\Institution;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Enum\AssistanceTargetType;
-use DistributionBundle\Enum\AssistanceType;
+use NewApiBundle\Enum\AssistanceTargetType;
+use NewApiBundle\Enum\AssistanceType;
 use InvalidArgumentException;
 
 /**

@@ -5,7 +5,7 @@ namespace Tests\NewApiBundle\Controller;
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\NationalId;
 use NewApiBundle\Entity\Phone;
-use DistributionBundle\Enum\AssistanceTargetType;
+use NewApiBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use NewApiBundle\Entity\Project;

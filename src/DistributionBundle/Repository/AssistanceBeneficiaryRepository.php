@@ -10,7 +10,7 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\GeneralReliefItem;
 use DistributionBundle\Entity\Assistance;
 use NewApiBundle\Entity\Household;
-use DistributionBundle\Enum\AssistanceTargetType;
+use NewApiBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use InvalidArgumentException;

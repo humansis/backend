@@ -7,7 +7,7 @@ use NewApiBundle\Repository\BeneficiaryRepository;
 use NewApiBundle\Repository\CommunityRepository;
 use NewApiBundle\Repository\InstitutionRepository;
 use DistributionBundle\Entity;
-use DistributionBundle\Enum\AssistanceTargetType;
+use NewApiBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use Doctrine\ORM\EntityRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;

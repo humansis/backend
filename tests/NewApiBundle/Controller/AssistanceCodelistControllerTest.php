@@ -4,8 +4,8 @@ namespace Tests\NewApiBundle\Controller;
 
 use DistributionBundle\DBAL\AssistanceTypeEnum;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Enum\AssistanceTargetType;
-use DistributionBundle\Enum\AssistanceType;
+use NewApiBundle\Enum\AssistanceTargetType;
+use NewApiBundle\Enum\AssistanceType;
 use Exception;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 use NewApiBundle\DBAL\SubSectorEnum;

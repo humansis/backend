@@ -4,7 +4,7 @@ namespace DistributionBundle\Repository;
 
 use NewApiBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Location;
-use DistributionBundle\Enum\AssistanceTargetType;
+use NewApiBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\Query\Expr\Join;
 use \DateTime;
 use DistributionBundle\Entity\Assistance;

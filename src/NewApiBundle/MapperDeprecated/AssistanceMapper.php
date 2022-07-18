@@ -4,7 +4,7 @@ namespace NewApiBundle\MapperDeprecated;
 
 use NewApiBundle\Repository\BeneficiaryRepository;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Enum\AssistanceTargetType;
+use NewApiBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use NewApiBundle\Enum\ProductCategoryType;
 

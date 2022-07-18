@@ -12,7 +12,7 @@ use CommonBundle\Controller\ExportController;
 use CommonBundle\Entity\Organization;
 use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Enum\AssistanceTargetType;
+use NewApiBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceRepository;
 use DistributionBundle\Utils\AssistanceService;
 use Doctrine\ORM\EntityNotFoundException;

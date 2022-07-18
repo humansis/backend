@@ -4,8 +4,8 @@ namespace DistributionBundle\Entity;
 
 use CommonBundle\Entity\Location;
 use CommonBundle\Utils\ExportableInterface;
-use DistributionBundle\Enum\AssistanceTargetType;
-use DistributionBundle\Enum\AssistanceType;
+use NewApiBundle\Enum\AssistanceTargetType;
+use NewApiBundle\Enum\AssistanceType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;

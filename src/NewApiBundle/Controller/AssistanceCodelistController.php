@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use CommonBundle\Pagination\Paginator;
-use DistributionBundle\Enum\AssistanceTargetType;
-use DistributionBundle\Enum\AssistanceType;
+use NewApiBundle\Enum\AssistanceTargetType;
+use NewApiBundle\Enum\AssistanceType;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 use NewApiBundle\InputType\AssistanceTargetFilterInputType;

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace DistributionBundle\Enum;
+namespace NewApiBundle\Enum;
 
 final class AssistanceType
 {

@@ -8,7 +8,7 @@ use NewApiBundle\Entity\Household;
 use CommonBundle\Repository\LocationRepository;
 use DistributionBundle\Entity\Assistance;
 use CommonBundle\Entity\Location;
-use DistributionBundle\Enum\AssistanceTargetType;
+use NewApiBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\NonUniqueResultException;

@@ -7,7 +7,7 @@ use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Camp;
 use NewApiBundle\Model\Vulnerability\Resolver as OldResolver;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Enum\AssistanceTargetType;
+use NewApiBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use NewApiBundle\Component\Assistance\DTO\CriteriaGroup;

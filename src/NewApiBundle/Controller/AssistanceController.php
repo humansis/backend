@@ -8,7 +8,7 @@ use CommonBundle\Controller\ExportController;
 use CommonBundle\Pagination\Paginator;
 use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Enum\AssistanceType;
+use NewApiBundle\Enum\AssistanceType;
 use DistributionBundle\Repository\AssistanceRepository;
 use DistributionBundle\Utils\AssistanceService;
 use Doctrine\ORM\EntityNotFoundException;

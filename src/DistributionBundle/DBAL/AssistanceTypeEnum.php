@@ -3,7 +3,7 @@
 namespace DistributionBundle\DBAL;
 
 use CommonBundle\DBAL\AbstractEnum;
-use DistributionBundle\Enum\AssistanceType;
+use NewApiBundle\Enum\AssistanceType;
 
 class AssistanceTypeEnum extends AbstractEnum
 {

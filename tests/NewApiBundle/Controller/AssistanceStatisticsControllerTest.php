@@ -3,7 +3,7 @@
 namespace Tests\NewApiBundle\Controller;
 
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Enum\AssistanceTargetType;
+use NewApiBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use DistributionBundle\Repository\AssistanceRepository;
 use Exception;

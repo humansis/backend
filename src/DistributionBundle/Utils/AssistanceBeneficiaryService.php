@@ -12,7 +12,7 @@ use NewApiBundle\Entity\Institution;
 use DateTime;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
-use DistributionBundle\Enum\AssistanceTargetType;
+use NewApiBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Workflow\ReliefPackageTransitions;

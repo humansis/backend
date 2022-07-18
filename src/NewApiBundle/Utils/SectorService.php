@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Utils;
 
-use DistributionBundle\Enum\AssistanceTargetType;
-use DistributionBundle\Enum\AssistanceType;
+use NewApiBundle\Enum\AssistanceTargetType;
+use NewApiBundle\Enum\AssistanceType;
 use InvalidArgumentException;
 use NewApiBundle\Component\Codelist\CodeItem;
 use NewApiBundle\Component\Codelist\CodeLists;

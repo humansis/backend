@@ -11,7 +11,7 @@ use CommonBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
 use DateTimeInterface;
 use DistributionBundle\Entity;
-use DistributionBundle\Enum\AssistanceTargetType;
+use NewApiBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use DistributionBundle\Repository\ModalityTypeRepository;
 use DistributionBundle\Utils\CriteriaAssistanceService;
