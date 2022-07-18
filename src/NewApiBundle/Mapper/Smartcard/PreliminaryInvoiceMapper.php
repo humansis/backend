@@ -39,7 +39,7 @@ class PreliminaryInvoiceMapper implements MapperInterface
 
     public function getPurchaseIds(): array
     {
-        return $this->object->getPurchaseIds();
+        return array_map('intval', $this->object->getPurchaseIds());
     }
 
     public function getValue()
