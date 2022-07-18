@@ -1,6 +1,6 @@
 <?php
 
-namespace DistributionBundle\DBAL;
+namespace NewApiBundle\DBAL;
 
 use CommonBundle\DBAL\AbstractEnum;
 use NewApiBundle\Enum\AssistanceType;

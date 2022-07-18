@@ -161,8 +161,8 @@ doctrine:
 #            - '~^(?!messenger_messages)~'
         types:
             enum_source_type: NewApiBundle\DBAL\SourceEnum
-            enum_assistance_type: DistributionBundle\DBAL\AssistanceTypeEnum
-            enum_assistance_target_type: DistributionBundle\DBAL\AssistanceTargetTypeEnum
+            enum_assistance_type: NewApiBundle\DBAL\AssistanceTypeEnum
+            enum_assistance_target_type: NewApiBundle\DBAL\AssistanceTargetTypeEnum
             enum_livelihood: NewApiBundle\DBAL\LivelihoodEnum
             enum_sector: NewApiBundle\DBAL\SectorEnum
             enum_sub_sector: NewApiBundle\DBAL\SubSectorEnum
