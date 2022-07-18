@@ -90,9 +90,9 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
                 $qb->andWhere('c.type in (:availableTypes)')
                     ->setParameter('availableTypes', $sellableCategoryTypes)
                 ;
-                if ($vendor->getLocation() && $vendor->getLocation()->getAdm1() && $vendor->getLocation()->getAdm1()->getCountryISO3()) {
+                if ($vendor->getLocation()) {
                     $qb->andWhere('p.countryISO3 = :vendorCountry')
-                        ->setParameter('vendorCountry', $vendor->getLocation()->getAdm1()->getCountryISO3())
+                        ->setParameter('vendorCountry', $vendor->getLocation()->getCountryISO3())
                     ;
                 }
             }

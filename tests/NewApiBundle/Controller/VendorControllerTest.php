@@ -2,7 +2,7 @@
 
 namespace Tests\NewApiBundle\Controller;
 
-use CommonBundle\Entity\Adm1;
+use CommonBundle\Entity\Location;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Exception;
@@ -42,7 +42,7 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testCreate()
     {
-        $adm1Results = $this->em->getRepository(Adm1::class)->findAll();
+        $adm1Results = $this->em->getRepository(Location::class)->findBy(['lvl' => 1]);
 
         if (empty($adm1Results)) {
             $this->markTestSkipped('To perform VendorController CRUD tests, you need to have at least one Adm1 record in database.');

@@ -4,9 +4,6 @@ namespace BeneficiaryBundle\Repository;
 
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
-use CommonBundle\Entity\Adm1;
-use CommonBundle\Entity\Adm2;
-use CommonBundle\Entity\Adm3;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
@@ -179,19 +176,13 @@ class HouseholdRepository extends AbstractCriteriaRepository
         HouseholdOrderInputType $orderBy = null,
         ?Pagination $pagination = null
     ): Paginator {
-        $qb = $this->createQueryBuilder('hh')
-            ->leftJoin('hh.householdLocations', 'hl')
-            ->leftJoin('hl.campAddress', 'ca')
-            ->leftJoin('ca.camp', 'c')
-            ->leftJoin('hl.address', 'ad')
-            ->leftJoin(Location::class, 'l', Join::WITH, 'l.id = COALESCE(IDENTITY(c.location, \'id\'), IDENTITY(ad.location, \'id\'))')
-            ->leftJoin('l.adm4', 'adm4')
-            ->leftJoin('l.adm3', 'locAdm3')
-            ->leftJoin('l.adm2', 'locAdm2')
-            ->leftJoin('l.adm1', 'locAdm1')
-            ->leftJoin(Adm3::class, 'adm3', Join::WITH, 'adm3.id = COALESCE(IDENTITY(adm4.adm3, \'id\'), locAdm3.id)')
-            ->leftJoin(Adm2::class, 'adm2', Join::WITH, 'adm2.id = COALESCE(IDENTITY(adm3.adm2, \'id\'), locAdm2.id)')
-            ->leftJoin(Adm1::class, 'adm1', Join::WITH, 'adm1.id = COALESCE(IDENTITY(adm2.adm1, \'id\'), locAdm1.id)')
+        $qb = $this->createQueryBuilder('hh');
+        $this->getHouseholdLocation($qb);
+        
+        $qb->leftJoin(Location::class, 'l4', Join::WITH, 'l.id = l4.id AND l4.lvl = 4')
+            ->leftJoin(Location::class, 'l3', Join::WITH, '(l.id = l3.id OR l.lft BETWEEN l3.lft AND l3.rgt) AND l3.lvl = 3')
+            ->leftJoin(Location::class, 'l2', Join::WITH, '(l.id = l2.id OR l.lft BETWEEN l2.lft AND l2.rgt) AND l2.lvl = 2')
+            ->leftJoin(Location::class, 'l1', Join::WITH, '(l.id = l1.id OR l.lft BETWEEN l1.lft AND l1.rgt) AND l1.lvl = 1')
             ->leftJoin('hh.beneficiaries', 'b')
             ->leftJoin('hh.projects', 'p')
             ->leftJoin('b.vulnerabilityCriteria', 'vb')
@@ -201,7 +192,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
             ->leftJoin('hh.beneficiaries', 'head', Join::WITH, 'head.status = 1')
             ->leftJoin('head.person', 'headper')
             ->andWhere('hh.archived = 0')
-            ->andWhere('adm1.countryISO3 = :iso3')
+            ->andWhere('l.countryISO3 = :iso3')
             ->setParameter('iso3', $iso3);
 
         if ($pagination) {
@@ -222,10 +213,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
                         COALESCE(per.localFamilyName, ''),
                         COALESCE(per.localGivenName, ''),
                         COALESCE(p.name, ''),
-                        COALESCE(adm1.name, ''),
-                        COALESCE(adm2.name, ''),
-                        COALESCE(adm3.name, ''),
-                        COALESCE(adm4.name, ''),
+                        COALESCE(l1.name, ''),
+                        COALESCE(l2.name, ''),
+                        COALESCE(l3.name, ''),
+                        COALESCE(l.name, ''),
                         COALESCE(vb.fieldString, ''),
                         COALESCE(ni.idNumber, '')
                     ) LIKE :fulltext")
@@ -286,7 +277,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
             foreach ($orderBy->toArray() as $name => $direction) {
                 switch ($name) {
                     case HouseholdOrderInputType::SORT_BY_CURRENT_HOUSEHOLD_LOCATION:
-                        $qb->addGroupBy('adm1')->addOrderBy('adm1.name', $direction);
+                        $qb->addGroupBy('l1.id')->addOrderBy('l1.name', $direction);
                         break;
                     case HouseholdOrderInputType::SORT_BY_LOCAL_FIRST_NAME:
                         $qb->addGroupBy('headper.localGivenName')->addOrderBy('headper.localGivenName', $direction);
@@ -344,6 +335,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
                 ->leftJoin("per.referral", "r")
                 ->leftJoin("hh.beneficiaries", "head")
                 ->leftJoin("head.person", "headper")
+                ->leftJoin(Location::class, 'l4', Join::WITH, 'l.id = l4.id AND l4.lvl = 4')
+                ->leftJoin(Location::class, 'l3', Join::WITH, '(l.id = l3.id OR l.lft BETWEEN l3.lft AND l3.rgt) AND l3.lvl = 3')
+                ->leftJoin(Location::class, 'l2', Join::WITH, '(l.id = l2.id OR l.lft BETWEEN l2.lft AND l2.rgt) AND l2.lvl = 2')
+                ->leftJoin(Location::class, 'l1', Join::WITH, '(l.id = l1.id OR l.lft BETWEEN l1.lft AND l1.rgt) AND l1.lvl = 1')
                 ->andWhere("head.status = 1")
                 ->andWhere("hh.archived = 0");
 
@@ -354,7 +349,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
 
             // If the field is the location, we sort it by the direction sent
             if ($value == "currentHouseholdLocation") {
-                $q->addGroupBy("adm1")->addOrderBy("adm1.name", $direction);
+                $q->addGroupBy("l1.id")->addOrderBy("l1.name", $direction);
             }
             // If the field is the local first name, we sort it by the direction sent
             elseif ($value == "localFirstName") {
@@ -403,10 +398,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
                             COALESCE(per.localFamilyName, ''),
                             COALESCE(per.localGivenName, ''),
                             COALESCE(p.name, ''),
-                            COALESCE(adm1.name, ''),
-                            COALESCE(adm2.name, ''),
-                            COALESCE(adm3.name, ''),
-                            COALESCE(adm4.name, ''),
+                            COALESCE(l1.name, ''),
+                            COALESCE(l2.name, ''),
+                            COALESCE(l3.name, ''),
+                            COALESCE(l.name, ''),
                             COALESCE(vb.fieldString, ''),
                             COALESCE(ni.idNumber, '')
                         ) LIKE '%" . $filterValue . "%'");

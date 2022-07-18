@@ -192,7 +192,7 @@ class InstitutionService
 
         if ($institutionType->getAddress() !== null) {
             $addressType = $institutionType->getAddress();
-            $location = $this->locationService->getLocationByInputType($country, $addressType->getLocation());
+            $location = $this->locationService->getLocationByInputType($addressType->getLocation());
 
             $institution->setAddress(Address::create(
                 $addressType->getStreet(),
@@ -393,7 +393,7 @@ class InstitutionService
         if (null !== $address = $institutionType->getAddress()) {
             $location = null;
             if ($address->getLocation() !== null) {
-                $location = $this->locationService->getLocationByInputType($iso3, $address->getLocation());
+                $location = $this->locationService->getLocationByInputType($address->getLocation());
             }
             $this->updateAddress($institution, Address::create(
                 $address->getStreet(),

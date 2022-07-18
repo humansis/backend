@@ -4,9 +4,6 @@ namespace CommonBundle\Repository;
 
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\QueryBuilder;
-use CommonBundle\Entity\Adm3;
-use CommonBundle\Entity\Adm2;
-use CommonBundle\Entity\Adm1;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\InputType\LocationFilterInputType;
@@ -30,7 +27,6 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
     public function getByCountry($country)
     {
         $qb = $this->createQueryBuilder('l');
-        $qb->leftJoin('l.adm1', 'amd1');
         $this->whereCountry($qb, $country);
 
         return $qb->getQuery()->getResult();
@@ -89,120 +85,6 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
         return true;
     }
 
-    public function getByNames(string $countryIso3, ?string $adm1, ?string $adm2, ?string $adm3, ?string $adm4): ?Location
-    {
-        $qb = $this->createQueryBuilder('l');
-        $qb->setMaxResults(1);
-
-        if (null !== $adm4) {
-            $qb->join('l.adm4', 'adm4')
-                ->andWhere('adm4.name LIKE :adm4')
-                ->setParameter('adm4', $adm4);
-
-            $qb->join('adm4.adm3', 'adm3')
-                ->andWhere('adm3.name LIKE :adm3')
-                ->setParameter('adm3', $adm3);
-
-            $qb->join('adm3.adm2', 'adm2')
-                ->andWhere('adm2.name LIKE :adm2')
-                ->setParameter('adm2', $adm2);
-
-            $qb->join('adm2.adm1', 'adm1')
-                ->andWhere('adm1.name LIKE :adm1')
-                ->andWhere('adm1.countryISO3 = :country')
-                ->setParameter('adm1', $adm1)
-                ->setParameter('country', $countryIso3);
-
-            return $qb->getQuery()->getOneOrNullResult();
-        }
-
-        if (null !== $adm3) {
-            $qb->join('l.adm3', 'adm3')
-                ->andWhere('adm3.name LIKE :adm3')
-                ->setParameter('adm3', $adm3);
-
-            $qb->join('adm3.adm2', 'adm2')
-                ->andWhere('adm2.name LIKE :adm2')
-                ->setParameter('adm2', $adm2);
-
-            $qb->join('adm2.adm1', 'adm1')
-                ->andWhere('adm1.name LIKE :adm1')
-                ->andWhere('adm1.countryISO3 = :country')
-                ->setParameter('adm1', $adm1)
-                ->setParameter('country', $countryIso3);
-
-            return $qb->getQuery()->getOneOrNullResult();
-        }
-
-        if (null !== $adm2) {
-            $qb->join('l.adm2', 'adm2')
-                ->andWhere('adm2.name LIKE :adm2')
-                ->setParameter('adm2', $adm2);
-
-            $qb->join('adm2.adm1', 'adm1')
-                ->andWhere('adm1.name LIKE :adm1')
-                ->andWhere('adm1.countryISO3 = :country')
-                ->setParameter('adm1', $adm1)
-                ->setParameter('country', $countryIso3);
-
-            return $qb->getQuery()->getOneOrNullResult();
-        }
-
-        if (null !== $adm1) {
-            $qb->join('l.adm1', 'adm1')
-                ->andWhere('adm1.name LIKE :adm1')
-                ->andWhere('adm1.countryISO3 = :country')
-                ->setParameter('adm1', $adm1)
-                ->setParameter('country', $countryIso3);
-
-            return $qb->getQuery()->getOneOrNullResult();
-        }
-
-        return null;
-    }
-
-    /**
-     * Create sub request to get the adm1 of a location
-     *
-     * @param QueryBuilder $qb
-     */
-    public function getAdm1(QueryBuilder &$qb)
-    {
-        $qb->leftJoin("l.adm4", "adm4")
-            ->leftJoin("l.adm3", "locAdm3")
-            ->leftJoin("l.adm2", "locAdm2")
-            ->leftJoin("l.adm1", "locAdm1")
-            ->leftJoin(Adm3::class, "adm3", Join::WITH, "adm3.id = COALESCE(IDENTITY(adm4.adm3, 'id'), locAdm3.id)")
-            ->leftJoin(Adm2::class, "adm2", Join::WITH, "adm2.id = COALESCE(IDENTITY(adm3.adm2, 'id'), locAdm2.id)")
-            ->leftJoin(Adm1::class, "adm1", Join::WITH, "adm1.id = COALESCE(IDENTITY(adm2.adm1, 'id'), locAdm1.id)");
-    }
-
-    /**
-     * Create sub request to get the adm2 of a location
-     *
-     * @param QueryBuilder $qb
-     */
-    public function getAdm2(QueryBuilder &$qb)
-    {
-        $qb->leftJoin("l.adm4", "adm4")
-            ->leftJoin("l.adm3", "locAdm3")
-            ->leftJoin("l.adm2", "locAdm2")
-            ->leftJoin(Adm3::class, "adm3", Join::WITH, "adm3.id = COALESCE(IDENTITY(adm4.adm3, 'id'), locAdm3.id)")
-            ->leftJoin(Adm2::class, "adm2", Join::WITH, "adm2.id = COALESCE(IDENTITY(adm3.adm2, 'id'), locAdm2.id)");
-    }
-
-    /**
-     * Create sub request to get the adm3 of a location
-     *
-     * @param QueryBuilder $qb
-     */
-    public function getAdm3(QueryBuilder &$qb)
-    {
-        $qb->leftJoin("l.adm4", "adm4")
-            ->leftJoin("l.adm3", "locAdm3")
-            ->leftJoin(Adm3::class, "adm3", Join::WITH, "adm3.id = COALESCE(IDENTITY(adm4.adm3, 'id'), locAdm3.id)");
-    }
-
     /**
      * Create sub request to get items in country.
      * The location must be in the country ($countryISO3).
@@ -212,15 +94,13 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
      */
     public function whereCountry(QueryBuilder &$qb, $countryISO3)
     {
-        $this->getAdm1($qb);
-        $qb->andWhere("adm1.countryISO3 = :iso3")
+        $qb->andWhere("l.countryISO3 = :iso3")
             ->setParameter("iso3", $countryISO3);
     }
 
     public function getCountry(QueryBuilder &$qb)
     {
-        $this->getAdm1($qb);
-        $qb->select("adm1.countryISO3 as country");
+        $qb->select("l.countryISO3 as country");
     }
 
     public static function joinPathToRoot(QueryBuilder $qb, string $locationCurrentAlias, string $pathAlias)

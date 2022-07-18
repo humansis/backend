@@ -7,10 +7,6 @@ namespace TransactionBundle\Export;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Phone;
-use CommonBundle\Entity\Adm1;
-use CommonBundle\Entity\Adm2;
-use CommonBundle\Entity\Adm3;
-use CommonBundle\Entity\Adm4;
 use DistributionBundle\Entity\Assistance;
 use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Component\Country\Country;
@@ -127,6 +123,7 @@ class DistributedSummarySpreadsheetExport
             $commodity = $distributedItem->getCommodity();
             $datetime = $distributedItem->getDateDistribution();
             $fieldOfficerEmail = $distributedItem->getFieldOfficer() ? $distributedItem->getFieldOfficer()->getEmail() : null;
+            $fullLocation = self::adms($assistance);
 
             $i++;
             $worksheet->setCellValue('A'.$i, $beneficiary->getId());
@@ -136,10 +133,10 @@ class DistributedSummarySpreadsheetExport
             $worksheet->setCellValue('E'.$i, self::nationalId($beneficiary) ?? $this->translator->trans('N/A'));
             $worksheet->setCellValue('F'.$i, self::phone($beneficiary) ?? $this->translator->trans('N/A'));
             $worksheet->setCellValue('G'.$i, $assistance->getName());
-            $worksheet->setCellValue('H'.$i, self::adms($assistance)[0]);
-            $worksheet->setCellValue('I'.$i, self::adms($assistance)[1]);
-            $worksheet->setCellValue('J'.$i, self::adms($assistance)[2]);
-            $worksheet->setCellValue('K'.$i, self::adms($assistance)[3]);
+            $worksheet->setCellValue('H'.$i, $fullLocation[0]);
+            $worksheet->setCellValue('I'.$i, $fullLocation[1]);
+            $worksheet->setCellValue('J'.$i, $fullLocation[2]);
+            $worksheet->setCellValue('K'.$i, $fullLocation[3]);
             $worksheet->setCellValue('L'.$i, $datetime ? $dateFormatter->format($datetime) : $this->translator->trans('N/A'));
             $worksheet->setCellValue('M'.$i, $distributedItem->getModalityType());
             $worksheet->setCellValue('N'.$i, $distributedItem->getCarrierNumber() ?? $this->translator->trans('N/A'));
@@ -174,22 +171,18 @@ class DistributedSummarySpreadsheetExport
         return null;
     }
 
+    //TODO: fullLocationNames - move to a helper class?
     private static function adms(Assistance $assistance): array
     {
-        $adm = $assistance->getLocation()->getAdm();
-        if ($adm instanceof Adm1) {
-            return [$adm->getName(), null, null, null];
+        $location = $assistance->getLocation();
+        $names = array_fill(0, 4 , null);
+
+        while ($location) {
+            $names[$location->getLvl() - 1] = $location->getName();
+            $location = $location->getParent();
         }
-        if ($adm instanceof Adm2) {
-            return [$adm->getAdm1()->getName(), $adm->getName(), null, null];
-        }
-        if ($adm instanceof Adm3) {
-            return [$adm->getAdm2()->getAdm1()->getName(), $adm->getAdm2()->getName(), $adm->getName(), null];
-        }
-        if ($adm instanceof Adm4) {
-            return [$adm->getAdm3()->getAdm2()->getAdm1()->getName(), $adm->getAdm3()->getAdm2()->getName(), $adm->getAdm3()->getName(), $adm->getName()];
-        }
-        return [null, null, null, null];
+
+        return $names;
     }
 }
 

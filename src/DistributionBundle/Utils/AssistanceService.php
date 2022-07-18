@@ -28,7 +28,6 @@ use Exception;
 use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Component\Assistance\SelectionCriteriaFactory;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
-use NewApiBundle\Entity\Assistance\SelectionCriteria;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
@@ -253,7 +252,7 @@ class AssistanceService
 
         $location = $this->locationService->getLocation($countryISO3, $location);
         $distribution->setLocation($location);
-        $distribution->setName(self::generateName($location, $distribution->getDateDistribution()));
+        $distribution->setName($this->generateName($location, $distribution->getDateDistribution()));
 
         $project = $distribution->getProject();
         $projectTmp = $this->em->getRepository(Project::class)->find($project);
@@ -380,7 +379,7 @@ class AssistanceService
 
     public function updateDateDistribution(Assistance $assistance, DateTimeInterface $date)
     {
-        $newDistributionName = self::generateName($assistance->getLocation(), $date);
+        $newDistributionName = $this->generateName($assistance->getLocation(), $date);
 
         $assistance
             ->setDateDistribution($date)
@@ -677,16 +676,7 @@ class AssistanceService
 
     private function generateName(Location $location, ?DateTimeInterface $date = null): string
     {
-        $adm = '';
-        if ($location->getAdm4()) {
-            $adm = $location->getAdm4()->getName();
-        } elseif ($location->getAdm3()) {
-            $adm = $location->getAdm3()->getName();
-        } elseif ($location->getAdm2()) {
-            $adm = $location->getAdm2()->getName();
-        } elseif ($location->getAdm1()) {
-            $adm = $location->getAdm1()->getName();
-        }
+        $adm = $location->getName();
 
         if ($date) {
             return $adm.'-'.$date->format('d-m-Y');

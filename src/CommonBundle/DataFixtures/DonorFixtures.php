@@ -2,13 +2,11 @@
 
 namespace CommonBundle\DataFixtures;
 
-use BeneficiaryBundle\Entity\Camp;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use ProjectBundle\Entity\Donor;
 
-class DonorFixtures extends Fixture implements DependentFixtureInterface
+class DonorFixtures extends Fixture
 {
     /**
      * @param ObjectManager $manager
@@ -22,12 +20,5 @@ class DonorFixtures extends Fixture implements DependentFixtureInterface
 
         $manager->persist($donor);
         $manager->flush();
-    }
-
-    public function getDependencies()
-    {
-        return [
-            LocationTestFixtures::class,
-        ];
     }
 }

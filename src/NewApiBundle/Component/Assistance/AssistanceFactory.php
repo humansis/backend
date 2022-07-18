@@ -3,7 +3,6 @@
 namespace NewApiBundle\Component\Assistance;
 
 use BeneficiaryBundle\Entity\AbstractBeneficiary;
-use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Exception\CsvParserException;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use BeneficiaryBundle\Repository\CommunityRepository;
@@ -21,11 +20,8 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\ORMException;
 use NewApiBundle\Component\Assistance\Domain;
-use NewApiBundle\Component\Assistance\DTO\CriteriaGroup;
 use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
-use NewApiBundle\Entity\Assistance\SelectionCriteria;
 use NewApiBundle\Entity\ScoringBlueprint;
-use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\Repository\AssistanceStatisticsRepository;
 use NewApiBundle\Repository\ScoringBlueprintRepository;
@@ -240,16 +236,7 @@ class AssistanceFactory
 
     private static function generateName(Location $location, ?DateTimeInterface $date = null): string
     {
-        $adm = '';
-        if ($location->getAdm4()) {
-            $adm = $location->getAdm4()->getName();
-        } elseif ($location->getAdm3()) {
-            $adm = $location->getAdm3()->getName();
-        } elseif ($location->getAdm2()) {
-            $adm = $location->getAdm2()->getName();
-        } elseif ($location->getAdm1()) {
-            $adm = $location->getAdm1()->getName();
-        }
+        $adm = $location->getName();
 
         if ($date) {
             return $adm.'-'.$date->format('d-m-Y');

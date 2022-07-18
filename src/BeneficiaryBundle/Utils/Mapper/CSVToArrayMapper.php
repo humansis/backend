@@ -4,15 +4,12 @@ namespace BeneficiaryBundle\Utils\Mapper;
 
 use BeneficiaryBundle\Entity\Camp;
 use BeneficiaryBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Utils\ExcelColumnsGenerator;
-use CommonBundle\Entity\Adm1;
-use CommonBundle\Entity\Adm2;
-use CommonBundle\Entity\Adm3;
-use CommonBundle\Entity\Adm4;
+use CommonBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Enum\EnumTrait;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
@@ -577,37 +574,27 @@ class CSVToArrayMapper
     /**
      * Makes sure the ADM are only retrieved once from the database to save database accesses
      *
-     * @param mixed[] $location
-     * @param string $admClass
-     * @param string $admType
-     * @param string $parentAdmType
-     * @param mixed $parentAdm
-     *
+     * @param array $location
+     * @param int $level
      * @return mixed
      */
-    private function getAdmByLocation(&$location, string $admClass, string $admType, string $parentAdmType = null, &$parentAdm = null)
+    private function getAdmByLocation(&$location, int $level)
     {
-        // The query schema is different for the Adm1
-        if ($admClass === Adm1::class) {
-            $query = [
-                'name' => $location['adm1'],
-                'countryISO3' => $location['country_iso3']
-            ];
-        }
+        $admType = 'adm' . $level;
 
         // Return the ADM if it has already been loaded before
         if (! empty($this->adms[$admType][$location[$admType]])) {
             return $this->adms[$admType][$location[$admType]];
         }
 
-        // If it is not an Adm1, build the query
-        if (empty($query)) {
-            $query = ['name' => $location[$admType]];
-            $query[$parentAdmType] = $parentAdm;
-        }
+        $query = [
+            'enumNormalizedName' => EnumTrait::normalizeValue($location[$admType]),
+            'level' => $level,
+            'countryISO3' => $location['country_iso3']
+        ];
 
         // Store the result of the query for next times
-        $this->adms[$admType][$location[$admType]] = $this->em->getRepository($admClass)->findOneBy($query);
+        $this->adms[$admType][$location[$admType]] = $this->em->getRepository(Location::class)->findOneBy($query);
 
         return $this->adms[$admType][$location[$admType]];
     }
@@ -634,52 +621,19 @@ class CSVToArrayMapper
             throw new \Exception('An Adm1 is required');
         }
 
-        // Map adm1
-        $adm1 = $this->getAdmByLocation($location, Adm1::class, 'adm1');
-
-        if (! $adm1 instanceof Adm1) {
-            throw new \Exception('The Adm1 ' . $location['adm1'] . ' was not found in ' . $location['country_iso3']);
-        } else {
-            $formattedHouseholdArray['location']['adm1'] = $adm1->getId();
-        }
-
-        if (! $location['adm2']) {
-            return;
-        }
-
-        // Map adm2
-        $adm2 = $this->getAdmByLocation($location, Adm2::class, 'adm2', 'adm1', $adm1);
-
-        if (! $adm2 instanceof Adm2) {
-            throw new \Exception('The Adm2 ' . $location['adm2'] . ' was not found in ' . $adm1->getName());
-        } else {
-            $formattedHouseholdArray['location']['adm2'] = $adm2->getId();
-        }
-
-        if (! $location['adm3']) {
-            return;
-        }
-
-        // Map adm3
-        $adm3 = $this->getAdmByLocation($location, Adm3::class, 'adm3', 'adm2', $adm2);
-
-        if (! $adm3 instanceof Adm3) {
-            throw new \Exception('The Adm3 ' . $location['adm3'] . ' was not found in ' . $adm2->getName());
-        } else {
-            $formattedHouseholdArray['location']['adm3'] = $adm3->getId();
-        }
-
-        if (! $location['adm4']) {
-            return;
-        }
-
-        // Map adm4
-        $adm4 = $this->getAdmByLocation($location, Adm4::class, 'adm4', 'adm3', $adm3);
-
-        if (! $adm4 instanceof Adm4) {
-            throw new \Exception('The Adm4 ' . $location['adm4'] . ' was not found in ' . $adm3->getName());
-        } else {
-            $formattedHouseholdArray['location']['adm4'] = $adm4->getId();
+        $lastLocationName = $location['country_iso3'];
+        
+        for ($i = 1; $i <= 4; $i++) {
+            if (! $location['adm'.$i]) {
+                return;
+            }
+            $admLocation = $this->getAdmByLocation($location, $i);
+            if (! $admLocation instanceof Location) {
+                throw new \Exception('The Adm '. $i .' ' . $location['adm' . $i] . ' was not found in ' . $lastLocationName);
+            } else {
+                $formattedHouseholdArray['location']['adm'.$i] = $admLocation->getId();
+                $lastLocationName = $admLocation->getName();
+            }
         }
     }
 

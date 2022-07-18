@@ -4,9 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Repository\Assistance;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use CommonBundle\Entity\Adm1;
-use CommonBundle\Entity\Adm2;
-use CommonBundle\Entity\Adm3;
+use CommonBundle\Entity\Location;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Enum\AssistanceTargetType;
@@ -72,22 +70,17 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
             ->join(Beneficiary::class, 'b', Join::WITH, 'b.id=abstB.id AND b.archived = 0')
             ->join('b.smartcards', 's', Join::WITH, 's.beneficiary=b AND s.state=:smartcardStateActive') //filter only bnf with active card
             ->join('a.location', 'l')
-            ->leftJoin('l.adm4', 'adm4')
-            ->leftJoin('l.adm3', 'locAdm3')
-            ->leftJoin('l.adm2', 'locAdm2')
-            ->leftJoin('l.adm1', 'locAdm1')
-            ->leftJoin(Adm3::class, 'adm3', Join::WITH, 'adm3.id = COALESCE(IDENTITY(adm4.adm3, \'id\'), locAdm3.id)')
-            ->leftJoin(Adm2::class, 'adm2', Join::WITH, 'adm2.id = COALESCE(IDENTITY(adm3.adm2, \'id\'), locAdm2.id)')
-            ->leftJoin(Adm1::class, 'adm1', Join::WITH, 'adm1.id = COALESCE(IDENTITY(adm2.adm1, \'id\'), locAdm1.id)')
+            ->leftJoin(Location::class, 'l2', Join::WITH, '(l.id = l2.id OR l.lft BETWEEN l2.lft AND l2.rgt) AND l2.lvl = 2')
+            ->leftJoin(Location::class, 'l1', Join::WITH, '(l.id = l1.id OR l.lft BETWEEN l1.lft AND l1.rgt) AND l1.lvl = 1')
             ->setParameter('smartcardStateActive', SmartcardStates::ACTIVE);
 
         //if both vendor and assistance has at least adm2 filled, try to filter by adm2. If not, filter by adm1.
         if (null !== $vendor->getLocation()->getAdm2Id()) {
-            $qb->andWhere('( (adm2.id IS NOT NULL AND adm2.id = :vendorAdm2Id) OR (adm2.id IS NULL AND adm1.id = :vendorAdm1Id) )')
+            $qb->andWhere('( (l2.id IS NOT NULL AND l2.id = :vendorAdm2Id) OR (l2.id IS NULL AND l1.id = :vendorAdm1Id) )')
                 ->setParameter('vendorAdm1Id', $vendor->getLocation()->getAdm1Id())
                 ->setParameter('vendorAdm2Id', $vendor->getLocation()->getAdm2Id());
         } else {
-            $qb->andWhere('adm1.id = :vendorAdm1Id')
+            $qb->andWhere('l1.id = :vendorAdm1Id')
                 ->setParameter('vendorAdm1Id', $vendor->getLocation()->getAdm1Id());
         }
 
