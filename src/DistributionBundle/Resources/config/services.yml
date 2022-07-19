@@ -66,21 +66,9 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
 
-    DistributionBundle\Mapper\AssistanceBeneficiaryMapper:
+    NewApiBundle\MapperDeprecated\AssistanceBeneficiaryMapper:
         arguments:
             - '@NewApiBundle\MapperDeprecated\BeneficiaryMapper'
-        public: true
-
-    DistributionBundle\Mapper\AssistanceCommunityMapper:
-
-    DistributionBundle\Mapper\AssistanceInstitutionMapper:
-
-    DistributionBundle\Mapper\CampMapper:
-        public: true
-
-    DistributionBundle\Mapper\GeneralReliefItemMapper:
-        arguments:
-            - "@serializer"
         public: true
 
     DistributionBundle\Repository\AssistanceBeneficiaryRepository:
