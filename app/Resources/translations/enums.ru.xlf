@@ -1,21 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
-  <file source-language="en" target-language="en" datatype="plaintext" original="file.ext">
+  <file source-language="en" target-language="ru" datatype="plaintext" original="file.ext">
     <header>
       <tool tool-id="symfony" tool-name="Symfony"/>
     </header>
     <body>
       <trans-unit id="7eW_LtJ" resname="National ID">
         <source>National ID</source>
-        <target>National ID</target>
+        <target>Национальное удостоверение личности</target>
       </trans-unit>
       <trans-unit id="GdgnfPj" resname="Tax Number">
         <source>Tax Number</source>
-        <target>Tax Number</target>
+        <target>Налоговый номер</target>
       </trans-unit>
       <trans-unit id="MXPByM." resname="Passport">
         <source>Passport</source>
-        <target>Passport</target>
+        <target>Паспорт</target>
       </trans-unit>
       <trans-unit id="iWoKwgI" resname="Family Registration">
         <source>Family Registration</source>
@@ -23,147 +23,147 @@
       </trans-unit>
       <trans-unit id="Afi2c1o" resname="Birth Certificate">
         <source>Birth Certificate</source>
-        <target>Birth Certificate</target>
+        <target>Свидетельство о рождении</target>
       </trans-unit>
       <trans-unit id="aak5VN6" resname="Driver’s License">
         <source>Driver’s License</source>
-        <target>Driver’s License</target>
+        <target>Водительские права</target>
       </trans-unit>
       <trans-unit id="FZ.VZRI" resname="Camp ID">
         <source>Camp ID</source>
-        <target>Camp ID</target>
+        <target>Идентификатор лагеря</target>
       </trans-unit>
       <trans-unit id="Qb.gbSk" resname="Social Service Card">
         <source>Social Service Card</source>
-        <target>Social Service Card</target>
+        <target>Карта социального обслуживания</target>
       </trans-unit>
       <trans-unit id="_X6doOO" resname="Other">
         <source>Other</source>
-        <target>Other</target>
+        <target>Другое</target>
       </trans-unit>
       <trans-unit id="3JN7WYk" resname="None">
         <source>None</source>
-        <target>None</target>
+        <target>Ничего</target>
       </trans-unit>
       <trans-unit id="GP3VSbL" resname="New">
         <source>New</source>
-        <target>New</target>
+        <target>Новый</target>
       </trans-unit>
       <trans-unit id="f7ZNUGA" resname="Integrity Checking">
         <source>Integrity Checking</source>
-        <target>Integrity Checking</target>
+        <target>Проверка целостности</target>
       </trans-unit>
       <trans-unit id="xf..Ko0" resname="Integrity Check Correct">
         <source>Integrity Check Correct</source>
-        <target>Integrity Check Correct</target>
+        <target>Проверка целостности верна</target>
       </trans-unit>
       <trans-unit id="PF2JyJ7" resname="Integrity Check Failed">
         <source>Integrity Check Failed</source>
-        <target>Integrity Check Failed</target>
+        <target>Ошибка проверки целостности</target>
       </trans-unit>
       <trans-unit id="69_oac2" resname="Identity Checking">
         <source>Identity Checking</source>
-        <target>Identity Checking</target>
+        <target>Проверка личности</target>
       </trans-unit>
       <trans-unit id="lmmxtOM" resname="Identity Check Correct">
         <source>Identity Check Correct</source>
-        <target>Identity Check Correct</target>
+        <target>Проверка личности верна</target>
       </trans-unit>
       <trans-unit id="JFSaxlS" resname="Identity Check Failed">
         <source>Identity Check Failed</source>
-        <target>Identity Check Failed</target>
+        <target>Ошибка проверки личности</target>
       </trans-unit>
       <trans-unit id="RLYVseu" resname="Similarity Checking">
         <source>Similarity Checking</source>
-        <target>Similarity Checking</target>
+        <target>Проверка сходства</target>
       </trans-unit>
       <trans-unit id="qVwxy7q" resname="Similarity Check Correct">
         <source>Similarity Check Correct</source>
-        <target>Similarity Check Correct</target>
+        <target>Проверка сходства верна</target>
       </trans-unit>
       <trans-unit id="QIJazNe" resname="Similarity Check Failed">
         <source>Similarity Check Failed</source>
-        <target>Similarity Check Failed</target>
+        <target>Ошибка проверки сходства</target>
       </trans-unit>
       <trans-unit id="0lL._sv" resname="Importing">
         <source>Importing</source>
-        <target>Importing</target>
+        <target>Импорт</target>
       </trans-unit>
       <trans-unit id="tMxLB8M" resname="In Progress">
         <source>In Progress</source>
-        <target>In Progress</target>
+        <target>В процессе</target>
       </trans-unit>
       <trans-unit id="eAT3p5q" resname="Finished">
         <source>Finished</source>
-        <target>Finished</target>
+        <target>Завершен</target>
       </trans-unit>
       <trans-unit id="E8ou4km" resname="Canceled">
         <source>Canceled</source>
-        <target>Canceled</target>
+        <target>Отменен</target>
       </trans-unit>
       <trans-unit id="PMN2fnA" resname="Uploaded">
         <source>Uploaded</source>
-        <target>Uploaded</target>
+        <target>Загружено</target>
       </trans-unit>
       <trans-unit id="rKAaGjo" resname="Correct">
         <source>Correct</source>
-        <target>Correct</target>
+        <target>Правильно</target>
       </trans-unit>
       <trans-unit id="y3AjePM" resname="Errors">
         <source>Errors</source>
-        <target>Errors</target>
+        <target>Ошибки</target>
       </trans-unit>
       <trans-unit id="vbhlBfg" resname="Archived">
         <source>Archived</source>
-        <target>Archived</target>
+        <target>Заархивировано</target>
       </trans-unit>
       <trans-unit id="mcQAdpl" resname="To distribute">
         <source>To distribute</source>
-        <target>To distribute</target>
+        <target>Для раздачи</target>
       </trans-unit>
       <trans-unit id="MIW92c5" resname="Distribution in progress">
         <source>Distribution in progress</source>
-        <target>Distribution in progress</target>
+        <target>Раздача в процессе</target>
       </trans-unit>
       <trans-unit id="BOHvfR6" resname="Distributed">
         <source>Distributed</source>
-        <target>Distributed</target>
+        <target>Выдан</target>
       </trans-unit>
       <trans-unit id="QkolUdN" resname="Expired">
         <source>Expired</source>
-        <target>Expired</target>
+        <target>Срок истёк</target>
       </trans-unit>
       <trans-unit id="KK0jC0b" resname="Landline">
         <source>Landline</source>
-        <target>Landline</target>
+        <target>Стационарный</target>
       </trans-unit>
       <trans-unit id="y6rTz0p" resname="Mobile">
         <source>Mobile</source>
-        <target>Mobile</target>
+        <target>Мобильный</target>
       </trans-unit>
       <trans-unit id="yuSEaWp" resname="Duplicity Candidate">
         <source>Duplicity Candidate</source>
-        <target>Duplicity Candidate</target>
+        <target>Дублирование кандидата</target>
       </trans-unit>
       <trans-unit id="7u1vp4g" resname="Duplicity Keep Ours">
         <source>Duplicity Keep Ours</source>
-        <target>Duplicity Keep Ours</target>
+        <target>Из Humansis</target>
       </trans-unit>
       <trans-unit id="FaBDoGa" resname="Duplicity Keep Theirs">
         <source>Duplicity Keep Theirs</source>
-        <target>Duplicity Keep Theirs</target>
+        <target>Из файла</target>
       </trans-unit>
       <trans-unit id="VkPyaBa" resname="No Duplicity">
         <source>No Duplicity</source>
-        <target>No Duplicity</target>
+        <target>Нет дублирования</target>
       </trans-unit>
       <trans-unit id="Kj8shJI" resname="Mobile Money">
         <source>Mobile Money</source>
-        <target>Mobile Money</target>
+        <target>Мобильные деньги</target>
       </trans-unit>
       <trans-unit id="4toQj2M" resname="Cash">
         <source>Cash</source>
-        <target>Cash</target>
+        <target>Наличные</target>
       </trans-unit>
       <trans-unit id="UxBda0y" resname="Smartcard">
         <source>Smartcard</source>
@@ -171,271 +171,271 @@
       </trans-unit>
       <trans-unit id="2dldqnH" resname="QR Code Voucher">
         <source>QR Code Voucher</source>
-        <target>QR Code Voucher</target>
+        <target>Ваучер с QR-кодом</target>
       </trans-unit>
       <trans-unit id="pkau4lS" resname="Paper Voucher">
         <source>Paper Voucher</source>
-        <target>Paper Voucher</target>
+        <target>Бумажный ваучер</target>
       </trans-unit>
       <trans-unit id="IiiMq1Q" resname="Food Rations">
         <source>Food Rations</source>
-        <target>Food Rations</target>
+        <target>Продовольственные пайки</target>
       </trans-unit>
       <trans-unit id="_TZetf8" resname="Ready to Eat Rations">
         <source>Ready to Eat Rations</source>
-        <target>Ready to Eat Rations</target>
+        <target>Готовые к употреблению пайки</target>
       </trans-unit>
       <trans-unit id="6IIVS7L" resname="Bread">
         <source>Bread</source>
-        <target>Bread</target>
+        <target>Хлеб</target>
       </trans-unit>
       <trans-unit id="9Wy1WNE" resname="Agricultural Kit">
         <source>Agricultural Kit</source>
-        <target>Agricultural Kit</target>
+        <target>Сельскохозяйственный набор</target>
       </trans-unit>
       <trans-unit id="3RJZDur" resname="WASH Kit">
         <source>WASH Kit</source>
-        <target>WASH Kit</target>
+        <target>WASH набор</target>
       </trans-unit>
       <trans-unit id="AuaaspL" resname="Shelter tool kit">
         <source>Shelter tool kit</source>
-        <target>Shelter tool kit</target>
+        <target>Набор для проведения ремонта</target>
       </trans-unit>
       <trans-unit id="RdsYeVs" resname="Hygiene kit">
         <source>Hygiene kit</source>
-        <target>Hygiene kit</target>
+        <target>Гигиенический набор</target>
       </trans-unit>
       <trans-unit id="swOidc3" resname="Dignity kit">
         <source>Dignity kit</source>
-        <target>Dignity kit</target>
+        <target>Комплект средств личной гигиены</target>
       </trans-unit>
       <trans-unit id="iay_k__" resname="NFI Kit">
         <source>NFI Kit</source>
-        <target>NFI Kit</target>
+        <target>Непродовольственные наборы</target>
       </trans-unit>
       <trans-unit id="9HrXSq0" resname="Winterization Kit">
         <source>Winterization Kit</source>
-        <target>Winterization Kit</target>
+        <target>Набор для подготовки к зиме</target>
       </trans-unit>
       <trans-unit id="O6i5cjg" resname="Activity item">
         <source>Activity item</source>
-        <target>Activity item</target>
+        <target>Элемент активности</target>
       </trans-unit>
       <trans-unit id="sTgCTue" resname="Loan">
         <source>Loan</source>
-        <target>Loan</target>
+        <target>Займ</target>
       </trans-unit>
       <trans-unit id="Xw_MqKU" resname="Business Grant">
         <source>Business Grant</source>
-        <target>Business Grant</target>
+        <target>Бизнес грант</target>
       </trans-unit>
       <trans-unit id="9RYiBjG" resname="Valid">
         <source>Valid</source>
-        <target>Valid</target>
+        <target>Действительный</target>
       </trans-unit>
       <trans-unit id="lsNKBxn" resname="Invalid">
         <source>Invalid</source>
-        <target>Invalid</target>
+        <target>Недействительный</target>
       </trans-unit>
       <trans-unit id="AOVvuEL" resname="Invalid Exported">
         <source>Invalid Exported</source>
-        <target>Invalid Exported</target>
+        <target>Недействительный экспортирован</target>
       </trans-unit>
       <trans-unit id="h65OKV9" resname="Identity Candidate">
         <source>Identity Candidate</source>
-        <target>Identity Candidate</target>
+        <target>Личность кандидата</target>
       </trans-unit>
       <trans-unit id="fxkNbyE" resname="Unique Candidate">
         <source>Unique Candidate</source>
-        <target>Unique Candidate</target>
+        <target>Уникальный кандидат</target>
       </trans-unit>
       <trans-unit id="pN.muO7" resname="Similarity Candidate">
         <source>Similarity Candidate</source>
-        <target>Similarity Candidate</target>
+        <target>Похожий кандидат</target>
       </trans-unit>
       <trans-unit id="aHZywOd" resname="To Create">
         <source>To Create</source>
-        <target>To Create</target>
+        <target>Создать</target>
       </trans-unit>
       <trans-unit id="i0bPNU7" resname="To Update">
         <source>To Update</source>
-        <target>To Update</target>
+        <target>Обновить</target>
       </trans-unit>
       <trans-unit id="mx1VQmL" resname="To Link">
         <source>To Link</source>
-        <target>To Link</target>
+        <target>Связать</target>
       </trans-unit>
       <trans-unit id="kYGhhxN" resname="To Ignore">
         <source>To Ignore</source>
-        <target>To Ignore</target>
+        <target>Игнорировать</target>
       </trans-unit>
       <trans-unit id="1wueJLy" resname="Created">
         <source>Created</source>
-        <target>Created</target>
+        <target>Создан</target>
       </trans-unit>
       <trans-unit id="Ol7MoYj" resname="Updated">
         <source>Updated</source>
-        <target>Updated</target>
+        <target>Обновлён</target>
       </trans-unit>
       <trans-unit id="v9oCbmx" resname="Linked">
         <source>Linked</source>
-        <target>Linked</target>
+        <target>Связан</target>
       </trans-unit>
       <trans-unit id="VKDowX6" resname="Error">
         <source>Error</source>
-        <target>Error</target>
+        <target>Ошибка</target>
       </trans-unit>
       <trans-unit id="Eb2Qg6G" resname="Irregular earnings">
         <source>Irregular earnings</source>
-        <target>Irregular earnings</target>
+        <target>Нерегулярный заработок</target>
       </trans-unit>
       <trans-unit id="cYXxBj0" resname="Farming - Agriculture">
         <source>Farming - Agriculture</source>
-        <target>Farming - Agriculture</target>
+        <target>Сельское хозяйство - обработка земли</target>
       </trans-unit>
       <trans-unit id="1GI0pr2" resname="Farming - Livestock">
         <source>Farming - Livestock</source>
-        <target>Farming - Livestock</target>
+        <target>Сельское хозяйство - скотоводство</target>
       </trans-unit>
       <trans-unit id="413RaGm" resname="Regular salary - private sector">
         <source>Regular salary - private sector</source>
-        <target>Regular salary - private sector</target>
+        <target>Регулярная заработная плата - частный сектор</target>
       </trans-unit>
       <trans-unit id="h.qC_IF" resname="Regular salary - public sector">
         <source>Regular salary - public sector</source>
-        <target>Regular salary - public sector</target>
+        <target>Регулярная заработная плата - государственный сектор</target>
       </trans-unit>
       <trans-unit id="4DemrPC" resname="Social welfare">
         <source>Social welfare</source>
-        <target>Social welfare</target>
+        <target>Социальное обеспечение</target>
       </trans-unit>
       <trans-unit id="7fFCE2i" resname="Pension">
         <source>Pension</source>
-        <target>Pension</target>
+        <target>Пенсия</target>
       </trans-unit>
       <trans-unit id="HvL_92f" resname="Home Duties">
         <source>Home Duties</source>
-        <target>Home Duties</target>
+        <target>Домашние обязанности</target>
       </trans-unit>
       <trans-unit id="V8eE5pP" resname="Own business/trading">
         <source>Own business/trading</source>
-        <target>Own business/trading</target>
+        <target>Собственный бизнес/торговля</target>
       </trans-unit>
       <trans-unit id="7UYhgGa" resname="Savings">
         <source>Savings</source>
-        <target>Savings</target>
+        <target>Сбережения</target>
       </trans-unit>
       <trans-unit id="j8KpZWt" resname="Remittances">
         <source>Remittances</source>
-        <target>Remittances</target>
+        <target>Денежные переводы</target>
       </trans-unit>
       <trans-unit id="by8LrPV" resname="Humanitarian aid">
         <source>Humanitarian aid</source>
-        <target>Humanitarian aid</target>
+        <target>Гуманитарная помощь</target>
       </trans-unit>
       <trans-unit id="cckuNvu" resname="No Income">
         <source>No Income</source>
-        <target>No Income</target>
+        <target>Нет дохода</target>
       </trans-unit>
       <trans-unit id="chlqczX" resname="Refused to answer">
         <source>Refused to answer</source>
-        <target>Refused to answer</target>
+        <target>Отказался отвечать</target>
       </trans-unit>
       <trans-unit id="OkyagQ9" resname="Beneficiary">
         <source>Beneficiary</source>
-        <target>Beneficiary</target>
+        <target>Бенефициар</target>
       </trans-unit>
       <trans-unit id="m7CqzG1" resname="Head">
         <source>Head</source>
-        <target>Head</target>
+        <target>Глава</target>
       </trans-unit>
       <trans-unit id="ocbJf0F" resname="Household">
         <source>Household</source>
-        <target>Household</target>
+        <target>Домохозяйство</target>
       </trans-unit>
       <trans-unit id="4ZIYuvi" resname="Family name">
         <source>Family name</source>
-        <target>Family name</target>
+        <target>Фамилия</target>
       </trans-unit>
       <trans-unit id="cC75Ie0" resname="First name">
         <source>First name</source>
-        <target>First name</target>
+        <target>Имя</target>
       </trans-unit>
       <trans-unit id="KZ_59GN" resname="Selected (YES/NO)">
         <source>Selected (YES/NO)</source>
-        <target>Selected (YES/NO)</target>
+        <target>Выбранный (ДА/НЕТ)</target>
       </trans-unit>
       <trans-unit id="vX1FeOu" resname="Gender of household head">
         <source>Gender of household head</source>
-        <target>Gender of household head</target>
+        <target>Пол главы домохозяйства</target>
       </trans-unit>
       <trans-unit id="ZEQZ1Xs" resname="Vulnerability of household head">
         <source>Vulnerability of household head</source>
-        <target>Vulnerability of household head</target>
+        <target>Уязвимость главы домохозяйства</target>
       </trans-unit>
       <trans-unit id="IjE7RjV" resname="Vulnerability of household members">
         <source>Vulnerability of household members</source>
-        <target>Vulnerability of household members</target>
+        <target>Уязвимость членов домохозяйства</target>
       </trans-unit>
       <trans-unit id="3aiZTtj" resname="Dependency ration">
         <source>Dependency ration</source>
-        <target>Dependency ration</target>
+        <target>Коэффициент демографической нагрузки</target>
       </trans-unit>
       <trans-unit id="uHoGZLl" resname="Shelter type">
         <source>Shelter type</source>
-        <target>Shelter type</target>
+        <target>Тип жилья</target>
       </trans-unit>
       <trans-unit id="8V7vWgy" resname="Residence ownership">
         <source>Residence ownership</source>
-        <target>Residence ownership</target>
+        <target>Право собственности на жильё</target>
       </trans-unit>
       <trans-unit id="EirpaTf" resname="Displacement status">
         <source>Displacement status</source>
-        <target>Displacement status</target>
+        <target>Статус перемещения</target>
       </trans-unit>
       <trans-unit id="HWwE_l4" resname="Income per household member">
         <source>Income per household member</source>
-        <target>Income per household member</target>
+        <target>Доход на члена домохозяйства</target>
       </trans-unit>
       <trans-unit id="3gqdZH2" resname="Income spent on food">
         <source>Income spent on food</source>
-        <target>Income spent on food</target>
+        <target>Доходы, потраченные на продовольствие</target>
       </trans-unit>
       <trans-unit id="8PbXLe9" resname="Productive assets">
         <source>Productive assets</source>
-        <target>Productive assets</target>
+        <target>Производственные активы</target>
       </trans-unit>
       <trans-unit id="qX2ZSme" resname="Coping strategy index (CSI)">
         <source>Coping strategy index (CSI)</source>
-        <target>Coping strategy index (CSI)</target>
+        <target>Индекс стратегии выживания (CSI)</target>
       </trans-unit>
       <trans-unit id="G0ePDP6" resname="Food consumption scores (FCS)">
         <source>Food consumption scores (FCS)</source>
-        <target>Food consumption scores (FCS)</target>
+        <target>Показатели потребления продовольствия (FCS)</target>
       </trans-unit>
       <trans-unit id="oS0wgPW" resname="Assistance provided in the last 3 months">
         <source>Assistance provided in the last 3 months</source>
-        <target>Assistance provided in the last 3 months</target>
+        <target>Предоставленная помощь за последние 3 месяца</target>
       </trans-unit>
       <trans-unit id="HBeefiI" resname="Amount []">
         <source>Amount []</source>
-        <target>Amount []</target>
+        <target>Сумма []</target>
       </trans-unit>
       <trans-unit id="sGExlXh" resname="Cumulative amount []">
         <source>Cumulative amount []</source>
-        <target>Cumulative amount []</target>
+        <target>Общая сумма []</target>
       </trans-unit>
       <trans-unit id="5OsYBp1" resname="Food">
         <source>Food</source>
-        <target>Food</target>
+        <target>Продовольствие</target>
       </trans-unit>
       <trans-unit id="zuYsxxL" resname="Non-Food">
         <source>Non-Food</source>
-        <target>Non-Food</target>
+        <target>Непродовольственный</target>
       </trans-unit>
       <trans-unit id="M0qRf3z" resname="Cashback">
         <source>Cashback</source>
-        <target>Cashback</target>
+        <target>Возвращение средств</target>
       </trans-unit>
     </body>
   </file>

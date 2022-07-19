@@ -73,6 +73,10 @@ services:
         resource: '../../Command'
         public: true
         tags: [ 'console.command' ]
+        
+    NewApiBundle\Command\TranslationsUpdateGenerateCommand:
+        arguments:
+          - '%app.translations_dir%'
 
     NewApiBundle\Component\Assistance\AssistanceFactory:
         arguments:
@@ -220,7 +224,12 @@ services:
     NewApiBundle\Controller\BeneficiaryCodelistController:
         public: true
         arguments:
+            - '@translator' 
             - "@doctrine.orm.entity_manager"
+              
+    NewApiBundle\Controller\HouseholdCodelistController:
+        arguments:
+          - '@translator'
 
     NewApiBundle\Controller\WebApp\Smartcard\InvoiceController:
         public: true
