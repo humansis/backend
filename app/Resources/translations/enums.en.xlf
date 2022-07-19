@@ -89,6 +89,10 @@
         <source>Importing</source>
         <target>Importing</target>
       </trans-unit>
+      <trans-unit id="tMxLB8M" resname="In Progress">
+        <source>In Progress</source>
+        <target>In Progress</target>
+      </trans-unit>
       <trans-unit id="eAT3p5q" resname="Finished">
         <source>Finished</source>
         <target>Finished</target>
@@ -420,6 +424,18 @@
       <trans-unit id="sGExlXh" resname="Cumulative amount []">
         <source>Cumulative amount []</source>
         <target>Cumulative amount []</target>
+      </trans-unit>
+      <trans-unit id="5OsYBp1" resname="Food">
+        <source>Food</source>
+        <target>Food</target>
+      </trans-unit>
+      <trans-unit id="zuYsxxL" resname="Non-Food">
+        <source>Non-Food</source>
+        <target>Non-Food</target>
+      </trans-unit>
+      <trans-unit id="M0qRf3z" resname="Cashback">
+        <source>Cashback</source>
+        <target>Cashback</target>
       </trans-unit>
     </body>
   </file>

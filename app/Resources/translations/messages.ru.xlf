@@ -21,6 +21,10 @@
         <source>Active projects</source>
         <target>Активные проекты</target>
       </trans-unit>
+      <trans-unit id="gOUCFfW" resname="Active Projects">
+        <source>Active Projects</source>
+        <target>Активные проекты</target>
+      </trans-unit>
       <trans-unit id="TQB25rT" resname="Activities">
         <source>Activities</source>
         <target>Активности</target>
@@ -116,6 +120,10 @@
       <trans-unit id="acIGuR8" resname="Agricultural Vouchers">
         <source>Agricultural Vouchers</source>
         <target>Сельскохозяйственные ваучеры</target>
+      </trans-unit>
+      <trans-unit id="sO8Myom" resname="Allowed Product Category Types">
+        <source>Allowed Product Category Types</source>
+        <target>Разрешенные типы категорий товаров</target>
       </trans-unit>
       <trans-unit id="SeltfN9" resname="Amount">
         <source>Amount</source>
@@ -653,6 +661,10 @@
         <source>Date</source>
         <target>Дата</target>
       </trans-unit>
+      <trans-unit id="2Hl4SgF" resname="Datetime">
+        <source>Datetime</source>
+        <target>Дата время</target>
+      </trans-unit>
       <trans-unit id="kCLoPYA" resname="Date From">
         <source>Date From</source>
         <target>Начиная с</target>
@@ -1009,8 +1021,16 @@
         <source>English</source>
         <target>Английский</target>
       </trans-unit>
+      <trans-unit id="O_m.EWt" resname="English Invoice Address">
+        <source>English Invoice Address</source>
+        <target>Адрес для выставления счета (на английском языке)</target>
+      </trans-unit>
       <trans-unit id="d_HKIdu" resname="Enrolled beneficiaries">
         <source>Enrolled beneficiaries</source>
+        <target>Зарегистрированные бенефициары</target>
+      </trans-unit>
+      <trans-unit id="LAlAY4Z" resname="Enrolled Beneficiaries">
+        <source>Enrolled Beneficiaries</source>
         <target>Зарегистрированные бенефициары</target>
       </trans-unit>
       <trans-unit id="sKv_7qu" resname="Enumerator">
@@ -1024,6 +1044,10 @@
       <trans-unit id="B1SMLGU" resname="Expand">
         <source>Expand</source>
         <target>Развернуть</target>
+      </trans-unit>
+      <trans-unit id="2T4AOhv" resname="Expiration Date">
+        <source>Expiration Date</source>
+        <target>Дата окончания</target>
       </trans-unit>
       <trans-unit id="NmSJVXn" resname="Export">
         <source>Export</source>
@@ -1285,6 +1309,10 @@
         <source>Import from file</source>
         <target>Импорт из файла</target>
       </trans-unit>
+      <trans-unit id="TKbwbtO" resname="Import from File">
+        <source>Import from File</source>
+        <target>Импорт из файла</target>
+      </trans-unit>
       <trans-unit id="BdazhEU"
                   resname="Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.">
         <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after
@@ -1433,6 +1461,10 @@
         <source>Local Given Name</source>
         <target>Имя (на языке оригинала)</target>
       </trans-unit>
+      <trans-unit id="9Pe2nwW" resname="Local Invoice Address">
+        <source>Local Invoice Address</source>
+        <target>Адрес для выставления счета (на языке оригинала)</target>
+      </trans-unit>
       <trans-unit id="FbYZdLJ" resname="Location">
         <source>Location</source>
         <target>Местоположение</target>
@@ -1560,6 +1592,10 @@
       <trans-unit id="zlooCeG" resname="New Assistance">
         <source>New Assistance</source>
         <target>Новая помощь</target>
+      </trans-unit>
+      <trans-unit id="DCFJ4Z8" resname="New Import">
+        <source>New Import</source>
+        <target>Новый импорт</target>
       </trans-unit>
       <trans-unit id="fEUeD0N" resname="New Password">
         <source>New Password</source>
@@ -1989,9 +2025,17 @@
         <source>Required and must be greater than Start Date</source>
         <target>Обязательное и должно быть позже даты начала</target>
       </trans-unit>
+      <trans-unit id="Zg89dvT" resname="Reset Filters">
+        <source>Reset Filters</source>
+        <target>Сбросить фильтры</target>
+      </trans-unit>
       <trans-unit id="a0WdhjS" resname="Reset Sort">
         <source>Reset Sort</source>
         <target>Сбросить сортировку</target>
+      </trans-unit>
+      <trans-unit id="ivZNCLK" resname="Reset Table Sort">
+        <source>Reset Table Sort</source>
+        <target>Сбросить сортировку таблицы</target>
       </trans-unit>
       <trans-unit id="YSbypS1" resname="Residence Address">
         <source>Residence Address</source>
@@ -2048,6 +2092,10 @@
       <trans-unit id="f1U4Ihn" resname="Search...">
         <source>Search...</source>
         <target>Поиск…</target>
+      </trans-unit>
+      <trans-unit id="ScJmuqq" resname="Search">
+        <source>Search</source>
+        <target>Поиск</target>
       </trans-unit>
       <trans-unit id="MaIxwG5" resname="Sector">
         <source>Sector</source>
@@ -2151,6 +2199,10 @@
       </trans-unit>
       <trans-unit id="3IykCav" resname="Served beneficiaries">
         <source>Served beneficiaries</source>
+        <target>Обслужено бенефициаров</target>
+      </trans-unit>
+      <trans-unit id="SV3rcDJ" resname="Served Beneficiaries">
+        <source>Served Beneficiaries</source>
         <target>Обслужено бенефициаров</target>
       </trans-unit>
       <trans-unit id="ITPtmmN" resname="Service Name">
@@ -2377,6 +2429,10 @@
         <source>Total Registrations</source>
         <target>Всего регистраций</target>
       </trans-unit>
+      <trans-unit id="k2rCYe7" resname="Total Target">
+        <source>Total Target</source>
+        <target>Всего цель</target>
+      </trans-unit>
       <trans-unit id="5Q8B9gp" resname="Total Target Beneficiaries">
         <source>Total Target Beneficiaries</source>
         <target>Всего целевых бенефициаров</target>
@@ -2492,6 +2548,10 @@
       <trans-unit id="oP0g0kS" resname="Validate and Lock">
         <source>Validate and Lock</source>
         <target>Подтвердить и закрыть</target>
+      </trans-unit>
+      <trans-unit id="BqZ8mPE" resname="Validation Errors">
+        <source>Validation Errors</source>
+        <target>Ошибка проверки</target>
       </trans-unit>
       <trans-unit id="zUJATVK" resname="value">
         <source>value</source>
@@ -2753,6 +2813,10 @@
       <trans-unit id="picK5Uv" resname="Head Vulnerability">
         <source>Head Vulnerability</source>
         <target>Главный фактор уязвимости</target>
+      </trans-unit>
+      <trans-unit id="t5yskm4" resname="Help">
+        <source>Help</source>
+        <target>Помощь</target>
       </trans-unit>
       <trans-unit id="eAe8g.a" resname="Members Vulnerability">
         <source>Members Vulnerability</source>
