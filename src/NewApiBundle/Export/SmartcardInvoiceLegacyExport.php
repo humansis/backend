@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DistributionBundle\Export;
+namespace NewApiBundle\Export;
 
 use CommonBundle\Entity\Organization;
 use CommonBundle\Mapper\LocationMapper;
