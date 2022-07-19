@@ -8,7 +8,6 @@ use NewApiBundle\Enum\VendorInvoicingState;
 use NewApiBundle\InputType\SmartcardRedemptionBatchCreateInputType;
 use NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository;
 use NewApiBundle\Request\Pagination;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use VoucherBundle\Controller\SmartcardController;
@@ -20,7 +19,6 @@ class InvoiceController extends AbstractWebAppController
 {
     /**
      * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/exports")
-     * @ParamConverter("redemptionBatch", class="Invoice")
      *
      * @param Invoice $invoice
      *
@@ -28,12 +26,11 @@ class InvoiceController extends AbstractWebAppController
      */
     public function export(Invoice $invoice): Response
     {
-        return $this->forward(SmartcardController::class.'::export', ['batch' => $invoice]);
+        return $this->forward(SmartcardController::class.'::export', ['invoice' => $invoice]);
     }
 
     /**
      * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/legacy-exports")
-     * @ParamConverter("invoice", class="Invoice")
      *
      * @param Invoice $invoice
      *
@@ -41,7 +38,7 @@ class InvoiceController extends AbstractWebAppController
      */
     public function legacyExport(Invoice $invoice): Response
     {
-        return $this->forward(SmartcardController::class.'::exportLegacy', ['batch' => $invoice]);
+        return $this->forward(SmartcardController::class.'::exportLegacy', ['invoice' => $invoice]);
     }
 
     /**
