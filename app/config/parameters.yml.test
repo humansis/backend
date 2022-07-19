@@ -50,3 +50,7 @@ parameters:
     import.batch_size.finalization: 3000
 
     frontendUrl: 'https://pin.humansis.org'
+
+    default_account: admin@example.org
+    default_account_encoded_password: xxxx
+    default_account_salt: xxxx
