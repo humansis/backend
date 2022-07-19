@@ -10,7 +10,7 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use DistributionBundle\Repository\ModalityTypeRepository;
-use DistributionBundle\Utils\Exception\RemoveBeneficiaryWithReliefException;
+use NewApiBundle\Utils\Exception\RemoveBeneficiaryWithReliefException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NoResultException;

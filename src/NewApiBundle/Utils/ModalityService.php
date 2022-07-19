@@ -1,7 +1,7 @@
 <?php
 
 
-namespace DistributionBundle\Utils;
+namespace NewApiBundle\Utils;
 
 use DistributionBundle\Entity\Modality;
 use DistributionBundle\Entity\ModalityType;
@@ -9,7 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Class ModalityService
- * @package DistributionBundle\Utils
+ * @package NewApiBundle\Utils
  */
 class ModalityService
 {

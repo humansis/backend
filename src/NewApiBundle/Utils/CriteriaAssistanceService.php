@@ -1,7 +1,7 @@
 <?php
 
 
-namespace DistributionBundle\Utils;
+namespace NewApiBundle\Utils;
 
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Model\Vulnerability\Resolver as OldResolver;
@@ -16,7 +16,7 @@ use NewApiBundle\Entity\Project;
 
 /**
  * Class CriteriaAssistanceService
- * @package DistributionBundle\Utils
+ * @package NewApiBundle\Utils
  */
 class CriteriaAssistanceService
 {

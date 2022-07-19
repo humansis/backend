@@ -6,7 +6,7 @@ namespace NewApiBundle\Mapper\Assistance;
 use DistributionBundle\Entity;
 use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Component\Assistance\Domain;
-use DistributionBundle\Utils\AssistanceService;
+use NewApiBundle\Utils\AssistanceService;
 use NewApiBundle\Component\Assistance\DTO\CommoditySummary;
 use NewApiBundle\Serializer\MapperInterface;
 

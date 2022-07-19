@@ -1,6 +1,6 @@
 <?php
 
-namespace DistributionBundle\Utils;
+namespace NewApiBundle\Utils;
 
 use NewApiBundle\Entity\AbstractBeneficiary;
 use NewApiBundle\Entity\Beneficiary;
@@ -49,7 +49,7 @@ use VoucherBundle\Entity\Voucher;
 
 /**
  * Class AssistanceService
- * @package DistributionBundle\Utils
+ * @package NewApiBundle\Utils
  */
 class AssistanceService
 {

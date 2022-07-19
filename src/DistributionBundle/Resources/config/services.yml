@@ -18,10 +18,10 @@ services:
 #######################################################################################
 
     distribution.assistance_service:
-        alias: DistributionBundle\Utils\AssistanceService
+        alias: NewApiBundle\Utils\AssistanceService
         public: true
 
-    DistributionBundle\Utils\AssistanceService:
+    NewApiBundle\Utils\AssistanceService:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@serializer'
@@ -33,26 +33,26 @@ services:
             - '@Twig\Environment'
 
     distribution.assistance_beneficiary_service:
-        class: DistributionBundle\Utils\AssistanceBeneficiaryService
+        class: NewApiBundle\Utils\AssistanceBeneficiaryService
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@service_container'
 
     distribution.criteria_assistance_service:
-        alias: DistributionBundle\Utils\CriteriaAssistanceService
+        alias: NewApiBundle\Utils\CriteriaAssistanceService
         public: true
 
-    DistributionBundle\Utils\CriteriaAssistanceService:
+    NewApiBundle\Utils\CriteriaAssistanceService:
 
     distribution.modality_service:
-        class: DistributionBundle\Utils\ModalityService
+        class: NewApiBundle\Utils\ModalityService
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'
 
     distribution.commodity_service:
-        class: DistributionBundle\Utils\CommodityService
+        class: NewApiBundle\Utils\CommodityService
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'

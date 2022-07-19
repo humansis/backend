@@ -1,7 +1,7 @@
 <?php
 
 
-namespace DistributionBundle\Utils;
+namespace NewApiBundle\Utils;
 
 use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Entity\Assistance;
@@ -10,7 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Class CommodityService
- * @package DistributionBundle\Utils
+ * @package NewApiBundle\Utils
  */
 class CommodityService
 {
