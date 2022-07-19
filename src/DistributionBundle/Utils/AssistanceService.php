@@ -363,26 +363,6 @@ class AssistanceService
         }
     }
 
-    /**
-     * Edit a distribution
-     *
-     * @param Assistance $assistance
-     * @param array $distributionArray
-     * @return Assistance
-     * @throws Exception
-     */
-    public function edit(Assistance $assistance, array $distributionArray)
-    {
-        $assistance->setDateDistribution(DateTime::createFromFormat('d-m-Y', $distributionArray['date_distribution']))
-            ->setUpdatedOn(new DateTime());
-        $distributionNameWithoutDate = explode('-', $assistance->getName())[0];
-        $newDistributionName = $distributionNameWithoutDate . '-' . $distributionArray['date_distribution'];
-        $assistance->setName($newDistributionName);
-
-        $this->em->flush();
-        return $assistance;
-    }
-
     public function updateDateDistribution(Assistance $assistance, DateTimeInterface $date)
     {
         $newDistributionName = $this->generateName($assistance->getLocation(), $date);
@@ -554,48 +534,6 @@ class AssistanceService
     }
 
     /**
-     * @deprecated use Repository directly
-     *
-     * @param Assistance[] $distributions
-     * @return Assistance[]
-     */
-    public function filterDistributions($distributions)
-    {
-        $distributionArray = $distributions->getValues();
-        $filteredArray = array();
-        /** @var Assistance $key */
-        foreach ($distributionArray as $key) {
-            if (!$key->getArchived()) {
-                $filteredArray[] = $key;
-            }
-        }
-        return $filteredArray;
-    }
-
-    /**
-     * @param $distributions
-     * @return string
-     */
-    public function filterQrVoucherDistributions($distributions)
-    {
-        $distributionArray = $distributions->getValues();
-        $filteredArray = array();
-        foreach ($distributionArray as $distribution) {
-            $commodities = $distribution->getCommodities();
-            $isQrVoucher = false;
-            foreach ($commodities as $commodity) {
-                if ($commodity->getModalityType()->getName() === "QR Code Voucher") {
-                    $isQrVoucher = true;
-                }
-            }
-            if ($isQrVoucher && !$distribution->getArchived()) {
-                $filteredArray[] = $distribution;
-            }
-        }
-        return $filteredArray;
-    }
-
-    /**
      * Export all distributions in a pdf
      * @param int $projectId
      * @return mixed
@@ -689,89 +627,6 @@ class AssistanceService
         } else {
             return $adm.'-'.date('d-m-Y');
         }
-    }
-
-    private function mapping(AssistanceCreateInputType $inputType): array
-    {
-        /** @var Location $location */
-        $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
-
-        $locationArray = [];
-        if ($location->getAdm4()) {
-            $locationArray = [
-                'adm1' => $location->getAdm4()->getAdm3()->getAdm2()->getAdm1()->getId(),
-                'adm2' => $location->getAdm4()->getAdm3()->getAdm2()->getId(),
-                'adm3' => $location->getAdm4()->getAdm3()->getId(),
-                'adm4' => $location->getAdm4()->getId(),
-                'country_iso3' => $inputType->getIso3(),
-            ];
-        } elseif ($location->getAdm3()){
-            $locationArray = [
-                'adm1' => $location->getAdm3()->getAdm2()->getAdm1()->getId(),
-                'adm2' => $location->getAdm3()->getAdm2()->getId(),
-                'adm3' => $location->getAdm3()->getId(),
-                'adm4' => null,
-                'country_iso3' => $inputType->getIso3(),
-            ];
-        } elseif ($location->getAdm2()){
-            $locationArray = [
-                'adm1' => $location->getAdm2()->getAdm1()->getId(),
-                'adm2' => $location->getAdm2()->getId(),
-                'adm3' => null,
-                'adm4' => null,
-                'country_iso3' => $inputType->getIso3(),
-            ];
-        } elseif ($location->getAdm1()){
-            $locationArray = [
-                'adm1' => $location->getAdm1()->getId(),
-                'adm2' => null,
-                'adm3' => null,
-                'adm4' => null,
-                'country_iso3' => $inputType->getIso3(),
-            ];
-        }
-
-        $distributionArray = [
-            'countryIso3' => $inputType->getIso3(),
-            'assistance_type' => $inputType->getType(),
-            'target_type' => $inputType->getTarget(),
-            'date_distribution' => $inputType->getDateDistribution(),
-            'date_expiration' => $inputType->getDateExpiration(),
-            'project' => ['id' => $inputType->getProjectId()],
-            'location' => $locationArray,
-            'sector' => $inputType->getSector(),
-            'subsector' => $inputType->getSubsector(),
-            'threshold' => $inputType->getThreshold(),
-            'institutions' => $inputType->getInstitutions(),
-            'communities' => $inputType->getCommunities(),
-            'households_targeted' => $inputType->getHouseholdsTargeted(),
-            'individuals_targeted' => $inputType->getIndividualsTargeted(),
-            'description' => $inputType->getDescription(),
-            'foodLimit' => $inputType->getFoodLimit(),
-            'nonfoodLimit' => $inputType->getNonFoodLimit(),
-            'cashbackLimit' => $inputType->getCashbackLimit(),
-            'remoteDistributionAllowed' => $inputType->getRemoteDistributionAllowed(),
-            'allowedProductCategoryTypes' => $inputType->getAllowedProductCategoryTypes(),
-        ];
-
-        foreach ($inputType->getCommodities() as $commodity) {
-            $modalityType = $this->em->getRepository(ModalityType::class)->findOneBy(['name' => $commodity->getModalityType()]);
-            if (!$modalityType) {
-                throw new EntityNotFoundException(sprintf('ModalityType %s does not exists', $commodity->getModalityType()));
-            }
-            $distributionArray['commodities'][] = [
-                'value' => $commodity->getValue(),
-                'unit' => $commodity->getUnit(),
-                'description' => $commodity->getDescription(),
-                'modality_type' => ['id' => $modalityType->getId()],
-            ];
-        }
-
-        foreach ($inputType->getSelectionCriteria() as $criterion) {
-            $distributionArray['selection_criteria'][$criterion->getGroup()][] = $this->selectionCriteriaFactory->create($criterion);
-        }
-
-        return $distributionArray;
     }
 
     /**

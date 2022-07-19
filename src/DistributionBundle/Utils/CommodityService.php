@@ -33,6 +33,8 @@ class CommodityService
      * @param array $commodityArray
      * @param bool $flush
      * @return Commodity
+     *
+     * @deprecated
      */
     public function create(Assistance $distribution, array $commodityArray, bool $flush)
     {
