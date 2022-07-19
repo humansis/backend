@@ -92,68 +92,6 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request should failed: '.$this->client->getResponse()->getContent());
     }
 
-    public function testDepositToSmartcard()
-    {
-        $this->markTestSkipped('This should be re-factorized to current deposit endpoint');
-
-        $ab = $this->assistanceBeneficiaryWithoutRelief();
-        $bnf = $ab->getBeneficiary();
-        $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
-
-        $reliefPackage = $this->createReliefPackage($ab);
-
-        $this->request('PATCH', '/api/wsse/offline-app/v3/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
-            'value' => 255.25,
-            'balance' => 260.00,
-            'distributionId' => $reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId(),
-            'createdAt' => '2020-02-02T12:00:00Z',
-            'beneficiaryId' => $bnf->getId(),
-        ]);
-
-        $smartcard = json_decode($this->client->getResponse()->getContent(), true);
-
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
-        $this->assertArrayHasKey('value', $smartcard);
-        $this->assertArrayHasKey('currency', $smartcard);
-        $this->assertEquals(255.25, $smartcard['value'], 0.0001);
-        $this->assertNotNull($smartcard['currency']);
-    }
-
-    public function testDepositToInactiveSmartcard()
-    {
-        //TODO this test passes, but deposit to inactive smartcard is still possible. In request is mission distributionId
-
-        $depositor = $this->em->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
-        /** @var AssistanceBeneficiary $assistanceBeneficiary */
-        $assistanceBeneficiary = $this->assistanceBeneficiaryWithoutRelief();
-        $bnf = $assistanceBeneficiary->getBeneficiary();
-
-        /** @var Smartcard $smartcard */
-        $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
-        $smartcard->setState(SmartcardStates::INACTIVE);
-        $smartcard->setBeneficiary($assistanceBeneficiary->getBeneficiary());
-
-        $reliefPackage = $this->createReliefPackage($assistanceBeneficiary);
-
-        $this->em->persist($reliefPackage);
-
-        $date = new \DateTime('now');
-        $hash = SmartcardDepositService::generateDepositHash($smartcard->getSerialNumber(), $date->getTimestamp(), 1000, $reliefPackage);
-        $deposit = SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 1000, null, $date, $hash);
-        $smartcard->addDeposit($deposit);
-
-        $this->em->persist($smartcard);
-        $this->em->flush();
-
-        $this->request('PATCH', '/api/wsse/offline-app/v3/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
-            'value' => 500,
-            'createdAt' => '2020-02-02T12:00:00+0200',
-            'beneficiaryId' => $bnf->getId(),
-        ]);
-
-        $this->assertTrue($this->client->getResponse()->isClientError(), 'Request failed: '.$this->client->getResponse()->getContent());
-    }
-
     public function testPurchase()
     {
         $depositor = $this->em->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
