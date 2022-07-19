@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="ua" datatype="plaintext" original="file.ext">
+    <header>
+      <tool tool-id="symfony" tool-name="Symfony"/>
+    </header>
+    <body>
+      <trans-unit id="7eW_LtJ" resname="National ID">
+        <source>National ID</source>
+        <target>Національне посвідчення особи</target>
+      </trans-unit>
+      <trans-unit id="GdgnfPj" resname="Tax Number">
+        <source>Tax Number</source>
+        <target>Податковий номер</target>
+      </trans-unit>
+      <trans-unit id="MXPByM." resname="Passport">
+        <source>Passport</source>
+        <target>Паспорт</target>
+      </trans-unit>
+      <trans-unit id="iWoKwgI" resname="Family Registration">
+        <source>Family Registration</source>
+        <target>Family Registration</target>
+      </trans-unit>
+      <trans-unit id="Afi2c1o" resname="Birth Certificate">
+        <source>Birth Certificate</source>
+        <target>Свідоцтво про народження</target>
+      </trans-unit>
+      <trans-unit id="aak5VN6" resname="Driver’s License">
+        <source>Driver’s License</source>
+        <target>Водійські права</target>
+      </trans-unit>
+      <trans-unit id="FZ.VZRI" resname="Camp ID">
+        <source>Camp ID</source>
+        <target>Ідентифікатор табору</target>
+      </trans-unit>
+      <trans-unit id="Qb.gbSk" resname="Social Service Card">
+        <source>Social Service Card</source>
+        <target>Карта соціального обслуговування</target>
+      </trans-unit>
+      <trans-unit id="_X6doOO" resname="Other">
+        <source>Other</source>
+        <target>Інше</target>
+      </trans-unit>
+      <trans-unit id="3JN7WYk" resname="None">
+        <source>None</source>
+        <target>Нічого</target>
+      </trans-unit>
+      <trans-unit id="GP3VSbL" resname="New">
+        <source>New</source>
+        <target>новий</target>
+      </trans-unit>
+      <trans-unit id="f7ZNUGA" resname="Integrity Checking">
+        <source>Integrity Checking</source>
+        <target>Перевірка цілісності</target>
+      </trans-unit>
+      <trans-unit id="xf..Ko0" resname="Integrity Check Correct">
+        <source>Integrity Check Correct</source>
+        <target>Перевірка цілісності вірна</target>
+      </trans-unit>
+      <trans-unit id="PF2JyJ7" resname="Integrity Check Failed">
+        <source>Integrity Check Failed</source>
+        <target>Помилка перевірки цілісності</target>
+      </trans-unit>
+      <trans-unit id="69_oac2" resname="Identity Checking">
+        <source>Identity Checking</source>
+        <target>Перевірка особи</target>
+      </trans-unit>
+      <trans-unit id="lmmxtOM" resname="Identity Check Correct">
+        <source>Identity Check Correct</source>
+        <target>Перевірка особистості вірна</target>
+      </trans-unit>
+      <trans-unit id="JFSaxlS" resname="Identity Check Failed">
+        <source>Identity Check Failed</source>
+        <target>Помилка перевірки особистості</target>
+      </trans-unit>
+      <trans-unit id="RLYVseu" resname="Similarity Checking">
+        <source>Similarity Checking</source>
+        <target>Перевірка подібності</target>
+      </trans-unit>
+      <trans-unit id="qVwxy7q" resname="Similarity Check Correct">
+        <source>Similarity Check Correct</source>
+        <target>Перевірка подібності вірна</target>
+      </trans-unit>
+      <trans-unit id="QIJazNe" resname="Similarity Check Failed">
+        <source>Similarity Check Failed</source>
+        <target>Помилка перевірки схожості</target>
+      </trans-unit>
+      <trans-unit id="0lL._sv" resname="Importing">
+        <source>Importing</source>
+        <target>Імпорт</target>
+      </trans-unit>
+      <trans-unit id="tMxLB8M" resname="In Progress">
+        <source>In Progress</source>
+        <target>В процесі</target>
+      </trans-unit>
+      <trans-unit id="eAT3p5q" resname="Finished">
+        <source>Finished</source>
+        <target>Завершено</target>
+      </trans-unit>
+      <trans-unit id="E8ou4km" resname="Canceled">
+        <source>Canceled</source>
+        <target>Скасовано</target>
+      </trans-unit>
+      <trans-unit id="PMN2fnA" resname="Uploaded">
+        <source>Uploaded</source>
+        <target>Завантажено</target>
+      </trans-unit>
+      <trans-unit id="rKAaGjo" resname="Correct">
+        <source>Correct</source>
+        <target>Правильно</target>
+      </trans-unit>
+      <trans-unit id="y3AjePM" resname="Errors">
+        <source>Errors</source>
+        <target>Помилки</target>
+      </trans-unit>
+      <trans-unit id="vbhlBfg" resname="Archived">
+        <source>Archived</source>
+        <target>Заархівовано</target>
+      </trans-unit>
+      <trans-unit id="mcQAdpl" resname="To distribute">
+        <source>To distribute</source>
+        <target>Для роздачі</target>
+      </trans-unit>
+      <trans-unit id="MIW92c5" resname="Distribution in progress">
+        <source>Distribution in progress</source>
+        <target>Роздача у процесі</target>
+      </trans-unit>
+      <trans-unit id="BOHvfR6" resname="Distributed">
+        <source>Distributed</source>
+        <target>Виданий</target>
+      </trans-unit>
+      <trans-unit id="QkolUdN" resname="Expired">
+        <source>Expired</source>
+        <target>Термін вийшов</target>
+      </trans-unit>
+      <trans-unit id="KK0jC0b" resname="Landline">
+        <source>Landline</source>
+        <target>Стаціонарний</target>
+      </trans-unit>
+      <trans-unit id="y6rTz0p" resname="Mobile">
+        <source>Mobile</source>
+        <target>Мобільний</target>
+      </trans-unit>
+      <trans-unit id="yuSEaWp" resname="Duplicity Candidate">
+        <source>Duplicity Candidate</source>
+        <target>Дублювання кандидата</target>
+      </trans-unit>
+      <trans-unit id="7u1vp4g" resname="Duplicity Keep Ours">
+        <source>Duplicity Keep Ours</source>
+        <target>З Humansis</target>
+      </trans-unit>
+      <trans-unit id="FaBDoGa" resname="Duplicity Keep Theirs">
+        <source>Duplicity Keep Theirs</source>
+        <target>З файлу</target>
+      </trans-unit>
+      <trans-unit id="VkPyaBa" resname="No Duplicity">
+        <source>No Duplicity</source>
+        <target>Дублювання відсутнє</target>
+      </trans-unit>
+      <trans-unit id="Kj8shJI" resname="Mobile Money">
+        <source>Mobile Money</source>
+        <target>Мобільні гроші</target>
+      </trans-unit>
+      <trans-unit id="4toQj2M" resname="Cash">
+        <source>Cash</source>
+        <target>Готівка</target>
+      </trans-unit>
+      <trans-unit id="UxBda0y" resname="Smartcard">
+        <source>Smartcard</source>
+        <target>Smartcard</target>
+      </trans-unit>
+      <trans-unit id="2dldqnH" resname="QR Code Voucher">
+        <source>QR Code Voucher</source>
+        <target>Ваучер з QR-кодом</target>
+      </trans-unit>
+      <trans-unit id="pkau4lS" resname="Paper Voucher">
+        <source>Paper Voucher</source>
+        <target>Паперовий ваучер</target>
+      </trans-unit>
+      <trans-unit id="IiiMq1Q" resname="Food Rations">
+        <source>Food Rations</source>
+        <target>Продовольчі пайки</target>
+      </trans-unit>
+      <trans-unit id="_TZetf8" resname="Ready to Eat Rations">
+        <source>Ready to Eat Rations</source>
+        <target>Готові до вживання пайки</target>
+      </trans-unit>
+      <trans-unit id="6IIVS7L" resname="Bread">
+        <source>Bread</source>
+        <target>Хліб</target>
+      </trans-unit>
+      <trans-unit id="9Wy1WNE" resname="Agricultural Kit">
+        <source>Agricultural Kit</source>
+        <target>Сільськогосподарський набір</target>
+      </trans-unit>
+      <trans-unit id="3RJZDur" resname="WASH Kit">
+        <source>WASH Kit</source>
+        <target>WASH набір</target>
+      </trans-unit>
+      <trans-unit id="AuaaspL" resname="Shelter tool kit">
+        <source>Shelter tool kit</source>
+        <target>Набір для ремонту</target>
+      </trans-unit>
+      <trans-unit id="RdsYeVs" resname="Hygiene kit">
+        <source>Hygiene kit</source>
+        <target>Гігієнічний набір</target>
+      </trans-unit>
+      <trans-unit id="swOidc3" resname="Dignity kit">
+        <source>Dignity kit</source>
+        <target>Комплект засобів особистої гігієни</target>
+      </trans-unit>
+      <trans-unit id="iay_k__" resname="NFI Kit">
+        <source>NFI Kit</source>
+        <target>Непродовольчі набори</target>
+      </trans-unit>
+      <trans-unit id="9HrXSq0" resname="Winterization Kit">
+        <source>Winterization Kit</source>
+        <target>Набір для підготовки до зими</target>
+      </trans-unit>
+      <trans-unit id="O6i5cjg" resname="Activity item">
+        <source>Activity item</source>
+        <target>Елемент активності</target>
+      </trans-unit>
+      <trans-unit id="sTgCTue" resname="Loan">
+        <source>Loan</source>
+        <target>Позика</target>
+      </trans-unit>
+      <trans-unit id="Xw_MqKU" resname="Business Grant">
+        <source>Business Grant</source>
+        <target>Бізнес-грант</target>
+      </trans-unit>
+      <trans-unit id="9RYiBjG" resname="Valid">
+        <source>Valid</source>
+        <target>Дійсний</target>
+      </trans-unit>
+      <trans-unit id="lsNKBxn" resname="Invalid">
+        <source>Invalid</source>
+        <target>Недійсний</target>
+      </trans-unit>
+      <trans-unit id="AOVvuEL" resname="Invalid Exported">
+        <source>Invalid Exported</source>
+        <target>Недійсний експортований</target>
+      </trans-unit>
+      <trans-unit id="h65OKV9" resname="Identity Candidate">
+        <source>Identity Candidate</source>
+        <target>Особа кандидата</target>
+      </trans-unit>
+      <trans-unit id="fxkNbyE" resname="Unique Candidate">
+        <source>Unique Candidate</source>
+        <target>Унікальний кандидат</target>
+      </trans-unit>
+      <trans-unit id="pN.muO7" resname="Similarity Candidate">
+        <source>Similarity Candidate</source>
+        <target>Схожий кандидат</target>
+      </trans-unit>
+      <trans-unit id="aHZywOd" resname="To Create">
+        <source>To Create</source>
+        <target>Створено</target>
+      </trans-unit>
+      <trans-unit id="i0bPNU7" resname="To Update">
+        <source>To Update</source>
+        <target>Оновлено</target>
+      </trans-unit>
+      <trans-unit id="mx1VQmL" resname="To Link">
+        <source>To Link</source>
+        <target>Пов'язаний</target>
+      </trans-unit>
+      <trans-unit id="kYGhhxN" resname="To Ignore">
+        <source>To Ignore</source>
+        <target>Помилка</target>
+      </trans-unit>
+      <trans-unit id="1wueJLy" resname="Created">
+        <source>Created</source>
+        <target>Створений</target>
+      </trans-unit>
+      <trans-unit id="Ol7MoYj" resname="Updated">
+        <source>Updated</source>
+        <target>Оновлений</target>
+      </trans-unit>
+      <trans-unit id="v9oCbmx" resname="Linked">
+        <source>Linked</source>
+        <target>Пов'язаний</target>
+      </trans-unit>
+      <trans-unit id="VKDowX6" resname="Error">
+        <source>Error</source>
+        <target>Помилка</target>
+      </trans-unit>
+      <trans-unit id="Eb2Qg6G" resname="Irregular earnings">
+        <source>Irregular earnings</source>
+        <target>Нерегулярний заробіток</target>
+      </trans-unit>
+      <trans-unit id="cYXxBj0" resname="Farming - Agriculture">
+        <source>Farming - Agriculture</source>
+        <target>Сільське господарство-обробка землі</target>
+      </trans-unit>
+      <trans-unit id="1GI0pr2" resname="Farming - Livestock">
+        <source>Farming - Livestock</source>
+        <target>Сільське господарство - скотарство</target>
+      </trans-unit>
+      <trans-unit id="413RaGm" resname="Regular salary - private sector">
+        <source>Regular salary - private sector</source>
+        <target>Регулярна заробітна плата – приватний сектор</target>
+      </trans-unit>
+      <trans-unit id="h.qC_IF" resname="Regular salary - public sector">
+        <source>Regular salary - public sector</source>
+        <target>Регулярна заробітна плата – державний сектор</target>
+      </trans-unit>
+      <trans-unit id="4DemrPC" resname="Social welfare">
+        <source>Social welfare</source>
+        <target>Соціальне забезпечення</target>
+      </trans-unit>
+      <trans-unit id="7fFCE2i" resname="Pension">
+        <source>Pension</source>
+        <target>Пенсія</target>
+      </trans-unit>
+      <trans-unit id="HvL_92f" resname="Home Duties">
+        <source>Home Duties</source>
+        <target>Домашні обов'язки</target>
+      </trans-unit>
+      <trans-unit id="V8eE5pP" resname="Own business/trading">
+        <source>Own business/trading</source>
+        <target>Власний бізнес/торгівля</target>
+      </trans-unit>
+      <trans-unit id="7UYhgGa" resname="Savings">
+        <source>Savings</source>
+        <target>Заощадження</target>
+      </trans-unit>
+      <trans-unit id="j8KpZWt" resname="Remittances">
+        <source>Remittances</source>
+        <target>Грошові перекази</target>
+      </trans-unit>
+      <trans-unit id="by8LrPV" resname="Humanitarian aid">
+        <source>Humanitarian aid</source>
+        <target>Гуманітарна допомога</target>
+      </trans-unit>
+      <trans-unit id="cckuNvu" resname="No Income">
+        <source>No Income</source>
+        <target>Немає доходу</target>
+      </trans-unit>
+      <trans-unit id="chlqczX" resname="Refused to answer">
+        <source>Refused to answer</source>
+        <target>Відмовився відповідати</target>
+      </trans-unit>
+      <trans-unit id="OkyagQ9" resname="Beneficiary">
+        <source>Beneficiary</source>
+        <target>Бенефіціар</target>
+      </trans-unit>
+      <trans-unit id="m7CqzG1" resname="Head">
+        <source>Head</source>
+        <target>Голова</target>
+      </trans-unit>
+      <trans-unit id="ocbJf0F" resname="Household">
+        <source>Household</source>
+        <target>Домогосподарство</target>
+      </trans-unit>
+      <trans-unit id="4ZIYuvi" resname="Family name">
+        <source>Family name</source>
+        <target>Прізвище</target>
+      </trans-unit>
+      <trans-unit id="cC75Ie0" resname="First name">
+        <source>First name</source>
+        <target>Ім'я</target>
+      </trans-unit>
+      <trans-unit id="KZ_59GN" resname="Selected (YES/NO)">
+        <source>Selected (YES/NO)</source>
+        <target>Обраний (ТАК/НІ)</target>
+      </trans-unit>
+      <trans-unit id="vX1FeOu" resname="Gender of household head">
+        <source>Gender of household head</source>
+        <target>Стать голови домогосподарства</target>
+      </trans-unit>
+      <trans-unit id="ZEQZ1Xs" resname="Vulnerability of household head">
+        <source>Vulnerability of household head</source>
+        <target>Вразливість голови домогосподарства</target>
+      </trans-unit>
+      <trans-unit id="IjE7RjV" resname="Vulnerability of household members">
+        <source>Vulnerability of household members</source>
+        <target>Вразливість членів домогосподарства</target>
+      </trans-unit>
+      <trans-unit id="3aiZTtj" resname="Dependency ration">
+        <source>Dependency ration</source>
+        <target>Коефіцієнт демографічного навантаження</target>
+      </trans-unit>
+      <trans-unit id="uHoGZLl" resname="Shelter type">
+        <source>Shelter type</source>
+        <target>Тип житла</target>
+      </trans-unit>
+      <trans-unit id="8V7vWgy" resname="Residence ownership">
+        <source>Residence ownership</source>
+        <target>Право власності на житло</target>
+      </trans-unit>
+      <trans-unit id="EirpaTf" resname="Displacement status">
+        <source>Displacement status</source>
+        <target>Статус переміщення</target>
+      </trans-unit>
+      <trans-unit id="HWwE_l4" resname="Income per household member">
+        <source>Income per household member</source>
+        <target>Дохід на члена домогосподарства</target>
+      </trans-unit>
+      <trans-unit id="3gqdZH2" resname="Income spent on food">
+        <source>Income spent on food</source>
+        <target>Доходи, витрачені на продовольство</target>
+      </trans-unit>
+      <trans-unit id="8PbXLe9" resname="Productive assets">
+        <source>Productive assets</source>
+        <target>Виробничі активи</target>
+      </trans-unit>
+      <trans-unit id="qX2ZSme" resname="Coping strategy index (CSI)">
+        <source>Coping strategy index (CSI)</source>
+        <target>Індекс стратегії виживання (CSI)</target>
+      </trans-unit>
+      <trans-unit id="G0ePDP6" resname="Food consumption scores (FCS)">
+        <source>Food consumption scores (FCS)</source>
+        <target>Показники споживання продовольства (FCS)</target>
+      </trans-unit>
+      <trans-unit id="oS0wgPW" resname="Assistance provided in the last 3 months">
+        <source>Assistance provided in the last 3 months</source>
+        <target>Надана допомога за останні 3 місяці</target>
+      </trans-unit>
+      <trans-unit id="HBeefiI" resname="Amount []">
+        <source>Amount []</source>
+        <target>Сума []</target>
+      </trans-unit>
+      <trans-unit id="sGExlXh" resname="Cumulative amount []">
+        <source>Cumulative amount []</source>
+        <target>Загальна сума []</target>
+      </trans-unit>
+      <trans-unit id="5OsYBp1" resname="Food">
+        <source>Food</source>
+        <target>Продовольство</target>
+      </trans-unit>
+      <trans-unit id="zuYsxxL" resname="Non-Food">
+        <source>Non-Food</source>
+        <target>Непродовольчий</target>
+      </trans-unit>
+      <trans-unit id="M0qRf3z" resname="Cashback">
+        <source>Cashback</source>
+        <target>Повернення коштів</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

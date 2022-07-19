@@ -17,12 +17,21 @@ use ProjectBundle\Enum\Livelihood;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Cache(expires="+5 days", public=true)
  */
 class HouseholdCodelistController extends AbstractController
 {
+    /** @var TranslatorInterface */
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+    
     /**
      * @Rest\Get("/web-app/v1/households/livelihoods")
      *
@@ -32,7 +41,7 @@ class HouseholdCodelistController extends AbstractController
     {
         $data = [];
         foreach (Livelihood::values() as $code) {
-            $data[] = new CodeItem($code, Livelihood::translate($code));
+            $data[] = new CodeItem($code, $this->translator->trans($code));
         }
 
         return $this->json(new Paginator($data));

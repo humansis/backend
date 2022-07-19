@@ -73,6 +73,10 @@ services:
         resource: '../../Command'
         public: true
         tags: [ 'console.command' ]
+        
+    NewApiBundle\Command\TranslationsUpdateGenerateCommand:
+        arguments:
+          - '%app.translations_dir%'
 
     NewApiBundle\Component\Assistance\AssistanceFactory:
         arguments:
@@ -181,6 +185,7 @@ services:
     NewApiBundle\Controller\CommonController:
         arguments:
             - '@NewApiBundle\Component\Country\Countries'
+            - '%app.translations_dir%'
 
     NewApiBundle\Controller\DonorController:
         arguments:
@@ -216,7 +221,12 @@ services:
     NewApiBundle\Controller\BeneficiaryCodelistController:
         public: true
         arguments:
+            - '@translator' 
             - "@doctrine.orm.entity_manager"
+              
+    NewApiBundle\Controller\HouseholdCodelistController:
+        arguments:
+          - '@translator'
 
     NewApiBundle\Request\ParamConverter\:
         resource: '../../Request/ParamConverter'
