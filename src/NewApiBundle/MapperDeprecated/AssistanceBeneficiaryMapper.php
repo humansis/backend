@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DistributionBundle\Mapper;
+namespace NewApiBundle\MapperDeprecated;
 
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use TransactionBundle\Entity\Transaction;

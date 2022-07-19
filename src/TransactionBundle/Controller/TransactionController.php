@@ -5,7 +5,7 @@ namespace TransactionBundle\Controller;
 use NewApiBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Assistance;
 use NewApiBundle\Entity\Household;
-use DistributionBundle\Mapper\AssistanceBeneficiaryMapper;
+use NewApiBundle\MapperDeprecated\AssistanceBeneficiaryMapper;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
