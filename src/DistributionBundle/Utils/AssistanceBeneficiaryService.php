@@ -53,85 +53,6 @@ class AssistanceBeneficiaryService
     }
 
     /**
-     * Get all beneficiaries from a distribution
-     *
-     * @param Assistance $assistance
-     * @return array
-     */
-    public function getBeneficiaries(Assistance $assistance)
-    {
-        $beneficiaries = $this->em->getRepository(Beneficiary::class)->getAllofDistribution($assistance);
-        return $beneficiaries;
-    }
-
-    /**
-     * Get all distribution beneficiaries from a distribution
-     *
-     * @param Assistance $assistance
-     * @return array
-     */
-    public function getAssistanceBeneficiaries(Assistance $assistance)
-    {
-        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findByAssistance($assistance);
-        return $distributionBeneficiaries;
-    }
-
-    /**
-     * Get all distribution beneficiaries from a distribution
-     *
-     * @param Assistance $assistance
-     * @return array
-     */
-    public function getActiveAssistanceBeneficiaries(Assistance $assistance)
-    {
-        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findActiveByAssistance($assistance);
-        return $distributionBeneficiaries;
-    }
-
-    /**
-     * Get distribution beneficiaries without booklets
-     *
-     * @param Assistance $assistance
-     * @return array
-     */
-    public function getDistributionAssignableBeneficiaries(Assistance $assistance)
-    {
-        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findAssignable($assistance);
-        return $distributionBeneficiaries;
-    }
-
-
-    /**
-     * Get random beneficiaries from a distribution
-     *
-     * @param Assistance $assistance
-     * @param Int $numberRandomBeneficiary
-     * @return array
-     */
-    public function getRandomBeneficiaries(Assistance $assistance, Int $numberRandomBeneficiary)
-    {
-        $listReceivers = $this->em->getRepository(Beneficiary::class)->getNotRemovedofDistribution($assistance);
-
-        if (sizeof($listReceivers) < $numberRandomBeneficiary) {
-            return $listReceivers;
-        }
-
-
-        $randomIds = array_rand($listReceivers, $numberRandomBeneficiary);
-
-        if (gettype($randomIds) == 'integer') {
-            return [$listReceivers[$randomIds]];
-        }
-
-        $randomReceivers = array();
-        foreach ($randomIds as $id) {
-            array_push($randomReceivers, $listReceivers[$id]);
-        }
-
-        return $randomReceivers;
-    }
-
-    /**
      * @param array $objectBeneficiary
      * @param string $type
      * @return mixed
@@ -160,17 +81,5 @@ class AssistanceBeneficiaryService
             ]);
         }
         return $this->container->get('export_csv_service')->export($beneficiaries, 'distributions', $type);
-    }
-
-    /**
-     * Get all beneficiaries in a selected project
-     *
-     * @param Project $project
-     * @param string $target
-     * @return array
-     */
-    public function getAllBeneficiariesInProject(Project $project, string $target): array
-    {
-        return $this->em->getRepository(Beneficiary::class)->getAllOfProject($project, $target);
     }
 }

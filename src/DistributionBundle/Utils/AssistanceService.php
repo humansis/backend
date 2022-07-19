@@ -600,48 +600,6 @@ class AssistanceService
     }
 
     /**
-     * @deprecated use Repository directly
-     *
-     * @param Assistance[] $distributions
-     * @return Assistance[]
-     */
-    public function filterDistributions($distributions)
-    {
-        $distributionArray = $distributions->getValues();
-        $filteredArray = array();
-        /** @var Assistance $key */
-        foreach ($distributionArray as $key) {
-            if (!$key->getArchived()) {
-                $filteredArray[] = $key;
-            }
-        }
-        return $filteredArray;
-    }
-
-    /**
-     * @param $distributions
-     * @return string
-     */
-    public function filterQrVoucherDistributions($distributions)
-    {
-        $distributionArray = $distributions->getValues();
-        $filteredArray = array();
-        foreach ($distributionArray as $distribution) {
-            $commodities = $distribution->getCommodities();
-            $isQrVoucher = false;
-            foreach ($commodities as $commodity) {
-                if ($commodity->getModalityType()->getName() === "QR Code Voucher") {
-                    $isQrVoucher = true;
-                }
-            }
-            if ($isQrVoucher && !$distribution->getArchived()) {
-                $filteredArray[] = $distribution;
-            }
-        }
-        return $filteredArray;
-    }
-
-    /**
      * Export all distributions in a pdf
      * @param int $projectId
      * @return mixed
@@ -728,6 +686,17 @@ class AssistanceService
 
         $this->em->remove($assistanceEntity);
         $this->em->flush();
+    }
+
+    private function generateName(Location $location, ?DateTimeInterface $date = null): string
+    {
+        $adm = $location->getName();
+
+        if ($date) {
+            return $adm.'-'.$date->format('d-m-Y');
+        } else {
+            return $adm.'-'.date('d-m-Y');
+        }
     }
 
     /**

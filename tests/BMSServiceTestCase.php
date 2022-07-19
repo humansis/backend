@@ -13,7 +13,6 @@ use NewApiBundle\Entity\Profile;
 use NewApiBundle\Entity\VulnerabilityCriterion;
 use NewApiBundle\Utils\HouseholdService;
 use DistributionBundle\Utils\CommodityService;
-use DistributionBundle\Utils\ConfigurationLoader;
 use DistributionBundle\Utils\CriteriaAssistanceService;
 use Doctrine\ORM\EntityManager;
 
@@ -56,9 +55,6 @@ class BMSServiceTestCase extends KernelTestCase
 
     /** @var CommodityService $commodityService */
     protected $commodityService;
-
-    /** @var ConfigurationLoader $configurationLoader */
-    protected $configurationLoader;
 
     /** @var CriteriaAssistanceService $criteriaAssistanceService */
     protected $criteriaAssistanceService;

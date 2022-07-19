@@ -45,15 +45,6 @@ services:
 
     DistributionBundle\Utils\CriteriaAssistanceService:
 
-    distribution.configuration_loader:
-        alias: DistributionBundle\Utils\ConfigurationLoader
-        public: true
-
-    DistributionBundle\Utils\ConfigurationLoader:
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - '%distribution.criteria%'
-
     distribution.modality_service:
         class: DistributionBundle\Utils\ModalityService
         public: true
@@ -99,19 +90,6 @@ services:
 #######################################################################################
 ##                                       CSV                                         ##
 #######################################################################################
-
-    distribution.distribution_csv_service:
-        class: DistributionBundle\Utils\DistributionCSVService
-        public: true
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - '@beneficiary.household_export_csv_service'
-            - '@service_container'
-            - '@beneficiary.household_service'
-            - '@serializer'
-            - '@validator'
-            - "@request_validator"
-            - "@beneficiary.csv_to_array_mapper"
 
     distribution.export_legacy.smartcard_invoice:
         class: NewApiBundle\Export\SmartcardInvoiceLegacyExport

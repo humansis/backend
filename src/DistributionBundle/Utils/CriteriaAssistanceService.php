@@ -4,17 +4,13 @@
 namespace DistributionBundle\Utils;
 
 use NewApiBundle\Entity\Beneficiary;
-use NewApiBundle\Entity\Camp;
 use NewApiBundle\Model\Vulnerability\Resolver as OldResolver;
-use DistributionBundle\Entity\Assistance;
 use NewApiBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use NewApiBundle\Component\Assistance\DTO\CriteriaGroup;
 use NewApiBundle\Component\Assistance\Scoring\Model\Factory\ScoringFactory;
 use NewApiBundle\Component\Assistance\Scoring\ScoringResolver;
-use NewApiBundle\Entity\Assistance\SelectionCriteria;
-use NewApiBundle\Entity\ScoringBlueprint;
 use NewApiBundle\Repository\ScoringBlueprintRepository;
 use NewApiBundle\Entity\Project;
 
@@ -27,9 +23,6 @@ class CriteriaAssistanceService
 
     /** @var EntityManagerInterface $em */
     private $em;
-
-    /** @var ConfigurationLoader $configurationLoader */
-    private $configurationLoader;
 
     /** @var OldResolver */
     private $oldResolver;
@@ -46,7 +39,6 @@ class CriteriaAssistanceService
     /**
      * CriteriaAssistanceService constructor.
      * @param EntityManagerInterface        $entityManager
-     * @param ConfigurationLoader           $configurationLoader
      * @param OldResolver                   $oldResolver
      * @param ScoringResolver               $resolver
      * @param ScoringBlueprintRepository    $scoringBlueprintRepository
@@ -54,14 +46,12 @@ class CriteriaAssistanceService
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        ConfigurationLoader $configurationLoader,
         OldResolver $oldResolver,
         ScoringFactory $scoringFactory,
         ScoringResolver $resolver,
         ScoringBlueprintRepository $scoringBlueprintRepository
     ) {
         $this->em = $entityManager;
-        $this->configurationLoader = $configurationLoader;
         $this->oldResolver = $oldResolver;
         $this->scoringFactory = $scoringFactory;
         $this->resolver = $resolver;
@@ -135,38 +125,4 @@ class CriteriaAssistanceService
             return ['finalArray' => $reachedBeneficiaries];
         }
     }
-
-    /**
-     * @param Assistance $assistance
-     * @param SelectionCriteria $selectionCriteria
-     * @param bool $flush
-     * @return SelectionCriteria
-     */
-    public function save(Assistance $assistance, SelectionCriteria $selectionCriteria)
-    {
-        $assistance->getAssistanceSelection()->getSelectionCriteria()->add($selectionCriteria);
-        $selectionCriteria->setAssistanceSelection($assistance->getAssistanceSelection());
-        return $selectionCriteria;
-    }
-
-    /**
-     * @param string $countryISO3
-     * @return array
-     */
-    public function getAll(string $countryISO3)
-    {
-        $criteria = $this->configurationLoader->load($countryISO3);
-        return $criteria;
-    }
-
-    /**
-     * @param string $countryISO3
-     * @return array
-     */
-    public function getCamps(string $countryISO3)
-    {
-        $camps = $this->em->getRepository(Camp::class)->findByCountry($countryISO3);
-        return $camps;
-    }
-
 }
