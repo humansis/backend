@@ -121,10 +121,12 @@ framework:
                 dsn: 'doctrine://default'
                 options:
                     queue_name: import_items
+                    auto_setup: false
             incoming_big_data:
                 dsn: 'doctrine://default'
                 options:
                     queue_name: incoming_big_data
+                    auto_setup: false
             sync: 'sync://'
         routing:
             'NewApiBundle\Component\Import\Messaging\Message\ImportCheck': import
