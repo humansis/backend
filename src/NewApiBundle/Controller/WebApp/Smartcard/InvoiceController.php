@@ -20,7 +20,7 @@ class InvoiceController extends AbstractWebAppController
 {
     /**
      * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/exports")
-     * @ParamConverter("redemptionBatch", class="Invoice")
+     * @ParamConverter("invoice", class="VoucherBundle\Entity\Invoice")
      *
      * @param Invoice $invoice
      *
@@ -28,12 +28,12 @@ class InvoiceController extends AbstractWebAppController
      */
     public function export(Invoice $invoice): Response
     {
-        return $this->forward(SmartcardController::class.'::export', ['batch' => $invoice]);
+        return $this->forward(SmartcardController::class.'::export', ['invoice' => $invoice]);
     }
 
     /**
      * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/legacy-exports")
-     * @ParamConverter("invoice", class="Invoice")
+     * @ParamConverter("invoice", class="VoucherBundle\Entity\Invoice")
      *
      * @param Invoice $invoice
      *
@@ -41,7 +41,7 @@ class InvoiceController extends AbstractWebAppController
      */
     public function legacyExport(Invoice $invoice): Response
     {
-        return $this->forward(SmartcardController::class.'::exportLegacy', ['batch' => $invoice]);
+        return $this->forward(SmartcardController::class.'::exportLegacy', ['invoice' => $invoice]);
     }
 
     /**
