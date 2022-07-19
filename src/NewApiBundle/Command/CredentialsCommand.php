@@ -96,6 +96,12 @@ class CredentialsCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        if (empty($this->salt) || empty($this->encodedPassword)) {
+            $output->writeln('<comment>Empty salt or password, skip this command.</comment>');
+
+            return 0;
+        }
+
         $output->writeln("Checking if user {$this->account} exists...");
         if ($this->checkIfUserExists()) {
             $output->writeln("<info>User {$this->account} already exists.</info>");
