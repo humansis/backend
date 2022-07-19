@@ -61,7 +61,7 @@ final class ScoringRuleOptionsEnum
             self::NO_VULNERABILITY,
         ],
 
-        ScoringRulesEnum::HH_MEMBER_VULNERABILITY => [
+        ScoringRulesEnum::HH_MEMBERS_VULNERABILITY => [
             self::CHRONICALLY_ILL,
             self::PREGNANT_LACTATING_FEMALE,
             self::DISABLED,
