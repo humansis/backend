@@ -221,7 +221,12 @@ services:
     NewApiBundle\Controller\BeneficiaryCodelistController:
         public: true
         arguments:
+            - '@translator' 
             - "@doctrine.orm.entity_manager"
+              
+    NewApiBundle\Controller\HouseholdCodelistController:
+        arguments:
+          - '@translator'
 
     NewApiBundle\Request\ParamConverter\:
         resource: '../../Request/ParamConverter'

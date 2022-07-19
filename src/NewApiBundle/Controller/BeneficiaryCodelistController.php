@@ -16,12 +16,21 @@ use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\PhoneTypes;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Cache(expires="+5 days", public=true)
  */
 class BeneficiaryCodelistController extends AbstractController
 {
+    /** @var TranslatorInterface */
+    private $translator;
+    
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/types")
      *
@@ -68,7 +77,7 @@ class BeneficiaryCodelistController extends AbstractController
         $criterion = $this->getDoctrine()->getRepository(VulnerabilityCriterion::class)
             ->findAllActive();
 
-        return $this->json(new Paginator(CodeLists::mapCriterion($criterion)));
+        return $this->json(new Paginator(CodeLists::mapCriterion($criterion, $this->translator)));
     }
 
     /**
