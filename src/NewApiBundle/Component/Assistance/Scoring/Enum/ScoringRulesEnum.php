@@ -12,6 +12,9 @@ final class ScoringRulesEnum
     public const SINGLE_PARENT_HEADED = 'singleParentHeaded';
     public const PREGNANT_OR_LACTATING = 'pregnantOrLactating';
     public const NO_OF_CHRONICALLY_ILL = 'noOfChronicallyIll';
+    public const HH_HEAD_VULNERABILITY = 'hhHeadVulnerability';
+    public const HH_MEMBER_VULNERABILITY = 'hhMemberVulnerability';
+    public const COMPLEX_DEPENDENCY_RATIO = 'complexDependencyRatio';
 
     public static function values(): array
     {
@@ -20,6 +23,8 @@ final class ScoringRulesEnum
             self::SINGLE_PARENT_HEADED,
             self::PREGNANT_OR_LACTATING,
             self::NO_OF_CHRONICALLY_ILL,
+            self::HH_HEAD_VULNERABILITY,
+            self::HH_MEMBER_VULNERABILITY,
         ];
     }
 }
