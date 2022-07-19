@@ -8,7 +8,7 @@ services:
 
     VoucherBundle\Controller\SmartcardController:
         arguments:
-            - '@DistributionBundle\Export\SmartcardInvoiceExport'
+            - '@NewApiBundle\Export\SmartcardInvoiceExport'
             - '@CommonBundle\Repository\OrganizationRepository'
             - '@NewApiBundle\Component\Country\Countries'
         public: true

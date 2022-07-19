@@ -121,17 +121,17 @@ services:
             - "@beneficiary.csv_to_array_mapper"
 
     distribution.export_legacy.smartcard_invoice:
-        class: DistributionBundle\Export\SmartcardInvoiceLegacyExport
+        class: NewApiBundle\Export\SmartcardInvoiceLegacyExport
         arguments:
             - '@translator'
             - '@CommonBundle\Mapper\LocationMapper'
         public: true
 
     distribution.export.smartcard_invoice:
-        alias: DistributionBundle\Export\SmartcardInvoiceExport
+        alias: NewApiBundle\Export\SmartcardInvoiceExport
         public: true
 
-    DistributionBundle\Export\SmartcardInvoiceExport:
+    NewApiBundle\Export\SmartcardInvoiceExport:
         arguments:
             - '@translator'
             - '@CommonBundle\Mapper\LocationMapper'
