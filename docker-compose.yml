@@ -74,6 +74,8 @@ services:
             BATCH_SIZE_IDENTITY_CHECK: 10000
             BATCH_SIZE_SIMILARITY_CHECK: 10000
             BATCH_SIZE_FINALIZATION: 2000
+            DEFAULT_ACCOUNT_PASSWORD: xxx
+            DEFAULT_ACCOUNT_SALT: xxx
 
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
