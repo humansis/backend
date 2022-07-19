@@ -11,7 +11,7 @@ use DistributionBundle\Entity\Modality;
 use NewApiBundle\Enum\AssistanceTargetType;
 use NewApiBundle\Enum\AssistanceType;
 use DistributionBundle\Entity\ModalityType;
-use DistributionBundle\Utils\AssistanceService;
+use NewApiBundle\Utils\AssistanceService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;

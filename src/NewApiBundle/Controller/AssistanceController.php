@@ -10,7 +10,7 @@ use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
 use NewApiBundle\Enum\AssistanceType;
 use DistributionBundle\Repository\AssistanceRepository;
-use DistributionBundle\Utils\AssistanceService;
+use NewApiBundle\Utils\AssistanceService;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;

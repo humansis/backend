@@ -12,8 +12,8 @@ use NewApiBundle\Entity\Phone;
 use NewApiBundle\Entity\Profile;
 use NewApiBundle\Entity\VulnerabilityCriterion;
 use NewApiBundle\Utils\HouseholdService;
-use DistributionBundle\Utils\CommodityService;
-use DistributionBundle\Utils\CriteriaAssistanceService;
+use NewApiBundle\Utils\CommodityService;
+use NewApiBundle\Utils\CriteriaAssistanceService;
 use Doctrine\ORM\EntityManager;
 
 use NewApiBundle\Entity\Project;

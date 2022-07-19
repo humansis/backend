@@ -6,7 +6,7 @@ use CommonBundle\Entity\Organization;
 use DistributionBundle\Entity\Assistance;
 use NewApiBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceRepository;
-use DistributionBundle\Utils\AssistanceService;
+use NewApiBundle\Utils\AssistanceService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;

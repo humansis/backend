@@ -2,7 +2,7 @@
 
 namespace CommonBundle\DataFixtures;
 
-use DistributionBundle\Utils\AssistanceService;
+use NewApiBundle\Utils\AssistanceService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;

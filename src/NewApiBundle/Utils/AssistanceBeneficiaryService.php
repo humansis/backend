@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DistributionBundle\Utils;
+namespace NewApiBundle\Utils;
 
 use NewApiBundle\Entity\AbstractBeneficiary;
 use NewApiBundle\Entity\Beneficiary;
@@ -28,7 +28,7 @@ use Symfony\Contracts\Cache\CacheInterface;
 
 /**
  * Class AssistanceBeneficiaryService
- * @package DistributionBundle\Utils
+ * @package NewApiBundle\Utils
  */
 class AssistanceBeneficiaryService
 {

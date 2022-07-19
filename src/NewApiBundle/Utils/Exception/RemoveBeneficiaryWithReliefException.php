@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace DistributionBundle\Utils\Exception;
+namespace NewApiBundle\Utils\Exception;
 
 use NewApiBundle\Entity\Beneficiary;
 use Symfony\Component\Validator\ConstraintViolationInterface;

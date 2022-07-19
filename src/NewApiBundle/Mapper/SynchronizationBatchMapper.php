@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Mapper;
 
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Utils\AssistanceService;
+use NewApiBundle\Utils\AssistanceService;
 use NewApiBundle\Entity\SynchronizationBatch;
 use NewApiBundle\Serializer\MapperInterface;
 
