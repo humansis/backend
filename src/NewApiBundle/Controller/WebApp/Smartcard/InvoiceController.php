@@ -8,7 +8,6 @@ use NewApiBundle\Enum\VendorInvoicingState;
 use NewApiBundle\InputType\SmartcardRedemptionBatchCreateInputType;
 use NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository;
 use NewApiBundle\Request\Pagination;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use VoucherBundle\Controller\SmartcardController;
@@ -20,7 +19,6 @@ class InvoiceController extends AbstractWebAppController
 {
     /**
      * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/exports")
-     * @ParamConverter("invoice", class="VoucherBundle\Entity\Invoice")
      *
      * @param Invoice $invoice
      *
@@ -33,7 +31,6 @@ class InvoiceController extends AbstractWebAppController
 
     /**
      * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/legacy-exports")
-     * @ParamConverter("invoice", class="VoucherBundle\Entity\Invoice")
      *
      * @param Invoice $invoice
      *
