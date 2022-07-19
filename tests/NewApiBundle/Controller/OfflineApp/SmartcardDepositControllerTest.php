@@ -5,10 +5,11 @@ namespace Tests\NewApiBundle\Controller\OfflineApp;
 use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
+use NewApiBundle\Component\Smartcard\Deposit\DepositFactory;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ModalityType;
+use NewApiBundle\InputType\Smartcard\DepositInputType;
 use Tests\BMSServiceTestCase;
-use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Enum\SmartcardStates;
@@ -68,6 +69,58 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('state', $smartcard);
         $this->assertArrayHasKey('currency', $smartcard);
         $this->assertArrayHasKey('createdAt', $smartcard);
+    }
+
+    public function testDepositToSmartcardV5(): void
+    {
+        $ab = $this->assistanceBeneficiaryWithoutRelief();
+        $bnf = $ab->getBeneficiary();
+        $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
+        $reliefPackage = $this->createReliefPackage($ab);
+        $uniqueDate = $this->getUnusedDepositDate()->format(\DateTimeInterface::ATOM);
+
+        $this->request('POST', '/api/wsse/offline-app/v5/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
+            'reliefPackageId' => $reliefPackage->getId(),
+            'value' => 255.25,
+            'balance' => 300.00,
+            'createdAt' => $uniqueDate,
+        ]);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testDoubledDeposit(): void
+    {
+        $ab = $this->assistanceBeneficiaryWithoutRelief();
+        $bnf = $ab->getBeneficiary();
+        $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
+        $reliefPackage = $this->createReliefPackage($ab);
+        $date = $this->getUnusedDepositDate();
+        $depositFactory = self::$container->get(DepositFactory::class);
+        $depositCreateInputFile = DepositInputType::create($reliefPackage->getId(), 255.25, 300.00, $date);
+        $depositFactory->create('1234ABC', $depositCreateInputFile, $this->getTestUser(self::USER_TESTER));
+
+        $this->request('POST', '/api/wsse/offline-app/v5/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
+            'reliefPackageId' => $reliefPackage->getId(),
+            'value' => 255.25,
+            'balance' => 300.00,
+            'createdAt' => $date->format(\DateTimeInterface::ATOM),
+        ]);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $this->assertEquals(202, $this->client->getResponse()->getStatusCode());
+    }
+
+    private function getUnusedDepositDate(): \DateTimeImmutable
+    {
+        $date = new \DateTimeImmutable();
+        do {
+            $date = $date->modify('-1 second');
+            $deposit = $this->em->getRepository(SmartcardDeposit::class)->findOneBy(['distributedAt' => $date]);
+        } while ($deposit != null);
+
+        return $date;
     }
 
     private function someSmartcardAssistance(): ?Assistance
