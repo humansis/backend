@@ -7,6 +7,8 @@ use DateTime;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use DateTimeInterface;
+use NewApiBundle\Entity\AssistanceBeneficiary;
+use NewApiBundle\Repository\AssistanceBeneficiaryRepository;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManager;
 use NewApiBundle\Component\Smartcard\Exception\SmartcardActivationDeactivatedException;
@@ -375,7 +377,7 @@ class SmartcardService
     private static function findCurrency(AssistanceBeneficiary $assistanceBeneficiary): string
     {
         foreach ($assistanceBeneficiary->getAssistance()->getCommodities() as $commodity) {
-            /** @var \DistributionBundle\Entity\Commodity $commodity */
+            /** @var \NewApiBundle\Entity\Commodity $commodity */
             if ('Smartcard' === $commodity->getModalityType()->getName()) {
                 return $commodity->getUnit();
             }

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller\WebApp\Assistance;
 
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use Exception;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use Tests\BMSServiceTestCase;

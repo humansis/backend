@@ -7,6 +7,7 @@ use NewApiBundle\Entity\VulnerabilityCriterion;
 use NewApiBundle\Repository\CountrySpecificRepository;
 use NewApiBundle\Repository\VulnerabilityCriterionRepository;
 use CommonBundle\Repository\LocationRepository;
+use NewApiBundle\Entity\Assistance;
 use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\Component\Assistance\Domain\SelectionCriteria;
 use NewApiBundle\Component\Assistance\DTO\CriteriaGroup;

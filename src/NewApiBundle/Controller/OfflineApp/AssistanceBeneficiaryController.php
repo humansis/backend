@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller\OfflineApp;
 
-use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\AssistanceBeneficiary;
-use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
+use NewApiBundle\Entity\Assistance;
+use NewApiBundle\Entity\AssistanceBeneficiary;
+use NewApiBundle\Repository\AssistanceBeneficiaryRepository;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\InputType\CommunityFilterType;

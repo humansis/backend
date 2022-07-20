@@ -4,7 +4,7 @@ namespace VoucherBundle\Model;
 
 use NewApiBundle\Entity\Beneficiary;
 use DateTimeInterface;
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\InputType\PurchaseProductInputType;

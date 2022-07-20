@@ -1,9 +1,9 @@
 <?php
 
-namespace DistributionBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use DistributionBundle\Entity\AssistanceBeneficiary;
+use NewApiBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
@@ -14,7 +14,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * @see ReliefPackage
  *
  * @ORM\Table(name="general_relief_item")
- * @ORM\Entity(repositoryClass="DistributionBundle\Repository\GeneralReliefItemRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\GeneralReliefItemRepository")
  */
 class GeneralReliefItem
 {
@@ -49,7 +49,7 @@ class GeneralReliefItem
     /**
      * @var AssistanceBeneficiary
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\AssistanceBeneficiary", cascade={"persist"})
      * @ORM\JoinColumn(name="distribution_beneficiary_id")
      */
     private $assistanceBeneficiary;

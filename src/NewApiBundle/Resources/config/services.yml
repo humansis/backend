@@ -641,7 +641,7 @@ services:
     NewApiBundle\MapperDeprecated\AssistanceMapper:
         arguments:
             - '@NewApiBundle\MapperDeprecated\BeneficiaryMapper'
-            - "@=service('doctrine.orm.entity_manager').getRepository('DistributionBundle:AssistanceBeneficiary')"
+            - "@=service('doctrine.orm.entity_manager').getRepository('NewApiBundle:AssistanceBeneficiary')"
             - "@=service('doctrine.orm.entity_manager').getRepository('NewApiBundle:Beneficiary')"
         public: true
 

@@ -3,9 +3,9 @@
 
 namespace NewApiBundle\Utils;
 
-use DistributionBundle\Entity\Commodity;
-use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\ModalityType;
+use NewApiBundle\Entity\Commodity;
+use NewApiBundle\Entity\Assistance;
+use NewApiBundle\Entity\ModalityType;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**

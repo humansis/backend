@@ -3,7 +3,7 @@
 namespace TransactionBundle\Controller;
 
 use NewApiBundle\Entity\Beneficiary;
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Entity\Household;
 use NewApiBundle\MapperDeprecated\AssistanceBeneficiaryMapper;
 use FOS\RestBundle\Controller\Annotations as Rest;

@@ -7,7 +7,7 @@ namespace NewApiBundle\Controller;
 use NewApiBundle\Entity\Community;
 use NewApiBundle\Repository\CommunityRepository;
 use NewApiBundle\Utils\CommunityService;
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use NewApiBundle\InputType\AssistanceCommunitiesFilterInputType;
 use NewApiBundle\InputType\CommunityCreateInputType;
 use NewApiBundle\InputType\CommunityFilterType;

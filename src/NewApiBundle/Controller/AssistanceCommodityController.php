@@ -3,9 +3,9 @@
 namespace NewApiBundle\Controller;
 
 use CommonBundle\Pagination\Paginator;
-use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\Commodity;
-use DistributionBundle\Repository\AssistanceRepository;
+use NewApiBundle\Entity\Assistance;
+use NewApiBundle\Entity\Commodity;
+use NewApiBundle\Repository\AssistanceRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\InputType\AssistanceCreateInputType;

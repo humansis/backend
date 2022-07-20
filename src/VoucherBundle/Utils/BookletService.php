@@ -4,8 +4,8 @@ namespace VoucherBundle\Utils;
 
 use NewApiBundle\Entity\AbstractBeneficiary;
 use NewApiBundle\Entity\Beneficiary;
-use DistributionBundle\Entity\AssistanceBeneficiary;
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\AssistanceBeneficiary;
+use NewApiBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\InputType\BookletBatchCreateInputType;
 use NewApiBundle\Entity\Project;

@@ -6,7 +6,7 @@ namespace TransactionBundle\Export;
 
 use CommonBundle\Entity\Organization;
 use CommonBundle\Utils\PdfService;
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 

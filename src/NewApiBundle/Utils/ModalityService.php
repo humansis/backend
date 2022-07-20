@@ -3,8 +3,8 @@
 
 namespace NewApiBundle\Utils;
 
-use DistributionBundle\Entity\Modality;
-use DistributionBundle\Entity\ModalityType;
+use NewApiBundle\Entity\Modality;
+use NewApiBundle\Entity\ModalityType;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**

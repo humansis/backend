@@ -6,7 +6,7 @@ namespace VoucherBundle\Entity;
 use NewApiBundle\Entity\Beneficiary;
 use DateTime;
 use DateTimeInterface;
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -79,7 +79,7 @@ class SmartcardPurchase
     /**
      * @var Assistance|null
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Assistance", inversedBy="smartcardPurchases", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Assistance", inversedBy="smartcardPurchases", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
      */
     private $assistance;

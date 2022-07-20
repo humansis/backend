@@ -3,9 +3,9 @@
 namespace TransactionBundle\Utils\Provider;
 
 use CommonBundle\Entity\OrganizationServices;
-use DistributionBundle\Entity\AssistanceBeneficiary;
+use NewApiBundle\Entity\AssistanceBeneficiary;
 
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use TransactionBundle\Entity\Transaction;

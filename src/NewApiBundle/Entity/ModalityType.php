@@ -1,13 +1,13 @@
 <?php
 
-namespace DistributionBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * @ORM\Table(name="modality_type")
- * @ORM\Entity(repositoryClass="DistributionBundle\Repository\ModalityTypeRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ModalityTypeRepository")
  */
 class ModalityType
 {
@@ -32,7 +32,7 @@ class ModalityType
     /**
      * @var Modality
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Modality", inversedBy="modalityTypes")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Modality", inversedBy="modalityTypes")
      * @SymfonyGroups({"FullModalityType", "FullAssistance", "SmallAssistance"})
      */
     private $modality;

@@ -4,6 +4,8 @@ namespace VoucherBundle\Tests\Controller;
 
 use NewApiBundle\Entity\Beneficiary;
 use CommonBundle\DataFixtures\VendorFixtures;
+use NewApiBundle\Entity\Assistance;
+use NewApiBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Component\Smartcard\SmartcardDepositService;
@@ -710,10 +712,10 @@ class SmartcardControllerTest extends BMSServiceTestCase
         }
         $this->em->flush();
 
-        /** @var \DistributionBundle\Entity\ModalityType $modalityType */
-        $modalityType = $this->em->getRepository(\DistributionBundle\Entity\ModalityType::class)->findOneBy(['name' => 'Smartcard'], ['id' => 'asc']);
-        /** @var \DistributionBundle\Entity\Commodity $commodity */
-        $commodity = $this->em->getRepository(\DistributionBundle\Entity\Commodity::class)->findBy(['modalityType' => $modalityType], ['id' => 'asc'])[0];
+        /** @var \NewApiBundle\Entity\ModalityType $modalityType */
+        $modalityType = $this->em->getRepository(\NewApiBundle\Entity\ModalityType::class)->findOneBy(['name' => 'Smartcard'], ['id' => 'asc']);
+        /** @var \NewApiBundle\Entity\Commodity $commodity */
+        $commodity = $this->em->getRepository(\NewApiBundle\Entity\Commodity::class)->findBy(['modalityType' => $modalityType], ['id' => 'asc'])[0];
         $assistance = $commodity->getAssistance();
         $beneficiary = $assistance->getDistributionBeneficiaries()[0]->getBeneficiary();
 

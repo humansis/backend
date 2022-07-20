@@ -10,7 +10,7 @@ use CommonBundle\Controller\CountryController;
 use CommonBundle\DataFixtures\BeneficiaryTestFixtures;
 use CommonBundle\DataFixtures\BookletFixtures;
 use CommonBundle\DataFixtures\ProjectFixtures;
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Enum\AssistanceTargetType;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;

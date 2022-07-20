@@ -6,7 +6,7 @@ use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\CountrySpecific;
 use NewApiBundle\Repository\BeneficiaryRepository;
 use NewApiBundle\Repository\CountrySpecificRepository;
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use Doctrine\ORM\NonUniqueResultException;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\InputType\Assistance\DistributeBeneficiaryReliefPackagesInputType;

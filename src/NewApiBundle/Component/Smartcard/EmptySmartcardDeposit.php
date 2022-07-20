@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Smartcard;
 
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 
 /**
  * Create empty (virtual) deposit.

@@ -3,7 +3,7 @@
 namespace VoucherBundle\Repository;
 
 use NewApiBundle\Entity\Beneficiary;
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Tools\Pagination\Paginator;

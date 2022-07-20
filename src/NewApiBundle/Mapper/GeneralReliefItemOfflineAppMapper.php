@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
-use DistributionBundle\Entity\GeneralReliefItem;
+use NewApiBundle\Entity\GeneralReliefItem;
 use NewApiBundle\Serializer\MapperInterface;
 
 class GeneralReliefItemOfflineAppMapper implements MapperInterface

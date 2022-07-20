@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller\WebApp\Assistance;
 
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Controller\WebApp\AbstractWebAppController;
 use NewApiBundle\Entity\Assistance\ReliefPackage;

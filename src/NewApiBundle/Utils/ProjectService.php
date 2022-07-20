@@ -3,7 +3,7 @@
 namespace NewApiBundle\Utils;
 
 use NewApiBundle\Entity\Household;
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use InvalidArgumentException;

@@ -6,11 +6,11 @@ use NewApiBundle\Entity\Community;
 use CommonBundle\Entity\Location;
 use DateTime;
 use DateTimeInterface;
-use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\ModalityType;
+use NewApiBundle\Entity\Assistance;
+use NewApiBundle\Entity\ModalityType;
 use NewApiBundle\Enum\AssistanceType;
-use DistributionBundle\Repository\AssistanceRepository;
-use DistributionBundle\Repository\ModalityTypeRepository;
+use NewApiBundle\Repository\AssistanceRepository;
+use NewApiBundle\Repository\ModalityTypeRepository;
 use Exception;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 use NewApiBundle\Enum\ProductCategoryType;
@@ -37,7 +37,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     {
         /** @var Assistance $assistance */
         $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy([], ['id' => 'asc'])[0];
-        $commodityIds = array_map(function (\DistributionBundle\Entity\Commodity $commodity) {
+        $commodityIds = array_map(function (\NewApiBundle\Entity\Commodity $commodity) {
             return $commodity->getId();
         }, $assistance->getCommodities()->toArray());
 

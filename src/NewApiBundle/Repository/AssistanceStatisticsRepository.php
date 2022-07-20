@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Repository;
 
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;

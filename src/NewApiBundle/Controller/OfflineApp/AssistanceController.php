@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller\OfflineApp;
 
 use NewApiBundle\MapperDeprecated\AssistanceMapper;
-use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Repository\AssistanceRepository;
+use NewApiBundle\Entity\Assistance;
+use NewApiBundle\Repository\AssistanceRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Controller\AbstractController;
 use NewApiBundle\Enum\ModalityType;

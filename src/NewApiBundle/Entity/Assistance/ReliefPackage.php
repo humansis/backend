@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Entity\Assistance;
 
-use DistributionBundle\Entity\AssistanceBeneficiary;
+use NewApiBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
@@ -35,7 +35,7 @@ class ReliefPackage
     /**
      * @var AssistanceBeneficiary
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", inversedBy="reliefPackages")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\AssistanceBeneficiary", inversedBy="reliefPackages")
      */
     private $assistanceBeneficiary;
 

@@ -2,8 +2,8 @@
 namespace VoucherBundle\Tests\Controller;
 
 use NewApiBundle\Entity\Beneficiary;
-use DistributionBundle\Entity\AssistanceBeneficiary;
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\AssistanceBeneficiary;
+use NewApiBundle\Entity\Assistance;
 use Tests\BMSServiceTestCase;
 use VoucherBundle\Entity\Booklet;
 

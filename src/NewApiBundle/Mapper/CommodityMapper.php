@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
-use DistributionBundle\Entity\Commodity;
+use NewApiBundle\Entity\Commodity;
 use NewApiBundle\Serializer\MapperInterface;
 
 class CommodityMapper implements MapperInterface

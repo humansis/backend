@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace NewApiBundle\Mapper\Assistance\OfflineApp;
 
 use NewApiBundle\Entity\Beneficiary;
-use DistributionBundle\Entity\AssistanceBeneficiary;
-use DistributionBundle\Entity\GeneralReliefItem;
+use NewApiBundle\Entity\AssistanceBeneficiary;
+use NewApiBundle\Entity\GeneralReliefItem;
 use NewApiBundle\Mapper\MapperContextTrait;
 use NewApiBundle\Serializer\MapperInterface;
 use VoucherBundle\Entity\Voucher;

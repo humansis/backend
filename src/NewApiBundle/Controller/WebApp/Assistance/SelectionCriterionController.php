@@ -3,7 +3,7 @@
 namespace NewApiBundle\Controller\WebApp\Assistance;
 
 use CommonBundle\Pagination\Paginator;
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\SelectionCriteria\SelectionCriterionService;
 use NewApiBundle\Controller\AbstractController;

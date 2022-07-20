@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Command;
 
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use NewApiBundle\Component\WingMoney\ImportService;

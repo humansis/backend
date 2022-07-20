@@ -7,7 +7,7 @@ namespace TransactionBundle\Export;
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\NationalId;
 use NewApiBundle\Entity\Phone;
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Component\Country\Country;
 use NewApiBundle\Enum\NationalIdType;

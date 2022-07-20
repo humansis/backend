@@ -2,7 +2,7 @@
 
 namespace VoucherBundle\Entity;
 
-use DistributionBundle\Entity\AssistanceBeneficiary;
+use NewApiBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -90,7 +90,7 @@ class Booklet implements ExportableInterface
     private $vouchers;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", inversedBy="booklets")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\AssistanceBeneficiary", inversedBy="booklets")
      * @ORM\JoinColumn(name="distribution_beneficiary_id")
      */
     private $distribution_beneficiary;

@@ -1,6 +1,6 @@
 <?php
 
-namespace DistributionBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use NewApiBundle\Entity\AbstractBeneficiary;
 use NewApiBundle\Entity\Beneficiary;
@@ -22,7 +22,7 @@ use VoucherBundle\Entity\SmartcardDeposit;
  * AssistanceBeneficiary.
  *
  * @ORM\Table(name="distribution_beneficiary")
- * @ORM\Entity(repositoryClass="DistributionBundle\Repository\AssistanceBeneficiaryRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\AssistanceBeneficiaryRepository")
  */
 class AssistanceBeneficiary
 {
@@ -31,7 +31,7 @@ class AssistanceBeneficiary
     /**
      * @var Assistance
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Assistance", inversedBy="distributionBeneficiaries")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Assistance", inversedBy="distributionBeneficiaries")
      * @ORM\JoinColumn(name="assistance_id")
      * @SymfonyGroups({"FullAssistanceBeneficiary", "FullBooklet"})
      */

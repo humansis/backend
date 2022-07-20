@@ -3,7 +3,7 @@
 namespace Tests\NewApiBundle\Controller;
 
 use NewApiBundle\DBAL\AssistanceTypeEnum;
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Enum\AssistanceTargetType;
 use NewApiBundle\Enum\AssistanceType;
 use Exception;

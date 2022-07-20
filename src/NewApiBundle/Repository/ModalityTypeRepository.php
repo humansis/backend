@@ -1,6 +1,6 @@
 <?php
 
-namespace DistributionBundle\Repository;
+namespace NewApiBundle\Repository;
 
 use DistributionBundle\Entity\Modality;
 

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper\Assistance\OfflineApp;
 
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Repository\AssistanceStatisticsRepository;
 use NewApiBundle\Serializer\MapperInterface;
 

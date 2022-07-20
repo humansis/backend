@@ -2,10 +2,10 @@
 
 namespace Tests\NewApiBundle\Controller;
 
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Enum\AssistanceTargetType;
-use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
-use DistributionBundle\Repository\AssistanceRepository;
+use NewApiBundle\Repository\AssistanceBeneficiaryRepository;
+use NewApiBundle\Repository\AssistanceRepository;
 use Exception;
 use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Entity\Assistance\ReliefPackage;

@@ -3,9 +3,9 @@
 namespace NewApiBundle\MapperDeprecated;
 
 use NewApiBundle\Repository\BeneficiaryRepository;
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Enum\AssistanceTargetType;
-use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
+use NewApiBundle\Repository\AssistanceBeneficiaryRepository;
 use NewApiBundle\Enum\ProductCategoryType;
 
 /**

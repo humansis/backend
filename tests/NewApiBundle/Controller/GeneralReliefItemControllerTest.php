@@ -2,7 +2,7 @@
 
 namespace Tests\NewApiBundle\Controller;
 
-use DistributionBundle\Entity\GeneralReliefItem;
+use NewApiBundle\Entity\GeneralReliefItem;
 use Exception;
 use Tests\BMSServiceTestCase;
 

@@ -3,7 +3,7 @@
 namespace NewApiBundle\Controller;
 
 use NewApiBundle\Entity\Institution;
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\AssistanceInstitutionsFilterInputType;
 use NewApiBundle\InputType\InstitutionCreateInputType;
