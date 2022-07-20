@@ -1,6 +1,6 @@
 <?php
 
-namespace App\tests\DistributionBundle\Controller;
+namespace Tests\NewApiBundle;
 
 use CommonBundle\Utils\ExportService;
 use NewApiBundle\Entity\Assistance;

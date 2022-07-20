@@ -9,7 +9,7 @@ use NewApiBundle\Repository\AssistanceBeneficiaryRepository;
 use NewApiBundle\Enum\ProductCategoryType;
 
 /**
- * @deprecated TODO remove methods while removing DistributionBundle
+ * @deprecated
  */
 class AssistanceMapper
 {
@@ -100,13 +100,6 @@ class AssistanceMapper
         ];
 
         return $assistanceArray;
-    }
-
-    public function toFullArrays(iterable $assistances): iterable
-    {
-        foreach ($assistances as $assistance) {
-            yield $this->toFullArray($assistance);
-        }
     }
 
     /**
