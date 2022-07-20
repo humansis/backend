@@ -3,7 +3,7 @@
 namespace NewApiBundle\Entity;
 
 use CommonBundle\Utils\ExportableInterface;
-use DistributionBundle\Model\Criteria;
+use NewApiBundle\Model\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
