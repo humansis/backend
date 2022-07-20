@@ -6,18 +6,13 @@ use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Community;
 use NewApiBundle\Entity\CountrySpecific;
 use NewApiBundle\Entity\Institution;
-use DistributionBundle\Entity\AssistanceBeneficiary;
-use DistributionBundle\Entity\GeneralReliefItem;
 use DistributionBundle\Entity\Assistance;
-use NewApiBundle\Entity\Household;
 use NewApiBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use InvalidArgumentException;
-use NewApiBundle\DBAL\NationalIdTypeEnum;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\NationalIdType;
-use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\InputType\CommunityFilterType;
@@ -52,19 +47,6 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         ], ['id' => 'asc']);
     }
 
-    public function countAll(string $iso3)
-    {
-        $qb = $this->createQueryBuilder("db");
-        $q = $qb->select("COUNT(DISTINCT db.beneficiary)")
-            ->leftJoin("db.beneficiary", "b")
-            ->leftJoin("b.projects", "p")
-            ->andWhere('p.iso3 = :country')
-            ->andWhere('b.archived = 0');
-        $q->setParameter('country', $iso3);
-
-        return $q->getQuery()->getSingleScalarResult();
-    }
-
     public function findAssignable(Assistance $assistance)
     {
         $qb = $this->createQueryBuilder("db");
@@ -76,18 +58,6 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter(':s', Booklet::UNASSIGNED);
 
         return $q->getQuery()->getResult();
-    }
-
-    public function countWithoutBooklet(Assistance $assistance)
-    {
-        $qb = $this->createQueryBuilder("db");
-        $q = $qb->select("COUNT(db)")
-            ->where("db.assistance = :dd")
-            ->setParameter("dd", $assistance)
-            ->leftJoin("db.booklets", "b")
-            ->andWhere('b IS NULL');
-
-        return $q->getQuery()->getSingleScalarResult();
     }
 
     /**
@@ -103,31 +73,6 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         ]);
 
         return (int) $result;
-    }
-
-    public function findActiveByAssistance(Assistance $assistance): iterable
-    {
-        $qb = $this->createQueryBuilder('db')
-            ->andWhere('db.assistance = :assistance')
-            ->andWhere('db.removed = false')
-            ->setParameter('assistance', $assistance)
-            ->leftJoin("db.beneficiary", "beneficiary")
-        ;
-
-        switch ($assistance->getTargetType()) {
-            case AssistanceTargetType::INDIVIDUAL:
-            case AssistanceTargetType::HOUSEHOLD:
-                $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Beneficiary::class));
-                break;
-            case AssistanceTargetType::COMMUNITY:
-                $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Community::class));
-                break;
-            case AssistanceTargetType::INSTITUTION:
-                $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Institution::class));
-                break;
-        }
-
-        return $qb->getQuery()->getResult();
     }
 
     public function findByAssistance(Assistance $assistance): iterable
