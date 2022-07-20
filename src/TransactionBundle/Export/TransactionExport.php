@@ -96,7 +96,7 @@ class TransactionExport
 
         $worksheet->setCellValue('E2', "Location");
         $worksheet->setCellValue('E3', "Location");
-        $worksheet->setCellValue('F2', $assistance->getLocation()->getLocationName());
+        $worksheet->setCellValue('F2', $assistance->getLocation()->getName());
         $worksheet->mergeCells('F2:F3');
         $worksheet->getStyle('E2')->getFont()
             ->setBold(true);

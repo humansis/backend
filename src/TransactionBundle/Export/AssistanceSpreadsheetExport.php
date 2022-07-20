@@ -198,7 +198,7 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('E5')->setValue($this->translator->trans('Location').':');
         $worksheet->getCell('E5')->getStyle()->applyFromArray($labelStyle);
 
-        $worksheet->getCell('F4')->setValue($assistance->getLocation()->getLocationName());
+        $worksheet->getCell('F4')->setValue($assistance->getLocation()->getName());
         $worksheet->getCell('F4')->getStyle()->applyFromArray($userInputStyle);
         $worksheet->mergeCells('F4:F5');
 
