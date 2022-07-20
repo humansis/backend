@@ -199,10 +199,18 @@ services:
     NewApiBundle\Controller\DonorController:
         arguments:
             - '@NewApiBundle\Component\File\UploadService'
+              
+    NewApiBundle\Controller\InstitutionCodelistController:
+        arguments:
+            - "@translator"
 
     NewApiBundle\Controller\LocationController:
         arguments:
             - '@NewApiBundle\Component\Country\Countries'
+  
+    NewApiBundle\Controller\ModalityCodelistController:
+        arguments:
+            - "@translator"
 
     NewApiBundle\Controller\OrganizationController:
         arguments:
@@ -215,12 +223,18 @@ services:
     NewApiBundle\Controller\AssistanceCodelistController:
         arguments: 
             - '@project.sector_service'
+            - "@translator"
+
+    NewApiBundle\Controller\ProductCategoryCodelistController:
+        arguments:
+            - "@translator"
 
     NewApiBundle\Controller\ScoringBlueprintController:
 
     NewApiBundle\Controller\SectorsCodelistController:
         arguments:
             - "@project.sector_service"
+            - "@translator"
 
     NewApiBundle\Controller\SelectionCriterionController:
 

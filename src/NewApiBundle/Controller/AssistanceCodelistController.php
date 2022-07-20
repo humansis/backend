@@ -15,6 +15,7 @@ use ProjectBundle\Utils\SectorService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Cache(expires="+5 days", public=true)
@@ -26,16 +27,21 @@ class AssistanceCodelistController extends AbstractController
      */
     private $sectorService;
 
+    /** @var TranslatorInterface */
+    private $translator;
+
 
     /**
      * AssistanceCodelistController constructor.
      * @param SectorService $sectorService
      */
     public function __construct(
-        SectorService $sectorService
+        SectorService $sectorService,
+        TranslatorInterface $translator
     )
     {
         $this->sectorService = $sectorService;
+        $this->translator = $translator;
     }
 
     /**
@@ -53,7 +59,7 @@ class AssistanceCodelistController extends AbstractController
             $data = $this->sectorService->findTargetsByType($targetTypeFilterType->getType());
         }
 
-        $targets = CodeLists::mapEnum($data);
+        $targets = CodeLists::mapEnum($data, $this->translator);
 
         return $this->json(new Paginator($targets));
     }
@@ -81,7 +87,7 @@ class AssistanceCodelistController extends AbstractController
             }
         }
 
-        $assistanceTypes = CodeLists::mapEnum($data);
+        $assistanceTypes = CodeLists::mapEnum($data, $this->translator);
 
         return $this->json(new Paginator($assistanceTypes));
     }
@@ -93,8 +99,8 @@ class AssistanceCodelistController extends AbstractController
      */
     public function getCommodityDivision(): JsonResponse
     {
-        $targets = CodeLists::mapEnum(CommodityDivision::values());
+        $data = CodeLists::mapEnum(CommodityDivision::values(), $this->translator, 'enums');
 
-        return $this->json(new Paginator($targets));
+        return $this->json(new Paginator($data));
     }
 }

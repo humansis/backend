@@ -8,9 +8,17 @@ use CommonBundle\Pagination\Paginator;
 use NewApiBundle\Component\Codelist\CodeLists;
 use NewApiBundle\Enum\ProductCategoryType;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ProductCategoryCodelistController extends AbstractController
 {
+    /** @var TranslatorInterface */
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
     /**
      * @Rest\Get("/web-app/v1/product-categories/types")
      *
@@ -18,7 +26,7 @@ class ProductCategoryCodelistController extends AbstractController
      */
     public function getTypes(): JsonResponse
     {
-        $data = CodeLists::mapEnum(ProductCategoryType::values());
+        $data = CodeLists::mapEnum(ProductCategoryType::values(), $this->translator, 'enums');
 
         return $this->json(new Paginator($data));
     }

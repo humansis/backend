@@ -38,7 +38,7 @@ class BeneficiaryCodelistController extends AbstractController
      */
     public function getTypes(): JsonResponse
     {
-        $data = CodeLists::mapEnum(BeneficiaryType::values());
+        $data = CodeLists::mapEnum(BeneficiaryType::values(), $this->translator);
 
         return $this->json(new Paginator($data));
     }
@@ -50,7 +50,7 @@ class BeneficiaryCodelistController extends AbstractController
      */
     public function getReferralTypes(): JsonResponse
     {
-        $data = CodeLists::mapArray(Referral::REFERRALTYPES);
+        $data = CodeLists::mapArray(Referral::REFERRALTYPES, $this->translator, 'sectors');
 
         return $this->json(new Paginator($data));
     }
@@ -62,7 +62,7 @@ class BeneficiaryCodelistController extends AbstractController
      */
     public function getResidencyStatuses(): JsonResponse
     {
-        $data = CodeLists::mapEnum(ResidencyStatus::all());
+        $data = CodeLists::mapEnum(ResidencyStatus::values(), $this->translator, 'enums');
 
         return $this->json(new Paginator($data));
     }
@@ -87,7 +87,7 @@ class BeneficiaryCodelistController extends AbstractController
      */
     public function getNationalIdTypes(): JsonResponse
     {
-        $data = CodeLists::mapEnum(NationalIdType::values());
+        $data = CodeLists::mapEnum(NationalIdType::values(), $this->translator, 'enums');
 
         return $this->json(new Paginator($data));
     }
@@ -99,7 +99,7 @@ class BeneficiaryCodelistController extends AbstractController
      */
     public function getPhoneTypes(): JsonResponse
     {
-        $data = CodeLists::mapEnum(PhoneTypes::values());
+        $data = CodeLists::mapEnum(PhoneTypes::values(), $this->translator, 'enums');
 
         return $this->json(new Paginator($data));
     }

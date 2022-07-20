@@ -11,21 +11,37 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CodeLists
 {
-    public static function mapEnum(iterable $list)
+    public static function mapEnum(
+        iterable $list,
+        ?TranslatorInterface $translator = null,
+        ?string $domain = 'messages'
+    )
     {
         $data = [];
         foreach ($list as $value) {
-            $data[] = new CodeItem($value, $value);
+            $translation = $translator !== null
+                ? $translator->trans($value, [], $domain)
+                : $value;
+
+            $data[] = new CodeItem($value, $translation);
         }
 
         return $data;
     }
 
-    public static function mapArray(iterable $list)
+    public static function mapArray(
+        iterable $list,
+        ?TranslatorInterface $translator = null,
+        ?string $domain = 'messages'
+    )
     {
         $data = [];
         foreach ($list as $key => $value) {
-            $data[] = new CodeItem($key, $value);
+            $translation = $translator !== null
+                ? $translator->trans($value, [], $domain)
+                : $value;
+            
+            $data[] = new CodeItem($key, $translation);
         }
 
         return $data;

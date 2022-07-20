@@ -12,6 +12,7 @@ use ProjectBundle\Entity\Project;
 use ProjectBundle\Utils\SectorService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Cache(expires="+5 days", public=true)
@@ -21,9 +22,13 @@ class SectorsCodelistController extends AbstractController
     /** @var SectorService */
     private $sectorService;
 
-    public function __construct(SectorService $sectorService)
+    /** @var TranslatorInterface */
+    private $translator;
+
+    public function __construct(SectorService $sectorService, TranslatorInterface $translator)
     {
         $this->sectorService = $sectorService;
+        $this->translator = $translator;
     }
 
     /**
@@ -34,7 +39,7 @@ class SectorsCodelistController extends AbstractController
      */
     public function getSectors(): JsonResponse
     {
-        $data = CodeLists::mapEnum(SectorEnum::all());
+        $data = CodeLists::mapEnum(SectorEnum::all(), $this->translator, 'sectors');
 
         return $this->json(new Paginator($data));
     }

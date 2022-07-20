@@ -39,10 +39,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function getLivelihoods(): JsonResponse
     {
-        $data = [];
-        foreach (Livelihood::values() as $code) {
-            $data[] = new CodeItem($code, $this->translator->trans($code));
-        }
+        $data = CodeLists::mapEnum(Livelihood::values(), $this->translator, 'enums');
 
         return $this->json(new Paginator($data));
     }
@@ -54,7 +51,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function getAssets(): JsonResponse
     {
-        $data = CodeLists::mapEnum(HouseholdAssets::values());
+        $data = CodeLists::mapEnum(HouseholdAssets::values(), $this->translator);
 
         return $this->json(new Paginator($data));
     }
@@ -66,7 +63,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function supportReceivedTypes(): JsonResponse
     {
-        $data = CodeLists::mapEnum(HouseholdSupportReceivedType::values());
+        $data = CodeLists::mapEnum(HouseholdSupportReceivedType::values(), $this->translator);
 
         return $this->json(new Paginator($data));
     }
@@ -78,7 +75,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function getShelterStatuses(): JsonResponse
     {
-        $data = CodeLists::mapEnum(HouseholdShelterStatus::values());
+        $data = CodeLists::mapEnum(HouseholdShelterStatus::values(), $this->translator);
 
         return $this->json(new Paginator($data));
     }
@@ -90,7 +87,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function getLocationTypes(): JsonResponse
     {
-        $data = CodeLists::mapEnum(HouseholdLocation::LOCATION_TYPES);
+        $data = CodeLists::mapArray(HouseholdLocation::LOCATION_TYPES, $this->translator, 'enums');
 
         return $this->json(new Paginator($data));
     }
@@ -102,7 +99,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function referralTypes(): JsonResponse
     {
-        $data = CodeLists::mapArray(Referral::REFERRALTYPES);
+        $data = CodeLists::mapArray(Referral::REFERRALTYPES, $this->translator, 'sectors');
 
         return $this->json(new Paginator($data));
     }

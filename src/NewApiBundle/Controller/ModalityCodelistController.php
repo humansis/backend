@@ -9,14 +9,24 @@ use DistributionBundle\Entity\Modality;
 use DistributionBundle\Entity\ModalityType;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Codelist\CodeItem;
+use NewApiBundle\Component\Codelist\CodeLists;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Cache(expires="+5 days", public=true)
  */
 class ModalityCodelistController extends AbstractController
 {
+    /** @var TranslatorInterface */
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+    
     /**
      * @Rest\Get("/web-app/v1/modalities")
      *
@@ -24,13 +34,13 @@ class ModalityCodelistController extends AbstractController
      */
     public function modalities(): JsonResponse
     {
-        $fn = function (Modality $modality) {
-            return new CodeItem($modality->getName(), $modality->getName());
-        };
+        $modalities = $this->getDoctrine()
+            ->getRepository(Modality::class)
+            ->getNames();
 
-        $modalities = $this->getDoctrine()->getRepository(Modality::class)->findAll();
-
-        return $this->json(new Paginator(array_map($fn, $modalities)));
+        $data = CodeLists::mapEnum($modalities, $this->translator, 'enums');
+        
+        return $this->json(new Paginator($data));
     }
 
     /**
@@ -40,13 +50,11 @@ class ModalityCodelistController extends AbstractController
      */
     public function allTypes(): JsonResponse
     {
-        $data = [];
+        $types = $this->getDoctrine()
+            ->getRepository(ModalityType::class)
+            ->getPublicNames();
 
-        /** @var ModalityType[] $types */
-        $types = $this->getDoctrine()->getRepository(ModalityType::class)->findBy(['internal' => false]);
-        foreach ($types as $type) {
-            $data[] = new CodeItem($type->getName(), $type->getName());
-        }
+        $data = CodeLists::mapEnum($types, $this->translator, 'enums');
 
         return $this->json(new Paginator($data));
     }
@@ -60,18 +68,11 @@ class ModalityCodelistController extends AbstractController
      */
     public function types(string $code): JsonResponse
     {
-        $modality = $this->getDoctrine()->getRepository(Modality::class)->findOneBy(['name' => $code]);
-        if (!$modality) {
-            throw $this->createNotFoundException('Modality not found');
-        }
+        $types = $this->getDoctrine()
+            ->getRepository(ModalityType::class)
+            ->getPublicNames($code);
 
-        $data = [];
-        foreach ($modality->getModalityTypes() as $type) {
-            /** @var ModalityType $type */
-            if (!$type->isInternal()) {
-                $data[] = new CodeItem($type->getName(), $type->getName());
-            }
-        }
+        $data = CodeLists::mapEnum($types, $this->translator, 'enums');
 
         return $this->json(new Paginator($data));
     }
