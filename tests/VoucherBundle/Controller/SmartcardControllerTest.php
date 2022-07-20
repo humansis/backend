@@ -10,6 +10,8 @@ use NewApiBundle\Component\Smartcard\SmartcardDepositService;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\Smartcard\PreliminaryInvoice;
 use NewApiBundle\Enum\ModalityType;
+use NewApiBundle\InputType\Smartcard\ChangeSmartcardInputType;
+use NewApiBundle\InputType\Smartcard\SmartcardRegisterInputType;
 use NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\User;
@@ -20,6 +22,8 @@ use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Enum\SmartcardStates;
 use VoucherBundle\InputType\SmartcardInvoice;
+use VoucherBundle\Repository\SmartcardRepository;
+use VoucherBundle\Utils\SmartcardService;
 
 class SmartcardControllerTest extends BMSServiceTestCase
 {
@@ -63,18 +67,38 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'createdAt' => '2020-02-02T12:00:00Z',
         ]);
 
-        $smartcard = json_decode($this->client->getResponse()->getContent(), true);
-
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
-        $this->assertArrayHasKey('id', $smartcard);
-        $this->assertArrayHasKey('serialNumber', $smartcard);
-        $this->assertArrayHasKey('state', $smartcard);
-        $this->assertArrayHasKey('currency', $smartcard);
-        $this->assertEquals('1111111', $smartcard['serialNumber']);
-        $this->assertEquals(SmartcardStates::ACTIVE, $smartcard['state']);
-        $this->assertNull($smartcard['currency']);
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
 
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumberAndBeneficiary('1111111', $bnf);
+        $this->em->remove($smartcard);
+        $this->em->flush();
+    }
+
+    /**
+     * @return void
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function testRegisterSmartcardDuplicity(): void
+    {
+        $smartcardService = self::$container->get(SmartcardService::class);
+        $code = '1111111';
+        $createdAt = '2005-02-02T12:00:00Z';
+        $this->removeSmartcards($code);
+        $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
+        $registerInputType = SmartcardRegisterInputType::create($code, $bnf->getId(), $createdAt);
+        $smartcard = $smartcardService->register($registerInputType);
+
+        $this->request('POST', '/api/wsse/offline-app/v1/smartcards', [
+            'serialNumber' => $code,
+            'beneficiaryId' => $bnf->getId(),
+            'createdAt' => $createdAt,
+        ]);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $this->assertSame(202, $this->client->getResponse()->getStatusCode());
+
         $this->em->remove($smartcard);
         $this->em->flush();
     }
@@ -398,6 +422,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
     public function testChangeStateToInactive()
     {
+        $smartcardRepository = self::$container->get(SmartcardRepository::class);
         $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
         $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
 
@@ -407,11 +432,29 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'beneficiaryId' => $bnf->getId(),
         ]);
 
-        $smartcard = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $smartcard = $smartcardRepository->find($smartcard->getId());
+        $this->assertEquals(SmartcardStates::INACTIVE, $smartcard->getState());
+    }
+
+    public function testChangeStateToInactiveDoubled(): void
+    {
+        $smartcardService = self::$container->get(SmartcardService::class);
+        $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
+        $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
+        $date = '2005-02-02T12:00:00Z';
+        $changeInputType = ChangeSmartcardInputType::create(SmartcardStates::INACTIVE, $date);
+        $smartcardService->change($smartcard, $changeInputType);
+
+        $this->request('PATCH', '/api/wsse/offline-app/v1/smartcards/'.$smartcard->getSerialNumber(), [
+            'state' => SmartcardStates::INACTIVE,
+            'createdAt' => $date,
+            'beneficiaryId' => $bnf->getId(),
+        ]);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
-        $this->assertArrayHasKey('state', $smartcard);
-        $this->assertEquals(SmartcardStates::INACTIVE, $smartcard['state']);
+        $this->assertEquals(202, $this->client->getResponse()->getStatusCode());
     }
 
     public function testGetPurchases(): void
