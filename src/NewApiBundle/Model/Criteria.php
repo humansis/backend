@@ -1,7 +1,7 @@
 <?php
 
 
-namespace DistributionBundle\Model;
+namespace NewApiBundle\Model;
 
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
