@@ -3,9 +3,9 @@
 namespace CommonBundle\Controller;
 
 use CommonBundle\Entity\Organization;
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Enum\AssistanceTargetType;
-use DistributionBundle\Repository\AssistanceRepository;
+use NewApiBundle\Repository\AssistanceRepository;
 use NewApiBundle\Utils\AssistanceService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;

@@ -31,7 +31,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         try {
             $projectId = $em->createQueryBuilder()
                 ->select('p.id')
-                ->from(\DistributionBundle\Entity\Assistance::class, 'a')
+                ->from(\NewApiBundle\Entity\Assistance::class, 'a')
                 ->join('a.project', 'p')
                 ->andWhere('a.validatedBy IS NOT NULL')
                 ->andWhere('a.archived = 0')

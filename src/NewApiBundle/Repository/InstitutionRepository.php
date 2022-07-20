@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Repository;
 
 use CommonBundle\Entity\Location;
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use InvalidArgumentException;

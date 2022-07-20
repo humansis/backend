@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller\VendorApp;
 
+use NewApiBundle\Entity\Assistance;
 use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\Query\Expr\Join;
@@ -51,7 +52,7 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
             ])
             ->setMaxResults(1)
             ->getQuery()->getOneOrNullResult();
-        
+
         $reliefPackage->setAmountDistributed("0.00");
 
         /** @var Assistance $assistance */

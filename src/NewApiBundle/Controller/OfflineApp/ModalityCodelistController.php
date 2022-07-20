@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller\OfflineApp;
 
 use CommonBundle\Pagination\Paginator;
-use DistributionBundle\Entity\ModalityType;
+use NewApiBundle\Entity\ModalityType;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Codelist\CodeItem;
 use NewApiBundle\Controller\AbstractController;

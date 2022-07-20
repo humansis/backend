@@ -3,7 +3,7 @@
 namespace App\tests\DistributionBundle\Controller;
 
 use CommonBundle\Utils\ExportService;
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use Tests\BMSServiceTestCase;
 
 class ExportDistributionTest extends BMSServiceTestCase

@@ -2,7 +2,7 @@
 
 namespace Tests\NewApiBundle\Controller;
 
-use DistributionBundle\Entity\Modality;
+use NewApiBundle\Entity\Modality;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Tests\BMSServiceTestCase;

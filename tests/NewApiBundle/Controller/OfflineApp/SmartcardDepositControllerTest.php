@@ -3,6 +3,8 @@
 namespace Tests\NewApiBundle\Controller\OfflineApp;
 
 use NewApiBundle\Entity\Beneficiary;
+use NewApiBundle\Entity\Assistance;
+use NewApiBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Component\Smartcard\Deposit\DepositFactory;

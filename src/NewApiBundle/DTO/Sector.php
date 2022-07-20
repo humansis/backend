@@ -6,7 +6,7 @@ use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Community;
 use NewApiBundle\Entity\Household;
 use NewApiBundle\Entity\Institution;
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Enum\AssistanceTargetType;
 use NewApiBundle\Enum\AssistanceType;
 use InvalidArgumentException;

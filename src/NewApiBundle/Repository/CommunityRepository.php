@@ -3,7 +3,7 @@
 namespace NewApiBundle\Repository;
 
 use CommonBundle\Entity\Location;
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;

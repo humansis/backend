@@ -6,7 +6,7 @@ use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\CountrySpecific;
 use NewApiBundle\Entity\Household;
 use CommonBundle\Repository\LocationRepository;
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use CommonBundle\Entity\Location;
 use NewApiBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\AbstractQuery;
@@ -94,7 +94,7 @@ class BeneficiaryRepository extends \Doctrine\ORM\EntityRepository
      */
     public function getNotSelectedBeneficiariesOfProject(Project $project, string $target, Assistance $excludedAssistance)
     {
-        $excludedAssistanceDQL = "SELECT ben.id FROM DistributionBundle\Entity\AssistanceBeneficiary db LEFT JOIN db.beneficiary ab INNER JOIN NewApiBundle\Entity\Beneficiary ben WITH ben.id = ab.id WHERE db.assistance = :assistance";
+        $excludedAssistanceDQL = "SELECT ben.id FROM NewApiBundle\Entity\AssistanceBeneficiary db LEFT JOIN db.beneficiary ab INNER JOIN NewApiBundle\Entity\Beneficiary ben WITH ben.id = ab.id WHERE db.assistance = :assistance";
         $projectId = $project->getId();
 
         $qb = $this->createQueryBuilder('b');

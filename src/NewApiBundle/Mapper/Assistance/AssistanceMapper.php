@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper\Assistance;
 
-use DistributionBundle\Entity;
+use NewApiBundle\Entity;
 use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Component\Assistance\Domain;
 use NewApiBundle\Utils\AssistanceService;

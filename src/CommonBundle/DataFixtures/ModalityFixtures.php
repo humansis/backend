@@ -2,8 +2,8 @@
 
 namespace CommonBundle\DataFixtures;
 
-use DistributionBundle\Entity\Modality;
-use DistributionBundle\Entity\ModalityType;
+use NewApiBundle\Entity\Modality;
+use NewApiBundle\Entity\ModalityType;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 

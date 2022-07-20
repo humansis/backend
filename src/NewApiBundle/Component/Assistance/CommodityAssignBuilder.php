@@ -2,8 +2,8 @@
 
 namespace NewApiBundle\Component\Assistance;
 
-use DistributionBundle\Entity\AssistanceBeneficiary;
-use DistributionBundle\Entity\Commodity;
+use NewApiBundle\Entity\AssistanceBeneficiary;
+use NewApiBundle\Entity\Commodity;
 
 class CommodityAssignBuilder
 {

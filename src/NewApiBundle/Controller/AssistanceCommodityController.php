@@ -4,6 +4,9 @@ namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Exception\CsvParserException;
 use CommonBundle\Pagination\Paginator;
+use NewApiBundle\Entity\Assistance;
+use NewApiBundle\Entity\Commodity;
+use NewApiBundle\Repository\AssistanceRepository;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Repository\CommodityRepository;
 use Doctrine\ORM\EntityNotFoundException;

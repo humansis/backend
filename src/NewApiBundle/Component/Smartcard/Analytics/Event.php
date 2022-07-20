@@ -3,8 +3,8 @@
 namespace NewApiBundle\Component\Smartcard\Analytics;
 
 use DateTimeInterface;
-use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\AssistanceBeneficiary;
+use NewApiBundle\Entity\Assistance;
+use NewApiBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\Project;
 use VoucherBundle\Entity\Smartcard;

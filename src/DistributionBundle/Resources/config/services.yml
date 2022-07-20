@@ -62,24 +62,24 @@ services:
             - '@NewApiBundle\MapperDeprecated\BeneficiaryMapper'
         public: true
 
-    DistributionBundle\Repository\AssistanceBeneficiaryRepository:
+    NewApiBundle\Repository\AssistanceBeneficiaryRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
-            - DistributionBundle\Entity\AssistanceBeneficiary
+            - NewApiBundle\Entity\AssistanceBeneficiary
 
     assistance.repository:
-        alias: DistributionBundle\Repository\AssistanceRepository
+        alias: NewApiBundle\Repository\AssistanceRepository
         public: true
 
-    DistributionBundle\Repository\AssistanceRepository:
+    NewApiBundle\Repository\AssistanceRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
-            - DistributionBundle\Entity\Assistance
+            - NewApiBundle\Entity\Assistance
 
-    DistributionBundle\Repository\ModalityTypeRepository:
+    NewApiBundle\Repository\ModalityTypeRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
-            - DistributionBundle\Entity\ModalityType
+            - NewApiBundle\Entity\ModalityType
         public: true
 
     DistributionBundle\Repository\CommodityRepository:

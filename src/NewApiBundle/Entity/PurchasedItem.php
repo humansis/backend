@@ -5,8 +5,8 @@ namespace NewApiBundle\Entity;
 
 use NewApiBundle\Entity\AbstractBeneficiary;
 use CommonBundle\Entity\Location;
-use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\Commodity;
+use NewApiBundle\Entity\Assistance;
+use NewApiBundle\Entity\Commodity;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Project;
 use VoucherBundle\Entity\Product;
@@ -59,7 +59,7 @@ class PurchasedItem
     /**
      * @var Assistance
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Assistance")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Assistance")
      */
     private $assistance;
 
@@ -87,7 +87,7 @@ class PurchasedItem
     /**
      * @var Commodity
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Commodity")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Commodity")
      */
     private $commodity;
 

@@ -12,7 +12,7 @@ trait AssistanceFilterTrait
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("int", groups={"Strict"}),
-     *         @EntityExist(entity="\DistributionBundle\Entity\Assistance", groups={"Strict"})
+     *         @EntityExist(entity="\NewApiBundle\Entity\Assistance", groups={"Strict"})
      *     },
      *     groups={"Strict"}
      * )

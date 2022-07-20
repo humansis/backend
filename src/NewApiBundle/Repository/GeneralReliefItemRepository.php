@@ -1,10 +1,10 @@
 <?php
 
-namespace DistributionBundle\Repository;
+namespace NewApiBundle\Repository;
 
 use NewApiBundle\Entity\Beneficiary;
-use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\GeneralReliefItem;
+use NewApiBundle\Entity\Assistance;
+use NewApiBundle\Entity\GeneralReliefItem;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\InputType\GeneralReliefFilterInputType;
 use NewApiBundle\Request\Pagination;

@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Component\Assistance;
 
-use DistributionBundle\Repository\AssistanceRepository;
+use NewApiBundle\Repository\AssistanceRepository;
 use NewApiBundle\Component\Assistance\Domain\Assistance;
 
 class AssistanceQuery

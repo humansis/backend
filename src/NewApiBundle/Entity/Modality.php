@@ -1,6 +1,6 @@
 <?php
 
-namespace DistributionBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
@@ -9,7 +9,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * Modality
  *
  * @ORM\Table(name="modality")
- * @ORM\Entity(repositoryClass="DistributionBundle\Repository\ModalityRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ModalityRepository")
  */
 class Modality
 {
@@ -32,7 +32,7 @@ class Modality
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\ModalityType", mappedBy="modality")
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\ModalityType", mappedBy="modality")
      */
     private $modalityTypes;
 
@@ -81,11 +81,11 @@ class Modality
     /**
      * Add modalityType.
      *
-     * @param \DistributionBundle\Entity\ModalityType $modalityType
+     * @param \NewApiBundle\Entity\ModalityType $modalityType
      *
      * @return Modality
      */
-    public function addModalityType(\DistributionBundle\Entity\ModalityType $modalityType)
+    public function addModalityType(\NewApiBundle\Entity\ModalityType $modalityType)
     {
         $this->modalityTypes[] = $modalityType;
 
@@ -95,11 +95,11 @@ class Modality
     /**
      * Remove modalityType.
      *
-     * @param \DistributionBundle\Entity\ModalityType $modalityType
+     * @param \NewApiBundle\Entity\ModalityType $modalityType
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeModalityType(\DistributionBundle\Entity\ModalityType $modalityType)
+    public function removeModalityType(\NewApiBundle\Entity\ModalityType $modalityType)
     {
         return $this->modalityTypes->removeElement($modalityType);
     }

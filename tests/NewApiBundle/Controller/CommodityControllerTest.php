@@ -2,7 +2,7 @@
 
 namespace Tests\NewApiBundle\Controller;
 
-use DistributionBundle\Entity\Commodity;
+use NewApiBundle\Entity\Commodity;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Tests\BMSServiceTestCase;
@@ -67,7 +67,7 @@ class CommodityControllerTest extends BMSServiceTestCase
     {
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $assistance = $em->getRepository(\DistributionBundle\Entity\Assistance::class)->findBy(['archived' => 0], ['id' => 'asc'])[0];
+        $assistance = $em->getRepository(\NewApiBundle\Entity\Assistance::class)->findBy(['archived' => 0], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/commodities');
 

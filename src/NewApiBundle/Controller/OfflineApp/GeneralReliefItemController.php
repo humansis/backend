@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller\OfflineApp;
 
-use DistributionBundle\Entity\GeneralReliefItem;
+use NewApiBundle\Entity\GeneralReliefItem;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\GeneralReliefFilterInputType;
 use NewApiBundle\InputType\GeneralReliefPatchInputType;

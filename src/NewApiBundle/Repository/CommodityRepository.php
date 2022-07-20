@@ -1,8 +1,8 @@
 <?php
 
-namespace DistributionBundle\Repository;
+namespace NewApiBundle\Repository;
 
-use DistributionBundle\Entity\Commodity;
+use NewApiBundle\Entity\Commodity;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\InputType\CommodityFilterInputType;
 use NewApiBundle\InputType\CommodityOfflineFilterInputType;

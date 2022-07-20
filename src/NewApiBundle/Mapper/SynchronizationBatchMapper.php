@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Utils\AssistanceService;
 use NewApiBundle\Entity\SynchronizationBatch;
 use NewApiBundle\Serializer\MapperInterface;

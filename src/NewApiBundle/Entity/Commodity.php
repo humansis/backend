@@ -1,6 +1,6 @@
 <?php
 
-namespace DistributionBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -16,7 +16,7 @@ use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
  * Commodity
  *
  * @ORM\Table(name="commodity")
- * @ORM\Entity(repositoryClass="DistributionBundle\Repository\CommodityRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\CommodityRepository")
  */
 class Commodity
 {
@@ -26,7 +26,7 @@ class Commodity
     /**
      * @var ModalityType
      * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\ModalityType")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ModalityType")
      */
     private $modalityType;
 
@@ -46,7 +46,7 @@ class Commodity
 
     /**
      * @var Assistance
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Assistance", inversedBy="commodities")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Assistance", inversedBy="commodities")
      * @ORM\JoinColumn(name="assistance_id")
      */
     private $assistance;
@@ -122,11 +122,11 @@ class Commodity
     /**
      * Set assistance.
      *
-     * @param \DistributionBundle\Entity\Assistance|null $assistance
+     * @param \NewApiBundle\Entity\Assistance|null $assistance
      *
      * @return Commodity
      */
-    public function setAssistance(\DistributionBundle\Entity\Assistance $assistance = null)
+    public function setAssistance(\NewApiBundle\Entity\Assistance $assistance = null)
     {
         $this->assistance = $assistance;
 
@@ -136,7 +136,7 @@ class Commodity
     /**
      * Get assistance.
      *
-     * @return \DistributionBundle\Entity\Assistance|null
+     * @return \NewApiBundle\Entity\Assistance|null
      */
     public function getAssistance()
     {
@@ -146,11 +146,11 @@ class Commodity
     /**
      * Set modalityType.
      *
-     * @param \DistributionBundle\Entity\ModalityType|null $modalityType
+     * @param \NewApiBundle\Entity\ModalityType|null $modalityType
      *
      * @return Commodity
      */
-    public function setModalityType(\DistributionBundle\Entity\ModalityType $modalityType = null)
+    public function setModalityType(\NewApiBundle\Entity\ModalityType $modalityType = null)
     {
         $this->modalityType = $modalityType;
 
@@ -160,7 +160,7 @@ class Commodity
     /**
      * Get modalityType.
      *
-     * @return \DistributionBundle\Entity\ModalityType|null
+     * @return \NewApiBundle\Entity\ModalityType|null
      */
     public function getModalityType()
     {

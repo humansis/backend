@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller\OfflineApp;
 
-use DistributionBundle\Entity\Commodity;
+use NewApiBundle\Entity\Commodity;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Controller\AbstractController;
 use NewApiBundle\InputType\CommodityOfflineFilterInputType;

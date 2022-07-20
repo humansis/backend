@@ -1,6 +1,6 @@
 <?php
 
-namespace DistributionBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use CommonBundle\Entity\Location;
 use CommonBundle\Utils\ExportableInterface;
@@ -23,7 +23,7 @@ use VoucherBundle\Entity\SmartcardPurchase;
  * Assistance
  *
  * @ORM\Table(name="assistance")
- * @ORM\Entity(repositoryClass="DistributionBundle\Repository\AssistanceRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\AssistanceRepository")
  */
 class Assistance implements ExportableInterface
 {
@@ -101,7 +101,7 @@ class Assistance implements ExportableInterface
     /**
      * @var AssistanceSelection
      *
-     * @ORM\OneToOne(targetEntity="DistributionBundle\Entity\AssistanceSelection", cascade={"persist"}, inversedBy="assistance")
+     * @ORM\OneToOne(targetEntity="NewApiBundle\Entity\AssistanceSelection", cascade={"persist"}, inversedBy="assistance")
      * @ORM\JoinColumn(name="assistance_selection_id", nullable=false)
      */
     private $assistanceSelection;
@@ -135,13 +135,13 @@ class Assistance implements ExportableInterface
 
     /**
      * @var Commodity[]
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\Commodity", mappedBy="assistance", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\Commodity", mappedBy="assistance", cascade={"persist"})
      * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
      */
     private $commodities;
 
     /**
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", mappedBy="assistance", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\AssistanceBeneficiary", mappedBy="assistance", cascade={"persist"})
      *
      * @SymfonyGroups({"FullAssistance", "FullProject"})
      */
@@ -572,11 +572,11 @@ class Assistance implements ExportableInterface
     /**
      * Add commodity.
      *
-     * @param \DistributionBundle\Entity\Commodity $commodity
+     * @param \NewApiBundle\Entity\Commodity $commodity
      *
      * @return Assistance
      */
-    public function addCommodity(\DistributionBundle\Entity\Commodity $commodity)
+    public function addCommodity(\NewApiBundle\Entity\Commodity $commodity)
     {
         $commodity->setAssistance($this);
         $this->commodities[] = $commodity;
@@ -587,11 +587,11 @@ class Assistance implements ExportableInterface
     /**
      * Remove commodity.
      *
-     * @param \DistributionBundle\Entity\Commodity $commodity
+     * @param \NewApiBundle\Entity\Commodity $commodity
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeCommodity(\DistributionBundle\Entity\Commodity $commodity)
+    public function removeCommodity(\NewApiBundle\Entity\Commodity $commodity)
     {
         return $this->commodities->removeElement($commodity);
     }
@@ -609,11 +609,11 @@ class Assistance implements ExportableInterface
     /**
      * Add assistanceBeneficiary.
      *
-     * @param \DistributionBundle\Entity\AssistanceBeneficiary $assistanceBeneficiary
+     * @param \NewApiBundle\Entity\AssistanceBeneficiary $assistanceBeneficiary
      *
      * @return Assistance
      */
-    public function addAssistanceBeneficiary(\DistributionBundle\Entity\AssistanceBeneficiary $assistanceBeneficiary)
+    public function addAssistanceBeneficiary(\NewApiBundle\Entity\AssistanceBeneficiary $assistanceBeneficiary)
     {
         if (null === $this->distributionBeneficiaries) {
             $this->distributionBeneficiaries = new ArrayCollection();
@@ -626,11 +626,11 @@ class Assistance implements ExportableInterface
     /**
      * Remove assistanceBeneficiary.
      *
-     * @param \DistributionBundle\Entity\AssistanceBeneficiary $assistanceBeneficiary
+     * @param \NewApiBundle\Entity\AssistanceBeneficiary $assistanceBeneficiary
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeAssistanceBeneficiary(\DistributionBundle\Entity\AssistanceBeneficiary $assistanceBeneficiary)
+    public function removeAssistanceBeneficiary(\NewApiBundle\Entity\AssistanceBeneficiary $assistanceBeneficiary)
     {
         return $this->distributionBeneficiaries->removeElement($assistanceBeneficiary);
     }

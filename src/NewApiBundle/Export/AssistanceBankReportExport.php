@@ -5,8 +5,8 @@ namespace NewApiBundle\Export;
 
 
 use NewApiBundle\Repository\CountrySpecificRepository;
-use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
+use NewApiBundle\Entity\Assistance;
+use NewApiBundle\Repository\AssistanceBeneficiaryRepository;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;

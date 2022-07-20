@@ -1,7 +1,8 @@
 <?php
 
-namespace DistributionBundle\Repository;
+namespace NewApiBundle\Repository;
 
+use NewApiBundle\Entity\Modality;
 use DistributionBundle\Entity\Modality;
 use Doctrine\ORM\AbstractQuery;
 
@@ -16,7 +17,7 @@ class ModalityRepository extends \Doctrine\ORM\EntityRepository
             ->select('m.name')
             ->getQuery()
             ->getArrayResult();
-        
+
         return array_column($resultArray, 'name');
     }
 }

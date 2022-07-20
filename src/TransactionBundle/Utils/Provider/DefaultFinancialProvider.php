@@ -6,8 +6,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
 use TransactionBundle\Entity\Transaction;
-use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\AssistanceBeneficiary;
+use NewApiBundle\Entity\Assistance;
+use NewApiBundle\Entity\AssistanceBeneficiary;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 

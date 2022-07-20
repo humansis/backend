@@ -2,7 +2,7 @@
 
 namespace Tests\NewApiBundle\Controller\WebApp;
 
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use Exception;
 use NewApiBundle\Entity\DistributedItem;
 use NewApiBundle\Entity\SmartcardPurchasedItem;

@@ -4,7 +4,7 @@ namespace NewApiBundle\Entity\Assistance;
 
 use BeneficiaryBundle\Entity\CountrySpecific;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\AssistanceSelection;
+use NewApiBundle\Entity\AssistanceSelection;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
@@ -15,7 +15,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * SelectionCriteria - user filled criteria
  *
  * @ORM\Table(name="selection_criteria")
- * @ORM\Entity(repositoryClass="DistributionBundle\Repository\SelectionCriteriaRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\SelectionCriteriaRepository")
  * @ORM\HasLifecycleCallbacks
  */
 class SelectionCriteria
@@ -25,7 +25,7 @@ class SelectionCriteria
     /**
      * @var AssistanceSelection
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\AssistanceSelection", inversedBy="selectionCriteria")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\AssistanceSelection", inversedBy="selectionCriteria")
      * @ORM\JoinColumn(name="assistance_selection_id", nullable=false)
      */
     private $assistanceSelection;

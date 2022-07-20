@@ -1,12 +1,12 @@
 <?php
 
-namespace DistributionBundle\Repository;
+namespace NewApiBundle\Repository;
 
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Community;
 use NewApiBundle\Entity\CountrySpecific;
 use NewApiBundle\Entity\Institution;
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;

@@ -2,7 +2,7 @@
 
 namespace TransactionBundle\Entity;
 
-use DistributionBundle\Entity\AssistanceBeneficiary;
+use NewApiBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Entity\User;
@@ -114,7 +114,7 @@ class Transaction
     /**
      * @var AssistanceBeneficiary
      *
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", inversedBy="transactions", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\AssistanceBeneficiary", inversedBy="transactions", cascade={"persist"})
      * @ORM\JoinColumn(name="distribution_beneficiary_id")
      */
     private $assistanceBeneficiary;

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Entity;
 
-use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Entity\Assistance;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -23,7 +23,7 @@ class AssistanceStatistics
 
     /**
      * @var Assistance
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Assistance")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Assistance")
      */
     private $assistance;
 

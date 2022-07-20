@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper\Assistance;
 
-use DistributionBundle\Entity\AssistanceSelection;
+use NewApiBundle\Entity\AssistanceSelection;
 use NewApiBundle\Serializer\MapperInterface;
 
 class SelectionMapper implements MapperInterface

@@ -1,7 +1,7 @@
 <?php
 namespace NewApiBundle\Entity;
 
-use DistributionBundle\Entity\AssistanceBeneficiary;
+use NewApiBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -39,12 +39,12 @@ abstract class AbstractBeneficiary
     /**
      * @var AssistanceBeneficiary[]|Collection
      *
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", mappedBy="beneficiary", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\AssistanceBeneficiary", mappedBy="beneficiary", cascade={"remove"})
      */
     private $distributionBeneficiaries;
 
     /**
-     * @ORM\OneToMany(targetEntity="DistributionBundle\Entity\AssistanceBeneficiary", mappedBy="beneficiary", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\AssistanceBeneficiary", mappedBy="beneficiary", cascade={"remove"})
      * @ORM\JoinColumn(name="distribution_beneficiary_id")
      *
      * @var AssistanceBeneficiary $assistanceBeneficiary
