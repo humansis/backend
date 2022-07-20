@@ -794,3 +794,100 @@ services:
         public: false
         tags:
             - { name: monolog.logger, channel: wsse }
+
+
+#From DistributionBundle:
+
+    NewApiBundle\Extension\BeneficiaryGenderExtension:
+        tags:
+            - { name: twig.extension }
+
+    #######################################################################################
+    ##                                       CRUD                                        ##
+    #######################################################################################
+
+    distribution.assistance_service:
+        alias: NewApiBundle\Utils\AssistanceService
+        public: true
+
+    NewApiBundle\Utils\AssistanceService:
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@serializer'
+            - '@validator'
+            - '@location_service'
+            - '@distribution.commodity_service'
+            - '@distribution.criteria_assistance_service'
+            - '@service_container'
+            - '@Twig\Environment'
+
+    distribution.assistance_beneficiary_service:
+        class: NewApiBundle\Utils\AssistanceBeneficiaryService
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+
+    distribution.criteria_assistance_service:
+        alias: NewApiBundle\Utils\CriteriaAssistanceService
+        public: true
+
+    NewApiBundle\Utils\CriteriaAssistanceService:
+
+    distribution.modality_service:
+        class: NewApiBundle\Utils\ModalityService
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+
+    distribution.commodity_service:
+        class: NewApiBundle\Utils\CommodityService
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+
+    NewApiBundle\MapperDeprecated\AssistanceBeneficiaryMapper:
+        arguments:
+            - '@NewApiBundle\MapperDeprecated\BeneficiaryMapper'
+        public: true
+
+    NewApiBundle\Repository\AssistanceBeneficiaryRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\AssistanceBeneficiary
+
+    assistance.repository:
+        alias: NewApiBundle\Repository\AssistanceRepository
+        public: true
+
+    NewApiBundle\Repository\AssistanceRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\Assistance
+
+    NewApiBundle\Repository\ModalityTypeRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\ModalityType
+        public: true
+
+    #######################################################################################
+    ##                                       CSV                                         ##
+    #######################################################################################
+
+    distribution.export_legacy.smartcard_invoice:
+        class: NewApiBundle\Export\SmartcardInvoiceLegacyExport
+        arguments:
+            - '@translator'
+            - '@CommonBundle\Mapper\LocationMapper'
+        public: true
+
+    distribution.export.smartcard_invoice:
+        alias: NewApiBundle\Export\SmartcardInvoiceExport
+        public: true
+
+    NewApiBundle\Export\SmartcardInvoiceExport:
+        arguments:
+            - '@translator'
+            - '@CommonBundle\Mapper\LocationMapper'
+            - '@smartcard_purchase.repository'

@@ -7,3 +7,80 @@ parameters:
 #From BeneficiaryBundle:
         vulnerability_weightingFile:        '%kernel.project_dir%/src/NewApiBundle/Resources/config/vulnerability/weighting.csv'
         vulnerability_scoringFileTemplate:  '%kernel.project_dir%/src/NewApiBundle/Resources/config/vulnerability/scoring_<<COUNTRY>>.csv'
+
+#From DistributionBundle:
+        distribution.criteria: {
+                gender: {
+                        type: table_field,
+                        target: Beneficiary
+                },
+                dateOfBirth: {
+                        type: table_field,
+                        target: Beneficiary
+                },
+                residencyStatus: {
+                        type: table_field,
+                        target: Beneficiary
+                },
+                hasNotBeenInDistributionsSince: {
+                        type: other,
+                        target: Beneficiary
+                },
+                disabledHeadOfHousehold: {
+                        type: other,
+                        target: Head
+                },
+                hasValidSmartcard: {
+                        type: other,
+                        target: Head
+                },
+                headOfHouseholdDateOfBirth: {
+                        type: table_field,
+                        target: Head
+                },
+                headOfHouseholdGender: {
+                        type: table_field,
+                        target: Head
+                },
+                livelihood: {
+                        type: table_field,
+                        target: Household
+                },
+                foodConsumptionScore: {
+                        type: table_field,
+                        target: Household
+                },
+                copingStrategiesIndex: {
+                        type: table_field,
+                        target: Household
+                },
+                income: {
+                        type: table_field,
+                        target: Household
+                },
+                householdSize: {
+                        type: other,
+                        target: Household
+                },
+                location: {
+                        type: other,
+                        target: Household,
+                        valueTransformer: !php/const NewApiBundle\Component\SelectionCriteria\Enum\CriteriaValueTransformerEnum::CONVERT_TO_INT
+                },
+                locationType: {
+                        type: other,
+                        target: Household
+                },
+                campName: {
+                        type: other,
+                        target: Household
+                },
+                vulnerabilityCriteria: {
+                        type: NewApiBundle\Entity\VulnerabilityCriterion,
+                        target: Beneficiary
+                },
+                countrySpecific: {
+                        type: NewApiBundle\Entity\CountrySpecific,
+                        target: Household
+                }
+        }
