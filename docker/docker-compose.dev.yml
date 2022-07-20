@@ -6,6 +6,9 @@ networks:
     pma:
         external: false
 
+volumes:
+    consumercache:
+
 services:
     php:
         # CAREFUL: "__DEV__" token is replaced in deployment script ci/deploy-docker.sh!
@@ -24,8 +27,9 @@ services:
         # CAREFUL: "__DEV__" token is replaced in deployment script ci/deploy-docker.sh!
         image: artifactory.quanti.cz/docker/humansis-php:__DEV__
         volumes:
-            - /opt/humansis/var:/var/www/html/var
-            - /var/cache/humansis:/var/www/html/var/cache
+            - /opt/humansis/var/sessions:/var/www/html/var/sessions
+            - /opt/humansis/var/imports:/var/www/html/var/imports
+            - /opt/humansis/var/logs:/var/www/html/var/logs
             - /opt/humansis/parameters.yml:/var/www/html/app/config/parameters.yml:ro
         entrypoint: "php /var/www/html/bin/console messenger:consume incoming_big_data import --time-limit=3600 --limit=100"
         networks:

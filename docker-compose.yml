@@ -2,6 +2,7 @@ version: '3.7'
 
 volumes:
     mysqldata:
+    localstackdata:
 
 networks:
     backend:
@@ -138,6 +139,40 @@ services:
             - pma
         environment:
             ADMINER_DESIGN: 'pepa-linha'
+
+    rabbitmq:
+        image: rabbitmq:3-management-alpine
+        ports:
+            - 15672:15672
+            - 8080:8080
+        networks:
+            - backend
+
+    # only linux/amd64
+    # sqs:
+    #     image: roribio16/alpine-sqs
+    #     ports:
+    #         - 9324:9324
+    #         - 9325:9325
+    #     networks:
+    #         - backend
+
+    sqs:
+        image: localstack/localstack
+        ports:
+            - "4566:4566"            # LocalStack Gateway
+            - "4510-4559:4510-4559"  # external services port range
+        # command: "/usr/local/bin/awslocal sqs create-queue --queue-name test2"
+        environment:
+            # - DEBUG=${DEBUG-}
+            # - PERSISTENCE=${PERSISTENCE-}
+            # - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR-}
+            - LOCALSTACK_SERVICES=sqs
+            - DOCKER_HOST=unix:///var/run/docker.sock
+            - HOSTNAME_EXTERNAL=sqs
+        volumes:
+            - "localstackdata:/var/lib/localstack"
+            - "/var/run/docker.sock:/var/run/docker.sock"
 
     nginx:
         image: nginx
