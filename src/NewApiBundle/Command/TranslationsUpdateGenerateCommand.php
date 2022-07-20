@@ -63,7 +63,7 @@ class TranslationsUpdateGenerateCommand extends Command
 
         //get languages and remove second line
         $headers = explode(';', array_shift($lines));
-        $this->languages = array_slice($headers, 3);
+        $this->languages = array_slice($headers, 4);
 
         foreach ($lines as $index => $line) {
             $cells = explode(';', $line);
@@ -72,16 +72,16 @@ class TranslationsUpdateGenerateCommand extends Command
                 continue;
             }
 
-            if (count($cells) !== 3 + count($this->languages)) {
+            if (count($cells) !== 4 + count($this->languages)) {
                 throw new \Exception(
                     'Invalid number of cells (check source csv for multiline translations near line #'
                     .($index + 3).',  "'.$line.'"'
                 );
             }
 
-            if (preg_match('/([\w-]+?)\.\w{2}\.xlf$/', $cells[0], $matches)) {
+            if ($cells[1] === $cells[3] && $cells[3] === '') {
                 $this->storeFiles();
-                $this->initFiles($matches[1]);
+                $this->initFiles($cells[0]);
             } else {
                 $this->addRow($cells);
             }
@@ -95,13 +95,18 @@ class TranslationsUpdateGenerateCommand extends Command
     private function addRow($cells): void
     {
         foreach ($this->languages as $index => $language) {
+            
+            if ($cells[4 + $index] === '') {
+                continue;
+            }
+            
             /** @var SimpleXMLElement $tu */
             $tu = $this->files[$language]['xml']->file[0]->body[0]->addChild('trans-unit');
             $tu->addAttribute('id', $cells[0]);
             $tu->addAttribute('resname', $cells[1]);
 
-            $tu->source = $cells[2];
-            $tu->target = $cells[3 + $index] === '' ? $cells[2] : $cells[3 + $index];
+            $tu->source = $cells[3];
+            $tu->target = $cells[4 + $index];
         }
     }
 

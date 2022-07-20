@@ -184,35 +184,73 @@ class CommonController extends AbstractController
     public function translationsDownload(ExportService $exporter): BinaryFileResponse
     {
         $finder = new Finder();
-        $finder->files()->in($this->translationsDir)->name('*.en.xlf');
+        $finder->files()->in($this->translationsDir)->name('*.xlf');
 
         if (!$finder->hasResults()) {
             throw new \UnexpectedValueException('No translations found');
         }
-
-        $lines = [];
-
-        $lines[] = ['id','resname','source','target'];
-        $lines[] = [];
-
+        
+        //prepare source array of all languages
+        $source = [];
         foreach ($finder as $file) {
             $xml = new \SimpleXMLElement(file_get_contents($file->getRealPath()));
 
-            $lines[] = [$file->getFilename()];
+            [$filename, $lang, $ext] = explode('.', $file->getFilename());
+
+            if (!isset($source[$filename])) {
+                $source[$filename] = [];
+            }
+            
+            $order = 1;
 
             foreach ($xml->file->body->{'trans-unit'} as $item) {
                 $attr = $item->attributes();
-                $lines[] = [
-                    (string)$attr['id'],
-                    (string)$attr['resname'],
-                    (string)$item->source,
-                    (string)$item->target,
-                ];
-            }
 
-            $lines[] = [];
+                $source[$filename][(string)$attr['id']]['translate'][$lang] = (string)$item->target;
+                
+                if ($lang === 'en') {
+                    $source[$filename][(string)$attr['id']]['order'] = $order++;
+                    $source[$filename][(string)$attr['id']]['resname'] = (string)$attr['resname'];
+                }
+            }
+        }
+        
+        //prepare target array to export
+        $lines = [];
+        $lines[0] = ['id','resname','row#','source'];
+        foreach ($this->getParameter('app.locales') as $locale) {
+            $lines[0][] = $locale;
+        }
+        $lines[] = [];
+
+        $rowCounter = 1;
+        
+        foreach ($source as $filename => $entries) {
+
+            $lines[] = [$filename, '', $rowCounter++];
+            
+            foreach ($entries as $id => $entry) {
+                
+                if (!isset($entry['resname'])) {
+                    throw new \UnexpectedValueException('Missing resname for id ' . $id);
+                }
+                
+                $line = [
+                    $id,
+                    $entry['resname'],
+                    $rowCounter++,
+                    $entry['resname'],
+                ];
+
+                foreach ($this->getParameter('app.locales') as $locale) {
+                    $line[] = $entry['translate'][$locale] ?? '';
+                }
+                
+                $lines[] = $line;
+            }
         }
 
+        //export
         $filename = $exporter->export($lines, 'translations', 'xlsx');
         $response = new BinaryFileResponse(getcwd() . '/' . $filename);
 
