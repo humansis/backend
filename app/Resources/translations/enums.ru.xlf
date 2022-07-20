@@ -353,6 +353,10 @@
         <source>Household</source>
         <target>Домохозяйство</target>
       </trans-unit>
+      <trans-unit id="u81ijAe" resname="household">
+        <source>household</source>
+        <target>Домохозяйство</target>
+      </trans-unit>
       <trans-unit id="4ZIYuvi" resname="Family name">
         <source>Family name</source>
         <target>Фамилия</target>

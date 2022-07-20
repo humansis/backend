@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="mn" datatype="plaintext" original="file.ext">
     <header>
@@ -19,6 +19,10 @@
       </trans-unit>
       <trans-unit id="dcFiFi1" resname="Active projects">
         <source>Active projects</source>
+        <target>Идэвхтэй төслүүд</target>
+      </trans-unit>
+      <trans-unit id="gOUCFfW" resname="Active Projects">
+        <source>Active Projects</source>
         <target>Идэвхтэй төслүүд</target>
       </trans-unit>
       <trans-unit id="4ZaJUj7" resname="Activity Description">
@@ -195,6 +199,10 @@
       </trans-unit>
       <trans-unit id="u1AdeHf" resname="Community">
         <source>Community</source>
+        <target>Нийгмийн бүлэг</target>
+      </trans-unit>
+      <trans-unit id="81TumeK" resname="community">
+        <source>community</source>
         <target>Нийгмийн бүлэг</target>
       </trans-unit>
       <trans-unit id="ObNtONb" resname="Condition">
@@ -393,6 +401,10 @@
         <source>Enrolled beneficiaries</source>
         <target>Хамрагдсан тусламж хүртэгчид</target>
       </trans-unit>
+      <trans-unit id="LAlAY4Z" resname="Enrolled Beneficiaries">
+        <source>Enrolled Beneficiaries</source>
+        <target>Хамрагдсан тусламж хүртэгчид</target>
+      </trans-unit>
       <trans-unit id="sKv_7qu" resname="Enumerator">
         <source>Enumerator</source>
         <target>Тоологч</target>
@@ -473,6 +485,10 @@
         <source>Has Not Been In Distribution Since</source>
         <target>Үүнээс хойш түгээгдээгүй</target>
       </trans-unit>
+      <trans-unit id="YkhOIqa" resname="health">
+        <source>health</source>
+        <target>Эрүүл мэнд</target>
+      </trans-unit>
       <trans-unit id="VYmESet" resname="Health">
         <source>Health</source>
         <target>Эрүүл мэнд</target>
@@ -499,6 +515,10 @@
       </trans-unit>
       <trans-unit id="ocbJf0F" resname="Household">
         <source>Household</source>
+        <target>Өрх</target>
+      </trans-unit>
+      <trans-unit id="u81ijAe" resname="household">
+        <source>household</source>
         <target>Өрх</target>
       </trans-unit>
       <trans-unit id="dJOqWjY" resname="Household Head">
@@ -561,6 +581,10 @@
         <source>Import from file</source>
         <target>Файлаас импортлох</target>
       </trans-unit>
+      <trans-unit id="TKbwbtO" resname="Import from File">
+        <source>Import from File</source>
+        <target>Файлаас импортлох</target>
+      </trans-unit>
       <trans-unit id="BdazhEU" resname="Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.">
         <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.</source>
         <target>Өөрчилсөн түгээлтийг агуулсан файлыг импортлох. Импорт хийсний дараа "шинэчлэх" дээр дарахад мэдээллийн баазыг энэхүү түгээлтийн тусламж хүртэгчдийн шинэ жагсаалтаар шинэчлэгдэх болно.</target>
@@ -579,6 +603,10 @@
       </trans-unit>
       <trans-unit id="ZaFVNyn" resname="Institution">
         <source>Institution</source>
+        <target>Байгууллага</target>
+      </trans-unit>
+      <trans-unit id="gi.jZ5y" resname="institution">
+        <source>institution</source>
         <target>Байгууллага</target>
       </trans-unit>
       <trans-unit id="Uq.Myb0" resname="Institutions">
@@ -945,6 +973,10 @@
         <source>Served beneficiaries</source>
         <target>Үйлчлүүлсэн тусламж хүртэгчид</target>
       </trans-unit>
+      <trans-unit id="Ylj6.eN" resname="Served Beneficiaries">
+        <source>Served Beneficiaries</source>
+        <target>Үйлчлүүлсэн тусламж хүртэгчид</target>
+      </trans-unit>
       <trans-unit id="SQmtaXI" resname="Set As Distributed">
         <source>Set As Distributed</source>
         <target>Түгээлтйин байдлаар тохируулсан</target>
@@ -1030,7 +1062,7 @@
         <target>Шилжилтийн байр</target>
       </trans-unit>
       <trans-unit id="PLyHx2g" resname="True">
-        <source>True</source>
+        <source>TRUE</source>
         <target>Үнэн</target>
       </trans-unit>
       <trans-unit id="rj1rhbS" resname="Two-factor authentication adds an additional layer of security to your account by requiring more than a password to log in">
@@ -1087,14 +1119,14 @@
       </trans-unit>
       <trans-unit id="oP0g0kS" resname="Validate and Lock">
         <source>Validate and Lock</source>
-        <target><![CDATA[Баталгаажуулах & түгжих]]></target>
-      </trans-unit>
-      <trans-unit id="jjeVPSP" resname="Value">
-        <source>Value</source>
-        <target>Утга</target>
+        <target>Баталгаажуулах &amp; түгжих</target>
       </trans-unit>
       <trans-unit id="zUJATVK" resname="value">
         <source>value</source>
+        <target>Утга</target>
+      </trans-unit>
+      <trans-unit id="jjeVPSP" resname="Value">
+        <source>Value</source>
         <target>Утга</target>
       </trans-unit>
       <trans-unit id="_KqCtC0" resname="Vendor">

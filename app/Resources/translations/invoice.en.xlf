@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="en" datatype="plaintext" original="file.ext">
     <header>
@@ -179,11 +179,11 @@
       </trans-unit>
       <trans-unit id="uDIALaK" resname="Invoice">
         <source>Invoice</source>
-        <target>__Invoice</target>
+        <target>Invoice</target>
       </trans-unit>
       <trans-unit id="pr5lTwN" resname="Invoice template version">
         <source>Invoice template version</source>
-        <target>__Invoice template version</target>
+        <target>Invoice template version</target>
       </trans-unit>
     </body>
   </file>

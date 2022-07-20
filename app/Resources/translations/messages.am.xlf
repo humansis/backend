@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="am" datatype="plaintext" original="file.ext">
     <header>
@@ -19,6 +19,10 @@
       </trans-unit>
       <trans-unit id="dcFiFi1" resname="Active projects">
         <source>Active projects</source>
+        <target>በስራ ላይ ያለ ፕሮጀክት</target>
+      </trans-unit>
+      <trans-unit id="gOUCFfW" resname="Active Projects">
+        <source>Active Projects</source>
         <target>በስራ ላይ ያለ ፕሮጀክት</target>
       </trans-unit>
       <trans-unit id="4ZaJUj7" resname="Activity Description">
@@ -199,6 +203,10 @@
       </trans-unit>
       <trans-unit id="u1AdeHf" resname="Community">
         <source>Community</source>
+        <target>ማህበረሰብ</target>
+      </trans-unit>
+      <trans-unit id="81TumeK" resname="community">
+        <source>community</source>
         <target>ማህበረሰብ</target>
       </trans-unit>
       <trans-unit id="ObNtONb" resname="Condition">
@@ -397,6 +405,10 @@
         <source>Enrolled beneficiaries</source>
         <target>የተመዘገቡ ተጠቃሚዎች</target>
       </trans-unit>
+      <trans-unit id="LAlAY4Z" resname="Enrolled Beneficiaries">
+        <source>Enrolled Beneficiaries</source>
+        <target>የተመዘገቡ ተጠቃሚዎች</target>
+      </trans-unit>
       <trans-unit id="sKv_7qu" resname="Enumerator">
         <source>Enumerator</source>
         <target>ቆጣሪ</target>
@@ -469,17 +481,21 @@
         <source>Food Voucher</source>
         <target>የምግብ ቫውቸር</target>
       </trans-unit>
-      <trans-unit id="oEYw74v" resname="Gender">
-        <source>Gender</source>
-        <target>ፆታ</target>
-      </trans-unit>
       <trans-unit id="3p.q6ot" resname="gender">
         <source>gender</source>
+        <target>ፆታ</target>
+      </trans-unit>
+      <trans-unit id="oEYw74v" resname="Gender">
+        <source>Gender</source>
         <target>ፆታ</target>
       </trans-unit>
       <trans-unit id="LeLx7nx" resname="Has Not Been In Distribution Since">
         <source>Has Not Been In Distribution Since</source>
         <target>ጀምሮ በስርጭት ውስጥ የለም</target>
+      </trans-unit>
+      <trans-unit id="YkhOIqa" resname="health">
+        <source>health</source>
+        <target>ጤና</target>
       </trans-unit>
       <trans-unit id="VYmESet" resname="Health">
         <source>Health</source>
@@ -507,6 +523,10 @@
       </trans-unit>
       <trans-unit id="ocbJf0F" resname="Household">
         <source>Household</source>
+        <target>ቤተሰብ</target>
+      </trans-unit>
+      <trans-unit id="u81ijAe" resname="household">
+        <source>household</source>
         <target>ቤተሰብ</target>
       </trans-unit>
       <trans-unit id="dJOqWjY" resname="Household Head">
@@ -569,6 +589,10 @@
         <source>Import from file</source>
         <target>ከዚህ ስርጭት</target>
       </trans-unit>
+      <trans-unit id="TKbwbtO" resname="Import from File">
+        <source>Import from File</source>
+        <target>ከዚህ ስርጭት</target>
+      </trans-unit>
       <trans-unit id="BdazhEU" resname="Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.">
         <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.</source>
         <target>የተሻሻለውን ስርጭት የያዘውን ፋይል ያስመጡት ፡፡ ከውጭ ካስገቡ በኋላ “ዝመና” ላይ ጠቅ ሲያደርጉ የመረጃ ቋቱ ለዚህ ስርጭት አዲስ የተጠቃሚዎች ዝርዝር ይዘምናል ፡፡</target>
@@ -587,6 +611,10 @@
       </trans-unit>
       <trans-unit id="ZaFVNyn" resname="Institution">
         <source>Institution</source>
+        <target>ተቋም</target>
+      </trans-unit>
+      <trans-unit id="gi.jZ5y" resname="institution">
+        <source>institution</source>
         <target>ተቋም</target>
       </trans-unit>
       <trans-unit id="Uq.Myb0" resname="Institutions">
@@ -613,12 +641,12 @@
         <source>Latitude</source>
         <target>ኬክሮስ</target>
       </trans-unit>
-      <trans-unit id="wd4uQBu" resname="livelihood">
-        <source>livelihood</source>
-        <target>መተዳደሪያ</target>
-      </trans-unit>
       <trans-unit id="So3CbB1" resname="Livelihood">
         <source>Livelihood</source>
+        <target>መተዳደሪያ</target>
+      </trans-unit>
+      <trans-unit id="wd4uQBu" resname="livelihood">
+        <source>livelihood</source>
         <target>መተዳደሪያ</target>
       </trans-unit>
       <trans-unit id="coTSxPT" resname="Livelihoods Support">
@@ -961,6 +989,10 @@
         <source>Served beneficiaries</source>
         <target>ያገለገሉ ተጠቃሚዎች</target>
       </trans-unit>
+      <trans-unit id="Ylj6.eN" resname="Served Beneficiaries">
+        <source>Served Beneficiaries</source>
+        <target>ያገለገሉ ተጠቃሚዎች</target>
+      </trans-unit>
       <trans-unit id="SQmtaXI" resname="Set As Distributed">
         <source>Set As Distributed</source>
         <target>እንደ ተሰራጭ ተዘጋጅ</target>
@@ -1046,7 +1078,7 @@
         <target>የሽግግር መጠለያ</target>
       </trans-unit>
       <trans-unit id="PLyHx2g" resname="True">
-        <source>True</source>
+        <source>TRUE</source>
         <target>እውነት</target>
       </trans-unit>
       <trans-unit id="rj1rhbS" resname="Two-factor authentication adds an additional layer of security to your account by requiring more than a password to log in">
@@ -1105,12 +1137,12 @@
         <source>Validate and Lock</source>
         <target>ማረጋገጥ እና መቆለፍ</target>
       </trans-unit>
-      <trans-unit id="jjeVPSP" resname="Value">
-        <source>Value</source>
-        <target>ዋጋ</target>
-      </trans-unit>
       <trans-unit id="zUJATVK" resname="value">
         <source>value</source>
+        <target>ዋጋ</target>
+      </trans-unit>
+      <trans-unit id="jjeVPSP" resname="Value">
+        <source>Value</source>
         <target>ዋጋ</target>
       </trans-unit>
       <trans-unit id="_KqCtC0" resname="Vendor">
