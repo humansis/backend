@@ -17,19 +17,6 @@ use NewApiBundle\Request\Pagination;
  */
 class GeneralReliefItemRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function countNonDistributed(Assistance $assistance)
-    {
-        $qb = $this->createQueryBuilder("gri");
-        $q = $qb->select("COUNT(DISTINCT gri)")
-            ->leftJoin("gri.assistanceBeneficiary", "db")
-            ->leftJoin("db.assistance", "dd")
-            ->where("dd = :distribution")
-            ->setParameter("distribution", $assistance)
-            ->andWhere("gri.distributedAt is NULL");
-
-        return $q->getQuery()->getSingleScalarResult();
-    }
-
     /**
      * @param GeneralReliefFilterInputType $filter
      * @param Pagination|null              $pagination

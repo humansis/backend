@@ -26,39 +26,6 @@ use NewApiBundle\Entity\Project;
  */
 class AssistanceRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function getLastId()
-    {
-        $qb = $this->createQueryBuilder('dd')
-                   ->select("MAX(dd.id)");
-        return $qb->getQuery()->getSingleScalarResult();
-    }
-
-    public function getTotalValue(string $country)
-    {
-        $qb = $this->createQueryBuilder("dd");
-
-        $qb
-            ->select("SUM(c.value)")
-            ->leftJoin("dd.project", "p")
-            ->where("p.iso3 = :country")
-                ->setParameter("country", $country)
-            ->leftJoin("dd.commodities", "c")
-            ->leftJoin("c.modalityType", "mt")
-            ->andWhere("mt.name = 'Mobile'");
-
-        return $qb->getQuery()->getSingleScalarResult();
-    }
-
-    public function getActiveByCountry(string $country)
-    {
-        $qb = $this->createQueryBuilder("dd")
-                    ->leftJoin("dd.project", "p")
-                    ->where("p.iso3 = :country")
-                    ->setParameter("country", $country)
-                    ->andWhere("dd.archived = 0");
-        return $qb->getQuery()->getResult();
-    }
-
     public function countCompleted(string $countryISO3): int
     {
         $qb = $this->createQueryBuilder('dd');
@@ -70,73 +37,6 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
 
         return intval($qb->getQuery()->getSingleScalarResult());
 
-    }
-
-    public function getNoBenificiaryByResidencyStatus(int $distributionId, string $residencyStatus, string $distributionType) {
-        $qb = $this->createQueryBuilder('dd');
-        $qb
-            ->andWhere('dd.id = :distributionId')
-                ->setParameter('distributionId', $distributionId)
-            ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0');
-        if ($distributionType === AssistanceTargetType::INDIVIDUAL) {
-            $qb->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.residencyStatus = :residencyStatus');
-        } else {
-            $qb->leftJoin('db.beneficiary', 'hhh')
-                ->leftJoin('hhh.household', 'hh')
-                ->leftJoin('hh.beneficiaries', 'b', Join::WITH, 'b.residencyStatus = :residencyStatus');
-        }
-           $qb->setParameter('residencyStatus', $residencyStatus)
-                ->select('COUNT(b)');
-        return $qb->getQuery()->getSingleScalarResult();
-    }
-
-    public function getNoHeadHouseholdsByGender(int $distributionId, string $gender) {
-        $qb = $this->createQueryBuilder('dd');
-        $qb
-            ->andWhere('dd.id = :distributionId')
-                ->setParameter('distributionId', $distributionId)
-            ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
-            ->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.gender = :gender AND b.status = 1')
-                ->setParameter('gender', PersonGenderEnum::valueToDB($gender))
-            ->select('COUNT(b)');
-        return $qb->getQuery()->getSingleScalarResult();
-    }
-
-    public function getNoFamilies(int $distributionId) {
-        $qb = $this->createQueryBuilder('dd');
-        $qb
-            ->andWhere('dd.id = :distributionId')
-                ->setParameter('distributionId', $distributionId)
-            ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
-            ->leftJoin('db.beneficiary', 'b')
-            ->leftJoin('b.household', 'hh')
-            ->select('COUNT(DISTINCT hh)');
-        return $qb->getQuery()->getSingleScalarResult();
-    }
-
-    public function getNoBenificiaryByAgeAndByGender(int $distributionId, string $gender, int $minAge, int $maxAge, DateTime $distributionDate, string $distributionType) {
-        $maxDateOfBirth = clone $distributionDate;
-        $minDateOfBirth = clone $distributionDate;
-        $maxDateOfBirth->sub(new \DateInterval('P'.$minAge.'Y'));
-        $minDateOfBirth->sub(new \DateInterval('P'.$maxAge.'Y'));
-        $qb = $this->createQueryBuilder('dd');
-        $qb
-            ->andWhere('dd.id = :distributionId')
-                ->setParameter('distributionId', $distributionId)
-            ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0');
-
-        if ($distributionType === AssistanceTargetType::INDIVIDUAL) {
-            $qb->leftJoin('db.beneficiary', 'b', Join::WITH, 'b.dateOfBirth >= :minDateOfBirth AND b.dateOfBirth < :maxDateOfBirth AND b.gender = :gender');
-        } else {
-            $qb->leftJoin('db.beneficiary', 'hhh')
-                ->leftJoin('hhh.household', 'hh')
-                ->leftJoin('hh.beneficiaries', 'b', Join::WITH, 'b.dateOfBirth >= :minDateOfBirth AND b.dateOfBirth < :maxDateOfBirth AND b.gender = :gender');
-        }
-                $qb->setParameter('minDateOfBirth', $minDateOfBirth)
-                ->setParameter('maxDateOfBirth', $maxDateOfBirth)
-                ->setParameter('gender', PersonGenderEnum::valueToDB($gender))
-            ->select('COUNT(DISTINCT b)');
-        return $qb->getQuery()->getSingleScalarResult();
     }
 
     public function getNoServed(int $distributionId, string $modalityType) {
@@ -157,23 +57,6 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                     ;
                 }
         return $qb->getQuery()->getSingleScalarResult();
-    }
-
-    /**
-     * Returns list of distributions distributed to given beneficiary
-     *
-     * @param Beneficiary $beneficiary
-     * @return Assistance[]
-     */
-    public function findDistributedToBeneficiary(Beneficiary $beneficiary)
-    {
-        $qb = $this->createQueryBuilder('dd')
-            ->join('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.beneficiary = :beneficiary')
-            ->orderBy('dd.dateDistribution', 'DESC');
-
-        $qb->setParameter('beneficiary', $beneficiary);
-
-        return $qb->getQuery()->getResult();
     }
 
     /**
