@@ -83,11 +83,6 @@ services:
             - '%default_account%'
             - '%default_account_salt%'
             - '%default_account_encoded_password%'
-            - '@UserBundle\Repository\UserRepository'
-            - '@user.user_service'
-            - '@UserBundle\Repository\UserCountryRepository'
-            - '@NewApiBundle\Component\Country\Countries'
-            - '@doctrine.orm.entity_manager'
         public: true
         tags: [ 'console.command' ]
 

@@ -14,7 +14,6 @@ use UserBundle\Entity\User;
 use UserBundle\Entity\UserCountry;
 use UserBundle\Repository\UserCountryRepository;
 use UserBundle\Repository\UserRepository;
-use UserBundle\Utils\UserService;
 
 class CredentialsCommand extends Command
 {
@@ -41,11 +40,6 @@ class CredentialsCommand extends Command
     private $userRepository;
 
     /**
-     * @var UserService
-     */
-    private $userService;
-
-    /**
      * @var Countries
      */
     private $countries;
@@ -65,7 +59,6 @@ class CredentialsCommand extends Command
         string                 $salt,
         string                 $encodedPassword,
         UserRepository         $userRepository,
-        UserService            $userService,
         UserCountryRepository  $userCountryRepository,
         Countries              $countries,
         EntityManagerInterface $entityManager
@@ -73,12 +66,11 @@ class CredentialsCommand extends Command
 
         parent::__construct();
         $this->account = $account;
-        $this->userRepository = $userRepository;
-        $this->userService = $userService;
         $this->salt = $salt;
         $this->encodedPassword = $encodedPassword;
-        $this->countries = $countries;
+        $this->userRepository = $userRepository;
         $this->userCountryRepository = $userCountryRepository;
+        $this->countries = $countries;
         $this->entityManager = $entityManager;
     }
 
