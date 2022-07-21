@@ -59,14 +59,13 @@ class SmartcardController extends AbstractOfflineAppController
         SmartcardRepository      $smartcardRepository,
         SmartcardService         $smartcardService
     ): Response {
+        $smartcard = $smartcardRepository->findBySerialNumberAndChangeParameters($serialNumber, $changeSmartcardInputType);
+        if ($smartcard) {
+            return Response::create('', Response::HTTP_ACCEPTED);
+        }
         $smartcard = $smartcardRepository->findActiveBySerialNumber($serialNumber);
-        if (!$smartcard instanceof Smartcard) {
-            $smartcard = $smartcardRepository->findBySerialNumberAndChangeParameters($serialNumber, $changeSmartcardInputType);
-            if ($smartcard) {
-                return Response::create('', Response::HTTP_ACCEPTED);
-            } else {
-                throw $this->createNotFoundException("Smartcard with code '$serialNumber' was not found.");
-            }
+        if (!$smartcard) {
+            throw $this->createNotFoundException("Smartcard with code '$serialNumber' was not found.");
         }
 
         try {
@@ -74,9 +73,9 @@ class SmartcardController extends AbstractOfflineAppController
 
             return Response::create();
         } catch (SmartcardDoubledChangeException $e) {
-            throw new BadRequestHttpException('Not possible to change state from '.$smartcard->getState().' to '.$changeSmartcardInputType->getState());
-        } catch (SmartcardNotAllowedStateTransitionException $e) {
             return Response::create('', Response::HTTP_ACCEPTED);
+        } catch (SmartcardNotAllowedStateTransitionException $e) {
+            throw new BadRequestHttpException('Not possible to change state from '.$smartcard->getState().' to '.$changeSmartcardInputType->getState());
         }
     }
 }
