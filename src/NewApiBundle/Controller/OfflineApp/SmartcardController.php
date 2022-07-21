@@ -7,7 +7,7 @@ use Doctrine\ORM\ORMException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Smartcard\Exception\SmartcardDoubledChangeException;
 use NewApiBundle\Component\Smartcard\Exception\SmartcardDoubledRegistrationException;
-use NewApiBundle\Component\Smartcard\Exception\SmartcardNotAllowedStateTransition;
+use NewApiBundle\Component\Smartcard\Exception\SmartcardNotAllowedStateTransitionException;
 use NewApiBundle\InputType\Smartcard\ChangeSmartcardInputType;
 use NewApiBundle\InputType\Smartcard\SmartcardRegisterInputType;
 use Symfony\Component\HttpFoundation\Response;
@@ -75,7 +75,7 @@ class SmartcardController extends AbstractOfflineAppController
             return Response::create();
         } catch (SmartcardDoubledChangeException $e) {
             throw new BadRequestHttpException('Not possible to change state from '.$smartcard->getState().' to '.$changeSmartcardInputType->getState());
-        } catch (SmartcardNotAllowedStateTransition $e) {
+        } catch (SmartcardNotAllowedStateTransitionException $e) {
             return Response::create('', Response::HTTP_ACCEPTED);
         }
     }

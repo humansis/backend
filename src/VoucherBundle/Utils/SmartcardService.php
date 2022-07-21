@@ -9,7 +9,7 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManager;
 use NewApiBundle\Component\Smartcard\Exception\SmartcardDoubledChangeException;
 use NewApiBundle\Component\Smartcard\Exception\SmartcardDoubledRegistrationException;
-use NewApiBundle\Component\Smartcard\Exception\SmartcardNotAllowedStateTransition;
+use NewApiBundle\Component\Smartcard\Exception\SmartcardNotAllowedStateTransitionException;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\Smartcard\PreliminaryInvoice;
 use NewApiBundle\InputType\Smartcard\ChangeSmartcardInputType;
@@ -82,7 +82,7 @@ class SmartcardService
      *
      * @return void
      * @throws SmartcardDoubledChangeException
-     * @throws SmartcardNotAllowedStateTransition
+     * @throws SmartcardNotAllowedStateTransitionException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
@@ -92,7 +92,7 @@ class SmartcardService
 
         if ($smartcard->getState() !== $changeSmartcardInputType->getState()) {
             if (!SmartcardStates::isTransitionAllowed($smartcard->getState(), $changeSmartcardInputType->getState())) {
-                throw new SmartcardNotAllowedStateTransition($smartcard, $changeSmartcardInputType->getState(),
+                throw new SmartcardNotAllowedStateTransitionException($smartcard, $changeSmartcardInputType->getState(),
                     "Not allowed transition from state {$smartcard->getState()} to {$changeSmartcardInputType->getState()}.");
             }
             $smartcard->setState($changeSmartcardInputType->getState());

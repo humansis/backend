@@ -5,7 +5,7 @@ namespace NewApiBundle\Component\Smartcard\Exception;
 use Throwable;
 use VoucherBundle\Entity\Smartcard;
 
-class SmartcardNotAllowedStateTransition extends SmartcardException
+class SmartcardNotAllowedStateTransitionException extends SmartcardException
 {
     /**
      * @var string
