@@ -105,27 +105,27 @@ final class RulesCalculation
 
         switch (true) {
             case $ratio > 0 && $ratio <= 1:
-                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::VERY_LOW_VULNERABILITY);
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::VERY_LOW_VULNERABILITY)->getScore();
                 break;
 
             case (int)$ratio === 2:
-                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::LOW_VULNERABILITY);
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::LOW_VULNERABILITY)->getScore();
                 break;
 
             case (int)$ratio === 3:
-                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::MODERATE_VULNERABILITY);
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::MODERATE_VULNERABILITY)->getScore();
                 break;
 
             case (int)$ratio === 4:
-                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::HIGH_VULNERABILITY);
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::HIGH_VULNERABILITY)->getScore();
                 break;
 
             case (int)$ratio === 5:
-                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::VERY_HIGH_VULNERABILITY);
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::VERY_HIGH_VULNERABILITY)->getScore();
                 break;
 
             case (int)$ratio === 0 || $ratio >= 6:
-                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::EXTREME_VULNERABILITY);
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::EXTREME_VULNERABILITY)->getScore();
                 break;
 
             default:
