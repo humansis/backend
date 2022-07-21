@@ -48,3 +48,5 @@ parameters:
     import.batch_size.identity_check: 10000
     import.batch_size.similarity_check: 10000
     import.batch_size.finalization: 3000
+
+    frontendUrl: 'https://pin.humansis.org'

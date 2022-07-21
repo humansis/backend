@@ -32,3 +32,6 @@ monolog:
 nelmio_cors:
     defaults:
         allow_origin: ['https://stage.humansis.org', 'https://stage-pin.humansis.org',  'http://localhost:8080']
+
+parameters:
+    frontendUrl: 'https://stage.humansis.org'

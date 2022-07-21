@@ -340,15 +340,13 @@ class AssistanceController extends AbstractController
      */
     public function vulnerabilityScoresExports(Assistance $assistance, Request $request, AssistanceFactory $factory): Response
     {
-        $urlPrefix = $request->getSchemeAndHttpHost();
-
         if (!$request->query->has('type')) {
             throw $this->createNotFoundException('Missing query attribute type');
         }
 
         $type = $request->query->get('type');
 
-        return $this->scoresFromAssistance($factory->hydrate($assistance), $type, $urlPrefix);
+        return $this->scoresFromAssistance($factory->hydrate($assistance), $type);
     }
 
     /**
@@ -359,10 +357,8 @@ class AssistanceController extends AbstractController
      * @throws NoResultException
      * @throws EntityNotFoundException
      */
-    public function vulnerabilityScoresPreExport(AssistanceCreateInputType $inputType, AssistanceFactory $factory, Request $request)
+    public function vulnerabilityScoresPreExport(AssistanceCreateInputType $inputType, AssistanceFactory $factory, Request $request): Response
     {
-        $urlPrefix = $request->getSchemeAndHttpHost();
-
         if (!$request->query->has('type')) {
             throw $this->createNotFoundException('Missing query attribute type');
         }
@@ -372,7 +368,7 @@ class AssistanceController extends AbstractController
         $inputType->setThreshold(0);
         $assistance = $factory->create($inputType);
 
-        return $this->scoresFromAssistance($assistance, $type, $urlPrefix, $threshold);
+        return $this->scoresFromAssistance($assistance, $type, $threshold);
     }
 
     /**
@@ -384,9 +380,9 @@ class AssistanceController extends AbstractController
      * @throws NonUniqueResultException
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
-    private function scoresFromAssistance(DomainAssistance $assistance, string $type, string $urlPrefix, int $threshold = null): Response
+    private function scoresFromAssistance(DomainAssistance $assistance, string $type, int $threshold = null): Response
     {
-        $filename = $this->vulnerabilityScoreExport->export($assistance, $type, $urlPrefix, $threshold);
+        $filename = $this->vulnerabilityScoreExport->export($assistance, $type, $threshold);
         if (!$filename) {
             throw $this->createNotFoundException();
         }

@@ -368,6 +368,7 @@ services:
 
     NewApiBundle\Export\VulnerabilityScoreExport:
         arguments:
+            - '%frontendUrl%'
             - '@export_csv_service'
             - '@translator'
             - '@=service("doctrine.orm.entity_manager").getRepository("BeneficiaryBundle:Beneficiary")'

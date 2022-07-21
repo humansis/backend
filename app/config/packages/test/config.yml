@@ -47,3 +47,6 @@ monolog:
 nelmio_cors:
     defaults:
         allow_origin: ['https://test.humansis.org', 'https://test-pin.humansis.org',  'http://localhost:8080']
+
+parameters:
+    frontendUrl: 'https://test.humansis.org'

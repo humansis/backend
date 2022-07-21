@@ -51,3 +51,6 @@ services:
 nelmio_cors:
     defaults:
         allow_origin: ['http://localhost:8080']
+
+parameters:
+    frontendUrl: 'http://localhost:8080'

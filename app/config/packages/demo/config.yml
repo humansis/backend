@@ -33,3 +33,6 @@ monolog:
 nelmio_cors:
     defaults:
         allow_origin: ['https://demo.humansis.org', 'https://demo-pin.humansis.org',  'http://localhost:8080']
+
+parameters:
+    frontendUrl: 'https://demo.humansis.org'
