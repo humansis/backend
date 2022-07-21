@@ -78,7 +78,7 @@ class SmartcardService
     {
         /** @var Beneficiary $beneficiary */
         $beneficiary = $this->beneficiaryRepository->find($beneficiaryId);
-        $smartcard = $this->getActualSmartcard($serialNumber, $beneficiary, $createdAt);
+        $smartcard = $this->getActualSmartcardOrCreateNew($serialNumber, $beneficiary, $createdAt);
         $smartcard->setSuspicious(false, null);
 
         if ($beneficiary) {
@@ -145,12 +145,12 @@ class SmartcardService
         if (!$beneficiary) {
             throw new NotFoundHttpException('Beneficiary ID must exist');
         }
-        $smartcard = $this->getActualSmartcard($serialNumber, $beneficiary, $data->getCreatedAt());
+        $smartcard = $this->getActualSmartcardOrCreateNew($serialNumber, $beneficiary, $data->getCreatedAt());
         $this->em->persist($smartcard);
         return $this->purchaseService->purchaseSmartcard($smartcard, $data);
     }
 
-    public function getActualSmartcard(string $serialNumber, ?Beneficiary $beneficiary, DateTimeInterface $dateOfEvent): Smartcard
+    public function getActualSmartcardOrCreateNew(string $serialNumber, ?Beneficiary $beneficiary, DateTimeInterface $dateOfEvent): Smartcard
     {
         $smartcard = $this->smartcardRepository->findBySerialNumberAndBeneficiary($serialNumber, $beneficiary);
 
@@ -325,14 +325,12 @@ class SmartcardService
      * @return void
      * @throws \Doctrine\ORM\ORMException
      */
-    public function setMissingCurrency(Smartcard $smartcard, ReliefPackage $reliefPackage)
+    public function setMissingCurrencyToSmartcardAndPurchases(Smartcard $smartcard, ReliefPackage $reliefPackage)
     {
-        // set missing currency to smartcard
         if (null === $smartcard->getCurrency()) {
             $smartcard->setCurrency(SmartcardService::findCurrency($reliefPackage->getAssistanceBeneficiary()));
         }
 
-        // set missing currency to purchases
         foreach ($smartcard->getPurchases() as $purchase) {
             foreach ($purchase->getRecords() as $record) {
                 if (null === $record->getCurrency()) {
