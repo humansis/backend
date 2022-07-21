@@ -434,10 +434,6 @@ services:
             - '@doctrine.orm.entity_manager'
             - '@workflow.registry'
             - '@validator'
-            - '@NewApiBundle\Component\Smartcard\Deposit\DepositFactory'
-            - '@NewApiBundle\Repository\Assistance\ReliefPackageRepository'
-            - '@logger'
-            - '@VoucherBundle\Repository\SmartcardDepositRepository'
 
     NewApiBundle\Component\Smartcard\Deposit\DepositFactory:
         public: true

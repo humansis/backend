@@ -280,13 +280,11 @@ services:
 
     CommonBundle\DataFixtures\SmartcardFixtures:
         public: true
+        autowire: true
         arguments:
             - "@=service('kernel').getEnvironment()"
             - '@smartcard_service'
             - '@voucher.purchase_service'
-            - '@NewApiBundle\Component\Smartcard\Deposit\DepositFactory'
-            - '@NewApiBundle\Repository\Assistance\ReliefPackageRepository'
-            - '@VoucherBundle\Repository\SmartcardRepository'
         tags:
             - { name: doctrine.fixture.orm }
 

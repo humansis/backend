@@ -70,11 +70,11 @@ class DepositFactory
         ReliefPackageService       $reliefPackageService,
         LoggerInterface            $logger
     ) {
+        $this->smartcardDepositRepository = $smartcardDepositRepository;
         $this->smartcardService = $smartcardService;
         $this->reliefPackageRepository = $reliefPackageRepository;
         $this->cache = $cache;
         $this->reliefPackageService = $reliefPackageService;
-        $this->smartcardDepositRepository = $smartcardDepositRepository;
         $this->logger = $logger;
     }
 
@@ -99,11 +99,11 @@ class DepositFactory
             $depositInputType->getValue(),
             $reliefPackage);
         $this->checkDepositDuplicity($hash);
-        $smartcard = $this->smartcardService->getActualSmartcard($smartcardSerialNumber, $reliefPackage->getAssistanceBeneficiary()->getBeneficiary(),
+        $smartcard = $this->smartcardService->getActualSmartcardOrCreateNew($smartcardSerialNumber, $reliefPackage->getAssistanceBeneficiary()->getBeneficiary(),
             $depositInputType->getCreatedAt());
         $deposit = $this->createNewDepositRoot($smartcard, $user, $reliefPackage, $depositInputType, $hash);
         $this->reliefPackageService->addDeposit($reliefPackage, $deposit);
-        $this->smartcardService->setMissingCurrency($smartcard, $reliefPackage);
+        $this->smartcardService->setMissingCurrencyToSmartcardAndPurchases($smartcard, $reliefPackage);
         $this->cache->delete(CacheTarget::assistanceId($reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId()));
 
         return $deposit;
