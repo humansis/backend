@@ -88,13 +88,12 @@ services:
 
     smartcard_service:
         class: VoucherBundle\Utils\SmartcardService
+        autowire: true
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@voucher.purchase_service'
             - '@VoucherBundle\Repository\SmartcardRepository'
             - '@smartcard_purchase.repository'
-            - '@BeneficiaryBundle\Repository\BeneficiaryRepository'
-            - '@ProjectBundle\Repository\ProjectRepository'
         public: true
 
     VoucherBundle\Mapper\SmartcardMapper:
