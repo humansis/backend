@@ -2,7 +2,7 @@
 
 namespace VoucherBundle\Utils;
 
-use CommonBundle\Controller\ExportController;
+use NewApiBundle\Controller\ExportController;
 use CommonBundle\InputType\Country;
 use CommonBundle\InputType\DataTableType;
 use CommonBundle\InputType\RequestConverter;

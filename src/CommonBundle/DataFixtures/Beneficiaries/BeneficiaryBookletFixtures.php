@@ -6,7 +6,7 @@ namespace CommonBundle\DataFixtures\Beneficiaries;
 
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Household;
-use CommonBundle\Controller\CountryController;
+use NewApiBundle\Controller\CountryController;
 use CommonBundle\DataFixtures\BeneficiaryTestFixtures;
 use CommonBundle\DataFixtures\BookletFixtures;
 use CommonBundle\DataFixtures\ProjectFixtures;

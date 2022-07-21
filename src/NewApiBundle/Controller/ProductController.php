@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-use CommonBundle\Controller\ExportController;
+use NewApiBundle\Controller\ExportController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\File\UploadService;
 use NewApiBundle\InputType\ProductCreateInputType;

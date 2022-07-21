@@ -6,7 +6,7 @@ namespace NewApiBundle\Controller;
 
 use NewApiBundle\Entity\CountrySpecific;
 use NewApiBundle\Entity\CountrySpecificAnswer;
-use CommonBundle\Controller\ExportController;
+use NewApiBundle\Controller\ExportController;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\CountrySpecificCreateInputType;

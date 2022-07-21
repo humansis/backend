@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Controller;
 
-use CommonBundle\Controller\ExportController;
+use NewApiBundle\Controller\ExportController;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\VendorCreateInputType;

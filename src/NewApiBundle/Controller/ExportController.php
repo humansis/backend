@@ -1,6 +1,6 @@
 <?php
 
-namespace CommonBundle\Controller;
+namespace NewApiBundle\Controller;
 
 use CommonBundle\Entity\Organization;
 use NewApiBundle\Entity\Assistance;
