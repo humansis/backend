@@ -130,7 +130,7 @@ class DepositFactory
             $user,
             $reliefPackage,
             (float) $depositInputType->getValue(),
-            null !== $depositInputType->getBalance() ? (float) $depositInputType->getBalance() : null,
+            (float) $depositInputType->getBalance(),
             $depositInputType->getCreatedAt(),
             $hash,
             $this->suspicious,
