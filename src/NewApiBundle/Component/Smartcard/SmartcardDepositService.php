@@ -5,6 +5,8 @@ namespace NewApiBundle\Component\Smartcard;
 
 use CommonBundle\InputType\RequestConverter;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use NewApiBundle\Component\Smartcard\Deposit\DepositFactory;
 use NewApiBundle\Component\Smartcard\Deposit\Exception\DoubledDepositException;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
@@ -14,6 +16,7 @@ use NewApiBundle\InputType\SynchronizationBatch\CreateDepositInputType;
 use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
 use NewApiBundle\Workflow\SynchronizationBatchTransitions;
+use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -171,11 +174,7 @@ class SmartcardDepositService
         $this->em->flush();
 
         foreach ($inputs as $input) {
-            try {
-                $this->deposit($input, $deposits->getCreatedBy());
-            } catch (Deposit\Exception\DoubledDepositException $e) {
-                $this->logger->info("Creation of deposit with hash {$e->getDeposit()->getHash()} was omitted. It's already set in Deposit #{$e->getDeposit()->getId()}");
-            }
+            $this->deposit($input, $deposits->getCreatedBy());
         }
     }
 
@@ -184,10 +183,9 @@ class SmartcardDepositService
      * @param User                   $user
      *
      * @return void
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Psr\Cache\InvalidArgumentException
-     * @throws Deposit\Exception\DoubledDepositException
+     * @throws InvalidArgumentException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     private function deposit(CreateDepositInputType $input, User $user)
     {
@@ -196,16 +194,20 @@ class SmartcardDepositService
             throw new \InvalidArgumentException("ReliefPackage #{$input->getReliefPackageId()} doesn't exits");
         }
 
-        $this->depositFactory->create(
-            $input->getSmartcardSerialNumber(),
-            DepositInputType::create(
-                $reliefPackage->getId(),
-                $reliefPackage->getAmountToDistribute(),
-                $input->getBalanceAfter(),
-                $input->getCreatedAt()
-            ),
-            $user
-        );
+        try {
+            $this->depositFactory->create(
+                $input->getSmartcardSerialNumber(),
+                DepositInputType::create(
+                    $reliefPackage->getId(),
+                    $reliefPackage->getAmountToDistribute(),
+                    $input->getBalanceAfter(),
+                    $input->getCreatedAt()
+                ),
+                $user
+            );
+        } catch (DoubledDepositException $e) {
+            $this->logger->info("Creation of deposit with hash {$e->getDeposit()->getHash()} was omitted. It's already set in Deposit #{$e->getDeposit()->getId()}");
+        }
     }
 
 }
