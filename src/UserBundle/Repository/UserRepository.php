@@ -113,4 +113,17 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
 
         return new Paginator($qb);
     }
+
+    /**
+     * @param User $user
+     *
+     * @return void
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function save(User $user): void
+    {
+        $this->_em->persist($user);
+        $this->_em->flush();
+    }
 }

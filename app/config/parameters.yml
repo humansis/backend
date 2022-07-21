@@ -49,3 +49,7 @@ parameters:
     import.batch_size.identity_check: '%env(BATCH_SIZE_IDENTITY_CHECK)%'
     import.batch_size.similarity_check: '%env(BATCH_SIZE_INTEGRITY_CHECK)%'
     import.batch_size.finalization: '%env(BATCH_SIZE_FINALIZATION)%'
+
+    default_account: admin@example.org
+    default_account_encoded_password: '%env(DEFAULT_ACCOUNT_PASSWORD)%'
+    default_account_salt: '%env(DEFAULT_ACCOUNT_SALT)%'

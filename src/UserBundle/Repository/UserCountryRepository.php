@@ -2,6 +2,8 @@
 
 namespace UserBundle\Repository;
 
+use UserBundle\Entity\UserCountry;
+
 /**
  * UserCountryRepository
  *
@@ -10,4 +12,16 @@ namespace UserBundle\Repository;
  */
 class UserCountryRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * @param UserCountry $userCountry
+     *
+     * @return void
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function save(UserCountry $userCountry): void
+    {
+        $this->_em->persist($userCountry);
+        $this->_em->flush();
+    }
 }

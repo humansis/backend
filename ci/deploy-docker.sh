@@ -122,5 +122,11 @@ cache_clear="cd /opt/humansis && bash ./clear-cache.sh $4"
 ssh $ec2_user@$ec2_host "$cache_clear" || exit 1
 echo "...done"
 
+# create default admin user
+if [[ $1 == "stage" ]]; then
+  admin_user="cd /opt/humansis && sudo docker-compose exec -T php bash -c 'php bin/console app:default-credentials'"
+  ssh $ec2_user@$ec2_host $admin_user
+fi
+
 rm_old_images="sudo docker system prune -f"
 ssh $ec2_user@$ec2_host $rm_old_images
