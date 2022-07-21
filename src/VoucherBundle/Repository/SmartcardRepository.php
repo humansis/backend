@@ -120,7 +120,6 @@ class SmartcardRepository extends EntityRepository
      * @param ChangeSmartcardInputType $changeSmartcardInputType
      *
      * @return null|Smartcard
-     * @throws NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function findBySerialNumberAndChangeParameters(
@@ -138,6 +137,6 @@ class SmartcardRepository extends EntityRepository
                 'changedAt' => $changeSmartcardInputType->getCreatedAt(),
             ]);
 
-        return $qb->getQuery()->getSingleResult();
+        return $qb->getQuery()->getOneOrNullResult();
     }
 }
