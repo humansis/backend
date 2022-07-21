@@ -2,6 +2,7 @@
 
 namespace NewApiBundle\Controller\WebApp\Smartcard;
 
+use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Controller\WebApp\AbstractWebAppController;
 use NewApiBundle\Enum\VendorInvoicingState;
@@ -102,7 +103,7 @@ class InvoiceController extends AbstractWebAppController
     {
         $invoices = $invoiceRepository->findByVendorAndState($vendor);
 
-        return $this->json($invoices);
+        return $this->json(new Paginator($invoices));
     }
 
     /**
