@@ -38,8 +38,6 @@ class SmartcardController extends AbstractOfflineAppController
     }
 
     /**
-     * Update smartcard, typically its' state.
-     *
      * @Rest\Patch("/offline-app/v1/smartcards/{serialNumber}")
      *
      * @param string                   $serialNumber
