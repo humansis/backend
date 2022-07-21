@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Assistance\Scoring\Enum;
 
+use NewApiBundle\Enum\HouseholdShelterStatus;
+
 /**
  * List of supported values for each calculation rules
  */
@@ -25,12 +27,32 @@ final class ScoringRuleOptionsEnum
     public const DISABLED = 'Disabled';
     public const NO_VULNERABILITY = 'No vulnerability';
 
-    public const VERY_LOW_VULNERABILITY = '0 > r <= 1';
-    public const LOW_VULNERABILITY = 'r = 2';
-    public const MODERATE_VULNERABILITY = 'r = 3';
-    public const HIGH_VULNERABILITY = 'r = 4';
-    public const VERY_HIGH_VULNERABILITY = 'r = 5';
-    public const EXTREME_VULNERABILITY = 'r = 0 || r <=6';
+    public const VERY_LOW_VULNERABILITY = 'Dependency ratio very low vulnerability';
+    public const LOW_VULNERABILITY = 'Dependency ratio low vulnerability';
+    public const MODERATE_VULNERABILITY = 'Dependency ratio moderate vulnerability';
+    public const HIGH_VULNERABILITY = 'Dependency ratio high vulnerability';
+    public const VERY_HIGH_VULNERABILITY = 'Dependency ratio very high vulnerability';
+    public const EXTREME_VULNERABILITY = 'Dependency ratio extreme vulnerability';
+
+    public const ASSETS_0_1 = '1 Asset';
+    public const ASSETS_2 = '2 Assets';
+    public const ASSETS_3 = '3 Assets';
+    public const ASSETS_4 = '4 Assets';
+    public const ASSETS_5_MORE = '5 Assets or More';
+
+    public const CSI_0_20 = 'No coping';
+    public const CSI_20_30 = 'Stress coping';
+    public const CSI_30_40 = 'Crisis coping';
+    public const CSI_40_MORE = 'Emergeny coping';
+
+    public const INCOME_SPENT_0_50 = 'spent < 50 %';
+    public const INCOME_SPENT_50_65 = '50 % < spent < 65 %';
+    public const INCOME_SPENT_65_75 = '65 % < spent < 75 %';
+    public const INCOME_SPENT_75_MORE = '75% < spent';
+
+    public const CONSUMPTION_POOR = 'Poor Consumption';
+    public const CONSUMPTION_BORDERLINE = 'Borderline Consumption';
+    public const CONSUMPTION_ACCEPTABLE = 'Acceptable Consumption';
 
 
     public const SUPPORTED = [
@@ -76,5 +98,43 @@ final class ScoringRuleOptionsEnum
             self::VERY_HIGH_VULNERABILITY,
             self::EXTREME_VULNERABILITY,
         ],
+
+        ScoringRulesEnum::SHELTER_TYPE => [
+            HouseholdShelterStatus::TENT,
+            HouseholdShelterStatus::MAKESHIFT_SHELTER,
+            HouseholdShelterStatus::TRANSITIONAL_SHELTER,
+            HouseholdShelterStatus::HOUSE_APARTMENT_SEVERELY_DAMAGED,
+            HouseholdShelterStatus::HOUSE_APARTMENT_MODERATELY_DAMAGED,
+            HouseholdShelterStatus::HOUSE_APARTMENT_NOT_DAMAGED,
+            HouseholdShelterStatus::ROOM_OR_SPACE_IN_PUBLIC_BUILDING,
+        ],
+
+        ScoringRulesEnum::ASSETS => [
+            self::ASSETS_0_1,
+            self::ASSETS_2,
+            self::ASSETS_3,
+            self::ASSETS_4,
+            self::ASSETS_5_MORE,
+        ],
+
+        ScoringRulesEnum::CSI => [
+            self::CSI_0_20,
+            self::CSI_20_30,
+            self::CSI_30_40,
+            self::CSI_40_MORE,
+        ],
+
+        ScoringRulesEnum::INCOME_SPENT_ON_FOOD => [
+            self::INCOME_SPENT_0_50,
+            self::INCOME_SPENT_50_65,
+            self::INCOME_SPENT_65_75,
+            self::INCOME_SPENT_75_MORE,
+        ],
+
+        ScoringRulesEnum::FCS => [
+            self::CONSUMPTION_POOR,
+            self::CONSUMPTION_BORDERLINE,
+            self::CONSUMPTION_ACCEPTABLE,
+        ]
     ];
 }
