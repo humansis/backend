@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-use CommonBundle\Controller\ExportController;
+use NewApiBundle\Controller\ExportController;
 use CommonBundle\Pagination\Paginator;
 use DateTimeInterface;
 use NewApiBundle\Entity\Assistance;
