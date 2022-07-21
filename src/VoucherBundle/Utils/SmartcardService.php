@@ -327,10 +327,32 @@ class SmartcardService
      */
     public function setMissingCurrencyToSmartcardAndPurchases(Smartcard $smartcard, ReliefPackage $reliefPackage)
     {
+        $this->setMissingCurrencyToSmartcard($smartcard, $reliefPackage);
+        $this->setMissingCurrencyToPurchases($smartcard);
+        $this->smartcardRepository->save($smartcard);
+    }
+
+    /**
+     * @param Smartcard     $smartcard
+     * @param ReliefPackage $reliefPackage
+     *
+     * @return void
+     */
+    private function setMissingCurrencyToSmartcard(Smartcard $smartcard, ReliefPackage $reliefPackage): void
+    {
         if (null === $smartcard->getCurrency()) {
             $smartcard->setCurrency(SmartcardService::findCurrency($reliefPackage->getAssistanceBeneficiary()));
         }
+    }
 
+    /**
+     * @param Smartcard $smartcard
+     *
+     * @return void
+     * @throws \Doctrine\ORM\ORMException
+     */
+    private function setMissingCurrencyToPurchases(Smartcard $smartcard): void
+    {
         foreach ($smartcard->getPurchases() as $purchase) {
             foreach ($purchase->getRecords() as $record) {
                 if (null === $record->getCurrency()) {
@@ -339,8 +361,5 @@ class SmartcardService
                 }
             }
         }
-
-        $this->smartcardRepository->save($smartcard);
     }
-
 }
