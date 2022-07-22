@@ -1,5 +1,5 @@
 [![Build status](https://gitlab-public.quanti.cz/humansis/web-platform/backend/badges/develop/pipeline.svg)](https://gitlab-public.quanti.cz/humansis/web-platform/backend/-/commits/develop)
-[![version](https://img.shields.io/badge/version-3.3.3-blue)](https://gitlab-public.quanti.cz/humansis/web-platform/backend/)
+[![version](https://img.shields.io/badge/dynamic/json?color=blue&label=version&query=%24%5B0%5D.name&url=https%3A%2F%2Fgitlab-public.quanti.cz%2Fapi%2Fv4%2Fprojects%2F12%2Frepository%2Ftags)](https://gitlab-public.quanti.cz/humansis/web-platform/backend/)
 
 HUMANSIS
 ==============
