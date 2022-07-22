@@ -8,24 +8,22 @@ use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Modality;
 use DistributionBundle\Entity\ModalityType;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Component\Codelist\CodeItem;
-use NewApiBundle\Component\Codelist\CodeLists;
 use NewApiBundle\Enum\Domain;
+use NewApiBundle\Services\CodeListService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Cache(expires="+5 days", public=true)
  */
 class ModalityCodelistController extends AbstractController
 {
-    /** @var TranslatorInterface */
-    private $translator;
+    /** @var CodeListService */
+    private $codeListService;
 
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(CodeListService $codeListService)
     {
-        $this->translator = $translator;
+        $this->codeListService = $codeListService;
     }
     
     /**
@@ -39,7 +37,7 @@ class ModalityCodelistController extends AbstractController
             ->getRepository(Modality::class)
             ->getNames();
 
-        $data = CodeLists::mapEnum($modalities, $this->translator, Domain::ENUMS);
+        $data = $this->codeListService->mapEnum($modalities, Domain::ENUMS);
         
         return $this->json(new Paginator($data));
     }
@@ -55,7 +53,7 @@ class ModalityCodelistController extends AbstractController
             ->getRepository(ModalityType::class)
             ->getPublicNames();
 
-        $data = CodeLists::mapEnum($types, $this->translator, Domain::ENUMS);
+        $data = $this->codeListService->mapEnum($types, Domain::ENUMS);
 
         return $this->json(new Paginator($data));
     }
@@ -73,7 +71,7 @@ class ModalityCodelistController extends AbstractController
             ->getRepository(ModalityType::class)
             ->getPublicNames($code);
 
-        $data = CodeLists::mapEnum($types, $this->translator, Domain::ENUMS);
+        $data = $this->codeListService->mapEnum($types, Domain::ENUMS);
 
         return $this->json(new Paginator($data));
     }

@@ -7,8 +7,9 @@ namespace NewApiBundle\Controller;
 use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Component\Codelist\CodeLists;
+use NewApiBundle\Enum\Domain;
 use NewApiBundle\InputType\TransactionFilterInputType;
+use NewApiBundle\Services\CodeListService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,6 +19,14 @@ use TransactionBundle\Repository\TransactionRepository;
 
 class TransactionController extends AbstractController
 {
+    /** @var CodeListService */
+    private $codeListService;
+
+    public function __construct(CodeListService $codeListService)
+    {
+        $this->codeListService = $codeListService;
+    }
+    
     /**
      * @Rest\Get("/web-app/v1/transactions")
      *
@@ -77,7 +86,7 @@ class TransactionController extends AbstractController
      */
     public function statuses(): JsonResponse
     {
-        $data = CodeLists::mapArray(Transaction::statuses());
+        $data = $this->codeListService->mapArray(Transaction::statuses(), Domain::ENUMS);
 
         return $this->json(new Paginator($data));
     }

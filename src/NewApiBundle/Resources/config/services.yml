@@ -201,7 +201,7 @@ services:
               
     NewApiBundle\Controller\InstitutionCodelistController:
         arguments:
-            - "@translator"
+            - '@NewApiBundle\Services\CodeListService'
 
     NewApiBundle\Controller\LocationController:
         arguments:
@@ -209,7 +209,7 @@ services:
   
     NewApiBundle\Controller\ModalityCodelistController:
         arguments:
-            - "@translator"
+            - '@NewApiBundle\Services\CodeListService'
 
     NewApiBundle\Controller\OrganizationController:
         arguments:
@@ -222,34 +222,40 @@ services:
     NewApiBundle\Controller\AssistanceCodelistController:
         arguments: 
             - '@project.sector_service'
-            - "@translator"
+            - '@NewApiBundle\Services\CodeListService'
 
     NewApiBundle\Controller\ProductCategoryCodelistController:
         arguments:
-            - "@translator"
+            - '@NewApiBundle\Services\CodeListService'
 
     NewApiBundle\Controller\ScoringBlueprintController:
 
     NewApiBundle\Controller\SectorsCodelistController:
         arguments:
             - "@project.sector_service"
-            - "@translator"
+            - '@NewApiBundle\Services\CodeListService'
 
     NewApiBundle\Controller\SelectionCriterionController:
+        arguments:
+            - '@NewApiBundle\Services\CodeListService'
+      
 
     NewApiBundle\Controller\SmartcardPurchaseController:
         arguments:
             - '@NewApiBundle\Component\Smartcard\SmartcardPurchaseService'
+              
+    NewApiBundle\Controller\TransactionController:
+        arguments:
+            - '@NewApiBundle\Services\CodeListService'
 
     NewApiBundle\Controller\BeneficiaryCodelistController:
         public: true
         arguments:
-            - '@translator' 
-            - "@doctrine.orm.entity_manager"
+            - '@NewApiBundle\Services\CodeListService' 
               
     NewApiBundle\Controller\HouseholdCodelistController:
         arguments:
-          - '@translator'
+            - '@NewApiBundle\Services\CodeListService'
 
     NewApiBundle\Controller\WebApp\Smartcard\InvoiceController:
         public: true
@@ -524,6 +530,10 @@ services:
             - '%kernel.project_dir%/src/BeneficiaryBundle/Resources/config/vulnerability/scoring_<<COUNTRY>>.csv'
 
     NewApiBundle\Services\AssistanceDistributionService:
+    
+    NewApiBundle\Services\CodeListService:
+        arguments:
+          - '@translator'
 
     NewApiBundle\Services\ScoringBlueprintService:
     

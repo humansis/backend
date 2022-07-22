@@ -6,14 +6,13 @@ namespace NewApiBundle\Controller;
 
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Component\Codelist\CodeLists;
 use NewApiBundle\Enum\Domain;
+use NewApiBundle\Services\CodeListService;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Utils\SectorService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Cache(expires="+5 days", public=true)
@@ -23,13 +22,15 @@ class SectorsCodelistController extends AbstractController
     /** @var SectorService */
     private $sectorService;
 
-    /** @var TranslatorInterface */
-    private $translator;
+    /** @var CodeListService */
+    private $codeListService;
 
-    public function __construct(SectorService $sectorService, TranslatorInterface $translator)
-    {
+    public function __construct(
+        SectorService $sectorService,
+        CodeListService $codeListService
+    ) {
         $this->sectorService = $sectorService;
-        $this->translator = $translator;
+        $this->codeListService = $codeListService;
     }
 
     /**
@@ -40,7 +41,7 @@ class SectorsCodelistController extends AbstractController
      */
     public function getSectors(): JsonResponse
     {
-        $data = CodeLists::mapEnum(SectorEnum::all(), $this->translator, Domain::SECTORS);
+        $data = $this->codeListService->mapEnum(SectorEnum::all(), Domain::SECTORS);
 
         return $this->json(new Paginator($data));
     }
@@ -72,7 +73,7 @@ class SectorsCodelistController extends AbstractController
             throw $this->createNotFoundException('Sector not found');
         }
 
-        $subSectors = CodeLists::mapSubSectors($this->sectorService->findSubsSectorsBySector($code));
+        $subSectors = $this->codeListService->mapSubSectors($this->sectorService->findSubsSectorsBySector($code), Domain::SECTORS);
 
         return $this->json(new Paginator($subSectors));
     }

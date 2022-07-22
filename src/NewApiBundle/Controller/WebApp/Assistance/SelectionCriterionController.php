@@ -5,10 +5,10 @@ namespace NewApiBundle\Controller\WebApp\Assistance;
 use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Component\Codelist\CodeLists;
 use NewApiBundle\Component\SelectionCriteria\SelectionCriterionService;
 use NewApiBundle\Controller\AbstractController;
 use NewApiBundle\Enum\SelectionCriteriaTarget;
+use NewApiBundle\Services\CodeListService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,6 +17,13 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class SelectionCriterionController extends AbstractController
 {
+    /** @var CodeListService */
+    private $codeListService;
+
+    public function __construct(CodeListService $codeListService)
+    {
+        $this->codeListService = $codeListService;
+    }
     /**
      * @Rest\Get("/web-app/v1/selection-criteria/targets")
      * @Cache(expires="+5 days", public=true)
@@ -25,7 +32,7 @@ class SelectionCriterionController extends AbstractController
      */
     public function targets(): JsonResponse
     {
-        $data = CodeLists::mapEnum(SelectionCriteriaTarget::values());
+        $data = $this->codeListService->mapEnum(SelectionCriteriaTarget::values());
 
         return $this->json(new Paginator($data));
     }
@@ -77,7 +84,7 @@ class SelectionCriterionController extends AbstractController
             throw $this->createNotFoundException($ex->getMessage(), $ex);
         }
 
-        $data = CodeLists::mapEnum($data);
+        $data = $this->codeListService->mapEnum($data);
 
         return $this->json(new Paginator($data));
     }

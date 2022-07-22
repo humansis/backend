@@ -8,15 +8,12 @@ use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
-use NewApiBundle\Component\Codelist\CodeLists;
-use NewApiBundle\Enum\Domain;
 use NewApiBundle\InputType\AssistanceTargetFilterInputType;
 use NewApiBundle\InputType\AssistanceTypeFilterInputType;
+use NewApiBundle\Services\CodeListService;
 use ProjectBundle\Utils\SectorService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Cache(expires="+5 days", public=true)
@@ -28,21 +25,21 @@ class AssistanceCodelistController extends AbstractController
      */
     private $sectorService;
 
-    /** @var TranslatorInterface */
-    private $translator;
-
+    /** @var CodeListService */
+    private $codeListService;
 
     /**
      * AssistanceCodelistController constructor.
      * @param SectorService $sectorService
+     * @param CodeListService $codeListService
      */
     public function __construct(
         SectorService $sectorService,
-        TranslatorInterface $translator
+        CodeListService $codeListService
     )
     {
         $this->sectorService = $sectorService;
-        $this->translator = $translator;
+        $this->codeListService = $codeListService;
     }
 
     /**
@@ -60,7 +57,7 @@ class AssistanceCodelistController extends AbstractController
             $data = $this->sectorService->findTargetsByType($targetTypeFilterType->getType());
         }
 
-        $targets = CodeLists::mapEnum($data, $this->translator);
+        $targets = $this->codeListService->mapEnum($data);
 
         return $this->json(new Paginator($targets));
     }
@@ -88,7 +85,7 @@ class AssistanceCodelistController extends AbstractController
             }
         }
 
-        $assistanceTypes = CodeLists::mapEnum($data, $this->translator);
+        $assistanceTypes = $this->codeListService->mapEnum($data);
 
         return $this->json(new Paginator($assistanceTypes));
     }
@@ -100,7 +97,7 @@ class AssistanceCodelistController extends AbstractController
      */
     public function getCommodityDivision(): JsonResponse
     {
-        $data = CodeLists::mapEnum(CommodityDivision::values(), $this->translator, Domain::ENUMS);
+        $data = $this->codeListService->mapEnum(CommodityDivision::values());
 
         return $this->json(new Paginator($data));
     }

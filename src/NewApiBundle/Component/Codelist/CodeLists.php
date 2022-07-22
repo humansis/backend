@@ -10,6 +10,7 @@ use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\DTO\Sector;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/** @deprecated use CodeListService instead */
 class CodeLists
 {
     public static function mapEnum(

@@ -6,24 +6,22 @@ namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Institution;
 use CommonBundle\Pagination\Paginator;
-use NewApiBundle\Component\Codelist\CodeLists;
+use NewApiBundle\Services\CodeListService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Cache(expires="+5 days", public=true)
  */
 class InstitutionCodelistController extends AbstractController
 {
-    /** @var TranslatorInterface */
-    private $translator;
+    /** @var CodeListService */
+    private $codeListService;
 
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(CodeListService $codeListService)
     {
-        $this->translator = $translator;
+        $this->codeListService = $codeListService;
     }
     
     /**
@@ -33,7 +31,7 @@ class InstitutionCodelistController extends AbstractController
      */
     public function getInstitutionTypes(): JsonResponse
     {
-        $data = CodeLists::mapEnum(Institution::TYPE_ALL, $this->translator);
+        $data = $this->codeListService->mapEnum(Institution::TYPE_ALL);
 
         return $this->json(new Paginator($data));
     }
