@@ -55,17 +55,5 @@ class ResolverTest extends KernelTestCase
         $this->assertEquals(5, $protocol->getScore('Test Rule'));
     }
 
-    public function testUkrIDPScoring()
-    {
-        $this->markTestSkipped();
-        $this->expectNotToPerformAssertions();
-
-        $scoring = $this->scoringFactory->buildScoring('IDP');
-
-        /** @var Household $household */
-        $household = $this->objectManager->getRepository(Household::class)->findOneBy([]);
-
-        $this->resolver->compute($household, $scoring, 'KHM');
-    }
 }
 
