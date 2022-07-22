@@ -194,7 +194,6 @@ services:
     NewApiBundle\Controller\CommonController:
         arguments:
             - '@NewApiBundle\Component\Country\Countries'
-            - '%app.translations_dir%'
 
     NewApiBundle\Controller\DonorController:
         arguments:
@@ -527,6 +526,12 @@ services:
     NewApiBundle\Services\AssistanceDistributionService:
 
     NewApiBundle\Services\ScoringBlueprintService:
+    
+    NewApiBundle\Services\TranslationExportService:
+        arguments:
+            - '@CommonBundle\Utils\ExportService'
+            - '%app.translations_dir%'
+            - '%app.locales%'
 
     NewApiBundle\Component\SelectionCriteria\Loader\CriteriaConfigurationLoader:
         arguments:

@@ -6,13 +6,11 @@ namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Pagination\Paginator;
-use CommonBundle\Utils\ExportService;
 use DistributionBundle\Repository\AssistanceRepository;
-use DistributionBundle\Utils\AssistanceService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Country\Countries;
+use NewApiBundle\Services\TranslationExportService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,15 +26,11 @@ class CommonController extends AbstractController
 
     /** @var TranslatorInterface */
     private $translator;
-    
-    /** @var string */
-    private $translationsDir;
 
-    public function __construct(Countries $countries, string $translationsDir, TranslatorInterface $translator)
+    public function __construct(Countries $countries, TranslatorInterface $translator)
     {
         $this->countries = $countries;
         $this->translator = $translator;
-        $this->translationsDir = $translationsDir;
     }
 
     /**
@@ -181,77 +175,9 @@ class CommonController extends AbstractController
      * @return BinaryFileResponse
      * @throws \Exception
      */
-    public function translationsDownload(ExportService $exporter): BinaryFileResponse
+    public function translationsDownload(TranslationExportService $translationExportService): BinaryFileResponse
     {
-        $finder = new Finder();
-        $finder->files()->in($this->translationsDir)->name('*.xlf');
-
-        if (!$finder->hasResults()) {
-            throw new \UnexpectedValueException('No translations found');
-        }
-        
-        //prepare source array of all languages
-        $source = [];
-        foreach ($finder as $file) {
-            $xml = new \SimpleXMLElement(file_get_contents($file->getRealPath()));
-
-            [$filename, $lang, $ext] = explode('.', $file->getFilename());
-
-            if (!isset($source[$filename])) {
-                $source[$filename] = [];
-            }
-            
-            $order = 1;
-
-            foreach ($xml->file->body->{'trans-unit'} as $item) {
-                $attr = $item->attributes();
-
-                $source[$filename][(string)$attr['id']]['translate'][$lang] = (string)$item->target;
-                
-                if ($lang === 'en') {
-                    $source[$filename][(string)$attr['id']]['order'] = $order++;
-                    $source[$filename][(string)$attr['id']]['resname'] = (string)$attr['resname'];
-                }
-            }
-        }
-        
-        //prepare target array to export
-        $lines = [];
-        $lines[0] = ['id','resname','row#','source'];
-        foreach ($this->getParameter('app.locales') as $locale) {
-            $lines[0][] = $locale;
-        }
-        $lines[] = [];
-
-        $rowCounter = 1;
-        
-        foreach ($source as $filename => $entries) {
-
-            $lines[] = [$filename, '', $rowCounter++];
-            
-            foreach ($entries as $id => $entry) {
-                
-                if (!isset($entry['resname'])) {
-                    throw new \UnexpectedValueException('Missing resname for id ' . $id);
-                }
-                
-                $line = [
-                    $id,
-                    $entry['resname'],
-                    $rowCounter++,
-                    $entry['resname'],
-                ];
-
-                foreach ($this->getParameter('app.locales') as $locale) {
-                    $line[] = $entry['translate'][$locale] ?? '';
-                }
-                
-                $lines[] = $line;
-            }
-        }
-
-        //export
-        $filename = $exporter->export($lines, 'translations', 'xlsx');
+        $filename = $translationExportService->prepareExport();
         $response = new BinaryFileResponse(getcwd() . '/' . $filename);
 
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
