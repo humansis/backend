@@ -92,6 +92,7 @@ framework:
           from:
             - !php/const NewApiBundle\Enum\ImportState::NEW
             - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_CORRECT
+            - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_FAILED
           to: !php/const NewApiBundle\Enum\ImportState::UPLOADING
         !php/const NewApiBundle\Workflow\ImportTransitions::COMPLETE_UPLOAD:
           from: !php/const NewApiBundle\Enum\ImportState::UPLOADING
