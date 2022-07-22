@@ -130,7 +130,6 @@ class SmartcardRepository extends EntityRepository
         $qb->andWhere('s.serialNumber = :serialNumber')
             ->andWhere('s.state = :state')
             ->andWhere('s.changedAt = :changedAt')
-            ->setMaxResults(1)
             ->setParameters([
                 'serialNumber' => $serialNumber,
                 'state' => $changeSmartcardInputType->getState(),
