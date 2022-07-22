@@ -17,9 +17,9 @@ class PreliminaryInvoiceRepository extends EntityRepository
      * @param Vendor      $vendor
      * @param string|null $invoicingState
      *
-     * @return Paginator
+     * @return Vendor[]
      */
-    public function findByVendorAndState(Vendor $vendor, ?string $invoicingState = null): Paginator
+    public function findByVendorAndState(Vendor $vendor, ?string $invoicingState = null): array
     {
         $qb = $this->createQueryBuilder('pi');
         $qb->join('pi.vendor', 'v');
@@ -40,7 +40,7 @@ class PreliminaryInvoiceRepository extends EntityRepository
             }
         }
 
-        return new Paginator($qb);
+        return $qb->getQuery()->getResult();
     }
 
     /**
