@@ -33,7 +33,7 @@ class ParserTest extends KernelTestCase
         /** @var ScoringRule[] $scoringRules */
         $scoringRules = $this->parser->parse($csvPath);
 
-        $this->assertEquals(3, count($scoringRules));
+        $this->assertEquals(count(ScoringRulesEnum::values()), count($scoringRules));
 
         $this->assertEquals(1, count($scoringRules[0]->getOptions()));
         $this->assertEquals(1, count($scoringRules[1]->getOptions()));
