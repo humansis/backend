@@ -43,13 +43,10 @@ class LocationMapper implements MapperInterface
         return $this->object->getCode();
     }
 
-    /** @deprecated ? */
-    public function getCountryIso3(): string
-    {
-        return $this->object->getCountryIso3();
-    }
-
-    /** @deprecated use $this->getId() */
+    /** 
+     * @deprecated use $this->getId()
+     * backward compatibility for FE 
+     */
     public function getLocationId(): int
     {
         return $this->object->getId();
