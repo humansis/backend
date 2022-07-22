@@ -8,11 +8,13 @@ use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleOptionsEnum;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRule;
+use NewApiBundle\Utils\Floats;
 
 /**
  * All methods needs to be public function(Household $household, ScoringRule $rule): int
  *
- * @package NewApiBundle\Component\Assistance\Scoring
+ * Every public method in this class needs to be included in ScoringRuleOptionsEnum. Also every value in
+ * ScoringRuleOptionsEnum has to have implementation in this class.
  */
 final class RulesCalculation
 {
@@ -22,12 +24,40 @@ final class RulesCalculation
      *
      * @return int
      */
-    public function dependencyRatio(Household $household, ScoringRule $rule): int
+    public function dependencyRatioUkr(Household $household, ScoringRule $rule): int
     {
-        if ($household->getBeneficiaries()->count() === 2 ) {
-            return $rule->getOptionByValue('1 (mid.)')->getScore();
-        } else if ($household->getBeneficiaries()->count() > 2) {
-            return $rule->getOptionByValue('>1 (hight dep.)')->getScore();
+        $childAgeLimit = 17;
+        $workingAgeLimit = 50;
+
+        $children = 0;
+        $elders = 0;
+        $adultsInWorkingAge = 0;
+
+        foreach ($household->getBeneficiaries() as $member) {
+            var_dump($member->getAge());
+            if (is_null($member->getAge())) {
+                continue;
+            }
+
+            if ($member->getAge() <= $childAgeLimit) {
+                $children++;
+            } elseif ($member->getAge() >= $workingAgeLimit) {
+                $elders ++;
+            } else {
+                $adultsInWorkingAge++;
+            }
+        }
+
+        if ($adultsInWorkingAge === 0) {
+            return $rule->getOptionByValue(ScoringRuleOptionsEnum::DEPENDENCY_RATIO_HIGH)->getScore();
+        }
+
+        $dependencyRatio = ($children + $elders) / $adultsInWorkingAge;
+
+        if (Floats::compare($dependencyRatio, 1.0)) {
+            return $rule->getOptionByValue(ScoringRuleOptionsEnum::DEPENDENCY_RATIO_MID)->getScore();
+        } else if ($dependencyRatio > 1.0) {
+            return $rule->getOptionByValue(ScoringRuleOptionsEnum::DEPENDENCY_RATIO_HIGH)->getScore();
         }
 
         return 0;

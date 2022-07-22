@@ -6,13 +6,14 @@ calculation,pregnantOrLactating,Pregnant or lactating,Pregnant or lactating,3
 ,,,,
 countrySpecific,Elderly ,Single Elderly/elderlies ,Elderly,3
 ,,,,
-countrySpecific,Disabled,Disability,1st degree ,3
-,,,2nd degree ,2
-,,,3rd degree ,2
-,,,2 and more people with any disability ,3
+countrySpecific,Disabled,Disability,Severe functional limitation,3
+,,,A lot of functional limitation,2
+,,,Some functional limitation,2
 ,,,,
 calculation,noOfChronicallyIll,Chronical ilnesses and health issues ,one,2
 ,,,two and more,3
 ,,,,
-calculation,dependencyRatio,Dependency Ratio (number of family members only),1 (mid.),2
+calculation,dependencyRatioUkr,Dependency Ratio (number of family members only),1 (mid.),2
 ,,,>1 (hight dep.),3
+,,,,
+countrySpecific,Main income,Main income,none,3

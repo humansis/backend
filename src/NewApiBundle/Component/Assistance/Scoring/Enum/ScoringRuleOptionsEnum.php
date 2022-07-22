@@ -27,7 +27,7 @@ final class ScoringRuleOptionsEnum
             self::VULNERABILITY_PREGNANT_OR_LACTATING,
         ],
 
-        ScoringRulesEnum::DEPENDENCY_RATIO => [
+        ScoringRulesEnum::DEPENDENCY_RATIO_UKR => [
             self::DEPENDENCY_RATIO_MID,
             self::DEPENDENCY_RATIO_HIGH,
         ],
