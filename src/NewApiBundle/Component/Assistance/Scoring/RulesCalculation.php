@@ -34,7 +34,6 @@ final class RulesCalculation
         $adultsInWorkingAge = 0;
 
         foreach ($household->getBeneficiaries() as $member) {
-            var_dump($member->getAge());
             if (is_null($member->getAge())) {
                 continue;
             }
