@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Component\Codelist;
 
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use NewApiBundle\Enum\Domain;
 use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\DTO\Sector;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -14,7 +15,7 @@ class CodeLists
     public static function mapEnum(
         iterable $list,
         ?TranslatorInterface $translator = null,
-        ?string $domain = 'messages'
+        ?string $domain = Domain::MESSAGES
     )
     {
         $data = [];
@@ -32,7 +33,7 @@ class CodeLists
     public static function mapArray(
         iterable $list,
         ?TranslatorInterface $translator = null,
-        ?string $domain = 'messages'
+        ?string $domain = Domain::MESSAGES
     )
     {
         $data = [];

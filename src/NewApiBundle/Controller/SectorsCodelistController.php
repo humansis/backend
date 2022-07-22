@@ -7,6 +7,7 @@ namespace NewApiBundle\Controller;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Codelist\CodeLists;
+use NewApiBundle\Enum\Domain;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Utils\SectorService;
@@ -39,7 +40,7 @@ class SectorsCodelistController extends AbstractController
      */
     public function getSectors(): JsonResponse
     {
-        $data = CodeLists::mapEnum(SectorEnum::all(), $this->translator, 'sectors');
+        $data = CodeLists::mapEnum(SectorEnum::all(), $this->translator, Domain::SECTORS);
 
         return $this->json(new Paginator($data));
     }

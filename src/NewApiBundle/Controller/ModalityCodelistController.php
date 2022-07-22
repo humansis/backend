@@ -10,6 +10,7 @@ use DistributionBundle\Entity\ModalityType;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Codelist\CodeItem;
 use NewApiBundle\Component\Codelist\CodeLists;
+use NewApiBundle\Enum\Domain;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -38,7 +39,7 @@ class ModalityCodelistController extends AbstractController
             ->getRepository(Modality::class)
             ->getNames();
 
-        $data = CodeLists::mapEnum($modalities, $this->translator, 'enums');
+        $data = CodeLists::mapEnum($modalities, $this->translator, Domain::ENUMS);
         
         return $this->json(new Paginator($data));
     }
@@ -54,7 +55,7 @@ class ModalityCodelistController extends AbstractController
             ->getRepository(ModalityType::class)
             ->getPublicNames();
 
-        $data = CodeLists::mapEnum($types, $this->translator, 'enums');
+        $data = CodeLists::mapEnum($types, $this->translator, Domain::ENUMS);
 
         return $this->json(new Paginator($data));
     }
@@ -72,7 +73,7 @@ class ModalityCodelistController extends AbstractController
             ->getRepository(ModalityType::class)
             ->getPublicNames($code);
 
-        $data = CodeLists::mapEnum($types, $this->translator, 'enums');
+        $data = CodeLists::mapEnum($types, $this->translator, Domain::ENUMS);
 
         return $this->json(new Paginator($data));
     }

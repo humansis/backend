@@ -9,6 +9,7 @@ use DistributionBundle\Enum\AssistanceType;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 use NewApiBundle\Component\Codelist\CodeLists;
+use NewApiBundle\Enum\Domain;
 use NewApiBundle\InputType\AssistanceTargetFilterInputType;
 use NewApiBundle\InputType\AssistanceTypeFilterInputType;
 use ProjectBundle\Utils\SectorService;
@@ -99,7 +100,7 @@ class AssistanceCodelistController extends AbstractController
      */
     public function getCommodityDivision(): JsonResponse
     {
-        $data = CodeLists::mapEnum(CommodityDivision::values(), $this->translator, 'enums');
+        $data = CodeLists::mapEnum(CommodityDivision::values(), $this->translator, Domain::ENUMS);
 
         return $this->json(new Paginator($data));
     }

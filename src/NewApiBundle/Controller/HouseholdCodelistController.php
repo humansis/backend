@@ -10,6 +10,7 @@ use BeneficiaryBundle\Entity\Referral;
 use CommonBundle\Pagination\Paginator;
 use NewApiBundle\Component\Codelist\CodeItem;
 use NewApiBundle\Component\Codelist\CodeLists;
+use NewApiBundle\Enum\Domain;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
@@ -39,7 +40,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function getLivelihoods(): JsonResponse
     {
-        $data = CodeLists::mapEnum(Livelihood::values(), $this->translator, 'enums');
+        $data = CodeLists::mapEnum(Livelihood::values(), $this->translator, Domain::ENUMS);
 
         return $this->json(new Paginator($data));
     }
@@ -87,7 +88,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function getLocationTypes(): JsonResponse
     {
-        $data = CodeLists::mapArray(HouseholdLocation::LOCATION_TYPES, $this->translator, 'enums');
+        $data = CodeLists::mapArray(HouseholdLocation::LOCATION_TYPES, $this->translator, Domain::ENUMS);
 
         return $this->json(new Paginator($data));
     }
@@ -99,7 +100,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function referralTypes(): JsonResponse
     {
-        $data = CodeLists::mapArray(Referral::REFERRALTYPES, $this->translator, 'sectors');
+        $data = CodeLists::mapArray(Referral::REFERRALTYPES, $this->translator, Domain::SECTORS);
 
         return $this->json(new Paginator($data));
     }

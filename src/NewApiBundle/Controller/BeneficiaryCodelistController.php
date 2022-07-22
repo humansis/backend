@@ -12,6 +12,7 @@ use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Codelist\CodeLists;
 use NewApiBundle\Enum\BeneficiaryType;
+use NewApiBundle\Enum\Domain;
 use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\PhoneTypes;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -50,7 +51,7 @@ class BeneficiaryCodelistController extends AbstractController
      */
     public function getReferralTypes(): JsonResponse
     {
-        $data = CodeLists::mapArray(Referral::REFERRALTYPES, $this->translator, 'sectors');
+        $data = CodeLists::mapArray(Referral::REFERRALTYPES, $this->translator, Domain::SECTORS);
 
         return $this->json(new Paginator($data));
     }
@@ -62,7 +63,7 @@ class BeneficiaryCodelistController extends AbstractController
      */
     public function getResidencyStatuses(): JsonResponse
     {
-        $data = CodeLists::mapEnum(ResidencyStatus::values(), $this->translator, 'enums');
+        $data = CodeLists::mapEnum(ResidencyStatus::values(), $this->translator, Domain::ENUMS);
 
         return $this->json(new Paginator($data));
     }
@@ -87,7 +88,7 @@ class BeneficiaryCodelistController extends AbstractController
      */
     public function getNationalIdTypes(): JsonResponse
     {
-        $data = CodeLists::mapEnum(NationalIdType::values(), $this->translator, 'enums');
+        $data = CodeLists::mapEnum(NationalIdType::values(), $this->translator, Domain::ENUMS);
 
         return $this->json(new Paginator($data));
     }
@@ -99,7 +100,7 @@ class BeneficiaryCodelistController extends AbstractController
      */
     public function getPhoneTypes(): JsonResponse
     {
-        $data = CodeLists::mapEnum(PhoneTypes::values(), $this->translator, 'enums');
+        $data = CodeLists::mapEnum(PhoneTypes::values(), $this->translator, Domain::ENUMS);
 
         return $this->json(new Paginator($data));
     }
