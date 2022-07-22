@@ -41,7 +41,7 @@ final class RulesCalculation
             if ($member->getAge() <= $childAgeLimit) {
                 $children++;
             } elseif ($member->getAge() >= $workingAgeLimit) {
-                $elders ++;
+                $elders++;
             } else {
                 $adultsInWorkingAge++;
             }
