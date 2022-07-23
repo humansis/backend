@@ -5,27 +5,45 @@ declare(strict_types=1);
 namespace NewApiBundle\Component\Codelist;
 
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
+use NewApiBundle\Enum\Domain;
 use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\DTO\Sector;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/** @deprecated use CodeListService instead */
 class CodeLists
 {
-    public static function mapEnum(iterable $list)
+    public static function mapEnum(
+        iterable $list,
+        ?TranslatorInterface $translator = null,
+        ?string $domain = Domain::MESSAGES
+    )
     {
         $data = [];
         foreach ($list as $value) {
-            $data[] = new CodeItem($value, $value);
+            $translation = $translator !== null
+                ? $translator->trans($value, [], $domain)
+                : $value;
+
+            $data[] = new CodeItem($value, $translation);
         }
 
         return $data;
     }
 
-    public static function mapArray(iterable $list)
+    public static function mapArray(
+        iterable $list,
+        ?TranslatorInterface $translator = null,
+        ?string $domain = Domain::MESSAGES
+    )
     {
         $data = [];
         foreach ($list as $key => $value) {
-            $data[] = new CodeItem($key, $value);
+            $translation = $translator !== null
+                ? $translator->trans($value, [], $domain)
+                : $value;
+            
+            $data[] = new CodeItem($key, $translation);
         }
 
         return $data;

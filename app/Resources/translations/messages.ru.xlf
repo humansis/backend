@@ -445,6 +445,10 @@
         <source>Community</source>
         <target>Сообщество</target>
       </trans-unit>
+      <trans-unit id="81TumeK" resname="community">
+        <source>community</source>
+        <target>Сообщество</target>
+      </trans-unit>
       <trans-unit id="NXuxGoY" resname="Community Based Interventions">
         <source>Community Based Interventions</source>
         <target>Вмешательства на уровне сообщества</target>
@@ -1070,7 +1074,7 @@
         <target>Тип полученной внешней помощи</target>
       </trans-unit>
       <trans-unit id="YKM_bPU" resname="False">
-        <source>False</source>
+        <source>FALSE</source>
         <target>ЛОЖНЫЙ</target>
       </trans-unit>
       <trans-unit id="VN7kL_t" resname="Family Name">
@@ -1161,6 +1165,10 @@
         <source>Government</source>
         <target>Правительство</target>
       </trans-unit>
+      <trans-unit id="q16eN2_" resname="government">
+        <source>government</source>
+        <target>Правительство</target>
+      </trans-unit>
       <trans-unit id="V0EjK1r" resname="Governorate">
         <source>Governorate</source>
         <target>Провинция</target>
@@ -1168,6 +1176,10 @@
       <trans-unit id="LeLx7nx" resname="Has Not Been In Distribution Since">
         <source>Has Not Been In Distribution Since</source>
         <target>Не участвовал в выдаче с</target>
+      </trans-unit>
+      <trans-unit id="YkhOIqa" resname="health">
+        <source>health</source>
+        <target>Здоровье</target>
       </trans-unit>
       <trans-unit id="VYmESet" resname="Health">
         <source>Health</source>
@@ -1203,6 +1215,10 @@
       </trans-unit>
       <trans-unit id="ocbJf0F" resname="Household">
         <source>Household</source>
+        <target>Домохозяйство</target>
+      </trans-unit>
+      <trans-unit id="u81ijAe" resname="household">
+        <source>household</source>
         <target>Домохозяйство</target>
       </trans-unit>
       <trans-unit id="ltEY3Zk" resname="Household Detail">
@@ -1341,6 +1357,10 @@
         <source>Individual</source>
         <target>Особа</target>
       </trans-unit>
+      <trans-unit id="2hXKrun" resname="individual">
+        <source>individual</source>
+        <target>Особа</target>
+      </trans-unit>
       <trans-unit id="3RdriBz" resname="Individual Protection Assistance">
         <source>Individual Protection Assistance</source>
         <target>Помощь в индивидуальной защите</target>
@@ -1359,6 +1379,10 @@
       </trans-unit>
       <trans-unit id="ZaFVNyn" resname="Institution">
         <source>Institution</source>
+        <target>Учреждение</target>
+      </trans-unit>
+      <trans-unit id="gi.jZ5y" resname="institution">
+        <source>institution</source>
         <target>Учреждение</target>
       </trans-unit>
       <trans-unit id="Uq.Myb0" resname="Institutions">
@@ -1845,6 +1869,10 @@
         <source>Production</source>
         <target>Продукция</target>
       </trans-unit>
+      <trans-unit id="q44Y706" resname="production">
+        <source>production</source>
+        <target>Продукция</target>
+      </trans-unit>
       <trans-unit id="TtyL_vx" resname="Products">
         <source>Products</source>
         <target>Продукты</target>
@@ -2201,7 +2229,7 @@
         <source>Served beneficiaries</source>
         <target>Обслужено бенефициаров</target>
       </trans-unit>
-      <trans-unit id="SV3rcDJ" resname="Served Beneficiaries">
+      <trans-unit id="Ylj6.eN" resname="Served Beneficiaries">
         <source>Served Beneficiaries</source>
         <target>Обслужено бенефициаров</target>
       </trans-unit>
@@ -2470,7 +2498,7 @@
         <target>Переводы</target>
       </trans-unit>
       <trans-unit id="PLyHx2g" resname="True">
-        <source>True</source>
+        <source>TRUE</source>
         <target>ПРАВДА</target>
       </trans-unit>
       <trans-unit id="rj1rhbS" resname="Two-factor authentication adds an additional layer of security to your account by requiring more than a password to log in">
@@ -2749,8 +2777,7 @@
         <source>Approved by</source>
         <target>Одобрено</target>
       </trans-unit>
-      <trans-unit id="RMSi1bj"
-                  resname="The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.">
+      <trans-unit id="RMSi1bj" resname="The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.">
         <source>The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.</source>
         <target>Указанное ниже лицо подтверждает своей подписью на этом Списке раздачи, что оно получило и приняло пожертвование указанных ниже предметов от Человек в беде.</target>
       </trans-unit>
@@ -2890,10 +2917,781 @@
         <source>Smartcard code</source>
         <target>Код Smartcard</target>
       </trans-unit>
-      <trans-unit id="EUHpzYl"
-                  resname="The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.">
-        <source>The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.</source>
-        <target>Указанное ниже лицо подтверждает своей подписью на этом Списке раздачи, что оно получило и приняло пожертвование указанных ниже предметов от Человек в беде.</target>
+      <trans-unit id="Q6e.Qgr" resname="You need to change your password">
+        <source>You need to change your password</source>
+        <target>Вам необходимо изменить ваш пароль</target>
+      </trans-unit>
+      <trans-unit id="9HB50bt" resname="Password Was Not Updated">
+        <source>Password Was Not Updated</source>
+        <target>Пароль не был обновлен</target>
+      </trans-unit>
+      <trans-unit id="YguqR08" resname="Password Successfully Updated">
+        <source>Password Successfully Updated</source>
+        <target>Пароль успешно обновлен</target>
+      </trans-unit>
+      <trans-unit id="tDxyH13" resname="This project does not contain any assistances">
+        <source>This project does not contain any assistances</source>
+        <target>Этот проект не содержит никаких помощей</target>
+      </trans-unit>
+      <trans-unit id="afwf0iD" resname="Create your first one">
+        <source>Create your first one</source>
+        <target>Создайте свою первую</target>
+      </trans-unit>
+      <trans-unit id="8x70pcF" resname="Please add some beneficiaries first!">
+        <source>Please add some beneficiaries first!</source>
+        <target>Пожалуйста, сначала добавьте бенефициаров!</target>
+      </trans-unit>
+      <trans-unit id="a5qG8KG" resname="Then you will be able to manage some assistances">
+        <source>Then you will be able to manage some assistances</source>
+        <target>Тогда вы сможете управлять помощями</target>
+      </trans-unit>
+      <trans-unit id="IEaAcvp" resname="Some required fields are not filled">
+        <source>Some required fields are not filled</source>
+        <target>Некоторые обязательные поля незаполнены</target>
+      </trans-unit>
+      <trans-unit id="XcXPsTb" resname="To Be Delivered">
+        <source>To Be Delivered</source>
+        <target>Должно быть доставлено</target>
+      </trans-unit>
+      <trans-unit id="ffYLZOf" resname="Imports">
+        <source>Imports</source>
+        <target>Импорт</target>
+      </trans-unit>
+      <trans-unit id="ZQGFQKK" resname="Import Detail">
+        <source>Import Detail</source>
+        <target>Сведения о импорте</target>
+      </trans-unit>
+      <trans-unit id="KGB8SlJ" resname="Create New Import">
+        <source>Create New Import</source>
+        <target>Создать новый импорт</target>
+      </trans-unit>
+      <trans-unit id="nlXvGt8" resname="Import Successfully Created">
+        <source>Import Successfully Created</source>
+        <target>Импорт успешно создан</target>
+      </trans-unit>
+      <trans-unit id="fozSBW2" resname="Title">
+        <source>Title</source>
+        <target>Название</target>
+      </trans-unit>
+      <trans-unit id="tMxLB8M" resname="In Progress">
+        <source>In Progress</source>
+        <target>В процессе</target>
+      </trans-unit>
+      <trans-unit id="qsnZPIv" resname="Integrity Check">
+        <source>Integrity Check</source>
+        <target>Проверка целостности</target>
+      </trans-unit>
+      <trans-unit id="ehdJMMC" resname="Duplicity Check">
+        <source>Duplicity Check</source>
+        <target>Проверка дублирования</target>
+      </trans-unit>
+      <trans-unit id="I9exltS" resname="Similarity Check">
+        <source>Similarity Check</source>
+        <target>Проверка сходства</target>
+      </trans-unit>
+      <trans-unit id="IJ_1hWm" resname="Finalisation">
+        <source>Finalisation</source>
+        <target>Завершение</target>
+      </trans-unit>
+      <trans-unit id="5LufHs6" resname="Start">
+        <source>Start</source>
+        <target>Начало</target>
+      </trans-unit>
+      <trans-unit id="m_8C4ft" resname="Import Statistics">
+        <source>Import Statistics</source>
+        <target>Импорт статистики</target>
+      </trans-unit>
+      <trans-unit id="rL11St7" resname="Cancel Import">
+        <source>Cancel Import</source>
+        <target>Отменить импорт</target>
+      </trans-unit>
+      <trans-unit id="mrr.ErV" resname="Are you sure you want to cancel this import?">
+        <source>Are you sure you want to cancel this import?</source>
+        <target>Вы уверены, что хотите отменить этот импорт?</target>
+      </trans-unit>
+      <trans-unit id="3InUpXZ" resname="Canceled Successfully">
+        <source>Canceled Successfully</source>
+        <target>Успешно отменен</target>
+      </trans-unit>
+      <trans-unit id="PbDuHIG" resname="Start Import">
+        <source>Start Import</source>
+        <target>Начать импорт</target>
+      </trans-unit>
+      <trans-unit id="mfVKtcL" resname="Integrity Check Started Successfully">
+        <source>Integrity Check Started Successfully</source>
+        <target>Проверка целостности успешно запущена</target>
+      </trans-unit>
+      <trans-unit id="hl6J3nj" resname="Upload">
+        <source>Upload</source>
+        <target>Загрузить</target>
+      </trans-unit>
+      <trans-unit id="lEoZ95X" resname="Start Duplicity Check">
+        <source>Start Duplicity Check</source>
+        <target>Начать проверку дублирования</target>
+      </trans-unit>
+      <trans-unit id="xJ3X9ZX" resname="Download Affected Records">
+        <source>Download Affected Records</source>
+        <target>Скачать неверные данные</target>
+      </trans-unit>
+      <trans-unit id="fGMnE_R" resname="Upload Corrected Records">
+        <source>Upload Corrected Records</source>
+        <target>Загрузить исправленные данные</target>
+      </trans-unit>
+      <trans-unit id="8gjqLUt" resname="Start Integrity Check Again">
+        <source>Start Integrity Check Again</source>
+        <target>Начать проверку целосности заново</target>
+      </trans-unit>
+      <trans-unit id="qa5vWp3" resname="Downloaded File">
+        <source>Downloaded File</source>
+        <target>Скачанный файл</target>
+      </trans-unit>
+      <trans-unit id="Coz1.ay" resname="Duplicity Check Started Successfully">
+        <source>Duplicity Check Started Successfully</source>
+        <target>Проверка дублирования начата успешно</target>
+      </trans-unit>
+      <trans-unit id="wjrZbqz" resname="Number of Records">
+        <source>Number of Records</source>
+        <target>Число записей</target>
+      </trans-unit>
+      <trans-unit id="8_pC3sL" resname="Corrected Errors">
+        <source>Corrected Errors</source>
+        <target>Исправленные ошибки</target>
+      </trans-unit>
+      <trans-unit id="6YcQZNb" resname="Integrity Errors">
+        <source>Integrity Errors</source>
+        <target>Ошибки целостности</target>
+      </trans-unit>
+      <trans-unit id="Ooy7QZq" resname="Similarities Found">
+        <source>Similarities Found</source>
+        <target>Сходства найдены</target>
+      </trans-unit>
+      <trans-unit id="1D0x.Pr" resname="Similarities Corrected/Merged">
+        <source>Similarities Corrected/Merged</source>
+        <target>Сходства исправлены/объединены</target>
+      </trans-unit>
+      <trans-unit id="lBlvmfQ" resname="Duplicities Found">
+        <source>Duplicities Found</source>
+        <target>Найдены дублирования</target>
+      </trans-unit>
+      <trans-unit id="gmUqMtZ" resname="Resolve Duplicities">
+        <source>Resolve Duplicities</source>
+        <target>Дублирования устранены</target>
+      </trans-unit>
+      <trans-unit id="4EOzt1j" resname="Resolve Similarities">
+        <source>Resolve Similarities</source>
+        <target>Сходства устранены</target>
+      </trans-unit>
+      <trans-unit id="uYjR_1E" resname="Go to Finalisation">
+        <source>Go to Finalisation</source>
+        <target>Перейти к завершению</target>
+      </trans-unit>
+      <trans-unit id="HjjOFN2" resname="Start Similarity Check">
+        <source>Start Similarity Check</source>
+        <target>Начать проверку сходства</target>
+      </trans-unit>
+      <trans-unit id="92KBVoK" resname="Similarity Check Started Successfully">
+        <source>Similarity Check Started Successfully</source>
+        <target>Проверка на сходства начата успешно</target>
+      </trans-unit>
+      <trans-unit id="AOFZ86Z" resname="Duplicity Cases">
+        <source>Duplicity Cases</source>
+        <target>Случаи дублирования</target>
+      </trans-unit>
+      <trans-unit id="b2FXh.5" resname="Similarity Cases">
+        <source>Similarity Cases</source>
+        <target>Случаи сходства</target>
+      </trans-unit>
+      <trans-unit id="Iwen_hB" resname="Similarities">
+        <source>Similarities</source>
+        <target>Сходства</target>
+      </trans-unit>
+      <trans-unit id="mdlTq1t" resname="Duplicities">
+        <source>Duplicities</source>
+        <target>Дублирования</target>
+      </trans-unit>
+      <trans-unit id="HgXyT9a" resname="Imported Record">
+        <source>Imported Record</source>
+        <target>Импортированная запись</target>
+      </trans-unit>
+      <trans-unit id="POZxSyA" resname="Records From Database">
+        <source>Records From Database</source>
+        <target>Записи из базы данных</target>
+      </trans-unit>
+      <trans-unit id="wVImtJn" resname="Use Existing">
+        <source>Use Existing</source>
+        <target>Использовать существующий</target>
+      </trans-unit>
+      <trans-unit id="ONz4qNw" resname="Use New">
+        <source>Use New</source>
+        <target>Использовать новый</target>
+      </trans-unit>
+      <trans-unit id="ji0Eo4B" resname="Approve and Save">
+        <source>Approve and Save</source>
+        <target>Подтвердить и сохранить</target>
+      </trans-unit>
+      <trans-unit id="MOhD7XQ" resname="Duplicity Item">
+        <source>Duplicity Item</source>
+        <target>Дублирования</target>
+      </trans-unit>
+      <trans-unit id="cu0kXSz" resname="Reasons">
+        <source>Reasons</source>
+        <target>Причины</target>
+      </trans-unit>
+      <trans-unit id="MoegNKS" resname="Resolving">
+        <source>Resolving</source>
+        <target>Решение</target>
+      </trans-unit>
+      <trans-unit id="64WMRYt" resname="Solved">
+        <source>Solved</source>
+        <target>Решено</target>
+      </trans-unit>
+      <trans-unit id="2RtRN5M" resname="Not Solved">
+        <source>Not Solved</source>
+        <target>Не решено</target>
+      </trans-unit>
+      <trans-unit id="DUPmuIi" resname="This step is not currently in progress">
+        <source>This step is not currently in progress</source>
+        <target>Этот шаг в настоящее время не выполняется</target>
+      </trans-unit>
+      <trans-unit id="a_dLP97" resname="Get Affected Records">
+        <source>Get Affected Records</source>
+        <target>Получить неверные данные</target>
+      </trans-unit>
+      <trans-unit id="1ur_gjW" resname="Download">
+        <source>Download</source>
+        <target>Загрузить</target>
+      </trans-unit>
+      <trans-unit id="7gzv1.G" resname="Invalid Files">
+        <source>Invalid Files</source>
+        <target>Неверные файлы</target>
+      </trans-unit>
+      <trans-unit id="GnGpwNV" resname="Download Started">
+        <source>Download Started</source>
+        <target>Загрузка началась</target>
+      </trans-unit>
+      <trans-unit id="4bbLK.z" resname="Amharic">
+        <source>Amharic</source>
+        <target>Амхарский</target>
+      </trans-unit>
+      <trans-unit id="b0JDA.o" resname="Ukrainian">
+        <source>Ukrainian</source>
+        <target>Украинский</target>
+      </trans-unit>
+      <trans-unit id="FOyhZPS" resname="W A S H">
+        <source>W A S H</source>
+        <target>WASH</target>
+      </trans-unit>
+      <trans-unit id="HOUFmD2" resname="Education &amp; T V E T">
+        <source>Education &amp; T V E T</source>
+        <target>Образование и Профессионально-техническое образование</target>
+      </trans-unit>
+      <trans-unit id="ynVi_ce" resname="D R R &amp; Resilience">
+        <source>D R R &amp; Resilience</source>
+        <target>Cнижение риска бедствий и способность к восстановлению</target>
+      </trans-unit>
+      <trans-unit id="f5zIjxy" resname="Non- Sector Specific">
+        <source>Non- Sector Specific</source>
+        <target>Независимый от сектора</target>
+      </trans-unit>
+      <trans-unit id="5OsYBp1" resname="Food">
+        <source>Food</source>
+        <target>Продовольствие</target>
+      </trans-unit>
+      <trans-unit id="zuYsxxL" resname="Non-Food">
+        <source>Non-Food</source>
+        <target>Непродовольственный</target>
+      </trans-unit>
+      <trans-unit id="M0qRf3z" resname="Cashback">
+        <source>Cashback</source>
+        <target>Возвращение средств</target>
+      </trans-unit>
+      <trans-unit id="7B.3Jnh" resname="IDPoor">
+        <source>IDPoor</source>
+        <target>IDPoor</target>
+      </trans-unit>
+      <trans-unit id="A1cs.jC" resname="EquityCardNo">
+        <source>EquityCardNo</source>
+        <target>EquityCardNo</target>
+      </trans-unit>
+      <trans-unit id="bNLjMYV" resname="School">
+        <source>School</source>
+        <target>Школа</target>
+      </trans-unit>
+      <trans-unit id="1k3r2UL" resname="school">
+        <source>school</source>
+        <target>Школа</target>
+      </trans-unit>
+      <trans-unit id="OeA8jbR" resname="Community Center">
+        <source>Community Center</source>
+        <target>Центр сообщества</target>
+      </trans-unit>
+      <trans-unit id="zftzzYs" resname="community_center">
+        <source>community_center</source>
+        <target>Центр сообщества</target>
+      </trans-unit>
+      <trans-unit id="ikDmru3" resname="Commerce">
+        <source>Commerce</source>
+        <target>Торговля</target>
+      </trans-unit>
+      <trans-unit id="z7JA76h" resname="commerce">
+        <source>commerce</source>
+        <target>Торговля</target>
+      </trans-unit>
+      <trans-unit id="jOEuU.H" resname="Driver's License">
+        <source>Driver's License</source>
+        <target>Водительское удостоверение</target>
+      </trans-unit>
+      <trans-unit id="2UCwz_h" resname="Select invoicing">
+        <source>Select invoicing</source>
+        <target>Выбрать выставление счетов</target>
+      </trans-unit>
+      <trans-unit id="r9hSSpk" resname="Invoiced">
+        <source>Invoiced</source>
+        <target>Счет выставлен</target>
+      </trans-unit>
+      <trans-unit id="ETKaYj2" resname="To Redeem">
+        <source>To Redeem</source>
+        <target>Погасить</target>
+      </trans-unit>
+      <trans-unit id="NpDnUeb" resname="Category Type">
+        <source>Category Type</source>
+        <target>Тип категории</target>
+      </trans-unit>
+      <trans-unit id="T1veieg" resname="Vendor No.">
+        <source>Vendor No.</source>
+        <target>Поставщик №</target>
+      </trans-unit>
+      <trans-unit id="hNe8BIH" resname="Show Vendor Summary">
+        <source>Show Vendor Summary</source>
+        <target>Показать сводку поставщиков</target>
+      </trans-unit>
+      <trans-unit id="tdG5oPK" resname="Allowed Category Types">
+        <source>Allowed Category Types</source>
+        <target>Разрешенные типы категорий</target>
+      </trans-unit>
+      <trans-unit id="6pdZq8s" resname="Remote Distribution Permission">
+        <source>Remote Distribution Permission</source>
+        <target>Разрешение на удаленную выдачу</target>
+      </trans-unit>
+      <trans-unit id="G7IB0Yg" resname="Allowed">
+        <source>Allowed</source>
+        <target>Разрешено</target>
+      </trans-unit>
+      <trans-unit id="koye9oP" resname="See History">
+        <source>See History</source>
+        <target>Посмотреть историю</target>
+      </trans-unit>
+      <trans-unit id="80Sa5wb" resname="Vendor Transaction Summary">
+        <source>Vendor Transaction Summary</source>
+        <target>Сводка транзакций поставщика</target>
+      </trans-unit>
+      <trans-unit id="JQkZU08" resname="Unpaid Transaction Value">
+        <source>Unpaid Transaction Value</source>
+        <target>Сумма неоплаченной транзакции</target>
+      </trans-unit>
+      <trans-unit id="nFkJjpW" resname="Unpaid Transactions">
+        <source>Unpaid Transactions</source>
+        <target>Неоплаченные транзакции</target>
+      </trans-unit>
+      <trans-unit id="Y5av_PQ" resname="Total No. Transactions">
+        <source>Total No. Transactions</source>
+        <target>Всего транзакций</target>
+      </trans-unit>
+      <trans-unit id="_ZD.H3m" resname="Redeem">
+        <source>Redeem</source>
+        <target>Погасить</target>
+      </trans-unit>
+      <trans-unit id="ZrO_JHP" resname="Redeemed Batches">
+        <source>Redeemed Batches</source>
+        <target>Погашено партий</target>
+      </trans-unit>
+      <trans-unit id="ybPDgkf" resname="Total">
+        <source>Total</source>
+        <target>Всего</target>
+      </trans-unit>
+      <trans-unit id="BR190nY" resname="Vendor Redemption Summary">
+        <source>Vendor Redemption Summary</source>
+        <target>Сводка по погашению у поставщика</target>
+      </trans-unit>
+      <trans-unit id="8ADQo8W" resname="Name (local)">
+        <source>Name (local)</source>
+        <target>Имя (на языке оригинала)</target>
+      </trans-unit>
+      <trans-unit id="8jGFW7W" resname="Legacy Print">
+        <source>Legacy Print</source>
+        <target>Legacy Print</target>
+      </trans-unit>
+      <trans-unit id="SFCxdLc" resname="Required">
+        <source>Required</source>
+        <target>Обязательно</target>
+      </trans-unit>
+      <trans-unit id="OsujmCc" resname="Edit This Voucher Booklets">
+        <source>Edit This Voucher Booklets</source>
+        <target>Редактировать этот буклет ваучеров</target>
+      </trans-unit>
+      <trans-unit id="_456Gjy" resname="Items">
+        <source>Items</source>
+        <target>Товары</target>
+      </trans-unit>
+      <trans-unit id="uLHYlMa" resname="Categories">
+        <source>Categories</source>
+        <target>Категории</target>
+      </trans-unit>
+      <trans-unit id="KSwG8AR" resname="Category">
+        <source>Category</source>
+        <target>Категория</target>
+      </trans-unit>
+      <trans-unit id="jSYaNy." resname="Sync">
+        <source>Sync</source>
+        <target>Синхронизировать</target>
+      </trans-unit>
+      <trans-unit id="gw4s3ai" resname="Sync Id">
+        <source>Sync Id</source>
+        <target>Идентификатор синхронизации</target>
+      </trans-unit>
+      <trans-unit id="t1sx.zU" resname="Detail of Sync">
+        <source>Detail of Sync</source>
+        <target>Сведения о синхронизации</target>
+      </trans-unit>
+      <trans-unit id="94IFedc" resname="Raw Data">
+        <source>Raw Data</source>
+        <target>Необработанные данные</target>
+      </trans-unit>
+      <trans-unit id="DWCyj7E" resname="Validation Error Messages">
+        <source>Validation Error Messages</source>
+        <target>Сообщения об ошибках проверки</target>
+      </trans-unit>
+      <trans-unit id="jbEtiGJ" resname="Smartcard Purchased Items">
+        <source>Smartcard Purchased Items</source>
+        <target>Покупки со Smartcard</target>
+      </trans-unit>
+      <trans-unit id="pA9486f" resname="Select Type">
+        <source>Select Type</source>
+        <target>Выбрать тип</target>
+      </trans-unit>
+      <trans-unit id="7w3yL_d" resname="Select Distribution">
+        <source>Select Distribution</source>
+        <target>Выбрать выдачу</target>
+      </trans-unit>
+      <trans-unit id="sy9zbaw" resname="Select Commodity">
+        <source>Select Commodity</source>
+        <target>Выбрать товар</target>
+      </trans-unit>
+      <trans-unit id="ZetSxEO" resname="Select Date">
+        <source>Select Date</source>
+        <target>Выбрать дату</target>
+      </trans-unit>
+      <trans-unit id="EMcFuAY" resname="Assistance Date">
+        <source>Assistance Date</source>
+        <target>Дата помощи</target>
+      </trans-unit>
+      <trans-unit id="7eNfiTG" resname="Carrier Number">
+        <source>Carrier Number</source>
+        <target>Номер перевозчика</target>
+      </trans-unit>
+      <trans-unit id="vbX9Jmp" resname="Select Vendor">
+        <source>Select Vendor</source>
+        <target>Выбрать поставщика</target>
+      </trans-unit>
+      <trans-unit id="yVAsQZX" resname="Card No.">
+        <source>Card No.</source>
+        <target>Номер карты</target>
+      </trans-unit>
+      <trans-unit id="0cwUcbV" resname="Detail of Import">
+        <source>Detail of Import</source>
+        <target>Сведения об импорте</target>
+      </trans-unit>
+      <trans-unit id="aiRx3fU" resname="Edit Import">
+        <source>Edit Import</source>
+        <target>Редактировать импорт</target>
+      </trans-unit>
+      <trans-unit id="M1MojGx" resname="Import Successfully Updated">
+        <source>Import Successfully Updated</source>
+        <target>Импорт успешно обновлен</target>
+      </trans-unit>
+      <trans-unit id="HVLIBe5" resname="Downloading Template">
+        <source>Downloading Template</source>
+        <target>Скачивание шаблона</target>
+      </trans-unit>
+      <trans-unit id="qeShGSS" resname="Identity Check">
+        <source>Identity Check</source>
+        <target>Проверка личносты</target>
+      </trans-unit>
+      <trans-unit id="W9YD_bl" resname="Import Files">
+        <source>Import Files</source>
+        <target>Импорт файлов</target>
+      </trans-unit>
+      <trans-unit id="MfvvFiW" resname="Continue">
+        <source>Continue</source>
+        <target>Продолжить</target>
+      </trans-unit>
+      <trans-unit id="3de0H1u" resname="Are you sure you want to ignore errors and proceed?">
+        <source>Are you sure you want to ignore errors and proceed?</source>
+        <target>Вы уверены, что хотите игнорировать ошибки и продолжить?</target>
+      </trans-unit>
+      <trans-unit id="LtFVlTI" resname="Records From File">
+        <source>Records From File</source>
+        <target>Записи из файла</target>
+      </trans-unit>
+      <trans-unit id="37.E8Tu" resname="Use Record From">
+        <source>Use Record From</source>
+        <target>Использовать запись из</target>
+      </trans-unit>
+      <trans-unit id=".3GFc1D" resname="No difference">
+        <source>No difference</source>
+        <target>Нет различий</target>
+      </trans-unit>
+      <trans-unit id="UACc4dp" resname="File">
+        <source>File</source>
+        <target>Файл</target>
+      </trans-unit>
+      <trans-unit id="joO7_NN" resname="Duplicities Corrected/Merged">
+        <source>Duplicities Corrected/Merged</source>
+        <target>Дублирования исправлены/объединены</target>
+      </trans-unit>
+      <trans-unit id="P4ELjY." resname="Final Records to Import">
+        <source>Final Records to Import</source>
+        <target>Окончательные записи для импорта</target>
+      </trans-unit>
+      <trans-unit id="6mHSUbS" resname="Not Imported Rows">
+        <source>Not Imported Rows</source>
+        <target>Не импортированные строки</target>
+      </trans-unit>
+      <trans-unit id="ocwJnOM" resname="Back to Imports">
+        <source>Back to Imports</source>
+        <target>Назад к импорту</target>
+      </trans-unit>
+      <trans-unit id="BTlQ0f0" resname="Go to Beneficiaries">
+        <source>Go to Beneficiaries</source>
+        <target>Перейти к бенефициарам</target>
+      </trans-unit>
+      <trans-unit id="j_zsZwE" resname="Show Not Imported Rows">
+        <source>Show Not Imported Rows</source>
+        <target>Показать не импортированные строки</target>
+      </trans-unit>
+      <trans-unit id="ANVtvLv" resname="Failed Action">
+        <source>Failed Action</source>
+        <target>Не удалось выполнить действие</target>
+      </trans-unit>
+      <trans-unit id="94l5nId" resname="Error Message">
+        <source>Error Message</source>
+        <target>Сообщение об ошибке</target>
+      </trans-unit>
+      <trans-unit id="ObjfaA3" resname="Given Name">
+        <source>Given Name</source>
+        <target>Имя</target>
+      </trans-unit>
+      <trans-unit id="MCnoQS8" resname="Approved and Saved">
+        <source>Approved and Saved</source>
+        <target>Подтверждено и сохранено</target>
+      </trans-unit>
+      <trans-unit id="KgBF_pY" resname="Resolved Duplicities">
+        <source>Resolved Duplicities</source>
+        <target>Устраненные дублирования</target>
+      </trans-unit>
+      <trans-unit id="xFfeM2R" resname="All From File">
+        <source>All From File</source>
+        <target>Всё из файла</target>
+      </trans-unit>
+      <trans-unit id="nzZc9KG" resname="All From Humansis">
+        <source>All From Humansis</source>
+        <target>Всё из Humansis</target>
+      </trans-unit>
+      <trans-unit id="A8hS_RM" resname="Manage Duplicities">
+        <source>Manage Duplicities</source>
+        <target>Управление дублированиями</target>
+      </trans-unit>
+      <trans-unit id="lESLQbn" resname="Duplicities were resolved">
+        <source>Duplicities were resolved</source>
+        <target>Дублирования решены</target>
+      </trans-unit>
+      <trans-unit id="kSbMvQY" resname="Start Identity Check">
+        <source>Start Identity Check</source>
+        <target>Начать аутентификацию</target>
+      </trans-unit>
+      <trans-unit id="TZUgZos" resname="Drop file here or click to upload.">
+        <source>Drop file here or click to upload.</source>
+        <target>Перетяните файл сюда или нажмите, чтобы загрузить</target>
+      </trans-unit>
+      <trans-unit id="qixzCec" resname="You can upload only one file">
+        <source>You can upload only one file</source>
+        <target>Вы можете загрузить только один файл</target>
+      </trans-unit>
+      <trans-unit id="kyONsuG" resname="Do not repair your original file.">
+        <source>Do not repair your original file.</source>
+        <target>Не восстанавливайте исходный файл</target>
+      </trans-unit>
+      <trans-unit id="k6YfZnN" resname="Repair only the file with Affected Records.">
+        <source>Repair only the file with Affected Records.</source>
+        <target>Восстановите только файл с поврежденными данными</target>
+      </trans-unit>
+      <trans-unit id="cnUc_Ck" resname="Expected Columns">
+        <source>Expected Columns</source>
+        <target>Ожидаемые столбцы</target>
+      </trans-unit>
+      <trans-unit id="P3UpIGf" resname="Violations">
+        <source>Violations</source>
+        <target>Нарушения</target>
+      </trans-unit>
+      <trans-unit id="M6Rdvnj" resname="Missing Columns">
+        <source>Missing Columns</source>
+        <target>Отсутствующие столбцы</target>
+      </trans-unit>
+      <trans-unit id=".Mmkw4s" resname="Unexpected Columns">
+        <source>Unexpected Columns</source>
+        <target>Непредвиденные столбцы</target>
+      </trans-unit>
+      <trans-unit id="ToyFNVW" resname="Identity Check Started Successfully">
+        <source>Identity Check Started Successfully</source>
+        <target>Аутентификация началась успешно</target>
+      </trans-unit>
+      <trans-unit id="yK9vtv1" resname="Resolved Similarities and Correct Records">
+        <source>Resolved Similarities and Correct Records</source>
+        <target>Разрешенные сходства и исправленные записи</target>
+      </trans-unit>
+      <trans-unit id="mJ3qbS8" resname="Drop your file here or click to upload">
+        <source>Drop your file here or click to upload</source>
+        <target>Перетяните ваш файл сюда или нажмите, чтобы загрузить</target>
+      </trans-unit>
+      <trans-unit id="9ZHWe22" resname="You can upload only one file.">
+        <source>You can upload only one file.</source>
+        <target>Вы можете загрузить только один файл</target>
+      </trans-unit>
+      <trans-unit id="WAt0noP" resname="Uploaded Successfully">
+        <source>Uploaded Successfully</source>
+        <target>Успешно загружено</target>
+      </trans-unit>
+      <trans-unit id="j0pQlQF" resname="Distribution List">
+        <source>Distribution List</source>
+        <target>Список выдачи</target>
+      </trans-unit>
+      <trans-unit id="amBeU1u" resname="Bank Distribution List">
+        <source>Bank Distribution List</source>
+        <target>Список рассылки банка</target>
+      </trans-unit>
+      <trans-unit id="WTh5IYp" resname="Last Modified">
+        <source>Last Modified</source>
+        <target>Последнее изменение</target>
+      </trans-unit>
+      <trans-unit id="RmSCf46" resname="Progress">
+        <source>Progress</source>
+        <target>Прогрес</target>
+      </trans-unit>
+      <trans-unit id="r3qKluQ" resname="Amount Used">
+        <source>Amount Used</source>
+        <target>Использованная сумма</target>
+      </trans-unit>
+      <trans-unit id="BMPmj5J" resname="Assistance Statistics">
+        <source>Assistance Statistics</source>
+        <target>Статистика помощи</target>
+      </trans-unit>
+      <trans-unit id="ijCpmho" resname="Date of the assistance is in the future">
+        <source>Date of the assistance is in the future</source>
+        <target>Дата помощи в будущем</target>
+      </trans-unit>
+      <trans-unit id="HppCVHB" resname="Please be sure that no field activity has been started. Do you really want to unvalidate assistance?">
+        <source>Please be sure that no field activity has been started. Do you really want to unvalidate assistance?</source>
+        <target>Пожалуйста, убедитесь, что никакая полевая деятельность не была начата. Вы действительно хотите аннулировать помощь?</target>
+      </trans-unit>
+      <trans-unit id="n8L6cXp" resname="Assistance Successfully Unvalidated">
+        <source>Assistance Successfully Unvalidated</source>
+        <target>Помощь успешно аннулирована</target>
+      </trans-unit>
+      <trans-unit id="j7XpWOx" resname="Distribution Progress">
+        <source>Distribution Progress</source>
+        <target>Прогрес выдачи</target>
+      </trans-unit>
+      <trans-unit id="5sh72_i" resname="Export Details">
+        <source>Export Details</source>
+        <target>Детали экспорта</target>
+      </trans-unit>
+      <trans-unit id="Bd_TtZg" resname="Use number in this interval">
+        <source>Use number in this interval</source>
+        <target>Используйте число в этом интервале</target>
+      </trans-unit>
+      <trans-unit id="AgCAJ.n" resname="Export Projects">
+        <source>Export Projects</source>
+        <target>Экспортировать проекты</target>
+      </trans-unit>
+      <trans-unit id="mr.o3r7" resname="For Each">
+        <source>For Each</source>
+        <target>Для каждого</target>
+      </trans-unit>
+      <trans-unit id="wFEsNXL" resname="All distribution data will be deleted. Do you wish to continue?">
+        <source>All distribution data will be deleted. Do you wish to continue?</source>
+        <target>Все данные о раздаче будут удалены. Вы хотите продолжить?</target>
+      </trans-unit>
+      <trans-unit id="9InmrYc" resname="Conflicts with ID Number">
+        <source>Conflicts with ID Number</source>
+        <target>Конфликты с идентификационным номером</target>
+      </trans-unit>
+      <trans-unit id="Y7aDYxO" resname="Split ID numbers with space">
+        <source>Split ID numbers with space</source>
+        <target>Разделить идентификационные номера пробелом</target>
+      </trans-unit>
+      <trans-unit id="monBzdi" resname="ID Numbers">
+        <source>ID Numbers</source>
+        <target>Идентификационные номера</target>
+      </trans-unit>
+      <trans-unit id="ABnfxLM" resname="Not Found">
+        <source>Not Found</source>
+        <target>Не найдено</target>
+      </trans-unit>
+      <trans-unit id="q2UX2VG" resname="Conflict IDs">
+        <source>Conflict IDs</source>
+        <target>Идентификаторы конфликтов</target>
+      </trans-unit>
+      <trans-unit id="cdmWbuL" resname="Distributed In Past">
+        <source>Distributed In Past</source>
+        <target>Выдано в прошлом</target>
+      </trans-unit>
+      <trans-unit id="foX1oHU" resname="Partially Distributed">
+        <source>Partially Distributed</source>
+        <target>Частично выдано</target>
+      </trans-unit>
+      <trans-unit id="XloHwsd" resname="Unknown Error">
+        <source>Unknown Error</source>
+        <target>Неизвестная ошибка</target>
+      </trans-unit>
+      <trans-unit id="Zhrit2T" resname="Input Distributed Again">
+        <source>Input Distributed Again</source>
+        <target>Вклад распределен снова</target>
+      </trans-unit>
+      <trans-unit id="xtb3Im6" resname="Invalid Input">
+        <source>Invalid Input</source>
+        <target>Недействительный вклад</target>
+      </trans-unit>
+      <trans-unit id="2bY4OVK" resname="Input Distributed">
+        <source>Input Distributed</source>
+        <target>Вклад распределен</target>
+      </trans-unit>
+      <trans-unit id="nWMiwfT" resname="Login">
+        <source>Login</source>
+        <target>Авторизоваться</target>
+      </trans-unit>
+      <trans-unit id="2xbT1iL" resname="Relief Package Id">
+        <source>Relief Package Id</source>
+        <target>Идентификатор пакета помощи</target>
+      </trans-unit>
+      <trans-unit id="gddD6Hz" resname="Has valid Card">
+        <source>Has valid Card</source>
+        <target>Имеет действующую карту</target>
+      </trans-unit>
+      <trans-unit id="KbJzLbK" resname="Scoring Type">
+        <source>Scoring Type</source>
+        <target>Тип подсчета очков</target>
+      </trans-unit>
+      <trans-unit id="Ypp8yRd" resname="Scoring type isn't available from duplicated assistance.">
+        <source>Scoring type isn't available from duplicated assistance.</source>
+        <target>Тип оценки недоступен из продублированной помощи.</target>
+      </trans-unit>
+      <trans-unit id="BNkALpu" resname="Select new one.">
+        <source>Select new one.</source>
+        <target>Выберите новый.</target>
+      </trans-unit>
+      <trans-unit id="nqm9ISK" resname="Scoring">
+        <source>Scoring</source>
+        <target>Подсчет очков</target>
       </trans-unit>
     </body>
   </file>

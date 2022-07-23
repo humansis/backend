@@ -9,7 +9,7 @@ use DistributionBundle\Enum\AssistanceType;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use NewApiBundle\Component\Codelist\CodeItem;
-use NewApiBundle\Component\Codelist\CodeLists;
+use NewApiBundle\Services\CodeListService;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Entity\ProjectSector;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
@@ -34,24 +34,34 @@ class SectorService
     /** @var ValidatorInterface $validator */
     private $validator;
 
+    /** @var CodeListService */
+    private $codeListService;
+
     /**
      * SectorService constructor.
      * @param EntityManagerInterface $entityManager
      * @param Serializer $serializer
      * @param ValidatorInterface $validator
+     * @param CodeListService $codeListService
      */
-    public function __construct(EntityManagerInterface $entityManager, Serializer $serializer, ValidatorInterface $validator)
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        Serializer $serializer,
+        ValidatorInterface $validator,
+        CodeListService $codeListService
+    )
     {
         $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->validator = $validator;
+        $this->codeListService = $codeListService;
     }
 
     /**
      * @param Project $project
      * @return CodeItem[]
      */
-    public function getSectorsInProject(Project $project)
+    public function getSectorsInProject(Project $project): array
     {
         $data = [];
         /** @var ProjectSector $sector */
@@ -59,7 +69,7 @@ class SectorService
             $data[] = $sector->getSector();
         }
 
-        return CodeLists::mapEnum($data);;
+        return $this->codeListService->mapEnum($data);
     }
 
     public function findBySubSector($subSectorName): ?Sector

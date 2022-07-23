@@ -6,6 +6,7 @@ namespace ProjectBundle\Mapper;
 
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
+use NewApiBundle\Enum\Domain;
 use ProjectBundle\DTO\Sector;
 use ProjectBundle\Entity\ProjectSector;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -68,7 +69,7 @@ class SectorMapper
 
     private function getLabel(string $enumValue): string
     {
-        return $this->translator->trans('label_sector_'.$enumValue, [], 'sectors', 'en');
+        return $this->translator->trans('label_sector_'.$enumValue, [], Domain::SECTORS, 'en');
     }
 
     public function listToSubArrays(iterable $sectorTree): iterable

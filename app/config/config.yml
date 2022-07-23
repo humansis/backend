@@ -15,7 +15,7 @@ parameters:
     email: support@humansis.org
 
     # allowed languages in application
-    app.locales: [ en, ar, ua, ru, am, fr, hy, km, mn ]
+    app.locales: [ en, ar, uk, ru, am, fr, hy, km, mn ]
 
     # allowed currencies in application - it contains all circulating currencies
     app.currencies: [ AED, AFN, ALL, AMD, ANG, AOA, ARS, AUD, AWG, AZN, BAM, BBD, BDT, BGN, BHD, BIF, BMD, BND, BOB, BRL,

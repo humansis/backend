@@ -2,6 +2,8 @@
 
 namespace DistributionBundle\Repository;
 
+use DistributionBundle\Entity\Modality;
+
 /**
  * ModalityTypeRepository
  *
@@ -10,4 +12,21 @@ namespace DistributionBundle\Repository;
  */
 class ModalityTypeRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getPublicNames(?string $modalityCode = null): array
+    {
+        $qbr = $this->createQueryBuilder('mt')
+            ->select('mt.name')
+            ->where('mt.internal = false');
+        
+        if ($modalityCode !== null) {
+            $qbr->leftJoin('mt.modality', 'm')
+                ->where('m.name = :modalityCode')
+                ->setParameter('modalityCode', $modalityCode);
+        }
+        
+        $resultArray = $qbr->getQuery()
+            ->getArrayResult();
+
+        return array_column($resultArray, 'name');
+    }
 }

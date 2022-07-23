@@ -6,7 +6,8 @@ namespace NewApiBundle\Controller;
 
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Component\Codelist\CodeLists;
+use NewApiBundle\Enum\Domain;
+use NewApiBundle\Services\CodeListService;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Utils\SectorService;
@@ -21,9 +22,15 @@ class SectorsCodelistController extends AbstractController
     /** @var SectorService */
     private $sectorService;
 
-    public function __construct(SectorService $sectorService)
-    {
+    /** @var CodeListService */
+    private $codeListService;
+
+    public function __construct(
+        SectorService $sectorService,
+        CodeListService $codeListService
+    ) {
         $this->sectorService = $sectorService;
+        $this->codeListService = $codeListService;
     }
 
     /**
@@ -34,7 +41,7 @@ class SectorsCodelistController extends AbstractController
      */
     public function getSectors(): JsonResponse
     {
-        $data = CodeLists::mapEnum(SectorEnum::all());
+        $data = $this->codeListService->mapEnum(SectorEnum::all(), Domain::SECTORS);
 
         return $this->json(new Paginator($data));
     }
@@ -66,7 +73,7 @@ class SectorsCodelistController extends AbstractController
             throw $this->createNotFoundException('Sector not found');
         }
 
-        $subSectors = CodeLists::mapSubSectors($this->sectorService->findSubsSectorsBySector($code));
+        $subSectors = $this->codeListService->mapSubSectors($this->sectorService->findSubsSectorsBySector($code), Domain::SECTORS);
 
         return $this->json(new Paginator($subSectors));
     }

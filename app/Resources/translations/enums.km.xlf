@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="km" datatype="plaintext" original="file.ext">
+    <header>
+      <tool tool-id="symfony" tool-name="Symfony"/>
+    </header>
+    <body>
+      <trans-unit id="7eW_LtJ" resname="National ID">
+        <source>National ID</source>
+        <target>អត្ថ​សញ្ញាណ​ប​ណ្ណ​ជាតិ</target>
+      </trans-unit>
+      <trans-unit id="_X6doOO" resname="Other">
+        <source>Other</source>
+        <target>ផ្សេងៗ</target>
+      </trans-unit>
+      <trans-unit id="3JN7WYk" resname="None">
+        <source>None</source>
+        <target>គ្មាន</target>
+      </trans-unit>
+      <trans-unit id="GP3VSbL" resname="New">
+        <source>New</source>
+        <target>ថ្មី</target>
+      </trans-unit>
+      <trans-unit id="BOHvfR6" resname="Distributed">
+        <source>Distributed</source>
+        <target>បានចែក</target>
+      </trans-unit>
+      <trans-unit id="RdsYeVs" resname="Hygiene kit">
+        <source>Hygiene kit</source>
+        <target>កញ្ចប់អនាម័យផ្ទាល់ខ្លួន</target>
+      </trans-unit>
+      <trans-unit id="cYXxBj0" resname="Farming - Agriculture">
+        <source>Farming - Agriculture</source>
+        <target>ការធ្វើស្រែចំការ​ - កសិកម្ម</target>
+      </trans-unit>
+      <trans-unit id="1GI0pr2" resname="Farming - Livestock">
+        <source>Farming - Livestock</source>
+        <target>ការធ្វើស្រែចម្ការ - បសុសត្វ</target>
+      </trans-unit>
+      <trans-unit id="HvL_92f" resname="Home Duties">
+        <source>Home Duties</source>
+        <target>ភារកិច្ចផ្ទះ</target>
+      </trans-unit>
+      <trans-unit id="OkyagQ9" resname="Beneficiary">
+        <source>Beneficiary</source>
+        <target>អ្នកទទួលផល</target>
+      </trans-unit>
+      <trans-unit id="ocbJf0F" resname="Household">
+        <source>Household</source>
+        <target>គ្រួសារ</target>
+      </trans-unit>
+      <trans-unit id="u81ijAe" resname="household">
+        <source>household</source>
+        <target>គ្រួសារ</target>
+      </trans-unit>
+      <trans-unit id="4ZIYuvi" resname="Family name">
+        <source>Family name</source>
+        <target>គោត្តនាម</target>
+      </trans-unit>
+      <trans-unit id="cC75Ie0" resname="First name">
+        <source>First name</source>
+        <target>នាមខ្លួន</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

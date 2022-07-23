@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="en" datatype="plaintext" original="file.ext">
     <header>
@@ -443,6 +443,10 @@
       </trans-unit>
       <trans-unit id="u1AdeHf" resname="Community">
         <source>Community</source>
+        <target>Community</target>
+      </trans-unit>
+      <trans-unit id="81TumeK" resname="community">
+        <source>community</source>
         <target>Community</target>
       </trans-unit>
       <trans-unit id="NXuxGoY" resname="Community Based Interventions">
@@ -1071,7 +1075,7 @@
       </trans-unit>
       <trans-unit id="YKM_bPU" resname="False">
         <source>False</source>
-        <target>False</target>
+        <target>FALSE</target>
       </trans-unit>
       <trans-unit id="VN7kL_t" resname="Family Name">
         <source>Family Name</source>
@@ -1161,6 +1165,10 @@
         <source>Government</source>
         <target>Government</target>
       </trans-unit>
+      <trans-unit id="q16eN2_" resname="government">
+        <source>government</source>
+        <target>Government</target>
+      </trans-unit>
       <trans-unit id="V0EjK1r" resname="Governorate">
         <source>Governorate</source>
         <target>Governorate</target>
@@ -1168,6 +1176,10 @@
       <trans-unit id="LeLx7nx" resname="Has Not Been In Distribution Since">
         <source>Has Not Been In Distribution Since</source>
         <target>Has Not Been In Distribution Since</target>
+      </trans-unit>
+      <trans-unit id="YkhOIqa" resname="health">
+        <source>health</source>
+        <target>Health</target>
       </trans-unit>
       <trans-unit id="VYmESet" resname="Health">
         <source>Health</source>
@@ -1203,6 +1215,10 @@
       </trans-unit>
       <trans-unit id="ocbJf0F" resname="Household">
         <source>Household</source>
+        <target>Household</target>
+      </trans-unit>
+      <trans-unit id="u81ijAe" resname="household">
+        <source>household</source>
         <target>Household</target>
       </trans-unit>
       <trans-unit id="ltEY3Zk" resname="Household Detail">
@@ -1337,6 +1353,10 @@
         <source>Individual</source>
         <target>Individual</target>
       </trans-unit>
+      <trans-unit id="2hXKrun" resname="individual">
+        <source>individual</source>
+        <target>Individual</target>
+      </trans-unit>
       <trans-unit id="3RdriBz" resname="Individual Protection Assistance">
         <source>Individual Protection Assistance</source>
         <target>Individual Protection Assistance</target>
@@ -1355,6 +1375,10 @@
       </trans-unit>
       <trans-unit id="ZaFVNyn" resname="Institution">
         <source>Institution</source>
+        <target>Institution</target>
+      </trans-unit>
+      <trans-unit id="gi.jZ5y" resname="institution">
+        <source>institution</source>
         <target>Institution</target>
       </trans-unit>
       <trans-unit id="Uq.Myb0" resname="Institutions">
@@ -1841,6 +1865,10 @@
         <source>Production</source>
         <target>Production</target>
       </trans-unit>
+      <trans-unit id="q44Y706" resname="production">
+        <source>production</source>
+        <target>Production</target>
+      </trans-unit>
       <trans-unit id="TtyL_vx" resname="Products">
         <source>Products</source>
         <target>Products</target>
@@ -2197,7 +2225,7 @@
         <source>Served beneficiaries</source>
         <target>Served beneficiaries</target>
       </trans-unit>
-      <trans-unit id="SV3rcDJ" resname="Served Beneficiaries">
+      <trans-unit id="Ylj6.eN" resname="Served Beneficiaries">
         <source>Served Beneficiaries</source>
         <target>Served Beneficiaries</target>
       </trans-unit>
@@ -2467,7 +2495,7 @@
       </trans-unit>
       <trans-unit id="PLyHx2g" resname="True">
         <source>True</source>
-        <target>True</target>
+        <target>TRUE</target>
       </trans-unit>
       <trans-unit id="rj1rhbS" resname="Two-factor authentication adds an additional layer of security to your account by requiring more than a password to log in">
         <source>Two-factor authentication adds an additional layer of security to your account by requiring more than a password to log in</source>
@@ -2885,11 +2913,817 @@
         <source>Smartcard code</source>
         <target>Smartcard code</target>
       </trans-unit>
-      <trans-unit id="EUHpzYl" resname="The below listed person confirm by their signature of this Distribution List that they obtained and accepted&#10;the donation of the below specified items from People in Need.">
-        <source>The below listed person confirm by their signature of this Distribution List that they obtained and accepted
-the donation of the below specified items from People in Need.</source>
-        <target>__The below listed person confirm by their signature of this Distribution List that they obtained and accepted
-the donation of the below specified items from People in Need.</target>
+      <trans-unit id="Q6e.Qgr" resname="You need to change your password">
+        <source>You need to change your password</source>
+        <target>You need to change your password</target>
+      </trans-unit>
+      <trans-unit id="9HB50bt" resname="Password Was Not Updated">
+        <source>Password Was Not Updated</source>
+        <target>Password Was Not Updated</target>
+      </trans-unit>
+      <trans-unit id="YguqR08" resname="Password Successfully Updated">
+        <source>Password Successfully Updated</source>
+        <target>Password Successfully Updated</target>
+      </trans-unit>
+      <trans-unit id="tDxyH13" resname="This project does not contain any assistances">
+        <source>This project does not contain any assistances</source>
+        <target>This project does not contain any assistances</target>
+      </trans-unit>
+      <trans-unit id="afwf0iD" resname="Create your first one">
+        <source>Create your first one</source>
+        <target>Create your first one</target>
+      </trans-unit>
+      <trans-unit id="8x70pcF" resname="Please add some beneficiaries first!">
+        <source>Please add some beneficiaries first!</source>
+        <target>Please add some beneficiaries first!</target>
+      </trans-unit>
+      <trans-unit id="a5qG8KG" resname="Then you will be able to manage some assistances">
+        <source>Then you will be able to manage some assistances</source>
+        <target>Then you will be able to manage some assistances</target>
+      </trans-unit>
+      <trans-unit id="IEaAcvp" resname="Some required fields are not filled">
+        <source>Some required fields are not filled</source>
+        <target>Some required fields are not filled</target>
+      </trans-unit>
+      <trans-unit id="XcXPsTb" resname="To Be Delivered">
+        <source>To Be Delivered</source>
+        <target>To Be Delivered</target>
+      </trans-unit>
+      <trans-unit id="ffYLZOf" resname="Imports">
+        <source>Imports</source>
+        <target>Imports</target>
+      </trans-unit>
+      <trans-unit id="ZQGFQKK" resname="Import Detail">
+        <source>Import Detail</source>
+        <target>Import Detail</target>
+      </trans-unit>
+      <trans-unit id="KGB8SlJ" resname="Create New Import">
+        <source>Create New Import</source>
+        <target>Create New Import</target>
+      </trans-unit>
+      <trans-unit id="nlXvGt8" resname="Import Successfully Created">
+        <source>Import Successfully Created</source>
+        <target>Import Successfully Created</target>
+      </trans-unit>
+      <trans-unit id="fozSBW2" resname="Title">
+        <source>Title</source>
+        <target>Title</target>
+      </trans-unit>
+      <trans-unit id="tMxLB8M" resname="In Progress">
+        <source>In Progress</source>
+        <target>In Progress</target>
+      </trans-unit>
+      <trans-unit id="qsnZPIv" resname="Integrity Check">
+        <source>Integrity Check</source>
+        <target>Integrity Check</target>
+      </trans-unit>
+      <trans-unit id="ehdJMMC" resname="Duplicity Check">
+        <source>Duplicity Check</source>
+        <target>Duplicity Check</target>
+      </trans-unit>
+      <trans-unit id="I9exltS" resname="Similarity Check">
+        <source>Similarity Check</source>
+        <target>Similarity Check</target>
+      </trans-unit>
+      <trans-unit id="IJ_1hWm" resname="Finalisation">
+        <source>Finalisation</source>
+        <target>Finalisation</target>
+      </trans-unit>
+      <trans-unit id="5LufHs6" resname="Start">
+        <source>Start</source>
+        <target>Start</target>
+      </trans-unit>
+      <trans-unit id="m_8C4ft" resname="Import Statistics">
+        <source>Import Statistics</source>
+        <target>Import Statistics</target>
+      </trans-unit>
+      <trans-unit id="rL11St7" resname="Cancel Import">
+        <source>Cancel Import</source>
+        <target>Cancel Import</target>
+      </trans-unit>
+      <trans-unit id="mrr.ErV" resname="Are you sure you want to cancel this import?">
+        <source>Are you sure you want to cancel this import?</source>
+        <target>Are you sure you want to cancel this import?</target>
+      </trans-unit>
+      <trans-unit id="3InUpXZ" resname="Canceled Successfully">
+        <source>Canceled Successfully</source>
+        <target>Canceled Successfully</target>
+      </trans-unit>
+      <trans-unit id="PbDuHIG" resname="Start Import">
+        <source>Start Import</source>
+        <target>Start Import</target>
+      </trans-unit>
+      <trans-unit id="mfVKtcL" resname="Integrity Check Started Successfully">
+        <source>Integrity Check Started Successfully</source>
+        <target>Integrity Check Started Successfully</target>
+      </trans-unit>
+      <trans-unit id="hl6J3nj" resname="Upload">
+        <source>Upload</source>
+        <target>Upload</target>
+      </trans-unit>
+      <trans-unit id="lEoZ95X" resname="Start Duplicity Check">
+        <source>Start Duplicity Check</source>
+        <target>Start Duplicity Check</target>
+      </trans-unit>
+      <trans-unit id="xJ3X9ZX" resname="Download Affected Records">
+        <source>Download Affected Records</source>
+        <target>Download Affected Records</target>
+      </trans-unit>
+      <trans-unit id="fGMnE_R" resname="Upload Corrected Records">
+        <source>Upload Corrected Records</source>
+        <target>Upload Corrected Records</target>
+      </trans-unit>
+      <trans-unit id="8gjqLUt" resname="Start Integrity Check Again">
+        <source>Start Integrity Check Again</source>
+        <target>Start Integrity Check Again</target>
+      </trans-unit>
+      <trans-unit id="qa5vWp3" resname="Downloaded File">
+        <source>Downloaded File</source>
+        <target>Downloaded File</target>
+      </trans-unit>
+      <trans-unit id="Coz1.ay" resname="Duplicity Check Started Successfully">
+        <source>Duplicity Check Started Successfully</source>
+        <target>Duplicity Check Started Successfully</target>
+      </trans-unit>
+      <trans-unit id="wjrZbqz" resname="Number of Records">
+        <source>Number of Records</source>
+        <target>Number of Records</target>
+      </trans-unit>
+      <trans-unit id="8_pC3sL" resname="Corrected Errors">
+        <source>Corrected Errors</source>
+        <target>Corrected Errors</target>
+      </trans-unit>
+      <trans-unit id="6YcQZNb" resname="Integrity Errors">
+        <source>Integrity Errors</source>
+        <target>Integrity Errors</target>
+      </trans-unit>
+      <trans-unit id="Ooy7QZq" resname="Similarities Found">
+        <source>Similarities Found</source>
+        <target>Similarities Found</target>
+      </trans-unit>
+      <trans-unit id="1D0x.Pr" resname="Similarities Corrected/Merged">
+        <source>Similarities Corrected/Merged</source>
+        <target>Similarities Corrected/Merged</target>
+      </trans-unit>
+      <trans-unit id="lBlvmfQ" resname="Duplicities Found">
+        <source>Duplicities Found</source>
+        <target>Duplicities Found</target>
+      </trans-unit>
+      <trans-unit id="gmUqMtZ" resname="Resolve Duplicities">
+        <source>Resolve Duplicities</source>
+        <target>Resolve Duplicities</target>
+      </trans-unit>
+      <trans-unit id="4EOzt1j" resname="Resolve Similarities">
+        <source>Resolve Similarities</source>
+        <target>Resolve Similarities</target>
+      </trans-unit>
+      <trans-unit id="uYjR_1E" resname="Go to Finalisation">
+        <source>Go to Finalisation</source>
+        <target>Go to Finalisation</target>
+      </trans-unit>
+      <trans-unit id="HjjOFN2" resname="Start Similarity Check">
+        <source>Start Similarity Check</source>
+        <target>Start Similarity Check</target>
+      </trans-unit>
+      <trans-unit id="92KBVoK" resname="Similarity Check Started Successfully">
+        <source>Similarity Check Started Successfully</source>
+        <target>Similarity Check Started Successfully</target>
+      </trans-unit>
+      <trans-unit id="AOFZ86Z" resname="Duplicity Cases">
+        <source>Duplicity Cases</source>
+        <target>Duplicity Cases</target>
+      </trans-unit>
+      <trans-unit id="b2FXh.5" resname="Similarity Cases">
+        <source>Similarity Cases</source>
+        <target>Similarity Cases</target>
+      </trans-unit>
+      <trans-unit id="Iwen_hB" resname="Similarities">
+        <source>Similarities</source>
+        <target>Similarities</target>
+      </trans-unit>
+      <trans-unit id="mdlTq1t" resname="Duplicities">
+        <source>Duplicities</source>
+        <target>Duplicities</target>
+      </trans-unit>
+      <trans-unit id="HgXyT9a" resname="Imported Record">
+        <source>Imported Record</source>
+        <target>Imported Record</target>
+      </trans-unit>
+      <trans-unit id="POZxSyA" resname="Records From Database">
+        <source>Records From Database</source>
+        <target>Records From Database</target>
+      </trans-unit>
+      <trans-unit id="wVImtJn" resname="Use Existing">
+        <source>Use Existing</source>
+        <target>Use Existing</target>
+      </trans-unit>
+      <trans-unit id="ONz4qNw" resname="Use New">
+        <source>Use New</source>
+        <target>Use New</target>
+      </trans-unit>
+      <trans-unit id="ji0Eo4B" resname="Approve and Save">
+        <source>Approve and Save</source>
+        <target>Approve and Save</target>
+      </trans-unit>
+      <trans-unit id="MOhD7XQ" resname="Duplicity Item">
+        <source>Duplicity Item</source>
+        <target>Duplicity Item</target>
+      </trans-unit>
+      <trans-unit id="cu0kXSz" resname="Reasons">
+        <source>Reasons</source>
+        <target>Reasons</target>
+      </trans-unit>
+      <trans-unit id="MoegNKS" resname="Resolving">
+        <source>Resolving</source>
+        <target>Resolving</target>
+      </trans-unit>
+      <trans-unit id="64WMRYt" resname="Solved">
+        <source>Solved</source>
+        <target>Solved</target>
+      </trans-unit>
+      <trans-unit id="2RtRN5M" resname="Not Solved">
+        <source>Not Solved</source>
+        <target>Not Solved</target>
+      </trans-unit>
+      <trans-unit id="DUPmuIi" resname="This step is not currently in progress">
+        <source>This step is not currently in progress</source>
+        <target>This step is not currently in progress</target>
+      </trans-unit>
+      <trans-unit id="a_dLP97" resname="Get Affected Records">
+        <source>Get Affected Records</source>
+        <target>Get Affected Records</target>
+      </trans-unit>
+      <trans-unit id="1ur_gjW" resname="Download">
+        <source>Download</source>
+        <target>Download</target>
+      </trans-unit>
+      <trans-unit id="7gzv1.G" resname="Invalid Files">
+        <source>Invalid Files</source>
+        <target>Invalid Files</target>
+      </trans-unit>
+      <trans-unit id="GnGpwNV" resname="Download Started">
+        <source>Download Started</source>
+        <target>Download Started</target>
+      </trans-unit>
+      <trans-unit id="4bbLK.z" resname="Amharic">
+        <source>Amharic</source>
+        <target>Amharic</target>
+      </trans-unit>
+      <trans-unit id="b0JDA.o" resname="Ukrainian">
+        <source>Ukrainian</source>
+        <target>Ukrainian</target>
+      </trans-unit>
+      <trans-unit id="FOyhZPS" resname="W A S H">
+        <source>W A S H</source>
+        <target>W A S H</target>
+      </trans-unit>
+      <trans-unit id="HOUFmD2" resname="Education &amp; T V E T">
+        <source>Education &amp; T V E T</source>
+        <target><![CDATA[Education & T V E T]]></target>
+      </trans-unit>
+      <trans-unit id="ynVi_ce" resname="D R R &amp; Resilience">
+        <source>D R R &amp; Resilience</source>
+        <target><![CDATA[D R R & Resilience]]></target>
+      </trans-unit>
+      <trans-unit id="f5zIjxy" resname="Non- Sector Specific">
+        <source>Non- Sector Specific</source>
+        <target>Non- Sector Specific</target>
+      </trans-unit>
+      <trans-unit id="5OsYBp1" resname="Food">
+        <source>Food</source>
+        <target>Food</target>
+      </trans-unit>
+      <trans-unit id="zuYsxxL" resname="Non-Food">
+        <source>Non-Food</source>
+        <target>Non-Food</target>
+      </trans-unit>
+      <trans-unit id="M0qRf3z" resname="Cashback">
+        <source>Cashback</source>
+        <target>Cashback</target>
+      </trans-unit>
+      <trans-unit id="7B.3Jnh" resname="IDPoor">
+        <source>IDPoor</source>
+        <target>IDPoor</target>
+      </trans-unit>
+      <trans-unit id="A1cs.jC" resname="EquityCardNo">
+        <source>EquityCardNo</source>
+        <target>EquityCardNo</target>
+      </trans-unit>
+      <trans-unit id="bNLjMYV" resname="School">
+        <source>School</source>
+        <target>School</target>
+      </trans-unit>
+      <trans-unit id="1k3r2UL" resname="school">
+        <source>school</source>
+        <target>School</target>
+      </trans-unit>
+      <trans-unit id="OeA8jbR" resname="Community Center">
+        <source>Community Center</source>
+        <target>Community Center</target>
+      </trans-unit>
+      <trans-unit id="zftzzYs" resname="community_center">
+        <source>community_center</source>
+        <target>Community Center</target>
+      </trans-unit>
+      <trans-unit id="ikDmru3" resname="Commerce">
+        <source>Commerce</source>
+        <target>Commerce</target>
+      </trans-unit>
+      <trans-unit id="z7JA76h" resname="commerce">
+        <source>commerce</source>
+        <target>Commerce</target>
+      </trans-unit>
+      <trans-unit id="jOEuU.H" resname="Driver's License">
+        <source>Driver's License</source>
+        <target>Driver's License</target>
+      </trans-unit>
+      <trans-unit id="2UCwz_h" resname="Select invoicing">
+        <source>Select invoicing</source>
+        <target>Select invoicing</target>
+      </trans-unit>
+      <trans-unit id="r9hSSpk" resname="Invoiced">
+        <source>Invoiced</source>
+        <target>Invoiced</target>
+      </trans-unit>
+      <trans-unit id="ETKaYj2" resname="To Redeem">
+        <source>To Redeem</source>
+        <target>To Redeem</target>
+      </trans-unit>
+      <trans-unit id="NpDnUeb" resname="Category Type">
+        <source>Category Type</source>
+        <target>Category Type</target>
+      </trans-unit>
+      <trans-unit id="T1veieg" resname="Vendor No.">
+        <source>Vendor No.</source>
+        <target>Vendor No.</target>
+      </trans-unit>
+      <trans-unit id="hNe8BIH" resname="Show Vendor Summary">
+        <source>Show Vendor Summary</source>
+        <target>Show Vendor Summary</target>
+      </trans-unit>
+      <trans-unit id="tdG5oPK" resname="Allowed Category Types">
+        <source>Allowed Category Types</source>
+        <target>Allowed Category Types</target>
+      </trans-unit>
+      <trans-unit id="6pdZq8s" resname="Remote Distribution Permission">
+        <source>Remote Distribution Permission</source>
+        <target>Remote Distribution Permission</target>
+      </trans-unit>
+      <trans-unit id="G7IB0Yg" resname="Allowed">
+        <source>Allowed</source>
+        <target>Allowed</target>
+      </trans-unit>
+      <trans-unit id="koye9oP" resname="See History">
+        <source>See History</source>
+        <target>See History</target>
+      </trans-unit>
+      <trans-unit id="80Sa5wb" resname="Vendor Transaction Summary">
+        <source>Vendor Transaction Summary</source>
+        <target>Vendor Transaction Summary</target>
+      </trans-unit>
+      <trans-unit id="JQkZU08" resname="Unpaid Transaction Value">
+        <source>Unpaid Transaction Value</source>
+        <target>Unpaid Transaction Value</target>
+      </trans-unit>
+      <trans-unit id="nFkJjpW" resname="Unpaid Transactions">
+        <source>Unpaid Transactions</source>
+        <target>Unpaid Transactions</target>
+      </trans-unit>
+      <trans-unit id="Y5av_PQ" resname="Total No. Transactions">
+        <source>Total No. Transactions</source>
+        <target>Total No. Transactions</target>
+      </trans-unit>
+      <trans-unit id="_ZD.H3m" resname="Redeem">
+        <source>Redeem</source>
+        <target>Redeem</target>
+      </trans-unit>
+      <trans-unit id="ZrO_JHP" resname="Redeemed Batches">
+        <source>Redeemed Batches</source>
+        <target>Redeemed Batches</target>
+      </trans-unit>
+      <trans-unit id="ybPDgkf" resname="Total">
+        <source>Total</source>
+        <target>Total</target>
+      </trans-unit>
+      <trans-unit id="BR190nY" resname="Vendor Redemption Summary">
+        <source>Vendor Redemption Summary</source>
+        <target>Vendor Redemption Summary</target>
+      </trans-unit>
+      <trans-unit id="8ADQo8W" resname="Name (local)">
+        <source>Name (local)</source>
+        <target>Name (local)</target>
+      </trans-unit>
+      <trans-unit id="8jGFW7W" resname="Legacy Print">
+        <source>Legacy Print</source>
+        <target>Legacy Print</target>
+      </trans-unit>
+      <trans-unit id="SFCxdLc" resname="Required">
+        <source>Required</source>
+        <target>Required</target>
+      </trans-unit>
+      <trans-unit id="OsujmCc" resname="Edit This Voucher Booklets">
+        <source>Edit This Voucher Booklets</source>
+        <target>Edit This Voucher Booklets</target>
+      </trans-unit>
+      <trans-unit id="_456Gjy" resname="Items">
+        <source>Items</source>
+        <target>Items</target>
+      </trans-unit>
+      <trans-unit id="uLHYlMa" resname="Categories">
+        <source>Categories</source>
+        <target>Categories</target>
+      </trans-unit>
+      <trans-unit id="KSwG8AR" resname="Category">
+        <source>Category</source>
+        <target>Category</target>
+      </trans-unit>
+      <trans-unit id="jSYaNy." resname="Sync">
+        <source>Sync</source>
+        <target>Sync</target>
+      </trans-unit>
+      <trans-unit id="gw4s3ai" resname="Sync Id">
+        <source>Sync Id</source>
+        <target>Sync Id</target>
+      </trans-unit>
+      <trans-unit id="t1sx.zU" resname="Detail of Sync">
+        <source>Detail of Sync</source>
+        <target>Detail of Sync</target>
+      </trans-unit>
+      <trans-unit id="94IFedc" resname="Raw Data">
+        <source>Raw Data</source>
+        <target>Raw Data</target>
+      </trans-unit>
+      <trans-unit id="DWCyj7E" resname="Validation Error Messages">
+        <source>Validation Error Messages</source>
+        <target>Validation Error Messages</target>
+      </trans-unit>
+      <trans-unit id="jbEtiGJ" resname="Smartcard Purchased Items">
+        <source>Smartcard Purchased Items</source>
+        <target>Smartcard Purchased Items</target>
+      </trans-unit>
+      <trans-unit id="pA9486f" resname="Select Type">
+        <source>Select Type</source>
+        <target>Select Type</target>
+      </trans-unit>
+      <trans-unit id="7w3yL_d" resname="Select Distribution">
+        <source>Select Distribution</source>
+        <target>Select Distribution</target>
+      </trans-unit>
+      <trans-unit id="sy9zbaw" resname="Select Commodity">
+        <source>Select Commodity</source>
+        <target>Select Commodity</target>
+      </trans-unit>
+      <trans-unit id="ZetSxEO" resname="Select Date">
+        <source>Select Date</source>
+        <target>Select Date</target>
+      </trans-unit>
+      <trans-unit id="EMcFuAY" resname="Assistance Date">
+        <source>Assistance Date</source>
+        <target>Assistance Date</target>
+      </trans-unit>
+      <trans-unit id="7eNfiTG" resname="Carrier Number">
+        <source>Carrier Number</source>
+        <target>Carrier Number</target>
+      </trans-unit>
+      <trans-unit id="vbX9Jmp" resname="Select Vendor">
+        <source>Select Vendor</source>
+        <target>Select Vendor</target>
+      </trans-unit>
+      <trans-unit id="yVAsQZX" resname="Card No.">
+        <source>Card No.</source>
+        <target>Card No.</target>
+      </trans-unit>
+      <trans-unit id="0cwUcbV" resname="Detail of Import">
+        <source>Detail of Import</source>
+        <target>Detail of Import</target>
+      </trans-unit>
+      <trans-unit id="aiRx3fU" resname="Edit Import">
+        <source>Edit Import</source>
+        <target>Edit Import</target>
+      </trans-unit>
+      <trans-unit id="M1MojGx" resname="Import Successfully Updated">
+        <source>Import Successfully Updated</source>
+        <target>Import Successfully Updated</target>
+      </trans-unit>
+      <trans-unit id="HVLIBe5" resname="Downloading Template">
+        <source>Downloading Template</source>
+        <target>Downloading Template</target>
+      </trans-unit>
+      <trans-unit id="qeShGSS" resname="Identity Check">
+        <source>Identity Check</source>
+        <target>Identity Check</target>
+      </trans-unit>
+      <trans-unit id="W9YD_bl" resname="Import Files">
+        <source>Import Files</source>
+        <target>Import Files</target>
+      </trans-unit>
+      <trans-unit id="MfvvFiW" resname="Continue">
+        <source>Continue</source>
+        <target>Continue</target>
+      </trans-unit>
+      <trans-unit id="3de0H1u" resname="Are you sure you want to ignore errors and proceed?">
+        <source>Are you sure you want to ignore errors and proceed?</source>
+        <target>Are you sure you want to ignore errors and proceed?</target>
+      </trans-unit>
+      <trans-unit id="LtFVlTI" resname="Records From File">
+        <source>Records From File</source>
+        <target>Records From File</target>
+      </trans-unit>
+      <trans-unit id="37.E8Tu" resname="Use Record From">
+        <source>Use Record From</source>
+        <target>Use Record From</target>
+      </trans-unit>
+      <trans-unit id=".3GFc1D" resname="No difference">
+        <source>No difference</source>
+        <target>No difference</target>
+      </trans-unit>
+      <trans-unit id="UACc4dp" resname="File">
+        <source>File</source>
+        <target>File</target>
+      </trans-unit>
+      <trans-unit id="joO7_NN" resname="Duplicities Corrected/Merged">
+        <source>Duplicities Corrected/Merged</source>
+        <target>Duplicities Corrected/Merged</target>
+      </trans-unit>
+      <trans-unit id="P4ELjY." resname="Final Records to Import">
+        <source>Final Records to Import</source>
+        <target>Final Records to Import</target>
+      </trans-unit>
+      <trans-unit id="6mHSUbS" resname="Not Imported Rows">
+        <source>Not Imported Rows</source>
+        <target>Not Imported Rows</target>
+      </trans-unit>
+      <trans-unit id="ocwJnOM" resname="Back to Imports">
+        <source>Back to Imports</source>
+        <target>Back to Imports</target>
+      </trans-unit>
+      <trans-unit id="BTlQ0f0" resname="Go to Beneficiaries">
+        <source>Go to Beneficiaries</source>
+        <target>Go to Beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="j_zsZwE" resname="Show Not Imported Rows">
+        <source>Show Not Imported Rows</source>
+        <target>Show Not Imported Rows</target>
+      </trans-unit>
+      <trans-unit id="ANVtvLv" resname="Failed Action">
+        <source>Failed Action</source>
+        <target>Failed Action</target>
+      </trans-unit>
+      <trans-unit id="94l5nId" resname="Error Message">
+        <source>Error Message</source>
+        <target>Error Message</target>
+      </trans-unit>
+      <trans-unit id="ObjfaA3" resname="Given Name">
+        <source>Given Name</source>
+        <target>Given Name</target>
+      </trans-unit>
+      <trans-unit id="MCnoQS8" resname="Approved and Saved">
+        <source>Approved and Saved</source>
+        <target>Approved and Saved</target>
+      </trans-unit>
+      <trans-unit id="KgBF_pY" resname="Resolved Duplicities">
+        <source>Resolved Duplicities</source>
+        <target>Resolved Duplicities</target>
+      </trans-unit>
+      <trans-unit id="xFfeM2R" resname="All From File">
+        <source>All From File</source>
+        <target>All From File</target>
+      </trans-unit>
+      <trans-unit id="nzZc9KG" resname="All From Humansis">
+        <source>All From Humansis</source>
+        <target>All From Humansis</target>
+      </trans-unit>
+      <trans-unit id="A8hS_RM" resname="Manage Duplicities">
+        <source>Manage Duplicities</source>
+        <target>Manage Duplicities</target>
+      </trans-unit>
+      <trans-unit id="lESLQbn" resname="Duplicities were resolved">
+        <source>Duplicities were resolved</source>
+        <target>Duplicities were resolved</target>
+      </trans-unit>
+      <trans-unit id="kSbMvQY" resname="Start Identity Check">
+        <source>Start Identity Check</source>
+        <target>Start Identity Check</target>
+      </trans-unit>
+      <trans-unit id="TZUgZos" resname="Drop file here or click to upload.">
+        <source>Drop file here or click to upload.</source>
+        <target>Drop file here or click to upload.</target>
+      </trans-unit>
+      <trans-unit id="qixzCec" resname="You can upload only one file">
+        <source>You can upload only one file</source>
+        <target>You can upload only one file</target>
+      </trans-unit>
+      <trans-unit id="kyONsuG" resname="Do not repair your original file.">
+        <source>Do not repair your original file.</source>
+        <target>Do not repair your original file.</target>
+      </trans-unit>
+      <trans-unit id="k6YfZnN" resname="Repair only the file with Affected Records.">
+        <source>Repair only the file with Affected Records.</source>
+        <target>Repair only the file with Affected Records.</target>
+      </trans-unit>
+      <trans-unit id="cnUc_Ck" resname="Expected Columns">
+        <source>Expected Columns</source>
+        <target>Expected Columns</target>
+      </trans-unit>
+      <trans-unit id="P3UpIGf" resname="Violations">
+        <source>Violations</source>
+        <target>Violations</target>
+      </trans-unit>
+      <trans-unit id="M6Rdvnj" resname="Missing Columns">
+        <source>Missing Columns</source>
+        <target>Missing Columns</target>
+      </trans-unit>
+      <trans-unit id=".Mmkw4s" resname="Unexpected Columns">
+        <source>Unexpected Columns</source>
+        <target>Unexpected Columns</target>
+      </trans-unit>
+      <trans-unit id="ToyFNVW" resname="Identity Check Started Successfully">
+        <source>Identity Check Started Successfully</source>
+        <target>Identity Check Started Successfully</target>
+      </trans-unit>
+      <trans-unit id="yK9vtv1" resname="Resolved Similarities and Correct Records">
+        <source>Resolved Similarities and Correct Records</source>
+        <target>Resolved Similarities and Correct Records</target>
+      </trans-unit>
+      <trans-unit id="mJ3qbS8" resname="Drop your file here or click to upload">
+        <source>Drop your file here or click to upload</source>
+        <target>Drop your file here or click to upload</target>
+      </trans-unit>
+      <trans-unit id="9ZHWe22" resname="You can upload only one file.">
+        <source>You can upload only one file.</source>
+        <target>You can upload only one file.</target>
+      </trans-unit>
+      <trans-unit id="WAt0noP" resname="Uploaded Successfully">
+        <source>Uploaded Successfully</source>
+        <target>Uploaded Successfully</target>
+      </trans-unit>
+      <trans-unit id="j0pQlQF" resname="Distribution List">
+        <source>Distribution List</source>
+        <target>Distribution List</target>
+      </trans-unit>
+      <trans-unit id="amBeU1u" resname="Bank Distribution List">
+        <source>Bank Distribution List</source>
+        <target>Bank Distribution List</target>
+      </trans-unit>
+      <trans-unit id="WTh5IYp" resname="Last Modified">
+        <source>Last Modified</source>
+        <target>Last Modified</target>
+      </trans-unit>
+      <trans-unit id="RmSCf46" resname="Progress">
+        <source>Progress</source>
+        <target>Progress</target>
+      </trans-unit>
+      <trans-unit id="r3qKluQ" resname="Amount Used">
+        <source>Amount Used</source>
+        <target>Amount Used</target>
+      </trans-unit>
+      <trans-unit id="BMPmj5J" resname="Assistance Statistics">
+        <source>Assistance Statistics</source>
+        <target>Assistance Statistics</target>
+      </trans-unit>
+      <trans-unit id="ijCpmho" resname="Date of the assistance is in the future">
+        <source>Date of the assistance is in the future</source>
+        <target>Date of the assistance is in the future</target>
+      </trans-unit>
+      <trans-unit id="HppCVHB" resname="Please be sure that no field activity has been started. Do you really want to unvalidate assistance?">
+        <source>Please be sure that no field activity has been started. Do you really want to unvalidate assistance?</source>
+        <target>Please be sure that no field activity has been started. Do you really want to unvalidate assistance?</target>
+      </trans-unit>
+      <trans-unit id="n8L6cXp" resname="Assistance Successfully Unvalidated">
+        <source>Assistance Successfully Unvalidated</source>
+        <target>Assistance Successfully Unvalidated</target>
+      </trans-unit>
+      <trans-unit id="j7XpWOx" resname="Distribution Progress">
+        <source>Distribution Progress</source>
+        <target>Distribution Progress</target>
+      </trans-unit>
+      <trans-unit id="5sh72_i" resname="Export Details">
+        <source>Export Details</source>
+        <target>Export Details</target>
+      </trans-unit>
+      <trans-unit id="Bd_TtZg" resname="Use number in this interval">
+        <source>Use number in this interval</source>
+        <target>Use number in this interval</target>
+      </trans-unit>
+      <trans-unit id="AgCAJ.n" resname="Export Projects">
+        <source>Export Projects</source>
+        <target>Export Projects</target>
+      </trans-unit>
+      <trans-unit id="mr.o3r7" resname="For Each">
+        <source>For Each</source>
+        <target>For Each</target>
+      </trans-unit>
+      <trans-unit id="wFEsNXL" resname="All distribution data will be deleted. Do you wish to continue?">
+        <source>All distribution data will be deleted. Do you wish to continue?</source>
+        <target>All distribution data will be deleted. Do you wish to continue?</target>
+      </trans-unit>
+      <trans-unit id="9InmrYc" resname="Conflicts with ID Number">
+        <source>Conflicts with ID Number</source>
+        <target>Conflicts with ID Number</target>
+      </trans-unit>
+      <trans-unit id="Y7aDYxO" resname="Split ID numbers with space">
+        <source>Split ID numbers with space</source>
+        <target>Split ID numbers with space</target>
+      </trans-unit>
+      <trans-unit id="monBzdi" resname="ID Numbers">
+        <source>ID Numbers</source>
+        <target>ID Numbers</target>
+      </trans-unit>
+      <trans-unit id="ABnfxLM" resname="Not Found">
+        <source>Not Found</source>
+        <target>Not Found</target>
+      </trans-unit>
+      <trans-unit id="q2UX2VG" resname="Conflict IDs">
+        <source>Conflict IDs</source>
+        <target>Conflict IDs</target>
+      </trans-unit>
+      <trans-unit id="cdmWbuL" resname="Distributed In Past">
+        <source>Distributed In Past</source>
+        <target>Distributed In Past</target>
+      </trans-unit>
+      <trans-unit id="foX1oHU" resname="Partially Distributed">
+        <source>Partially Distributed</source>
+        <target>Partially Distributed</target>
+      </trans-unit>
+      <trans-unit id="XloHwsd" resname="Unknown Error">
+        <source>Unknown Error</source>
+        <target>Unknown Error</target>
+      </trans-unit>
+      <trans-unit id="Zhrit2T" resname="Input Distributed Again">
+        <source>Input Distributed Again</source>
+        <target>Input Distributed Again</target>
+      </trans-unit>
+      <trans-unit id="xtb3Im6" resname="Invalid Input">
+        <source>Invalid Input</source>
+        <target>Invalid Input</target>
+      </trans-unit>
+      <trans-unit id="2bY4OVK" resname="Input Distributed">
+        <source>Input Distributed</source>
+        <target>Input Distributed</target>
+      </trans-unit>
+      <trans-unit id="nWMiwfT" resname="Login">
+        <source>Login</source>
+        <target>Login</target>
+      </trans-unit>
+      <trans-unit id="2xbT1iL" resname="Relief Package Id">
+        <source>Relief Package Id</source>
+        <target>Relief Package Id</target>
+      </trans-unit>
+      <trans-unit id="gddD6Hz" resname="Has valid Card">
+        <source>Has valid Card</source>
+        <target>Has valid Card</target>
+      </trans-unit>
+      <trans-unit id="KbJzLbK" resname="Scoring Type">
+        <source>Scoring Type</source>
+        <target>Scoring Type</target>
+      </trans-unit>
+      <trans-unit id="Ypp8yRd" resname="Scoring type isn't available from duplicated assistance.">
+        <source>Scoring type isn't available from duplicated assistance.</source>
+        <target>Scoring type isn't available from duplicated assistance.</target>
+      </trans-unit>
+      <trans-unit id="BNkALpu" resname="Select new one.">
+        <source>Select new one.</source>
+        <target>Select new one.</target>
+      </trans-unit>
+      <trans-unit id="nqm9ISK" resname="Scoring">
+        <source>Scoring</source>
+        <target>Scoring</target>
+      </trans-unit>
+      <trans-unit id="TPFxnMY" resname="List is empty.">
+        <source>List is empty.</source>
+        <target>List is empty.</target>
+      </trans-unit>
+      <trans-unit id="4ZIYuvi" resname="Family name">
+        <source>Family name</source>
+        <target>Family name</target>
+      </trans-unit>
+      <trans-unit id="cC75Ie0" resname="First name">
+        <source>First name</source>
+        <target>First name</target>
+      </trans-unit>
+      <trans-unit id="f9jwf6w" resname="Household size">
+        <source>Household size</source>
+        <target>Household size</target>
+      </trans-unit>
+      <trans-unit id="Li1phVJ" resname="Total vulnerability score [%scoringName%]">
+        <source>Total vulnerability score [%scoringName%]</source>
+        <target>Total vulnerability score [%scoringName%]</target>
+      </trans-unit>
+      <trans-unit id="KZ_59GN" resname="Selected (YES/NO)">
+        <source>Selected (YES/NO)</source>
+        <target>Selected (YES/NO)</target>
+      </trans-unit>
+      <trans-unit id="UPAHiBI" resname="Amount per househould [%unit%]">
+        <source>Amount per househould [%unit%]</source>
+        <target>Amount per househould [%unit%]</target>
+      </trans-unit>
+      <trans-unit id="QyUfYPk" resname="Amount per household []">
+        <source>Amount per household []</source>
+        <target>Amount per household []</target>
+      </trans-unit>
+      <trans-unit id="sGExlXh" resname="Cumulative amount []">
+        <source>Cumulative amount []</source>
+        <target>Cumulative amount []</target>
       </trans-unit>
     </body>
   </file>

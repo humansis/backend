@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
-  <file source-language="en" target-language="ua" datatype="plaintext" original="file.ext">
+  <file source-language="en" target-language="uk" datatype="plaintext" original="file.ext">
     <header>
       <tool tool-id="symfony" tool-name="Symfony"/>
     </header>
@@ -351,6 +351,10 @@
       </trans-unit>
       <trans-unit id="ocbJf0F" resname="Household">
         <source>Household</source>
+        <target>Домогосподарство</target>
+      </trans-unit>
+      <trans-unit id="u81ijAe" resname="household">
+        <source>household</source>
         <target>Домогосподарство</target>
       </trans-unit>
       <trans-unit id="4ZIYuvi" resname="Family name">

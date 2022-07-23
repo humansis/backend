@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="en" datatype="plaintext" original="file.ext">
     <header>
@@ -353,6 +353,10 @@
         <source>Household</source>
         <target>Household</target>
       </trans-unit>
+      <trans-unit id="u81ijAe" resname="household">
+        <source>household</source>
+        <target>Household</target>
+      </trans-unit>
       <trans-unit id="4ZIYuvi" resname="Family name">
         <source>Family name</source>
         <target>Family name</target>
@@ -436,6 +440,42 @@
       <trans-unit id="M0qRf3z" resname="Cashback">
         <source>Cashback</source>
         <target>Cashback</target>
+      </trans-unit>
+      <trans-unit id="8MkT7PE" resname="refugee">
+        <source>refugee</source>
+        <target>Refugee</target>
+      </trans-unit>
+      <trans-unit id="00vJDlK" resname="IDP">
+        <source>IDP</source>
+        <target>IDP</target>
+      </trans-unit>
+      <trans-unit id="hIFv84P" resname="resident">
+        <source>resident</source>
+        <target>Resident</target>
+      </trans-unit>
+      <trans-unit id="1IV1GDa" resname="returnee">
+        <source>returnee</source>
+        <target>Returnee</target>
+      </trans-unit>
+      <trans-unit id="l7BWAoD" resname="current">
+        <source>current</source>
+        <target>Current</target>
+      </trans-unit>
+      <trans-unit id="Im.P7O." resname="temporary_settlement">
+        <source>temporary_settlement</source>
+        <target>Temporary Settlement</target>
+      </trans-unit>
+      <trans-unit id="E9ALT1C" resname="residence">
+        <source>residence</source>
+        <target>Residence</target>
+      </trans-unit>
+      <trans-unit id="h44FifP" resname="In Kind">
+        <source>In Kind</source>
+        <target>In Kind</target>
+      </trans-unit>
+      <trans-unit id="SGYkRqi" resname="Voucher">
+        <source>Voucher</source>
+        <target>Voucher</target>
       </trans-unit>
     </body>
   </file>

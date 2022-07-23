@@ -194,15 +194,22 @@ services:
     NewApiBundle\Controller\CommonController:
         arguments:
             - '@NewApiBundle\Component\Country\Countries'
-            - '%app.translations_dir%'
 
     NewApiBundle\Controller\DonorController:
         arguments:
             - '@NewApiBundle\Component\File\UploadService'
+              
+    NewApiBundle\Controller\InstitutionCodelistController:
+        arguments:
+            - '@NewApiBundle\Services\CodeListService'
 
     NewApiBundle\Controller\LocationController:
         arguments:
             - '@NewApiBundle\Component\Country\Countries'
+  
+    NewApiBundle\Controller\ModalityCodelistController:
+        arguments:
+            - '@NewApiBundle\Services\CodeListService'
 
     NewApiBundle\Controller\OrganizationController:
         arguments:
@@ -215,28 +222,40 @@ services:
     NewApiBundle\Controller\AssistanceCodelistController:
         arguments: 
             - '@project.sector_service'
+            - '@NewApiBundle\Services\CodeListService'
+
+    NewApiBundle\Controller\ProductCategoryCodelistController:
+        arguments:
+            - '@NewApiBundle\Services\CodeListService'
 
     NewApiBundle\Controller\ScoringBlueprintController:
 
     NewApiBundle\Controller\SectorsCodelistController:
         arguments:
             - "@project.sector_service"
+            - '@NewApiBundle\Services\CodeListService'
 
     NewApiBundle\Controller\SelectionCriterionController:
+        arguments:
+            - '@NewApiBundle\Services\CodeListService'
+      
 
     NewApiBundle\Controller\SmartcardPurchaseController:
         arguments:
             - '@NewApiBundle\Component\Smartcard\SmartcardPurchaseService'
+              
+    NewApiBundle\Controller\TransactionController:
+        arguments:
+            - '@NewApiBundle\Services\CodeListService'
 
     NewApiBundle\Controller\BeneficiaryCodelistController:
         public: true
         arguments:
-            - '@translator' 
-            - "@doctrine.orm.entity_manager"
+            - '@NewApiBundle\Services\CodeListService' 
               
     NewApiBundle\Controller\HouseholdCodelistController:
         arguments:
-          - '@translator'
+            - '@NewApiBundle\Services\CodeListService'
 
     NewApiBundle\Controller\WebApp\Smartcard\InvoiceController:
         public: true
@@ -511,8 +530,18 @@ services:
             - '%kernel.project_dir%/src/BeneficiaryBundle/Resources/config/vulnerability/scoring_<<COUNTRY>>.csv'
 
     NewApiBundle\Services\AssistanceDistributionService:
+    
+    NewApiBundle\Services\CodeListService:
+        arguments:
+          - '@translator'
 
     NewApiBundle\Services\ScoringBlueprintService:
+    
+    NewApiBundle\Services\TranslationExportService:
+        arguments:
+            - '@CommonBundle\Utils\ExportService'
+            - '%app.translations_dir%'
+            - '%app.locales%'
 
     NewApiBundle\Component\SelectionCriteria\Loader\CriteriaConfigurationLoader:
         arguments:
