@@ -345,11 +345,13 @@ services:
     NewApiBundle\Component\Import\Messaging\Handler\ImportCheckHandler:
         tags: [ 'messenger.message_handler' ]
 
+    NewApiBundle\Component\Import\Messaging\Handler\UploadImportHandler:
+        tags: [ 'messenger.message_handler' ]
+
     NewApiBundle\Component\Import\UploadImportService:
         public: true
         arguments:
             - '%import.uploadedFilesDirectory%'
-        tags: [ 'messenger.message_handler' ]
 
     NewApiBundle\Component\Import\IntegrityChecker:
         arguments:

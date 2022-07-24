@@ -8,6 +8,7 @@ use NewApiBundle\Component\Import\UploadImportService;
 use NewApiBundle\Repository\ImportFileRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class UploadImportHandler implements MessageHandlerInterface
 {

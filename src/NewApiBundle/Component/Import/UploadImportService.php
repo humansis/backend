@@ -14,11 +14,10 @@ use NewApiBundle\Repository\ImportFileRepository;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use UserBundle\Entity\User;
 
-class UploadImportService implements MessageHandlerInterface
+class UploadImportService
 {
     /** @var ImportParser */
     private $parser;
@@ -38,6 +37,8 @@ class UploadImportService implements MessageHandlerInterface
     /** @var Integrity\DuplicityService */
     private $integrityDuplicityService;
 
+    /** @var MessageBusInterface */
+    private $messageBus;
 
 
 
@@ -45,7 +46,8 @@ class UploadImportService implements MessageHandlerInterface
         string                     $uploadDirectory,
         EntityManagerInterface     $em,
         ImportFileValidator        $importFileValidator,
-        Integrity\DuplicityService $integrityDuplicityService
+        Integrity\DuplicityService $integrityDuplicityService,
+        MessageBusInterface $messageBus
     )
     {
         $this->parser = new ImportParser();
@@ -54,6 +56,7 @@ class UploadImportService implements MessageHandlerInterface
         $this->uploadDirectory = $uploadDirectory;
         $this->importFileValidator = $importFileValidator;
         $this->integrityDuplicityService = $integrityDuplicityService;
+        $this->messageBus = $messageBus;
     }
 
 
