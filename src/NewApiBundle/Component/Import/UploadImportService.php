@@ -38,19 +38,14 @@ class UploadImportService implements MessageHandlerInterface
     /** @var Integrity\DuplicityService */
     private $integrityDuplicityService;
 
-    /** @var MessageBusInterface */
-    private $messageBus;
 
-    /** @var ImportFileRepository */
-    private $importFileRepository;
+
 
     public function __construct(
         string                     $uploadDirectory,
         EntityManagerInterface     $em,
         ImportFileValidator        $importFileValidator,
         Integrity\DuplicityService $integrityDuplicityService,
-        MessageBusInterface        $messageBus,
-        ImportFileRepository       $importFileRepository
     )
     {
         $this->parser = new ImportParser();
@@ -59,23 +54,9 @@ class UploadImportService implements MessageHandlerInterface
         $this->uploadDirectory = $uploadDirectory;
         $this->importFileValidator = $importFileValidator;
         $this->integrityDuplicityService = $integrityDuplicityService;
-        $this->messageBus = $messageBus;
-        $this->importFileRepository = $importFileRepository;
     }
 
-    /**
-     * @param UploadFile $uploadFile
-     *
-     * @return void
-     * @throws \Doctrine\DBAL\ConnectionException
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
-     */
-    public function __invoke(UploadFile $uploadFile): void
-    {
-        $importFile = $this->importFileRepository->find($uploadFile->getImportFileId());
-        $this->load($importFile);
-        $this->messageBus->dispatch(ImportCheck::checkUploadingComplete($importFile->getImport()));
-    }
+
 
     /**
      * @param ImportFile $importFile
@@ -84,7 +65,7 @@ class UploadImportService implements MessageHandlerInterface
      * @throws \Doctrine\DBAL\ConnectionException
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    private function load(ImportFile $importFile): ImportFile
+    public function load(ImportFile $importFile): ImportFile
     {
         if ($importFile->isLoaded()) {
             throw new InvalidArgumentException('This import file is already loaded in database.');

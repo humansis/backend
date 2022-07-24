@@ -66,7 +66,7 @@ class ImportReset
     public function resetOtherImports(Import $import)
     {
         if ($import->getState() !== ImportState::FINISHED) {
-            throw new BadMethodCallException('Wrong import status');
+            throw new BadMethodCallException("Cannot reset import #{$import->getId()} which is at state {$import->getState()}. Only imports at state Finished are allowed.");
         }
 
         $importConflicts = $this->importRepository->getConflictingImports($import);

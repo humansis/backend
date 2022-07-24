@@ -22,7 +22,7 @@ class ItemBatch
 
     /**
      * @param string|null $checkType
-     * @param int[]       $queueItemIds
+     * @param int[]|null       $queueItemIds
      */
     private function __construct(?string $checkType = null, ?array $queueItemIds=null)
     {
