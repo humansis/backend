@@ -45,7 +45,7 @@ class UploadImportService implements MessageHandlerInterface
         string                     $uploadDirectory,
         EntityManagerInterface     $em,
         ImportFileValidator        $importFileValidator,
-        Integrity\DuplicityService $integrityDuplicityService,
+        Integrity\DuplicityService $integrityDuplicityService
     )
     {
         $this->parser = new ImportParser();
