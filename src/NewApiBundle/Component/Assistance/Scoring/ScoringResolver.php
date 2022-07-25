@@ -19,6 +19,9 @@ final class ScoringResolver
      * @var RulesCalculation
      */
     private $customComputation;
+    
+    /** @var RulesEnum */
+    private $enumResolver;
 
     /**
      * @var CountrySpecificRepository
@@ -30,9 +33,15 @@ final class ScoringResolver
      */
     private $countrySpecificAnswerRepository;
 
-    public function __construct(RulesCalculation $customComputation, CountrySpecificRepository $countrySpecificRepository, CountrySpecificAnswerRepository $countrySpecificAnswerRepository)
+    public function __construct(
+        RulesCalculation $customComputation,
+        RulesEnum $enumResolver,
+        CountrySpecificRepository $countrySpecificRepository,
+        CountrySpecificAnswerRepository $countrySpecificAnswerRepository
+    )
     {
         $this->customComputation = $customComputation;
+        $this->enumResolver = $enumResolver;
         $this->countrySpecificRepository = $countrySpecificRepository;
         $this->countrySpecificAnswerRepository = $countrySpecificAnswerRepository;
     }
@@ -46,6 +55,8 @@ final class ScoringResolver
                 $score = $this->customComputation($household, $rule);
             } else if ($rule->getType() === ScoringRuleType::COUNTRY_SPECIFIC) {
                 $score = $this->countrySpecifics($household, $rule->getFieldName(), $rule->getOptions(), $countryCode);
+            } else if ($rule->getType() === ScoringRuleType::ENUM) {
+                $score = $this->computeEnum($household, $rule);
             } else {
                 continue;
             }
@@ -54,6 +65,11 @@ final class ScoringResolver
         }
 
         return $protocol;
+    }
+
+    private function computeEnum(Household $household, ScoringRule $rule): int
+    {
+        return $this->enumResolver->getScore($household, $rule);
     }
 
     /**

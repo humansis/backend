@@ -12,6 +12,8 @@ use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleType;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRuleOption;
 use NewApiBundle\Component\Assistance\Scoring\RulesCalculation;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRule;
+use NewApiBundle\Component\Assistance\Scoring\RulesEnum;
+use NewApiBundle\Enum\HouseholdShelterStatus;
 use ReflectionClass;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -19,6 +21,9 @@ class RulesComputationTest extends KernelTestCase
 {
     /** @var RulesCalculation */
     private $rulesCalculation;
+
+    /** @var RulesEnum */
+    private $rulesEnum;
 
     public function __construct($name = null, array $data = [], $dataName = '')
     {
@@ -29,6 +34,8 @@ class RulesComputationTest extends KernelTestCase
         $container = self::$kernel->getContainer()->get('test.service_container');
 
         $this->rulesCalculation = $container->get(RulesCalculation::class);
+        
+        $this->rulesEnum = $container->get(RulesEnum::class);
     }
 
     public function testCorrectMethodsFormat()
@@ -108,5 +115,26 @@ class RulesComputationTest extends KernelTestCase
         $result = $this->rulesCalculation->dependencyRatioUkr($household, $scoringRule);
 
         $this->assertEquals(1, $result);
+    }
+
+    public function testEnumHouseholdShelterStatus()
+    {
+        $scoringRule = new ScoringRule(ScoringRuleType::ENUM, 'HouseholdShelterStatus', 'Test');
+        $scoringRule->addOption(new ScoringRuleOption('House/Apartment - Lightly Damaged',1));
+        $scoringRule->addOption(new ScoringRuleOption('House/Apartment - Moderately Damaged',4));
+        $scoringRule->addOption(new ScoringRuleOption('House/Apartment - Severely Damaged',5));
+
+        
+        $household = new Household();
+        
+        //value defined both enum and scoring
+        $household->setShelterStatus(HouseholdShelterStatus::HOUSE_APARTMENT_MODERATELY_DAMAGED);
+        $result = $this->rulesEnum->getScore($household, $scoringRule);
+        $this->assertEquals(4, $result);
+
+        //value defined only in enum
+        $household->setShelterStatus(HouseholdShelterStatus::HOUSE_APARTMENT_NOT_DAMAGED);
+        $result = $this->rulesEnum->getScore($household, $scoringRule);
+        $this->assertEquals(0, $result);
     }
 }
