@@ -76,7 +76,7 @@ final class ScoringService
     {
         $scores = [];
 
-        $scoringBlueprint = $this->scoringBlueprintRepository->findActive($input->getScoringBlueprint(), $countryCode);
+        $scoringBlueprint = $this->scoringBlueprintRepository->findActive($input->getScoringBlueprintId(), $countryCode);
         $scoring = isset($scoringBlueprint) ? $this->scoringFactory->buildScoring($scoringBlueprint) : null;
         foreach ($input->getBeneficiaryIds() as $beneficiaryId) {
             $beneficiary = $this->beneficiaryRepository->find($beneficiaryId);

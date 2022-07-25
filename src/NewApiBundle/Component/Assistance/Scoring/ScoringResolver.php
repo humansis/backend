@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Component\Assistance\Scoring;
 
 use BeneficiaryBundle\Entity\CountrySpecific;
+use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Repository\CountrySpecificAnswerRepository;
 use BeneficiaryBundle\Repository\CountrySpecificRepository;
@@ -121,6 +122,11 @@ final class ScoringResolver
             'countrySpecific' => $countrySpecific,
             'household' => $household,
         ]);
+
+        // Household does not have filled the country specific option
+        if (!$countrySpecificAnswer instanceof CountrySpecificAnswer) {
+            return 0;
+        }
 
         foreach ($scoringOptions as $option) {
             if ($option->getValue() === $countrySpecificAnswer->getAnswer()) {
