@@ -129,7 +129,7 @@ final class ScoringResolver
         }
 
         foreach ($scoringOptions as $option) {
-            if ($option->getValue() === $countrySpecificAnswer->getAnswer()) {
+            if (mb_strtolower($option->getValue()) === mb_strtolower($countrySpecificAnswer->getAnswer())) {
                 return $option->getScore();
             }
         }
