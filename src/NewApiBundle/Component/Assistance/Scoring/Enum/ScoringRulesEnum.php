@@ -21,6 +21,8 @@ final class ScoringRulesEnum
     public const INCOME_SPENT_ON_FOOD = 'incomeSpentOnFood';
     public const FCS = 'fcs';
     public const HH_HEAD_GENDER = 'hhHeadGender';
+    public const DEBT = 'debt';
+    public const ASSISTANCE_PROVIDED = 'assistanceProvided';
 
     public static function values(): array
     {
@@ -38,6 +40,8 @@ final class ScoringRulesEnum
             self::INCOME_SPENT_ON_FOOD,
             self::FCS,
             self::HH_HEAD_GENDER,
+            self::DEBT,
+            self::ASSISTANCE_PROVIDED,
         ];
     }
 }

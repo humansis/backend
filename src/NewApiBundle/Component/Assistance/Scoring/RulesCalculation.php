@@ -9,6 +9,8 @@ use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleOptionsEnum;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRule;
+use NewApiBundle\Enum\HouseholdShelterStatus;
+use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use NewApiBundle\Utils\Floats;
 use NewApiBundle\Enum\PersonGender;
 
@@ -284,7 +286,42 @@ final class RulesCalculation
     public function shelterType(Household $household, ScoringRule $rule): int
     {
         $shelterStatus = $household->getShelterStatus();
-        return $rule->getOptionByValue($shelterStatus)->getScore();
+        switch ($shelterStatus) {
+            case HouseholdShelterStatus::TENT:
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::SHELTER_TENT)->getScore();
+                break;
+
+            case HouseholdShelterStatus::MAKESHIFT_SHELTER:
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::SHELTER_MAKESHIFT)->getScore();
+                break;
+
+            case HouseholdShelterStatus::TRANSITIONAL_SHELTER:
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::SHELTER_TRANSITIONAL)->getScore();
+                break;
+
+            case HouseholdShelterStatus::HOUSE_APARTMENT_SEVERELY_DAMAGED:
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::SHELTER_SEVERELY_DAMAGED)->getScore();
+                break;
+
+            case HouseholdShelterStatus::HOUSE_APARTMENT_MODERATELY_DAMAGED:
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::SHELTER_MODERATELY_DAMAGED)->getScore();
+                break;
+
+            case HouseholdShelterStatus::HOUSE_APARTMENT_NOT_DAMAGED:
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::SHELTER_NOT_DAMAGED)->getScore();
+                break;
+
+            case HouseholdShelterStatus::ROOM_OR_SPACE_IN_PUBLIC_BUILDING:
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::SHELTER_SHARED)->getScore();
+                break;
+
+            default:
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::SHELTER_OTHER)->getScore();
+                break;
+        }
+
+        return $result;
+
     }
 
     public function productiveAssets(Household $household, ScoringRule $rule): int
@@ -385,6 +422,51 @@ final class RulesCalculation
             default:
                 $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::CONSUMPTION_ACCEPTABLE)->getScore();
                 break;
+        }
+
+        return $result;
+    }
+
+    public function debt(Household $household, ScoringRule $rule): int
+    {
+        $debt = $household->getDebtLevel();
+
+        switch (true) {
+            case $debt < 5000:
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::DEBT_0_5000)->getScore();
+                break;
+
+            case $debt < 20000:
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::DEBT_5000_20000)->getScore();
+                break;
+
+            case $debt < 60000:
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::DEBT_20000_60000)->getScore();
+                break;
+
+            case $debt < 100000:
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::DEBT_60000_100000)->getScore();
+                break;
+
+            default:
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::DEBT_100000_MORE)->getScore();
+        }
+
+        return $result;
+    }
+
+    public function assistanceProvided(Household $household, ScoringRule $rule): int
+    {
+        $receivedTypes = $household->getSupportReceivedTypes();
+        $supportDateReceived = $household->getSupportDateReceived();
+        $today = new \DateTime('now');
+        $months = $today->diff($supportDateReceived)->m;
+
+        $result = 0;
+        if ($months >= 3) {
+            foreach ($receivedTypes as $type) {
+                $result += $rule->getOptionByValue($type)->getScore();
+            }
         }
 
         return $result;

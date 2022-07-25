@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Component\Assistance\Scoring\Enum;
 
 use NewApiBundle\Enum\HouseholdShelterStatus;
+use NewApiBundle\Enum\HouseholdSupportReceivedType;
 
 /**
  * List of supported values for each calculation rules
@@ -35,25 +36,40 @@ final class ScoringRuleOptionsEnum
     public const VERY_HIGH_VULNERABILITY = 'Dependency ratio very high vulnerability';
     public const EXTREME_VULNERABILITY = 'Dependency ratio extreme vulnerability';
 
+    public const SHELTER_TENT = 'Tent';
+    public const SHELTER_MAKESHIFT = 'Makeshift Shelter';
+    public const SHELTER_TRANSITIONAL = 'Transitional Shelter';
+    public const SHELTER_SEVERELY_DAMAGED = 'House/Apartment - Severely Damaged';
+    public const SHELTER_MODERATELY_DAMAGED = 'House/Apartment - Moderately Damaged';
+    public const SHELTER_NOT_DAMAGED = 'House/Apartment - Good Condition';
+    public const SHELTER_SHARED = 'Room or Space in Shared Accommodation';
+    public const SHELTER_OTHER = 'Other';
+
     public const ASSETS_0_1 = '1 Asset';
     public const ASSETS_2 = '2 Assets';
     public const ASSETS_3 = '3 Assets';
     public const ASSETS_4 = '4 Assets';
     public const ASSETS_5_MORE = '5 Assets or More';
 
-    public const CSI_0_20 = 'No coping';
-    public const CSI_20_30 = 'Stress coping';
-    public const CSI_30_40 = 'Crisis coping';
-    public const CSI_40_MORE = 'Emergeny coping';
+    public const CSI_0_20 = '0 - 19';
+    public const CSI_20_30 = '20 - 29';
+    public const CSI_30_40 = '30 - 39';
+    public const CSI_40_MORE = '40+';
 
     public const INCOME_SPENT_0_50 = 'spent < 50 %';
     public const INCOME_SPENT_50_65 = '50 % < spent < 65 %';
     public const INCOME_SPENT_65_75 = '65 % < spent < 75 %';
     public const INCOME_SPENT_75_MORE = '75% < spent';
 
-    public const CONSUMPTION_POOR = 'Poor Consumption';
-    public const CONSUMPTION_BORDERLINE = 'Borderline Consumption';
-    public const CONSUMPTION_ACCEPTABLE = 'Acceptable Consumption';
+    public const CONSUMPTION_POOR = '0 - 20';
+    public const CONSUMPTION_BORDERLINE = '21 - 35';
+    public const CONSUMPTION_ACCEPTABLE = '36+';
+
+    public const DEBT_0_5000 = '0 - 4999';
+    public const DEBT_5000_20000 = '5000 - 19999';
+    public const DEBT_20000_60000 = '20000 - 59999';
+    public const DEBT_60000_100000 = '60000 - 99999';
+    public const DEBT_100000_MORE = '100000+';
 
     public const GENDER_MALE = 'Male';
     public const GENDER_FEMALE = 'Female';
@@ -84,13 +100,18 @@ final class ScoringRuleOptionsEnum
             self::PREGNANT_LACTATING_FEMALE,
             self::DISABLED,
             self::NO_VULNERABILITY,
+            self::OTHER,
         ],
 
         ScoringRulesEnum::HH_MEMBERS_VULNERABILITY => [
             self::CHRONICALLY_ILL,
+            self::INFANT,
+            self::ELDERLY,
             self::PREGNANT_LACTATING_FEMALE,
             self::DISABLED,
             self::NO_VULNERABILITY,
+            self::OTHER,
+
         ],
 
         ScoringRulesEnum::COMPLEX_DEPENDENCY_RATIO => [
@@ -103,13 +124,14 @@ final class ScoringRuleOptionsEnum
         ],
 
         ScoringRulesEnum::SHELTER_TYPE => [
-            HouseholdShelterStatus::TENT,
-            HouseholdShelterStatus::MAKESHIFT_SHELTER,
-            HouseholdShelterStatus::TRANSITIONAL_SHELTER,
-            HouseholdShelterStatus::HOUSE_APARTMENT_SEVERELY_DAMAGED,
-            HouseholdShelterStatus::HOUSE_APARTMENT_MODERATELY_DAMAGED,
-            HouseholdShelterStatus::HOUSE_APARTMENT_NOT_DAMAGED,
-            HouseholdShelterStatus::ROOM_OR_SPACE_IN_PUBLIC_BUILDING,
+            self::SHELTER_TENT,
+            self::SHELTER_MAKESHIFT,
+            self::SHELTER_TRANSITIONAL,
+            self::SHELTER_SEVERELY_DAMAGED,
+            self::SHELTER_MODERATELY_DAMAGED,
+            self::SHELTER_NOT_DAMAGED,
+            self::SHELTER_SHARED,
+            self::SHELTER_OTHER,
         ],
 
         ScoringRulesEnum::ASSETS => [
@@ -143,6 +165,27 @@ final class ScoringRuleOptionsEnum
         ScoringRulesEnum::HH_HEAD_GENDER => [
             self::GENDER_FEMALE,
             self::GENDER_MALE,
+        ],
+
+        ScoringRulesEnum::DEBT => [
+            self::DEBT_0_5000,
+            self::DEBT_5000_20000,
+            self::DEBT_20000_60000,
+            self::DEBT_60000_100000,
+            self::DEBT_100000_MORE,
+        ],
+
+        ScoringRulesEnum::ASSISTANCE_PROVIDED => [
+            HouseholdSupportReceivedType::MPCA,
+            HouseholdSupportReceivedType::CASH_FOR_WORK,
+            HouseholdSupportReceivedType::FOOD_KIT,
+            HouseholdSupportReceivedType::FOOD_VOUCHER,
+            HouseholdSupportReceivedType::HYGIENE_KIT,
+            HouseholdSupportReceivedType::SHELTER_KIT,
+            HouseholdSupportReceivedType::SHELTER_RECONSTRUCTION_SUPPORT,
+            HouseholdSupportReceivedType::NON_FOOD_ITEMS,
+            HouseholdSupportReceivedType::LIVELIHOODS_SUPPORT,
+            HouseholdSupportReceivedType::VOCATIONAL_TRAINING,
         ],
     ];
 }
