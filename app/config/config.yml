@@ -115,6 +115,7 @@ framework:
             symfony_serializer:
                 format: json
                 context: { }
+        failure_transport: failed
         transports:
             #        async: "%env(MESSENGER_TRANSPORT_DSN)%"
             import:
@@ -127,6 +128,7 @@ framework:
                 options:
                     queue_name: incoming_big_data
                     auto_setup: false
+            failed: 'doctrine://default?queue_name=failed'
             sync: 'sync://'
         routing:
             'NewApiBundle\Component\Import\Messaging\Message\ImportCheck': import
