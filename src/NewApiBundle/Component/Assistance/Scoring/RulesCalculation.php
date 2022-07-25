@@ -199,6 +199,26 @@ final class RulesCalculation
         return 0;
     }
 
+    public function hhHeadGender(Household $household, ScoringRule $rule): int
+    {
+        $hhhGender = $household->getHouseholdHead()->getPerson()->getGender();
+
+        switch ($hhhGender) {
+            case PersonGender::FEMALE:
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::GENDER_FEMALE)->getScore();
+                break;
+
+            case PersonGender::MALE:
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::GENDER_MALE)->getScore();
+                break;
+
+            default:
+                $result = 0;
+        }
+
+        return $result;
+    }
+
     public function hhHeadVulnerability(Household $household, ScoringRule $rule): int
     {
         $hhhGender = $household->getHouseholdHead()->getPerson()->getGender();

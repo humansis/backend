@@ -56,3 +56,6 @@ calculation,incomeSpentOnFood,Income Spent on Food,spent < 50 %,3
 calculation,fcs,Food consumption score,Poor Consumption,6
 ,,,Borderline Consumption,4
 ,,,Acceptable Consumption,1
+,,,,
+calculation,hhHeadGender,Gender of Head of Household,Female,3
+,,,Male,1

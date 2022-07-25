@@ -54,6 +54,8 @@ final class ScoringRuleOptionsEnum
     public const CONSUMPTION_BORDERLINE = 'Borderline Consumption';
     public const CONSUMPTION_ACCEPTABLE = 'Acceptable Consumption';
 
+    public const GENDER_MALE = 'Male';
+    public const GENDER_FEMALE = 'Female';
 
     public const SUPPORTED = [
         ScoringRulesEnum::SINGLE_PARENT_HEADED => [
@@ -135,6 +137,11 @@ final class ScoringRuleOptionsEnum
             self::CONSUMPTION_POOR,
             self::CONSUMPTION_BORDERLINE,
             self::CONSUMPTION_ACCEPTABLE,
-        ]
+        ],
+
+        ScoringRulesEnum::HH_HEAD_GENDER => [
+            self::GENDER_FEMALE,
+            self::GENDER_MALE,
+        ],
     ];
 }
