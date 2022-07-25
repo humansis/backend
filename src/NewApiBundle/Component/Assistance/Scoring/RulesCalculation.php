@@ -267,7 +267,7 @@ final class RulesCalculation
         return $rule->getOptionByValue($shelterStatus)->getScore();
     }
 
-    public function assets(Household $household, ScoringRule $rule): int
+    public function productiveAssets(Household $household, ScoringRule $rule): int
     {
         $assetsNum = count($household->getAssets());
         switch ($assetsNum) {

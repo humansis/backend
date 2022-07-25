@@ -9,3 +9,50 @@ calculation,dependencyRatioUkr,Dependency Ratio (number of family members only),
 ,,,,
 calculation,noOfChronicallyIll,Chronical ilnesses and health issues ,one,1
 ,,,two and more,1
+,,,,
+calculation,hhHeadVulnerability,Vulnerability Head of Household,Chronically ill,5
+,,,Age < 18,6
+,,,Age > 59,4
+,,,Pregnant or lactating female,4
+,,,Disabled,5
+,,,No vulnerability,0
+,,,,
+calculation,hhMembersVulnerability,Vulnerability of Household Members,Chronically ill,2
+,,,Pregnant or lactating female,2
+,,,Disabled,3
+,,,No vulnerability,1
+,,,,
+calculation,complexDependencyRatio,Dependency Ratio,Dependency ratio very low vulnerability,1
+,,,Dependency ratio low vulnerability,2
+,,,Dependency ratio moderate vulnerability,3
+,,,Dependency ratio high vulnerability,4
+,,,Dependency ratio very high vulnerability,5
+,,,Dependency ratio extreme vulnerability,6
+,,,,
+calculation,shelterType,Shelter type,Tent,5
+,,,Makeshift Shelter,4
+,,,Transitional Shelter,4
+,,,House/Apartment - Severely Damaged,5
+,,,House/Apartment - Moderately Damaged,2
+,,,House/Apartment - Not Damaged,1
+,,,Room or Space in Public Building,3
+,,,,
+calculation,productiveAssets,Productive Assets,1 Asset,-2
+,,,2 Assets,-3
+,,,3 Assets,-4
+,,,4 Assets,-5
+,,,5 Assets or More,-6
+,,,,
+calculation,csi,Coping Strategy Index (CSI),No coping,0
+,,,Stress coping,2
+,,,Crisis coping,4
+,,,Emergeny coping,6
+,,,,
+calculation,incomeSpentOnFood,Income Spent on Food,spent < 50 %,3
+,,,50 % < spent < 65 %,4
+,,,65 % < spent < 75 %,5
+,,,75% < spent,6
+,,,,
+calculation,fcs,Food consumption score,Poor Consumption,6
+,,,Borderline Consumption,4
+,,,Acceptable Consumption,1

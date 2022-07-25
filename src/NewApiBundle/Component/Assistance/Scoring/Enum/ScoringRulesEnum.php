@@ -16,7 +16,7 @@ final class ScoringRulesEnum
     public const HH_HEAD_VULNERABILITY = 'hhHeadVulnerability';
     public const HH_MEMBERS_VULNERABILITY = 'hhMembersVulnerability';
     public const SHELTER_TYPE = 'shelterType';
-    public const ASSETS = 'assets';
+    public const ASSETS = 'productiveAssets';
     public const CSI = 'csi';
     public const INCOME_SPENT_ON_FOOD = 'incomeSpentOnFood';
     public const FCS = 'fcs';
