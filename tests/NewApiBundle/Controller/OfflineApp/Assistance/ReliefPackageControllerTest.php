@@ -33,16 +33,8 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
             'amountDistributed' => 0,
         ], ['id' => 'asc'], 3);
 
-        $distributionRequest = [];
-        foreach ($reliefPackages as $package) {
-            $distributionRequest[] = [
-                'id' => $package->getId(),
-                'dateDistributed' => (new \DateTime())->format(\DateTimeInterface::ISO8601),
-                'amountDistributed' => null,
-            ];
-        }
-
-        $this->request('PATCH', "/api/basic/offline-app/v1/assistances/relief-packages/distribute", $distributionRequest);
+        $this->request('PATCH', "/api/basic/offline-app/v1/assistances/relief-packages/distribute",
+            $this->createDistributionRequest($reliefPackages));
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
             'Request failed: '.json_decode($this->client->getResponse()->getContent(), true)['debug'][0]['message']
@@ -54,5 +46,50 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
             $this->assertEquals($package->getAmountToDistribute(), $package->getAmountDistributed());
         }
 
+    }
+
+    public function testReliefPackageDoubledDistribution(): void
+    {
+        /** @var ReliefPackage[] $reliefPackages */
+        $reliefPackages = $this->em->getRepository(ReliefPackage::class)->findBy([
+            'state' => ReliefPackageState::DISTRIBUTED,
+        ], ['id' => 'asc'], 3);
+
+        if(count($reliefPackages) === 0){
+            $this->markTestSkipped('There is not enough relief packages');
+        }
+
+        $this->request('PATCH', "/api/basic/offline-app/v1/assistances/relief-packages/distribute",
+            $this->createDistributionRequest($reliefPackages));
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.json_decode($this->client->getResponse()->getContent(), true)['debug'][0]['message']
+        );
+        $this->assertEquals(202, $this->client->getResponse()->getStatusCode());
+
+        foreach ($reliefPackages as $package) {
+            $this->em->refresh($package);
+            $this->assertEquals(ReliefPackageState::DISTRIBUTED, $package->getState());
+            $this->assertEquals($package->getAmountToDistribute(), $package->getAmountDistributed());
+        }
+    }
+
+    /**
+     * @param array $reliefPackages
+     *
+     * @return ReliefPackage[]
+     */
+    private function createDistributionRequest(array $reliefPackages): array
+    {
+        $distributionRequest = [];
+        foreach ($reliefPackages as $package) {
+            $distributionRequest[] = [
+                'id' => $package->getId(),
+                'dateDistributed' => (new \DateTime())->format(\DateTimeInterface::ISO8601),
+                'amountDistributed' => null,
+            ];
+        }
+
+        return $distributionRequest;
     }
 }
