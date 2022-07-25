@@ -6,7 +6,7 @@ namespace NewApiBundle\Component\Assistance\Scoring;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
-use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleOptionsEnum;
+use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleCalculationOptionsEnum;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRule;
 use NewApiBundle\Utils\Floats;
 
@@ -48,15 +48,15 @@ final class RulesCalculation
         }
 
         if ($adultsInWorkingAge === 0) {
-            return $rule->getOptionByValue(ScoringRuleOptionsEnum::DEPENDENCY_RATIO_HIGH)->getScore();
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_HIGH)->getScore();
         }
 
         $dependencyRatio = ($children + $elders) / $adultsInWorkingAge;
 
         if (Floats::compare($dependencyRatio, 1.0)) {
-            return $rule->getOptionByValue(ScoringRuleOptionsEnum::DEPENDENCY_RATIO_MID)->getScore();
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_MID)->getScore();
         } else if ($dependencyRatio > 1.0) {
-            return $rule->getOptionByValue(ScoringRuleOptionsEnum::DEPENDENCY_RATIO_HIGH)->getScore();
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_HIGH)->getScore();
         }
 
         return 0;
@@ -73,7 +73,7 @@ final class RulesCalculation
         /** @var VulnerabilityCriterion $headVulnerability */
         foreach ($household->getHouseholdHead()->getVulnerabilityCriteria() as $headVulnerability) {
             if ($headVulnerability->getFieldString() === VulnerabilityCriterion::CRITERION_SOLO_PARENT) {
-                return $rule->getOptionByValue(ScoringRuleOptionsEnum::VULNERABILITY_SOLO_PARENT)->getScore();
+                return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::VULNERABILITY_SOLO_PARENT)->getScore();
             }
         }
 
@@ -94,7 +94,7 @@ final class RulesCalculation
             /** @var VulnerabilityCriterion $headVulnerability */
             foreach ($beneficiary->getVulnerabilityCriteria() as $headVulnerability) {
                 if ($headVulnerability->getFieldString() === VulnerabilityCriterion::CRITERION_PREGNANT || $headVulnerability->getFieldString() === VulnerabilityCriterion::CRITERION_LACTATING) {
-                    $totalScore += $rule->getOptionByValue(ScoringRuleOptionsEnum::VULNERABILITY_PREGNANT_OR_LACTATING)->getScore();
+                    $totalScore += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::VULNERABILITY_PREGNANT_OR_LACTATING)->getScore();
                     continue 2;
                 }
             }
@@ -115,9 +115,9 @@ final class RulesCalculation
         foreach ($household->getCountrySpecificAnswers() as $countrySpecificAnswer) {
             if ($countrySpecificAnswer->getCountrySpecific()->getFieldString() === 'No of chronically ill') {
                 if ( (int) $countrySpecificAnswer->getAnswer() === 1) {
-                    return $rule->getOptionByValue(ScoringRuleOptionsEnum::CHRONICALLY_ILL_ONE)->getScore();
+                    return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL_ONE)->getScore();
                 } else if ( (int) $countrySpecificAnswer->getAnswer() > 1) {
-                    return $rule->getOptionByValue(ScoringRuleOptionsEnum::CHRONICALLY_ILL_TWO_OR_MORE)->getScore();
+                    return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL_TWO_OR_MORE)->getScore();
                 }
             }
         }

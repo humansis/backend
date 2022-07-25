@@ -6,7 +6,7 @@ namespace NewApiBundle\Component\Assistance\Scoring\Enum;
 /**
  * List of supported calculation rules
  */
-final class ScoringRulesEnum
+final class ScoringRulesCalculationsEnum
 {
     public const DEPENDENCY_RATIO_UKR = 'dependencyRatioUkr';
     public const SINGLE_PARENT_HEADED = 'singleParentHeaded';

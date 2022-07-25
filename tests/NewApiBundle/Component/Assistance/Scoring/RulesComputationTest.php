@@ -6,8 +6,8 @@ namespace Tests\NewApiBundle\Component\Assistance\Scoring;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use DateTime;
-use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleOptionsEnum;
-use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRulesEnum;
+use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleCalculationOptionsEnum;
+use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRulesCalculationsEnum;
 use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleType;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRuleOption;
 use NewApiBundle\Component\Assistance\Scoring\RulesCalculation;
@@ -52,7 +52,7 @@ class RulesComputationTest extends KernelTestCase
 
     public function testHasMethodForEverySupportedCalculation()
     {
-        $supportedNotImplementedCalculations = ScoringRulesEnum::values();
+        $supportedNotImplementedCalculations = ScoringRulesCalculationsEnum::values();
 
         $customComputationReflection = new ReflectionClass(RulesCalculation::class);
 
@@ -62,7 +62,7 @@ class RulesComputationTest extends KernelTestCase
             }
         }
 
-        $this->assertEmpty($supportedNotImplementedCalculations, 'Class ' . RulesCalculation::class . ' does not contain implementation for every rule defined in ' . ScoringRulesEnum::class);
+        $this->assertEmpty($supportedNotImplementedCalculations, 'Class ' . RulesCalculation::class . ' does not contain implementation for every rule defined in ' . ScoringRulesCalculationsEnum::class);
     }
 
     public function testEveryMethodIsDefinedInEnum()
@@ -74,7 +74,7 @@ class RulesComputationTest extends KernelTestCase
                 continue;
             }
 
-            $this->assertContains($method->getName(), ScoringRulesEnum::values(), 'There is implemented public method which is not in ' . ScoringRulesEnum::class . '. Class ' . RulesCalculation::class . ' should contain only methods which performs calculation of rules.');
+            $this->assertContains($method->getName(), ScoringRulesCalculationsEnum::values(), 'There is implemented public method which is not in ' . ScoringRulesCalculationsEnum::class . '. Class ' . RulesCalculation::class . ' should contain only methods which performs calculation of rules.');
         }
     }
 
@@ -101,9 +101,9 @@ class RulesComputationTest extends KernelTestCase
         $household->addBeneficiary($almostElder);
         $household->addBeneficiary($adult);
 
-        $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesEnum::DEPENDENCY_RATIO_UKR, 'Test');
-        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::DEPENDENCY_RATIO_MID, 1));
-        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::DEPENDENCY_RATIO_HIGH, 2));
+        $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesCalculationsEnum::DEPENDENCY_RATIO_UKR, 'Test');
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_MID, 1));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_HIGH, 2));
 
         $result = $this->rulesCalculation->dependencyRatioUkr($household, $scoringRule);
 
