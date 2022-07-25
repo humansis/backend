@@ -225,8 +225,7 @@ final class RulesCalculation
     {
         $hhhGender = $household->getHouseholdHead()->getPerson()->getGender();
         $hhhAge = $household->getHouseholdHead()->getPerson()->getAge();
-        $hhhVulnerabilityCriteria = $household->getHouseholdHead()->getVulnerabilityCriteria();
-        $hhhVulnerabilityCriteria = $hhhVulnerabilityCriteria->toArray();
+        $hhhVulnerabilityCriteria = $household->getHouseholdHead();
 
         return $this->memberScoring($hhhVulnerabilityCriteria, $hhhGender, $hhhAge, $rule);
     }
@@ -237,10 +236,12 @@ final class RulesCalculation
 
         $totalScore = 0;
         foreach ($beneficiaries as $beneficiary) {
-            $memberGender = $beneficiary->getPerson()->getGender();
-            $memberAge = $beneficiary->getPerson()->getAge();
+            if($beneficiary->isHead() === false) {
+                $memberGender = $beneficiary->getPerson()->getGender();
+                $memberAge = $beneficiary->getPerson()->getAge();
 
-            $totalScore += $this->memberScoring($beneficiary, $memberGender, $memberAge, $rule);
+                $totalScore += $this->memberScoring($beneficiary, $memberGender, $memberAge, $rule);
+            }
         }
 
         return $totalScore;
@@ -248,36 +249,35 @@ final class RulesCalculation
 
     private function memberScoring(Beneficiary $beneficiary, $gender, $age, ScoringRule $rule): int
     {
-        switch (true) {
-            case $beneficiary->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED):
-                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::DISABLED)->getScore();
-                break;
+        $result = 0;
+        if($beneficiary->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED)) {
+            $result += $rule->getOptionByValue(ScoringRuleOptionsEnum::DISABLED)->getScore();
+        }
 
-            case $beneficiary->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL):
-                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::CHRONICALLY_ILL)->getScore();
-                break;
+        if($beneficiary->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL)) {
+            $result += $rule->getOptionByValue(ScoringRuleOptionsEnum::CHRONICALLY_ILL)->getScore();
+        }
 
-            case $gender === PersonGender::FEMALE &&
-                ($beneficiary->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_PREGNANT) ||
-                 $beneficiary->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_LACTATING)):
-                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::PREGNANT_LACTATING_FEMALE)->getScore();
-                break;
+        if($gender === PersonGender::FEMALE &&
+            ($beneficiary->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_PREGNANT) ||
+                $beneficiary->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_LACTATING))) {
+            $result += $rule->getOptionByValue(ScoringRuleOptionsEnum::PREGNANT_LACTATING_FEMALE)->getScore();
+        }
 
-            case $age < 18:
-                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::INFANT)->getScore();
-                break;
+        if($age < 18) {
+            $result += $rule->getOptionByValue(ScoringRuleOptionsEnum::INFANT)->getScore();
+        }
 
-            case $age > 59:
-                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::ELDERLY)->getScore();
-                break;
+        if($age > 59) {
+            $result += $rule->getOptionByValue(ScoringRuleOptionsEnum::ELDERLY)->getScore();
+        }
 
-            case $beneficiary->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_NO_VULNERABILITY):
-                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::NO_VULNERABILITY)->getScore();
-                break;
+        if($beneficiary->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_NO_VULNERABILITY)) {
+            $result += $rule->getOptionByValue(ScoringRuleOptionsEnum::NO_VULNERABILITY)->getScore();
+        }
 
-            default:
-                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::OTHER)->getScore();
-                break;
+        if($result === 0) {
+            $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::OTHER)->getScore();
         }
 
         return $result;
@@ -383,7 +383,7 @@ final class RulesCalculation
     {
         $isf = $household->getIncomeSpentOnFood();
         $income = $household->getIncome();
-        $isfRatio = $isf / $income * 100;
+        $isfRatio = (int)((float)$isf / $income * 100);
 
         switch (true) {
             case $isfRatio < 50:
