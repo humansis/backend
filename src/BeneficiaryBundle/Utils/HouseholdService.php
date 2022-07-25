@@ -19,6 +19,7 @@ use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use CommonBundle\Entity\Location;
+use CommonBundle\Repository\LocationRepository;
 use CommonBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
@@ -74,13 +75,15 @@ class HouseholdService
         EntityManagerInterface $entityManager,
         BeneficiaryService $beneficiaryService,
         RequestValidator $requestValidator,
-        LocationService $locationService
+        LocationService $locationService,
+        LocationRepository $locationRepository
     )
     {
         $this->em = $entityManager;
         $this->beneficiaryService = $beneficiaryService;
         $this->requestValidator = $requestValidator;
         $this->locationService = $locationService;
+        $this->locationRepository = $locationRepository;
     }
 
     /**
@@ -129,16 +132,13 @@ class HouseholdService
         return $household;
     }
 
-    private function createResidenceAddress(ResidenceAddressInputType $inputType): HouseholdLocation
+    private function createResidenceAddress(ResidenceAddressInputType $inputType, string $countryCode): HouseholdLocation
     {
         $householdLocation = new HouseholdLocation();
         $householdLocation->setLocationGroup(HouseholdLocation::LOCATION_GROUP_CURRENT);
         $householdLocation->setType(HouseholdLocation::LOCATION_TYPE_RESIDENCE);
 
-        $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
-        if (!$location instanceof Location) {
-            throw new EntityNotFoundException("Location was not found.");
-        }
+        $location = $this->locationService->getLocationByIdAndCountryCode($inputType->getLocationId(), $countryCode);
         $householdLocation->setAddress(Address::create(
             $inputType->getStreet(),
             $inputType->getNumber(),
@@ -149,16 +149,13 @@ class HouseholdService
         return $householdLocation;
     }
 
-    private function createTemporarySettlementAddress(TemporarySettlementAddressInputType $inputType): HouseholdLocation
+    private function createTemporarySettlementAddress(TemporarySettlementAddressInputType $inputType, string $countryCode): HouseholdLocation
     {
         $householdLocation = new HouseholdLocation();
         $householdLocation->setLocationGroup(HouseholdLocation::LOCATION_GROUP_CURRENT);
         $householdLocation->setType(HouseholdLocation::LOCATION_TYPE_SETTLEMENT);
 
-        $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
-        if (!$location instanceof Location) {
-            throw new EntityNotFoundException("Location was not found.");
-        }
+        $location = $this->locationService->getLocationByIdAndCountryCode($inputType->getLocationId(), $countryCode);
         $householdLocation->setAddress(Address::create(
             $inputType->getStreet(),
             $inputType->getNumber(),
@@ -169,7 +166,7 @@ class HouseholdService
         return $householdLocation;
     }
 
-    private function createCampAddress(CampAddressInputType $inputType): HouseholdLocation
+    private function createCampAddress(CampAddressInputType $inputType, string $countryCode): HouseholdLocation
     {
         $householdLocation = new HouseholdLocation();
         $householdLocation->setLocationGroup(HouseholdLocation::LOCATION_GROUP_CURRENT);
@@ -185,10 +182,7 @@ class HouseholdService
 
         // Or create a camp with the name in the request
         if (!$camp) {
-            $location = $this->em->getRepository(Location::class)->find($inputType->getCamp()->getLocationId());
-            if (!$location instanceof Location) {
-                throw new EntityNotFoundException("Location was not found.");
-            }
+            $location = $this->locationService->getLocationByIdAndCountryCode($inputType->getLocationId(), $countryCode);
             $camp = new Camp();
             $camp->setName($inputType->getCamp()->getName());
             $camp->setLocation($location);
@@ -893,7 +887,7 @@ class HouseholdService
     private function fillHousehold(HouseholdUpdateInputType $inputType, Household $household): void
     {
         if ($inputType->getResidenceAddress()) {
-            $household->addHouseholdLocation($this->createResidenceAddress($inputType->getResidenceAddress()));
+            $household->addHouseholdLocation($this->createResidenceAddress($inputType->getResidenceAddress(), $inputType->getIso3()));
         }
 
         if ($inputType->getTemporarySettlementAddress()) {
