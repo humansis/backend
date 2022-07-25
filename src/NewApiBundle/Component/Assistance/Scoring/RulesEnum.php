@@ -22,6 +22,10 @@ class RulesEnum
             default:
                 return 0;
         }
+        
+        if ($value === null) {
+            return 0;
+        }
 
         try {
             return $rule->getOptionByValue($value)->getScore();
