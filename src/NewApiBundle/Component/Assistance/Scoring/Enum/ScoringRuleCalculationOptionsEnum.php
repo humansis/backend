@@ -6,7 +6,7 @@ namespace NewApiBundle\Component\Assistance\Scoring\Enum;
 /**
  * List of supported values for each calculation rules
  */
-final class ScoringRuleOptionsEnum
+final class ScoringRuleCalculationOptionsEnum
 {
     public const VULNERABILITY_SOLO_PARENT = 'Solo parent';
 
@@ -19,20 +19,20 @@ final class ScoringRuleOptionsEnum
     public const CHRONICALLY_ILL_TWO_OR_MORE = 'two and more';
 
     public const SUPPORTED = [
-        ScoringRulesEnum::SINGLE_PARENT_HEADED => [
+        ScoringRulesCalculationsEnum::SINGLE_PARENT_HEADED => [
             self::VULNERABILITY_SOLO_PARENT,
         ],
 
-        ScoringRulesEnum::PREGNANT_OR_LACTATING => [
+        ScoringRulesCalculationsEnum::PREGNANT_OR_LACTATING => [
             self::VULNERABILITY_PREGNANT_OR_LACTATING,
         ],
 
-        ScoringRulesEnum::DEPENDENCY_RATIO_UKR => [
+        ScoringRulesCalculationsEnum::DEPENDENCY_RATIO_UKR => [
             self::DEPENDENCY_RATIO_MID,
             self::DEPENDENCY_RATIO_HIGH,
         ],
 
-        ScoringRulesEnum::NO_OF_CHRONICALLY_ILL => [
+        ScoringRulesCalculationsEnum::NO_OF_CHRONICALLY_ILL => [
             self::CHRONICALLY_ILL_ONE,
             self::CHRONICALLY_ILL_TWO_OR_MORE,
         ]

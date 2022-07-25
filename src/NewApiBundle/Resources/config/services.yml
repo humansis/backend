@@ -509,11 +509,14 @@ services:
     NewApiBundle\InputType\Assistance\Scoring\ScoringService:
 
     NewApiBundle\Component\Assistance\Scoring\RulesCalculation:
+      
+    NewApiBundle\Component\Assistance\Scoring\RulesEnum:
 
     NewApiBundle\Component\Assistance\Scoring\ScoringResolver:
         public: true
         arguments:
             - '@NewApiBundle\Component\Assistance\Scoring\RulesCalculation'
+            - '@NewApiBundle\Component\Assistance\Scoring\RulesEnum'
             - '@=service("doctrine.orm.entity_manager").getRepository("BeneficiaryBundle:CountrySpecific")'
             - '@=service("doctrine.orm.entity_manager").getRepository("BeneficiaryBundle:CountrySpecificAnswer")'
 

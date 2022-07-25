@@ -19,6 +19,9 @@ final class ScoringResolver
      * @var RulesCalculation
      */
     private $customComputation;
+    
+    /** @var RulesEnum */
+    private $enumResolver;
 
     /**
      * @var CountrySpecificRepository
@@ -30,9 +33,15 @@ final class ScoringResolver
      */
     private $countrySpecificAnswerRepository;
 
-    public function __construct(RulesCalculation $customComputation, CountrySpecificRepository $countrySpecificRepository, CountrySpecificAnswerRepository $countrySpecificAnswerRepository)
+    public function __construct(
+        RulesCalculation $customComputation,
+        RulesEnum $enumResolver,
+        CountrySpecificRepository $countrySpecificRepository,
+        CountrySpecificAnswerRepository $countrySpecificAnswerRepository
+    )
     {
         $this->customComputation = $customComputation;
+        $this->enumResolver = $enumResolver;
         $this->countrySpecificRepository = $countrySpecificRepository;
         $this->countrySpecificAnswerRepository = $countrySpecificAnswerRepository;
     }
@@ -42,18 +51,30 @@ final class ScoringResolver
         $protocol = new ScoringProtocol();
 
         foreach ($scoring->getRules() as $rule) {
-            if ($rule->getType() === ScoringRuleType::CALCULATION) {
-                $score = $this->customComputation($household, $rule);
-            } else if ($rule->getType() === ScoringRuleType::COUNTRY_SPECIFIC) {
-                $score = $this->countrySpecifics($household, $rule->getFieldName(), $rule->getOptions(), $countryCode);
-            } else {
-                continue;
+            switch ($rule->getType()) {
+                case ScoringRuleType::CALCULATION:
+                    $score = $this->customComputation($household, $rule);
+                    break;
+                case ScoringRuleType::COUNTRY_SPECIFIC:
+                    $score = $this->countrySpecifics($household, $rule->getFieldName(), $rule->getOptions(), $countryCode);
+                    break;
+                case ScoringRuleType::ENUM:
+                    $score = $this->computeEnum($household, $rule);
+                    break;
+                default:
+                    continue 2;
             }
 
             $protocol->addScore($rule->getTitle(), $score);
         }
 
         return $protocol;
+    }
+
+    private function computeEnum(Household $household, ScoringRule $rule): int
+    {
+        //todo temporary solution until enums are refactored to be used same style as customComputation
+        return $this->enumResolver->getScore($household, $rule);
     }
 
     /**

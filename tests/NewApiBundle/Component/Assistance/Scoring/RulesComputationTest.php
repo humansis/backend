@@ -6,12 +6,14 @@ namespace Tests\NewApiBundle\Component\Assistance\Scoring;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use DateTime;
-use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleOptionsEnum;
-use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRulesEnum;
+use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleCalculationOptionsEnum;
+use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRulesCalculationsEnum;
 use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleType;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRuleOption;
 use NewApiBundle\Component\Assistance\Scoring\RulesCalculation;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRule;
+use NewApiBundle\Component\Assistance\Scoring\RulesEnum;
+use NewApiBundle\Enum\HouseholdShelterStatus;
 use ReflectionClass;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -19,6 +21,9 @@ class RulesComputationTest extends KernelTestCase
 {
     /** @var RulesCalculation */
     private $rulesCalculation;
+
+    /** @var RulesEnum */
+    private $rulesEnum;
 
     public function __construct($name = null, array $data = [], $dataName = '')
     {
@@ -29,6 +34,8 @@ class RulesComputationTest extends KernelTestCase
         $container = self::$kernel->getContainer()->get('test.service_container');
 
         $this->rulesCalculation = $container->get(RulesCalculation::class);
+        
+        $this->rulesEnum = $container->get(RulesEnum::class);
     }
 
     public function testCorrectMethodsFormat()
@@ -52,7 +59,7 @@ class RulesComputationTest extends KernelTestCase
 
     public function testHasMethodForEverySupportedCalculation()
     {
-        $supportedNotImplementedCalculations = ScoringRulesEnum::values();
+        $supportedNotImplementedCalculations = ScoringRulesCalculationsEnum::values();
 
         $customComputationReflection = new ReflectionClass(RulesCalculation::class);
 
@@ -62,7 +69,7 @@ class RulesComputationTest extends KernelTestCase
             }
         }
 
-        $this->assertEmpty($supportedNotImplementedCalculations, 'Class ' . RulesCalculation::class . ' does not contain implementation for every rule defined in ' . ScoringRulesEnum::class);
+        $this->assertEmpty($supportedNotImplementedCalculations, 'Class ' . RulesCalculation::class . ' does not contain implementation for every rule defined in ' . ScoringRulesCalculationsEnum::class);
     }
 
     public function testEveryMethodIsDefinedInEnum()
@@ -74,7 +81,7 @@ class RulesComputationTest extends KernelTestCase
                 continue;
             }
 
-            $this->assertContains($method->getName(), ScoringRulesEnum::values(), 'There is implemented public method which is not in ' . ScoringRulesEnum::class . '. Class ' . RulesCalculation::class . ' should contain only methods which performs calculation of rules.');
+            $this->assertContains($method->getName(), ScoringRulesCalculationsEnum::values(), 'There is implemented public method which is not in ' . ScoringRulesCalculationsEnum::class . '. Class ' . RulesCalculation::class . ' should contain only methods which performs calculation of rules.');
         }
     }
 
@@ -101,12 +108,33 @@ class RulesComputationTest extends KernelTestCase
         $household->addBeneficiary($almostElder);
         $household->addBeneficiary($adult);
 
-        $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesEnum::DEPENDENCY_RATIO_UKR, 'Test');
-        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::DEPENDENCY_RATIO_MID, 1));
-        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::DEPENDENCY_RATIO_HIGH, 2));
+        $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesCalculationsEnum::DEPENDENCY_RATIO_UKR, 'Test');
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_MID, 1));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_HIGH, 2));
 
         $result = $this->rulesCalculation->dependencyRatioUkr($household, $scoringRule);
 
         $this->assertEquals(1, $result);
+    }
+
+    public function testEnumHouseholdShelterStatus()
+    {
+        $scoringRule = new ScoringRule('enum', 'HouseholdShelterStatus', 'Test');
+        $scoringRule->addOption(new ScoringRuleOption('House/Apartment - Lightly Damaged',1));
+        $scoringRule->addOption(new ScoringRuleOption('House/Apartment - Moderately Damaged',4));
+        $scoringRule->addOption(new ScoringRuleOption('House/Apartment - Severely Damaged',5));
+
+        
+        $household = new Household();
+        
+        //value defined both enum and scoring
+        $household->setShelterStatus(HouseholdShelterStatus::HOUSE_APARTMENT_MODERATELY_DAMAGED);
+        $result = $this->rulesEnum->getScore($household, $scoringRule);
+        $this->assertEquals(4, $result);
+
+        //value defined only in enum
+        $household->setShelterStatus(HouseholdShelterStatus::HOUSE_APARTMENT_NOT_DAMAGED);
+        $result = $this->rulesEnum->getScore($household, $scoringRule);
+        $this->assertEquals(0, $result);
     }
 }

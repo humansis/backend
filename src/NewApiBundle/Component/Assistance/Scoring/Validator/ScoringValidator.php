@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Assistance\Scoring\Validator;
 
-use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleOptionsEnum;
-use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRulesEnum;
+use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleCalculationOptionsEnum;
+use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRulesCalculationsEnum;
 use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleType;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRuleOption;
 use Symfony\Component\Validator\Constraint;
@@ -30,14 +30,14 @@ final class ScoringValidator extends ConstraintValidator
 
             if ($rule->getType() === ScoringRuleType::CALCULATION) {
 
-                if (!in_array($rule->getFieldName(), ScoringRulesEnum::values())) {
-                    $this->context->buildViolation("No calculation rule with Field Name {$rule->getFieldName()} is supported. Supported values are: [" . implode(', ', ScoringRulesEnum::values()) . ']')
+                if (!in_array($rule->getFieldName(), ScoringRulesCalculationsEnum::values())) {
+                    $this->context->buildViolation("No calculation rule with Field Name {$rule->getFieldName()} is supported. Supported values are: [" . implode(', ', ScoringRulesCalculationsEnum::values()) . ']')
                         ->addViolation();
 
                     continue;
                 }
 
-                $supportedOptions = ScoringRuleOptionsEnum::SUPPORTED[$rule->getFieldName()];
+                $supportedOptions = ScoringRuleCalculationOptionsEnum::SUPPORTED[$rule->getFieldName()];
             } else {
                 continue;
             }
