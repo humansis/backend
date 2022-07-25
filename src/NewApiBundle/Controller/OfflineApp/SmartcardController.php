@@ -5,12 +5,14 @@ namespace NewApiBundle\Controller\OfflineApp;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Component\Smartcard\Exception\SmartcardActivationDeactivatedException;
 use NewApiBundle\Component\Smartcard\Exception\SmartcardDoubledRegistrationException;
 use NewApiBundle\Component\Smartcard\Exception\SmartcardNotAllowedStateTransitionException;
 use NewApiBundle\InputType\Smartcard\ChangeSmartcardInputType;
 use NewApiBundle\InputType\Smartcard\SmartcardRegisterInputType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use VoucherBundle\Repository\SmartcardRepository;
 use VoucherBundle\Utils\SmartcardService;
 
@@ -55,21 +57,16 @@ class SmartcardController extends AbstractOfflineAppController
         SmartcardRepository      $smartcardRepository,
         SmartcardService         $smartcardService
     ): Response {
-        $smartcard = $smartcardRepository->findBySerialNumberAndChangeParameters($serialNumber, $changeSmartcardInputType);
-        if ($smartcard) {
-            return Response::create('', Response::HTTP_ACCEPTED);
-        }
-        $smartcard = $smartcardRepository->findActiveBySerialNumber($serialNumber);
+        $smartcard = $smartcardRepository->findOneBy(['serialNumber' => $serialNumber]);
         if (!$smartcard) {
-            throw $this->createNotFoundException("Smartcard with code '$serialNumber' was not found.");
+            throw new NotFoundHttpException("Smartcard with serial number $serialNumber does not exist");
         }
-
         try {
             $smartcardService->change($smartcard, $changeSmartcardInputType);
 
             return Response::create();
-        } catch (SmartcardNotAllowedStateTransitionException $e) {
-            throw new BadRequestHttpException($e->getMessage());
+        } catch (SmartcardActivationDeactivatedException|SmartcardNotAllowedStateTransitionException $e) {
+            return Response::create('', Response::HTTP_ACCEPTED);
         }
     }
 }

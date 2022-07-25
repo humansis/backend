@@ -7,6 +7,7 @@ use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use DateTimeInterface;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManager;
+use NewApiBundle\Component\Smartcard\Exception\SmartcardActivationDeactivatedException;
 use NewApiBundle\Component\Smartcard\Exception\SmartcardDoubledRegistrationException;
 use NewApiBundle\Component\Smartcard\Exception\SmartcardNotAllowedStateTransitionException;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
@@ -80,12 +81,19 @@ class SmartcardService
      * @param ChangeSmartcardInputType $changeSmartcardInputType
      *
      * @return void
+     * @throws SmartcardActivationDeactivatedException
      * @throws SmartcardNotAllowedStateTransitionException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function change(Smartcard $smartcard, ChangeSmartcardInputType $changeSmartcardInputType): void
     {
+        // Deactivated smartcard should not be changed
+        // For activation this serial number use register new flow
+        if ($smartcard->getState() !== SmartcardStates::ACTIVE) {
+            throw new SmartcardActivationDeactivatedException($smartcard);
+        }
+
         if ($smartcard->getState() !== $changeSmartcardInputType->getState()) {
             if (!SmartcardStates::isTransitionAllowed($smartcard->getState(), $changeSmartcardInputType->getState())) {
                 throw new SmartcardNotAllowedStateTransitionException($smartcard, $changeSmartcardInputType->getState(),

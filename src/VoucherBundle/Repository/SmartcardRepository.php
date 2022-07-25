@@ -115,27 +115,4 @@ class SmartcardRepository extends EntityRepository
         $this->_em->flush();
     }
 
-    /**
-     * @param string                   $serialNumber
-     * @param ChangeSmartcardInputType $changeSmartcardInputType
-     *
-     * @return null|Smartcard
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     */
-    public function findBySerialNumberAndChangeParameters(
-        string                   $serialNumber,
-        ChangeSmartcardInputType $changeSmartcardInputType
-    ): ?Smartcard {
-        $qb = $this->createQueryBuilder('s');
-        $qb->andWhere('s.serialNumber = :serialNumber')
-            ->andWhere('s.state = :state')
-            ->andWhere('s.changedAt = :changedAt')
-            ->setParameters([
-                'serialNumber' => $serialNumber,
-                'state' => $changeSmartcardInputType->getState(),
-                'changedAt' => $changeSmartcardInputType->getCreatedAt(),
-            ]);
-
-        return $qb->getQuery()->getOneOrNullResult();
-    }
 }
