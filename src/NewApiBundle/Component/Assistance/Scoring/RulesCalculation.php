@@ -325,17 +325,19 @@ final class RulesCalculation
     public function incomeSpentOnFood(Household $household, ScoringRule $rule): int
     {
         $isf = $household->getIncomeSpentOnFood();
+        $income = $household->getIncome();
+        $isfRatio = $isf / $income * 100;
 
         switch (true) {
-            case $isf < 50:
+            case $isfRatio < 50:
                 $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::INCOME_SPENT_0_50)->getScore();
                 break;
 
-            case $isf < 65:
+            case $isfRatio < 65:
                 $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::INCOME_SPENT_50_65)->getScore();
                 break;
 
-            case $isf < 75:
+            case $isfRatio < 75:
                 $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::INCOME_SPENT_65_75)->getScore();
                 break;
 
