@@ -94,9 +94,6 @@ framework:
             - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_CORRECT
             - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_FAILED
           to: !php/const NewApiBundle\Enum\ImportState::UPLOADING
-        !php/const NewApiBundle\Workflow\ImportTransitions::COMPLETE_UPLOAD:
-          from: !php/const NewApiBundle\Enum\ImportState::UPLOADING
-          to: !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECKING
         !php/const NewApiBundle\Workflow\ImportTransitions::FAIL_UPLOAD:
           from: !php/const NewApiBundle\Enum\ImportState::UPLOADING
           to: !php/const NewApiBundle\Enum\ImportState::UPLOAD_FAILED
