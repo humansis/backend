@@ -18,4 +18,4 @@ monolog:
             channels: [import]
 
 parameters:
-    frontendUrl: 'https://pin.humansis.org'
+    frontendUrl: 'http://localhost:8080'
