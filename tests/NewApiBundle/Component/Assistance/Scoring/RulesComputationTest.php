@@ -119,7 +119,7 @@ class RulesComputationTest extends KernelTestCase
 
     public function testEnumHouseholdShelterStatus()
     {
-        $scoringRule = new ScoringRule(ScoringRuleType::ENUM, 'HouseholdShelterStatus', 'Test');
+        $scoringRule = new ScoringRule('enum', 'HouseholdShelterStatus', 'Test');
         $scoringRule->addOption(new ScoringRuleOption('House/Apartment - Lightly Damaged',1));
         $scoringRule->addOption(new ScoringRuleOption('House/Apartment - Moderately Damaged',4));
         $scoringRule->addOption(new ScoringRuleOption('House/Apartment - Severely Damaged',5));

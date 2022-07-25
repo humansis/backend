@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace NewApiBundle\Component\Assistance\Scoring;
 
@@ -15,7 +16,7 @@ class RulesEnum
         }
         
         switch ($rule->getFieldName()) {
-            case 'HouseholdShelterStatus':
+            case ScoringSupportedEnumsEnum::HOUSEHOLD_SHELTER_STATUS:
                 $value = $household->getShelterStatus();
                 break;
             default:
