@@ -84,7 +84,7 @@ class CriteriaAssistanceService
      * @throws \Doctrine\ORM\ORMException
      *@deprecated replace by new method with type control of incoming criteria objects and country code
      */
-    public function load(iterable $criteriaGroups, Project $project, string $targetType, string $sector, ?string $subsector, int $threshold, bool $isCount, int $scoringBlueprintId = null)
+    public function load(iterable $criteriaGroups, Project $project, string $targetType, string $sector, ?string $subsector, ?int $threshold, bool $isCount, int $scoringBlueprintId = null)
     {
         if (!in_array($targetType, [
             AssistanceTargetType::INDIVIDUAL,
@@ -115,7 +115,7 @@ class CriteriaAssistanceService
                     );
                 }
 
-                if ($protocol->getTotalScore() >= $threshold) {
+                if (is_null($threshold) || $protocol->getTotalScore() >= $threshold) {
                     if (AssistanceTargetType::INDIVIDUAL === $targetType) {
                         $BNFId = $beneficiary->getId();
                         $reachedBeneficiaries[$BNFId] = $protocol;

@@ -106,7 +106,6 @@ class AssistanceCreateInputType implements InputTypeInterface
 
     /**
      * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
      */
     private $threshold;
 
