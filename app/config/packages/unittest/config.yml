@@ -16,3 +16,6 @@ monolog:
             path: '%kernel.logs_dir%/imports.log'
             level: debug
             channels: [import]
+
+parameters:
+    frontendUrl: 'https://pin.humansis.org'
