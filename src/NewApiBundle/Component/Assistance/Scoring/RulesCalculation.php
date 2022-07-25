@@ -246,12 +246,7 @@ final class RulesCalculation
 
     private function memberScoring(Beneficiary $beneficiary, $gender, $age, ScoringRule $rule): int
     {
-        $result = 0;
         switch (true) {
-            case $beneficiary->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_NO_VULNERABILITY):
-                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::NO_VULNERABILITY)->getScore();
-                break;
-
             case $beneficiary->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED):
                 $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::DISABLED)->getScore();
                 break;
@@ -267,14 +262,19 @@ final class RulesCalculation
                 break;
 
             case $age < 18:
-                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::AGE_18)->getScore();
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::INFANT)->getScore();
                 break;
 
             case $age > 59:
-                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::AGE_59)->getScore();
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::ELDERLY)->getScore();
+                break;
+
+            case $beneficiary->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_NO_VULNERABILITY):
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::NO_VULNERABILITY)->getScore();
                 break;
 
             default:
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::OTHER)->getScore();
                 break;
         }
 

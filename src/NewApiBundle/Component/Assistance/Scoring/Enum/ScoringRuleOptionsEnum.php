@@ -21,11 +21,12 @@ final class ScoringRuleOptionsEnum
     public const CHRONICALLY_ILL_TWO_OR_MORE = 'two and more';
 
     public const CHRONICALLY_ILL = 'Chronically ill';
-    public const AGE_18 = 'Age < 18';
-    public const AGE_59 = 'Age > 59';
+    public const DISABLED = 'Person with disability';
+    public const INFANT = 'Infant';
+    public const ELDERLY = 'Elderly';
     public const PREGNANT_LACTATING_FEMALE = 'Pregnant or lactating female';
-    public const DISABLED = 'Disabled';
     public const NO_VULNERABILITY = 'No vulnerability';
+    public const OTHER = 'Other';
 
     public const VERY_LOW_VULNERABILITY = 'Dependency ratio very low vulnerability';
     public const LOW_VULNERABILITY = 'Dependency ratio low vulnerability';
@@ -78,8 +79,8 @@ final class ScoringRuleOptionsEnum
 
         ScoringRulesEnum::HH_HEAD_VULNERABILITY => [
             self::CHRONICALLY_ILL,
-            self::AGE_18,
-            self::AGE_59,
+            self::INFANT,
+            self::ELDERLY,
             self::PREGNANT_LACTATING_FEMALE,
             self::DISABLED,
             self::NO_VULNERABILITY,
