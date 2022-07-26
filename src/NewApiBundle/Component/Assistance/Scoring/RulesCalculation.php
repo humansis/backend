@@ -463,7 +463,7 @@ final class RulesCalculation
         $months = $today->diff($supportDateReceived)->m;
 
         $result = 0;
-        if ($months >= 3) {
+        if ($months < 3) {
             foreach ($receivedTypes as $type) {
                 $result += $rule->getOptionByValue($type)->getScore();
             }

@@ -20,6 +20,7 @@ use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\PersonGender;
 use ReflectionClass;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use NewApiBundle\Enum\HouseholdSupportReceivedType;
 
 class RulesCalculationTest extends KernelTestCase
 {
@@ -182,11 +183,39 @@ class RulesCalculationTest extends KernelTestCase
         $rule = $scoring->getRuleByFieldName(ScoringRulesEnum::INCOME_SPENT_ON_FOOD);
         $result = $this->rulesCalculation->incomeSpentOnFood($household, $rule);
 
-        echo $result;
-
         $this->assertEquals(3, $result);
     }
 
+    public function testFoodConsumptionScore()
+    {
+        $household = $this->getStandardSyrHousehold();
+        $scoring = $this->getStandardSyrScoring();
+        $rule = $scoring->getRuleByFieldName(ScoringRulesEnum::FCS);
+        $result = $this->rulesCalculation->fcs($household, $rule);
+
+        $this->assertEquals(1, $result);
+    }
+
+    public function testDebt()
+    {
+        $household = $this->getStandardSyrHousehold();
+        $scoring = $this->getStandardSyrScoring();
+        $rule = $scoring->getRuleByFieldName(ScoringRulesEnum::DEBT);
+        $result = $this->rulesCalculation->debt($household, $rule);
+
+        $this->assertEquals(2, $result);
+    }
+
+    public function testAssistanceProvided()
+    {
+        $household = $this->getStandardSyrHousehold();
+        $scoring = $this->getStandardSyrScoring();
+        $rule = $scoring->getRuleByFieldName(ScoringRulesEnum::ASSISTANCE_PROVIDED);
+        $result = $this->rulesCalculation->assistanceProvided($household, $rule);
+
+        $this->assertEquals(-30, $result);
+    }
+    
     private function getStandardSyrScoring(): Scoring
     {
         $rules = [];
@@ -244,9 +273,36 @@ class RulesCalculationTest extends KernelTestCase
         $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::INCOME_SPENT_75_MORE, 6));
         $rules[] = $scoringRule;
 
+        $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesEnum::FCS, 'Food consumption score');
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::CONSUMPTION_POOR, 6));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::CONSUMPTION_BORDERLINE, 4));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::CONSUMPTION_ACCEPTABLE, 1));
+        $rules[] = $scoringRule;
+
         $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesEnum::HH_HEAD_GENDER, 'Gender of Head of Household');
         $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::GENDER_FEMALE, 3));
         $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::GENDER_MALE, 1));
+        $rules[] = $scoringRule;
+
+        $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesEnum::DEBT, 'Debt');
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::DEBT_0_5000, 1));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::DEBT_5000_20000, 2));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::DEBT_20000_60000, 3));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::DEBT_60000_100000, 4));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::DEBT_100000_MORE, 5));
+        $rules[] = $scoringRule;
+
+        $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesEnum::ASSISTANCE_PROVIDED, 'Assistance Provided in the Last 3 Months');
+        $scoringRule->addOption(new ScoringRuleOption(HouseholdSupportReceivedType::MPCA, -3));
+        $scoringRule->addOption(new ScoringRuleOption(HouseholdSupportReceivedType::CASH_FOR_WORK, -3));
+        $scoringRule->addOption(new ScoringRuleOption(HouseholdSupportReceivedType::FOOD_KIT, -3));
+        $scoringRule->addOption(new ScoringRuleOption(HouseholdSupportReceivedType::FOOD_VOUCHER, -3));
+        $scoringRule->addOption(new ScoringRuleOption(HouseholdSupportReceivedType::HYGIENE_KIT, -3));
+        $scoringRule->addOption(new ScoringRuleOption(HouseholdSupportReceivedType::SHELTER_KIT, -3));
+        $scoringRule->addOption(new ScoringRuleOption(HouseholdSupportReceivedType::SHELTER_RECONSTRUCTION_SUPPORT, -3));
+        $scoringRule->addOption(new ScoringRuleOption(HouseholdSupportReceivedType::NON_FOOD_ITEMS, -3));
+        $scoringRule->addOption(new ScoringRuleOption(HouseholdSupportReceivedType::LIVELIHOODS_SUPPORT, -3));
+        $scoringRule->addOption(new ScoringRuleOption(HouseholdSupportReceivedType::VOCATIONAL_TRAINING, -3));
         $rules[] = $scoringRule;
 
         return new Scoring('testSyrScoring', $rules);
@@ -309,6 +365,27 @@ class RulesCalculationTest extends KernelTestCase
 
         //income spent on food
         $household->setIncomeSpentOnFood(4900);
+
+        //food consumption score
+        $household->setFoodConsumptionScore(36);
+
+        //debt
+        $household->setDebtLevel(5000);
+
+        //assistance provided in the last 3 months
+        $household->setSupportReceivedTypes([
+            HouseholdSupportReceivedType::MPCA,
+            HouseholdSupportReceivedType::CASH_FOR_WORK,
+            HouseholdSupportReceivedType::FOOD_KIT,
+            HouseholdSupportReceivedType::FOOD_VOUCHER,
+            HouseholdSupportReceivedType::HYGIENE_KIT,
+            HouseholdSupportReceivedType::SHELTER_KIT,
+            HouseholdSupportReceivedType::SHELTER_RECONSTRUCTION_SUPPORT,
+            HouseholdSupportReceivedType::NON_FOOD_ITEMS,
+            HouseholdSupportReceivedType::LIVELIHOODS_SUPPORT,
+            HouseholdSupportReceivedType::VOCATIONAL_TRAINING,
+        ]);
+        $household->setSupportDateReceived(new DateTime('-1 month'));
 
         return $household;
     }
