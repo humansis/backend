@@ -33,7 +33,7 @@ class RulesCalculationTest extends KernelTestCase
     const HH_CSI = 'copingStrategyIndex';
     const HH_ASSETS = 'assets';
     const HH_SHELTER_STATUS = 'shelterStatus';
-    const HH_MEMBER = 'member';
+    const HH_MEMBERS = 'member';
     const HH_MEMBER_HEAD = 'hhMemberHead';
     const HH_MEMBER_GENDER = 'hhMemberGender';
     const HH_MEMBER_BIRTH_DATE = 'hhMemberBirthDate';
@@ -134,61 +134,429 @@ class RulesCalculationTest extends KernelTestCase
 
     public function testHhHeadGender()
     {
-        $household = $this->getStandardSyrHousehold();
         $scoring = $this->getStandardSyrScoring();
         $rule = $scoring->getRuleByFieldName(ScoringRulesEnum::HH_HEAD_GENDER);
+
+        $household = $this->createCustomHousehold([
+            self::HH_MEMBERS => [
+                [
+                    self::HH_MEMBER_HEAD => true,
+                    self::HH_MEMBER_GENDER => PersonGender::FEMALE,
+                    self::HH_MEMBER_BIRTH_DATE => new DateTime('-16 years'),
+                    self::HH_MEMBER_VULNERABILITY => VulnerabilityCriterion::CRITERION_LACTATING
+                ]
+            ]
+        ]);
         $result = $this->rulesCalculation->hhHeadGender($household, $rule);
-        $this->assertEquals(3, $result);
+        $this->assertEquals(4, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_MEMBERS => [
+                [
+                    self::HH_MEMBER_HEAD => true,
+                    self::HH_MEMBER_GENDER => PersonGender::MALE,
+                    self::HH_MEMBER_BIRTH_DATE => new DateTime('-16 years'),
+                    self::HH_MEMBER_VULNERABILITY => VulnerabilityCriterion::CRITERION_LACTATING
+                ]
+            ]
+        ]);
+        $result = $this->rulesCalculation->hhHeadGender($household, $rule);
+        $this->assertEquals(1, $result);
     }
 
     public function testHhHeadVulnerability()
     {
-        $household = $this->getStandardSyrHousehold();
         $scoring = $this->getStandardSyrScoring();
         $rule = $scoring->getRuleByFieldName(ScoringRulesEnum::HH_HEAD_VULNERABILITY);
-        $result = $this->rulesCalculation->hhHeadVulnerability($household, $rule);
 
+        $household = $this->createCustomHousehold([
+            self::HH_MEMBERS => [
+                [
+                    self::HH_MEMBER_HEAD => true,
+                    self::HH_MEMBER_BIRTH_DATE => new DateTime('-18 years'),
+                ]
+            ]
+        ]);
+        $result = $this->rulesCalculation->hhHeadVulnerability($household, $rule);
+        $this->assertEquals(0, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_MEMBERS => [
+                [
+                    self::HH_MEMBER_HEAD => true,
+                    self::HH_MEMBER_BIRTH_DATE => new DateTime('-18 years +1 day'),
+                ]
+            ]
+        ]);
+        $result = $this->rulesCalculation->hhHeadVulnerability($household, $rule);
+        $this->assertEquals(6, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_MEMBERS => [
+                [
+                    self::HH_MEMBER_HEAD => true,
+                    self::HH_MEMBER_BIRTH_DATE => new DateTime('-60 years'),
+                ]
+            ]
+        ]);
+        $result = $this->rulesCalculation->hhHeadVulnerability($household, $rule);
+        $this->assertEquals(4, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_MEMBERS => [
+                [
+                    self::HH_MEMBER_HEAD => true,
+                    self::HH_MEMBER_BIRTH_DATE => new DateTime('-60 years +1 day'),
+                ]
+            ]
+        ]);
+        $result = $this->rulesCalculation->hhHeadVulnerability($household, $rule);
+        $this->assertEquals(0, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_MEMBERS => [
+                [
+                    self::HH_MEMBER_HEAD => true,
+                    self::HH_MEMBER_GENDER => PersonGender::FEMALE,
+                    self::HH_MEMBER_BIRTH_DATE => new DateTime('-16 years'),
+                    self::HH_MEMBER_VULNERABILITY => VulnerabilityCriterion::CRITERION_LACTATING
+                ]
+            ]
+        ]);
+        $result = $this->rulesCalculation->hhHeadVulnerability($household, $rule);
+        $this->assertEquals(6, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_MEMBERS => [
+                [
+                    self::HH_MEMBER_HEAD => true,
+                    self::HH_MEMBER_GENDER => PersonGender::MALE,
+                    self::HH_MEMBER_BIRTH_DATE => new DateTime('-16 years'),
+                    self::HH_MEMBER_VULNERABILITY => VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL
+                ]
+            ]
+        ]);
+        $result = $this->rulesCalculation->hhHeadVulnerability($household, $rule);
+        $this->assertEquals(11, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_MEMBERS => [
+                [
+                    self::HH_MEMBER_HEAD => true,
+                    self::HH_MEMBER_GENDER => PersonGender::MALE,
+                    self::HH_MEMBER_BIRTH_DATE => new DateTime('-61 years'),
+                    self::HH_MEMBER_VULNERABILITY => VulnerabilityCriterion::CRITERION_DISABLED
+                ]
+            ]
+        ]);
+        $result = $this->rulesCalculation->hhHeadVulnerability($household, $rule);
         $this->assertEquals(9, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_MEMBERS => [
+                [
+                    self::HH_MEMBER_HEAD => true,
+                    self::HH_MEMBER_GENDER => PersonGender::FEMALE,
+                    self::HH_MEMBER_BIRTH_DATE => new DateTime('-44 years'),
+                    self::HH_MEMBER_VULNERABILITY => VulnerabilityCriterion::CRITERION_PREGNANT
+                ]
+            ]
+        ]);
+        $result = $this->rulesCalculation->hhHeadVulnerability($household, $rule);
+        $this->assertEquals(0, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_MEMBERS => [
+                [
+                    self::HH_MEMBER_HEAD => true,
+                    self::HH_MEMBER_GENDER => PersonGender::MALE,
+                    self::HH_MEMBER_BIRTH_DATE => new DateTime('-44 years'),
+                    self::HH_MEMBER_VULNERABILITY => VulnerabilityCriterion::CRITERION_NO_VULNERABILITY
+                ]
+            ]
+        ]);
+        $result = $this->rulesCalculation->hhHeadVulnerability($household, $rule);
+        $this->assertEquals(0, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_MEMBERS => [
+                [
+                    self::HH_MEMBER_HEAD => true,
+                    self::HH_MEMBER_GENDER => PersonGender::FEMALE,
+                    self::HH_MEMBER_BIRTH_DATE => new DateTime('-44 years'),
+                    self::HH_MEMBER_VULNERABILITY => 'neco jineho'
+                ]
+            ]
+        ]);
+        $result = $this->rulesCalculation->hhHeadVulnerability($household, $rule);
+        $this->assertEquals(0, $result);
     }
 
     public function testHhMembersVulnerability()
     {
-        $household = $this->getStandardSyrHousehold();
         $scoring = $this->getStandardSyrScoring();
         $rule = $scoring->getRuleByFieldName(ScoringRulesEnum::HH_MEMBERS_VULNERABILITY);
-        $result = $this->rulesCalculation->hhMembersVulnerability($household, $rule);
 
-        $this->assertEquals(9, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_MEMBERS => [
+                [
+                    self::HH_MEMBER_BIRTH_DATE => new DateTime('-18 years'),
+                ]
+            ]
+        ]);
+        $result = $this->rulesCalculation->hhMembersVulnerability($household, $rule);
+        $this->assertEquals(0, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_MEMBERS => [
+                [
+                    self::HH_MEMBER_BIRTH_DATE => new DateTime('-18 years +1 day'),
+                ]
+            ]
+        ]);
+        $result = $this->rulesCalculation->hhMembersVulnerability($household, $rule);
+        $this->assertEquals(2, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_MEMBERS => [
+                [
+                    self::HH_MEMBER_BIRTH_DATE => new DateTime('-60 years'),
+                ]
+            ]
+        ]);
+        $result = $this->rulesCalculation->hhMembersVulnerability($household, $rule);
+        $this->assertEquals(2, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_MEMBERS => [
+                [
+                    self::HH_MEMBER_BIRTH_DATE => new DateTime('-60 years +1 day'),
+                ]
+            ]
+        ]);
+        $result = $this->rulesCalculation->hhMembersVulnerability($household, $rule);
+        $this->assertEquals(0, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_MEMBERS => [[
+                self::HH_MEMBER_BIRTH_DATE => new DateTime('-18 years +1 day'),
+            ], [
+                self::HH_MEMBER_BIRTH_DATE => new DateTime('-60'),
+            ]],
+        ]);
+        $result = $this->rulesCalculation->hhMembersVulnerability($household, $rule);
+        $this->assertEquals(4, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_MEMBERS => [
+                [
+                    self::HH_MEMBER_GENDER => PersonGender::FEMALE,
+                    self::HH_MEMBER_BIRTH_DATE => new DateTime('-16 years'),
+                    self::HH_MEMBER_VULNERABILITY => VulnerabilityCriterion::CRITERION_LACTATING
+                ]
+            ]
+        ]);
+        $result = $this->rulesCalculation->hhMembersVulnerability($household, $rule);
+        $this->assertEquals(4, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_MEMBERS => [
+                [
+                    self::HH_MEMBER_GENDER => PersonGender::MALE,
+                    self::HH_MEMBER_BIRTH_DATE => new DateTime('-16 years'),
+                    self::HH_MEMBER_VULNERABILITY => VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL
+                ]
+            ]
+        ]);
+        $result = $this->rulesCalculation->hhMembersVulnerability($household, $rule);
+        $this->assertEquals(5, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_MEMBERS => [
+                [
+                    self::HH_MEMBER_GENDER => PersonGender::MALE,
+                    self::HH_MEMBER_BIRTH_DATE => new DateTime('-61 years'),
+                    self::HH_MEMBER_VULNERABILITY => VulnerabilityCriterion::CRITERION_DISABLED
+                ]
+            ]
+        ]);
+        $result = $this->rulesCalculation->hhMembersVulnerability($household, $rule);
+        $this->assertEquals(5, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_MEMBERS => [
+                [
+                    self::HH_MEMBER_GENDER => PersonGender::FEMALE,
+                    self::HH_MEMBER_BIRTH_DATE => new DateTime('-44 years'),
+                    self::HH_MEMBER_VULNERABILITY => VulnerabilityCriterion::CRITERION_PREGNANT
+                ]
+            ]
+        ]);
+        $result = $this->rulesCalculation->hhMembersVulnerability($household, $rule);
+        $this->assertEquals(2, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_MEMBERS => [
+                [
+                    self::HH_MEMBER_GENDER => PersonGender::MALE,
+                    self::HH_MEMBER_BIRTH_DATE => new DateTime('-44 years'),
+                    self::HH_MEMBER_VULNERABILITY => VulnerabilityCriterion::CRITERION_NO_VULNERABILITY
+                ]
+            ]
+        ]);
+        $result = $this->rulesCalculation->hhMembersVulnerability($household, $rule);
+        $this->assertEquals(0, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_MEMBERS => [
+                [
+                    self::HH_MEMBER_GENDER => PersonGender::FEMALE,
+                    self::HH_MEMBER_BIRTH_DATE => new DateTime('-44 years'),
+                    self::HH_MEMBER_VULNERABILITY => 'neco jineho'
+                ]
+            ]
+        ]);
+        $result = $this->rulesCalculation->hhMembersVulnerability($household, $rule);
+        $this->assertEquals(0, $result);
     }
 
     public function testShelterType()
     {
-        $household = $this->getStandardSyrHousehold();
         $scoring = $this->getStandardSyrScoring();
         $rule = $scoring->getRuleByFieldName(ScoringRulesEnum::SHELTER_TYPE);
-        $result = $this->rulesCalculation->shelterType($household, $rule);
 
+        $household = $this->createCustomHousehold([self::HH_SHELTER_STATUS => HouseholdShelterStatus::TENT]);
+        $result = $this->rulesCalculation->shelterType($household, $rule);
         $this->assertEquals(4, $result);
+
+        $household = $this->createCustomHousehold([self::HH_SHELTER_STATUS => HouseholdShelterStatus::MAKESHIFT_SHELTER]);
+        $result = $this->rulesCalculation->shelterType($household, $rule);
+        $this->assertEquals(3, $result);
+
+        $household = $this->createCustomHousehold([self::HH_SHELTER_STATUS => HouseholdShelterStatus::TRANSITIONAL_SHELTER]);
+        $result = $this->rulesCalculation->shelterType($household, $rule);
+        $this->assertEquals(3, $result);
+
+        $household = $this->createCustomHousehold([self::HH_SHELTER_STATUS => HouseholdShelterStatus::HOUSE_APARTMENT_SEVERELY_DAMAGED]);
+        $result = $this->rulesCalculation->shelterType($household, $rule);
+        $this->assertEquals(4, $result);
+
+        $household = $this->createCustomHousehold([self::HH_SHELTER_STATUS => HouseholdShelterStatus::HOUSE_APARTMENT_MODERATELY_DAMAGED]);
+        $result = $this->rulesCalculation->shelterType($household, $rule);
+        $this->assertEquals(2, $result);
+
+        $household = $this->createCustomHousehold([self::HH_SHELTER_STATUS => HouseholdShelterStatus::HOUSE_APARTMENT_NOT_DAMAGED]);
+        $result = $this->rulesCalculation->shelterType($household, $rule);
+        $this->assertEquals(0, $result);
+
+        $household = $this->createCustomHousehold([self::HH_SHELTER_STATUS => HouseholdShelterStatus::ROOM_OR_SPACE_IN_PUBLIC_BUILDING]);
+        $result = $this->rulesCalculation->shelterType($household, $rule);
+        $this->assertEquals(2, $result);
+
+        $household = $this->createCustomHousehold([self::HH_SHELTER_STATUS => HouseholdShelterStatus::OTHER]);
+        $result = $this->rulesCalculation->shelterType($household, $rule);
+        $this->assertEquals(0, $result);
     }
 
     public function testProductiveAssets()
     {
-        $household = $this->getStandardSyrHousehold();
         $scoring = $this->getStandardSyrScoring();
         $rule = $scoring->getRuleByFieldName(ScoringRulesEnum::ASSETS);
-        $result = $this->rulesCalculation->productiveAssets($household, $rule);
 
+        $household = $this->createCustomHousehold([
+            self::HH_ASSETS => []
+        ]);
+        $result = $this->rulesCalculation->productiveAssets($household, $rule);
+        $this->assertEquals(-2, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_ASSETS => [
+                HouseholdAssets::AC,
+            ]
+        ]);
+        $result = $this->rulesCalculation->productiveAssets($household, $rule);
+        $this->assertEquals(-2, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_ASSETS => [
+                HouseholdAssets::AGRICULTURAL_LAND,
+                HouseholdAssets::CAR,
+            ]
+        ]);
+        $result = $this->rulesCalculation->productiveAssets($household, $rule);
+        $this->assertEquals(-3, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_ASSETS => [
+                HouseholdAssets::FLATSCREEN_TV,
+                HouseholdAssets::LIVESTOCK,
+                HouseholdAssets::MOTORBIKE,
+            ]
+        ]);
+        $result = $this->rulesCalculation->productiveAssets($household, $rule);
+        $this->assertEquals(-4, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_ASSETS => [
+                HouseholdAssets::FLATSCREEN_TV,
+                HouseholdAssets::LIVESTOCK,
+                HouseholdAssets::MOTORBIKE,
+                HouseholdAssets::WASHING_MACHINE
+            ]
+        ]);
+        $result = $this->rulesCalculation->productiveAssets($household, $rule);
+        $this->assertEquals(-5, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_ASSETS => [
+                HouseholdAssets::CAR,
+                HouseholdAssets::FLATSCREEN_TV,
+                HouseholdAssets::LIVESTOCK,
+                HouseholdAssets::MOTORBIKE,
+                HouseholdAssets::WASHING_MACHINE
+            ]
+        ]);
+        $result = $this->rulesCalculation->productiveAssets($household, $rule);
         $this->assertEquals(-6, $result);
     }
 
     public function testCsi()
     {
-        $household = $this->getStandardSyrHousehold();
         $scoring = $this->getStandardSyrScoring();
         $rule = $scoring->getRuleByFieldName(ScoringRulesEnum::CSI);
-        $result = $this->rulesCalculation->csi($household, $rule);
 
+        $household = $this->createCustomHousehold([self::HH_CSI => 0]);
+        $result = $this->rulesCalculation->csi($household, $rule);
+        $this->assertEquals(0, $result);
+
+        $household = $this->createCustomHousehold([self::HH_CSI => 19]);
+        $result = $this->rulesCalculation->csi($household, $rule);
+        $this->assertEquals(0, $result);
+
+        $household = $this->createCustomHousehold([self::HH_CSI => 20]);
+        $result = $this->rulesCalculation->csi($household, $rule);
         $this->assertEquals(2, $result);
+
+        $household = $this->createCustomHousehold([self::HH_CSI => 29]);
+        $result = $this->rulesCalculation->csi($household, $rule);
+        $this->assertEquals(2, $result);
+
+        $household = $this->createCustomHousehold([self::HH_CSI => 30]);
+        $result = $this->rulesCalculation->csi($household, $rule);
+        $this->assertEquals(4, $result);
+
+        $household = $this->createCustomHousehold([self::HH_CSI => 39]);
+        $result = $this->rulesCalculation->csi($household, $rule);
+        $this->assertEquals(4, $result);
+
+        $household = $this->createCustomHousehold([self::HH_CSI => 40]);
+        $result = $this->rulesCalculation->csi($household, $rule);
+        $this->assertEquals(6, $result);
+
+        $household = $this->createCustomHousehold([self::HH_CSI => 19999]);
+        $result = $this->rulesCalculation->csi($household, $rule);
+        $this->assertEquals(6, $result);
     }
 
     public function testIncomeSpentOnFood()
@@ -288,55 +656,67 @@ class RulesCalculationTest extends KernelTestCase
         $scoring = $this->getStandardSyrScoring();
         $rule = $scoring->getRuleByFieldName(ScoringRulesEnum::DEBT);
 
-        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 0]);
+        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 1]);
         $result = $this->rulesCalculation->debt($household, $rule);
         $this->assertEquals(1, $result);
 
-        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 4999]);
-        $result = $this->rulesCalculation->debt($household, $rule);
-        $this->assertEquals(1, $result);
-
-        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 5000]);
+        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 2]);
         $result = $this->rulesCalculation->debt($household, $rule);
         $this->assertEquals(2, $result);
 
-        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 19999]);
-        $result = $this->rulesCalculation->debt($household, $rule);
-        $this->assertEquals(2, $result);
-
-        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 20000]);
+        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 3]);
         $result = $this->rulesCalculation->debt($household, $rule);
         $this->assertEquals(3, $result);
 
-        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 59999]);
-        $result = $this->rulesCalculation->debt($household, $rule);
-        $this->assertEquals(3, $result);
-
-        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 60000]);
+        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 4]);
         $result = $this->rulesCalculation->debt($household, $rule);
         $this->assertEquals(4, $result);
 
-        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 99999]);
-        $result = $this->rulesCalculation->debt($household, $rule);
-        $this->assertEquals(4, $result);
-
-        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 100000]);
-        $result = $this->rulesCalculation->debt($household, $rule);
-        $this->assertEquals(5, $result);
-
-        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 99999999]);
+        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 5]);
         $result = $this->rulesCalculation->debt($household, $rule);
         $this->assertEquals(5, $result);
     }
 
     public function testAssistanceProvided()
     {
-        $household = $this->getStandardSyrHousehold();
         $scoring = $this->getStandardSyrScoring();
         $rule = $scoring->getRuleByFieldName(ScoringRulesEnum::ASSISTANCE_PROVIDED);
-        $result = $this->rulesCalculation->assistanceProvided($household, $rule);
 
+        $household = $this->createCustomHousehold([
+            self::HH_SUPPORT_DATE_RECEIVED => new DateTime('-2 months'),
+            self::HH_SUPPORT_RECEIVED_TYPES => [
+                HouseholdSupportReceivedType::MPCA,
+                HouseholdSupportReceivedType::CASH_FOR_WORK,
+                HouseholdSupportReceivedType::FOOD_KIT,
+                HouseholdSupportReceivedType::FOOD_VOUCHER,
+                HouseholdSupportReceivedType::HYGIENE_KIT,
+                HouseholdSupportReceivedType::SHELTER_KIT,
+                HouseholdSupportReceivedType::SHELTER_RECONSTRUCTION_SUPPORT,
+                HouseholdSupportReceivedType::NON_FOOD_ITEMS,
+                HouseholdSupportReceivedType::LIVELIHOODS_SUPPORT,
+                HouseholdSupportReceivedType::VOCATIONAL_TRAINING,
+            ],
+        ]);
+        $result = $this->rulesCalculation->assistanceProvided($household, $rule);
         $this->assertEquals(-30, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_SUPPORT_DATE_RECEIVED => new DateTime('-3 months'),
+            self::HH_SUPPORT_RECEIVED_TYPES => [
+                HouseholdSupportReceivedType::MPCA,
+                HouseholdSupportReceivedType::CASH_FOR_WORK,
+                HouseholdSupportReceivedType::FOOD_KIT,
+                HouseholdSupportReceivedType::FOOD_VOUCHER,
+                HouseholdSupportReceivedType::HYGIENE_KIT,
+                HouseholdSupportReceivedType::SHELTER_KIT,
+                HouseholdSupportReceivedType::SHELTER_RECONSTRUCTION_SUPPORT,
+                HouseholdSupportReceivedType::NON_FOOD_ITEMS,
+                HouseholdSupportReceivedType::LIVELIHOODS_SUPPORT,
+                HouseholdSupportReceivedType::VOCATIONAL_TRAINING,
+            ],
+        ]);
+        $result = $this->rulesCalculation->assistanceProvided($household, $rule);
+        $this->assertEquals(0, $result);
     }
     
     private function getStandardSyrScoring(): Scoring
@@ -403,16 +783,16 @@ class RulesCalculationTest extends KernelTestCase
         $rules[] = $scoringRule;
 
         $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesEnum::HH_HEAD_GENDER, 'Gender of Head of Household');
-        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::GENDER_FEMALE, 3));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::GENDER_FEMALE, 4));
         $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::GENDER_MALE, 1));
         $rules[] = $scoringRule;
 
         $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesEnum::DEBT, 'Debt');
-        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::DEBT_0_5000, 1));
-        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::DEBT_5000_20000, 2));
-        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::DEBT_20000_60000, 3));
-        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::DEBT_60000_100000, 4));
-        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::DEBT_100000_MORE, 5));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::DEBT_LEVEL_1, 1));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::DEBT_LEVEL_2, 2));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::DEBT_LEVEL_3, 3));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::DEBT_LEVEL_4, 4));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleOptionsEnum::DEBT_LEVEL_5, 5));
         $rules[] = $scoringRule;
 
         $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesEnum::ASSISTANCE_PROVIDED, 'Assistance Provided in the Last 3 Months');
@@ -521,15 +901,15 @@ class RulesCalculationTest extends KernelTestCase
 
         $household = new Household();
 
-        if(array_key_exists(self::HH_MEMBER,$params) && is_array($params[self::HH_MEMBER])) {
-            foreach ($params[self::HH_MEMBER] as $member) {
+        if(array_key_exists(self::HH_MEMBERS,$params) && is_array($params[self::HH_MEMBERS])) {
+            foreach ($params[self::HH_MEMBERS] as $member) {
                 $beneficiary = new Beneficiary();
 
                 $beneficiary->setHead($member[self::HH_MEMBER_HEAD] ?? false);
-                $beneficiary->getPerson()->setGender($member[self::HH_MEMBER_GENDER] ?? PersonGender::FEMALE);
-                $beneficiary->getPerson()->setDateOfBirth($member[self::HH_MEMBER_BIRTH_DATE] ?? ((new DateTime())->modify('-60 year')->modify('-1 day')));
+                $beneficiary->getPerson()->setGender($member[self::HH_MEMBER_GENDER] ?? PersonGender::MALE);
+                $beneficiary->getPerson()->setDateOfBirth($member[self::HH_MEMBER_BIRTH_DATE] ?? (new DateTime('-44 year')));
 
-                if($member[self::HH_MEMBER_VULNERABILITY]) {
+                if(array_key_exists(self::HH_MEMBER_VULNERABILITY, $member)) {
                     $vulnerabilityCriteria = new ArrayCollection();
                     $vulnerabilityCriteria->add(new VulnerabilityCriterion($member[self::HH_MEMBER_VULNERABILITY]));
                     $beneficiary->setVulnerabilityCriteria($vulnerabilityCriteria);
@@ -576,7 +956,7 @@ class RulesCalculationTest extends KernelTestCase
 
         //assets
         if(array_key_exists(self::HH_ASSETS,$params) && is_array($params[self::HH_ASSETS])) {
-            $household->setAssets(self::HH_ASSETS);
+            $household->setAssets($params[self::HH_ASSETS]);
         }
 
         //csi

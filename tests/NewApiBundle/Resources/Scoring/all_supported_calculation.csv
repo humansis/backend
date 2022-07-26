@@ -62,14 +62,14 @@ calculation,fcs,Food consumption score,0 - 20,6
 ,,,21 - 35,4
 ,,,36+,1
 ,,,,
-calculation,hhHeadGender,Gender of Head of Household,Female,2
+calculation,hhHeadGender,Gender of Head of Household,Female,4
 ,,,Male,1
 ,,,,
-calculation,debt,Debt,0 - 4999,1
-,,,5000 - 19999,2
-,,,20000 - 59999,3
-,,,60000 - 99999,4
-,,,100000+,5
+calculation,debt,Debt,1,1
+,,,2,2
+,,,3,3
+,,,4,4
+,,,5,5
 ,,,,
 calculation,assistanceProvided,Assistance Provided in the Last 3 Months,MPCA,-3
 ,,,Cash for Work,-3

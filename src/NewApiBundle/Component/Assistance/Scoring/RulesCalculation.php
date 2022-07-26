@@ -429,27 +429,31 @@ final class RulesCalculation
 
     public function debt(Household $household, ScoringRule $rule): int
     {
-        $debt = $household->getDebtLevel();
+        $debtLevel = $household->getDebtLevel();
 
-        switch (true) {
-            case $debt < 5000:
-                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::DEBT_0_5000)->getScore();
+        switch ($debtLevel) {
+            case 1:
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::DEBT_LEVEL_1)->getScore();
                 break;
 
-            case $debt < 20000:
-                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::DEBT_5000_20000)->getScore();
+            case 2:
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::DEBT_LEVEL_2)->getScore();
                 break;
 
-            case $debt < 60000:
-                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::DEBT_20000_60000)->getScore();
+            case 3:
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::DEBT_LEVEL_3)->getScore();
                 break;
 
-            case $debt < 100000:
-                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::DEBT_60000_100000)->getScore();
+            case 4:
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::DEBT_LEVEL_4)->getScore();
+                break;
+
+            case 5:
+                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::DEBT_LEVEL_5)->getScore();
                 break;
 
             default:
-                $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::DEBT_100000_MORE)->getScore();
+                $result = 0;
         }
 
         return $result;

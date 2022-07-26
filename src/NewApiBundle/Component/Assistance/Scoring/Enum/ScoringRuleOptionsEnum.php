@@ -65,11 +65,11 @@ final class ScoringRuleOptionsEnum
     public const CONSUMPTION_BORDERLINE = '21 - 35';
     public const CONSUMPTION_ACCEPTABLE = '36+';
 
-    public const DEBT_0_5000 = '0 - 4999';
-    public const DEBT_5000_20000 = '5000 - 19999';
-    public const DEBT_20000_60000 = '20000 - 59999';
-    public const DEBT_60000_100000 = '60000 - 99999';
-    public const DEBT_100000_MORE = '100000+';
+    public const DEBT_LEVEL_1 = '1';
+    public const DEBT_LEVEL_2 = '2';
+    public const DEBT_LEVEL_3 = '3';
+    public const DEBT_LEVEL_4 = '4';
+    public const DEBT_LEVEL_5 = '5';
 
     public const GENDER_MALE = 'Male';
     public const GENDER_FEMALE = 'Female';
@@ -168,11 +168,11 @@ final class ScoringRuleOptionsEnum
         ],
 
         ScoringRulesEnum::DEBT => [
-            self::DEBT_0_5000,
-            self::DEBT_5000_20000,
-            self::DEBT_20000_60000,
-            self::DEBT_60000_100000,
-            self::DEBT_100000_MORE,
+            self::DEBT_LEVEL_1,
+            self::DEBT_LEVEL_2,
+            self::DEBT_LEVEL_3,
+            self::DEBT_LEVEL_4,
+            self::DEBT_LEVEL_5,
         ],
 
         ScoringRulesEnum::ASSISTANCE_PROVIDED => [
