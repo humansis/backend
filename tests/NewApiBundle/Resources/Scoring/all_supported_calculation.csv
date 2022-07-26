@@ -62,7 +62,7 @@ calculation,fcs,Food consumption score,0 - 20,6
 ,,,21 - 35,4
 ,,,36+,1
 ,,,,
-calculation,hhHeadGender,Gender of Head of Household,Female,3
+calculation,hhHeadGender,Gender of Head of Household,Female,2
 ,,,Male,1
 ,,,,
 calculation,debt,Debt,0 - 4999,1

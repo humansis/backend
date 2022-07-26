@@ -383,7 +383,7 @@ final class RulesCalculation
     {
         $isf = $household->getIncomeSpentOnFood();
         $income = $household->getIncome();
-        $isfRatio = (int)((float)$isf / $income * 100);
+        $isfRatio = $isf * 100 / $income;
 
         switch (true) {
             case $isfRatio < 50:
@@ -411,11 +411,11 @@ final class RulesCalculation
         $fcs = $household->getFoodConsumptionScore();
 
         switch (true) {
-            case $fcs <= 21:
+            case $fcs < 21:
                 $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::CONSUMPTION_POOR)->getScore();
                 break;
 
-            case $fcs <= 35:
+            case $fcs < 36:
                 $result = $rule->getOptionByValue(ScoringRuleOptionsEnum::CONSUMPTION_BORDERLINE)->getScore();
                 break;
 

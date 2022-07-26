@@ -24,6 +24,21 @@ use NewApiBundle\Enum\HouseholdSupportReceivedType;
 
 class RulesCalculationTest extends KernelTestCase
 {
+    const HH_SUPPORT_RECEIVED_TYPES = 'supportReceivedTypes';
+    const HH_SUPPORT_DATE_RECEIVED = 'supportDateReceived';
+    const HH_DEBT_LEVEL = 'debtLevel';
+    const HH_FCS = 'foodConsumptionScore';
+    const HH_ISF = 'incomeSpentOnFood';
+    const HH_INCOME = 'income';
+    const HH_CSI = 'copingStrategyIndex';
+    const HH_ASSETS = 'assets';
+    const HH_SHELTER_STATUS = 'shelterStatus';
+    const HH_MEMBER = 'member';
+    const HH_MEMBER_HEAD = 'hhMemberHead';
+    const HH_MEMBER_GENDER = 'hhMemberGender';
+    const HH_MEMBER_BIRTH_DATE = 'hhMemberBirthDate';
+    const HH_MEMBER_VULNERABILITY = 'hhMemberVulnerability';
+
     /** @var RulesCalculation */
     private $rulesCalculation;
 
@@ -178,32 +193,140 @@ class RulesCalculationTest extends KernelTestCase
 
     public function testIncomeSpentOnFood()
     {
-        $household = $this->getStandardSyrHousehold();
         $scoring = $this->getStandardSyrScoring();
         $rule = $scoring->getRuleByFieldName(ScoringRulesEnum::INCOME_SPENT_ON_FOOD);
-        $result = $this->rulesCalculation->incomeSpentOnFood($household, $rule);
 
+        $household = $this->createCustomHousehold([
+            self::HH_ISF => 0,
+            self::HH_INCOME => 100,
+        ]);
+        $result = $this->rulesCalculation->incomeSpentOnFood($household, $rule);
         $this->assertEquals(3, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_ISF => 49,
+            self::HH_INCOME => 100,
+        ]);
+        $result = $this->rulesCalculation->incomeSpentOnFood($household, $rule);
+        $this->assertEquals(3, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_ISF => 50,
+            self::HH_INCOME => 100,
+        ]);
+        $result = $this->rulesCalculation->incomeSpentOnFood($household, $rule);
+        $this->assertEquals(4, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_ISF => 64,
+            self::HH_INCOME => 100,
+        ]);
+        $result = $this->rulesCalculation->incomeSpentOnFood($household, $rule);
+        $this->assertEquals(4, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_ISF => 65,
+            self::HH_INCOME => 100,
+        ]);
+        $result = $this->rulesCalculation->incomeSpentOnFood($household, $rule);
+        $this->assertEquals(5, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_ISF => 74,
+            self::HH_INCOME => 100,
+        ]);
+        $result = $this->rulesCalculation->incomeSpentOnFood($household, $rule);
+        $this->assertEquals(5, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_ISF => 75,
+            self::HH_INCOME => 100,
+        ]);
+        $result = $this->rulesCalculation->incomeSpentOnFood($household, $rule);
+        $this->assertEquals(6, $result);
+
+        $household = $this->createCustomHousehold([
+            self::HH_ISF => 1000,
+            self::HH_INCOME => 100,
+        ]);
+        $result = $this->rulesCalculation->incomeSpentOnFood($household, $rule);
+        $this->assertEquals(6, $result);
     }
 
     public function testFoodConsumptionScore()
     {
-        $household = $this->getStandardSyrHousehold();
         $scoring = $this->getStandardSyrScoring();
         $rule = $scoring->getRuleByFieldName(ScoringRulesEnum::FCS);
-        $result = $this->rulesCalculation->fcs($household, $rule);
 
+        $household = $this->createCustomHousehold([self::HH_FCS => 0]);
+        $result = $this->rulesCalculation->fcs($household, $rule);
+        $this->assertEquals(6, $result);
+
+        $household = $this->createCustomHousehold([self::HH_FCS => 20]);
+        $result = $this->rulesCalculation->fcs($household, $rule);
+        $this->assertEquals(6, $result);
+
+        $household = $this->createCustomHousehold([self::HH_FCS => 21]);
+        $result = $this->rulesCalculation->fcs($household, $rule);
+        $this->assertEquals(4, $result);
+
+        $household = $this->createCustomHousehold([self::HH_FCS => 35]);
+        $result = $this->rulesCalculation->fcs($household, $rule);
+        $this->assertEquals(4, $result);
+
+        $household = $this->createCustomHousehold([self::HH_FCS => 36]);
+        $result = $this->rulesCalculation->fcs($household, $rule);
+        $this->assertEquals(1, $result);
+
+        $household = $this->createCustomHousehold([self::HH_FCS => 9999]);
+        $result = $this->rulesCalculation->fcs($household, $rule);
         $this->assertEquals(1, $result);
     }
 
     public function testDebt()
     {
-        $household = $this->getStandardSyrHousehold();
         $scoring = $this->getStandardSyrScoring();
         $rule = $scoring->getRuleByFieldName(ScoringRulesEnum::DEBT);
-        $result = $this->rulesCalculation->debt($household, $rule);
 
+        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 0]);
+        $result = $this->rulesCalculation->debt($household, $rule);
+        $this->assertEquals(1, $result);
+
+        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 4999]);
+        $result = $this->rulesCalculation->debt($household, $rule);
+        $this->assertEquals(1, $result);
+
+        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 5000]);
+        $result = $this->rulesCalculation->debt($household, $rule);
         $this->assertEquals(2, $result);
+
+        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 19999]);
+        $result = $this->rulesCalculation->debt($household, $rule);
+        $this->assertEquals(2, $result);
+
+        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 20000]);
+        $result = $this->rulesCalculation->debt($household, $rule);
+        $this->assertEquals(3, $result);
+
+        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 59999]);
+        $result = $this->rulesCalculation->debt($household, $rule);
+        $this->assertEquals(3, $result);
+
+        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 60000]);
+        $result = $this->rulesCalculation->debt($household, $rule);
+        $this->assertEquals(4, $result);
+
+        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 99999]);
+        $result = $this->rulesCalculation->debt($household, $rule);
+        $this->assertEquals(4, $result);
+
+        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 100000]);
+        $result = $this->rulesCalculation->debt($household, $rule);
+        $this->assertEquals(5, $result);
+
+        $household = $this->createCustomHousehold([self::HH_DEBT_LEVEL => 99999999]);
+        $result = $this->rulesCalculation->debt($household, $rule);
+        $this->assertEquals(5, $result);
     }
 
     public function testAssistanceProvided()
@@ -386,6 +509,109 @@ class RulesCalculationTest extends KernelTestCase
             HouseholdSupportReceivedType::VOCATIONAL_TRAINING,
         ]);
         $household->setSupportDateReceived(new DateTime('-1 month'));
+
+        return $household;
+    }
+
+    private function createCustomHousehold(array $params): Household
+    {
+        if (!$params || !is_array($params) || count($params) === 0) {
+            return $this->getStandardSyrHousehold();
+        }
+
+        $household = new Household();
+
+        if(array_key_exists(self::HH_MEMBER,$params) && is_array($params[self::HH_MEMBER])) {
+            foreach ($params[self::HH_MEMBER] as $member) {
+                $beneficiary = new Beneficiary();
+
+                $beneficiary->setHead($member[self::HH_MEMBER_HEAD] ?? false);
+                $beneficiary->getPerson()->setGender($member[self::HH_MEMBER_GENDER] ?? PersonGender::FEMALE);
+                $beneficiary->getPerson()->setDateOfBirth($member[self::HH_MEMBER_BIRTH_DATE] ?? ((new DateTime())->modify('-60 year')->modify('-1 day')));
+
+                if($member[self::HH_MEMBER_VULNERABILITY]) {
+                    $vulnerabilityCriteria = new ArrayCollection();
+                    $vulnerabilityCriteria->add(new VulnerabilityCriterion($member[self::HH_MEMBER_VULNERABILITY]));
+                    $beneficiary->setVulnerabilityCriteria($vulnerabilityCriteria);
+                }
+
+                $household->addBeneficiary($beneficiary);
+            }
+        } else {
+            //head
+            $beneficiary = new Beneficiary();
+            $beneficiary->setHead(true);
+            $beneficiary->getPerson()->setGender(PersonGender::FEMALE);
+            $beneficiary->getPerson()->setDateOfBirth((new DateTime())->modify('-60 year')->modify('-1 day'));
+            $vulnerabilityCriteria = new ArrayCollection();
+            $vulnerabilityCriteria->add(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_DISABLED));
+            $beneficiary->setVulnerabilityCriteria($vulnerabilityCriteria);
+            $household->addBeneficiary($beneficiary);
+
+            //member
+            $beneficiary = new Beneficiary();
+            $beneficiary->setHead(false);
+            $beneficiary->getPerson()->setGender(PersonGender::MALE);
+            $beneficiary->getPerson()->setDateOfBirth((new DateTime())->modify('-16 year'));
+            $vulnerabilityCriteria = new ArrayCollection();
+            $vulnerabilityCriteria->add(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL));
+            $beneficiary->setVulnerabilityCriteria($vulnerabilityCriteria);
+            $household->addBeneficiary($beneficiary);
+
+            //member
+            $beneficiary = new Beneficiary();
+            $beneficiary->setHead(false);
+            $beneficiary->getPerson()->setGender(PersonGender::FEMALE);
+            $beneficiary->getPerson()->setDateOfBirth((new DateTime())->modify('-16 year'));
+            $vulnerabilityCriteria = new ArrayCollection();
+            $vulnerabilityCriteria->add(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_LACTATING));
+            $beneficiary->setVulnerabilityCriteria($vulnerabilityCriteria);
+            $household->addBeneficiary($beneficiary);
+
+        }
+        //shelter type
+        if(array_key_exists(self::HH_SHELTER_STATUS,$params)) {
+            $household->setShelterStatus($params[self::HH_SHELTER_STATUS]);
+        }
+
+        //assets
+        if(array_key_exists(self::HH_ASSETS,$params) && is_array($params[self::HH_ASSETS])) {
+            $household->setAssets(self::HH_ASSETS);
+        }
+
+        //csi
+        if(array_key_exists(self::HH_CSI,$params)) {
+            $household->setCopingStrategiesIndex($params[self::HH_CSI]);
+        }
+
+        //income
+        if(array_key_exists(self::HH_INCOME,$params)) {
+            $household->setIncome($params[self::HH_INCOME]);
+        }
+
+        //income spent on food
+        if(array_key_exists(self::HH_ISF,$params)) {
+            $household->setIncomeSpentOnFood($params[self::HH_ISF]);
+        }
+
+        //food consumption score
+        if(array_key_exists(self::HH_FCS,$params)) {
+            $household->setFoodConsumptionScore($params[self::HH_FCS]);
+        }
+
+        //debt
+        if(array_key_exists(self::HH_DEBT_LEVEL,$params)) {
+            $household->setDebtLevel($params[self::HH_DEBT_LEVEL]);
+        }
+
+        //assistance provided in the last 3 months
+        if(array_key_exists(self::HH_SUPPORT_RECEIVED_TYPES,$params) && is_array($params[self::HH_SUPPORT_RECEIVED_TYPES])) {
+            $household->setSupportReceivedTypes($params[self::HH_SUPPORT_RECEIVED_TYPES]);
+        }
+
+        if(array_key_exists(self::HH_SUPPORT_DATE_RECEIVED,$params) && $params[self::HH_SUPPORT_DATE_RECEIVED] instanceof \DateTimeInterface) {
+            $household->setSupportDateReceived($params[self::HH_SUPPORT_DATE_RECEIVED]);
+        }
 
         return $household;
     }
