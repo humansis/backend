@@ -89,7 +89,8 @@ class ImportFinisher
         }
 
         $createdHousehold = $this->householdService->create(
-            $this->householdDecoratorBuilder->buildHouseholdInputType($item)
+            $this->householdDecoratorBuilder->buildHouseholdInputType($item),
+            $import->getCountryIso3()
         );
 
         /** @var ImportHouseholdDuplicity $acceptedDuplicity */
@@ -136,7 +137,7 @@ class ImportFinisher
         $householdUpdateInputType->setProjectIds($projects);
 
         $updatedHousehold = $acceptedDuplicity->getTheirs();
-        $this->householdService->update($updatedHousehold, $householdUpdateInputType);
+        $this->householdService->update($updatedHousehold, $householdUpdateInputType, $import->getCountryIso3());
 
         $this->linkHouseholdToQueue($import, $updatedHousehold, $acceptedDuplicity->getDecideBy());
         $this->logImportInfo($import, "Updated Household #{$updatedHousehold->getId()}");

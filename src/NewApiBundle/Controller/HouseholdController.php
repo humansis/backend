@@ -123,31 +123,33 @@ class HouseholdController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/households")
      *
+     * @param Request                  $request
      * @param HouseholdCreateInputType $inputType
      *
      * @return JsonResponse
+     * @throws \Exception
      */
-    public function create(HouseholdCreateInputType $inputType): JsonResponse
+    public function create(Request $request, HouseholdCreateInputType $inputType): JsonResponse
     {
-        $household = $this->householdService->create($inputType);
+        $household = $this->householdService->create($inputType, $this->getCountryCode($request));
         $this->getDoctrine()->getManager()->flush();
-
         return $this->json($household);
     }
 
     /**
      * @Rest\Put("/web-app/v1/households/{id}")
      *
+     * @param Request                  $request
      * @param Household                $household
      * @param HouseholdUpdateInputType $inputType
      *
      * @return JsonResponse
+     * @throws \Exception
      */
-    public function update(Household $household, HouseholdUpdateInputType $inputType): JsonResponse
+    public function update(Request $request, Household $household, HouseholdUpdateInputType $inputType): JsonResponse
     {
-        $object = $this->householdService->update($household, $inputType);
+        $object = $this->householdService->update($household, $inputType, $this->getCountryCode($request));
         $this->getDoctrine()->getManager()->flush();
-
         return $this->json($object);
     }
 
