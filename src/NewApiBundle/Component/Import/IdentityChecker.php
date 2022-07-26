@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\NationalId;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\Identity\NationalIdHashSet;
+use NewApiBundle\Component\Import\Integrity;
 use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
@@ -63,8 +64,23 @@ class IdentityChecker
             throw new \BadMethodCallException('Unable to execute checker. Import is not ready to check.');
         }
 
-        $IDsToFind = new NationalIdHashSet();
         $items = $this->queueRepository->getItemsToIdentityCheck($import, $batchSize);
+        $this->checkBatch($import, $items);
+    }
+
+    /**
+     * @param Import   $import
+     * @param ImportQueue[] $batch
+     *
+     * @throws \NewApiBundle\Enum\EnumValueNoFoundException
+     */
+    public function checkBatch(Import $import, iterable $items)
+    {
+        if (ImportState::IDENTITY_CHECKING !== $import->getState()) {
+            throw new \BadMethodCallException('Unable to execute checker. Import is not ready to check.');
+        }
+
+        $IDsToFind = new NationalIdHashSet();
         foreach ($items as $i => $item) {
             $this->extractItemIDs($item, $IDsToFind);
         }
@@ -84,7 +100,7 @@ class IdentityChecker
                 });
             }
         }
-
+        /** @var ImportQueue $item */
         foreach ($items as $item) {
             if (count($item->getHouseholdDuplicities()) > 0) {
                 $this->logImportWarning($item->getImport(), "Found duplicity!");
@@ -95,13 +111,12 @@ class IdentityChecker
 
                 //skip similarity check
                 $this->importQueueStateMachine->apply($item, ImportQueueTransitions::TO_CREATE);
+                $item->setSimilarityCheckedAt(new \DateTime());
             }
 
             $item->setIdentityCheckedAt(new \DateTime());
-            $this->entityManager->persist($item);
+            $this->queueRepository->save($item);
         }
-
-        $this->entityManager->flush();
     }
 
     /**

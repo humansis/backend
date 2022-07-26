@@ -168,6 +168,11 @@ services:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - NewApiBundle\Entity\Import
+            -
+    NewApiBundle\Repository\ImportFileRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\ImportFile
 
     NewApiBundle\Repository\ImportQueueRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
@@ -333,18 +338,20 @@ services:
             - "@doctrine.orm.entity_manager"
             - "@beneficiary.household_service"
             - '@monolog.logger.import'
-            - '@NewApiBundle\Component\Import\IntegrityChecker'
-            - '@NewApiBundle\Component\Import\ImportInvalidFileService'
-            - '@NewApiBundle\Component\Import\IdentityChecker'
-            - '@NewApiBundle\Component\Import\SimilarityChecker'
+
+    NewApiBundle\Component\Import\Messaging\Handler\ItemBatchHandler:
+        tags: [ 'messenger.message_handler' ]
+
+    NewApiBundle\Component\Import\Messaging\Handler\ImportCheckHandler:
+        tags: [ 'messenger.message_handler' ]
+
+    NewApiBundle\Component\Import\Messaging\Handler\UploadImportHandler:
+        tags: [ 'messenger.message_handler' ]
 
     NewApiBundle\Component\Import\UploadImportService:
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - '%import.uploadedFilesDirectory%'
-            - '@NewApiBundle\Component\Import\ImportFileValidator'
-            - '@NewApiBundle\Component\Import\Integrity\DuplicityService'
         public: true
+        arguments:
+            - '%import.uploadedFilesDirectory%'
 
     NewApiBundle\Component\Import\IntegrityChecker:
         arguments:
@@ -364,7 +371,6 @@ services:
 
     NewApiBundle\Component\Import\ImportFinisher:
         arguments:
-            - "%import.batch_size.finalization%"
             - "@doctrine.orm.entity_manager"
             - "@beneficiary.household_service"
             - '@monolog.logger.import'
@@ -379,8 +385,6 @@ services:
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@monolog.logger.import"
-            - '@NewApiBundle\Component\Import\IdentityChecker'
-            - '@NewApiBundle\Component\Import\SimilarityChecker'
 
     NewApiBundle\Component\Import\ImportInvalidFileService:
         public: true
@@ -440,38 +444,21 @@ services:
 
     workflow.import.integrity_subscriber:
         class: NewApiBundle\Event\Subscriber\Import\IntegritySubscriber
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - '@NewApiBundle\Component\Import\IntegrityChecker'
-            - '@NewApiBundle\Component\Import\ImportInvalidFileService'
-            - '%import.batch_size.integrity_check%'
         tags:
             - { name: kernel.event_subscriber }
 
     workflow.import.identity_subscriber:
         class: NewApiBundle\Event\Subscriber\Import\IdentitySubscriber
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - '@NewApiBundle\Component\Import\IdentityChecker'
-            - '%import.batch_size.identity_check%'
         tags:
             - { name: kernel.event_subscriber }
 
     workflow.import.similarity_subscriber:
         class: NewApiBundle\Event\Subscriber\Import\SimilaritySubscriber
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - '@NewApiBundle\Component\Import\SimilarityChecker'
-            - '%import.batch_size.similarity_check%'
         tags:
             - { name: kernel.event_subscriber }
 
     workflow.import.finisher_subscriber:
         class: NewApiBundle\Event\Subscriber\Import\FinishSubscriber
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - '@NewApiBundle\Component\Import\ImportFinisher'
-            - '@NewApiBundle\Component\Import\ImportReset'
         tags:
             - { name: kernel.event_subscriber }
 

@@ -2,17 +2,20 @@
 
 namespace NewApiBundle\Event\Subscriber\Import;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectRepository;
 use NewApiBundle\Component\Import\ImportInvalidFileService;
 use NewApiBundle\Component\Import\IntegrityChecker;
+use NewApiBundle\Component\Import\Messaging\Message\ImportCheck;
+use NewApiBundle\Component\Import\Messaging\Message\ItemBatch;
 use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportFile;
-use NewApiBundle\Entity\ImportQueue;
+use NewApiBundle\Enum\ImportQueueState;
+use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportTransitions;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Symfony\Component\Workflow\Event\CompletedEvent;
 use Symfony\Component\Workflow\Event\EnteredEvent;
 use Symfony\Component\Workflow\Event\Event;
@@ -21,10 +24,6 @@ use Symfony\Component\Workflow\TransitionBlocker;
 
 class IntegritySubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
 
     /**
      * @var IntegrityChecker
@@ -41,27 +40,25 @@ class IntegritySubscriber implements EventSubscriberInterface
      */
     private $importInvalidFileService;
 
-    /**
-     * @var int
-     */
-    private $batchSize;
+    /** @var MessageBusInterface */
+    private $messageBus;
 
     public function __construct(
-        EntityManagerInterface   $entityManager,
         IntegrityChecker         $integrityChecker,
         ImportInvalidFileService $importInvalidFileService,
-        int                      $batchSize
+        MessageBusInterface      $messageBus,
+        ImportQueueRepository    $queueRepository
     ) {
-        $this->entityManager = $entityManager;
         $this->integrityChecker = $integrityChecker;
-        $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
+        $this->queueRepository = $queueRepository;
         $this->importInvalidFileService = $importInvalidFileService;
-        $this->batchSize = $batchSize;
+        $this->messageBus = $messageBus;
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
+            'workflow.import.entered.'.ImportState::INTEGRITY_CHECKING => ['checkIntegrity'],
             'workflow.import.guard.'.ImportTransitions::COMPLETE_INTEGRITY => [
                 ['guardNothingLeft', -10],
                 ['guardNoItemsFailed', 10],
@@ -72,20 +69,37 @@ class IntegritySubscriber implements EventSubscriberInterface
                 ['guardSomeItemsFailedOrEmptyQueue', 20]
             ],
             'workflow.import.guard.'.ImportTransitions::REDO_INTEGRITY => ['guardSomeItemsLeft'],
-            // 'workflow.import.entered.'.ImportTransitions::CHECK_INTEGRITY => ['checkIntegrity'],
-            'workflow.import.completed.'.ImportTransitions::REDO_INTEGRITY => ['checkIntegrity'],
+            'workflow.import.completed.'.ImportTransitions::REDO_INTEGRITY => ['checkIntegrityAgain'],
             'workflow.import.entered.'.ImportTransitions::FAIL_INTEGRITY => ['generateFile'],
         ];
+    }
+
+    public function checkIntegrity(EnteredEvent $event): void
+    {
+        /** @var Import $import */
+        $import = $event->getSubject();
+        $this->fillQueue($import);
     }
 
     /**
      * @param CompletedEvent $enteredEvent
      */
-    public function checkIntegrity(CompletedEvent $enteredEvent): void
+    public function checkIntegrityAgain(CompletedEvent $enteredEvent): void
     {
         /** @var Import $import */
         $import = $enteredEvent->getSubject();
-        $this->integrityChecker->check($import, $this->batchSize);
+        $this->fillQueue($import);
+    }
+
+    private function fillQueue(Import $import)
+    {
+        foreach ($this->queueRepository->findBy([
+            'import' => $import,
+            'state' => ImportQueueState::NEW,
+        ]) as $item) {
+            $this->messageBus->dispatch(ItemBatch::checkSingleItemIntegrity($item));
+        }
+        $this->messageBus->dispatch(ImportCheck::checkIntegrityComplete($import), [new DelayStamp(5000)]);
     }
 
     /**

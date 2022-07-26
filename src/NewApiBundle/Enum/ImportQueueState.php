@@ -21,6 +21,7 @@ final class ImportQueueState
     const CREATED = 'Created';
     const UPDATED = 'Updated';
     const LINKED = 'Linked';
+    const IGNORED = 'Ignored';
     const ERROR = 'Error';
 
 
@@ -41,6 +42,7 @@ final class ImportQueueState
             self::CREATED,
             self::UPDATED,
             self::LINKED,
+            self::IGNORED,
             self::ERROR,
         ];
     }
@@ -51,7 +53,7 @@ final class ImportQueueState
             self::TO_CREATE,
             self::TO_UPDATE,
             self::TO_LINK,
-            //self::TO_IGNORE,
+            self::TO_IGNORE,
         ];
     }
 
@@ -61,6 +63,7 @@ final class ImportQueueState
             self::CREATED,
             self::UPDATED,
             self::LINKED,
+            self::IGNORED,
         ];
     }
 }

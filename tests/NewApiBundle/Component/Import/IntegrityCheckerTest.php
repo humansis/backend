@@ -24,7 +24,7 @@ class IntegrityCheckerTest extends KernelTestCase
     /** @var EntityManagerInterface */
     private static $entityManager;
 
-    /** @var IntegrityChecker */
+    /** @var \NewApiBundle\Component\Import\IntegrityChecker */
     private static $integrityChecker;
 
     /** @var DuplicityService */

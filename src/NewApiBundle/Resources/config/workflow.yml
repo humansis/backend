@@ -71,6 +71,8 @@ framework:
       initial_marking: !php/const NewApiBundle\Enum\ImportState::NEW
       places:
         - !php/const NewApiBundle\Enum\ImportState::NEW
+        - !php/const NewApiBundle\Enum\ImportState::UPLOADING
+        - !php/const NewApiBundle\Enum\ImportState::UPLOAD_FAILED
         - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECKING
         - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_CORRECT
         - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_FAILED
@@ -85,10 +87,21 @@ framework:
         - !php/const NewApiBundle\Enum\ImportState::CANCELED
       transitions:
 
+        # Upload
+        !php/const NewApiBundle\Workflow\ImportTransitions::UPLOAD:
+          from:
+            - !php/const NewApiBundle\Enum\ImportState::NEW
+            - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_CORRECT
+            - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_FAILED
+          to: !php/const NewApiBundle\Enum\ImportState::UPLOADING
+        !php/const NewApiBundle\Workflow\ImportTransitions::FAIL_UPLOAD:
+          from: !php/const NewApiBundle\Enum\ImportState::UPLOADING
+          to: !php/const NewApiBundle\Enum\ImportState::UPLOAD_FAILED
+
         # INTEGRITY
         !php/const NewApiBundle\Workflow\ImportTransitions::CHECK_INTEGRITY:
           from:
-            - !php/const NewApiBundle\Enum\ImportState::NEW
+            - !php/const NewApiBundle\Enum\ImportState::UPLOADING
             - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_FAILED
           to: !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECKING
         !php/const NewApiBundle\Workflow\ImportTransitions::COMPLETE_INTEGRITY:
@@ -157,6 +170,7 @@ framework:
         !php/const NewApiBundle\Workflow\ImportTransitions::CANCEL:
           from:
             - !php/const NewApiBundle\Enum\ImportState::NEW
+            - !php/const NewApiBundle\Enum\ImportState::UPLOAD_FAILED
             - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECKING
             - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_CORRECT
             - !php/const NewApiBundle\Enum\ImportState::INTEGRITY_CHECK_FAILED
@@ -191,6 +205,7 @@ framework:
         - !php/const NewApiBundle\Enum\ImportQueueState::CREATED
         - !php/const NewApiBundle\Enum\ImportQueueState::UPDATED
         - !php/const NewApiBundle\Enum\ImportQueueState::LINKED
+        - !php/const NewApiBundle\Enum\ImportQueueState::IGNORED
         - !php/const NewApiBundle\Enum\ImportQueueState::ERROR
       transitions:
 
@@ -281,6 +296,10 @@ framework:
             - !php/const NewApiBundle\Enum\ImportQueueState::TO_IGNORE
             - !php/const NewApiBundle\Enum\ImportQueueState::TO_LINK
           to: !php/const NewApiBundle\Enum\ImportQueueState::LINKED
+        !php/const NewApiBundle\Workflow\ImportQueueTransitions::IGNORE:
+          from:
+            - !php/const NewApiBundle\Enum\ImportQueueState::TO_IGNORE
+          to: !php/const NewApiBundle\Enum\ImportQueueState::IGNORED
 
         # errors, from ALL states where is anything happening
         !php/const NewApiBundle\Workflow\ImportQueueTransitions::FAIL_UNEXPECTED:

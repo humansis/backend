@@ -152,55 +152,15 @@ class ImportController extends AbstractController
     /**
      * @Rest\Patch("/web-app/v1/imports/{id}")
      *
-     * @param Entity\Import               $import
+     * @param Request               $request
+     * @param Entity\Import         $import
      * @param Import\PatchInputType $inputType
      *
      * @return JsonResponse
-     * @throws \Exception
      */
     public function updateStatus(Request $request, Entity\Import $import, Import\PatchInputType $inputType): JsonResponse
     {
         $this->importService->patch($import, $inputType);
-
-        if ($request->get(self::DISABLE_CRON, false) === true) {
-            return $this->json(null, Response::HTTP_ACCEPTED);
-        }
-
-        $kernel = $this->get('kernel');
-        $application = new Application($kernel);
-        $application->setAutoExit(false);
-
-        $output = new BufferedOutput();
-        if ($import->getState() === ImportState::INTEGRITY_CHECKING) {
-            $command = new ArrayInput([
-                'command' => 'app:import:integrity',
-                'import' => $import->getId(),
-            ]);
-            $application->run($command, $output);
-            $application->run($command, $output);
-        }
-        if ($import->getState() === ImportState::IDENTITY_CHECKING) {
-            $command = new ArrayInput([
-                'command' => 'app:import:identity',
-                'import' => $import->getId(),
-            ]);
-            $application->run($command, $output);
-            $application->run($command, $output);
-        }
-        if ($import->getState() === ImportState::SIMILARITY_CHECKING) {
-            $command = new ArrayInput([
-                'command' => 'app:import:similarity',
-                'import' => $import->getId(),
-            ]);
-            $application->run($command, $output);
-            $application->run($command, $output);
-        }
-        if ($import->getState() === ImportState::IMPORTING && $import->getImportQueue()->count() <= ImportService::ASAP_LIMIT) {
-            $application->run(new ArrayInput([
-                'command' => 'app:import:finish',
-                'import' => $import->getId(),
-            ]), $output);
-        }
 
         return $this->json(null, Response::HTTP_ACCEPTED);
     }
@@ -264,11 +224,9 @@ class ImportController extends AbstractController
 
         $importFiles = [];
 
+        $this->importService->updateStatus($import, ImportState::UPLOADING);
         foreach ($files as $file) {
-            $importFiles[] = $uploadedFile = $this->uploadImportService->uploadFile($import, $file, $user);
-            if (empty($uploadedFile->getStructureViolations())) {
-                $this->uploadImportService->load($uploadedFile);
-            }
+            $importFiles[] = $this->uploadImportService->uploadFile($import, $file, $user);
         }
 
         return $this->json(new Paginator($importFiles));

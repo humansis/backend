@@ -6,6 +6,9 @@ networks:
     pma:
         external: false
 
+volumes:
+    consumercache:
+
 services:
     php:
         image: artifactory.quanti.cz/docker/humansis-php:test
@@ -16,6 +19,20 @@ services:
             - /opt/humansis/jwt:/var/www/html/app/config/jwt:ro
         networks:
             - backend
+        environment:
+            ENVIRONMENT: test
+
+    consumer:
+        image: artifactory.quanti.cz/docker/humansis-php:test
+        volumes:
+            - /opt/humansis/var/sessions:/var/www/html/var/sessions
+            - /opt/humansis/var/imports:/var/www/html/var/imports
+            - /opt/humansis/var/logs:/var/www/html/var/logs
+            - /opt/humansis/parameters.yml:/var/www/html/app/config/parameters.yml:ro
+        entrypoint: "php /var/www/html/bin/console messenger:consume incoming_big_data import --time-limit=3600 --limit=100"
+        networks:
+            - backend
+        restart: always
         environment:
             ENVIRONMENT: test
 

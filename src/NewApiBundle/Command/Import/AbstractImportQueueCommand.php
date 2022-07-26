@@ -88,16 +88,4 @@ abstract class AbstractImportQueueCommand extends Command
         $this->logger->info("$commandType will affect $count imports: ".implode(' ', $countryList));
     }
 
-    protected function tryTransitions(Import $import, array $transitions): void
-    {
-        foreach ($transitions as $transition) {
-            if ($this->importStateMachine->can($import, $transition)) {
-                $this->logImportInfo($import, "is going to '$transition'");
-                $this->importStateMachine->apply($import, $transition);
-                return;
-            } else {
-                $this->logImportTransitionConstraints($this->importStateMachine, $import, $transition);
-            }
-        }
-    }
 }

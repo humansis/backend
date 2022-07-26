@@ -10,8 +10,6 @@ use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportQueueTransitions;
-use NewApiBundle\Workflow\ImportTransitions;
-use NewApiBundle\Workflow\WorkflowTool;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 
@@ -68,13 +66,14 @@ class SimilarityChecker
     /**
      * @param ImportQueue $item
      */
-    protected function checkOne(ImportQueue $item): void
+    public function checkOne(ImportQueue $item): void
     {
         // similarity check missing, it will be implemented later
         $item->setSimilarityCheckedAt(new \DateTime());
         $this->importQueueStateMachine->apply($item, ImportQueueTransitions::TO_CREATE);
 
         $this->entityManager->persist($item);
+        $this->entityManager->flush();
     }
 
     /**

@@ -31,12 +31,7 @@ class UploadImportServiceTest extends KernelTestCase
             ->get('doctrine')
             ->getManager();
 
-        $this->uploadService = new UploadImportService(
-            $this->entityManager,
-            $kernel->getContainer()->getParameter('import.uploadedFilesDirectory'),
-            $kernel->getContainer()->get(ImportFileValidator::class),
-            $kernel->getContainer()->get(DuplicityService::class)
-        );
+        $this->uploadService = $kernel->getContainer()->get(UploadImportService::class);
     }
 
     protected function tearDown(): void
@@ -63,8 +58,7 @@ class UploadImportServiceTest extends KernelTestCase
 
         $file = new UploadedFile($uploadedFilePath, 'KHM-Import-2HH-3HHM-24HHM.ods', null, null, true);
 
-        $importFile = $this->uploadService->uploadFile($import, $file, $user);
-        $this->uploadService->load($importFile);
+        $this->uploadService->uploadFile($import, $file, $user);
 
         $queue = $this->entityManager->getRepository(\NewApiBundle\Entity\ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
 
