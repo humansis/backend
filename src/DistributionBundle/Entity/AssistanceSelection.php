@@ -23,11 +23,11 @@ class AssistanceSelection
     private $id;
 
     /**
-     * @var integer
+     * @var integer|null
      *
-     * @ORM\Column(name="threshold", type="integer", nullable=false)
+     * @ORM\Column(name="threshold", type="integer", nullable=true)
      */
-    private $threshold = 0;
+    private $threshold;
 
     /**
      * @var Collection|SelectionCriteria[]
@@ -50,9 +50,9 @@ class AssistanceSelection
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getThreshold(): int
+    public function getThreshold(): ?int
     {
         return $this->threshold;
     }
@@ -60,7 +60,7 @@ class AssistanceSelection
     /**
      * @param int $threshold
      */
-    public function setThreshold(int $threshold): void
+    public function setThreshold(?int $threshold): void
     {
         $this->threshold = $threshold;
     }

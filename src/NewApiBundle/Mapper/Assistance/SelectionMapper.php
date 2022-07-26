@@ -38,7 +38,7 @@ class SelectionMapper implements MapperInterface
         return $this->object->getId();
     }
 
-    public function getThreshold(): int
+    public function getThreshold(): ?int
     {
         return $this->object->getThreshold();
     }
