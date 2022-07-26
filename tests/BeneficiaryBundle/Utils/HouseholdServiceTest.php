@@ -125,7 +125,7 @@ class HouseholdServiceTest extends KernelTestCase
             $this->fail('Testing data are invalid');
         }
 
-        $household = $this->householdService->create($createData, 'KHM');
+        $household = $this->householdService->create($createData, 'ARM');
         $this->entityManager->flush();
 
         $this->assertNotNull($household);
@@ -210,7 +210,7 @@ class HouseholdServiceTest extends KernelTestCase
      */
     public function testUpdate($householdId)
     {
-        $countryCode = 'KHM';
+        $countryCode = 'ARM';
         $updateData = new HouseholdUpdateInputType();
         $updateData->setProjectIds([1,2]);
         $updateData->setAssets(["1", "3", 5]);
@@ -373,7 +373,7 @@ class HouseholdServiceTest extends KernelTestCase
         $beneficiaryInputType->setResidencyStatus(ResidencyStatus::RETURNEE);
         $householdCreateInputType->addBeneficiary($beneficiaryInputType);
 
-        $household = $this->householdService->create($householdCreateInputType, 'KHM');
+        $household = $this->householdService->create($householdCreateInputType, 'ARM');
         $this->entityManager->flush();
 
         $this->assertEquals(ResidencyStatus::RETURNEE, $household->getBeneficiaries()->first()->getResidencyStatus());
@@ -388,7 +388,7 @@ class HouseholdServiceTest extends KernelTestCase
 
         $householdUpdateInputType->setResidenceAddress($addressData);
 
-        $this->householdService->update($household, $householdUpdateInputType, 'KHM');
+        $this->householdService->update($household, $householdUpdateInputType, 'ARM');
         $this->entityManager->flush();
         $this->entityManager->refresh($household);
 

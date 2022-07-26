@@ -186,7 +186,7 @@ class HouseholdService
 
         // Or create a camp with the name in the request
         if (!$camp) {
-            $location = $this->locationService->getLocationByIdAndCountryCode($inputType->getLocationId(), $countryCode);
+            $location = $this->locationService->getLocationByIdAndCountryCode($inputType->getCamp()->getLocationId(), $countryCode);
             $camp = new Camp();
             $camp->setName($inputType->getCamp()->getName());
             $camp->setLocation($location);

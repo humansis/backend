@@ -37,7 +37,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
 
         $this->request('POST', '/api/basic/web-app/v1/households', [
             'livelihood' => Livelihood::IRREGULAR_EARNINGS,
-            'iso3' => 'KHM',
             'assets' => ['1'],
             'shelterStatus' => '1',
             'projectIds' => [$project->getId()],
@@ -144,6 +143,8 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 'type' => 'Landline',
                 'proxy' => true,
             ],
+        ],[], [
+            'HTTP_COUNTRY' => $location->getCountryISO3()
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -210,7 +211,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
 
         $this->request('PUT', '/api/basic/web-app/v1/households/'.$id, [
             'livelihood' => Livelihood::FARMING_AGRICULTURE,
-            'iso3' => 'KHM',
             'assets' => ['1', '2'],
             'shelterStatus' => '1',
             'projectIds' => [],
@@ -311,7 +311,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 'type' => 'Landline',
                 'proxy' => true,
             ],
-        ]);
+        ], [], [ 'HTTP_COUNTRY' => $location->getCountryISO3() ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
