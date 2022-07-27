@@ -201,7 +201,7 @@ class AssistanceDistributionService
         $amount = 0;
         try {
             $toDistribute = min($targetDistributionAmount, $totalUndistributedAmount);
-            $reliefPackage->addDistributedAmount($toDistribute);
+            $reliefPackage->addAmountOfDistributed($toDistribute);
             $this->startReliefPackageDistributionWorkflow($reliefPackage, $distributor);
             $amount = $toDistribute;
             $reliefPackage->isFullyDistributed() ? $distributeReliefPackageOutputType->addSuccessfullyDistributed($reliefPackage->getId(),
