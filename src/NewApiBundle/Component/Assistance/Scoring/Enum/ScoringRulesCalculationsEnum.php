@@ -15,7 +15,6 @@ final class ScoringRulesCalculationsEnum
     public const NO_OF_CHRONICALLY_ILL = 'noOfChronicallyIll';
     public const HH_HEAD_VULNERABILITY = 'hhHeadVulnerability';
     public const HH_MEMBERS_VULNERABILITY = 'hhMembersVulnerability';
-    public const SHELTER_TYPE = 'shelterType';
     public const ASSETS = 'productiveAssets';
     public const CSI = 'csi';
     public const INCOME_SPENT_ON_FOOD = 'incomeSpentOnFood';
@@ -34,7 +33,6 @@ final class ScoringRulesCalculationsEnum
             self::HH_HEAD_VULNERABILITY,
             self::HH_MEMBERS_VULNERABILITY,
             self::COMPLEX_DEPENDENCY_RATIO,
-            self::SHELTER_TYPE,
             self::ASSETS,
             self::CSI,
             self::INCOME_SPENT_ON_FOOD,

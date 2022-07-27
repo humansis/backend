@@ -427,44 +427,6 @@ class RulesCalculationTest extends KernelTestCase
         $this->assertEquals(0, $result);
     }
 
-    public function testShelterType()
-    {
-        $scoring = $this->getStandardSyrScoring();
-        $rule = $scoring->getRuleByFieldName(ScoringRulesCalculationsEnum::SHELTER_TYPE);
-
-        $household = $this->createCustomHousehold([self::HH_SHELTER_STATUS => HouseholdShelterStatus::TENT]);
-        $result = $this->rulesCalculation->shelterType($household, $rule);
-        $this->assertEquals(4, $result);
-
-        $household = $this->createCustomHousehold([self::HH_SHELTER_STATUS => HouseholdShelterStatus::MAKESHIFT_SHELTER]);
-        $result = $this->rulesCalculation->shelterType($household, $rule);
-        $this->assertEquals(3, $result);
-
-        $household = $this->createCustomHousehold([self::HH_SHELTER_STATUS => HouseholdShelterStatus::TRANSITIONAL_SHELTER]);
-        $result = $this->rulesCalculation->shelterType($household, $rule);
-        $this->assertEquals(3, $result);
-
-        $household = $this->createCustomHousehold([self::HH_SHELTER_STATUS => HouseholdShelterStatus::HOUSE_APARTMENT_SEVERELY_DAMAGED]);
-        $result = $this->rulesCalculation->shelterType($household, $rule);
-        $this->assertEquals(4, $result);
-
-        $household = $this->createCustomHousehold([self::HH_SHELTER_STATUS => HouseholdShelterStatus::HOUSE_APARTMENT_MODERATELY_DAMAGED]);
-        $result = $this->rulesCalculation->shelterType($household, $rule);
-        $this->assertEquals(2, $result);
-
-        $household = $this->createCustomHousehold([self::HH_SHELTER_STATUS => HouseholdShelterStatus::HOUSE_APARTMENT_NOT_DAMAGED]);
-        $result = $this->rulesCalculation->shelterType($household, $rule);
-        $this->assertEquals(0, $result);
-
-        $household = $this->createCustomHousehold([self::HH_SHELTER_STATUS => HouseholdShelterStatus::ROOM_OR_SPACE_IN_PUBLIC_BUILDING]);
-        $result = $this->rulesCalculation->shelterType($household, $rule);
-        $this->assertEquals(2, $result);
-
-        $household = $this->createCustomHousehold([self::HH_SHELTER_STATUS => HouseholdShelterStatus::OTHER]);
-        $result = $this->rulesCalculation->shelterType($household, $rule);
-        $this->assertEquals(0, $result);
-    }
-
     public function testProductiveAssets()
     {
         $scoring = $this->getStandardSyrScoring();
@@ -747,17 +709,6 @@ class RulesCalculationTest extends KernelTestCase
         $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::PREGNANT_LACTATING_FEMALE, 2));
         $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::NO_VULNERABILITY, 0));
         $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::OTHER, 0));
-        $rules[] = $scoringRule;
-
-        $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesCalculationsEnum::SHELTER_TYPE, 'Shelter type');
-        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::SHELTER_TENT, 4));
-        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::SHELTER_MAKESHIFT, 3));
-        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::SHELTER_TRANSITIONAL, 3));
-        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::SHELTER_SEVERELY_DAMAGED, 4));
-        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::SHELTER_MODERATELY_DAMAGED, 2));
-        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::SHELTER_NOT_DAMAGED, 0));
-        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::SHELTER_SHARED, 2));
-        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::SHELTER_OTHER, 0));
         $rules[] = $scoringRule;
 
         $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesCalculationsEnum::ASSETS, 'Productive Assets');

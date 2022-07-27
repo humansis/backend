@@ -35,15 +35,6 @@ final class ScoringRuleCalculationOptionsEnum
     public const VERY_HIGH_VULNERABILITY = 'Dependency ratio very high vulnerability';
     public const EXTREME_VULNERABILITY = 'Dependency ratio extreme vulnerability';
 
-    public const SHELTER_TENT = 'Tent';
-    public const SHELTER_MAKESHIFT = 'Makeshift Shelter';
-    public const SHELTER_TRANSITIONAL = 'Transitional Shelter';
-    public const SHELTER_SEVERELY_DAMAGED = 'House/Apartment - Severely Damaged';
-    public const SHELTER_MODERATELY_DAMAGED = 'House/Apartment - Moderately Damaged';
-    public const SHELTER_NOT_DAMAGED = 'House/Apartment - Good Condition';
-    public const SHELTER_SHARED = 'Room or Space in Shared Accommodation';
-    public const SHELTER_OTHER = 'Other';
-
     public const ASSETS_0_1 = '1 Asset';
     public const ASSETS_2 = '2 Assets';
     public const ASSETS_3 = '3 Assets';
@@ -120,17 +111,6 @@ final class ScoringRuleCalculationOptionsEnum
             self::HIGH_VULNERABILITY,
             self::VERY_HIGH_VULNERABILITY,
             self::EXTREME_VULNERABILITY,
-        ],
-
-        ScoringRulesCalculationsEnum::SHELTER_TYPE => [
-            self::SHELTER_TENT,
-            self::SHELTER_MAKESHIFT,
-            self::SHELTER_TRANSITIONAL,
-            self::SHELTER_SEVERELY_DAMAGED,
-            self::SHELTER_MODERATELY_DAMAGED,
-            self::SHELTER_NOT_DAMAGED,
-            self::SHELTER_SHARED,
-            self::SHELTER_OTHER,
         ],
 
         ScoringRulesCalculationsEnum::ASSETS => [
