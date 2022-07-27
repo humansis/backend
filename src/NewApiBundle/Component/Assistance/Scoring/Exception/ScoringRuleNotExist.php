@@ -1,8 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace NewApiBundle\Component\Assistance\Scoring\Exception;
 
-class ScoringRuleNotExist extends \Exception
+use Exception;
+
+class ScoringRuleNotExist extends Exception
 {
 
 }

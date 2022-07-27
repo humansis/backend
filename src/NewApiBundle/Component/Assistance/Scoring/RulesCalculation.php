@@ -65,6 +65,13 @@ final class RulesCalculation
         return 0;
     }
 
+    /**
+     * Dependency ratio will be adjusted and finished within issue https://jira.quanti.cz/browse/PIN-3622
+     *
+     * @param Household $household
+     * @param ScoringRule $rule
+     * @return int
+     */
     public function complexDependencyRatio(Household $household, ScoringRule $rule): int
     {
         $beneficiaries = $household->getBeneficiaries();
@@ -84,49 +91,49 @@ final class RulesCalculation
                     $children++;
                     break;
 
-                case $age < 60 && $isChronicallyIll:
+                case $age >= 18 && $age < 60 && $isChronicallyIll:
                     $adultsWorking++;
                     $adultsChronicallyIll++;
                     break;
 
-                case $age < 60 && $isDisabled:
+                case $age >= 18 && $age < 60 && $isDisabled:
                     $adultsWorking++;
                     $adultsDisabled++;
                     break;
 
-                case $age < 60:
+                case $age >= 18 && $age < 60:
                     $adultsWorking++;
                     break;
 
-                default:
+                case $age >= 60:
                     $adultsOver60++;
             }
         }
 
-        $ratio = ((float)($children + $adultsOver60 + $adultsDisabled + $adultsChronicallyIll)) / $adultsWorking;
+        $ratio = $adultsWorking > 0 ? ((float)($children + $adultsOver60 + $adultsDisabled + $adultsChronicallyIll)) / $adultsWorking : 0;
 
         switch (true) {
             case $ratio > 0 && $ratio <= 1:
                 $result = $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::VERY_LOW_VULNERABILITY)->getScore();
                 break;
 
-            case (int)$ratio === 2:
+            case Floats::compare($ratio, 2):
                 $result = $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::LOW_VULNERABILITY)->getScore();
                 break;
 
-            case (int)$ratio === 3:
+            case Floats::compare($ratio, 3):
                 $result = $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::MODERATE_VULNERABILITY)->getScore();
                 break;
 
-            case (int)$ratio === 4:
+            case Floats::compare($ratio, 4):
                 $result = $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::HIGH_VULNERABILITY)->getScore();
                 break;
 
-            case (int)$ratio === 5:
+            case Floats::compare($ratio, 5):
                 $result = $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::VERY_HIGH_VULNERABILITY)->getScore();
                 break;
 
-            case (int)$ratio === 0 || $ratio >= 6:
+            case $ratio === 0 || $ratio >= 6:
                 $result = $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::EXTREME_VULNERABILITY)->getScore();
                 break;
 
@@ -246,7 +253,7 @@ final class RulesCalculation
         return $totalScore;
     }
 
-    private function memberScoring(Beneficiary $beneficiary, $gender, $age, ScoringRule $rule): int
+    private function memberScoring(Beneficiary $beneficiary, string $gender, int $age, ScoringRule $rule): int
     {
         $result = 0;
         if($beneficiary->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED)) {
