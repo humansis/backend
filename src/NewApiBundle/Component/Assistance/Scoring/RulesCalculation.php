@@ -289,47 +289,6 @@ final class RulesCalculation
         return $result;
     }
 
-    public function shelterType(Household $household, ScoringRule $rule): int
-    {
-        $shelterStatus = $household->getShelterStatus();
-        switch ($shelterStatus) {
-            case HouseholdShelterStatus::TENT:
-                $result = $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::SHELTER_TENT)->getScore();
-                break;
-
-            case HouseholdShelterStatus::MAKESHIFT_SHELTER:
-                $result = $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::SHELTER_MAKESHIFT)->getScore();
-                break;
-
-            case HouseholdShelterStatus::TRANSITIONAL_SHELTER:
-                $result = $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::SHELTER_TRANSITIONAL)->getScore();
-                break;
-
-            case HouseholdShelterStatus::HOUSE_APARTMENT_SEVERELY_DAMAGED:
-                $result = $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::SHELTER_SEVERELY_DAMAGED)->getScore();
-                break;
-
-            case HouseholdShelterStatus::HOUSE_APARTMENT_MODERATELY_DAMAGED:
-                $result = $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::SHELTER_MODERATELY_DAMAGED)->getScore();
-                break;
-
-            case HouseholdShelterStatus::HOUSE_APARTMENT_NOT_DAMAGED:
-                $result = $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::SHELTER_NOT_DAMAGED)->getScore();
-                break;
-
-            case HouseholdShelterStatus::ROOM_OR_SPACE_IN_PUBLIC_BUILDING:
-                $result = $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::SHELTER_SHARED)->getScore();
-                break;
-
-            default:
-                $result = $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::SHELTER_OTHER)->getScore();
-                break;
-        }
-
-        return $result;
-
-    }
-
     public function productiveAssets(Household $household, ScoringRule $rule): int
     {
         $assetsNum = count($household->getAssets());
