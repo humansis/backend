@@ -5,6 +5,7 @@ namespace VoucherBundle\Repository;
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
+use NewApiBundle\InputType\Smartcard\ChangeSmartcardInputType;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Enum\SmartcardStates;
 
@@ -99,5 +100,44 @@ class SmartcardRepository extends EntityRepository
 
             return $smartcards[0];
         }
+    }
+
+    /**
+     * @param Smartcard $smartcard
+     *
+     * @return void
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function save(Smartcard $smartcard): void
+    {
+        $this->_em->persist($smartcard);
+        $this->_em->flush();
+    }
+
+    /**
+     * @param string                   $serialNumber
+     * @param ChangeSmartcardInputType $changeSmartcardInputType
+     *
+     * @return null|Smartcard
+     * @throws NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function findBySerialNumberAndChangeParameters(
+        string                   $serialNumber,
+        ChangeSmartcardInputType $changeSmartcardInputType
+    ): ?Smartcard {
+        $qb = $this->createQueryBuilder('s');
+        $qb->andWhere('s.serialNumber = :serialNumber')
+            ->andWhere('s.state = :state')
+            ->andWhere('s.changedAt = :changedAt')
+            ->setMaxResults(1)
+            ->setParameters([
+                'serialNumber' => $serialNumber,
+                'state' => $changeSmartcardInputType->getState(),
+                'changedAt' => $changeSmartcardInputType->getCreatedAt(),
+            ]);
+
+        return $qb->getQuery()->getSingleResult();
     }
 }

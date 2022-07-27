@@ -3,24 +3,21 @@
 namespace VoucherBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use DateTime;
+use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use DateTimeInterface;
 use DistributionBundle\Entity\AssistanceBeneficiary;
-use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use Doctrine\ORM\EntityManager;
+use NewApiBundle\Component\Smartcard\Exception\SmartcardDoubledChangeException;
+use NewApiBundle\Component\Smartcard\Exception\SmartcardDoubledRegistrationException;
+use NewApiBundle\Component\Smartcard\Exception\SmartcardNotAllowedStateTransition;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\Smartcard\PreliminaryInvoice;
-use NewApiBundle\Enum\CacheTarget;
-use NewApiBundle\Enum\ReliefPackageState;
+use NewApiBundle\InputType\Smartcard\ChangeSmartcardInputType;
+use NewApiBundle\InputType\Smartcard\SmartcardRegisterInputType;
 use NewApiBundle\InputType\SmartcardPurchaseInputType;
-use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
-use NewApiBundle\Workflow\ReliefPackageTransitions;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Repository\ProjectRepository;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Workflow\Registry;
-use Symfony\Contracts\Cache\CacheInterface;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
@@ -33,6 +30,7 @@ use VoucherBundle\InputType\SmartcardPurchaseDeprecated as SmartcardPurchaseDepr
 use VoucherBundle\Model\PurchaseService;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
 use VoucherBundle\InputType\SmartcardInvoice as RedemptionBatchInput;
+use VoucherBundle\Repository\SmartcardRepository;
 
 class SmartcardService
 {
@@ -42,208 +40,128 @@ class SmartcardService
     /** @var PurchaseService */
     private $purchaseService;
 
-    /** @var Registry $workflowRegistry */
-    private $workflowRegistry;
-
-    /** @var LoggerInterface  */
-    private $logger;
+    /**
+     * @var SmartcardRepository
+     */
+    private $smartcardRepository;
 
     /**
-     * @var CacheInterface
+     * @var SmartcardPurchaseRepository
      */
-    private $cache;
+    private $smartcardPurchaseRepository;
 
     /**
-     * @var AssistanceBeneficiaryRepository
+     * @var BeneficiaryRepository
      */
-    private $assistanceBeneficiaryRepository;
+    private $beneficiaryRepository;
 
     /**
-     * @var ReliefPackageRepository
+     * @var ProjectRepository
      */
-    private $reliefPackageRepository;
+    private $projectRepository;
 
     public function __construct(
-        EntityManager                   $em,
-        PurchaseService                 $purchaseService,
-        Registry                        $workflowRegistry,
-        LoggerInterface                 $logger,
-        CacheInterface                  $cache,
-        AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository,
-        ReliefPackageRepository         $reliefPackageRepository
+        EntityManager               $em,
+        PurchaseService             $purchaseService,
+        SmartcardRepository         $smartcardRepository,
+        SmartcardPurchaseRepository $smartcardPurchaseRepository,
+        BeneficiaryRepository       $beneficiaryRepository,
+        ProjectRepository           $projectRepository
     ) {
         $this->em = $em;
         $this->purchaseService = $purchaseService;
-        $this->workflowRegistry = $workflowRegistry;
-        $this->logger = $logger;
-        $this->cache = $cache;
-        $this->assistanceBeneficiaryRepository = $assistanceBeneficiaryRepository;
-        $this->reliefPackageRepository = $reliefPackageRepository;
+        $this->smartcardRepository = $smartcardRepository;
+        $this->smartcardPurchaseRepository = $smartcardPurchaseRepository;
+        $this->beneficiaryRepository = $beneficiaryRepository;
+        $this->projectRepository = $projectRepository;
     }
 
-    public function register(string $serialNumber, string $beneficiaryId, DateTime $createdAt): Smartcard
+    /**
+     * @param Smartcard                $smartcard
+     * @param ChangeSmartcardInputType $changeSmartcardInputType
+     *
+     * @return void
+     * @throws SmartcardDoubledChangeException
+     * @throws SmartcardNotAllowedStateTransition
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function change(Smartcard $smartcard, ChangeSmartcardInputType $changeSmartcardInputType): void
+    {
+        $this->checkDoubledChange($smartcard, $changeSmartcardInputType);
+
+        if ($smartcard->getState() !== $changeSmartcardInputType->getState()) {
+            if (!SmartcardStates::isTransitionAllowed($smartcard->getState(), $changeSmartcardInputType->getState())) {
+                throw new SmartcardNotAllowedStateTransition($smartcard, $changeSmartcardInputType->getState(),
+                    "Not allowed transition from state {$smartcard->getState()} to {$changeSmartcardInputType->getState()}.");
+            }
+            $smartcard->setState($changeSmartcardInputType->getState());
+            $smartcard->setChangedAt($changeSmartcardInputType->getCreatedAt());
+            $this->smartcardRepository->save($smartcard);
+        }
+    }
+
+    /**
+     * @param Smartcard                $smartcard
+     * @param ChangeSmartcardInputType $changeSmartcardInputType
+     *
+     * @return void
+     * @throws SmartcardDoubledChangeException
+     */
+    private function checkDoubledChange(Smartcard $smartcard, ChangeSmartcardInputType $changeSmartcardInputType): void
+    {
+        if (is_null($smartcard->getChangedAt())) {
+            return;
+        }
+        if ($smartcard->getChangedAt()->getTimestamp() === $changeSmartcardInputType->getCreatedAt()->getTimestamp() &&
+            $smartcard->getState() === $changeSmartcardInputType->getState()) {
+            throw new SmartcardDoubledChangeException($smartcard);
+        }
+    }
+
+    /**
+     * @param SmartcardRegisterInputType $registerInputType
+     *
+     * @return Smartcard
+     * @throws SmartcardDoubledRegistrationException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function register(SmartcardRegisterInputType $registerInputType): Smartcard
     {
         /** @var Beneficiary $beneficiary */
-        $beneficiary = $this->em->getRepository(Beneficiary::class)->find($beneficiaryId);
-        $smartcard = $this->getActualSmartcard($serialNumber, $beneficiary, $createdAt);
+        $beneficiary = $this->beneficiaryRepository->find($registerInputType->getBeneficiaryId());
+        $smartcard = $this->getActualSmartcard($registerInputType->getSerialNumber(), $beneficiary, $registerInputType->getCreatedAt());
+        $this->checkSmartcardRegistrationDuplicity($smartcard, $registerInputType->getCreatedAt());
         $smartcard->setSuspicious(false, null);
+        $smartcard->setRegisteredAt($registerInputType->getCreatedAt());
 
         if ($beneficiary) {
             $smartcard->setBeneficiary($beneficiary);
         } else {
-            $smartcard->setSuspicious(true, "Beneficiary #$beneficiaryId does not exists");
+            $smartcard->setSuspicious(true, "Beneficiary #{$registerInputType->getBeneficiaryId()} does not exists");
         }
 
-        $this->em->persist($smartcard);
-        $this->em->flush();
+        $this->smartcardRepository->save($smartcard);
+
         return $smartcard;
     }
 
     /**
-     * @param string                $serialNumber
-     * @param int                   $beneficiaryId
-     * @param int                   $assistanceId
-     * @param string|int|float      $value
-     * @param string|int|float|null $balanceBefore
-     * @param DateTimeInterface     $distributedAt
-     * @param User                  $user
+     * @param Smartcard         $smartcard
+     * @param DateTimeInterface $registrationDateTime
      *
-     * @return SmartcardDeposit
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Psr\Cache\InvalidArgumentException
+     * @return void
+     * @throws SmartcardDoubledRegistrationException
      */
-    public function depositLegacy(
-        string $serialNumber,
-        int $beneficiaryId,
-        int $assistanceId,
-        $value,
-        $balanceBefore,
-        DateTimeInterface $distributedAt,
-        User $user
-    ): SmartcardDeposit {
-        $target = $this->assistanceBeneficiaryRepository->findOneBy([
-            'assistance' => $assistanceId,
-            'beneficiary' => $beneficiaryId,
-        ], ['id' => 'asc']);
-
-        if (null == $target) {
-            throw new NotFoundHttpException("No beneficiary #$beneficiaryId in assistance #$assistanceId");
+    private function checkSmartcardRegistrationDuplicity(Smartcard $smartcard, DateTimeInterface $registrationDateTime): void
+    {
+        if (is_null($smartcard->getRegisteredAt())) {
+            return;
         }
-
-        //TODO rewrite deposit function
-
-        // try to find relief package with correct state
-        $reliefPackage = $this->reliefPackageRepository->findForSmartcardByAssistanceBeneficiary($target, ReliefPackageState::TO_DISTRIBUTE);
-
-        // try to find relief package with incorrect state but created before distribution date
-        if (!$reliefPackage) {
-            $reliefPackage = $this->reliefPackageRepository->findForSmartcardByAssistanceBeneficiary($target, null, $distributedAt);
+        if ($smartcard->getRegisteredAt()->getTimestamp() === $registrationDateTime->getTimestamp()) {
+            throw new SmartcardDoubledRegistrationException($smartcard);
         }
-
-        // try to find any relief package for distribution
-        if (!$reliefPackage) {
-            $reliefPackage = $this->reliefPackageRepository->findForSmartcardByAssistanceBeneficiary($target);
-        }
-
-        if (!$reliefPackage) {
-            $message = "Nothing to distribute for beneficiary #$beneficiaryId in assistance #$assistanceId";
-            $this->logger->warning($message);
-            throw new NotFoundHttpException($message);
-        }
-
-        return $this->deposit($serialNumber, $reliefPackage->getId(), $value, $balanceBefore, $distributedAt, $user);
-    }
-
-    /**
-     * @param string                $serialNumber
-     * @param int                   $reliefPackageId
-     * @param string|int|float      $value
-     * @param string|int|float|null $balance
-     * @param DateTimeInterface     $distributedAt
-     * @param User                  $user
-     *
-     * @return SmartcardDeposit
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Psr\Cache\InvalidArgumentException
-     */
-    public function deposit(
-        string            $serialNumber,
-        int               $reliefPackageId,
-                          $value,
-                          $balance,
-        DateTimeInterface $distributedAt,
-        User              $user
-    ): SmartcardDeposit {
-        /** @var ReliefPackage|null $reliefPackage */
-        $reliefPackage = $this->reliefPackageRepository->find($reliefPackageId);
-        $suspicious = false;
-        $message = [];
-
-        if (null === $reliefPackage) {
-            throw new NotFoundHttpException("Relief package #$reliefPackageId does not exist.");
-        }
-
-        $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
-        $reliefPackage->addAmountOfDistributed($value);
-        $reliefPackage->setDistributedBy($user);
-
-        if ($reliefPackage->getAmountDistributed() > $reliefPackage->getAmountToDistribute()) {
-            $suspicious = true;
-            $message[] = sprintf('Relief package #%s amount of distributed (%s) is over to distribute (%s).',
-                $reliefPackageId, $reliefPackage->getAmountDistributed(), $reliefPackage->getAmountToDistribute());
-        }
-
-        if (!$reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
-            $suspicious = true;
-            $message[] = "Relief package #$reliefPackageId is in invalid state ({$reliefPackage->getState()}).";
-        }
-
-        $smartcard = $this->getActualSmartcard($serialNumber, $reliefPackage->getAssistanceBeneficiary()->getBeneficiary(), $distributedAt);
-
-        if (!$smartcard->getBeneficiary()) {
-            $suspicious = true;
-            $message[] = 'Smartcard does not have assigned beneficiary.';
-        }
-
-        $deposit = SmartcardDeposit::create(
-            $smartcard,
-            $user,
-            $reliefPackage,
-            (float) $value,
-            null !== $balance ? (float) $balance : null,
-            $distributedAt,
-            $suspicious,
-            $message
-        );
-
-        $smartcard->addDeposit($deposit);
-
-        if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
-            $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::DISTRIBUTE);
-        }
-
-        if (null === $smartcard->getCurrency()) {
-            $smartcard->setCurrency(self::findCurrency($reliefPackage->getAssistanceBeneficiary()));
-        }
-
-        // for situation, that purchases are sync before any money were deposited, we need to fix missing currency
-        foreach ($smartcard->getPurchases() as $purchase) {
-            foreach ($purchase->getRecords() as $record) {
-                if (null === $record->getCurrency()) {
-                    $record->setCurrency($smartcard->getCurrency());
-                    $this->em->persist($record);
-                }
-            }
-        }
-
-        $this->em->persist($smartcard);
-        $this->cache->delete(CacheTarget::assistanceId($deposit->getReliefPackage()->getAssistanceBeneficiary()->getAssistance()->getId()));
-        $this->em->flush();
-
-        return $deposit;
     }
 
     /**
@@ -256,7 +174,7 @@ class SmartcardService
             throw new \InvalidArgumentException('Argument 3 must be of type '.SmartcardPurchaseInput::class.' or '.SmartcardPurchaseDeprecatedInput::class);
         }
 
-        $smartcard = $this->em->getRepository(Smartcard::class)->findOneBy(['serialNumber' => $serialNumber]);
+        $smartcard = $this->smartcardRepository->findOneBy(['serialNumber' => $serialNumber]);
         if (!$smartcard) {
             $smartcard = $this->createSuspiciousSmartcard($serialNumber, $data->getCreatedAt());
         }
@@ -292,22 +210,21 @@ class SmartcardService
         if (!$data instanceof SmartcardPurchaseInput && !$data instanceof SmartcardPurchaseInputType) {
             throw new \InvalidArgumentException('Argument 2 must be of type '.SmartcardPurchaseInput::class . 'or ' . SmartcardPurchaseInputType::class);
         }
-        $beneficiary = $this->em->getRepository(Beneficiary::class)->findOneBy([
+        $beneficiary = $this->beneficiaryRepository->findOneBy([
             'id' => $data->getBeneficiaryId(),
             'archived' => false,
         ]);
         if (!$beneficiary) {
             throw new NotFoundHttpException('Beneficiary ID must exist');
         }
-        $smartcard = $this->getActualSmartcard($serialNumber, $beneficiary, $data->getCreatedAt());
+        $smartcard = $this->getActualSmartcardOrCreateNew($serialNumber, $beneficiary, $data->getCreatedAt());
         $this->em->persist($smartcard);
         return $this->purchaseService->purchaseSmartcard($smartcard, $data);
     }
 
-    public function getActualSmartcard(string $serialNumber, ?Beneficiary $beneficiary, DateTimeInterface $dateOfEvent): Smartcard
+    public function getActualSmartcardOrCreateNew(string $serialNumber, ?Beneficiary $beneficiary, DateTimeInterface $dateOfEvent): Smartcard
     {
-        $repo = $this->em->getRepository(Smartcard::class);
-        $smartcard = $repo->findBySerialNumberAndBeneficiary($serialNumber, $beneficiary);
+        $smartcard = $this->smartcardRepository->findBySerialNumberAndBeneficiary($serialNumber, $beneficiary);
 
         if ($smartcard
             && $smartcard->getBeneficiary()
@@ -325,7 +242,7 @@ class SmartcardService
             }
         }
 
-        $repo->disableBySerialNumber($serialNumber, SmartcardStates::REUSED, $dateOfEvent);
+        $this->smartcardRepository->disableBySerialNumber($serialNumber, SmartcardStates::REUSED, $dateOfEvent);
 
         $smartcard = new Smartcard($serialNumber, $dateOfEvent);
         $smartcard->setState(SmartcardStates::ACTIVE);
@@ -347,12 +264,12 @@ class SmartcardService
      *
      * @return Invoice
      * @throws \InvalidArgumentException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function redeem(Vendor $vendor, RedemptionBatchInput $inputBatch, User $redeemedBy): Invoice
     {
-        /** @var SmartcardPurchaseRepository $repository */
-        $repository = $this->em->getRepository(SmartcardPurchase::class);
-        $purchases = $repository->findBy([
+        $purchases = $this->smartcardPurchaseRepository->findBy([
             'id' => $inputBatch->getPurchases(),
         ], ['id'=>'asc']);
 
@@ -384,18 +301,15 @@ class SmartcardService
             }
         }
 
-        /** @var ProjectRepository $projectRepository */
-        $projectRepository = $this->em->getRepository(Project::class);
-
         /** @var Project|null $project */
-        $project = $projectRepository->find($projectId);
+        $project = $this->projectRepository->find($projectId);
 
         $redemptionBath = new Invoice(
             $vendor,
             $project,
             new \DateTime(),
             $redeemedBy,
-            $repository->countPurchasesValue($purchases),
+            $this->smartcardPurchaseRepository->countPurchasesValue($purchases),
             $currency,
             $vendor->getContractNo(),
             $vendor->getVendorNo(),
@@ -459,9 +373,7 @@ class SmartcardService
         $smartcard = new Smartcard($serialNumber, $createdAt);
         $smartcard->setState(SmartcardStates::ACTIVE);
         $smartcard->setSuspicious(true, 'Smartcard does not exists in database');
-
-        $this->em->persist($smartcard);
-        $this->em->flush();
+        $this->smartcardRepository->save($smartcard);
 
         return $smartcard;
     }
@@ -477,4 +389,50 @@ class SmartcardService
 
         throw new \LogicException('Unable to find currency for AssistanceBeneficiary #'.$assistanceBeneficiary->getId());
     }
+
+    /**
+     * @param Smartcard     $smartcard
+     * @param ReliefPackage $reliefPackage
+     *
+     * @return void
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public function setMissingCurrencyToSmartcardAndPurchases(Smartcard $smartcard, ReliefPackage $reliefPackage)
+    {
+        $this->setMissingCurrencyToSmartcard($smartcard, $reliefPackage);
+        $this->setMissingCurrencyToPurchases($smartcard);
+        $this->smartcardRepository->save($smartcard);
+    }
+
+    /**
+     * @param Smartcard     $smartcard
+     * @param ReliefPackage $reliefPackage
+     *
+     * @return void
+     */
+    private function setMissingCurrencyToSmartcard(Smartcard $smartcard, ReliefPackage $reliefPackage): void
+    {
+        if (null === $smartcard->getCurrency()) {
+            $smartcard->setCurrency(SmartcardService::findCurrency($reliefPackage->getAssistanceBeneficiary()));
+        }
+    }
+
+    /**
+     * @param Smartcard $smartcard
+     *
+     * @return void
+     * @throws \Doctrine\ORM\ORMException
+     */
+    private function setMissingCurrencyToPurchases(Smartcard $smartcard): void
+    {
+        foreach ($smartcard->getPurchases() as $purchase) {
+            foreach ($purchase->getRecords() as $record) {
+                if (null === $record->getCurrency()) {
+                    $record->setCurrency($smartcard->getCurrency());
+                    $this->em->persist($record);
+                }
+            }
+        }
+    }
+
 }
