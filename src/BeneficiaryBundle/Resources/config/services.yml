@@ -25,6 +25,8 @@ services:
             - "@location_service"
         public: true
 
+    BeneficiaryBundle\Utils\HouseholdService: '@beneficiary.household_service'
+
     beneficiary.institution_service:
         class: BeneficiaryBundle\Utils\InstitutionService
         arguments:

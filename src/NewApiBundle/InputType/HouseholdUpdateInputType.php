@@ -58,9 +58,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     }
 
     /**
-     * @Country
-     * @Assert\NotBlank
-     * @Assert\NotNull
+     * @deprecated
      */
     private $iso3;
 

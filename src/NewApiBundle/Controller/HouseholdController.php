@@ -3,6 +3,7 @@
 namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Utils\HouseholdService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\AddHouseholdsToProjectInputType;
 use NewApiBundle\InputType\HouseholdCreateInputType;
@@ -21,6 +22,18 @@ use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 
 class HouseholdController extends AbstractController
 {
+
+    /** @var HouseholdService */
+    private $householdService;
+
+    /**
+     * @param HouseholdService $householdService
+     */
+    public function __construct(HouseholdService $householdService)
+    {
+        $this->householdService = $householdService;
+    }
+
     /**
      * @Rest\Get("/web-app/v1/households/exports")
      *
@@ -110,31 +123,33 @@ class HouseholdController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/households")
      *
+     * @param Request                  $request
      * @param HouseholdCreateInputType $inputType
      *
      * @return JsonResponse
+     * @throws \Exception
      */
-    public function create(HouseholdCreateInputType $inputType): JsonResponse
+    public function create(Request $request, HouseholdCreateInputType $inputType): JsonResponse
     {
-        $household = $this->get('beneficiary.household_service')->create($inputType);
+        $household = $this->householdService->create($inputType, $this->getCountryCode($request));
         $this->getDoctrine()->getManager()->flush();
-
         return $this->json($household);
     }
 
     /**
      * @Rest\Put("/web-app/v1/households/{id}")
      *
+     * @param Request                  $request
      * @param Household                $household
      * @param HouseholdUpdateInputType $inputType
      *
      * @return JsonResponse
+     * @throws \Exception
      */
-    public function update(Household $household, HouseholdUpdateInputType $inputType): JsonResponse
+    public function update(Request $request, Household $household, HouseholdUpdateInputType $inputType): JsonResponse
     {
-        $object = $this->get('beneficiary.household_service')->update($household, $inputType);
+        $object = $this->householdService->update($household, $inputType, $this->getCountryCode($request));
         $this->getDoctrine()->getManager()->flush();
-
         return $this->json($object);
     }
 
@@ -147,7 +162,7 @@ class HouseholdController extends AbstractController
      */
     public function delete(Household $household): JsonResponse
     {
-        $this->get('beneficiary.household_service')->remove($household);
+        $this->householdService->remove($household);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

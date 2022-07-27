@@ -9,6 +9,7 @@ use CommonBundle\Entity\Location;
 use CommonBundle\InputType\Country;
 use CommonBundle\Repository\LocationRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityNotFoundException;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 
@@ -43,6 +44,22 @@ class LocationService
         $this->em = $entityManager;
         $this->locationRepository = $locationRepository;
         $this->requestValidator = $requestValidator;
+    }
+
+    /**
+     * @param int    $id
+     * @param string $countryCode
+     *
+     * @return Location|object
+     * @throws EntityNotFoundException
+     */
+    public function getLocationByIdAndCountryCode(int $id, string $countryCode)
+    {
+        $location = $this->locationRepository->findOneBy(['id' => $id, 'countryISO3' => $countryCode]);
+        if (empty($location)) {
+            throw new EntityNotFoundException("Location #{$id} was not found at country {$countryCode}.");
+        }
+        return $location;
     }
 
     /**
