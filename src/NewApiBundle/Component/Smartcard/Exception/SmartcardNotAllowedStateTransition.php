@@ -5,6 +5,9 @@ namespace NewApiBundle\Component\Smartcard\Exception;
 use Throwable;
 use VoucherBundle\Entity\Smartcard;
 
+/**
+ * @deprecated Remove after implement symfony/workflow
+ */
 class SmartcardNotAllowedStateTransition extends SmartcardException
 {
     /**

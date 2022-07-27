@@ -4,11 +4,10 @@ namespace VoucherBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
-use DateTime;
 use DateTimeInterface;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManager;
-use NewApiBundle\Component\Smartcard\Exception\SmartcardDoubledChangeException;
+use NewApiBundle\Component\Smartcard\Exception\SmartcardActivationDeactivatedException;
 use NewApiBundle\Component\Smartcard\Exception\SmartcardDoubledRegistrationException;
 use NewApiBundle\Component\Smartcard\Exception\SmartcardNotAllowedStateTransition;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
@@ -82,14 +81,16 @@ class SmartcardService
      * @param ChangeSmartcardInputType $changeSmartcardInputType
      *
      * @return void
-     * @throws SmartcardDoubledChangeException
+     * @throws SmartcardActivationDeactivatedException
      * @throws SmartcardNotAllowedStateTransition
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function change(Smartcard $smartcard, ChangeSmartcardInputType $changeSmartcardInputType): void
     {
-        $this->checkDoubledChange($smartcard, $changeSmartcardInputType);
+        if ($smartcard->getState() === SmartcardStates::INACTIVE) {
+            throw new SmartcardActivationDeactivatedException($smartcard);
+        }
 
         if ($smartcard->getState() !== $changeSmartcardInputType->getState()) {
             if (!SmartcardStates::isTransitionAllowed($smartcard->getState(), $changeSmartcardInputType->getState())) {
@@ -99,24 +100,6 @@ class SmartcardService
             $smartcard->setState($changeSmartcardInputType->getState());
             $smartcard->setChangedAt($changeSmartcardInputType->getCreatedAt());
             $this->smartcardRepository->save($smartcard);
-        }
-    }
-
-    /**
-     * @param Smartcard                $smartcard
-     * @param ChangeSmartcardInputType $changeSmartcardInputType
-     *
-     * @return void
-     * @throws SmartcardDoubledChangeException
-     */
-    private function checkDoubledChange(Smartcard $smartcard, ChangeSmartcardInputType $changeSmartcardInputType): void
-    {
-        if (is_null($smartcard->getChangedAt())) {
-            return;
-        }
-        if ($smartcard->getChangedAt()->getTimestamp() === $changeSmartcardInputType->getCreatedAt()->getTimestamp() &&
-            $smartcard->getState() === $changeSmartcardInputType->getState()) {
-            throw new SmartcardDoubledChangeException($smartcard);
         }
     }
 
@@ -131,10 +114,8 @@ class SmartcardService
     public function register(SmartcardRegisterInputType $registerInputType): Smartcard
     {
         /** @var Beneficiary $beneficiary */
-        $beneficiary = $this->beneficiaryRepository->find($beneficiaryId);
-        $smartcard = $this->getActualSmartcardOrCreateNew($serialNumber, $beneficiary, $createdAt);
         $beneficiary = $this->beneficiaryRepository->find($registerInputType->getBeneficiaryId());
-        $smartcard = $this->getActualSmartcard($registerInputType->getSerialNumber(), $beneficiary, $registerInputType->getCreatedAt());
+        $smartcard = $this->getActualSmartcardOrCreateNew($registerInputType->getSerialNumber(), $beneficiary, $registerInputType->getCreatedAt());
         $this->checkSmartcardRegistrationDuplicity($smartcard, $registerInputType->getCreatedAt());
         $smartcard->setSuspicious(false, null);
         $smartcard->setRegisteredAt($registerInputType->getCreatedAt());

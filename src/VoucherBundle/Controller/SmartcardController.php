@@ -4,8 +4,6 @@ namespace VoucherBundle\Controller;
 
 use CommonBundle\Entity\Organization;
 use CommonBundle\Repository\OrganizationRepository;
-use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Export\SmartcardInvoiceExport;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
@@ -13,9 +11,6 @@ use Doctrine\ORM\NoResultException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use NewApiBundle\Component\Country\Countries;
-use NewApiBundle\Controller\AbstractController;
-use NewApiBundle\Component\Smartcard\Deposit\DepositFactory;
-use NewApiBundle\InputType\Smartcard\DepositInputType;
 use NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -32,11 +27,9 @@ use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
-use VoucherBundle\Enum\SmartcardStates;
 use VoucherBundle\InputType\SmartcardPurchaseDeprecated as SmartcardPurchaseDeprecatedInput;
 use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
 use VoucherBundle\InputType\SmartcardInvoice as RedemptionBatchInput;
-use VoucherBundle\Mapper\SmartcardMapper;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
 
 /**
