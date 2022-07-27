@@ -33,15 +33,6 @@ calculation,complexDependencyRatio,Dependency Ratio,Dependency ratio very low vu
 ,,,Dependency ratio very high vulnerability,5
 ,,,Dependency ratio extreme vulnerability,6
 ,,,,
-calculation,shelterType,Shelter type,Tent,4
-,,,Makeshift Shelter,3
-,,,Transitional Shelter,3
-,,,House/Apartment - Severely Damaged,4
-,,,House/Apartment - Moderately Damaged,2
-,,,House/Apartment - Good Condition,0
-,,,Room or Space in Shared Accommodation,2
-,,,Other,0
-,,,,
 calculation,productiveAssets,Productive Assets,1 Asset,-2
 ,,,2 Assets,-3
 ,,,3 Assets,-4

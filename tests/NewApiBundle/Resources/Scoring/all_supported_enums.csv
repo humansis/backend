@@ -1,0 +1,10 @@
+Rule type,Field Name,Title,Options,Points
+,,,,
+enum,HouseholdShelterStatus,Household shelter status,Tent,4
+,,,Makeshift Shelter,3
+,,,Transitional Shelter,3
+,,,House/Apartment - Severely Damaged,4
+,,,House/Apartment - Moderately Damaged,2
+,,,House/Apartment - Not Damaged,0
+,,,Room or Space in Public Building.,2
+,,,Other,0
