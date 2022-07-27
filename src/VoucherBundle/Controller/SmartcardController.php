@@ -50,10 +50,6 @@ use VoucherBundle\Repository\SmartcardPurchaseRepository;
  */
 class SmartcardController extends Controller
 {
-    /**
-     * @var DepositFactory
-     */
-    private $depositFactory;
 
     /** @var SmartcardInvoiceExport */
     private $exporter;
@@ -63,77 +59,17 @@ class SmartcardController extends Controller
     private $countries;
 
     /**
-     * @param DepositFactory         $depositFactory
      * @param SmartcardInvoiceExport $exporter
      * @param OrganizationRepository $organizationRepository
      * @param Countries              $countries
      */
-    public function __construct(DepositFactory $depositFactory, SmartcardInvoiceExport $exporter, OrganizationRepository $organizationRepository, Countries $countries)
+    public function __construct(SmartcardInvoiceExport $exporter, OrganizationRepository $organizationRepository, Countries $countries)
     {
-        $this->depositFactory = $depositFactory;
         $this->exporter = $exporter;
         $this->organizationRepository = $organizationRepository;
         $this->countries = $countries;
     }
 
-    /**
-     * Register smartcard to system and assign to beneficiary.
-     *
-     * @Rest\Post("/offline-app/v1/smartcards")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER') or is_granted('ROLE_ENUMERATOR')")
-     *
-     * @SWG\Tag(name="Smartcards")
-     * @SWG\Tag(name="Offline App")
-     *
-     * @SWG\Parameter(
-     *     name="body",
-     *     in="body",
-     *     required=true,
-     *     @SWG\Schema(
-     *         type="object",
-     *         @SWG\Property(
-     *             property="serialNumber",
-     *             type="string",
-     *             description="Serial number (GUID) of smartcard"
-     *         ),
-     *         @SWG\Property(
-     *             property="beneficiaryId",
-     *             type="integer",
-     *             description="ID of beneficiary"
-     *         ),
-     *         @SWG\Property(
-     *             property="createdAt",
-     *             type="string",
-     *             description="ISO 8601 time of register smartcard in UTC",
-     *             example="2020-02-02T12:00:00+0200"
-     *         )
-     *     )
-     * )
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="Smartcard succesfully registered to system",
-     *     @Model(type=Smartcard::class, groups={"SmartcardOverview"})
-     * )
-     *
-     * @SWG\Response(response=404, description="Beneficiary does not exists")
-     * @SWG\Response(response=400, description="Smartcard is already registered")
-     *
-     * @param Request $request
-     *
-     * @return Response
-     */
-    public function register(Request $request): Response
-    {
-        $smartcard = $this->get('smartcard_service')->register(
-            strtoupper($request->get('serialNumber')),
-            $request->get('beneficiaryId'),
-            \DateTime::createFromFormat('Y-m-d\TH:i:sO', $request->get('createdAt')));
-
-        $mapper = $this->get(SmartcardMapper::class);
-
-        return $this->json($mapper->toFullArray($smartcard));
-    }
 
     /**
      * Info about smartcard.
@@ -212,87 +148,6 @@ class SmartcardController extends Controller
         $smartcards = $this->getDoctrine()->getRepository(Smartcard::class)->findBlocked($country);
 
         return new JsonResponse($smartcards);
-    }
-
-    /**
-     * Update smartcard, typically its' state.
-     *
-     * @Rest\Patch("/offline-app/v1/smartcards/{serialNumber}")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER') or is_granted('ROLE_ENUMERATOR')")
-     *
-     * @SWG\Tag(name="Smartcards")
-     * @SWG\Tag(name="Offline App")
-     *
-     * @SWG\Parameter(
-     *     name="serialNumber",
-     *     in="path",
-     *     type="string",
-     *     required=true,
-     *     description="Serial number (GUID) of smartcard"
-     * )
-     *
-     * @SWG\Parameter(
-     *     name="body",
-     *     in="body",
-     *     required=true,
-     *     @SWG\Schema(
-     *         type="object",
-     *         @SWG\Property(
-     *             property="state",
-     *             type="string",
-     *             description="smartcard state",
-     *             enum={"active", "inactive", "frozen", "cancelled"}
-     *         ),
-     *         @SWG\Property(
-     *             property="createdAt",
-     *             type="string",
-     *             description="ISO 8601 time of state change in UTC",
-     *             example="2020-02-02T12:00:00+0200"
-     *         )
-     *     )
-     * )
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="Smartcard succesfully updated",
-     *     @Model(type=Smartcard::class, groups={"SmartcardOverview"})
-     * )
-     *
-     * @SWG\Response(response=404, description="Smartcard does not exists.")
-     * @SWG\Response(response=400, description="Smartcard state can't be changed this way. State flow restriction.")
-     *
-     * @param string  $serialNumber
-     * @param Request $request
-     *
-     * @return Response
-     */
-    public function change(string $serialNumber, Request $request): Response
-    {
-        $smartcard = $this->getDoctrine()->getRepository(Smartcard::class)->findActiveBySerialNumber($serialNumber);
-
-        if (!$smartcard instanceof Smartcard) {
-            throw $this->createNotFoundException("Smartcard with code '$serialNumber' was not found.");
-        }
-
-        $newState = $smartcard->getState();
-        if ($request->request->has('state')) {
-            $newState = $request->request->get('state');
-        }
-
-        if ($smartcard->getState() !== $newState) {
-            if (!SmartcardStates::isTransitionAllowed($smartcard->getState(), $newState)) {
-                throw new BadRequestHttpException('Is not possible change state from '.$smartcard->getState().' to '.$newState);
-            }
-
-            $smartcard->setState($newState);
-        }
-
-        $this->getDoctrine()->getManager()->persist($smartcard);
-        $this->getDoctrine()->getManager()->flush();
-
-        $json = $this->get('serializer')->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
-
-        return new Response($json);
     }
 
     /**

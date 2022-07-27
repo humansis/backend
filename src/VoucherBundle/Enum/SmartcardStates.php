@@ -3,8 +3,12 @@ declare(strict_types=1);
 
 namespace VoucherBundle\Enum;
 
+use NewApiBundle\Enum\EnumTrait;
+
 class SmartcardStates
 {
+    use EnumTrait;
+
     const UNASSIGNED = 'unassigned';
     const ACTIVE = 'active';
     const INACTIVE = 'inactive';
@@ -35,5 +39,10 @@ class SmartcardStates
     public static function isTransitionAllowed(string $stateFrom, string $stateTo): bool
     {
         return in_array($stateTo, self::$possibleFlow[$stateFrom]);
+    }
+
+    public static function values(): array
+    {
+        return self::all();
     }
 }
