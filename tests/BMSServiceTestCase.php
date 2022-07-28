@@ -229,19 +229,14 @@ class BMSServiceTestCase extends KernelTestCase
         return $this;
     }
 
-    public function __construct($name = null, array $data = [], $dataName = '')
+    public function setUpFunctionnal(): void
     {
-        parent::__construct($name, $data, $dataName);
         self::bootKernel();
 
         //Preparing the EntityManager
         $this->em = self::$container
             ->get('doctrine')
             ->getManager();
-    }
-
-    public function setUpFunctionnal(): void
-    {
 
         //Mocking Serializer, Container
         $this->serializer = self::$container
