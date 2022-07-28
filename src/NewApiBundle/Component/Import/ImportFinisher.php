@@ -103,6 +103,7 @@ class ImportFinisher
         $this->logImportInfo($import, "Created Household #{$createdHousehold->getId()}");
 
         $this->importQueueStateMachine->apply($item, ImportQueueTransitions::CREATE);
+        $this->em->flush();
     }
 
     /**
@@ -143,6 +144,7 @@ class ImportFinisher
         $this->logImportInfo($import, "Updated Household #{$updatedHousehold->getId()}");
 
         $this->importQueueStateMachine->apply($item, ImportQueueTransitions::UPDATE);
+        $this->em->flush();
     }
 
     public function finishLinkQueue(ImportQueue $item, Import $import): void
@@ -157,6 +159,7 @@ class ImportFinisher
         $this->logImportInfo($import, "Found old version of Household #{$acceptedDuplicity->getTheirs()->getId()}");
 
         $this->importQueueStateMachine->apply($item, ImportQueueTransitions::LINK);
+        $this->em->flush();
     }
 
     public function finishIgnoreQueue(ImportQueue $item, Import $import): void
