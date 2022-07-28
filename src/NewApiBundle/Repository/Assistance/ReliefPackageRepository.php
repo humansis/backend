@@ -58,10 +58,11 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
 
     /**
      * @param Vendor $vendor
-     *
+     * @param string $country
+     * 
      * @return Paginator
      */
-    public function getForVendor(Vendor $vendor): Paginator
+    public function getForVendor(Vendor $vendor, string $country): Paginator
     {
         $qb = $this->createQueryBuilder('rp')
             ->join('rp.assistanceBeneficiary', 'ab', Join::WITH, 'ab.removed = 0')
@@ -70,9 +71,10 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
             ->join(Beneficiary::class, 'b', Join::WITH, 'b.id=abstB.id AND b.archived = 0')
             ->join('b.smartcards', 's', Join::WITH, 's.beneficiary=b AND s.state=:smartcardStateActive') //filter only bnf with active card
             ->join('a.location', 'l')
-            ->leftJoin(Location::class, 'l2', Join::WITH, '(l.id = l2.id OR l.lft BETWEEN l2.lft AND l2.rgt) AND l2.lvl = 2')
-            ->leftJoin(Location::class, 'l1', Join::WITH, '(l.id = l1.id OR l.lft BETWEEN l1.lft AND l1.rgt) AND l1.lvl = 1')
-            ->setParameter('smartcardStateActive', SmartcardStates::ACTIVE);
+            ->leftJoin(Location::class, 'l2', Join::WITH, '(l.id = l2.id OR l.lft BETWEEN l2.lft AND l2.rgt) AND l2.lvl = 2 AND l2.countryISO3 = :iso3')
+            ->leftJoin(Location::class, 'l1', Join::WITH, '(l.id = l1.id OR l.lft BETWEEN l1.lft AND l1.rgt) AND l1.lvl = 1 AND l1.countryISO3 = :iso3')
+            ->setParameter('smartcardStateActive', SmartcardStates::ACTIVE)
+            ->setParameter('iso3', $country);
 
         //if both vendor and assistance has at least adm2 filled, try to filter by adm2. If not, filter by adm1.
         if (null !== $vendor->getLocation()->getAdm2Id()) {

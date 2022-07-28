@@ -3,14 +3,18 @@ declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller\VendorApp;
 
+use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Assistance;
+use Doctrine\ORM\Query\Expr\Join;
 use Exception;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
+use NewApiBundle\Request\Pagination;
 use Tests\BMSServiceTestCase;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Vendor;
+use VoucherBundle\Enum\SmartcardStates;
 
 class ReliefPackageControllerTest extends BMSServiceTestCase
 {
@@ -29,10 +33,25 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
 
     public function testListReliefPackagesSimple()
     {
-        $reliefPackage = $this->em->getRepository(ReliefPackage::class)->findOneBy([
-            'modalityType' => ModalityType::SMART_CARD,
-            'state' => ReliefPackageState::TO_DISTRIBUTE,
-        ], ['id' => 'asc']);
+        $location = 'ZMB';
+        $reliefPackage = $this->em->getRepository(ReliefPackage::class)
+            ->createQueryBuilder('rp')
+            ->leftJoin('rp.assistanceBeneficiary', 'ab')
+            ->leftJoin('ab.assistance', 'a')
+            ->leftJoin('a.location', 'l')
+            ->join('ab.beneficiary', 'abstB')
+            ->join(Beneficiary::class, 'b', Join::WITH, 'b.id=abstB.id AND b.archived = 0')
+            ->join('b.smartcards', 's', Join::WITH, 's.beneficiary=b AND s.state=:smartcardStateActive')
+            ->andWhere('l.countryISO3 = :iso3')
+            ->andWhere('rp.state != :state')
+            ->setParameters([
+                'iso3' => $location,
+                'smartcardStateActive' => SmartcardStates::ACTIVE,
+                'state' => ReliefPackageState::CANCELED,
+            ])
+            ->setMaxResults(1)
+            ->getQuery()->getOneOrNullResult();
+        
         $reliefPackage->setAmountDistributed("0.00");
 
         /** @var Assistance $assistance */
@@ -59,8 +78,8 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
             ->setAddressPostcode('12345')
             ->setArchived(false)
             ->setUser($user)
-            ->setVendorNo('SYR'.sprintf('%07d', random_int(100, 10000)))
-            ->setContractNo('SYRSP'.sprintf('%06d', random_int(100, 10000)))
+            ->setVendorNo($location.sprintf('%07d', random_int(100, 10000)))
+            ->setContractNo($location.'SP'.sprintf('%06d', random_int(100, 10000)))
         ;
         $vendor->setLocation($reliefPackage->getAssistanceBeneficiary()->getAssistance()->getLocation());
         $vendor->setCanSellCashback(true);
@@ -74,7 +93,15 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         $this->em->flush();
         $this->em->refresh($vendor);
 
-        $this->request('GET', "/api/basic/vendor-app/v1/vendors/{$vendor->getId()}/relief-packages");
+        $this->request(
+            'GET',
+            "/api/basic/vendor-app/v1/vendors/{$vendor->getId()}/relief-packages",
+            [],
+            [],
+            [
+                'HTTP_COUNTRY' => $location
+            ]
+        );
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

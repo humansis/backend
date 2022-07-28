@@ -85,27 +85,6 @@ class HouseholdService
     }
 
     /**
-     * @param string $iso3
-     * @param array $filters
-     * @return mixed
-     */
-    public function getAll(string $iso3, array $filters)
-    {
-        $pageIndex = $filters['pageIndex'];
-        $pageSize = $filters['pageSize'];
-        $filter = $filters['filter'];
-        $sort = $filters['sort'];
-
-        $limitMinimum = $pageIndex * $pageSize;
-
-        $households = $this->em->getRepository(Household::class)->getAllBy($iso3, $limitMinimum, $pageSize, $sort, $filter);
-        $length = $households[0];
-        $households = $households[1];
-
-        return [$length, $households];
-    }
-
-    /**
      * @param HouseholdCreateInputType $inputType
      * @param string                   $countryCode
      *
