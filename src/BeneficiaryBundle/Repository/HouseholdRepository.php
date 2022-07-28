@@ -179,11 +179,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
         $qb = $this->createQueryBuilder('hh');
         $this->getHouseholdLocation($qb);
         
-        $qb->leftJoin(Location::class, 'l4', Join::WITH, 'l.id = l4.id AND l4.lvl = 4')
-            ->leftJoin(Location::class, 'l3', Join::WITH, '(l.id = l3.id OR l.lft BETWEEN l3.lft AND l3.rgt) AND l3.lvl = 3 AND l3.countryISO3 = :iso3')
-            ->leftJoin(Location::class, 'l2', Join::WITH, '(l.id = l2.id OR l.lft BETWEEN l2.lft AND l2.rgt) AND l2.lvl = 2 AND l2.countryISO3 = :iso3')
-            ->leftJoin(Location::class, 'l1', Join::WITH, '(l.id = l1.id OR l.lft BETWEEN l1.lft AND l1.rgt) AND l1.lvl = 1 AND l1.countryISO3 = :iso3')
-            ->leftJoin('hh.beneficiaries', 'b')
+        $qb->leftJoin('hh.beneficiaries', 'b')
             ->leftJoin('hh.projects', 'p')
             ->leftJoin('b.vulnerabilityCriteria', 'vb')
             ->leftJoin('b.person', 'per')
@@ -206,7 +202,10 @@ class HouseholdRepository extends AbstractCriteriaRepository
         }
 
         if ($filter->hasFulltext()) {
-            $qb->andWhere("CONCAT(
+            $qb->leftJoin(Location::class, 'l4', Join::WITH, 'l.id = l4.id AND l4.lvl = 4')
+                ->leftJoin(Location::class, 'l3', Join::WITH, '(l.id = l3.id OR l.lft BETWEEN l3.lft AND l3.rgt) AND l3.lvl = 3 AND l3.countryISO3 = :iso3')
+                ->leftJoin(Location::class, 'l2', Join::WITH, '(l.id = l2.id OR l.lft BETWEEN l2.lft AND l2.rgt) AND l2.lvl = 2 AND l2.countryISO3 = :iso3')
+                ->leftJoin(Location::class, 'l1', Join::WITH, '(l.id = l1.id OR l.lft BETWEEN l1.lft AND l1.rgt) AND l1.lvl = 1 AND l1.countryISO3 = :iso3')->andWhere("CONCAT(
                         COALESCE(hh.id, ''),
                         COALESCE(per.enFamilyName, ''),
                         COALESCE(per.enGivenName, ''),
