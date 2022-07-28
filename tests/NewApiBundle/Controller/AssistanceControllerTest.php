@@ -69,6 +69,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "nonFoodLimit": "*",
             "cashbackLimit": "*",
             "allowedProductCategoryTypes": "*",
+            "threshold": '.($assistance->getAssistanceSelection()->getThreshold() ?: 'null').',
             "deletable": '.($assistance->getValidated() ? 'false' : 'true').'
         }', $this->client->getResponse()->getContent());
     }

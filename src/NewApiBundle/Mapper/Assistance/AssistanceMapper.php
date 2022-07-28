@@ -190,6 +190,11 @@ class AssistanceMapper implements MapperInterface
         return $this->object->getAssistanceSelection()->getId();
     }
 
+    public function getThreshold(): ?int
+    {
+        return $this->object->getAssistanceSelection()->getThreshold();
+    }
+
     public function getRemoteDistributionAllowed(): ?bool
     {
         return $this->object->isRemoteDistributionAllowed();
