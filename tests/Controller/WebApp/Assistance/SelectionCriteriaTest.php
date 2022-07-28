@@ -72,6 +72,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
     public function assistanceArrayGenerator(): iterable
     {
         $group = 0;
+        $location = $this->em->getRepository(Location::class)->findBy(['name' => 'Banteay Meanchey'])[0];
         $bornBefore2020 = [
             'group' => $group++,
             'target' => SelectionCriteriaTarget::BENEFICIARY,
@@ -118,7 +119,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'field' => 'location',
             'condition' => '=',
             'weight' => 1,
-            'value' => 21,
+            'value' => $location->getId(),
         ];
         $CSOEquityCard = [
             'group' => $group++,
