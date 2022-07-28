@@ -25,7 +25,9 @@ class ReliefPackageController extends AbstractVendorAppController
             throw $this->createAccessDeniedException("Vendor #{$vendor->getId()} is not allowed for remote distributions.");
         }
 
-        $reliefPackages = $this->getDoctrine()->getRepository(ReliefPackage::class)->getForVendor($vendor);
+        $reliefPackages = $this->getDoctrine()
+            ->getRepository(ReliefPackage::class)
+            ->getForVendor($vendor, $this->getCountryCode($request));
 
         $response = $this->json($reliefPackages);
         $response->setEtag(md5($response->getContent()));
