@@ -22,18 +22,19 @@ use Tests\BMSServiceTestCase;
 
 class SelectionCriteriaTest extends BMSServiceTestCase
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp(): void
+    public function __construct($name = null, array $data = [], $dataName = '')
     {
+        parent::__construct($name, $data, $dataName);
         // Configuration of BMSServiceTest
         $this->setDefaultSerializerName('serializer');
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
         $this->client = self::$container->get('test.client');
+        $this->location = $this->em->getRepository(Location::class)->findOneBy(['code' => self::LOCATION_CODE]);
     }
+
+    private $location;
 
     private const LOCATION_CODE = 'KH01';
 
@@ -119,7 +120,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'field' => 'location',
             'condition' => '=',
             'weight' => 1,
-            'value' => self::LOCATION_CODE,
+            'value' => $this->location->getId(),
         ];
         $CSOEquityCard = [
             'group' => $group++,
@@ -180,14 +181,6 @@ class SelectionCriteriaTest extends BMSServiceTestCase
      */
     public function testCommodityCountOfCreatedAssistance(array $assistanceArray)
     {
-        if ($assistanceArray['selectionCriteria'][0]['value'] === self::LOCATION_CODE) {
-            $location = $this->em->getRepository(Location::class)->findOneBy(['code' => self::LOCATION_CODE]);
-            if ($location === null) {
-                $this->markTestSkipped('Location does not exist');
-            }
-            $assistanceArray['selectionCriteria'][0]['value'] = $location->getId();
-        }
-
         $this->request('POST', '/api/basic/web-app/v1/assistances/commodities', $assistanceArray);
 
         $this->assertTrue(
