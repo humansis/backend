@@ -198,3 +198,5 @@ Procfile text
 *.ppt   binary diff=exif
 *.pptx  binary diff=exif
 *.ps    binary diff=exif
+#Special
+.clean.swp binary
