@@ -81,6 +81,8 @@ services:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - BeneficiaryBundle\Entity\Household
+        calls:
+          - injectLocationRepository: [ '@CommonBundle\Repository\LocationRepository' ]
 
     BeneficiaryBundle\Repository\BeneficiaryRepository:
         factory: ['@doctrine.orm.default_entity_manager', getRepository]

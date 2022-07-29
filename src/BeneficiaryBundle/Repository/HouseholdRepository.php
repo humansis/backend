@@ -4,6 +4,7 @@ namespace BeneficiaryBundle\Repository;
 
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
+use CommonBundle\Repository\LocationRepository;
 use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
@@ -24,6 +25,16 @@ use Doctrine\ORM\Query\Expr\Join;
  */
 class HouseholdRepository extends AbstractCriteriaRepository
 {
+    /**
+     * @var LocationRepository
+     */
+    private $locationRepository;
+
+    public function injectLocationRepository(LocationRepository $locationRepository)
+    {
+        $this->locationRepository = $locationRepository;
+    }
+
     /**
      * Find all households in country
      * @param  string $iso3
@@ -202,24 +213,33 @@ class HouseholdRepository extends AbstractCriteriaRepository
         }
 
         if ($filter->hasFulltext()) {
-            $qb->leftJoin(Location::class, 'l4', Join::WITH, 'l.id = l4.id AND l4.lvl = 4')
-                ->leftJoin(Location::class, 'l3', Join::WITH, '(l.id = l3.id OR l.lft BETWEEN l3.lft AND l3.rgt) AND l3.lvl = 3 AND l3.countryISO3 = :iso3')
-                ->leftJoin(Location::class, 'l2', Join::WITH, '(l.id = l2.id OR l.lft BETWEEN l2.lft AND l2.rgt) AND l2.lvl = 2 AND l2.countryISO3 = :iso3')
-                ->leftJoin(Location::class, 'l1', Join::WITH, '(l.id = l1.id OR l.lft BETWEEN l1.lft AND l1.rgt) AND l1.lvl = 1 AND l1.countryISO3 = :iso3')->andWhere("CONCAT(
-                        COALESCE(hh.id, ''),
-                        COALESCE(per.enFamilyName, ''),
-                        COALESCE(per.enGivenName, ''),
-                        COALESCE(per.localFamilyName, ''),
-                        COALESCE(per.localGivenName, ''),
-                        COALESCE(p.name, ''),
-                        COALESCE(l1.name, ''),
-                        COALESCE(l2.name, ''),
-                        COALESCE(l3.name, ''),
-                        COALESCE(l.name, ''),
-                        COALESCE(vb.fieldString, ''),
-                        COALESCE(ni.idNumber, '')
-                    ) LIKE :fulltext")
-                ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+            
+            $qbl = [
+                'l1' => $this->locationRepository->addParentLocationFulltextSubQueryBuilder('l', 'l1'),
+                'l2' => $this->locationRepository->addParentLocationFulltextSubQueryBuilder('l', 'l2'),
+                'l3' => $this->locationRepository->addParentLocationFulltextSubQueryBuilder('l', 'l3'),
+            ];
+            
+            $qb->andWhere($qb->expr()->orX(
+                    $qb->expr()->like("CONCAT(
+                            COALESCE(hh.id, ''),
+                            COALESCE(per.enFamilyName, ''),
+                            COALESCE(per.enGivenName, ''),
+                            COALESCE(per.localFamilyName, ''),
+                            COALESCE(per.localGivenName, ''),
+                            COALESCE(p.name, ''),
+                            COALESCE(l.name, ''),
+                            COALESCE(vb.fieldString, ''),
+                            COALESCE(ni.idNumber, '')
+                        )", ":fulltext"),
+                    $qb->expr()->in('l.parentLocation', $qbl['l1']->getDQL()),
+                    $qb->expr()->in('l.parentLocation', $qbl['l2']->getDQL()),
+                    $qb->expr()->in('l.parentLocation', $qbl['l3']->getDQL())
+                ))
+                ->setParameter('fulltext', '%'.$filter->getFulltext().'%')
+                ->setParameter('l1Level', 1)
+                ->setParameter('l2Level', 2)
+                ->setParameter('l3Level', 3);
         }
 
         if ($filter->hasGender()) {

@@ -148,6 +148,27 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
+     * @param string $childAlias
+     * @param string $parentAlias
+     * @return QueryBuilder
+     */
+    public function addParentLocationFulltextSubQueryBuilder(
+        string $childAlias,
+        string $parentAlias
+    ): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder($parentAlias);
+        return $qb
+            ->andWhere($qb->expr()->between(
+                $childAlias .'.lft', 
+                $parentAlias . '.lft',
+                $parentAlias . '.rgt'))
+            ->andWhere($parentAlias . '.lvl = :' . $parentAlias . 'Level')
+            ->andWhere($parentAlias . '.countryISO3 = :iso3')
+            ->andWhere($parentAlias . '.name like :fulltext');
+    }
+
+    /**
      * @param LocationFilterInputType $filter
      * @param string|null             $iso3
      *
