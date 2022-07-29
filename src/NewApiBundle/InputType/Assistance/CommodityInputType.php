@@ -11,9 +11,10 @@ use NewApiBundle\Validator\Constraints\Enum;
 class CommodityInputType implements InputTypeInterface
 {
     /**
-     * @Assert\Type("string") // todo change to enum
+     * @Assert\Type("string")
      * @Assert\NotBlank
      * @Assert\NotNull
+     * @Enum(enumClass="NewApiBundle\DBAL\ModalityTypeEnum")
      */
     private $modalityType;
 

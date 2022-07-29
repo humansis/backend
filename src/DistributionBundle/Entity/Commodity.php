@@ -4,8 +4,6 @@ namespace DistributionBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
-use NewApiBundle\DBAL\AssistanceCommodityDivisionEnum;
-use NewApiBundle\Enum\PersonGender;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use NewApiBundle\Entity\Helper\EnumTrait;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
@@ -22,9 +20,9 @@ class Commodity
     use EnumTrait;
 
     /**
-     * @var ModalityType
+     * @var string|null
      * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\ModalityType")
+     * @ORM\Column(name="division", type="enum_modality_type", nullable=true)
      */
     private $modalityType;
 
@@ -138,11 +136,11 @@ class Commodity
     /**
      * Set modalityType.
      *
-     * @param \DistributionBundle\Entity\ModalityType|null $modalityType
+     * @param string|null $modalityType
      *
      * @return Commodity
      */
-    public function setModalityType(\DistributionBundle\Entity\ModalityType $modalityType = null)
+    public function setModalityType(?string $modalityType = null)
     {
         $this->modalityType = $modalityType;
 
@@ -152,9 +150,9 @@ class Commodity
     /**
      * Get modalityType.
      *
-     * @return \DistributionBundle\Entity\ModalityType|null
+     * @return string|null
      */
-    public function getModalityType()
+    public function getModalityType(): ?string
     {
         return $this->modalityType;
     }
