@@ -153,12 +153,9 @@ class Assistance
         if ($this->assistanceRoot->isValidated()) {
             throw new \LogicException('Validated assistance shouldn\'t be edited');
         }
-        $modalityType = $this->modalityTypeRepository->findOneBy(['name' => $commodityInputType->getModalityType()]);
-        if (!$modalityType) {
-            throw new EntityNotFoundException(sprintf('ModalityType %s does not exists', $commodityInputType->getModalityType()));
-        }
+
         $commodity = new Entity\Commodity();
-        $commodity->setModalityType($modalityType);
+        $commodity->setModalityType($commodityInputType->getModalityType());
         $commodity->setDescription($commodityInputType->getDescription());
         $commodity->setValue($commodityInputType->getValue());
         $commodity->setUnit($commodityInputType->getUnit());
@@ -184,14 +181,14 @@ class Assistance
         $modalityUnits = [];
         $commodityBuilder = new CommodityAssignBuilder();
         foreach ($this->assistanceRoot->getCommodities() as $commodity) {
-            $modality = $commodity->getModalityType()->getName();
+            $modality = $commodity->getModalityType();
             $unit = $commodity->getUnit();
 
             if (!isset($modalityUnits[$modality])) {
                 $modalityUnits[$modality] = [];
             }
-            if (!in_array($unit, $modalityUnits[$commodity->getModalityType()->getName()])) {
-                $modalityUnits[$commodity->getModalityType()->getName()][] = $commodity->getUnit();
+            if (!in_array($unit, $modalityUnits[$commodity->getModalityType()])) {
+                $modalityUnits[$commodity->getModalityType()][] = $commodity->getUnit();
             }
             if ($commodity->getDivision() !== null) {
                 if ($this->assistanceRoot->getTargetType() !== AssistanceTargetType::HOUSEHOLD) {
