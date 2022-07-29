@@ -60,7 +60,7 @@
 		"symfony/polyfill-apcu": "v1.22.1",
 		"symfony/string": "v5.2.6",
 		"symfony/swiftmailer-bundle": "v3.5.2",
-		"symfony/symfony": "v4.4.43",
+		"symfony/symfony": "4.4.43",
 		"tecnickcom/tcpdf": "6.4.1",
 		"twig/twig": "2.14.4"
 	},
