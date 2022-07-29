@@ -22,7 +22,7 @@ class Commodity
     /**
      * @var string|null
      * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
-     * @ORM\Column(name="division", type="enum_modality_type", nullable=true)
+     * @ORM\Column(name="modality_type", type="enum_modality_type", nullable=true)
      */
     private $modalityType;
 
