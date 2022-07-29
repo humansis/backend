@@ -33,5 +33,6 @@ class UserBundle extends Bundle
                 $mappings, ['fos_user.model_manager_name'], false
             )
         );
+        
     }
 }
