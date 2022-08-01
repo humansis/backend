@@ -5,6 +5,7 @@ namespace NewApiBundle\Repository\Assistance;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Location;
+use CommonBundle\Repository\LocationRepository;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Enum\AssistanceTargetType;
@@ -62,33 +63,66 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
      * 
      * @return Paginator
      */
+    
     public function getForVendor(Vendor $vendor, string $country): Paginator
     {
+        $vendorLocation = $vendor->getLocation();
+        if (null === $vendorLocation) {
+            throw new \InvalidArgumentException("Vendor need to be in location");
+        }
+
+        /** @var LocationRepository $locationRepository */
+        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
+        
         $qb = $this->createQueryBuilder('rp')
             ->join('rp.assistanceBeneficiary', 'ab', Join::WITH, 'ab.removed = 0')
             ->join('ab.assistance', 'a')
             ->join('ab.beneficiary', 'abstB')
             ->join(Beneficiary::class, 'b', Join::WITH, 'b.id=abstB.id AND b.archived = 0')
             ->join('b.smartcards', 's', Join::WITH, 's.beneficiary=b AND s.state=:smartcardStateActive') //filter only bnf with active card
-            ->join('a.location', 'l')
-            ->leftJoin(Location::class, 'l2', Join::WITH, '(l.id = l2.id OR l.lft BETWEEN l2.lft AND l2.rgt) AND l2.lvl = 2 AND l2.countryISO3 = :iso3')
-            ->leftJoin(Location::class, 'l1', Join::WITH, '(l.id = l1.id OR l.lft BETWEEN l1.lft AND l1.rgt) AND l1.lvl = 1 AND l1.countryISO3 = :iso3')
-            ->setParameter('smartcardStateActive', SmartcardStates::ACTIVE)
-            ->setParameter('iso3', $country);
+            ->join('a.location', 'l');
 
-        //if both vendor and assistance has at least adm2 filled, try to filter by adm2. If not, filter by adm1.
-        if (null !== $vendor->getLocation()->getAdm2Id()) {
-            $qb->andWhere('( (l2.id IS NOT NULL AND l2.id = :vendorAdm2Id) OR (l2.id IS NULL AND l1.id = :vendorAdm1Id) )')
-                ->setParameter('vendorAdm1Id', $vendor->getLocation()->getAdm1Id())
-                ->setParameter('vendorAdm2Id', $vendor->getLocation()->getAdm2Id());
-        } else {
-            $qb->andWhere('l1.id = :vendorAdm1Id')
-                ->setParameter('vendorAdm1Id', $vendor->getLocation()->getAdm1Id());
+        //if vendor has adm >= 2 filled, try to filter by adm2        
+        if (null !== $vendorLocation->getAdm2Id()) {
+
+            /** @var Location $vendorLocationAdm2 */
+            $vendorLocationAdm2 = $vendorLocation->getLvl() === 2
+                ? $vendorLocation
+                : $vendorLocation->getLocationByLevel(2);
+            
+            $qbLoc = $locationRepository->addChildrenLocationsQueryBuilder('lc');
+            
+            $qb->andWhere($qb->expr()->orX(
+                $qb->expr()->eq('l.id', ':adm2Id'), //assistance in adm2
+                $qb->expr()->eq('l.id', ':adm1Id'),  //assistance in adm1 only
+                $qb->expr()->exists($qbLoc->getDQL()) //assistance in adm > 2 
+            ))->setParameters([
+                'adm2Id' => $vendorLocationAdm2->getId(),
+                'adm1Id' => $vendorLocationAdm2->getParentLocation()->getId(),
+                'parentRgt' => $vendorLocationAdm2->getRgt(),
+                'parentLft' => $vendorLocationAdm2->getLft(),
+                'parentLvl' => 2,
+            ]);
+        }
+        //vendor location is adm1, filter by assistance in same or children location  
+        else {
+
+            $qbLoc = $locationRepository->addChildrenLocationsQueryBuilder('lc', true);
+
+            $qb->andWhere(
+                $qb->expr()->exists($qbLoc->getDQL())
+            )->setParameters([
+                    'parentRgt' => $vendorLocation->getRgt(),
+                    'parentLft' => $vendorLocation->getLft(),
+                    'parentLvl' => 1,
+                ]);
         }
 
         $qb->andWhere('rp.state = :state')
             ->andWhere('(a.dateExpiration > :currentDate OR a.dateExpiration IS NULL)')
             ->andWhere('a.remoteDistributionAllowed = true')
+            ->setParameter('smartcardStateActive', SmartcardStates::ACTIVE)
+            ->setParameter('iso3', $country)
             ->setParameter('state', ReliefPackageState::TO_DISTRIBUTE)
             ->setParameter('currentDate', new \DateTime());
 

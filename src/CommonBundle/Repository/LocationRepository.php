@@ -148,6 +148,39 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
+     * return query for children locations
+     *
+     * @param string $childAlias
+     * @param bool $withParent - include parent in the query
+     * @return QueryBuilder
+     */
+    public function addChildrenLocationsQueryBuilder(string $childAlias, bool $withParent = false): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder($childAlias);
+        
+        if ($withParent) {
+            //include parent in the query
+            $qb
+                ->andWhere(
+                    $qb->expr()->lte($childAlias.'.rgt', ':parentRgt'),
+                    $qb->expr()->gte($childAlias.'.lft', ':parentLft'),
+                    $qb->expr()->gte($childAlias.'.lvl', ':parentLvl')
+                );
+        }
+        else {
+            //get only children
+            $qb
+                ->andWhere(
+                    $qb->expr()->lt($childAlias.'.rgt', ':parentRgt'),
+                    $qb->expr()->gt($childAlias.'.lft', ':parentLft'),
+                    $qb->expr()->gt($childAlias.'.lvl', ':parentLvl')
+                );
+        }
+            
+        return $qb->andWhere($childAlias . '.countryISO3 = :iso3');
+    }
+
+    /**
      * @param string $childAlias
      * @param string $parentAlias
      * @return QueryBuilder
