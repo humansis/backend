@@ -9,6 +9,7 @@ use NewApiBundle\InputType\Assistance\DistributeReliefPackagesInputType;
 use NewApiBundle\Services\AssistanceDistributionService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class ReliefPackageController extends AbstractOfflineAppController
 {
@@ -32,15 +33,17 @@ class ReliefPackageController extends AbstractOfflineAppController
      *
      * @param DistributeReliefPackagesInputType[] $packages
      *
-     * @return JsonResponse
+     * @return Response
      */
     public function distributePackages(
         array $packages
-    ): JsonResponse {
+    ): Response {
+        $distributionOutput = $this->assistanceDistributionService->distributeByReliefIds($packages, $this->getUser());
+        if (count($distributionOutput->getAlreadyDistributed()) > 0) {
+            return Response::create('', Response::HTTP_ACCEPTED);
+        }
 
-        $this->assistanceDistributionService->distributeByReliefIds($packages, $this->getUser());
-
-        return $this->json(true);
+        return Response::create();
     }
 }
 

@@ -202,7 +202,7 @@ class AssistanceDistributionService
         try {
             $toDistribute = min($targetDistributionAmount, $totalUndistributedAmount);
             $reliefPackage->addAmountOfDistributed($toDistribute);
-            $this->startReliefPackageDitributionWorkflow($reliefPackage, $distributor);
+            $this->startReliefPackageDistributionWorkflow($reliefPackage, $distributor);
             $amount = $toDistribute;
             $reliefPackage->isFullyDistributed() ? $distributeReliefPackageOutputType->addSuccessfullyDistributed($reliefPackage->getId(),
                 $beneficiaryId, $idNumber) : $distributeReliefPackageOutputType->addPartiallyDistributed($reliefPackage->getId(), $beneficiaryId,
@@ -216,7 +216,7 @@ class AssistanceDistributionService
 
     }
 
-    private function startReliefPackageDitributionWorkflow(ReliefPackage $reliefPackage, User $distributor)
+    private function startReliefPackageDistributionWorkflow(ReliefPackage $reliefPackage, User $distributor)
     {
         $reliefPackage->setDistributedBy($distributor);
         // Assistance statistic cache is invalidated by workflow transition
