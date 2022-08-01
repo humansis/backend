@@ -4,14 +4,16 @@ namespace VoucherBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
-use DateTime;
 use DateTimeInterface;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManager;
+use NewApiBundle\Component\Smartcard\Exception\SmartcardActivationDeactivatedException;
+use NewApiBundle\Component\Smartcard\Exception\SmartcardDoubledRegistrationException;
+use NewApiBundle\Component\Smartcard\Exception\SmartcardNotAllowedStateTransition;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\Smartcard\PreliminaryInvoice;
-use NewApiBundle\Enum\CacheTarget;
-use NewApiBundle\Enum\ReliefPackageState;
+use NewApiBundle\InputType\Smartcard\ChangeSmartcardInputType;
+use NewApiBundle\InputType\Smartcard\SmartcardRegisterInputType;
 use NewApiBundle\InputType\SmartcardPurchaseInputType;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Repository\ProjectRepository;
@@ -74,22 +76,76 @@ class SmartcardService
         $this->projectRepository = $projectRepository;
     }
 
-    public function register(string $serialNumber, string $beneficiaryId, DateTime $createdAt): Smartcard
+    /**
+     * @param Smartcard                $smartcard
+     * @param ChangeSmartcardInputType $changeSmartcardInputType
+     *
+     * @return void
+     * @throws SmartcardActivationDeactivatedException
+     * @throws SmartcardNotAllowedStateTransition
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function change(Smartcard $smartcard, ChangeSmartcardInputType $changeSmartcardInputType): void
+    {
+        if ($smartcard->getState() === SmartcardStates::INACTIVE) {
+            throw new SmartcardActivationDeactivatedException($smartcard);
+        }
+
+        if ($smartcard->getState() !== $changeSmartcardInputType->getState()) {
+            if (!SmartcardStates::isTransitionAllowed($smartcard->getState(), $changeSmartcardInputType->getState())) {
+                throw new SmartcardNotAllowedStateTransition($smartcard, $changeSmartcardInputType->getState(),
+                    "Not allowed transition from state {$smartcard->getState()} to {$changeSmartcardInputType->getState()}.");
+            }
+            $smartcard->setState($changeSmartcardInputType->getState());
+            $smartcard->setChangedAt($changeSmartcardInputType->getCreatedAt());
+            $this->smartcardRepository->save($smartcard);
+        }
+    }
+
+    /**
+     * @param SmartcardRegisterInputType $registerInputType
+     *
+     * @return Smartcard
+     * @throws SmartcardDoubledRegistrationException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function register(SmartcardRegisterInputType $registerInputType): Smartcard
     {
         /** @var Beneficiary $beneficiary */
-        $beneficiary = $this->beneficiaryRepository->find($beneficiaryId);
-        $smartcard = $this->getActualSmartcardOrCreateNew($serialNumber, $beneficiary, $createdAt);
+        $beneficiary = $this->beneficiaryRepository->find($registerInputType->getBeneficiaryId());
+        $smartcard = $this->getActualSmartcardOrCreateNew($registerInputType->getSerialNumber(), $beneficiary, $registerInputType->getCreatedAt());
+        $this->checkSmartcardRegistrationDuplicity($smartcard, $registerInputType->getCreatedAt());
         $smartcard->setSuspicious(false, null);
+        $smartcard->setRegisteredAt($registerInputType->getCreatedAt());
 
         if ($beneficiary) {
             $smartcard->setBeneficiary($beneficiary);
         } else {
-            $smartcard->setSuspicious(true, "Beneficiary #$beneficiaryId does not exists");
+            $smartcard->setSuspicious(true, "Beneficiary #{$registerInputType->getBeneficiaryId()} does not exists");
         }
 
         $this->smartcardRepository->save($smartcard);
 
         return $smartcard;
+    }
+
+    /**
+     * @param Smartcard         $smartcard
+     * @param DateTimeInterface $registrationDateTime
+     *
+     * @return void
+     * @throws SmartcardDoubledRegistrationException
+     */
+    private function checkSmartcardRegistrationDuplicity(Smartcard $smartcard, DateTimeInterface $registrationDateTime): void
+    {
+        if (is_null($smartcard->getRegisteredAt())) {
+            return;
+        }
+        if ($smartcard->getRegisteredAt()->getTimestamp() === $registrationDateTime->getTimestamp()) {
+            throw new SmartcardDoubledRegistrationException($smartcard);
+        }
     }
 
     /**
