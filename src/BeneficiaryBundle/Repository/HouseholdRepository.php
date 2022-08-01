@@ -214,9 +214,9 @@ class HouseholdRepository extends AbstractCriteriaRepository
 
         if ($filter->hasFulltext()) {
             
-            $qbl1 = $this->locationRepository->addParentLocationFulltextSubQueryBuilder('l', 'l1');
-            $qbl2 = $this->locationRepository->addParentLocationFulltextSubQueryBuilder('l', 'l2');
-            $qbl3 = $this->locationRepository->addParentLocationFulltextSubQueryBuilder('l', 'l3');
+            $qbl1 = $this->locationRepository->addParentLocationFulltextSubQueryBuilder(1, 'l', 'l1');
+            $qbl2 = $this->locationRepository->addParentLocationFulltextSubQueryBuilder(2, 'l', 'l2');
+            $qbl3 = $this->locationRepository->addParentLocationFulltextSubQueryBuilder(3, 'l', 'l3');
             
             $qb->andWhere($qb->expr()->orX(
                     $qb->expr()->like("CONCAT(
@@ -234,10 +234,17 @@ class HouseholdRepository extends AbstractCriteriaRepository
                     $qb->expr()->in('l.parentLocation', $qbl2->getDQL()),
                     $qb->expr()->in('l.parentLocation', $qbl3->getDQL())
                 ))
-                ->setParameter('fulltext', '%'.$filter->getFulltext().'%')
-                ->setParameter('l1Level', 1)
-                ->setParameter('l2Level', 2)
-                ->setParameter('l3Level', 3);
+                ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+
+            foreach ($qbl1->getParameters() as $parameter) {
+                $qb->setParameter($parameter->getName(), $parameter->getValue());
+            }
+            foreach ($qbl2->getParameters() as $parameter) {
+                $qb->setParameter($parameter->getName(), $parameter->getValue());
+            }
+            foreach ($qbl3->getParameters() as $parameter) {
+                $qb->setParameter($parameter->getName(), $parameter->getValue());
+            }
         }
 
         if ($filter->hasGender()) {

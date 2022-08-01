@@ -150,11 +150,16 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
     /**
      * return query for children locations
      *
+     * @param Location $ancestor
      * @param string $childAlias
      * @param bool $withParent - include parent in the query
      * @return QueryBuilder
      */
-    public function addChildrenLocationsQueryBuilder(string $childAlias = 'subqChildLoc', bool $withParent = false): QueryBuilder
+    public function addChildrenLocationsQueryBuilder(
+        Location $ancestor,
+        string $childAlias = 'subqChildLoc',
+        bool $withParent = false
+    ): QueryBuilder
     {
         $qb = $this->createQueryBuilder($childAlias);
         
@@ -177,15 +182,22 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
                 );
         }
             
-        return $qb->andWhere($childAlias . '.countryISO3 = :iso3');
+        return $qb->andWhere($childAlias . '.countryISO3 = :iso3')
+            ->setParameters([
+                'parentRgt' => $ancestor->getRgt(),
+                'parentLft' => $ancestor->getLft(),
+                'parentLvl' => $ancestor->getLvl(),
+            ]);
     }
 
     /**
+     * @param int $level
      * @param string $childAlias
      * @param string $parentAlias
      * @return QueryBuilder
      */
     public function addParentLocationFulltextSubQueryBuilder(
+        int $level,
         string $childAlias,
         string $parentAlias = 'subqParentLoc'
     ): QueryBuilder
@@ -198,7 +210,8 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
                 $parentAlias . '.rgt'))
             ->andWhere($parentAlias . '.lvl = :' . $parentAlias . 'Level')
             ->andWhere($parentAlias . '.countryISO3 = :iso3')
-            ->andWhere($parentAlias . '.name like :fulltext');
+            ->andWhere($parentAlias . '.name like :fulltext')
+            ->setParameter($parentAlias . 'Level', $level);
     }
 
     /**

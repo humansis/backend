@@ -90,7 +90,7 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
                 ? $vendorLocation
                 : $vendorLocation->getLocationByLevel(2);
             
-            $qbLoc = $locationRepository->addChildrenLocationsQueryBuilder();
+            $qbLoc = $locationRepository->addChildrenLocationsQueryBuilder($vendorLocationAdm2);
             
             $qb->andWhere($qb->expr()->orX(
                 $qb->expr()->eq('l.id', ':adm2Id'), //assistance in adm2
@@ -99,23 +99,16 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
             ))->setParameters([
                 'adm2Id' => $vendorLocationAdm2->getId(),
                 'adm1Id' => $vendorLocationAdm2->getParentLocation()->getId(),
-                'parentRgt' => $vendorLocationAdm2->getRgt(),
-                'parentLft' => $vendorLocationAdm2->getLft(),
-                'parentLvl' => 2,
             ]);
         }
         //vendor location is adm1, filter by assistance in same or children location  
         else {
 
-            $qbLoc = $locationRepository->addChildrenLocationsQueryBuilder('lc', true);
+            $qbLoc = $locationRepository->addChildrenLocationsQueryBuilder($vendorLocation, 'lc', true);
 
             $qb->andWhere(
                 $qb->expr()->exists($qbLoc->getDQL())
-            )->setParameters([
-                    'parentRgt' => $vendorLocation->getRgt(),
-                    'parentLft' => $vendorLocation->getLft(),
-                    'parentLvl' => 1,
-                ]);
+            );
         }
 
         $qb->andWhere('rp.state = :state')
@@ -125,6 +118,10 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('iso3', $country)
             ->setParameter('state', ReliefPackageState::TO_DISTRIBUTE)
             ->setParameter('currentDate', new \DateTime());
+
+        foreach ($qbLoc->getParameters() as $parameter) {
+            $qb->setParameter($parameter->getName(), $parameter->getValue());
+        }
 
         return new Paginator($qb);
     }
