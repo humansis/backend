@@ -214,11 +214,9 @@ class HouseholdRepository extends AbstractCriteriaRepository
 
         if ($filter->hasFulltext()) {
             
-            $qbl = [
-                'l1' => $this->locationRepository->addParentLocationFulltextSubQueryBuilder('l', 'l1'),
-                'l2' => $this->locationRepository->addParentLocationFulltextSubQueryBuilder('l', 'l2'),
-                'l3' => $this->locationRepository->addParentLocationFulltextSubQueryBuilder('l', 'l3'),
-            ];
+            $qbl1 = $this->locationRepository->addParentLocationFulltextSubQueryBuilder('l', 'l1');
+            $qbl2 = $this->locationRepository->addParentLocationFulltextSubQueryBuilder('l', 'l2');
+            $qbl3 = $this->locationRepository->addParentLocationFulltextSubQueryBuilder('l', 'l3');
             
             $qb->andWhere($qb->expr()->orX(
                     $qb->expr()->like("CONCAT(
@@ -232,9 +230,9 @@ class HouseholdRepository extends AbstractCriteriaRepository
                             COALESCE(vb.fieldString, ''),
                             COALESCE(ni.idNumber, '')
                         )", ":fulltext"),
-                    $qb->expr()->in('l.parentLocation', $qbl['l1']->getDQL()),
-                    $qb->expr()->in('l.parentLocation', $qbl['l2']->getDQL()),
-                    $qb->expr()->in('l.parentLocation', $qbl['l3']->getDQL())
+                    $qb->expr()->in('l.parentLocation', $qbl1->getDQL()),
+                    $qb->expr()->in('l.parentLocation', $qbl2->getDQL()),
+                    $qb->expr()->in('l.parentLocation', $qbl3->getDQL())
                 ))
                 ->setParameter('fulltext', '%'.$filter->getFulltext().'%')
                 ->setParameter('l1Level', 1)
