@@ -90,7 +90,7 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
                 ? $vendorLocation
                 : $vendorLocation->getLocationByLevel(2);
             
-            $qbLoc = $locationRepository->addChildrenLocationsQueryBuilder('lc');
+            $qbLoc = $locationRepository->addChildrenLocationsQueryBuilder();
             
             $qb->andWhere($qb->expr()->orX(
                 $qb->expr()->eq('l.id', ':adm2Id'), //assistance in adm2

@@ -154,7 +154,7 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
      * @param bool $withParent - include parent in the query
      * @return QueryBuilder
      */
-    public function addChildrenLocationsQueryBuilder(string $childAlias, bool $withParent = false): QueryBuilder
+    public function addChildrenLocationsQueryBuilder(string $childAlias = 'subqChildLoc', bool $withParent = false): QueryBuilder
     {
         $qb = $this->createQueryBuilder($childAlias);
         
@@ -187,7 +187,7 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
      */
     public function addParentLocationFulltextSubQueryBuilder(
         string $childAlias,
-        string $parentAlias
+        string $parentAlias = 'subqParentLoc'
     ): QueryBuilder
     {
         $qb = $this->createQueryBuilder($parentAlias);
