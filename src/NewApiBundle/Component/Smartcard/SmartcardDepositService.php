@@ -5,25 +5,30 @@ namespace NewApiBundle\Component\Smartcard;
 
 use CommonBundle\InputType\RequestConverter;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
+use NewApiBundle\Component\Smartcard\Deposit\DepositFactory;
+use NewApiBundle\Component\Smartcard\Deposit\Exception\DoubledDepositException;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\SynchronizationBatch\Deposits;
+use NewApiBundle\InputType\Smartcard\DepositInputType;
 use NewApiBundle\InputType\SynchronizationBatch\CreateDepositInputType;
+use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
 use NewApiBundle\Workflow\SynchronizationBatchTransitions;
+use Psr\Cache\InvalidArgumentException;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\TransitionBlocker;
 use UserBundle\Entity\User;
-use VoucherBundle\Utils\SmartcardService;
+use VoucherBundle\Repository\SmartcardDepositRepository;
 
 class SmartcardDepositService
 {
     /** @var EntityManager */
     private $em;
-
-    /** @var SmartcardService */
-    private $smartcardService;
 
     /** @var Registry $workflowRegistry */
     private $workflowRegistry;
@@ -31,18 +36,75 @@ class SmartcardDepositService
     /** @var ValidatorInterface */
     private $validator;
 
-    public function __construct(EntityManager      $em,
-                                SmartcardService   $smartcardService,
-                                Registry           $workflowRegistry,
-                                ValidatorInterface $validator
+    /**
+     * @var DepositFactory
+     */
+    private $depositFactory;
+
+    /**
+     * @var ReliefPackageRepository
+     */
+    private $reliefPackageRepository;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @var SmartcardDepositRepository
+     */
+    private $smartcardDepositRepository;
+
+    public function __construct(
+        EntityManager              $em,
+        Registry                   $workflowRegistry,
+        ValidatorInterface         $validator,
+        DepositFactory             $depositFactory,
+        ReliefPackageRepository    $reliefPackageRepository,
+        LoggerInterface            $logger,
+        SmartcardDepositRepository $smartcardDepositRepository
     )
     {
         $this->em = $em;
-        $this->smartcardService = $smartcardService;
         $this->workflowRegistry = $workflowRegistry;
         $this->validator = $validator;
+        $this->depositFactory = $depositFactory;
+        $this->reliefPackageRepository = $reliefPackageRepository;
+        $this->logger = $logger;
+        $this->smartcardDepositRepository = $smartcardDepositRepository;
     }
 
+    /**
+     * @param string        $smartcardSerialNumber
+     * @param int           $timestamp
+     * @param               $value
+     * @param ReliefPackage $reliefPackage
+     *
+     * @return string
+     */
+    public static function generateDepositHash(string $smartcardSerialNumber, int $timestamp, $value, ReliefPackage $reliefPackage): string
+    {
+        return md5($smartcardSerialNumber.
+            '-'.
+            $timestamp.
+            '-'.
+            $value.
+            '-'.
+            $reliefPackage->getUnit().
+            '-'.
+            $reliefPackage->getId()
+        );
+    }
+
+    /**
+     * @param Deposits $deposits
+     *
+     * @return void
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Psr\Cache\InvalidArgumentException
+     */
     public function validateSync(Deposits $deposits): void
     {
         $workflow = $this->workflowRegistry->get($deposits);
@@ -59,7 +121,7 @@ class SmartcardDepositService
             $violation = $this->validator->validate($depositInput);
 
             if ($depositInput->getReliefPackageId()) {
-                $reliefPackage = $this->em->getRepository(ReliefPackage::class)->find($depositInput->getReliefPackageId());
+                $reliefPackage = $this->reliefPackageRepository->find($depositInput->getReliefPackageId());
                 if (null == $reliefPackage) {
                     $violation->add(new ConstraintViolation(
                         "ReliefPackage #{$depositInput->getReliefPackageId()} doesn't exits",
@@ -116,20 +178,36 @@ class SmartcardDepositService
         }
     }
 
-    public function deposit(CreateDepositInputType $input, User $user)
+    /**
+     * @param CreateDepositInputType $input
+     * @param User                   $user
+     *
+     * @return void
+     * @throws InvalidArgumentException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    private function deposit(CreateDepositInputType $input, User $user)
     {
-        $reliefPackage = $this->em->getRepository(ReliefPackage::class)->find($input->getReliefPackageId());
+        $reliefPackage = $this->reliefPackageRepository->find($input->getReliefPackageId());
         if (null == $reliefPackage) {
             throw new \InvalidArgumentException("ReliefPackage #{$input->getReliefPackageId()} doesn't exits");
         }
-        $this->smartcardService->deposit(
-            $input->getSmartcardSerialNumber(),
-            $reliefPackage->getId(),
-            $reliefPackage->getAmountToDistribute(),
-            $input->getBalanceAfter(),
-            $input->getCreatedAt(),
-            $user
-        );
+
+        try {
+            $this->depositFactory->create(
+                $input->getSmartcardSerialNumber(),
+                DepositInputType::create(
+                    $reliefPackage->getId(),
+                    $reliefPackage->getAmountToDistribute(),
+                    $input->getBalanceAfter(),
+                    $input->getCreatedAt()
+                ),
+                $user
+            );
+        } catch (DoubledDepositException $e) {
+            $this->logger->info("Creation of deposit with hash {$e->getDeposit()->getHash()} was omitted. It's already set in Deposit #{$e->getDeposit()->getId()}");
+        }
     }
 
 }

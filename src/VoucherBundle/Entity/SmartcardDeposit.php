@@ -98,9 +98,12 @@ class SmartcardDeposit
      */
     private $message;
 
-    protected function __construct()
-    {
-    }
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="hash", type="string", nullable=true)
+     */
+    private $hash;
 
     public static function create(
         Smartcard         $smartcard,
@@ -109,6 +112,7 @@ class SmartcardDeposit
                           $value,
                           $balance,
         DateTimeInterface $distributedAt,
+        string            $hash,
         bool              $suspicious = false,
         ?array            $message = null
     ): SmartcardDeposit {
@@ -120,6 +124,7 @@ class SmartcardDeposit
         $entity->balance = $balance;
         $entity->smartcard = $smartcard;
         $entity->suspicious = $suspicious;
+        $entity->hash = $hash;
         $entity->message = $message;
 
         $smartcard->addDeposit($entity);
@@ -225,6 +230,32 @@ class SmartcardDeposit
     public function setMessage(?array $message): void
     {
         $this->message = $message;
+    }
+
+    /**
+     * @param string $message
+     *
+     * @return void
+     */
+    public function addMessage(string $message): void
+    {
+        $this->message[] = $message;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getHash(): ?string
+    {
+        return $this->hash;
+    }
+
+    /**
+     * @param string|null $hash
+     */
+    public function setHash(?string $hash): void
+    {
+        $this->hash = $hash;
     }
 
 }

@@ -32,6 +32,16 @@ services:
         arguments:
             - VoucherBundle\Entity\SmartcardPurchase
 
+    VoucherBundle\Repository\SmartcardDepositRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - VoucherBundle\Entity\SmartcardDeposit
+
+    VoucherBundle\Repository\SmartcardRepository:
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        arguments:
+            - VoucherBundle\Entity\Smartcard
+
     VoucherBundle\Repository\SmartcardPurchaseRepository:
         alias: smartcard_purchase.repository
 
@@ -77,14 +87,12 @@ services:
 
     smartcard_service:
         class: VoucherBundle\Utils\SmartcardService
+        autowire: true
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@voucher.purchase_service'
-            - '@workflow.registry'
-            - '@logger'
-            - '@cache.app'
-            - '@=service("doctrine.orm.entity_manager").getRepository("DistributionBundle:AssistanceBeneficiary")'
-            - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:Assistance\\ReliefPackage")'
+            - '@VoucherBundle\Repository\SmartcardRepository'
+            - '@smartcard_purchase.repository'
         public: true
 
     VoucherBundle\Mapper\SmartcardMapper:

@@ -6,7 +6,6 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation as Serializer;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use VoucherBundle\Enum\SmartcardStates;
 
@@ -97,6 +96,21 @@ class Smartcard
      * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
      */
     private $disabledAt;
+
+
+    /**
+     * @var \DateTimeInterface
+     *
+     * @ORM\Column(name="registered_at", type="datetime", nullable=true)
+     */
+    private $registeredAt;
+
+    /**
+     * @var \DateTimeInterface
+     *
+     * @ORM\Column(name="changed_at", type="datetime", nullable=true)
+     */
+    private $changedAt;
 
     /**
      * @var bool
@@ -335,4 +349,37 @@ class Smartcard
     {
         return self::STATE_ACTIVE === $this->state;
     }
+
+    /**
+     * @return \DateTimeInterface|null
+     */
+    public function getRegisteredAt(): ?\DateTimeInterface
+    {
+        return $this->registeredAt;
+    }
+
+    /**
+     * @param \DateTimeInterface $registeredAt
+     */
+    public function setRegisteredAt(\DateTimeInterface $registeredAt): void
+    {
+        $this->registeredAt = $registeredAt;
+    }
+
+    /**
+     * @return \DateTimeInterface|null
+     */
+    public function getChangedAt(): ?\DateTimeInterface
+    {
+        return $this->changedAt;
+    }
+
+    /**
+     * @param \DateTimeInterface $changedAt
+     */
+    public function setChangedAt(\DateTimeInterface $changedAt): void
+    {
+        $this->changedAt = $changedAt;
+    }
+
 }

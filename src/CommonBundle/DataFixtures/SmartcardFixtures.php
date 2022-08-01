@@ -8,15 +8,18 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Component\Smartcard\Deposit\DepositFactory;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ModalityType;
+use NewApiBundle\InputType\Smartcard\DepositInputType;
+use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Smartcard;
-use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Model\PurchaseService;
+use VoucherBundle\Repository\SmartcardRepository;
 use VoucherBundle\Utils\SmartcardService;
 
 class SmartcardFixtures extends Fixture implements DependentFixtureInterface
@@ -35,15 +38,43 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
     private $purchaseService;
 
     /**
-     * @param string           $environment
-     * @param SmartcardService $smartcardService
-     * @param PurchaseService  $purchaseService
+     * @var DepositFactory
      */
-    public function __construct(string $environment, SmartcardService $smartcardService, PurchaseService $purchaseService)
+    private $depositFactory;
+
+    /**
+     * @var ReliefPackageRepository
+     */
+    private $reliefPackageRepository;
+
+    /**
+     * @var SmartcardRepository
+     */
+    private $smartcardRepository;
+
+    /**
+     * @param string                  $environment
+     * @param SmartcardService        $smartcardService
+     * @param PurchaseService         $purchaseService
+     * @param DepositFactory          $depositFactory
+     * @param ReliefPackageRepository $reliefPackageRepository
+     * @param SmartcardRepository     $smartcardRepository
+     */
+    public function __construct(
+        string                  $environment,
+        SmartcardService        $smartcardService,
+        PurchaseService         $purchaseService,
+        DepositFactory          $depositFactory,
+        ReliefPackageRepository $reliefPackageRepository,
+        SmartcardRepository     $smartcardRepository
+    )
     {
         $this->environment = $environment;
         $this->smartcardService = $smartcardService;
         $this->purchaseService = $purchaseService;
+        $this->depositFactory = $depositFactory;
+        $this->reliefPackageRepository = $reliefPackageRepository;
+        $this->smartcardRepository = $smartcardRepository;
     }
 
     /**
@@ -139,16 +170,18 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
 
     private function generateDeposits(ObjectManager $manager, AssistanceBeneficiary $ab, Vendor $vendor): void
     {
-        $packages = $manager->getRepository(ReliefPackage::class)->findBy(['assistanceBeneficiary' => $ab], ['id' => 'asc']);
+        $packages = $this->reliefPackageRepository->findBy(['assistanceBeneficiary' => $ab], ['id' => 'asc']);
 
         foreach ($packages as $package) {
             $i = rand(5, 10);
-            $this->smartcardService->deposit(
+            $this->depositFactory->create(
                 $ab->getBeneficiary()->getSmartcardSerialNumber(),
-                $package->getId(),
-                $package->getAmountToDistribute(),
-                null,
-                new DateTimeImmutable("now-${i} days"),
+                DepositInputType::create(
+                    $package->getId(),
+                    $package->getAmountToDistribute(),
+                    null,
+                    new DateTimeImmutable("now-${i} days")
+                ),
                 $this->randomEntity(User::class, $manager)
             );
         }
@@ -156,7 +189,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
 
     private function generatePurchases(ObjectManager $manager, AssistanceBeneficiary $ab, Vendor $vendor): void
     {
-        $smartcard = $manager->getRepository(Smartcard::class)->findOneBy(['serialNumber' => $ab->getBeneficiary()->getSmartcardSerialNumber()], ['id' => 'desc']);
+        $smartcard = $this->smartcardRepository->findActiveBySerialNumber($ab->getBeneficiary()->getSmartcardSerialNumber());
         for ($j = 0; $j < rand(0, 50); ++$j) {
             $this->generatePurchase($j, $smartcard, $vendor, $j > 3 ? $ab->getAssistance() : null, $manager);
         }

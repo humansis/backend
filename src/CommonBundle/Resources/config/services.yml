@@ -280,6 +280,7 @@ services:
 
     CommonBundle\DataFixtures\SmartcardFixtures:
         public: true
+        autowire: true
         arguments:
             - "@=service('kernel').getEnvironment()"
             - '@smartcard_service'

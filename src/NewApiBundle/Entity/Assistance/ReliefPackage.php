@@ -236,14 +236,14 @@ class ReliefPackage
      *
      * @return void
      */
-    public function addAmountOfDistributed($amountDistributed): void
+    public function addDistributedAmount($amountDistributed): void
     {
         $this->setAmountDistributed((string) ((float) $this->amountDistributed + (float) $amountDistributed));
     }
 
     public function distributeRest(): void
     {
-        $this->addAmountOfDistributed($this->getCurrentUndistributedAmount());
+        $this->addDistributedAmount($this->getCurrentUndistributedAmount());
     }
 
     /**
