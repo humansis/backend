@@ -88,7 +88,7 @@ class Household extends AbstractBeneficiary
     /**
      * @var Collection|Beneficiary[]
      *
-     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Beneficiary", mappedBy="household", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Beneficiary", mappedBy="household", fetch="EAGER", cascade={"persist"})
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers"})
      */
     private $beneficiaries;
