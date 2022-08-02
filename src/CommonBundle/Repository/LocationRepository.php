@@ -148,6 +148,73 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
+     * return query for children locations
+     *
+     * @param Location $ancestor
+     * @param string $childAlias
+     * @param bool $withParent - include parent in the query
+     * @return QueryBuilder
+     */
+    public function addChildrenLocationsQueryBuilder(
+        Location $ancestor,
+        string $childAlias = 'subqChildLoc',
+        bool $withParent = false
+    ): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder($childAlias);
+        
+        if ($withParent) {
+            //include parent in the query
+            $qb
+                ->andWhere(
+                    $qb->expr()->lte($childAlias.'.rgt', ':parentRgt'),
+                    $qb->expr()->gte($childAlias.'.lft', ':parentLft'),
+                    $qb->expr()->gte($childAlias.'.lvl', ':parentLvl')
+                );
+        }
+        else {
+            //get only children
+            $qb
+                ->andWhere(
+                    $qb->expr()->lt($childAlias.'.rgt', ':parentRgt'),
+                    $qb->expr()->gt($childAlias.'.lft', ':parentLft'),
+                    $qb->expr()->gt($childAlias.'.lvl', ':parentLvl')
+                );
+        }
+            
+        return $qb->andWhere($childAlias . '.countryISO3 = :iso3')
+            ->setParameters([
+                'parentRgt' => $ancestor->getRgt(),
+                'parentLft' => $ancestor->getLft(),
+                'parentLvl' => $ancestor->getLvl(),
+            ]);
+    }
+
+    /**
+     * @param int $level
+     * @param string $childAlias
+     * @param string $parentAlias
+     * @return QueryBuilder
+     */
+    public function addParentLocationFulltextSubQueryBuilder(
+        int $level,
+        string $childAlias,
+        string $parentAlias = 'subqParentLoc'
+    ): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder($parentAlias);
+        return $qb
+            ->andWhere($qb->expr()->between(
+                $childAlias .'.lft', 
+                $parentAlias . '.lft',
+                $parentAlias . '.rgt'))
+            ->andWhere($parentAlias . '.lvl = :' . $parentAlias . 'Level')
+            ->andWhere($parentAlias . '.countryISO3 = :iso3')
+            ->andWhere($parentAlias . '.name like :fulltext')
+            ->setParameter($parentAlias . 'Level', $level);
+    }
+
+    /**
      * @param LocationFilterInputType $filter
      * @param string|null             $iso3
      *
