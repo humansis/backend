@@ -2,9 +2,9 @@
 
 namespace Tests\NewApiBundle\Secret;
 
-use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-class SecretTest extends TestCase
+class SecretTest extends KernelTestCase
 {
     public static function setUpBeforeClass()
     {
