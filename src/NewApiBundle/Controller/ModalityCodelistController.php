@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use CommonBundle\Pagination\Paginator;
-use DistributionBundle\Entity\Modality;
-use DistributionBundle\Entity\ModalityType;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Enum\Domain;
+use NewApiBundle\Enum\Modality;
+use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Services\CodeListService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -33,7 +33,7 @@ class ModalityCodelistController extends AbstractController
      */
     public function modalities(): JsonResponse
     {
-        $data = $this->codeListService->mapEnum(\NewApiBundle\Enum\Modality::values(), Domain::ENUMS);
+        $data = $this->codeListService->mapEnum(Modality::values(), Domain::ENUMS);
         
         return $this->json(new Paginator($data));
     }
@@ -45,7 +45,7 @@ class ModalityCodelistController extends AbstractController
      */
     public function allTypes(): JsonResponse
     {
-        $data = $this->codeListService->mapEnum(\NewApiBundle\Enum\ModalityType::values(), Domain::ENUMS);
+        $data = $this->codeListService->mapEnum(ModalityType::getPublicValues(), Domain::ENUMS);
 
         return $this->json(new Paginator($data));
     }
@@ -59,7 +59,7 @@ class ModalityCodelistController extends AbstractController
      */
     public function types(string $code): JsonResponse
     {
-        $data = $this->codeListService->mapEnum(\NewApiBundle\Enum\Modality::getModalityTypes($code), Domain::ENUMS);
+        $data = $this->codeListService->mapEnum(Modality::getModalityTypes($code), Domain::ENUMS);
 
         return $this->json(new Paginator($data));
     }

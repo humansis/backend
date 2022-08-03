@@ -45,26 +45,31 @@ final class Modality
         ];
     }
 
-    public static function getModalityTypes(?string $modality = null): array
+    public static function getModalityTypes(?string $modality = null, bool $includeInternal = false): array
     {
+        $modalityTypes = [];
         switch ($modality) {
             case self::CASH:
-                return self::CASH_TYPES;
+                $modalityTypes = self::CASH_TYPES;
+                break;
 
             case self::VOUCHER:
-                return self::VOUCHER_TYPES;
+                $modalityTypes = self::VOUCHER_TYPES;
+                break;
 
             case self::IN_KIND:
-                return self::IN_KIND_TYPES;
+                $modalityTypes = self::IN_KIND_TYPES;
+                break;
 
             case self::OTHER:
-                return self::OTHER_TYPES;
+                $modalityTypes = self::OTHER_TYPES;
+                break;
 
             case null:
-                return array_merge(self::CASH_TYPES, self::VOUCHER_TYPES, self::IN_KIND_TYPES, self::OTHER_TYPES);
-
-            default:
-                return [];
+                $modalityTypes = array_merge(self::CASH_TYPES, self::VOUCHER_TYPES, self::IN_KIND_TYPES, self::OTHER_TYPES);
+                break;
         }
+
+        return $includeInternal ? $modalityTypes : array_intersect($modalityTypes, ModalityType::getPublicValues());
     }
 }
