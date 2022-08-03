@@ -33,11 +33,7 @@ class ModalityCodelistController extends AbstractController
      */
     public function modalities(): JsonResponse
     {
-        $modalities = $this->getDoctrine()
-            ->getRepository(Modality::class)
-            ->getNames();
-
-        $data = $this->codeListService->mapEnum($modalities, Domain::ENUMS);
+        $data = $this->codeListService->mapEnum(\NewApiBundle\Enum\Modality::values(), Domain::ENUMS);
         
         return $this->json(new Paginator($data));
     }
@@ -49,11 +45,7 @@ class ModalityCodelistController extends AbstractController
      */
     public function allTypes(): JsonResponse
     {
-        $types = $this->getDoctrine()
-            ->getRepository(ModalityType::class)
-            ->getPublicNames();
-
-        $data = $this->codeListService->mapEnum($types, Domain::ENUMS);
+        $data = $this->codeListService->mapEnum(\NewApiBundle\Enum\ModalityType::values(), Domain::ENUMS);
 
         return $this->json(new Paginator($data));
     }
@@ -67,11 +59,7 @@ class ModalityCodelistController extends AbstractController
      */
     public function types(string $code): JsonResponse
     {
-        $types = $this->getDoctrine()
-            ->getRepository(ModalityType::class)
-            ->getPublicNames($code);
-
-        $data = $this->codeListService->mapEnum($types, Domain::ENUMS);
+        $data = $this->codeListService->mapEnum(\NewApiBundle\Enum\Modality::getModalityTypes($code), Domain::ENUMS);
 
         return $this->json(new Paginator($data));
     }

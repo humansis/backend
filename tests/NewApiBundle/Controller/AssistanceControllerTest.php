@@ -687,8 +687,6 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         /** @var AssistanceRepository $assistanceRepository */
         $assistanceRepository = self::$container->get('doctrine')->getRepository(Assistance::class);
-        /** @var ModalityTypeRepository $modalityTypeRepository */
-        $modalityTypeRepository = self::$container->get('doctrine')->getRepository(ModalityType::class);
         /** @var Assistance $assistance */
 
         $commodityData = ['value' => 1, 'unit' => 'USD', 'modality_type' => \NewApiBundle\Enum\ModalityType::CASH, 'description' => 'Note'];
