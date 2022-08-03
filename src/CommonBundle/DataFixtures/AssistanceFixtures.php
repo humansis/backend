@@ -151,7 +151,6 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             ProjectFixtures::class,
             BeneficiaryFixtures::class,
             BeneficiaryTestFixtures::class,
-            ModalityFixtures::class,
         ];
     }
 

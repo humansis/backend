@@ -136,10 +136,6 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\ModalityFixtures:
-        tags:
-            - { name: doctrine.fixture.orm }
-
     CommonBundle\DataFixtures\ProjectFixtures:
         public: true
         arguments:
