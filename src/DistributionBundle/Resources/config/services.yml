@@ -54,12 +54,6 @@ services:
             - '@doctrine.orm.entity_manager'
             - '%distribution.criteria%'
 
-    distribution.modality_service:
-        class: DistributionBundle\Utils\ModalityService
-        public: true
-        arguments:
-            - '@doctrine.orm.entity_manager'
-
     distribution.commodity_service:
         class: DistributionBundle\Utils\CommodityService
         public: true
