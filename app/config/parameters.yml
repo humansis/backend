@@ -15,7 +15,7 @@ parameters:
     mailer_port: 587
     mailer_encryption: tls
 
-    secret: ThisTokenIsNotSoSecretChangeIt
+    secret: '%env(SYMFONY_SECRET)%'
     aws_access_key_id: '%env(AWS_ACCESS_KEY)%'
     aws_secret_access_key: '%env(AWS_SECRET_KEY)%'
     aws_s3_region: eu-central-1
