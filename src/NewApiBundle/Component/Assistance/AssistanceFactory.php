@@ -241,7 +241,6 @@ class AssistanceFactory
         return new Domain\Assistance(
             $assistance,
             $this->cache,
-            $this->modalityTypeRepository,
             $this->assistanceStatisticRepository,
             $this->workflowRegistry,
             $this->targetRepository,
