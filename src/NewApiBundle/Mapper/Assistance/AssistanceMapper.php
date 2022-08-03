@@ -8,6 +8,7 @@ use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Component\Assistance\Domain;
 use DistributionBundle\Utils\AssistanceService;
 use NewApiBundle\Entity\ScoringBlueprint;
+use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Serializer\MapperInterface;
 
 class AssistanceMapper implements MapperInterface
@@ -140,7 +141,7 @@ class AssistanceMapper implements MapperInterface
     {
         $result = [];
         foreach ($this->object->getCommodities() as $commodity) {
-            if ('Activity item' === $commodity->getModalityType()->getName()) {
+            if (ModalityType::ACTIVITY_ITEM === $commodity->getModalityType()) {
                 continue;
             }
 

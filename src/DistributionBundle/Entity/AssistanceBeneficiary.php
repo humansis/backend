@@ -114,7 +114,7 @@ class AssistanceBeneficiary
     {
         foreach ($this->getAssistance()->getCommodities() as $commodity) {
             /** @var Commodity $commodity */
-            if ('Smartcard' === $commodity->getModalityType()->getName()) {
+            if (\NewApiBundle\Enum\ModalityType::SMART_CARD === $commodity->getModalityType()) {
                 return count($this->getSmartcardDeposits()) > 0;
             }
         }

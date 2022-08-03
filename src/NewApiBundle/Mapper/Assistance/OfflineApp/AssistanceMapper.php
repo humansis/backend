@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Mapper\Assistance\OfflineApp;
 
 use DistributionBundle\Entity\Assistance;
+use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Repository\AssistanceStatisticsRepository;
 use NewApiBundle\Serializer\MapperInterface;
 
@@ -86,7 +87,7 @@ class AssistanceMapper implements MapperInterface
     {
         $result = [];
         foreach ($this->object->getCommodities() as $commodity) {
-            if ('Activity item' === $commodity->getModalityType()->getName()) {
+            if (ModalityType::ACTIVITY_ITEM === $commodity->getModalityType()) {
                 continue;
             }
 

@@ -10,6 +10,7 @@ use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use NewApiBundle\Enum\CacheTarget;
+use NewApiBundle\Enum\ModalityType;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\InvalidArgumentException;
 use Swift_Attachment;
@@ -87,7 +88,7 @@ class TransactionService
     {
         $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
 
-        if ($assistance->getCommodities()[0]->getModalityType()->getName() === "Mobile Money") {
+        if ($assistance->getCommodities()[0]->getModalityType() === ModalityType::MOBILE_MONEY) {
             $amountToSend = $assistance->getCommodities()[0]->getValue();
             $currencyToSend = $assistance->getCommodities()[0]->getUnit();
         } else {

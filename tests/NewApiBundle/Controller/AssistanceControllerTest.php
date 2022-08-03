@@ -241,9 +241,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There needs to be at least one project and location in system for completing this test');
         }
 
-        /** @var ModalityType $smartcardModalityType */
-        $smartcardModalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findOneBy(['name' => 'Smartcard'], ['id' => 'asc']);
-        $cashModalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findOneBy(['name' => 'Cash'], ['id' => 'asc']);
+        $smartcardModalityType = \NewApiBundle\Enum\ModalityType::SMART_CARD;
+        $cashModalityType = \NewApiBundle\Enum\ModalityType::CASH;
 
         $this->request('POST', '/api/basic/web-app/v1/assistances/commodities', [
             'iso3' => 'KHM',
@@ -257,12 +256,12 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'target' => \DistributionBundle\Enum\AssistanceTargetType::HOUSEHOLD,
             'threshold' => 1,
             'commodities' => [
-                ['modalityType' => $smartcardModalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
-                ['modalityType' => $smartcardModalityType->getName(), 'unit' => 'CZK', 'value' => 2000],
-                ['modalityType' => $smartcardModalityType->getName(), 'unit' => 'USD', 'value' => 4000],
-                ['modalityType' => $cashModalityType->getName(), 'unit' => 'CZK', 'value' => 100],
-                ['modalityType' => $cashModalityType->getName(), 'unit' => 'CZK', 'value' => 200],
-                ['modalityType' => $cashModalityType->getName(), 'unit' => 'USD', 'value' => 400],
+                ['modalityType' => $smartcardModalityType, 'unit' => 'CZK', 'value' => 1000],
+                ['modalityType' => $smartcardModalityType, 'unit' => 'CZK', 'value' => 2000],
+                ['modalityType' => $smartcardModalityType, 'unit' => 'USD', 'value' => 4000],
+                ['modalityType' => $cashModalityType, 'unit' => 'CZK', 'value' => 100],
+                ['modalityType' => $cashModalityType, 'unit' => 'CZK', 'value' => 200],
+                ['modalityType' => $cashModalityType, 'unit' => 'USD', 'value' => 400],
             ],
             'selectionCriteria' => [
                 [
@@ -362,9 +361,6 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var Location $location */
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
-        /** @var ModalityType $modalityType */
-        $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Cash'], ['id' => 'asc'])[0];
-
         $this->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
             'projectId' => $project->getId(),
@@ -378,7 +374,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
-                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+                ['modalityType' => \NewApiBundle\Enum\ModalityType::CASH, 'unit' => 'CZK', 'value' => 1000],
             ],
             'selectionCriteria' => [
                 [
@@ -432,8 +428,6 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var Location $location */
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
-        /** @var ModalityType $modalityType */
-        $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Cash'], ['id' => 'asc'])[0];
 
         $this->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
@@ -447,7 +441,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
-                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+                ['modalityType' => \NewApiBundle\Enum\ModalityType::CASH, 'unit' => 'CZK', 'value' => 1000],
             ],
             'selectionCriteria' => [
                 [
@@ -498,9 +492,6 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var Community $community */
         $community = self::$container->get('doctrine')->getRepository(Community::class)->findBy([], ['id' => 'asc'])[0];
 
-        /** @var ModalityType $modalityType */
-        $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Cash'], ['id' => 'asc'])[0];
-
 
         $this->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
@@ -513,7 +504,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'type' => AssistanceType::ACTIVITY,
             'target' => \DistributionBundle\Enum\AssistanceTargetType::COMMUNITY,
             'commodities' => [
-                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+                ['modalityType' => \NewApiBundle\Enum\ModalityType::CASH, 'unit' => 'CZK', 'value' => 1000],
             ],
             'communities' => [$community->getId()],
             'description' => 'test construction activity',
@@ -554,9 +545,6 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var Location $location */
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
-        /** @var ModalityType $modalityType */
-        $modalityType = self::$container->get('doctrine')->getRepository(ModalityType::class)->findBy(['name' => 'Smartcard'], ['id' => 'asc'])[0];
-
         $this->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
             'projectId' => $project->getId(),
@@ -570,7 +558,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
-                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+                ['modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD, 'unit' => 'CZK', 'value' => 1000],
             ],
             'selectionCriteria' => [
                 [

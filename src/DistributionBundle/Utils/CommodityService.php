@@ -40,10 +40,7 @@ class CommodityService
         $commodity->setValue($commodityArray["value"])
             ->setAssistance($distribution)
             ->setUnit($commodityArray["unit"])
-            ->setModalityType(
-                $this->em->getRepository(ModalityType::class)
-                    ->find($commodityArray["modality_type"]["id"])
-            )
+            ->setModalityType($commodityArray["modality_type"])
             ->setDescription($commodityArray["description"]);
 
         if ($flush) {

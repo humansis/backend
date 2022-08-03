@@ -14,6 +14,9 @@ use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\Smartcard\PreliminaryInvoice;
 use NewApiBundle\InputType\Smartcard\ChangeSmartcardInputType;
 use NewApiBundle\InputType\Smartcard\SmartcardRegisterInputType;
+use NewApiBundle\Enum\CacheTarget;
+use NewApiBundle\Enum\ModalityType;
+use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\InputType\SmartcardPurchaseInputType;
 use ProjectBundle\Entity\Project;
 use ProjectBundle\Repository\ProjectRepository;
@@ -366,7 +369,7 @@ class SmartcardService
     {
         foreach ($assistanceBeneficiary->getAssistance()->getCommodities() as $commodity) {
             /** @var \DistributionBundle\Entity\Commodity $commodity */
-            if ('Smartcard' === $commodity->getModalityType()->getName()) {
+            if (ModalityType::SMART_CARD === $commodity->getModalityType()) {
                 return $commodity->getUnit();
             }
         }

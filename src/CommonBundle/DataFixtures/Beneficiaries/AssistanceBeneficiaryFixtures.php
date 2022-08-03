@@ -16,6 +16,7 @@ use DistributionBundle\Utils\AssistanceService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Enum\ModalityType;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
 
@@ -53,7 +54,9 @@ class AssistanceBeneficiaryFixtures extends Fixture implements DependentFixtureI
 
             foreach ($assistances as $assistance) {
                 echo "P#{$project->getId()} - ".$assistance->getName().": ";
-                if ($assistance->getCommodities()[0]->getModalityType()->getName() === 'Smartcard') continue;
+                if ($assistance->getCommodities()[0]->getModalityType() === ModalityType::SMART_CARD) {
+                    continue;
+                }
                 switch ($assistance->getTargetType()) {
                     case AssistanceTargetType::INDIVIDUAL:
                         $this->addBNFsToAssistance($manager, $assistance, $project);

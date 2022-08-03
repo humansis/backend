@@ -10,7 +10,6 @@ use CommonBundle\Mapper\LocationMapper;
 use DistributionBundle\Entity\Modality;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
-use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Utils\AssistanceService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
@@ -251,16 +250,12 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
 
     private function loadSmartcardAssistance(ObjectManager $manager, Project $project, string $currency)
     {
-        $modalityType = $manager->getRepository(ModalityType::class)->findOneBy(['name' => 'Smartcard'], ['id' => 'asc']);
-
         $data = $this->assistanceArray;
         $data['project']['id'] = $project->getId();
         $data['commodities'] = [
             0 => [
-                'modality' => 'Cash',
-                'modality_type' => [
-                    'id' => $modalityType->getId(),
-                ],
+                'modality' => \NewApiBundle\Enum\Modality::CASH,
+                'modality_type' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
                 'type' => 'Smartcard',
                 'unit' => $currency,
                 'value' => 45,
@@ -289,6 +284,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
     private function getCommodities(ObjectManager $manager, Country $country): array
     {
         $modalities = $manager->getRepository(Modality::class)->findAll();
+        \NewApiBundle\Enum\Modality::values()
         $commodities = [];
         foreach ($modalities as $modality) {
             $modalityType = $modality->getModalityTypes()[0];

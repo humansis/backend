@@ -265,7 +265,7 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('C8')->setValue($this->translator->trans('Distributed item(s)', [], null, $languageCode).':');
         $worksheet->getCell('C8')->getStyle()->applyFromArray($labelStyle);
 
-        $worksheet->getCell('D7')->setValue($assistance->getCommodities()->get(0)->getModalityType()->getName());
+        $worksheet->getCell('D7')->setValue($assistance->getCommodities()->get(0)->getModalityType());
         $worksheet->getCell('D7')->getStyle()->applyFromArray($userInputStyle);
         $worksheet->mergeCells('D7:D8');
 
@@ -276,7 +276,7 @@ class AssistanceSpreadsheetExport
             $worksheet->getCell('E8')->setValue($this->translator->trans('Distributed item(s)', [], null, $languageCode).':');
             $worksheet->getCell('E8')->getStyle()->applyFromArray($labelStyle);
 
-            $worksheet->getCell('F7')->setValue($assistance->getCommodities()->get(1)->getModalityType()->getName());
+            $worksheet->getCell('F7')->setValue($assistance->getCommodities()->get(1)->getModalityType());
             $worksheet->getCell('F7')->getStyle()->applyFromArray($userInputStyle);
             $worksheet->mergeCells('F7:F8');
         }
@@ -288,7 +288,7 @@ class AssistanceSpreadsheetExport
             $worksheet->getCell('G8')->setValue($this->translator->trans('Distributed item(s)', [], null, $languageCode).':');
             $worksheet->getCell('G8')->getStyle()->applyFromArray($labelStyle);
 
-            $worksheet->getCell('H7')->setValue($assistance->getCommodities()->get(2)->getModalityType()->getName());
+            $worksheet->getCell('H7')->setValue($assistance->getCommodities()->get(2)->getModalityType());
             $worksheet->getStyle('H7')->applyFromArray($userInputStyle);
             $worksheet->mergeCells('H7:H8');
         }

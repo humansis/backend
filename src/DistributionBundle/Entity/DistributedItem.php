@@ -90,9 +90,7 @@ class DistributedItem implements \JsonSerializable
         $commoditiesJson = [];
         foreach ($this->commodities as $commodity) {
             $commoditiesJson[] = [
-                'modality_type' => [
-                    'name' => $commodity->getModalityType()->getName(),
-                ],
+                'modality_type' => $commodity->getModalityType(),
                 'unit' => $commodity->getUnit(),
                 'value' => $commodity->getValue(),
                 'description' => $commodity->getDescription(),

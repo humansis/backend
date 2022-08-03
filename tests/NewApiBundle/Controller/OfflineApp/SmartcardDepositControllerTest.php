@@ -127,7 +127,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
     {
         foreach ($this->em->getRepository(Assistance::class)->findBy([], ['id'=>'asc']) as $assistance) {
             foreach ($assistance->getCommodities() as $commodity) {
-                if ('Smartcard' === $commodity->getModalityType()->getName()) {
+                if (ModalityType::SMART_CARD === $commodity->getModalityType()) {
                     return $assistance;
                 }
             }
@@ -141,7 +141,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
         /** @var Assistance $assistance */
         foreach ($this->em->getRepository(Assistance::class)->findBy([], ['id'=>'asc']) as $assistance) {
             foreach ($assistance->getCommodities() as $commodity) {
-                if (ModalityType::SMART_CARD !== $commodity->getModalityType()->getName()) {
+                if (ModalityType::SMART_CARD !== $commodity->getModalityType()) {
                     continue 2;
                 }
             }

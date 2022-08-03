@@ -238,8 +238,9 @@ class AssistanceService
             unset($distributionArray['commodities']);
 
             // ignore user defined commodities and create some generic instead
-            $modalityType = $this->em->getRepository(ModalityType::class)->findOneBy(['name' => 'Activity item']);
-            $distributionArray['commodities'][] = ['value' => 1, 'unit' => 'activity', 'description' => null, 'modality_type' => ['id' => $modalityType->getId()]];
+            //$modalityType = $this->em->getRepository(ModalityType::class)->findOneBy(['name' => 'Activity item']);
+            $modalityType = \NewApiBundle\Enum\ModalityType::ACTIVITY_ITEM;
+            $distributionArray['commodities'][] = ['value' => 1, 'unit' => 'activity', 'description' => null, 'modality_type' => $modalityType];
         }
 
         /** @var Assistance $distribution */
@@ -478,12 +479,12 @@ class AssistanceService
             $femaleTotal = $femaleChildrenUnder23month + $femaleChildrenUnder5years + $femaleUnder17years + $femaleUnder59years + $femaleOver60years;
             $noFamilies = $assistance->getTargetType() === AssistanceTargetType::INDIVIDUAL ? ($maleTotal + $femaleTotal) : ($maleHHH + $femaleHHH);
             $familySize = $assistance->getTargetType() === AssistanceTargetType::HOUSEHOLD && $noFamilies ? ($maleTotal + $femaleTotal) / $noFamilies : null;
-            $modalityType = $assistance->getCommodities()[0]->getModalityType()->getName();
+            $modalityType = $assistance->getCommodities()[0]->getModalityType();
             $beneficiaryServed =  $this->assistanceRepository->getNoServed($assistance->getId(), $modalityType);
 
             $commodityNames = implode(', ',
                     array_map(
-                        function($commodity) { return  $commodity->getModalityType()->getName(); }, 
+                        function($commodity) { return  $commodity->getModalityType(); },
                         $assistance->getCommodities()->toArray()
                     )
                 );
@@ -595,7 +596,7 @@ class AssistanceService
             $commodities = $distribution->getCommodities();
             $isQrVoucher = false;
             foreach ($commodities as $commodity) {
-                if ($commodity->getModalityType()->getName() === "QR Code Voucher") {
+                if ($commodity->getModalityType() === \NewApiBundle\Enum\ModalityType::QR_CODE_VOUCHER) {
                     $isQrVoucher = true;
                 }
             }

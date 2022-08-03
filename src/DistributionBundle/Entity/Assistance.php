@@ -918,7 +918,7 @@ class Assistance implements ExportableInterface
         $valuescommodities = [];
 
         foreach ($this->getCommodities() as $commodity) {
-            $stringCommodity = $commodity->getModalityType()->getName()." ".$commodity->getValue()." ".$commodity->getUnit();
+            $stringCommodity = $commodity->getModalityType()." ".$commodity->getValue()." ".$commodity->getUnit();
             array_push($valuescommodities, $stringCommodity);
         }
         $valuescommodities = join(',', $valuescommodities);
@@ -934,10 +934,10 @@ class Assistance implements ExportableInterface
         $percentage = '';
         foreach ($this->getCommodities() as $index => $commodity) {
             $percentage .= $index !== 0 ? ', ' : '';
-            if ($this->isValidated()) {
-                $percentage .= $this->getPercentageValue($commodity).'% '.$commodity->getModalityType()->getName();
+            if ($this->getValidated()) {
+                $percentage .= $this->getPercentageValue($commodity).'% '.$commodity->getModalityType();
             } else {
-                $percentage .= '0% '.$commodity->getModalityType()->getName();
+                $percentage .= '0% '.$commodity->getModalityType();
             }
         }
 
@@ -1135,7 +1135,7 @@ class Assistance implements ExportableInterface
     public function hasModalityTypeCommodity(string $modalityType): bool {
         $hasModalityTypeCommodity = false;
         foreach ($this->commodities as $commodity) {
-            $hasModalityTypeCommodity = $hasModalityTypeCommodity || $commodity->getModalityType()->getName() === $modalityType;
+            $hasModalityTypeCommodity = $hasModalityTypeCommodity || $commodity->getModalityType() === $modalityType;
         }
         return $hasModalityTypeCommodity;
     }
