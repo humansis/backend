@@ -9,10 +9,8 @@ use DistributionBundle\Entity;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
-use DistributionBundle\Repository\ModalityTypeRepository;
 use DistributionBundle\Utils\Exception\RemoveBeneficiaryWithReliefException;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NoResultException;
 use NewApiBundle\Component\Assistance\CommodityAssignBuilder;
 use NewApiBundle\Component\Assistance\DTO\CommoditySummary;
@@ -39,8 +37,6 @@ class Assistance
     private $assistanceRoot;
     /** @var CacheInterface */
     private $cache;
-    /** @var ModalityTypeRepository */
-    private $modalityTypeRepository;
     /** @var AssistanceStatisticsRepository */
     private $assistanceStatisticRepository;
     /** @var AssistanceBeneficiaryRepository */
@@ -53,7 +49,6 @@ class Assistance
     /**
      * @param Entity\Assistance               $assistanceEntity
      * @param CacheInterface                  $cache
-     * @param ModalityTypeRepository          $modalityTypeRepository
      * @param AssistanceStatisticsRepository  $assistanceStatisticRepository
      * @param Registry                        $workflowRegistry
      * @param AssistanceBeneficiaryRepository $targetRepository
@@ -62,7 +57,6 @@ class Assistance
     public function __construct(
         Entity\Assistance               $assistanceEntity,
         CacheInterface                  $cache,
-        ModalityTypeRepository          $modalityTypeRepository,
         AssistanceStatisticsRepository  $assistanceStatisticRepository,
         Registry                        $workflowRegistry,
         AssistanceBeneficiaryRepository $targetRepository,
@@ -70,7 +64,6 @@ class Assistance
     ) {
         $this->assistanceRoot = $assistanceEntity;
         $this->cache = $cache;
-        $this->modalityTypeRepository = $modalityTypeRepository;
         $this->assistanceStatisticRepository = $assistanceStatisticRepository;
         $this->workflowRegistry = $workflowRegistry;
         $this->targetRepository = $targetRepository;

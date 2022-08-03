@@ -13,7 +13,6 @@ use DateTimeInterface;
 use DistributionBundle\Entity;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
-use DistributionBundle\Repository\ModalityTypeRepository;
 use DistributionBundle\Utils\CriteriaAssistanceService;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
@@ -40,9 +39,6 @@ class AssistanceFactory
 
     /** @var SerializerInterface */
     private $serializer;
-
-    /** @var ModalityTypeRepository */
-    private $modalityTypeRepository;
 
     /** @var LocationRepository */
     private $locationRepository;
@@ -78,7 +74,6 @@ class AssistanceFactory
      * @param CacheInterface                  $cache
      * @param CriteriaAssistanceService       $criteriaAssistanceService
      * @param SerializerInterface             $serializer
-     * @param ModalityTypeRepository          $modalityTypeRepository
      * @param LocationRepository              $locationRepository
      * @param ProjectRepository               $projectRepository
      * @param CommunityRepository             $communityRepository
@@ -94,7 +89,6 @@ class AssistanceFactory
         CacheInterface                  $cache,
         CriteriaAssistanceService       $criteriaAssistanceService,
         SerializerInterface             $serializer,
-        ModalityTypeRepository          $modalityTypeRepository,
         LocationRepository              $locationRepository,
         ProjectRepository               $projectRepository,
         CommunityRepository             $communityRepository,
@@ -109,7 +103,6 @@ class AssistanceFactory
         $this->cache = $cache;
         $this->criteriaAssistanceService = $criteriaAssistanceService;
         $this->serializer = $serializer;
-        $this->modalityTypeRepository = $modalityTypeRepository;
         $this->locationRepository = $locationRepository;
         $this->projectRepository = $projectRepository;
         $this->communityRepository = $communityRepository;
