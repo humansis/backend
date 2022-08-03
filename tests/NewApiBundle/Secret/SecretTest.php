@@ -18,5 +18,6 @@ class SecretTest extends KernelTestCase
         $this->assertNotEmpty($secret);
         $this->assertNotNull($secret);
         $this->assertIsString($secret);
+        $this->assertGreaterThan(0, strlen($secret));
     }
 }
