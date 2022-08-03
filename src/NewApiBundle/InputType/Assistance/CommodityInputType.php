@@ -14,7 +14,7 @@ class CommodityInputType implements InputTypeInterface
      * @Assert\Type("string")
      * @Assert\NotBlank
      * @Assert\NotNull
-     * @Enum(enumClass="NewApiBundle\DBAL\ModalityTypeEnum")
+     * @Enum(enumClass="NewApiBundle\Enum\ModalityType")
      */
     private $modalityType;
 

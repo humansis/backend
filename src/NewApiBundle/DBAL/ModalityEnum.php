@@ -9,6 +9,8 @@ use NewApiBundle\Enum\Modality;
 
 class ModalityEnum extends AbstractEnum
 {
+    use EnumTrait;
+
     public static function all(): array
     {
         return Modality::values();
@@ -17,5 +19,15 @@ class ModalityEnum extends AbstractEnum
     public function getName(): string
     {
         return 'enum_modality';
+    }
+
+    public static function databaseMap(): array
+    {
+        return [
+            Modality::CASH => Modality::CASH,
+            Modality::VOUCHER => Modality::VOUCHER,
+            Modality::IN_KIND => Modality::IN_KIND,
+            Modality::OTHER => Modality::OTHER,
+        ];
     }
 }
