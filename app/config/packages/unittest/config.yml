@@ -24,4 +24,3 @@ monolog:
 
 parameters:
     frontendUrl: 'http://localhost:8080'
-    secret: '%env(SYMFONY_SECRET)%'
