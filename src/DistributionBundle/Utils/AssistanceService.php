@@ -238,9 +238,7 @@ class AssistanceService
             unset($distributionArray['commodities']);
 
             // ignore user defined commodities and create some generic instead
-            //$modalityType = $this->em->getRepository(ModalityType::class)->findOneBy(['name' => 'Activity item']);
-            $modalityType = \NewApiBundle\Enum\ModalityType::ACTIVITY_ITEM;
-            $distributionArray['commodities'][] = ['value' => 1, 'unit' => 'activity', 'description' => null, 'modality_type' => $modalityType];
+            $distributionArray['commodities'][] = ['value' => 1, 'unit' => 'activity', 'description' => null, 'modality_type' => \NewApiBundle\Enum\ModalityType::ACTIVITY_ITEM];
         }
 
         /** @var Assistance $distribution */
@@ -767,15 +765,12 @@ class AssistanceService
         ];
 
         foreach ($inputType->getCommodities() as $commodity) {
-            $modalityType = $this->em->getRepository(ModalityType::class)->findOneBy(['name' => $commodity->getModalityType()]);
-            if (!$modalityType) {
-                throw new EntityNotFoundException(sprintf('ModalityType %s does not exists', $commodity->getModalityType()));
-            }
+
             $distributionArray['commodities'][] = [
                 'value' => $commodity->getValue(),
                 'unit' => $commodity->getUnit(),
                 'description' => $commodity->getDescription(),
-                'modality_type' => ['id' => $modalityType->getId()],
+                'modality_type' => $commodity->getModalityType(),
             ];
         }
 

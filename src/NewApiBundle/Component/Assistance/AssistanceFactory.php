@@ -20,8 +20,6 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\ORMException;
 use NewApiBundle\Component\Assistance\Domain;
-use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
-use NewApiBundle\Entity\ScoringBlueprint;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\Repository\AssistanceStatisticsRepository;
 use NewApiBundle\Repository\ScoringBlueprintRepository;

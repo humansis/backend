@@ -710,10 +710,8 @@ class SmartcardControllerTest extends BMSServiceTestCase
         }
         $this->em->flush();
 
-        /** @var \DistributionBundle\Entity\ModalityType $modalityType */
-        $modalityType = $this->em->getRepository(\DistributionBundle\Entity\ModalityType::class)->findOneBy(['name' => 'Smartcard'], ['id' => 'asc']);
         /** @var \DistributionBundle\Entity\Commodity $commodity */
-        $commodity = $this->em->getRepository(\DistributionBundle\Entity\Commodity::class)->findBy(['modalityType' => $modalityType], ['id' => 'asc'])[0];
+        $commodity = $this->em->getRepository(\DistributionBundle\Entity\Commodity::class)->findBy(['modalityType' => ModalityType::SMART_CARD], ['id' => 'asc'])[0];
         $assistance = $commodity->getAssistance();
         $beneficiary = $assistance->getDistributionBeneficiaries()[0]->getBeneficiary();
 
