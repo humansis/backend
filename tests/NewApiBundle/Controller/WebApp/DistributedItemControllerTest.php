@@ -122,7 +122,6 @@ class DistributedItemControllerTest extends BMSServiceTestCase
         );
 
         $items = json_decode($this->client->getResponse()->getContent());
-        echo $items->totalCount;
 
         $beneficiaryAmounts = [];
         foreach ($items->data as $distributedItem) {

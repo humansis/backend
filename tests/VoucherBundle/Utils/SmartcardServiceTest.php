@@ -189,7 +189,7 @@ class SmartcardServiceTest extends KernelTestCase
      */
     public function testSmartcardCashflows(array $actions, array $expectedResults): void
     {
-        $admin = $this->em->getRepository(User::class)->find(1);
+        $admin = $this->user;
         $assistanceRepository = $this->em->getRepository(Assistance::class);
         $product = $this->em->getRepository(Product::class)->findOneBy(['countryISO3'=>'SYR'], ['id' => 'asc']);
 
