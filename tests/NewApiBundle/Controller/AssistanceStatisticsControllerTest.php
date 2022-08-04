@@ -6,6 +6,7 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use DistributionBundle\Repository\AssistanceRepository;
+use Doctrine\Common\Collections\Criteria;
 use Exception;
 use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
@@ -96,12 +97,16 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
 
     public function testStatisticsCheckNumbers(): void
     {
-        $assistanceRoot = $this->assistanceRepository->findOneBy([
-            'validated' => true,
-            'completed' => false,
-            'archived' => false,
-            'targetType' => AssistanceTargetType::INDIVIDUAL,
-        ], ['id' => 'asc']);
+        $assistanceRoot = $this->assistanceRepository->matching(
+            Criteria::create()
+                ->where(Criteria::expr()->neq('validatedBy', null))
+                ->andWhere(Criteria::expr()->eq('completed', false))
+                ->andWhere(Criteria::expr()->eq('archived', false))
+                ->andWhere(Criteria::expr()->eq('targetType', AssistanceTargetType::INDIVIDUAL))
+                ->orderBy(['id' => 'asc'])
+        );
+        $assistanceRoot = $this->assistanceRepository->matching($assistanceRoot)->first();
+
         if (!$assistanceRoot) {
             $this->markTestSkipped('There is no suitable assistance for testing in the database.');
         }

@@ -11,6 +11,7 @@ use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Repository\AssistanceRepository;
 use DistributionBundle\Repository\ModalityTypeRepository;
+use Doctrine\Common\Collections\Criteria;
 use Exception;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 use NewApiBundle\Enum\ProductCategoryType;
@@ -708,7 +709,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         $cashModality = $modalityTypeRepository->findOneBy(['name' => \NewApiBundle\Enum\ModalityType::CASH]);
         $commodityData = ['value' => 1, 'unit' => 'USD', 'modality_type' => ['id' => $cashModality->getId()], 'description' => 'Note'];
-        $assistance = $assistanceRepository->findOneBy(['validated' => true]);
+        $assistance = $assistanceRepository->matching(Criteria::create()->where(Criteria::expr()->neq('validatedBy', null)))->first();
         $assistance->setAssistanceType(AssistanceType::DISTRIBUTION);
         $assistance->setSubSector(SubSectorEnum::MULTI_PURPOSE_CASH_ASSISTANCE);
         $assistance->addCommodity($this->commodityService->create($assistance, $commodityData, false));
