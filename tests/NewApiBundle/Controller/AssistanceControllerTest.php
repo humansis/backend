@@ -63,14 +63,14 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "individualsTargeted": '.($assistance->getIndividualsTargeted() ?: 'null').',
             "description": "*",
             "commodityIds": ['.implode(',', $commodityIds).'],
-            "validated": '.($assistance->getValidated() ? 'true' : 'false').',
+            "validated": '.($assistance->isValidated() ? 'true' : 'false').',
             "completed": '.($assistance->getCompleted() ? 'true' : 'false').',
             "foodLimit": "*",
             "nonFoodLimit": "*",
             "cashbackLimit": "*",
             "allowedProductCategoryTypes": "*",
             "threshold": '.($assistance->getAssistanceSelection()->getThreshold() ?: 'null').',
-            "deletable": '.($assistance->getValidated() ? 'false' : 'true').'
+            "deletable": '.($assistance->isValidated() ? 'false' : 'true').'
         }', $this->client->getResponse()->getContent());
     }
 

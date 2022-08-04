@@ -16,6 +16,7 @@ use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+use UserBundle\Entity\User;
 use VoucherBundle\Entity\SmartcardPurchase;
 
 /**
@@ -115,13 +116,13 @@ class Assistance implements ExportableInterface
     private $archived = 0;
 
     /**
-     * @var boolean
+     * @var User|null
      *
-     * @ORM\Column(name="validated", type="boolean", options={"default" : 0})
-     *
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true)
      * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
-    private $validated = 0;
+    private $validatedBy = null;
 
     /**
      * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingAssistance", mappedBy="distribution", cascade={"persist", "remove"})
@@ -389,7 +390,7 @@ class Assistance implements ExportableInterface
      *
      * @return Assistance
      */
-    public function setArchived($archived)
+    public function setArchived(bool $archived): Assistance
     {
         $this->archived = $archived;
 
@@ -409,13 +410,13 @@ class Assistance implements ExportableInterface
     /**
      * Set validated.
      *
-     * @param bool $validated
+     * @param User|null $validatedBy
      *
      * @return Assistance
      */
-    public function setValidated($validated)
+    public function setValidatedBy(?User $validatedBy): self
     {
-        $this->validated = $validated;
+        $this->validatedBy = $validatedBy;
 
         return $this;
     }
@@ -423,11 +424,11 @@ class Assistance implements ExportableInterface
     /**
      * Get validated.
      *
-     * @return bool
+     * @return User|null
      */
-    public function getValidated()
+    public function getValidatedBy(): ?User
     {
-        return $this->validated;
+        return $this->validatedBy;
     }
 
     /**
@@ -875,6 +876,11 @@ class Assistance implements ExportableInterface
         $this->subSector = $subSector;
     }
 
+    public function isValidated(): bool
+    {
+        return $this->validatedBy !== null;
+    }
+
     public function getMappedValueForExport(): array
     {
         // récuperer les criteria de selection  depuis l'objet selectioncriteria
@@ -928,7 +934,7 @@ class Assistance implements ExportableInterface
         $percentage = '';
         foreach ($this->getCommodities() as $index => $commodity) {
             $percentage .= $index !== 0 ? ', ' : '';
-            if ($this->getValidated()) {
+            if ($this->isValidated()) {
                 $percentage .= $this->getPercentageValue($commodity).'% '.$commodity->getModalityType()->getName();
             } else {
                 $percentage .= '0% '.$commodity->getModalityType()->getName();

@@ -32,6 +32,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use UserBundle\Entity\User;
 
 /**
  * Class AssistanceController
@@ -180,7 +181,9 @@ class AssistanceController extends Controller
      */
     public function validateAction(Assistance $assistance, AssistanceFactory $factory, AssistanceRepository $repository)
     {
-        $repository->save($factory->hydrate($assistance)->validate());
+        /** @var User $user */
+        $user = $this->getUser();
+        $repository->save($factory->hydrate($assistance)->validate($user));
 
         $json = $this->get('serializer')
             ->serialize(

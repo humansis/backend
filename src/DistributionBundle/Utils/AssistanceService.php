@@ -45,6 +45,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
+use UserBundle\Entity\User;
 use VoucherBundle\Entity\Voucher;
 
 /**
@@ -145,13 +146,14 @@ class AssistanceService
 
     /**
      * @param Assistance $assistanceRoot
+     * @param User       $user
      *
      * @deprecated use Assistance::validate instead
      */
-    public function validateDistribution(Assistance $assistanceRoot)
+    public function validateDistribution(Assistance $assistanceRoot, User $user)
     {
         $assistance = $this->assistanceFactory->hydrate($assistanceRoot);
-        $assistance->validate();
+        $assistance->validate($user);
         $this->assistanceRepository->save($assistance);
     }
 
@@ -638,7 +640,7 @@ class AssistanceService
     public function delete(Assistance $assistanceEntity)
     {
         $this->cache->delete(CacheTarget::assistanceId($assistanceEntity->getId()));
-        if ($assistanceEntity->getValidated()) { //TODO also completed? to discuss
+        if ($assistanceEntity->isValidated()) { //TODO also completed? to discuss
             $assistance = $this->assistanceFactory->hydrate($assistanceEntity);
             $assistance->archive();
             $this->assistanceRepository->save($assistance);

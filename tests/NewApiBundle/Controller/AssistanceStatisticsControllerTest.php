@@ -12,6 +12,7 @@ use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
 use Tests\BMSServiceTestCase;
+use UserBundle\Entity\User;
 
 class AssistanceStatisticsControllerTest extends BMSServiceTestCase
 {
@@ -161,8 +162,10 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
             'Request failed: '.$this->client->getResponse()->getContent()
         );
 
+        $user = self::$container->get('doctrine')->getRepository(User::class)->findOneBy([]);
+
         // validate assistance
-        $assistance->validate();
+        $assistance->validate($user);
 
         // check statistics
         $this->request('GET',

@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use TransactionBundle\Entity\Transaction;
@@ -136,7 +137,7 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
 
     private function getAssistanceBeneficiaries(ObjectManager $manager): array
     {
-        $validatedAssists = $manager->getRepository(Assistance::class)->findBy(['validated' => true], ['id' => 'asc']);
+        $validatedAssists = $manager->getRepository(Assistance::class)->matching(Criteria::create()->where(Criteria::expr()->neq('validatedBy', null)));
 
         return $manager->getRepository(AssistanceBeneficiary::class)->findBy(['assistance' => $validatedAssists], ['id' => 'asc'], 100);
     }
