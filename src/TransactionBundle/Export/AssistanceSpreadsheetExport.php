@@ -256,15 +256,28 @@ class AssistanceSpreadsheetExport
             $worksheet->mergeCells('H7:H8');
         }
 
-        $worksheet->getCell('I7')->setValue('Round:');
-        $worksheet->getCell('I7')->getStyle()->applyFromArray($labelEnStyle);
+        $worksheet->getCell('E7')->setValue('Round:');
+        $worksheet->getCell('E7')->getStyle()->applyFromArray($labelEnStyle);
 
-        $worksheet->getCell('I8')->setValue($this->translator->trans('Round').':');
-        $worksheet->getCell('I8')->getStyle()->applyFromArray($labelStyle);
+        $worksheet->getCell('E8')->setValue($this->translator->trans('Round').':');
+        $worksheet->getCell('E8')->getStyle()->applyFromArray($labelStyle);
 
         $worksheet->getStyle('J7')->applyFromArray($userInputStyle);
         $worksheet->getCell('J7')->setValue($assistance->getRound() === null ? $this->translator->trans('N/A') : $assistance->getRound());
         $worksheet->mergeCells('J7:J8');
+        
+        $worksheet->getStyle('F7')->applyFromArray($userInputStyle);
+        $worksheet->mergeCells('F7:F8');
+
+        $worksheet->getCell('G7')->setValue('Validated by:');
+        $worksheet->getCell('G7')->getStyle()->applyFromArray($labelEnStyle);
+
+        $worksheet->getCell('G8')->setValue($this->translator->trans('Validated by').':');
+        $worksheet->getCell('G8')->getStyle()->applyFromArray($labelStyle);
+
+        $worksheet->getCell('H7')->getStyle()->applyFromArray($userInputStyle);
+        $worksheet->getCell('H7')->setValue($assistance->isValidated() ? $assistance->getValidatedBy()->getUsernameCanonical() : "");
+        $worksheet->mergeCells('H7:J8');
 
         $worksheet->getCell('C10')->setValue("Distributed by:");
         $worksheet->getCell('C11')->setValue("(name, position, signature)");
