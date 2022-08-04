@@ -7,7 +7,6 @@ use BeneficiaryBundle\Entity\Institution;
 use CommonBundle\DataFixtures\Beneficiaries\BeneficiaryFixtures;
 use CommonBundle\Entity\Location;
 use CommonBundle\Mapper\LocationMapper;
-use DistributionBundle\Entity\Modality;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Utils\AssistanceService;
@@ -17,6 +16,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Component\Country\Country;
+use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ProductCategoryType;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
@@ -254,8 +254,8 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data['commodities'] = [
             0 => [
                 'modality' => \NewApiBundle\Enum\Modality::CASH,
-                'modality_type' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
-                'type' => 'Smartcard',
+                'modality_type' => ModalityType::SMART_CARD,
+                'type' => ModalityType::SMART_CARD,
                 'unit' => $currency,
                 'value' => 45,
                 'description' => null,

@@ -21,6 +21,7 @@ use NewApiBundle\Component\Assistance\DTO\CriteriaGroup;
 use NewApiBundle\Component\Import\Identity\NationalIdHashSet;
 use NewApiBundle\DBAL\PersonGenderEnum;
 use NewApiBundle\Entity\Import;
+use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\Enum\SelectionCriteriaField;
@@ -479,10 +480,10 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         $qb->select('COUNT(DISTINCT b)');
         $this->whereInDistribution($qb, $distribution);
 
-        if ('Mobile Money' === $modalityType) {
+        if (ModalityType::MOBILE_MONEY === $modalityType) {
             $qb->innerJoin('db.transactions', 't', Join::WITH, 't.transactionStatus = 1');
         } else {
-            if ($modalityType === 'QR Code Voucher') {
+            if ($modalityType === ModalityType::QR_CODE_VOUCHER) {
                 $qb->innerJoin('db.booklets', 'bo', Join::WITH, 'bo.status = 1 OR bo.status = 2');
             } else {
                 $qb->innerJoin('db.reliefPackages', 'rp', Join::WITH, 'rp.state = :distributed')

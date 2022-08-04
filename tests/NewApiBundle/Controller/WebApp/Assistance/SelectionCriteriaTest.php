@@ -12,6 +12,7 @@ use DistributionBundle\Repository\AssistanceRepository;
 use Exception;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 use NewApiBundle\DBAL\ModalityTypeEnum;
+use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ProductCategoryType;
 use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
@@ -51,12 +52,12 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'target' => \DistributionBundle\Enum\AssistanceTargetType::HOUSEHOLD,
             'threshold' => 1,
             'commodities' => [
-                ['modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD, 'unit' => 'CZK', 'value' => 1000],
-                ['modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD, 'unit' => 'CZK', 'value' => 2000],
-                ['modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD, 'unit' => 'USD', 'value' => 4000],
-                ['modalityType' => \NewApiBundle\Enum\ModalityType::CASH, 'unit' => 'CZK', 'value' => 100],
-                ['modalityType' => \NewApiBundle\Enum\ModalityType::CASH, 'unit' => 'CZK', 'value' => 200],
-                ['modalityType' => \NewApiBundle\Enum\ModalityType::CASH, 'unit' => 'USD', 'value' => 400],
+                ['modalityType' => ModalityType::SMART_CARD, 'unit' => 'CZK', 'value' => 1000],
+                ['modalityType' => ModalityType::SMART_CARD, 'unit' => 'CZK', 'value' => 2000],
+                ['modalityType' => ModalityType::SMART_CARD, 'unit' => 'USD', 'value' => 4000],
+                ['modalityType' => ModalityType::CASH, 'unit' => 'CZK', 'value' => 100],
+                ['modalityType' => ModalityType::CASH, 'unit' => 'CZK', 'value' => 200],
+                ['modalityType' => ModalityType::CASH, 'unit' => 'USD', 'value' => 400],
             ],
             'selectionCriteria' => $criteria,
             'foodLimit' => 10.99,
@@ -198,7 +199,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         );
         $contentArray = json_decode($this->client->getResponse()->getContent(), true);
         foreach ($contentArray['data'] as $summary) {
-            $this->assertTrue(in_array($summary['modalityType'], [\NewApiBundle\Enum\ModalityType::SMART_CARD, \NewApiBundle\Enum\ModalityType::CASH]));
+            $this->assertTrue(in_array($summary['modalityType'], [ModalityType::SMART_CARD, ModalityType::CASH]));
             $this->assertTrue(in_array($summary['unit'], ['CZK', 'USD']));
             $this->assertGreaterThan(0, $summary['value']);
         }

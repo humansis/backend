@@ -12,6 +12,7 @@ use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Utils\DistributionCSVService;
 use NewApiBundle\Entity\Assistance\SelectionCriteria;
+use NewApiBundle\Enum\ModalityType;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Tests\BMSServiceTestCase;
 use TransactionBundle\Entity\Transaction;
@@ -64,7 +65,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
                     "modality_type" => [
                         "id" => 1,
                     ],
-                    "type" => "Mobile Money",
+                    "type" => ModalityType::MOBILE_MONEY,
                     "unit" => "USD",
                     "value" => 150.1,
                     "description" => null
@@ -805,7 +806,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
                     'modality_type' => [
                         'id' => 1,
                     ],
-                    'type' => 'Mobile Money',
+                    'type' => ModalityType::MOBILE_MONEY,
                     'unit' => 'USD',
                     'value' => 100,
                     'description' => null,
@@ -932,7 +933,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
                     'modality_type' => [
                         'id' => 1,
                     ],
-                    'type' => 'Mobile Money',
+                    'type' => ModalityType::MOBILE_MONEY,
                     'unit' => 'USD',
                     'value' => 100,
                     'description' => null,

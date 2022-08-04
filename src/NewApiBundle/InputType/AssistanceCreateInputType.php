@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
+use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\SelectionCriteriaField;
 use NewApiBundle\InputType\Assistance\CommodityInputType;
 use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
@@ -246,7 +247,7 @@ class AssistanceCreateInputType implements InputTypeInterface
     {
         /** @var CommodityInputType $commodity */
         foreach ($this->commodities as $commodity) {
-            if ($commodity->getModalityType() === 'Smartcard') { //TODO modality type enum
+            if ($commodity->getModalityType() === ModalityType::SMART_CARD) {
                 return $this->remoteDistributionAllowed !== null;
             }
         }

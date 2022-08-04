@@ -10,6 +10,7 @@ use \DateTime;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\DBAL\PersonGenderEnum;
+use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\InputType\AssistanceByProjectOfflineAppFilterInputType;
 use NewApiBundle\InputType\AssistanceFilterInputType;
@@ -147,9 +148,9 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                 ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
                 ->select('COUNT(DISTINCT db)');
 
-                if ($modalityType === 'Mobile Money') {
+                if ($modalityType === ModalityType::MOBILE_MONEY) {
                     $qb->innerJoin('db.transactions', 't', Join::WITH, 't.transactionStatus = 1');
-                } else if ($modalityType === 'QR Code Voucher') {
+                } else if ($modalityType === ModalityType::QR_CODE_VOUCHER) {
                     $qb->innerJoin('db.booklets', 'b', Join::WITH, 'b.status = 1 OR b.status = 2');
                 } else {
                     $qb->innerJoin('db.reliefPackages', 'rp', Join::WITH, 'rp.state = :undistributedState')
