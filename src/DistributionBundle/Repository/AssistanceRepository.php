@@ -272,7 +272,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
         $qbr = $this->createQueryBuilder('dd')
             ->leftJoin('dd.project', 'p')
             ->andWhere('dd.archived = 0')
-            ->andWhere('dd.validated = 1')
+            ->andWhere('dd.validatedBy IS NOT NULL')
             ->andWhere('dd.project = :project')
             ->andWhere('p.iso3 = :iso3')
             ->andWhere('dd.targetType IN (:targetTypes)')

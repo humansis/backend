@@ -104,8 +104,7 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
                 ->andWhere(Criteria::expr()->eq('archived', false))
                 ->andWhere(Criteria::expr()->eq('targetType', AssistanceTargetType::INDIVIDUAL))
                 ->orderBy(['id' => 'asc'])
-        );
-        $assistanceRoot = $this->assistanceRepository->matching($assistanceRoot)->first();
+        )->first();
 
         if (!$assistanceRoot) {
             $this->markTestSkipped('There is no suitable assistance for testing in the database.');
