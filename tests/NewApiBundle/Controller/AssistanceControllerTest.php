@@ -311,7 +311,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testUpdateDistributionDate()
     {
         $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findOneBy([
-            'validated' => false,
+            'validatedBy' => null,
             'completed' => false,
         ], ['updatedOn' => 'desc']);
         $date = new DateTime();
@@ -335,7 +335,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testUpdateExpirationDate()
     {
         $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findOneBy([
-            'validated' => false,
+            'validatedBy' => null,
             'completed' => false,
         ], ['updatedOn' => 'desc']);
         $date = new DateTime('+1 year');
@@ -728,7 +728,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var AssistanceRepository $assistanceRepository */
         $assistanceRepository = self::$container->get('doctrine')->getRepository(Assistance::class);
 
-        $assistance = $assistanceRepository->findOneBy(['validated' => false]);
+        $assistance = $assistanceRepository->findOneBy(['validatedBy' => null]);
         $id = $assistance->getId();
 
         $this->request('GET', "/api/basic/web-app/v1/assistances/$id/bank-report/exports", [

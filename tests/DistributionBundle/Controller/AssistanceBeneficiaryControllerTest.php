@@ -39,7 +39,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
 
         /** @var Assistance $assistance */
         $assistance = $this->em->getRepository(Assistance::class)->findOneBy([
-            'validated' => false,
+            'validatedBy' => null,
             'completed' => false,
             'archived' => false,
         ], ['id' => 'desc']);

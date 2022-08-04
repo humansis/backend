@@ -480,7 +480,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "selection_criteria"=> $distribution['selection_criteria'],
             'target_type' => AssistanceTargetType::HOUSEHOLD,
             'updated_on' => '28-11-2018 11:11:11',
-            'validated' => false,
+            'validatedBy' => null,
         );
         // Second step
         // Create the user with the email and the salted password. The user should be enable
