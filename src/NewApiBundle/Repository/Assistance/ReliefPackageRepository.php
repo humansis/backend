@@ -115,7 +115,7 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('(a.dateExpiration > :currentDate OR a.dateExpiration IS NULL)')
             ->andWhere('a.remoteDistributionAllowed = true')
             ->andWhere('a.archived = false')
-            ->andWhere('a.validated IS NOT NULL')
+            ->andWhere('a.validatedBy IS NOT NULL')
             ->andWhere('a.completed = false')
             ->setParameter('smartcardStateActive', SmartcardStates::ACTIVE)
             ->setParameter('iso3', $country)
