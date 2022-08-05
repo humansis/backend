@@ -322,7 +322,7 @@ class Assistance implements ExportableInterface
      *
      * @return Assistance
      */
-    public function setAssistanceType(string $assistanceType): self
+    public function setAssistanceType(string $assistanceType): Assistance
     {
         $this->assistanceType = $assistanceType;
 
@@ -414,7 +414,7 @@ class Assistance implements ExportableInterface
      *
      * @return Assistance
      */
-    public function setValidatedBy(?User $validatedBy): self
+    public function setValidatedBy(?User $validatedBy): Assistance
     {
         $this->validatedBy = $validatedBy;
 
@@ -438,7 +438,7 @@ class Assistance implements ExportableInterface
      *
      * @return Assistance
      */
-    public function setCompleted(bool $completed = true): self
+    public function setCompleted(bool $completed = true): Assistance
     {
         $this->completed = $completed;
 
@@ -462,7 +462,7 @@ class Assistance implements ExportableInterface
      *
      * @return self
      */
-    public function setTargetType(string $targetType): self
+    public function setTargetType(string $targetType): Assistance
     {
         if (!in_array($targetType, AssistanceTargetType::values())) {
             throw new \InvalidArgumentException("Wrong assistance target type: $targetType, allowed are: "
@@ -801,7 +801,7 @@ class Assistance implements ExportableInterface
      *
      * @return $this
      */
-    public function setDescription(?string $description): self
+    public function setDescription(?string $description): Assistance
     {
         $this->description = $description;
 
