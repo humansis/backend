@@ -4,6 +4,7 @@ namespace ReportingBundle\Utils\DataFillers\Distribution;
 
 use Doctrine\ORM\EntityManager;
 use NewApiBundle\DBAL\PersonGenderEnum;
+use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\PersonGender;
 use Symfony\Component\Validator\Constraints\DateTime;
 
@@ -167,14 +168,12 @@ class DataFillersDistribution extends DataFillers
             $this->repository = $this->em->getRepository(Commodity::class);
             $qb = $this->repository->createQueryBuilder('c')
                                    ->leftjoin('c.assistance', 'dd')
-                                   ->leftjoin('c.modalityType', 'm')
-                                   ->leftjoin('m.modality', 'mt')
-                                   ->select("CONCAT(mt.name, '-', m.name) AS value", 'dd.id as distribution');
+                                   ->select("c.modalityType AS value", 'dd.id as distribution');
             $results = $qb->getQuery()->getArrayResult();
             $reference = $this->getReferenceId("BMS_Distribution_M");
             foreach ($results as $result) {
                 $new_value = new ReportingValue();
-                $new_value->setValue($result['value']);
+                $new_value->setValue($result['value'] . '-' . ModalityType::getModality($result['value']));
                 $new_value->setUnity('modality');
                 $new_value->setCreationDate(new \DateTime());
 

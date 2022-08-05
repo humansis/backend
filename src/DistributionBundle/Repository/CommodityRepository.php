@@ -44,8 +44,7 @@ class CommodityRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('country', $country);
 
         if ($filter->hasNotModalityTypes()) {
-            $qbr->join('c.modalityType', 'm')
-                ->andWhere('m.name NOT IN (:modalityTypes)')
+            $qbr->andWhere('c.modalityType NOT IN (:modalityTypes)')
                 ->setParameter('modalityTypes', $filter->getNotModalityTypes());
         }
 

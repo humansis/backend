@@ -44,8 +44,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
             ->where("p.iso3 = :country")
                 ->setParameter("country", $country)
             ->leftJoin("dd.commodities", "c")
-            ->leftJoin("c.modalityType", "mt")
-            ->andWhere("mt.name = 'Mobile'");
+            ->andWhere("c.modalityType = 'Mobile'");
 
         return $qb->getQuery()->getSingleScalarResult();
     }
@@ -293,13 +292,13 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
 
         if ($filter->hasModalityTypes()) {
             $qbr->join('dd.commodities', 'c')
-                ->join('c.modalityType', 'm', 'WITH', 'm.name IN (:modalityTypes)')
+                ->andWhere('c.modalityType IN (:modalityTypes)')
                 ->setParameter('modalityTypes', $filter->getModalityTypes());
         }
 
         if ($filter->hasNotModalityTypes()) {
             $qbr->join('dd.commodities', 'c')
-                ->join('c.modalityType', 'm', 'WITH', 'm.name NOT IN (:modalityTypes)')
+                ->andWhere('c.modalityType NOT IN (:modalityTypes)')
                 ->setParameter('modalityTypes', $filter->getNotModalityTypes());
         }
 
@@ -335,10 +334,6 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                     $orderBy->has(AssistanceOrderInputType::SORT_BY_UNIT) ||
                     $orderBy->has(AssistanceOrderInputType::SORT_BY_VALUE)))) {
             $qb->leftJoin('dd.commodities', 'c');
-
-            if ($filter->hasModalityTypes() || $orderBy->has(AssistanceOrderInputType::SORT_BY_MODALITY_TYPE)) {
-                $qb->leftJoin('c.modalityType', 'mt');
-            }
         }
 
         if ($filter) {
@@ -364,7 +359,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                     ->setParameter('locations', $filter->getLocations());
             }
             if ($filter->hasModalityTypes()) {
-                $qb->andWhere('mt.name IN (:modalityTypes)')
+                $qb->andWhere('c.modalityType IN (:modalityTypes)')
                     ->setParameter('modalityTypes', $filter->getModalityTypes());
             }
         }
