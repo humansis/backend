@@ -2,9 +2,9 @@
 
 namespace Tests\NewApiBundle\Controller;
 
-use DistributionBundle\Entity\Modality;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use NewApiBundle\Enum\Modality;
 use Tests\BMSServiceTestCase;
 
 class ModalityControllerTest extends BMSServiceTestCase
@@ -44,11 +44,9 @@ class ModalityControllerTest extends BMSServiceTestCase
      */
     public function testGetModalityTypes()
     {
-        /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $modality = $em->getRepository(Modality::class)->findBy([], ['id' => 'asc'])[0];
+        $modality = Modality::values()[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/modalities/'.$modality->getName().'/types');
+        $this->request('GET', '/api/basic/web-app/v1/modalities/'.$modality.'/types');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
