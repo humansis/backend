@@ -25,6 +25,7 @@
 	"require": {
 		"php": "^7.3",
 		"ext-Zend-OPcache": "*",
+		"ext-bcmath": "*",
 		"ext-gd": "^7.3",
 		"ext-json": "*",
 		"ext-simplexml": "*",
@@ -52,6 +53,7 @@
 		"nelmio/cors-bundle": "1.5.6",
 		"phpoffice/phpspreadsheet": "1.17.1",
 		"phpstan/phpstan": "0.12.94",
+		"prestashop/decimal": "^1.5",
 		"punic/punic": "3.5.1",
 		"relief_applications/symfony-request-validator-bundle": "@dev",
 		"sensio/framework-extra-bundle": "v5.6.1",
