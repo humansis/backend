@@ -251,6 +251,8 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
                 ->setParameter('parent', $filter->getParent());
         }
 
+        $qbr->orderBy('l.name', 'ASC');
+
         return new Paginator($qbr);
     }
 
