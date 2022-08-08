@@ -106,6 +106,8 @@ class SelectionCriteria
         switch ($this->configuration->getReturnType()) {
             case CriteriaValueTransformerEnum::CONVERT_TO_INT:
                 return (int) $this->getValueString();
+            case CriteriaValueTransformerEnum::CONVERT_TO_BOOL:
+                return (bool) $this->getValueString();
             default:
                 return $this->getValueString();
         }

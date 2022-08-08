@@ -340,7 +340,8 @@ distribution:
             },
             vulnerabilityCriteria: {
                 type: BeneficiaryBundle\Entity\VulnerabilityCriterion,
-                target: Beneficiary
+                target: Beneficiary,
+                valueTransformer: !php/const NewApiBundle\Component\SelectionCriteria\Enum\CriteriaValueTransformerEnum::CONVERT_TO_BOOL
             },
             countrySpecific: {
                 type: BeneficiaryBundle\Entity\CountrySpecific,
