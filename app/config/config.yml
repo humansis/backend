@@ -291,11 +291,13 @@ distribution:
             },
             disabledHeadOfHousehold: {
                 type: other,
-                target: Head
+                target: Head,
+                valueTransformer: !php/const NewApiBundle\Component\SelectionCriteria\Enum\CriteriaValueTransformerEnum::CONVERT_TO_BOOL
             },
             hasValidSmartcard: {
                 type: other,
-                target: Head
+                target: Head,
+                valueTransformer: !php/const NewApiBundle\Component\SelectionCriteria\Enum\CriteriaValueTransformerEnum::CONVERT_TO_BOOL
             },
             headOfHouseholdDateOfBirth: {
                 type: table_field,
