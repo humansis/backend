@@ -968,6 +968,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
         return $this->createQueryBuilder('b')
             ->select('COUNT(DISTINCT b)')
             ->where('b.household = :household')
+            ->andWhere('b.archived = 0')
             ->setParameter('household', $household)
             ->getQuery()->getSingleScalarResult();
     }
