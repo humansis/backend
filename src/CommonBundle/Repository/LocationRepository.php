@@ -148,7 +148,7 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * return query for children locations
+     * return query for children locations (to be used in subquery)
      *
      * @param Location $ancestor
      * @param string $childAlias
@@ -163,31 +163,41 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
     {
         $qb = $this->createQueryBuilder($childAlias);
         
-        if ($withParent) {
-            //include parent in the query
-            $qb
-                ->andWhere(
-                    $qb->expr()->lte($childAlias.'.rgt', ':parentRgt'),
-                    $qb->expr()->gte($childAlias.'.lft', ':parentLft'),
-                    $qb->expr()->gte($childAlias.'.lvl', ':parentLvl')
-                );
-        }
-        else {
-            //get only children
-            $qb
-                ->andWhere(
-                    $qb->expr()->lt($childAlias.'.rgt', ':parentRgt'),
-                    $qb->expr()->gt($childAlias.'.lft', ':parentLft'),
-                    $qb->expr()->gt($childAlias.'.lvl', ':parentLvl')
-                );
-        }
-            
-        return $qb->andWhere($childAlias . '.countryISO3 = :iso3')
-            ->setParameters([
-                'parentRgt' => $ancestor->getRgt(),
-                'parentLft' => $ancestor->getLft(),
-                'parentLvl' => $ancestor->getLvl(),
-            ]);
+        return $this->inChildrenLocationsQueryBuilder(
+            $qb,
+            $ancestor,
+            $childAlias,
+            $withParent,
+        );
+        
+    }
+
+    /**
+     * add join for children locations to query in param
+     * 
+     * @param QueryBuilder $qb
+     * @param Location $ancestor
+     * @param string $joinAlias
+     * @param string $childAlias
+     * @param bool $withParent
+     * @return QueryBuilder
+     */
+    public function joinChildrenLocationsQueryBuilder(
+        QueryBuilder $qb,
+        Location $ancestor,
+        string $joinAlias,
+        string $childAlias = 'subqChildLoc',
+        bool $withParent = false
+    ): QueryBuilder
+    {
+        $qb->join($joinAlias . '.location', $childAlias);
+
+        return $this->inChildrenLocationsQueryBuilder(
+            $qb,
+            $ancestor,
+            $childAlias,
+            $withParent,
+        );
     }
 
     /**
@@ -257,24 +267,6 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * @param mixed $locationId
-     *
-     * @return int[]
-     */
-    public function findDescendantLocations($locationId): iterable
-    {
-        return $this->_em->getConnection()
-            ->executeQuery('
-                WITH RECURSIVE loc (loc_id, loc_parent_id) AS (
-                    SELECT location_id, parent_location_id FROM view_location_recursive WHERE location_id=?         
-                    UNION ALL 
-                    SELECT location_id, parent_location_id FROM view_location_recursive JOIN loc ON parent_location_id=loc_id
-                )
-                SELECT DISTINCT loc_id FROM loc', [$locationId])
-            ->fetchFirstColumn();
-    }
-
-    /**
      * @param string      $code
      * @param string|null $iso3
      * @param array|null  $context
@@ -292,5 +284,37 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
         }
 
         return $qb->getQuery()->getResult();
+    }
+    
+    private function inChildrenLocationsQueryBuilder(
+        QueryBuilder $qb,
+        Location $ancestor,
+        string $childAlias = 'subqChildLoc',
+        bool $withParent = false
+    ): QueryBuilder
+    {
+        if ($withParent) {
+            //include parent in the query
+            $qb
+                ->andWhere(
+                    $qb->expr()->lte($childAlias.'.rgt', ':parentRgt'),
+                    $qb->expr()->gte($childAlias.'.lft', ':parentLft'),
+                    $qb->expr()->gte($childAlias.'.lvl', ':parentLvl')
+                );
+        }
+        else {
+            //get only children
+            $qb
+                ->andWhere(
+                    $qb->expr()->lt($childAlias.'.rgt', ':parentRgt'),
+                    $qb->expr()->gt($childAlias.'.lft', ':parentLft'),
+                    $qb->expr()->gt($childAlias.'.lvl', ':parentLvl')
+                );
+        }
+
+        return $qb->andWhere($childAlias . '.countryISO3 = :iso3')
+            ->setParameter('parentRgt', $ancestor->getRgt())
+            ->setParameter('parentLft', $ancestor->getLft())
+            ->setParameter('parentLvl', $ancestor->getLvl());
     }
 }
