@@ -7,10 +7,9 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Institution;
-use BeneficiaryBundle\Entity\NationalId;
 use CommonBundle\Entity\Location;
+use CommonBundle\Repository\LocationRepository;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Entity\DistributedItem;
 use NewApiBundle\Entity\PurchasedItem;
@@ -125,14 +124,17 @@ class PurchasedItemRepository extends EntityRepository
                     ->setParameter('assistances', $filter->getAssistances());
             }
             if ($filter->hasLocations()) {
-                $locationIds = [];
-                foreach ($filter->getLocations() as $location) {
-                    $locationIds = array_merge($locationIds, $this->_em->getRepository(Location::class)->findDescendantLocations($location));
+
+                /** @var LocationRepository $locationRepository */
+                $locationRepository = $this->_em->getRepository(Location::class);
+                $location = $locationRepository->find($filter->getLocations()[0]);
+
+                if ($location === null || $location->getCountryISO3() !== $countryIso3) {
+                    throw new \InvalidArgumentException("Location not found or in different country");
                 }
 
-                $qbr
-                    ->andWhere('IDENTITY(pi.location) IN (:locations)')
-                    ->setParameter('locations', $locationIds);
+                $qbr = $locationRepository->joinChildrenLocationsQueryBuilder($qbr, $location, 'pi', 'l', true);
+
             }
             if ($filter->hasModalityTypes()) {
                 $qbr->andWhere('pi.modalityType IN (:modalityTypes)')
