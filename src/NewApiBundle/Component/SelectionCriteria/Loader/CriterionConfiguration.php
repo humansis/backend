@@ -2,6 +2,9 @@
 
 namespace NewApiBundle\Component\SelectionCriteria\Loader;
 
+use http\Exception\InvalidArgumentException;
+use NewApiBundle\Component\SelectionCriteria\Enum\CriteriaValueTransformerEnum;
+
 class CriterionConfiguration
 {
     /**
@@ -64,4 +67,16 @@ class CriterionConfiguration
         return $this->returnType;
     }
 
+    /**
+     * @param string $type
+     * @return void
+     */
+    public function setReturnType(string $type): void
+    {
+        if (!in_array($type, CriteriaValueTransformerEnum::values())) {
+            throw new InvalidArgumentException('invalid return type - "' . $type . '", has to be defined in CriteriaValueTransformerEnum');
+        }
+        
+        $this->returnType = $type;
+    }
 }

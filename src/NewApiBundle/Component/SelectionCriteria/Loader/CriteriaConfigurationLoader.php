@@ -35,4 +35,18 @@ class CriteriaConfigurationLoader
             $this->configuration[$key][self::VALUE_TRANSFORMER_KEY] ?? CriteriaValueTransformerEnum::CONVERT_TO_STRING,
         );
     }
+
+    public function guessReturnType(string $value): string
+    {
+        if (strtolower($value) === 'true' || strtolower($value) === 'false') {
+            return CriteriaValueTransformerEnum::CONVERT_TO_BOOL;
+        }
+        if (!is_numeric($value)) {
+            return CriteriaValueTransformerEnum::CONVERT_TO_STRING;
+        }
+        if (strpos($value, '.') !== false) {
+            return CriteriaValueTransformerEnum::CONVERT_TO_FLOAT;
+        }
+        return CriteriaValueTransformerEnum::CONVERT_TO_INT;
+    }
 }

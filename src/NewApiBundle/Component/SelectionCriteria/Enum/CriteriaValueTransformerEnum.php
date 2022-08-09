@@ -10,6 +10,7 @@ class CriteriaValueTransformerEnum
 
     public const CONVERT_TO_STRING = 'to_string';
     public const CONVERT_TO_INT = 'to_int';
+    public const CONVERT_TO_FLOAT = 'to_float';
     public const CONVERT_TO_BOOL = 'to_bool';
 
     public static function values(): array
@@ -17,6 +18,7 @@ class CriteriaValueTransformerEnum
         return [
             self::CONVERT_TO_STRING,
             self::CONVERT_TO_INT,
+            self::CONVERT_TO_FLOAT,
             self::CONVERT_TO_BOOL,
         ];
     }

@@ -7,7 +7,6 @@ use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Repository\CountrySpecificRepository;
 use BeneficiaryBundle\Repository\VulnerabilityCriterionRepository;
 use CommonBundle\Repository\LocationRepository;
-use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\Component\Assistance\Domain\SelectionCriteria;
 use NewApiBundle\Component\Assistance\DTO\CriteriaGroup;
@@ -100,6 +99,10 @@ class SelectionCriteriaFactory
         switch ($criteriaEntity->getTableString()) {
             case SelectionCriteriaField::COUNTRY_SPECIFIC:
                 $configuration = $this->configurationLoader->getCriterionConfiguration(SelectionCriteriaField::COUNTRY_SPECIFIC);
+                if (is_string($criteriaEntity->getValueString())) { //when creating new assistance, $criteriaEntity->getValueString() does not always return string
+                    $returnType = $this->configurationLoader->guessReturnType($criteriaEntity->getValueString());
+                    $configuration->setReturnType($returnType);
+                }
                 break;
             case SelectionCriteriaField::VULNERABILITY_CRITERIA:
                 $configuration = $this->configurationLoader->getCriterionConfiguration(SelectionCriteriaField::VULNERABILITY_CRITERIA);
