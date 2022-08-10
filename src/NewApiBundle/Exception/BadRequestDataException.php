@@ -1,5 +1,5 @@
 <?php
-namespace CommonBundle\Exception;
+namespace NewApiBundle\Exception;
 
 use Symfony\Component\HttpFoundation\Exception\RequestExceptionInterface;
 

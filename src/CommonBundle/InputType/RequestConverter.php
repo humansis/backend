@@ -2,7 +2,7 @@
 
 namespace CommonBundle\InputType;
 
-use CommonBundle\Exception\BadRequestDataException;
+use NewApiBundle\Exception\BadRequestDataException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
