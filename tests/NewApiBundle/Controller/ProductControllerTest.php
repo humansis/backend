@@ -2,7 +2,7 @@
 
 namespace Tests\NewApiBundle\Controller;
 
-use CommonBundle\DataFixtures\VendorFixtures;
+use NewApiBundle\DataFixtures\VendorFixtures;
 use Exception;
 use NewApiBundle\Entity\ProductCategory;
 use NewApiBundle\Enum\ProductCategoryType;
