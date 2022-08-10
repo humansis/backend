@@ -486,11 +486,11 @@
         <target>Үүнээс хойш түгээгдээгүй</target>
       </trans-unit>
       <trans-unit id="YkhOIqa" resname="health">
-        <source>Health</source>
+        <source>health</source>
         <target>Эрүүл мэнд</target>
       </trans-unit>
       <trans-unit id="VYmESet" resname="Health">
-        <source>health</source>
+        <source>Health</source>
         <target>Эрүүл мэнд</target>
       </trans-unit>
       <trans-unit id="OnhpU4i" resname="Home">
@@ -590,8 +590,8 @@
         <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after
           importing.
         </source>
-        <target>"Өөрчилсөн түгээлтийг агуулсан файлыг импортлох. Импорт хийсний дараа ""шинэчлэх"" дээр дарахад мэдээллийн баазыг энэхүү түгээлтийн тусламж хүртэгчдийн шинэ жагсаалтаар шинэчлэгдэх
-          болно."
+        <target>"""Өөрчилсөн түгээлтийг агуулсан файлыг импортлох. Импорт хийсний дараа """"шинэчлэх"""" дээр дарахад мэдээллийн баазыг энэхүү түгээлтийн тусламж хүртэгчдийн шинэ жагсаалтаар
+          шинэчлэгдэх болно."""
         </target>
       </trans-unit>
       <trans-unit id="27t7txq" resname="Income Level">

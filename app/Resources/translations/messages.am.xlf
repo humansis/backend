@@ -494,11 +494,11 @@
         <target>ጀምሮ በስርጭት ውስጥ የለም</target>
       </trans-unit>
       <trans-unit id="YkhOIqa" resname="health">
-        <source>Health</source>
+        <source>health</source>
         <target>ጤና</target>
       </trans-unit>
       <trans-unit id="VYmESet" resname="Health">
-        <source>health</source>
+        <source>Health</source>
         <target>ጤና</target>
       </trans-unit>
       <trans-unit id="OnhpU4i" resname="Home">

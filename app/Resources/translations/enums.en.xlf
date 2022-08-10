@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="en" datatype="plaintext" original="file.ext">
     <header>
@@ -441,10 +441,6 @@
         <source>Cashback</source>
         <target>Cashback</target>
       </trans-unit>
-      <trans-unit id="8MkT7PE" resname="refugee">
-        <source>refugee</source>
-        <target>Refugee</target>
-      </trans-unit>
       <trans-unit id="00vJDlK" resname="IDP">
         <source>IDP</source>
         <target>IDP</target>
@@ -457,10 +453,6 @@
         <source>returnee</source>
         <target>Returnee</target>
       </trans-unit>
-      <trans-unit id="l7BWAoD" resname="current">
-        <source>current</source>
-        <target>Current</target>
-      </trans-unit>
       <trans-unit id="Im.P7O." resname="temporary_settlement">
         <source>temporary_settlement</source>
         <target>Temporary Settlement</target>
@@ -468,6 +460,14 @@
       <trans-unit id="E9ALT1C" resname="residence">
         <source>residence</source>
         <target>Residence</target>
+      </trans-unit>
+      <trans-unit id="8MkT7PE" resname="refugee">
+        <source>refugee</source>
+        <target>Refugee</target>
+      </trans-unit>
+      <trans-unit id="l7BWAoD" resname="current">
+        <source>current</source>
+        <target>Current</target>
       </trans-unit>
       <trans-unit id="h44FifP" resname="In Kind">
         <source>In Kind</source>

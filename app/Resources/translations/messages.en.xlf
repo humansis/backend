@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="en" datatype="plaintext" original="file.ext">
     <header>
@@ -583,7 +583,7 @@
       </trans-unit>
       <trans-unit id="Qptrdl5" resname="Import &amp; compare">
         <source>Import &amp; compare</source>
-        <target><![CDATA[Import & compare]]></target>
+        <target>Import &amp; compare</target>
       </trans-unit>
       <trans-unit id="FUBfiFA" resname="Import from file">
         <source>Import from file</source>
@@ -593,9 +593,14 @@
         <source>Import from File</source>
         <target>Import from File</target>
       </trans-unit>
-      <trans-unit id="BdazhEU" resname="Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.">
-        <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.</source>
-        <target>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.</target>
+      <trans-unit id="BdazhEU"
+                  resname="Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.">
+        <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after
+          importing.
+        </source>
+        <target>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after
+          importing.
+        </target>
       </trans-unit>
       <trans-unit id="27t7txq" resname="Income Level">
         <source>Income Level</source>
@@ -1571,7 +1576,7 @@
       </trans-unit>
       <trans-unit id="VKC2.3y" resname="Default DRR &amp; Resilience">
         <source>Default DRR &amp; Resilience</source>
-        <target><![CDATA[Default DRR & Resilience]]></target>
+        <target>Default DRR &amp; Resilience</target>
       </trans-unit>
       <trans-unit id="Kx5IaBb" resname="Default Early Recovery">
         <source>Default Early Recovery</source>
@@ -1731,7 +1736,7 @@
       </trans-unit>
       <trans-unit id="EiPAGAC" resname="DRR &amp; Resilience">
         <source>DRR &amp; Resilience</source>
-        <target><![CDATA[DRR & Resilience]]></target>
+        <target>DRR &amp; Resilience</target>
       </trans-unit>
       <trans-unit id="5LSmmga" resname="Duplicate Assistance">
         <source>Duplicate Assistance</source>
@@ -1799,7 +1804,7 @@
       </trans-unit>
       <trans-unit id="nPkvSPw" resname="Education &amp; TVET">
         <source>Education &amp; TVET</source>
-        <target><![CDATA[Education & TVET]]></target>
+        <target>Education &amp; TVET</target>
       </trans-unit>
       <trans-unit id="R7K7qLi" resname="Emergency Telecomms">
         <source>Emergency Telecomms</source>
@@ -1843,7 +1848,7 @@
       </trans-unit>
       <trans-unit id="xGr66Iv" resname="Food Security &amp; Livelihood">
         <source>Food Security &amp; Livelihood</source>
-        <target><![CDATA[Food Security & Livelihood]]></target>
+        <target>Food Security &amp; Livelihood</target>
       </trans-unit>
       <trans-unit id="Jgqi9Iu" resname="Food Vouchers">
         <source>Food Vouchers</source>
@@ -2259,7 +2264,7 @@
       </trans-unit>
       <trans-unit id="oa.3G9m" resname="Purchase Date &amp; Time">
         <source>Purchase Date &amp; Time</source>
-        <target><![CDATA[Purchase Date & Time]]></target>
+        <target>Purchase Date &amp; Time</target>
       </trans-unit>
       <trans-unit id="y.7_wTj" resname="Purchased Date">
         <source>Purchased Date</source>
@@ -2751,7 +2756,7 @@
       </trans-unit>
       <trans-unit id="LmVsQDA" resname="Project &amp; Donor">
         <source>Project &amp; Donor</source>
-        <target><![CDATA[Project & Donor]]></target>
+        <target>Project &amp; Donor</target>
       </trans-unit>
       <trans-unit id="zf5SHir" resname="Distributed item(s)">
         <source>Distributed item(s)</source>
@@ -2773,7 +2778,8 @@
         <source>Approved by</source>
         <target>Approved by</target>
       </trans-unit>
-      <trans-unit id="RMSi1bj" resname="The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.">
+      <trans-unit id="RMSi1bj"
+                  resname="The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.">
         <source>The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.</source>
         <target>The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.</target>
       </trans-unit>
@@ -3179,11 +3185,11 @@
       </trans-unit>
       <trans-unit id="HOUFmD2" resname="Education &amp; T V E T">
         <source>Education &amp; T V E T</source>
-        <target><![CDATA[Education & T V E T]]></target>
+        <target>Education &amp; T V E T</target>
       </trans-unit>
       <trans-unit id="ynVi_ce" resname="D R R &amp; Resilience">
         <source>D R R &amp; Resilience</source>
-        <target><![CDATA[D R R & Resilience]]></target>
+        <target>D R R &amp; Resilience</target>
       </trans-unit>
       <trans-unit id="f5zIjxy" resname="Non- Sector Specific">
         <source>Non- Sector Specific</source>
@@ -4009,10 +4015,9 @@
         <source>Bebelac Type</source>
         <target>Bebelac Type</target>
       </trans-unit>
-      <trans-unit id="51av0xa" resname="Water&#10;Nº of 1.5 bottles ">
-        <source>Water&#10;Nº of 1.5 bottles </source>
-        <target>Water
-Nº of 1.5 bottles </target>
+      <trans-unit id="51av0xa" resname="&quot;Water Nº of 1.5 bottles&quot;">
+        <source>"Water Nº of 1.5 bottles"</source>
+        <target>"Water Nº of 1.5 bottles"</target>
       </trans-unit>
       <trans-unit id="dAQwynL" resname="Bebelac kg">
         <source>Bebelac kg</source>
@@ -4034,109 +4039,69 @@ Nº of 1.5 bottles </target>
         <source>Nº FAMILIES</source>
         <target>Nº FAMILIES</target>
       </trans-unit>
-      <trans-unit id="I2phZLM" resname="FEMALE&#10;Head of Family gender">
-        <source>FEMALE
-Head of Family gender</source>
-        <target>FEMALE
-Head of Family gender</target>
+      <trans-unit id="I2phZLM" resname="&quot;FEMALE Head of Family gender&quot;">
+        <source>"FEMALE Head of Family gender"</source>
+        <target>"FEMALE Head of Family gender"</target>
       </trans-unit>
-      <trans-unit id="0ZQdz2Y" resname="MALE&#10;Head of Family gender">
-        <source>MALE
-Head of Family gender</source>
-        <target>MALE
-Head of Family gender</target>
+      <trans-unit id="0ZQdz2Y" resname="&quot;MALE Head of Family gender&quot;">
+        <source>"MALE Head of Family gender"</source>
+        <target>"MALE Head of Family gender"</target>
       </trans-unit>
-      <trans-unit id="x8lsEdk" resname="Children&#10;0-23 months&#10;Male">
-        <source>Children
-0-23 months
-Male</source>
-        <target>Children
-0-23 months
-Male</target>
+      <trans-unit id="x8lsEdk" resname="&quot;Children 0-23 months Male&quot;">
+        <source>"Children 0-23 months Male"</source>
+        <target>"Children 0-23 months Male"</target>
       </trans-unit>
-      <trans-unit id="08NcV1g" resname="Children&#10;0-23 months&#10;Female">
-        <source>Children
-0-23 months
-Female</source>
-        <target>Children
-0-23 months
-Female</target>
+      <trans-unit id="08NcV1g" resname="&quot;Children 0-23 months Female&quot;">
+        <source>"Children 0-23 months Female"</source>
+        <target>"Children 0-23 months Female"</target>
       </trans-unit>
-      <trans-unit id="w4CzqbR" resname="Children&#10;2-5&#10;Male">
-        <source>Children
-2-5
-Male</source>
-        <target>Children
-2-5
-Male</target>
+      <trans-unit id="w4CzqbR" resname="&quot;Children 2-5 Male&quot;">
+        <source>"Children 2-5 Male"</source>
+        <target>"Children 2-5 Male"</target>
       </trans-unit>
-      <trans-unit id=".pPwDj0" resname="Children&#10;2-5&#10;Female">
-        <source>Children
-2-5
-Female</source>
-        <target>Children
-2-5
-Female</target>
+      <trans-unit id=".pPwDj0" resname="&quot;Children 2-5 Female&quot;">
+        <source>"Children 2-5 Female"</source>
+        <target>"Children 2-5 Female"</target>
       </trans-unit>
-      <trans-unit id="hwVztzw" resname="Males&#10;6-17">
-        <source>Males
-6-17</source>
-        <target>Males
-6-17</target>
+      <trans-unit id="hwVztzw" resname="&quot;Males 6-17&quot;">
+        <source>"Males 6-17"</source>
+        <target>"Males 6-17"</target>
       </trans-unit>
-      <trans-unit id="nWwdF_h" resname="Females&#10;6-17">
-        <source>Females
-6-17</source>
-        <target>Females
-6-17</target>
+      <trans-unit id="nWwdF_h" resname="&quot;Females 6-17&quot;">
+        <source>"Females 6-17"</source>
+        <target>"Females 6-17"</target>
       </trans-unit>
-      <trans-unit id="47LfDJD" resname="Males&#10;18-59">
-        <source>Males
-18-59</source>
-        <target>Males
-18-59</target>
+      <trans-unit id="47LfDJD" resname="&quot;Males 18-59&quot;">
+        <source>"Males 18-59"</source>
+        <target>"Males 18-59"</target>
       </trans-unit>
-      <trans-unit id="prA38io" resname="Females&#10;18-59">
-        <source>Females
-18-59</source>
-        <target>Females
-18-59</target>
+      <trans-unit id="prA38io" resname="&quot;Females 18-59&quot;">
+        <source>"Females 18-59"</source>
+        <target>"Females 18-59"</target>
       </trans-unit>
-      <trans-unit id="8jrgDm." resname="Males&#10;60+">
-        <source>Males
-60+</source>
-        <target>Males
-60+</target>
+      <trans-unit id="8jrgDm." resname="&quot;Males 60+&quot;">
+        <source>"Males 60+"</source>
+        <target>"Males 60+"</target>
       </trans-unit>
-      <trans-unit id="YuI1MEa" resname="Females&#10;60+">
-        <source>Females
-60+</source>
-        <target>Females
-60+</target>
+      <trans-unit id="YuI1MEa" resname="&quot;Females 60+&quot;">
+        <source>"Females 60+"</source>
+        <target>"Females 60+"</target>
       </trans-unit>
-      <trans-unit id="wmaf7RR" resname="Total&#10;Males">
-        <source>Total
-Males</source>
-        <target>Total
-Males</target>
+      <trans-unit id="wmaf7RR" resname="&quot;Total Males&quot;">
+        <source>"Total Males"</source>
+        <target>"Total Males"</target>
       </trans-unit>
-      <trans-unit id="DPt6PBc" resname="Total&#10;Females">
-        <source>Total
-Females</source>
-        <target>Total
-Females</target>
+      <trans-unit id="DPt6PBc" resname="&quot;Total Females&quot;">
+        <source>"Total Females"</source>
+        <target>"Total Females"</target>
       </trans-unit>
-      <trans-unit id="Rg7M6UB" resname="Individ. Benef.&#10;Served">
-        <source>Individ. Benef.
-Served</source>
-        <target>Individ. Benef.
-Served</target>
+      <trans-unit id="Rg7M6UB" resname="&quot;Individ. Benef. Served&quot;">
+        <source>"Individ. Benef. Served"</source>
+        <target>"Individ. Benef. Served"</target>
       </trans-unit>
-      <trans-unit id="jVaZB9b" resname="Family&#10;Size">
-        <source>Family
-Size</source>
-        <target>Family
-Size</target>
+      <trans-unit id="jVaZB9b" resname="&quot;Family Size&quot;">
+        <source>"Family Size"</source>
+        <target>"Family Size"</target>
       </trans-unit>
       <trans-unit id="G.TdrrG" resname="Distributed At">
         <source>Distributed At</source>

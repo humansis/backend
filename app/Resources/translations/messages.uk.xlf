@@ -494,11 +494,11 @@
         <target>Не брав участь у дистрибуції з</target>
       </trans-unit>
       <trans-unit id="YkhOIqa" resname="health">
-        <source>Health</source>
+        <source>health</source>
         <target>Здоров'я</target>
       </trans-unit>
       <trans-unit id="VYmESet" resname="Health">
-        <source>health</source>
+        <source>Health</source>
         <target>Здоров'я</target>
       </trans-unit>
       <trans-unit id="OnhpU4i" resname="Home">
@@ -3692,6 +3692,134 @@
       <trans-unit id="nqm9ISK" resname="Scoring">
         <source>Scoring</source>
         <target>Підрахунок балів</target>
+      </trans-unit>
+      <trans-unit id="SZ8TjP8" resname="Navi/Elo number">
+        <source>Navi/Elo number</source>
+        <target>Номер Navi/Elo</target>
+      </trans-unit>
+      <trans-unit id="fRw6Jnb" resname="DISTR. NO.">
+        <source>DISTR. NO.</source>
+        <target>ДИСТРИБУЦІЯ №</target>
+      </trans-unit>
+      <trans-unit id="Xe7WWKm" resname="Starting Date">
+        <source>Starting Date</source>
+        <target>Дата початку</target>
+      </trans-unit>
+      <trans-unit id="woDitwo" resname="Ending Date">
+        <source>Ending Date</source>
+        <target>Дата закінчення</target>
+      </trans-unit>
+      <trans-unit id="Z6WDait" resname="Town, Village">
+        <source>Town, Village</source>
+        <target>Місто, село</target>
+      </trans-unit>
+      <trans-unit id="0Ghuve4" resname="Location = School/Camp">
+        <source>Location = School/Camp</source>
+        <target>Локація = Школа/табір</target>
+      </trans-unit>
+      <trans-unit id="FtkxLrQ" resname="Neighbourhood (Camp Name)">
+        <source>Neighbourhood (Camp Name)</source>
+        <target>Околиця (назва табору)</target>
+      </trans-unit>
+      <trans-unit id="gYj2PIP" resname="Activity (Modality)">
+        <source>Activity (Modality)</source>
+        <target>Активність (модальність)</target>
+      </trans-unit>
+      <trans-unit id="nLrJcaP" resname="Nº Of Units">
+        <source>Nº Of Units</source>
+        <target>№ одиниць</target>
+      </trans-unit>
+      <trans-unit id="piWpgoz" resname="Amount (USD/SYP)">
+        <source>Amount (USD/SYP)</source>
+        <target>Сума (USD/SYP)</target>
+      </trans-unit>
+      <trans-unit id="Hz3sari" resname="Bebelac Type">
+        <source>Bebelac Type</source>
+        <target>Тип Bebelac</target>
+      </trans-unit>
+      <trans-unit id="dAQwynL" resname="Bebelac kg">
+        <source>Bebelac kg</source>
+        <target>Bebelac кг</target>
+      </trans-unit>
+      <trans-unit id="XQHPta9" resname="Nappies Pack">
+        <source>Nappies Pack</source>
+        <target>Пакет підгузків</target>
+      </trans-unit>
+      <trans-unit id="yJ7.ptS" resname="IDPs">
+        <source>IDPs</source>
+        <target>ВПО</target>
+      </trans-unit>
+      <trans-unit id="_t2n_yT" resname="Residents">
+        <source>Residents</source>
+        <target>Місце проживання</target>
+      </trans-unit>
+      <trans-unit id="JeNGCn4" resname="Nº FAMILIES">
+        <source>Nº FAMILIES</source>
+        <target>№ СІМЕЙ</target>
+      </trans-unit>
+      <trans-unit id="I2phZLM" resname="&quot;FEMALE Head of Family gender&quot;">
+        <source>"FEMALE Head of Family gender"</source>
+        <target>Жінка Голова сім'ї стать</target>
+      </trans-unit>
+      <trans-unit id="0ZQdz2Y" resname="&quot;MALE Head of Family gender&quot;">
+        <source>"MALE Head of Family gender"</source>
+        <target>Чоловік Голова сім'ї стать</target>
+      </trans-unit>
+      <trans-unit id="x8lsEdk" resname="&quot;Children 0-23 months Male&quot;">
+        <source>"Children 0-23 months Male"</source>
+        <target>Дитина 0-23 місяців Чоловік</target>
+      </trans-unit>
+      <trans-unit id="08NcV1g" resname="&quot;Children 0-23 months Female&quot;">
+        <source>"Children 0-23 months Female"</source>
+        <target>Дитина 0-23 місяців Жінка</target>
+      </trans-unit>
+      <trans-unit id="w4CzqbR" resname="&quot;Children 2-5 Male&quot;">
+        <source>"Children 2-5 Male"</source>
+        <target>Дитина 2-5 Чоловік</target>
+      </trans-unit>
+      <trans-unit id=".pPwDj0" resname="&quot;Children 2-5 Female&quot;">
+        <source>"Children 2-5 Female"</source>
+        <target>Дитина 2-5 Жінка</target>
+      </trans-unit>
+      <trans-unit id="hwVztzw" resname="&quot;Males 6-17&quot;">
+        <source>"Males 6-17"</source>
+        <target>Чоловіки 6-17</target>
+      </trans-unit>
+      <trans-unit id="nWwdF_h" resname="&quot;Females 6-17&quot;">
+        <source>"Females 6-17"</source>
+        <target>Жінки 6-17</target>
+      </trans-unit>
+      <trans-unit id="47LfDJD" resname="&quot;Males 18-59&quot;">
+        <source>"Males 18-59"</source>
+        <target>Чоловіки 18-59</target>
+      </trans-unit>
+      <trans-unit id="prA38io" resname="&quot;Females 18-59&quot;">
+        <source>"Females 18-59"</source>
+        <target>Жінки 18-59</target>
+      </trans-unit>
+      <trans-unit id="8jrgDm." resname="&quot;Males 60+&quot;">
+        <source>"Males 60+"</source>
+        <target>Чоловіки 60+</target>
+      </trans-unit>
+      <trans-unit id="YuI1MEa" resname="&quot;Females 60+&quot;">
+        <source>"Females 60+"</source>
+        <target>Жінки 60+</target>
+      </trans-unit>
+      <trans-unit id="wmaf7RR" resname="&quot;Total Males&quot;">
+        <source>"Total Males"</source>
+        <target>Всього Чоловіки</target>
+      </trans-unit>
+      <trans-unit id="DPt6PBc" resname="&quot;Total Females&quot;">
+        <source>"Total Females"</source>
+        <target>Всього Жінки</target>
+      </trans-unit>
+      <trans-unit id="Rg7M6UB" resname="&quot;Individ. Benef. Served&quot;">
+        <source>"Individ. Benef. Served"</source>
+        <target>Обслуговано бенефіціарів</target>
+      </trans-unit>
+      <trans-unit id="jVaZB9b" resname="&quot;Family Size&quot;">
+        <source>"Family Size"</source>
+        <target>Сім'я Розмір</target>
       </trans-unit>
     </body>
   </file>
