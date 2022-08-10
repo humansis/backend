@@ -40,7 +40,7 @@ class ImportQueueMapper implements MapperInterface
         $extractValueFromAllBeneficiaries = function ($values) use ($extractValue) {
             return array_map($extractValue, $values);
         };
-        return array_map($extractValueFromAllBeneficiaries, $this->object->getContent());
+        return array_values(array_map($extractValueFromAllBeneficiaries, $this->object->getContent()));
     }
 
     public function getStatus(): string

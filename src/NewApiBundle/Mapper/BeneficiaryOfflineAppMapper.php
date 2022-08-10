@@ -55,9 +55,9 @@ class BeneficiaryOfflineAppMapper implements MapperInterface
 
     public function getNationalIdCards(): array
     {
-        return array_map(function ($item) {
+        return array_values(array_map(function ($item) {
             return $item->getId();
-        }, $this->object->getPerson()->getNationalIds()->toArray());
+        }, $this->object->getPerson()->getNationalIds()->toArray()));
     }
 
     public function getReferralType(): ?string

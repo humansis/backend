@@ -50,16 +50,16 @@ class BeneficiaryMapper implements MapperInterface
 
     public function getNationalIds(): array
     {
-        return array_map(function ($item) {
+        return array_values(array_map(function ($item) {
             return $item->getId();
-        }, $this->object->getPerson()->getNationalIds()->toArray());
+        }, $this->object->getPerson()->getNationalIds()->toArray()));
     }
 
     public function getPhoneIds(): array
     {
-        return array_map(function ($item) {
+        return array_values(array_map(function ($item) {
             return $item->getId();
-        }, $this->object->getPerson()->getPhones()->toArray());
+        }, $this->object->getPerson()->getPhones()->toArray()));
     }
 
     public function getResidencyStatus(): string

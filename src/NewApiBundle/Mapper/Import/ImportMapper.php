@@ -48,9 +48,9 @@ class ImportMapper implements MapperInterface
 
     public function getProjects(): array
     {
-        return array_map(function (Project $project) {
+        return array_values(array_map(function (Project $project) {
             return $project->getId();
-        }, $this->object->getProjects()->toArray());
+        }, $this->object->getProjects()->toArray()));
     }
 
     public function getStatus(): string

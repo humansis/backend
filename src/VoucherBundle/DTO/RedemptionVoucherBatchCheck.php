@@ -97,8 +97,8 @@ class RedemptionVoucherBatchCheck implements \JsonSerializable
 
     private function toIdArray(array $vouchers): array
     {
-        return array_map(function (Voucher $voucher) {
+        return array_values(array_map(function (Voucher $voucher) {
             return $voucher->getId();
-        }, $vouchers);
+        }, $vouchers));
     }
 }

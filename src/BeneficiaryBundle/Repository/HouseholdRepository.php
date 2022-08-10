@@ -284,9 +284,9 @@ class HouseholdRepository extends AbstractCriteriaRepository
 
         if ($filter->hasLivelihoods()) {
             
-            $livelihoods = array_map(static function ($livelihood) {
+            $livelihoods = array_values(array_map(static function ($livelihood) {
                 return LivelihoodEnum::valueToDB($livelihood);
-            }, $filter->getLivelihoods());
+            }, $filter->getLivelihoods()));
             
             $qb->andWhere('hh.livelihood IN (:livelihoods)')
                 ->setParameter('livelihoods', $livelihoods);

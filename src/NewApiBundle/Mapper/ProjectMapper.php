@@ -93,16 +93,16 @@ class ProjectMapper implements MapperInterface
 
     public function getSectors(): array
     {
-        return array_map(function (ProjectSector $item) {
+        return array_values(array_map(function (ProjectSector $item) {
             return $item->getSector();
-        }, $this->object->getSectors()->toArray());
+        }, $this->object->getSectors()->toArray()));
     }
 
     public function getDonorIds(): array
     {
-        return array_map(function ($item) {
+        return array_values(array_map(function ($item) {
             return $item->getId();
-        }, $this->object->getDonors()->toArray());
+        }, $this->object->getDonors()->toArray()));
     }
 
     public function getNumberOfHouseholds(): int

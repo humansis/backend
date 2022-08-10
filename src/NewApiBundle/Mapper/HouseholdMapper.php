@@ -51,9 +51,9 @@ class HouseholdMapper implements MapperInterface
      */
     public function getAssets(): iterable
     {
-        return array_map(function ($item) {
+        return array_values(array_map(function ($item) {
             return (string) $item;
-        }, $this->object->getAssets());
+        }, $this->object->getAssets()));
     }
 
     public function getShelterStatus(): ?string
@@ -66,9 +66,9 @@ class HouseholdMapper implements MapperInterface
      */
     public function getProjectIds(): iterable
     {
-        return array_map(function ($item) {
+        return array_values(array_map(function ($item) {
             return $item->getId();
-        }, $this->object->getProjects()->toArray());
+        }, $this->object->getProjects()->toArray()));
     }
 
     public function getNotes(): ?string
@@ -100,9 +100,9 @@ class HouseholdMapper implements MapperInterface
 
     public function getCountrySpecificAnswerIds(): iterable
     {
-        return array_map(function ($item) {
+        return array_values(array_map(function ($item) {
             return $item->getId();
-        }, $this->object->getCountrySpecificAnswers()->toArray());
+        }, $this->object->getCountrySpecificAnswers()->toArray()));
     }
 
     /**
@@ -110,9 +110,9 @@ class HouseholdMapper implements MapperInterface
      */
     public function getBeneficiaryIds(): iterable
     {
-        return array_map(function ($item) {
+        return array_values(array_map(function ($item) {
             return $item->getId();
-        }, $this->object->getBeneficiaries()->toArray());
+        }, $this->object->getBeneficiaries()->toArray()));
     }
 
     public function getIncomeLevel(): ?int
@@ -145,9 +145,9 @@ class HouseholdMapper implements MapperInterface
      */
     public function getSupportReceivedTypes(): iterable
     {
-        return array_map(function ($item) {
+        return array_values(array_map(function ($item) {
             return (string) $item;
-        }, $this->object->getSupportReceivedTypes());
+        }, $this->object->getSupportReceivedTypes()));
     }
 
     public function getSupportOrganizationName(): ?string

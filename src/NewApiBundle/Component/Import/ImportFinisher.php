@@ -127,9 +127,9 @@ class ImportFinisher
         $householdUpdateInputType = $this->householdDecoratorBuilder->buildHouseholdUpdateType($item);
 
         $updatedHousehold = $acceptedDuplicity->getTheirs();
-        $projects = array_map(function (Project $project) {
+        $projects = array_values(array_map(function (Project $project) {
             return $project->getId();
-        }, $updatedHousehold->getProjects()->toArray());
+        }, $updatedHousehold->getProjects()->toArray()));
 
         foreach ($import->getProjects() as $project) {
             $projects[] = $project->getId();

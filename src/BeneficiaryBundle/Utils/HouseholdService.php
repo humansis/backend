@@ -534,9 +534,9 @@ class HouseholdService
     public function removeBeneficiaries(array $householdArray)
     {
         $household = $this->em->getRepository(Household::class)->find($householdArray['id']);
-        $beneficiaryIds = array_map(function ($beneficiary) {
+        $beneficiaryIds = array_values(array_map(function ($beneficiary) {
             return $beneficiary['id'];
-        }, $householdArray['beneficiaries']);
+        }, $householdArray['beneficiaries']));
 
         // Remove beneficiaries that are not in the array
         foreach ($household->getBeneficiaries() as $beneficiary) {

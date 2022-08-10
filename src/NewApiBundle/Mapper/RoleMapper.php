@@ -50,6 +50,6 @@ class RoleMapper implements MapperInterface
             return $privilege->getCode();
         };
 
-        return array_map($fn, $this->object->getPrivileges()->toArray());
+        return array_values(array_map($fn, $this->object->getPrivileges()->toArray()));
     }
 }

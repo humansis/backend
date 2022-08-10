@@ -83,7 +83,7 @@ class ImportQueueRepository extends EntityRepository
         }
 
         $results = $builder->getQuery()->getArrayResult();
-        return array_map(function($item) { return $item['id']; }, $results);
+        return array_values(array_map(function($item) { return $item['id']; }, $results));
     }
 
     public function getTotalByImportAndStatus(Import $import, string $state): int

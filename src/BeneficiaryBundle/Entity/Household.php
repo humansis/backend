@@ -230,9 +230,9 @@ class Household extends AbstractBeneficiary
      */
     public function getAssets(): array
     {
-        return array_map(function ($asset) {
+        return array_values(array_map(function ($asset) {
             return HouseholdAssetsEnum::valueFromDB($asset);
-        }, $this->assets);
+        }, $this->assets));
     }
 
     /**
@@ -243,9 +243,9 @@ class Household extends AbstractBeneficiary
     public function setAssets(array $assets): self
     {
         self::validateValues('assets', HouseholdAssets::class, $assets);
-        $this->assets = array_unique(array_map(function ($asset) {
+        $this->assets = array_values(array_unique(array_map(function ($asset) {
             return HouseholdAssetsEnum::valueToDB($asset);
-        }, $assets));
+        }, $assets)));
 
         return $this;
     }
@@ -601,9 +601,9 @@ class Household extends AbstractBeneficiary
      */
     public function getSupportReceivedTypes(): array
     {
-        return array_map(function ($type) {
+        return array_values(array_map(function ($type) {
             return HouseholdSupportReceivedTypeEnum::valueFromDB($type);
-        }, $this->supportReceivedTypes);
+        }, $this->supportReceivedTypes));
     }
 
     /**
@@ -614,9 +614,9 @@ class Household extends AbstractBeneficiary
     public function setSupportReceivedTypes(array $supportReceivedTypes): self
     {
         self::validateValues('supportReceivedType', HouseholdSupportReceivedType::class, $supportReceivedTypes);
-        $this->supportReceivedTypes = array_map(function ($type) {
+        $this->supportReceivedTypes = array_values(array_map(function ($type) {
             return HouseholdSupportReceivedTypeEnum::valueToDB($type);
-        }, $supportReceivedTypes);
+        }, $supportReceivedTypes));
 
         return $this;
     }

@@ -427,7 +427,7 @@ class ImportController extends AbstractController
             'state' => ImportQueueState::ERROR,
         ]);
 
-        $fails = array_map(function (Entity\ImportQueue $failedQueue) use ($lineFactory) {
+        $fails = array_values(array_map(function (Entity\ImportQueue $failedQueue) use ($lineFactory) {
             $line = $lineFactory->create($failedQueue, 0);
             $messages = json_decode($failedQueue->getMessage(), true);
 
@@ -455,7 +455,7 @@ class ImportController extends AbstractController
                     "type" => $line->idType
                 ]
             ];
-        }, $importQueues);
+        }, $importQueues));
 
         return $this->json(new Paginator($fails));
     }

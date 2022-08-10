@@ -76,8 +76,8 @@ class VoucherRedemptionBatchMapper implements MapperInterface
 
     public function getVoucherIds(): array
     {
-        return array_map(function (Voucher $item) {
+        return array_values(array_map(function (Voucher $item) {
             return $item->getId();
-        }, $this->object->getVouchers()->toArray());
+        }, $this->object->getVouchers()->toArray()));
     }
 }
