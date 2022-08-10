@@ -1,6 +1,6 @@
 <?php
 
-namespace CommonBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\NestedTreeTrait;
@@ -37,7 +37,7 @@ class Location implements TreeInterface
     /**
      * @var Location|null
      *
-     * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location", inversedBy="childLocations")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Location", inversedBy="childLocations")
      * @ORM\JoinColumn(name="parent_location_id", nullable=true)
      */
     private $parentLocation;
@@ -45,7 +45,7 @@ class Location implements TreeInterface
     /**
      * @var Location[]
      *
-     * @ORM\OneToMany(targetEntity="CommonBundle\Entity\Location", mappedBy="parentLocation")
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\Location", mappedBy="parentLocation")
      */
     private $childLocations;
 

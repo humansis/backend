@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Controller;
 
-use CommonBundle\Entity\Organization;
+use NewApiBundle\Entity\Organization;
 use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Enum\AssistanceTargetType;
 use NewApiBundle\Repository\AssistanceRepository;

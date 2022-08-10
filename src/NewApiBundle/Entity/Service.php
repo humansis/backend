@@ -1,6 +1,6 @@
 <?php
 
-namespace CommonBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
@@ -46,7 +46,7 @@ class Service implements \JsonSerializable
     /**
      * @var OrganizationServices $organizationServices
      *
-     * @ORM\OneToMany(targetEntity="CommonBundle\Entity\OrganizationServices", mappedBy="service", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\OrganizationServices", mappedBy="service", cascade={"remove"})
      */
     private $organizationServices;
 
@@ -135,11 +135,11 @@ class Service implements \JsonSerializable
     /**
      * Add OrganizationServices.
      *
-     * @param \CommonBundle\Entity\OrganizationServices $organizationServices
+     * @param \NewApiBundle\Entity\OrganizationServices $organizationServices
      *
      * @return OrganizationServices
      */
-    public function addOrganizationServices(\CommonBundle\Entity\OrganizationServices $organizationServices)
+    public function addOrganizationServices(\NewApiBundle\Entity\OrganizationServices $organizationServices)
     {
         if (null === $this->organizationServices) {
             $this->organizationServices = new \Doctrine\Common\Collections\ArrayCollection();
@@ -152,11 +152,11 @@ class Service implements \JsonSerializable
     /**
      * Remove OrganizationServices.
      *
-     * @param \CommonBundle\Entity\OrganizationServices $organizationServices
+     * @param \NewApiBundle\Entity\OrganizationServices $organizationServices
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeOrganizationServices(\CommonBundle\Entity\OrganizationServices $organizationServices)
+    public function removeOrganizationServices(\NewApiBundle\Entity\OrganizationServices $organizationServices)
     {
         return $this->organizationServices->removeElement($organizationServices);
     }

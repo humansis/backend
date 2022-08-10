@@ -3,7 +3,7 @@
 namespace Tests\NewApiBundle\Controller\WebApp\Assistance;
 
 use NewApiBundle\Entity\Community;
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use DateTime;
 use DateTimeInterface;
 use NewApiBundle\Entity\Assistance;

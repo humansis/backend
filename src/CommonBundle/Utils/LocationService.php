@@ -5,7 +5,7 @@ namespace CommonBundle\Utils;
 
 use NewApiBundle\Form\HouseholdConstraints;
 use NewApiBundle\InputType\Deprecated\LocationType;
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;

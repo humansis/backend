@@ -1,6 +1,6 @@
 <?php
 
-namespace CommonBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
@@ -39,14 +39,14 @@ class OrganizationServices implements \JsonSerializable
     /**
      * @var Organization
      *
-     * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Organization", inversedBy="organizationServices")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Organization", inversedBy="organizationServices")
      */
     private $organization;
 
     /**
      * @var Service
      *
-     * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Service", inversedBy="organizationServices")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Service", inversedBy="organizationServices")
      */
     private $service;
 
@@ -123,11 +123,11 @@ class OrganizationServices implements \JsonSerializable
     /**
      * Set organization.
      *
-     * @param \CommonBundle\Entity\Organization $organization
+     * @param \NewApiBundle\Entity\Organization $organization
      *
      * @return OrganizationServices
      */
-    public function setOrganization(\CommonBundle\Entity\Organization $organization)
+    public function setOrganization(\NewApiBundle\Entity\Organization $organization)
     {
         $this->organization = $organization;
 
@@ -137,7 +137,7 @@ class OrganizationServices implements \JsonSerializable
     /**
      * Get Organization.
      *
-     * @return \CommonBundle\Entity\Organization
+     * @return \NewApiBundle\Entity\Organization
      */
     public function getOrganization()
     {
@@ -147,11 +147,11 @@ class OrganizationServices implements \JsonSerializable
     /**
      * Set Service.
      *
-     * @param \CommonBundle\Entity\Service $service
+     * @param \NewApiBundle\Entity\Service $service
      *
      * @return OrganizationServices
      */
-    public function setService(\CommonBundle\Entity\Service $service = null)
+    public function setService(\NewApiBundle\Entity\Service $service = null)
     {
         $this->service = $service;
 
@@ -161,7 +161,7 @@ class OrganizationServices implements \JsonSerializable
     /**
      * Get Service.
      *
-     * @return \CommonBundle\Entity\Service
+     * @return \NewApiBundle\Entity\Service
      */
     public function getService()
     {

@@ -9,7 +9,7 @@ use NewApiBundle\Exception\CsvParserException;
 use NewApiBundle\Repository\BeneficiaryRepository;
 use NewApiBundle\Utils\BeneficiaryService;
 use NewApiBundle\Controller\ExportController;
-use CommonBundle\Entity\Organization;
+use NewApiBundle\Entity\Organization;
 use CommonBundle\Pagination\Paginator;
 use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Enum\AssistanceTargetType;

@@ -5,7 +5,7 @@ namespace NewApiBundle\DBAL;
 
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 
-class AssistanceCommodityDivisionEnum extends \CommonBundle\DBAL\AbstractEnum
+class AssistanceCommodityDivisionEnum extends \NewApiBundle\DBAL\AbstractEnum
 {
     public static function all(): array
     {

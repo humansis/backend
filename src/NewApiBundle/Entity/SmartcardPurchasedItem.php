@@ -5,7 +5,7 @@ namespace NewApiBundle\Entity;
 
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Household;
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Project;
 use NewApiBundle\Entity\Assistance;
@@ -38,7 +38,7 @@ class SmartcardPurchasedItem
     /**
      * @var Location
      *
-     * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Location")
      */
     private $location;
 

@@ -14,7 +14,7 @@ use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Entity\Person;
-use CommonBundle\Entity\Organization;
+use NewApiBundle\Entity\Organization;
 use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Entity\Commodity;

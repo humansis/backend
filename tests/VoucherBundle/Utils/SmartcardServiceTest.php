@@ -2,7 +2,7 @@
 
 namespace VoucherBundle\Tests\Utils;
 
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use NewApiBundle\Entity\Beneficiary;
 use DateTime;
 use NewApiBundle\Entity\Assistance;

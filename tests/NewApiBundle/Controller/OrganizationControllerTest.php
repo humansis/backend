@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
-use CommonBundle\Entity\Organization;
-use CommonBundle\Entity\OrganizationServices;
+use NewApiBundle\Entity\Organization;
+use NewApiBundle\Entity\OrganizationServices;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Exception;

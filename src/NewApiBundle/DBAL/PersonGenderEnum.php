@@ -3,10 +3,9 @@ declare(strict_types=1);
 
 namespace NewApiBundle\DBAL;
 
-use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\PersonGender;
 
-class PersonGenderEnum extends \CommonBundle\DBAL\AbstractEnum
+class PersonGenderEnum extends \NewApiBundle\DBAL\AbstractEnum
 {
     use EnumTrait;
 

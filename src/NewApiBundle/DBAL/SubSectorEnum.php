@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace NewApiBundle\DBAL;
 
-use CommonBundle\DBAL\AbstractEnum;
-
 class SubSectorEnum extends AbstractEnum
 {
     protected static $values = [

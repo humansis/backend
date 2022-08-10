@@ -5,7 +5,7 @@ namespace NewApiBundle\DBAL;
 
 use NewApiBundle\Enum\ImportDuplicityState;
 
-class ImportDuplicityStateEnum extends \CommonBundle\DBAL\AbstractEnum
+class ImportDuplicityStateEnum extends \NewApiBundle\DBAL\AbstractEnum
 {
     public function getName(): string
     {

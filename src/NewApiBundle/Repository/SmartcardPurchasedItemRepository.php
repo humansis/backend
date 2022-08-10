@@ -5,6 +5,7 @@ namespace NewApiBundle\Repository;
 
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\NationalId;
+use NewApiBundle\Entity\Location;
 use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;

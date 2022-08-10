@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Repository;
 
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use NewApiBundle\Entity\Assistance;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;

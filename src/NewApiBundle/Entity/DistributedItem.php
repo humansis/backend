@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Entity;
 
 use NewApiBundle\Entity\Beneficiary;
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Entity\Commodity;
 use Doctrine\ORM\Mapping as ORM;
@@ -51,7 +51,7 @@ class DistributedItem
     /**
      * @var Location
      *
-     * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Location")
      */
     private $location;
 

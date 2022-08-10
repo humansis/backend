@@ -5,7 +5,7 @@ namespace NewApiBundle\DataFixtures;
 use NewApiBundle\Entity\Community;
 use NewApiBundle\Entity\Institution;
 use NewApiBundle\DataFixtures\Beneficiaries\BeneficiaryFixtures;
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use CommonBundle\Mapper\LocationMapper;
 use NewApiBundle\Entity\Modality;
 use NewApiBundle\Enum\AssistanceTargetType;

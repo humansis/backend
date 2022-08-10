@@ -1,9 +1,9 @@
 <?php
 
-namespace CommonBundle\DBAL;
+namespace NewApiBundle\DBAL;
 
-use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\Type;
 
 abstract class AbstractEnum extends Type
 {

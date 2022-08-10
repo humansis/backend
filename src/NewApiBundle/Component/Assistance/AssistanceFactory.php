@@ -7,7 +7,7 @@ use NewApiBundle\Exception\CsvParserException;
 use NewApiBundle\Repository\BeneficiaryRepository;
 use NewApiBundle\Repository\CommunityRepository;
 use NewApiBundle\Repository\InstitutionRepository;
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
 use DateTimeInterface;
 use NewApiBundle\Entity;

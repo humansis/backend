@@ -2,9 +2,9 @@
 
 namespace NewApiBundle\DataFixtures;
 
-use CommonBundle\Entity\Organization;
-use CommonBundle\Entity\OrganizationServices;
-use CommonBundle\Entity\Service;
+use NewApiBundle\Entity\Organization;
+use NewApiBundle\Entity\OrganizationServices;
+use NewApiBundle\Entity\Service;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;

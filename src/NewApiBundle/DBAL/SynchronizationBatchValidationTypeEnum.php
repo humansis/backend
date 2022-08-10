@@ -3,11 +3,9 @@ declare(strict_types=1);
 
 namespace NewApiBundle\DBAL;
 
-use NewApiBundle\Enum\SourceType;
-use NewApiBundle\Enum\SynchronizationBatchState;
 use NewApiBundle\Enum\SynchronizationBatchValidationType;
 
-class SynchronizationBatchValidationTypeEnum extends \CommonBundle\DBAL\AbstractEnum
+class SynchronizationBatchValidationTypeEnum extends \NewApiBundle\DBAL\AbstractEnum
 {
     public function getName(): string
     {

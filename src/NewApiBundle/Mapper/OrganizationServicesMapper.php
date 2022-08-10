@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Mapper;
 
-use CommonBundle\Entity\OrganizationServices;
+use NewApiBundle\Entity\OrganizationServices;
 use NewApiBundle\Serializer\MapperInterface;
 
 class OrganizationServicesMapper implements MapperInterface

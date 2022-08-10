@@ -2,7 +2,7 @@
 
 namespace CommonBundle\Repository;
 
-use CommonBundle\Entity\Organization;
+use NewApiBundle\Entity\Organization;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Request\Pagination;
 

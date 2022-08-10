@@ -2,7 +2,7 @@
 
 namespace VoucherBundle\Controller;
 
-use CommonBundle\Entity\Organization;
+use NewApiBundle\Entity\Organization;
 use CommonBundle\Repository\OrganizationRepository;
 use NewApiBundle\Export\SmartcardInvoiceExport;
 use Doctrine\ORM\EntityNotFoundException;

@@ -5,7 +5,7 @@ namespace NewApiBundle\DBAL;
 
 use NewApiBundle\Enum\HouseholdShelterStatus;
 
-class HouseholdShelterStatusEnum extends \CommonBundle\DBAL\AbstractEnum
+class HouseholdShelterStatusEnum extends \NewApiBundle\DBAL\AbstractEnum
 {
     use EnumTrait;
 

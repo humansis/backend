@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Entity;
 
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -44,7 +44,7 @@ class Address
     private $postcode;
 
     /**
-     * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Location")
      */
     private $location;
 
@@ -162,11 +162,11 @@ class Address
      /**
      * Set location.
      *
-     * @param \CommonBundle\Entity\Location|null $location
+     * @param \NewApiBundle\Entity\Location|null $location
      *
      * @return Address
      */
-    public function setLocation(\CommonBundle\Entity\Location $location = null)
+    public function setLocation(\NewApiBundle\Entity\Location $location = null)
     {
         $this->location = $location;
 
@@ -176,7 +176,7 @@ class Address
     /**
      * Get location.
      *
-     * @return \CommonBundle\Entity\Location|null
+     * @return \NewApiBundle\Entity\Location|null
      */
     public function getLocation()
     {

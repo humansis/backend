@@ -2,8 +2,8 @@
 
 namespace VoucherBundle\Utils;
 
-use CommonBundle\Entity\Location;
-use CommonBundle\Entity\Logs;
+use NewApiBundle\Entity\Location;
+use NewApiBundle\Entity\Logs;
 use CommonBundle\Utils\LocationService;
 use Couchbase\DocumentNotFoundException;
 use DateTime;

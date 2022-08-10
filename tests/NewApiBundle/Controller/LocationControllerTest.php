@@ -2,7 +2,7 @@
 
 namespace Tests\NewApiBundle\Controller;
 
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
 use Exception;
 use NewApiBundle\Component\Country\Countries;

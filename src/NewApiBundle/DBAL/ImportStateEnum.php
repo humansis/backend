@@ -5,7 +5,7 @@ namespace NewApiBundle\DBAL;
 
 use NewApiBundle\Enum\ImportState;
 
-class ImportStateEnum extends \CommonBundle\DBAL\AbstractEnum
+class ImportStateEnum extends \NewApiBundle\DBAL\AbstractEnum
 {
     public function getName(): string
     {

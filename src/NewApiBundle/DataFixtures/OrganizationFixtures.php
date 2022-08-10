@@ -4,7 +4,7 @@ namespace NewApiBundle\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use CommonBundle\Entity\Organization;
+use NewApiBundle\Entity\Organization;
 
 class OrganizationFixtures extends Fixture
 {

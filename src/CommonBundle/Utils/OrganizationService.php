@@ -2,8 +2,8 @@
 
 namespace CommonBundle\Utils;
 
-use CommonBundle\Entity\Organization;
-use CommonBundle\Entity\OrganizationServices;
+use NewApiBundle\Entity\Organization;
+use NewApiBundle\Entity\OrganizationServices;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\InputType\OrganizationUpdateInputType;
 use Psr\Container\ContainerInterface;

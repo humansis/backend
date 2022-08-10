@@ -8,7 +8,7 @@ use Dompdf\Options;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use CommonBundle\Entity\Organization;
+use NewApiBundle\Entity\Organization;
 use Doctrine\ORM\EntityManagerInterface;
 
 class PdfService

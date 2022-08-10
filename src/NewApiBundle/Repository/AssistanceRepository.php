@@ -3,7 +3,7 @@
 namespace NewApiBundle\Repository;
 
 use NewApiBundle\Entity\Beneficiary;
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use NewApiBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\Query\Expr\Join;
 use \DateTime;

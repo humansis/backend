@@ -18,7 +18,7 @@ use NewApiBundle\InputType\HouseholdOrderInputType;
 use NewApiBundle\Request\Pagination;
 use NewApiBundle\DBAL\LivelihoodEnum;
 use NewApiBundle\Entity\Project;
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use Doctrine\ORM\Query\Expr\Join;
 
 /**

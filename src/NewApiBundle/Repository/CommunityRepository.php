@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Repository;
 
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use NewApiBundle\Entity\Assistance;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;

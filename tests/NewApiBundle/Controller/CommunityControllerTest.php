@@ -3,7 +3,7 @@
 namespace Tests\NewApiBundle\Controller;
 
 use NewApiBundle\Entity\Community;
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\OptimisticLockException;
