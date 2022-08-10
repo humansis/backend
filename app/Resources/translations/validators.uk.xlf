@@ -11,7 +11,7 @@
       </trans-unit>
       <trans-unit id="NN2_iru" resname="This value should be true.">
         <source>This value should be true.</source>
-        <target>Це значення має бути дійсним.</target>
+        <target>Це значення має бути вірним.</target>
       </trans-unit>
       <trans-unit id="OjM_kpf" resname="This value should be of type {{ type }}.">
         <source>This value should be of type {{ type }}.</source>
@@ -31,7 +31,7 @@
       </trans-unit>
       <trans-unit id="nIvOQ_o" resname="You must select at most {{ limit }} choice.|You must select at most {{ limit }} choices.">
         <source>You must select at most {{ limit }} choice.|You must select at most {{ limit }} choices.</source>
-        <target>Ви повинні вибрати як мінімум {{ limit }} варіантів. |Ви повинні вибрати як мінімум {{ limit }} варіантів.</target>
+        <target>Ви повинні вибрати максимум {{ limit }} варіантів. |Ви повинні вибрати максимум {{ limit }} варіантів.</target>
       </trans-unit>
       <trans-unit id="87zjiHi" resname="One or more of the given values is invalid.">
         <source>One or more of the given values is invalid.</source>
@@ -91,11 +91,11 @@
       </trans-unit>
       <trans-unit id="1KV4L.t" resname="This value should not be blank.">
         <source>This value should not be blank.</source>
-        <target>Це значення не повинно бути пустим.</target>
+        <target>Це значення не повинно бути порожнім.</target>
       </trans-unit>
       <trans-unit id="2G4Vepm" resname="This value should not be null.">
         <source>This value should not be null.</source>
-        <target>Це значення має бути нульовим.</target>
+        <target>Це значення не має бути нульовим.</target>
       </trans-unit>
       <trans-unit id="yDc3m6E" resname="This value should be null.">
         <source>This value should be null.</source>
@@ -219,11 +219,11 @@
       </trans-unit>
       <trans-unit id="MAzmID7" resname="Invalid card number.">
         <source>Invalid card number.</source>
-        <target>Неправильний номер картки.</target>
+        <target>Невірний номер картки.</target>
       </trans-unit>
       <trans-unit id="c3REGK3" resname="Unsupported card type or invalid card number.">
         <source>Unsupported card type or invalid card number.</source>
-        <target>Тип карти, що не підтримується, або неправильний номер картки.</target>
+        <target>Тип карти, що не підтримується, або невірний номер картки.</target>
       </trans-unit>
       <trans-unit id="XSVzcbV" resname="This is not a valid International Bank Account Number (IBAN).">
         <source>This is not a valid International Bank Account Number (IBAN).</source>
@@ -503,7 +503,7 @@
       </trans-unit>
       <trans-unit id="GRMTXRX" resname="Please provide a valid phone number.">
         <source>Please provide a valid phone number.</source>
-        <target>Будь ласка, вкажіть номер телефону, що діє.</target>
+        <target>Будь ласка, вкажіть дійсний номер телефону.</target>
       </trans-unit>
       <trans-unit id="WkYuMDd" resname="The checkbox has an invalid value.">
         <source>The checkbox has an invalid value.</source>
@@ -515,7 +515,7 @@
       </trans-unit>
       <trans-unit id="TzSC4.o" resname="Please select a valid option.">
         <source>Please select a valid option.</source>
-        <target>Будь ласка, виберіть потрібний варіант.</target>
+        <target>Будь ласка, виберіть допустимий варіант.</target>
       </trans-unit>
       <trans-unit id="qGRcTk7" resname="Please select a valid range.">
         <source>Please select a valid range.</source>

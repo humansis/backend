@@ -494,11 +494,11 @@
         <target>لم يكن في التوزيع منذ</target>
       </trans-unit>
       <trans-unit id="YkhOIqa" resname="health">
-        <source>health</source>
+        <source>Health</source>
         <target>الصحة</target>
       </trans-unit>
       <trans-unit id="VYmESet" resname="Health">
-        <source>Health</source>
+        <source>health</source>
         <target>الصحة</target>
       </trans-unit>
       <trans-unit id="OnhpU4i" resname="Home">
@@ -553,10 +553,6 @@
         <source>Household Size</source>
         <target>حجم الأسرة</target>
       </trans-unit>
-      <trans-unit id="i9HzhQO" resname="Households Targeted">
-        <source>Households Targeted</source>
-        <target>الأسر المستهدفة</target>
-      </trans-unit>
       <trans-unit id="98f8lQA" resname="Household Status">
         <source>Household Status</source>
         <target>حالة الأسرة</target>
@@ -597,8 +593,11 @@
         <source>Import from File</source>
         <target>استيراد من ملف</target>
       </trans-unit>
-      <trans-unit id="BdazhEU" resname="Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.">
-        <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.</source>
+      <trans-unit id="BdazhEU"
+                  resname="Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.">
+        <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after
+          importing.
+        </source>
         <target>قم باستيراد الملف الذي يحتوي على التوزيع المعدّل. سيتم تحديث قاعدة البيانات بقائمة</target>
       </trans-unit>
       <trans-unit id="27t7txq" resname="Income Level">
@@ -1082,7 +1081,7 @@
         <target>المأوى الانتقالي</target>
       </trans-unit>
       <trans-unit id="PLyHx2g" resname="True">
-        <source>TRUE</source>
+        <source>True</source>
         <target>صحيح</target>
       </trans-unit>
       <trans-unit id="rj1rhbS" resname="Two-factor authentication adds an additional layer of security to your account by requiring more than a password to log in">
@@ -1165,10 +1164,6 @@
         <source>Village</source>
         <target>القرية</target>
       </trans-unit>
-      <trans-unit id="pPmun0d" resname="Village/Neighbourhood">
-        <source>Village/Neighbourhood</source>
-        <target>قرية</target>
-      </trans-unit>
       <trans-unit id="9nNksbD" resname="Vocational Training">
         <source>Vocational Training</source>
         <target>تدريب مهني</target>
@@ -1196,6 +1191,14 @@
       <trans-unit id="oCQ66J1" resname="You can select only one country">
         <source>You can select only one country</source>
         <target>يمكنك اختيار دولة واحدة فقط</target>
+      </trans-unit>
+      <trans-unit id="i9HzhQO" resname="Households Targeted">
+        <source>Households Targeted</source>
+        <target>الأسر المستهدفة</target>
+      </trans-unit>
+      <trans-unit id="pPmun0d" resname="Village/Neighbourhood">
+        <source>Village/Neighbourhood</source>
+        <target>قرية</target>
       </trans-unit>
     </body>
   </file>

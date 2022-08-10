@@ -43,7 +43,7 @@
       </trans-unit>
       <trans-unit id="EYCKpDH" resname="No token could be found.">
         <source>No token could be found.</source>
-        <target>Токена не знайдено</target>
+        <target>Токен не знайдено</target>
       </trans-unit>
       <trans-unit id="z3cOUZo" resname="Username could not be found.">
         <source>Username could not be found.</source>

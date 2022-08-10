@@ -35,7 +35,7 @@
       </trans-unit>
       <trans-unit id="uEaRUvy" resname="contract_no">
         <source>contract_no</source>
-        <target>Контракт №</target>
+        <target>Договор №</target>
       </trans-unit>
       <trans-unit id="qSWo.e4" resname="period_start">
         <source>period_start</source>
@@ -67,7 +67,7 @@
       </trans-unit>
       <trans-unit id="zzjZXJx" resname="amount">
         <source>amount</source>
-        <target>Сумма</target>
+        <target>Количество</target>
       </trans-unit>
       <trans-unit id="Rm5bnNV" resname="currency">
         <source>currency</source>
@@ -79,7 +79,7 @@
       </trans-unit>
       <trans-unit id="OFz9vAD" resname="unit">
         <source>unit</source>
-        <target>Единица измерения</target>
+        <target>Единица</target>
       </trans-unit>
       <trans-unit id="IoKfYkz" resname="unit_price">
         <source>unit_price</source>
@@ -139,7 +139,7 @@
       </trans-unit>
       <trans-unit id="LyR5YVU" resname="purchase_unit">
         <source>purchase_unit</source>
-        <target>Единица измерения</target>
+        <target>Единица</target>
       </trans-unit>
       <trans-unit id="PDFWkVM" resname="purchase_item_total">
         <source>purchase_item_total</source>

@@ -486,11 +486,11 @@
         <target>Չի մասնակցել տրամադրման գործաընթացին մինչ այժմ</target>
       </trans-unit>
       <trans-unit id="YkhOIqa" resname="health">
-        <source>health</source>
+        <source>Health</source>
         <target>Առողջություն</target>
       </trans-unit>
       <trans-unit id="VYmESet" resname="Health">
-        <source>Health</source>
+        <source>health</source>
         <target>Առողջություն</target>
       </trans-unit>
       <trans-unit id="HvL_92f" resname="Home Duties">
@@ -581,9 +581,13 @@
         <source>Import from File</source>
         <target>Ներմուծում ֆայլից</target>
       </trans-unit>
-      <trans-unit id="BdazhEU" resname="Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.">
-        <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.</source>
-        <target>Ներմուծեք ֆայլ, որը պարունակում է փոփոխված տրամադրում։ Տվյալների բազան կթարմացվի այս տրամադրման շահառուների նոր ցուցակով, երբ ներմուծումից հետո սեղմեք "update" /"թարմացում"</target>
+      <trans-unit id="BdazhEU"
+                  resname="Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.">
+        <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after
+          importing.
+        </source>
+        <target>"Ներմուծեք ֆայլ, որը պարունակում է փոփոխված տրամադրում։ Տվյալների բազան կթարմացվի այս տրամադրման շահառուների նոր ցուցակով, երբ ներմուծումից հետո սեղմեք ""update"" /""թարմացում"""
+        </target>
       </trans-unit>
       <trans-unit id="27t7txq" resname="Income Level">
         <source>Income Level</source>
@@ -1058,7 +1062,7 @@
         <target>Ժամանակավոր կացարան</target>
       </trans-unit>
       <trans-unit id="PLyHx2g" resname="True">
-        <source>TRUE</source>
+        <source>True</source>
         <target>Ճիշտ</target>
       </trans-unit>
       <trans-unit id="rj1rhbS" resname="Two-factor authentication adds an additional layer of security to your account by requiring more than a password to log in">

@@ -9,17 +9,69 @@
         <source>National ID</source>
         <target>Національне посвідчення особи</target>
       </trans-unit>
+      <trans-unit id="_X6doOO" resname="Other">
+        <source>Other</source>
+        <target>Інше</target>
+      </trans-unit>
+      <trans-unit id="3JN7WYk" resname="None">
+        <source>None</source>
+        <target>Ні</target>
+      </trans-unit>
+      <trans-unit id="GP3VSbL" resname="New">
+        <source>New</source>
+        <target>Створити</target>
+      </trans-unit>
+      <trans-unit id="BOHvfR6" resname="Distributed">
+        <source>Distributed</source>
+        <target>Виданий</target>
+      </trans-unit>
+      <trans-unit id="RdsYeVs" resname="Hygiene kit">
+        <source>Hygiene kit</source>
+        <target>Гігієнічний набір</target>
+      </trans-unit>
+      <trans-unit id="cYXxBj0" resname="Farming - Agriculture">
+        <source>Farming - Agriculture</source>
+        <target>Сільське господарство-обробка землі</target>
+      </trans-unit>
+      <trans-unit id="1GI0pr2" resname="Farming - Livestock">
+        <source>Farming - Livestock</source>
+        <target>Сільське господарство - скотарство</target>
+      </trans-unit>
+      <trans-unit id="HvL_92f" resname="Home Duties">
+        <source>Home Duties</source>
+        <target>Домашні обов'язки</target>
+      </trans-unit>
+      <trans-unit id="OkyagQ9" resname="Beneficiary">
+        <source>Beneficiary</source>
+        <target>Бенефіціар</target>
+      </trans-unit>
+      <trans-unit id="ocbJf0F" resname="Household">
+        <source>Household</source>
+        <target>Домогосподарство</target>
+      </trans-unit>
+      <trans-unit id="u81ijAe" resname="household">
+        <source>household</source>
+        <target>Домогосподарство</target>
+      </trans-unit>
+      <trans-unit id="4ZIYuvi" resname="Family name">
+        <source>Family name</source>
+        <target>Прізвище</target>
+      </trans-unit>
+      <trans-unit id="cC75Ie0" resname="First name">
+        <source>First name</source>
+        <target>Ім'я</target>
+      </trans-unit>
       <trans-unit id="GdgnfPj" resname="Tax Number">
         <source>Tax Number</source>
-        <target>Податковий номер</target>
+        <target>ІПН</target>
       </trans-unit>
       <trans-unit id="MXPByM." resname="Passport">
         <source>Passport</source>
-        <target>Паспорт</target>
+        <target>Паспорт для виїзду закордон</target>
       </trans-unit>
       <trans-unit id="iWoKwgI" resname="Family Registration">
         <source>Family Registration</source>
-        <target>Family Registration</target>
+        <target>Свідоцтво про шлюб</target>
       </trans-unit>
       <trans-unit id="Afi2c1o" resname="Birth Certificate">
         <source>Birth Certificate</source>
@@ -31,23 +83,11 @@
       </trans-unit>
       <trans-unit id="FZ.VZRI" resname="Camp ID">
         <source>Camp ID</source>
-        <target>Ідентифікатор табору</target>
+        <target>ID табору</target>
       </trans-unit>
       <trans-unit id="Qb.gbSk" resname="Social Service Card">
         <source>Social Service Card</source>
         <target>Карта соціального обслуговування</target>
-      </trans-unit>
-      <trans-unit id="_X6doOO" resname="Other">
-        <source>Other</source>
-        <target>Інше</target>
-      </trans-unit>
-      <trans-unit id="3JN7WYk" resname="None">
-        <source>None</source>
-        <target>Нічого</target>
-      </trans-unit>
-      <trans-unit id="GP3VSbL" resname="New">
-        <source>New</source>
-        <target>новий</target>
       </trans-unit>
       <trans-unit id="f7ZNUGA" resname="Integrity Checking">
         <source>Integrity Checking</source>
@@ -63,15 +103,15 @@
       </trans-unit>
       <trans-unit id="69_oac2" resname="Identity Checking">
         <source>Identity Checking</source>
-        <target>Перевірка особи</target>
+        <target>Перевірка ідентичності</target>
       </trans-unit>
       <trans-unit id="lmmxtOM" resname="Identity Check Correct">
         <source>Identity Check Correct</source>
-        <target>Перевірка особистості вірна</target>
+        <target>Перевірка ідентичності вірна</target>
       </trans-unit>
       <trans-unit id="JFSaxlS" resname="Identity Check Failed">
         <source>Identity Check Failed</source>
-        <target>Помилка перевірки особистості</target>
+        <target>Помилка перевірки ідентичності</target>
       </trans-unit>
       <trans-unit id="RLYVseu" resname="Similarity Checking">
         <source>Similarity Checking</source>
@@ -119,15 +159,11 @@
       </trans-unit>
       <trans-unit id="mcQAdpl" resname="To distribute">
         <source>To distribute</source>
-        <target>Для роздачі</target>
+        <target>Для дистрибуції</target>
       </trans-unit>
       <trans-unit id="MIW92c5" resname="Distribution in progress">
         <source>Distribution in progress</source>
-        <target>Роздача у процесі</target>
-      </trans-unit>
-      <trans-unit id="BOHvfR6" resname="Distributed">
-        <source>Distributed</source>
-        <target>Виданий</target>
+        <target>Дистрибуція в процесі</target>
       </trans-unit>
       <trans-unit id="QkolUdN" resname="Expired">
         <source>Expired</source>
@@ -201,10 +237,6 @@
         <source>Shelter tool kit</source>
         <target>Набір для ремонту</target>
       </trans-unit>
-      <trans-unit id="RdsYeVs" resname="Hygiene kit">
-        <source>Hygiene kit</source>
-        <target>Гігієнічний набір</target>
-      </trans-unit>
       <trans-unit id="swOidc3" resname="Dignity kit">
         <source>Dignity kit</source>
         <target>Комплект засобів особистої гігієни</target>
@@ -243,7 +275,7 @@
       </trans-unit>
       <trans-unit id="h65OKV9" resname="Identity Candidate">
         <source>Identity Candidate</source>
-        <target>Особа кандидата</target>
+        <target>Ідентичний кандидат</target>
       </trans-unit>
       <trans-unit id="fxkNbyE" resname="Unique Candidate">
         <source>Unique Candidate</source>
@@ -255,19 +287,19 @@
       </trans-unit>
       <trans-unit id="aHZywOd" resname="To Create">
         <source>To Create</source>
-        <target>Створено</target>
+        <target>Створити</target>
       </trans-unit>
       <trans-unit id="i0bPNU7" resname="To Update">
         <source>To Update</source>
-        <target>Оновлено</target>
+        <target>Оновити</target>
       </trans-unit>
       <trans-unit id="mx1VQmL" resname="To Link">
         <source>To Link</source>
-        <target>Пов'язаний</target>
+        <target>Пов'язати</target>
       </trans-unit>
       <trans-unit id="kYGhhxN" resname="To Ignore">
         <source>To Ignore</source>
-        <target>Помилка</target>
+        <target>Ігнорувати</target>
       </trans-unit>
       <trans-unit id="1wueJLy" resname="Created">
         <source>Created</source>
@@ -289,14 +321,6 @@
         <source>Irregular earnings</source>
         <target>Нерегулярний заробіток</target>
       </trans-unit>
-      <trans-unit id="cYXxBj0" resname="Farming - Agriculture">
-        <source>Farming - Agriculture</source>
-        <target>Сільське господарство-обробка землі</target>
-      </trans-unit>
-      <trans-unit id="1GI0pr2" resname="Farming - Livestock">
-        <source>Farming - Livestock</source>
-        <target>Сільське господарство - скотарство</target>
-      </trans-unit>
       <trans-unit id="413RaGm" resname="Regular salary - private sector">
         <source>Regular salary - private sector</source>
         <target>Регулярна заробітна плата – приватний сектор</target>
@@ -312,10 +336,6 @@
       <trans-unit id="7fFCE2i" resname="Pension">
         <source>Pension</source>
         <target>Пенсія</target>
-      </trans-unit>
-      <trans-unit id="HvL_92f" resname="Home Duties">
-        <source>Home Duties</source>
-        <target>Домашні обов'язки</target>
       </trans-unit>
       <trans-unit id="V8eE5pP" resname="Own business/trading">
         <source>Own business/trading</source>
@@ -341,29 +361,9 @@
         <source>Refused to answer</source>
         <target>Відмовився відповідати</target>
       </trans-unit>
-      <trans-unit id="OkyagQ9" resname="Beneficiary">
-        <source>Beneficiary</source>
-        <target>Бенефіціар</target>
-      </trans-unit>
       <trans-unit id="m7CqzG1" resname="Head">
         <source>Head</source>
         <target>Голова</target>
-      </trans-unit>
-      <trans-unit id="ocbJf0F" resname="Household">
-        <source>Household</source>
-        <target>Домогосподарство</target>
-      </trans-unit>
-      <trans-unit id="u81ijAe" resname="household">
-        <source>household</source>
-        <target>Домогосподарство</target>
-      </trans-unit>
-      <trans-unit id="4ZIYuvi" resname="Family name">
-        <source>Family name</source>
-        <target>Прізвище</target>
-      </trans-unit>
-      <trans-unit id="cC75Ie0" resname="First name">
-        <source>First name</source>
-        <target>Ім'я</target>
       </trans-unit>
       <trans-unit id="KZ_59GN" resname="Selected (YES/NO)">
         <source>Selected (YES/NO)</source>
@@ -435,11 +435,31 @@
       </trans-unit>
       <trans-unit id="zuYsxxL" resname="Non-Food">
         <source>Non-Food</source>
-        <target>Непродовольчий</target>
+        <target>Непродовольчі товари</target>
       </trans-unit>
       <trans-unit id="M0qRf3z" resname="Cashback">
         <source>Cashback</source>
         <target>Повернення коштів</target>
+      </trans-unit>
+      <trans-unit id="00vJDlK" resname="IDP">
+        <source>IDP</source>
+        <target>ВПО</target>
+      </trans-unit>
+      <trans-unit id="hIFv84P" resname="resident">
+        <source>resident</source>
+        <target>Резидент</target>
+      </trans-unit>
+      <trans-unit id="1IV1GDa" resname="returnee">
+        <source>returnee</source>
+        <target>Репатріант</target>
+      </trans-unit>
+      <trans-unit id="Im.P7O." resname="temporary_settlement">
+        <source>temporary_settlement</source>
+        <target>Тимчасове поселення</target>
+      </trans-unit>
+      <trans-unit id="E9ALT1C" resname="residence">
+        <source>residence</source>
+        <target>Житло</target>
       </trans-unit>
     </body>
   </file>

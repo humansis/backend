@@ -5,6 +5,26 @@
       <tool tool-id="symfony" tool-name="Symfony"/>
     </header>
     <body>
+      <trans-unit id="z80fPWr" resname="Shelter">
+        <source>Shelter</source>
+        <target>Жильё</target>
+      </trans-unit>
+      <trans-unit id="DpetAhZ" resname="Protection">
+        <source>Protection</source>
+        <target>Защита</target>
+      </trans-unit>
+      <trans-unit id="VYmESet" resname="Health">
+        <source>Health</source>
+        <target>Здоровье</target>
+      </trans-unit>
+      <trans-unit id="ereLcFj" resname="Nutrition">
+        <source>Nutrition</source>
+        <target>Питание</target>
+      </trans-unit>
+      <trans-unit id="mkhpM89" resname="Cash for Work">
+        <source>Cash for Work</source>
+        <target>Оплата за труд</target>
+      </trans-unit>
       <trans-unit id="_DDY9n7" resname="Food Security">
         <source>Food Security</source>
         <target>Продовольственная безопасность</target>
@@ -17,17 +37,9 @@
         <source>Multi Purpose Cash Assistance</source>
         <target>Многоцелевая денежная помощь</target>
       </trans-unit>
-      <trans-unit id="z80fPWr" resname="Shelter">
-        <source>Shelter</source>
-        <target>Жильё</target>
-      </trans-unit>
       <trans-unit id="5AdZwSg" resname="WASH">
         <source>WASH</source>
         <target>Водоснабжение, санитария и гигиена (WASH)</target>
-      </trans-unit>
-      <trans-unit id="DpetAhZ" resname="Protection">
-        <source>Protection</source>
-        <target>Защита</target>
       </trans-unit>
       <trans-unit id="nPkvSPw" resname="Education &amp; TVET">
         <source>Education &amp; TVET</source>
@@ -37,17 +49,9 @@
         <source>Emergency Telecomms</source>
         <target>Экстренные телекоммуникации</target>
       </trans-unit>
-      <trans-unit id="VYmESet" resname="Health">
-        <source>Health</source>
-        <target>Здоровье</target>
-      </trans-unit>
       <trans-unit id="rm6YkJy" resname="Logistics">
         <source>Logistics</source>
         <target>Логистика</target>
-      </trans-unit>
-      <trans-unit id="ereLcFj" resname="Nutrition">
-        <source>Nutrition</source>
-        <target>Питание</target>
       </trans-unit>
       <trans-unit id="5Ih29l3" resname="Mine Action">
         <source>Mine Action</source>
@@ -77,10 +81,6 @@
         <source>Food Vouchers</source>
         <target>Продовольственные ваучеры</target>
       </trans-unit>
-      <trans-unit id="mkhpM89" resname="Cash for Work">
-        <source>Cash for Work</source>
-        <target>Оплата за труд</target>
-      </trans-unit>
       <trans-unit id="ehz3sp5" resname="Cash Transfers">
         <source>Cash Transfers</source>
         <target>Денежные переводы</target>
@@ -107,7 +107,7 @@
       </trans-unit>
       <trans-unit id="FKp_5UJ" resname="Rehabilitation (Light, Medium, Heavy)">
         <source>Rehabilitation (Light, Medium, Heavy)</source>
-        <target>Реабилитация (частичная, умеренная, значительная)</target>
+        <target>Восстановление (частичное, умеренное, значительное)</target>
       </trans-unit>
       <trans-unit id="Jygu13." resname="Construction (Light, Medium, Heavy)">
         <source>Construction (Light, Medium, Heavy)</source>
@@ -367,7 +367,7 @@
       </trans-unit>
       <trans-unit id="gxlXJB_" resname="label_sector_rehabilitation">
         <source>label_sector_rehabilitation</source>
-        <target>Реабилитация (частичная, умеренная, значительная)</target>
+        <target>Восстановление (частичное, умеренное, значительное)</target>
       </trans-unit>
       <trans-unit id="0CAsOrA" resname="label_sector_construction">
         <source>label_sector_construction</source>
