@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="en" datatype="plaintext" original="file.ext">
     <header>
@@ -43,7 +43,7 @@
       </trans-unit>
       <trans-unit id="nPkvSPw" resname="Education &amp; TVET">
         <source>Education &amp; TVET</source>
-        <target>Education &amp; TVET</target>
+        <target><![CDATA[Education & TVET]]></target>
       </trans-unit>
       <trans-unit id="R7K7qLi" resname="Emergency Telecomms">
         <source>Emergency Telecomms</source>
@@ -59,7 +59,7 @@
       </trans-unit>
       <trans-unit id="EiPAGAC" resname="DRR &amp; Resilience">
         <source>DRR &amp; Resilience</source>
-        <target>DRR &amp; Resilience</target>
+        <target><![CDATA[DRR & Resilience]]></target>
       </trans-unit>
       <trans-unit id="E85QtF1" resname="Non-Sector Specific">
         <source>Non-Sector Specific</source>
@@ -243,7 +243,7 @@
       </trans-unit>
       <trans-unit id="VKC2.3y" resname="Default DRR &amp; Resilience">
         <source>Default DRR &amp; Resilience</source>
-        <target>Default DRR &amp; Resilience</target>
+        <target><![CDATA[Default DRR & Resilience]]></target>
       </trans-unit>
       <trans-unit id="3Q3hlhQ" resname="Default Non-Sector Specific">
         <source>Default Non-Sector Specific</source>
@@ -283,7 +283,7 @@
       </trans-unit>
       <trans-unit id="6Tg_v5O" resname="label_sector_Education &amp; TVET">
         <source>label_sector_Education &amp; TVET</source>
-        <target>Education &amp; TVET</target>
+        <target><![CDATA[Education & TVET]]></target>
       </trans-unit>
       <trans-unit id="Ew0O5cY" resname="label_sector_Emergency Telecomms">
         <source>label_sector_Emergency Telecomms</source>
@@ -307,7 +307,7 @@
       </trans-unit>
       <trans-unit id="0iNO_hu" resname="label_sector_DRR &amp; Resilience">
         <source>label_sector_DRR &amp; Resilience</source>
-        <target>DRR &amp; Resilience</target>
+        <target><![CDATA[DRR & Resilience]]></target>
       </trans-unit>
       <trans-unit id="tWM_aRU" resname="label_sector_Non-Sector Specific">
         <source>label_sector_Non-Sector Specific</source>
@@ -515,7 +515,7 @@
       </trans-unit>
       <trans-unit id="Sg4Vi7z" resname="label_sector_default_drr_resilience">
         <source>label_sector_default_drr_resilience</source>
-        <target>Default DRR &amp; Resilience</target>
+        <target><![CDATA[Default DRR & Resilience]]></target>
       </trans-unit>
       <trans-unit id="5nZ7NS_" resname="label_sector_default_non_sector">
         <source>label_sector_default_non_sector</source>

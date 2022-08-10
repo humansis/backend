@@ -43,6 +43,7 @@ use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 use VoucherBundle\Entity\Voucher;
 
@@ -89,6 +90,9 @@ class AssistanceService
     /** @var ScoringBlueprintRepository */
     private $scoringBlueprintRepository;
 
+    /** @var TranslatorInterface */
+    private $translator;
+
     /**
      * @var Environment
      */
@@ -121,7 +125,8 @@ class AssistanceService
         CacheInterface            $cache,
         AssistanceFactory         $assistanceFactory,
         AssistanceRepository      $assistanceRepository,
-        SelectionCriteriaFactory  $selectionCriteriaFactory
+        SelectionCriteriaFactory  $selectionCriteriaFactory,
+        TranslatorInterface $translator
     ) {
         $this->em = $entityManager;
         $this->serializer = $serializer;
@@ -135,6 +140,7 @@ class AssistanceService
         $this->assistanceRepository = $assistanceRepository;
         $this->selectionCriteriaFactory = $selectionCriteriaFactory;
         $this->twig = $twig;
+        $this->translator = $translator;
     }
 
     /**
@@ -493,56 +499,56 @@ class AssistanceService
             
             
             $row = [
-                "Navi/Elo number" => $assistance->getProject()->getInternalId() ?? " ",
-                "DISTR. NO." => $assistance->getId(),
-                "Distributed by" => " ",
-                "Round" => " ",
-                "Donor" => $donors,
-                "Starting Date" => $assistance->getDateDistribution(),
-                "Ending Date" => $assistance->getCompleted() ? $assistance->getUpdatedOn() : " - ",
-                "Governorate" => $assistance->getLocation()->getAdm1Name(),
-                "District" => $assistance->getLocation()->getAdm2Name(),
-                "Sub-District" => $assistance->getLocation()->getAdm3Name(),
-                "Town, Village" => $assistance->getLocation()->getAdm4Name(),
-                "Location = School/Camp" => " ",
-                "Neighbourhood (Camp Name)" => " ",
-                "Latitude" => " ",
-                "Longitude" => " ",
-                // "Location Code" => $distribution->getLocation()->getCode(),
-                "Activity (Modality)" => $commodityNames,
-                "UNIT" => $commodityUnit,
-                "Nº Of Units" => $numberOfUnits,
-                "Amount (USD/SYP)" => " ",
-                "Total Amount" => $totalAmount,
-                "Bebelac Type" => " ",
-                "Water\nNº of 1.5 bottles " => " ",
-                "Bebelac kg" => " ",
-                "Nappies Pack" => " ",
-                "IDPs" => $idps,
-                "Residents" => $residents,
-                "Nº FAMILIES" => $noFamilies,
-                "FEMALE\nHead of Family gender" => $femaleHHH,
-                "MALE\nHead of Family gender" => $maleHHH,
+                $this->translator->trans("Navi/Elo number") => $assistance->getProject()->getInternalId() ?? " ",
+                $this->translator->trans("DISTR. NO.") => $assistance->getId(),
+                $this->translator->trans("Distributed by") => " ",
+                $this->translator->trans("Round") => " ",
+                $this->translator->trans("Donor") => $donors,
+                $this->translator->trans("Starting Date") => $assistance->getDateDistribution(),
+                $this->translator->trans("Ending Date") => $assistance->getCompleted() ? $assistance->getUpdatedOn() : " - ",
+                $this->translator->trans("Governorate") => $assistance->getLocation()->getAdm1Name(),
+                $this->translator->trans("District") => $assistance->getLocation()->getAdm2Name(),
+                $this->translator->trans("Sub-District") => $assistance->getLocation()->getAdm3Name(),
+                $this->translator->trans("Town, Village") => $assistance->getLocation()->getAdm4Name(),
+                $this->translator->trans("Location = School/Camp") => " ",
+                $this->translator->trans("Neighbourhood (Camp Name)") => " ",
+                $this->translator->trans("Latitude") => " ",
+                $this->translator->trans("Longitude") => " ",
+                // $this->translator->trans("Location Code") => $distribution->getLocation()->getCode(),
+                $this->translator->trans("Activity (Modality)") => $commodityNames,
+                $this->translator->trans("UNIT") => $commodityUnit,
+                $this->translator->trans("Nº Of Units") => $numberOfUnits,
+                $this->translator->trans("Amount (USD/SYP)") => " ",
+                $this->translator->trans("Total Amount") => $totalAmount,
+                $this->translator->trans("Bebelac Type") => " ",
+                $this->translator->trans("Water\nNº of 1.5 bottles ") => " ",
+                $this->translator->trans("Bebelac kg") => " ",
+                $this->translator->trans("Nappies Pack") => " ",
+                $this->translator->trans("IDPs") => $idps,
+                $this->translator->trans("Residents") => $residents,
+                $this->translator->trans("Nº FAMILIES") => $noFamilies,
+                $this->translator->trans("FEMALE\nHead of Family gender") => $femaleHHH,
+                $this->translator->trans("MALE\nHead of Family gender") => $maleHHH,
                 /*
                 * Male and Female children from 0 to 17 months
                 */
-                "Children\n0-23 months\nMale" => $maleChildrenUnder23month,
-                "Children\n0-23 months\nFemale" => $femaleChildrenUnder23month,
-                //"Children\n2-5" => $childrenUnder5years
-                "Children\n2-5\nMale" => $maleChildrenUnder5years,
-                "Children\n2-5\nFemale" => $femaleChildrenUnder5years,
-                "Males\n6-17" => $maleUnder17years,
-                "Females\n6-17" => $femaleUnder17years,
-                "Males\n18-59" => $maleUnder59years,
-                "Females\n18-59" => $femaleUnder59years,
-                "Males\n60+" => $maleOver60years,
-                "Females\n60+" => $femaleOver60years,
-                "Total\nMales" => $maleTotal,
-                "Total\nFemales" => $femaleTotal,
-                "Individ. Benef.\nServed" => $beneficiaryServed,
-                "Family\nSize" => $familySize
+                $this->translator->trans("Children\n0-23 months\nMale") => $maleChildrenUnder23month,
+                $this->translator->trans("Children\n0-23 months\nFemale") => $femaleChildrenUnder23month,
+                //$this->translator->trans("Children\n2-5") => $childrenUnder5years
+                $this->translator->trans("Children\n2-5\nMale") => $maleChildrenUnder5years,
+                $this->translator->trans("Children\n2-5\nFemale") => $femaleChildrenUnder5years,
+                $this->translator->trans("Males\n6-17") => $maleUnder17years,
+                $this->translator->trans("Females\n6-17") => $femaleUnder17years,
+                $this->translator->trans("Males\n18-59") => $maleUnder59years,
+                $this->translator->trans("Females\n18-59") => $femaleUnder59years,
+                $this->translator->trans("Males\n60+") => $maleOver60years,
+                $this->translator->trans("Females\n60+") => $femaleOver60years,
+                $this->translator->trans("Total\nMales") => $maleTotal,
+                $this->translator->trans("Total\nFemales") => $femaleTotal,
+                $this->translator->trans("Individ. Benef.\nServed") => $beneficiaryServed,
+                $this->translator->trans("Family\nSize") => $familySize
             ];
-            array_push($exportableTable, $row);
+            $exportableTable[] = $row;
         }
         return $this->container->get('export_csv_service')->export($exportableTable, 'distributions', $type);
     }
@@ -796,15 +802,14 @@ class AssistanceService
 
             $commonFields = $beneficiary->getCommonExportFields();
 
-            array_push($exportableTable,
-                array_merge($commonFields, array(
-                    "Commodity" => $commodityNames,
-                    "Value" => $commodityValues,
-                    "Distributed At" => $relief->getLastModifiedAt(),
-                    "Notes Distribution" => $relief->getNotes(),
-                    "Removed" => $relief->getAssistanceBeneficiary()->getRemoved() ? 'Yes' : 'No',
-                    "Justification for adding/removing" => $relief->getAssistanceBeneficiary()->getJustification(),
-                ))
+            $exportableTable[] = array_merge($commonFields, array(
+                    $this->translator->trans("Commodity") => $commodityNames,
+                    $this->translator->trans("Value") => $commodityValues,
+                    $this->translator->trans("Distributed At") => $relief->getLastModifiedAt(),
+                    $this->translator->trans("Notes Distribution") => $relief->getNotes(),
+                    $this->translator->trans("Removed") => $relief->getAssistanceBeneficiary()->getRemoved() ? 'Yes' : 'No',
+                    $this->translator->trans("Justification for adding/removing") => $relief->getAssistanceBeneficiary()->getJustification(),
+                )
             );
         }
 
@@ -854,17 +859,15 @@ class AssistanceService
             }
             $products = implode(', ', array_unique($products));
 
-            array_push(
-                $exportableTable,
-                array_merge($commonFields, array(
-                    "Booklet" => $transactionBooklet ? $transactionBooklet->getCode() : null,
-                    "Status" => $transactionBooklet ? $transactionBooklet->getStatus() : null,
-                    "Value" => $transactionBooklet ? $transactionBooklet->getTotalValue() . ' ' . $transactionBooklet->getCurrency() : null,
-                    "Used At" => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
-                    "Purchased items" => $products,
-                    "Removed" => $assistanceBeneficiary->getRemoved() ? 'Yes' : 'No',
-                    "Justification for adding/removing" => $assistanceBeneficiary->getJustification(),
-                ))
+            $exportableTable[] = array_merge($commonFields, array(
+                    $this->translator->trans("Booklet") => $transactionBooklet ? $transactionBooklet->getCode() : null,
+                    $this->translator->trans("Status") => $transactionBooklet ? $transactionBooklet->getStatus() : null,
+                    $this->translator->trans("Value") => $transactionBooklet ? $transactionBooklet->getTotalValue() . ' ' . $transactionBooklet->getCurrency() : null,
+                    $this->translator->trans("Used At") => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
+                    $this->translator->trans("Purchased items") => $products,
+                    $this->translator->trans("Removed") => $assistanceBeneficiary->getRemoved() ? 'Yes' : 'No',
+                    $this->translator->trans("Justification for adding/removing") => $assistanceBeneficiary->getJustification(),
+                )
             );
         }
 

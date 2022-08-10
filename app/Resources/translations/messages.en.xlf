@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="en" datatype="plaintext" original="file.ext">
     <header>
@@ -494,11 +494,11 @@
         <target>Has Not Been In Distribution Since</target>
       </trans-unit>
       <trans-unit id="YkhOIqa" resname="health">
-        <source>Health</source>
+        <source>health</source>
         <target>Health</target>
       </trans-unit>
       <trans-unit id="VYmESet" resname="Health">
-        <source>health</source>
+        <source>Health</source>
         <target>Health</target>
       </trans-unit>
       <trans-unit id="OnhpU4i" resname="Home">
@@ -583,7 +583,7 @@
       </trans-unit>
       <trans-unit id="Qptrdl5" resname="Import &amp; compare">
         <source>Import &amp; compare</source>
-        <target>Import &amp; compare</target>
+        <target><![CDATA[Import & compare]]></target>
       </trans-unit>
       <trans-unit id="FUBfiFA" resname="Import from file">
         <source>Import from file</source>
@@ -593,14 +593,9 @@
         <source>Import from File</source>
         <target>Import from File</target>
       </trans-unit>
-      <trans-unit id="BdazhEU"
-                  resname="Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.">
-        <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after
-          importing.
-        </source>
-        <target>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after
-          importing.
-        </target>
+      <trans-unit id="BdazhEU" resname="Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.">
+        <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.</source>
+        <target>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.</target>
       </trans-unit>
       <trans-unit id="27t7txq" resname="Income Level">
         <source>Income Level</source>
@@ -1576,7 +1571,7 @@
       </trans-unit>
       <trans-unit id="VKC2.3y" resname="Default DRR &amp; Resilience">
         <source>Default DRR &amp; Resilience</source>
-        <target>Default DRR &amp; Resilience</target>
+        <target><![CDATA[Default DRR & Resilience]]></target>
       </trans-unit>
       <trans-unit id="Kx5IaBb" resname="Default Early Recovery">
         <source>Default Early Recovery</source>
@@ -1736,7 +1731,7 @@
       </trans-unit>
       <trans-unit id="EiPAGAC" resname="DRR &amp; Resilience">
         <source>DRR &amp; Resilience</source>
-        <target>DRR &amp; Resilience</target>
+        <target><![CDATA[DRR & Resilience]]></target>
       </trans-unit>
       <trans-unit id="5LSmmga" resname="Duplicate Assistance">
         <source>Duplicate Assistance</source>
@@ -1804,7 +1799,7 @@
       </trans-unit>
       <trans-unit id="nPkvSPw" resname="Education &amp; TVET">
         <source>Education &amp; TVET</source>
-        <target>Education &amp; TVET</target>
+        <target><![CDATA[Education & TVET]]></target>
       </trans-unit>
       <trans-unit id="R7K7qLi" resname="Emergency Telecomms">
         <source>Emergency Telecomms</source>
@@ -1848,7 +1843,7 @@
       </trans-unit>
       <trans-unit id="xGr66Iv" resname="Food Security &amp; Livelihood">
         <source>Food Security &amp; Livelihood</source>
-        <target>Food Security &amp; Livelihood</target>
+        <target><![CDATA[Food Security & Livelihood]]></target>
       </trans-unit>
       <trans-unit id="Jgqi9Iu" resname="Food Vouchers">
         <source>Food Vouchers</source>
@@ -2264,7 +2259,7 @@
       </trans-unit>
       <trans-unit id="oa.3G9m" resname="Purchase Date &amp; Time">
         <source>Purchase Date &amp; Time</source>
-        <target>Purchase Date &amp; Time</target>
+        <target><![CDATA[Purchase Date & Time]]></target>
       </trans-unit>
       <trans-unit id="y.7_wTj" resname="Purchased Date">
         <source>Purchased Date</source>
@@ -2756,7 +2751,7 @@
       </trans-unit>
       <trans-unit id="LmVsQDA" resname="Project &amp; Donor">
         <source>Project &amp; Donor</source>
-        <target>Project &amp; Donor</target>
+        <target><![CDATA[Project & Donor]]></target>
       </trans-unit>
       <trans-unit id="zf5SHir" resname="Distributed item(s)">
         <source>Distributed item(s)</source>
@@ -2778,8 +2773,7 @@
         <source>Approved by</source>
         <target>Approved by</target>
       </trans-unit>
-      <trans-unit id="RMSi1bj"
-                  resname="The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.">
+      <trans-unit id="RMSi1bj" resname="The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.">
         <source>The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.</source>
         <target>The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.</target>
       </trans-unit>
@@ -3185,11 +3179,11 @@
       </trans-unit>
       <trans-unit id="HOUFmD2" resname="Education &amp; T V E T">
         <source>Education &amp; T V E T</source>
-        <target>Education &amp; T V E T</target>
+        <target><![CDATA[Education & T V E T]]></target>
       </trans-unit>
       <trans-unit id="ynVi_ce" resname="D R R &amp; Resilience">
         <source>D R R &amp; Resilience</source>
-        <target>D R R &amp; Resilience</target>
+        <target><![CDATA[D R R & Resilience]]></target>
       </trans-unit>
       <trans-unit id="f5zIjxy" resname="Non- Sector Specific">
         <source>Non- Sector Specific</source>
@@ -3730,6 +3724,443 @@
       <trans-unit id="sGExlXh" resname="Cumulative amount []">
         <source>Cumulative amount []</source>
         <target>Cumulative amount []</target>
+      </trans-unit>
+      <trans-unit id="7_EMgOy" resname="Primary">
+        <source>Primary</source>
+        <target>Primary</target>
+      </trans-unit>
+      <trans-unit id="YvLM..z" resname="Secondary">
+        <source>Secondary</source>
+        <target>Secondary</target>
+      </trans-unit>
+      <trans-unit id="rz3dgVr" resname="Tertiary">
+        <source>Tertiary</source>
+        <target>Tertiary</target>
+      </trans-unit>
+      <trans-unit id="gQGOMit" resname="Type...">
+        <source>Type...</source>
+        <target>Type...</target>
+      </trans-unit>
+      <trans-unit id="2NosSd8" resname="Note">
+        <source>Note</source>
+        <target>Note</target>
+      </trans-unit>
+      <trans-unit id=".v7_dRf" resname="Type note...">
+        <source>Type note...</source>
+        <target>Type note...</target>
+      </trans-unit>
+      <trans-unit id="jpbT5yT" resname="Note Successfully Updated">
+        <source>Note Successfully Updated</source>
+        <target>Note Successfully Updated</target>
+      </trans-unit>
+      <trans-unit id="KZ5gTM." resname="Edit note">
+        <source>Edit note</source>
+        <target>Edit note</target>
+      </trans-unit>
+      <trans-unit id="5tiKQld" resname="Show full note">
+        <source>Show full note</source>
+        <target>Show full note</target>
+      </trans-unit>
+      <trans-unit id="ZQHhztj" resname="Save note">
+        <source>Save note</source>
+        <target>Save note</target>
+      </trans-unit>
+      <trans-unit id="_b_j3Hy" resname="Discard changes">
+        <source>Discard changes</source>
+        <target>Discard changes</target>
+      </trans-unit>
+      <trans-unit id="lOqbHTO" resname="Show less">
+        <source>Show less</source>
+        <target>Show less</target>
+      </trans-unit>
+      <trans-unit id="X5SCMzC" resname="List of Beneficiaries">
+        <source>List of Beneficiaries</source>
+        <target>List of Beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="Z5ZS.RP" resname="Spent">
+        <source>Spent</source>
+        <target>Spent</target>
+      </trans-unit>
+      <trans-unit id="tcS021_" resname="temporary_invoice_no">
+        <source>temporary_invoice_no</source>
+        <target>temporary_invoice_no</target>
+      </trans-unit>
+      <trans-unit id="SKLtdQE" resname="invoice_no">
+        <source>invoice_no</source>
+        <target>invoice_no</target>
+      </trans-unit>
+      <trans-unit id="Utbj3k_" resname="invoice">
+        <source>invoice</source>
+        <target>invoice</target>
+      </trans-unit>
+      <trans-unit id="tsRYY4d" resname="customer">
+        <source>customer</source>
+        <target>customer</target>
+      </trans-unit>
+      <trans-unit id="F7xeAn4" resname="invoice_date">
+        <source>invoice_date</source>
+        <target>invoice_date</target>
+      </trans-unit>
+      <trans-unit id="9K78BIR" resname="supplier_name">
+        <source>supplier_name</source>
+        <target>supplier_name</target>
+      </trans-unit>
+      <trans-unit id="ZS77xm0" resname="supplier_no">
+        <source>supplier_no</source>
+        <target>supplier_no</target>
+      </trans-unit>
+      <trans-unit id="uEaRUvy" resname="contract_no">
+        <source>contract_no</source>
+        <target>contract_no</target>
+      </trans-unit>
+      <trans-unit id="qSWo.e4" resname="period_start">
+        <source>period_start</source>
+        <target>period_start</target>
+      </trans-unit>
+      <trans-unit id="HrQ5ihz" resname="period_end">
+        <source>period_end</source>
+        <target>period_end</target>
+      </trans-unit>
+      <trans-unit id="6AmqlCT" resname="payment_method">
+        <source>payment_method</source>
+        <target>payment_method</target>
+      </trans-unit>
+      <trans-unit id="qw.OwI4" resname="cash">
+        <source>cash</source>
+        <target>cash</target>
+      </trans-unit>
+      <trans-unit id="x1KubdR" resname="cheque">
+        <source>cheque</source>
+        <target>cheque</target>
+      </trans-unit>
+      <trans-unit id="Q4HcKrF" resname="bank">
+        <source>bank</source>
+        <target>bank</target>
+      </trans-unit>
+      <trans-unit id="yQRveje" resname="description">
+        <source>description</source>
+        <target>description</target>
+      </trans-unit>
+      <trans-unit id="zzjZXJx" resname="amount">
+        <source>amount</source>
+        <target>amount</target>
+      </trans-unit>
+      <trans-unit id="Rm5bnNV" resname="currency">
+        <source>currency</source>
+        <target>currency</target>
+      </trans-unit>
+      <trans-unit id="Mug2mpx" resname="qty">
+        <source>qty</source>
+        <target>qty</target>
+      </trans-unit>
+      <trans-unit id="OFz9vAD" resname="unit">
+        <source>unit</source>
+        <target>unit</target>
+      </trans-unit>
+      <trans-unit id="IoKfYkz" resname="unit_price">
+        <source>unit_price</source>
+        <target>unit_price</target>
+      </trans-unit>
+      <trans-unit id="lJXHjBP" resname="redemption_payment_items">
+        <source>redemption_payment_items</source>
+        <target>redemption_payment_items</target>
+      </trans-unit>
+      <trans-unit id="TUITGL6" resname="redemption_payment_items_description">
+        <source>redemption_payment_items_description</source>
+        <target>redemption_payment_items_description</target>
+      </trans-unit>
+      <trans-unit id="gMX3993" resname="redemption_payment_cash">
+        <source>redemption_payment_cash</source>
+        <target>redemption_payment_cash</target>
+      </trans-unit>
+      <trans-unit id="2TtfynS" resname="redemption_payment_cash_description">
+        <source>redemption_payment_cash_description</source>
+        <target>redemption_payment_cash_description</target>
+      </trans-unit>
+      <trans-unit id="xJLhEEa" resname="total_to_pay">
+        <source>total_to_pay</source>
+        <target>total_to_pay</target>
+      </trans-unit>
+      <trans-unit id="sRm9pCB" resname="annex">
+        <source>annex</source>
+        <target>annex</target>
+      </trans-unit>
+      <trans-unit id="vvkc5PR" resname="annex_description">
+        <source>annex_description</source>
+        <target>annex_description</target>
+      </trans-unit>
+      <trans-unit id="bdRwzsY" resname="purchase_customer_id">
+        <source>purchase_customer_id</source>
+        <target>purchase_customer_id</target>
+      </trans-unit>
+      <trans-unit id="jmDirp0" resname="purchase_customer_first_name">
+        <source>purchase_customer_first_name</source>
+        <target>purchase_customer_first_name</target>
+      </trans-unit>
+      <trans-unit id="jDASwZt" resname="purchase_customer_family_name">
+        <source>purchase_customer_family_name</source>
+        <target>purchase_customer_family_name</target>
+      </trans-unit>
+      <trans-unit id="WZutOex" resname="purchase_date">
+        <source>purchase_date</source>
+        <target>purchase_date</target>
+      </trans-unit>
+      <trans-unit id="LyYCAXu" resname="purchase_time">
+        <source>purchase_time</source>
+        <target>purchase_time</target>
+      </trans-unit>
+      <trans-unit id="T1vp0LH" resname="purchase_item">
+        <source>purchase_item</source>
+        <target>purchase_item</target>
+      </trans-unit>
+      <trans-unit id="LyR5YVU" resname="purchase_unit">
+        <source>purchase_unit</source>
+        <target>purchase_unit</target>
+      </trans-unit>
+      <trans-unit id="PDFWkVM" resname="purchase_item_total">
+        <source>purchase_item_total</source>
+        <target>purchase_item_total</target>
+      </trans-unit>
+      <trans-unit id="4xdrFMJ" resname="purchase_total">
+        <source>purchase_total</source>
+        <target>purchase_total</target>
+      </trans-unit>
+      <trans-unit id="XIRJoh2" resname="signature_recipient">
+        <source>signature_recipient</source>
+        <target>signature_recipient</target>
+      </trans-unit>
+      <trans-unit id="f7Pk1rC" resname="signature_underline_individual">
+        <source>signature_underline_individual</source>
+        <target>signature_underline_individual</target>
+      </trans-unit>
+      <trans-unit id="zbbUIvt" resname="signature_organization">
+        <source>signature_organization</source>
+        <target>signature_organization</target>
+      </trans-unit>
+      <trans-unit id="TwKXNmJ" resname="signature_underline_organization">
+        <source>signature_underline_organization</source>
+        <target>signature_underline_organization</target>
+      </trans-unit>
+      <trans-unit id="v3G.txX" resname="generated_by">
+        <source>generated_by</source>
+        <target>generated_by</target>
+      </trans-unit>
+      <trans-unit id="Aplc1wK" resname="generated_on">
+        <source>generated_on</source>
+        <target>generated_on</target>
+      </trans-unit>
+      <trans-unit id="lvqPIm0" resname="checksum">
+        <source>checksum</source>
+        <target>checksum</target>
+      </trans-unit>
+      <trans-unit id="uDIALaK" resname="Invoice">
+        <source>Invoice</source>
+        <target>Invoice</target>
+      </trans-unit>
+      <trans-unit id="pr5lTwN" resname="Invoice template version">
+        <source>Invoice template version</source>
+        <target>Invoice template version</target>
+      </trans-unit>
+      <trans-unit id="SZ8TjP8" resname="Navi/Elo number">
+        <source>Navi/Elo number</source>
+        <target>Navi/Elo number</target>
+      </trans-unit>
+      <trans-unit id="fRw6Jnb" resname="DISTR. NO.">
+        <source>DISTR. NO.</source>
+        <target>DISTR. NO.</target>
+      </trans-unit>
+      <trans-unit id="Xe7WWKm" resname="Starting Date">
+        <source>Starting Date</source>
+        <target>Starting Date</target>
+      </trans-unit>
+      <trans-unit id="woDitwo" resname="Ending Date">
+        <source>Ending Date</source>
+        <target>Ending Date</target>
+      </trans-unit>
+      <trans-unit id="Z6WDait" resname="Town, Village">
+        <source>Town, Village</source>
+        <target>Town, Village</target>
+      </trans-unit>
+      <trans-unit id="0Ghuve4" resname="Location = School/Camp">
+        <source>Location = School/Camp</source>
+        <target>Location = School/Camp</target>
+      </trans-unit>
+      <trans-unit id="FtkxLrQ" resname="Neighbourhood (Camp Name)">
+        <source>Neighbourhood (Camp Name)</source>
+        <target>Neighbourhood (Camp Name)</target>
+      </trans-unit>
+      <trans-unit id="gYj2PIP" resname="Activity (Modality)">
+        <source>Activity (Modality)</source>
+        <target>Activity (Modality)</target>
+      </trans-unit>
+      <trans-unit id="MNyA3C1" resname="UNIT">
+        <source>UNIT</source>
+        <target>UNIT</target>
+      </trans-unit>
+      <trans-unit id="nLrJcaP" resname="Nº Of Units">
+        <source>Nº Of Units</source>
+        <target>Nº Of Units</target>
+      </trans-unit>
+      <trans-unit id="piWpgoz" resname="Amount (USD/SYP)">
+        <source>Amount (USD/SYP)</source>
+        <target>Amount (USD/SYP)</target>
+      </trans-unit>
+      <trans-unit id="Hz3sari" resname="Bebelac Type">
+        <source>Bebelac Type</source>
+        <target>Bebelac Type</target>
+      </trans-unit>
+      <trans-unit id="51av0xa" resname="Water&#10;Nº of 1.5 bottles ">
+        <source>Water&#10;Nº of 1.5 bottles </source>
+        <target>Water
+Nº of 1.5 bottles </target>
+      </trans-unit>
+      <trans-unit id="dAQwynL" resname="Bebelac kg">
+        <source>Bebelac kg</source>
+        <target>Bebelac kg</target>
+      </trans-unit>
+      <trans-unit id="XQHPta9" resname="Nappies Pack">
+        <source>Nappies Pack</source>
+        <target>Nappies Pack</target>
+      </trans-unit>
+      <trans-unit id="yJ7.ptS" resname="IDPs">
+        <source>IDPs</source>
+        <target>IDPs</target>
+      </trans-unit>
+      <trans-unit id="_t2n_yT" resname="Residents">
+        <source>Residents</source>
+        <target>Residents</target>
+      </trans-unit>
+      <trans-unit id="JeNGCn4" resname="Nº FAMILIES">
+        <source>Nº FAMILIES</source>
+        <target>Nº FAMILIES</target>
+      </trans-unit>
+      <trans-unit id="I2phZLM" resname="FEMALE&#10;Head of Family gender">
+        <source>FEMALE
+Head of Family gender</source>
+        <target>FEMALE
+Head of Family gender</target>
+      </trans-unit>
+      <trans-unit id="0ZQdz2Y" resname="MALE&#10;Head of Family gender">
+        <source>MALE
+Head of Family gender</source>
+        <target>MALE
+Head of Family gender</target>
+      </trans-unit>
+      <trans-unit id="x8lsEdk" resname="Children&#10;0-23 months&#10;Male">
+        <source>Children
+0-23 months
+Male</source>
+        <target>Children
+0-23 months
+Male</target>
+      </trans-unit>
+      <trans-unit id="08NcV1g" resname="Children&#10;0-23 months&#10;Female">
+        <source>Children
+0-23 months
+Female</source>
+        <target>Children
+0-23 months
+Female</target>
+      </trans-unit>
+      <trans-unit id="w4CzqbR" resname="Children&#10;2-5&#10;Male">
+        <source>Children
+2-5
+Male</source>
+        <target>Children
+2-5
+Male</target>
+      </trans-unit>
+      <trans-unit id=".pPwDj0" resname="Children&#10;2-5&#10;Female">
+        <source>Children
+2-5
+Female</source>
+        <target>Children
+2-5
+Female</target>
+      </trans-unit>
+      <trans-unit id="hwVztzw" resname="Males&#10;6-17">
+        <source>Males
+6-17</source>
+        <target>Males
+6-17</target>
+      </trans-unit>
+      <trans-unit id="nWwdF_h" resname="Females&#10;6-17">
+        <source>Females
+6-17</source>
+        <target>Females
+6-17</target>
+      </trans-unit>
+      <trans-unit id="47LfDJD" resname="Males&#10;18-59">
+        <source>Males
+18-59</source>
+        <target>Males
+18-59</target>
+      </trans-unit>
+      <trans-unit id="prA38io" resname="Females&#10;18-59">
+        <source>Females
+18-59</source>
+        <target>Females
+18-59</target>
+      </trans-unit>
+      <trans-unit id="8jrgDm." resname="Males&#10;60+">
+        <source>Males
+60+</source>
+        <target>Males
+60+</target>
+      </trans-unit>
+      <trans-unit id="YuI1MEa" resname="Females&#10;60+">
+        <source>Females
+60+</source>
+        <target>Females
+60+</target>
+      </trans-unit>
+      <trans-unit id="wmaf7RR" resname="Total&#10;Males">
+        <source>Total
+Males</source>
+        <target>Total
+Males</target>
+      </trans-unit>
+      <trans-unit id="DPt6PBc" resname="Total&#10;Females">
+        <source>Total
+Females</source>
+        <target>Total
+Females</target>
+      </trans-unit>
+      <trans-unit id="Rg7M6UB" resname="Individ. Benef.&#10;Served">
+        <source>Individ. Benef.
+Served</source>
+        <target>Individ. Benef.
+Served</target>
+      </trans-unit>
+      <trans-unit id="jVaZB9b" resname="Family&#10;Size">
+        <source>Family
+Size</source>
+        <target>Family
+Size</target>
+      </trans-unit>
+      <trans-unit id="G.TdrrG" resname="Distributed At">
+        <source>Distributed At</source>
+        <target>Distributed At</target>
+      </trans-unit>
+      <trans-unit id="wTv1zQh" resname="Notes Distribution">
+        <source>Notes Distribution</source>
+        <target>Notes Distribution</target>
+      </trans-unit>
+      <trans-unit id="QRj7T_0" resname="Removed">
+        <source>Removed</source>
+        <target>Removed</target>
+      </trans-unit>
+      <trans-unit id="0WODjuq" resname="Justification for adding/removing">
+        <source>Justification for adding/removing</source>
+        <target>Justification for adding/removing</target>
+      </trans-unit>
+      <trans-unit id="irxlqZm" resname="Used At">
+        <source>Used At</source>
+        <target>Used At</target>
+      </trans-unit>
+      <trans-unit id="POqLw2c" resname="Purchased items">
+        <source>Purchased items</source>
+        <target>Purchased items</target>
       </trans-unit>
     </body>
   </file>
