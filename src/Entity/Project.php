@@ -10,6 +10,14 @@ use Entity\Beneficiary;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use NewApiBundle\Entity\Helper\CreatedAt;
+use NewApiBundle\Entity\Helper\LastModifiedAt;
+use NewApiBundle\Enum\ProductCategoryType;
+use NewApiBundle\Exception\CountryMismatchException;
+use ProjectBundle\DTO\Sector;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+use CommonBundle\Utils\ExportableInterface;
+use BeneficiaryBundle\Entity\Household;
 use Entity\Helper\CountryDependent;
 use Entity\Helper\CreatedAt;
 use Entity\Helper\LastModifiedAt;
@@ -523,6 +531,9 @@ class Project implements ExportableInterface
      */
     public function addHousehold(\Entity\Household $household): Project
     {
+        if($household->getCountryIso3() !== $this->getIso3()) {
+            throw new CountryMismatchException();
+        }
         $this->households->add($household);
         return $this;
     }

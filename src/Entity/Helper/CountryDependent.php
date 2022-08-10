@@ -3,7 +3,6 @@
 namespace Entity\Helper;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 trait CountryDependent
 {
@@ -11,7 +10,6 @@ trait CountryDependent
      * @var string
      *
      * @ORM\Column(name="iso3", type="string", nullable=false, length=3, options={"fixed" = true})
-     * @SymfonyGroups({"FullProject", "FullUser", "FullCountrySpecific", "FullHousehold", "FullBooklet", "FullProduct"})
      */
     private $countryIso3;
 

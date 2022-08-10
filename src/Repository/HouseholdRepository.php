@@ -63,8 +63,7 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
         $qb = $this->createQueryBuilder("hh");
         $qb
             ->select("COUNT(DISTINCT hh)")
-            ->leftJoin("hh.projects", "p")
-            ->where("p.countryIso3 = :country")
+            ->where("hh.countryIso3 = :country")
             ->setParameter("country", $iso3)
             ->andWhere("hh.archived = 0")
         ;

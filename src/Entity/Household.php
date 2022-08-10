@@ -15,6 +15,16 @@ use Enum\HouseholdAssets;
 use Enum\HouseholdShelterStatus;
 use Enum\HouseholdSupportReceivedType;
 use DBAL\LivelihoodEnum;
+use NewApiBundle\DBAL\HouseholdAssetsEnum;
+use NewApiBundle\DBAL\HouseholdShelterStatusEnum;
+use NewApiBundle\DBAL\HouseholdSupportReceivedTypeEnum;
+use NewApiBundle\Entity\Helper\CountryDependent;
+use NewApiBundle\Entity\Helper\EnumTrait;
+use NewApiBundle\Entity\ImportHouseholdDuplicity;
+use NewApiBundle\Enum\HouseholdAssets;
+use NewApiBundle\Enum\HouseholdShelterStatus;
+use NewApiBundle\Enum\HouseholdSupportReceivedType;
+use ProjectBundle\DBAL\LivelihoodEnum;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -26,6 +36,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 class Household extends AbstractBeneficiary
 {
     use EnumTrait;
+    use CountryDependent;
 
     /**
      * @var string|null

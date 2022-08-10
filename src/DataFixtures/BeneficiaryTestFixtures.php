@@ -164,6 +164,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         $household->setDebtLevel($this->householdTemplate['debt_level']);
         $household->setFoodConsumptionScore($this->householdTemplate['food_consumption_score']);
         $household->setIncome($this->householdTemplate['income']);
+        $household->setCountryIso3($project->getIso3());
 
         foreach ($members as $member) {
             [$gender, $age] = explode('-', $member);
