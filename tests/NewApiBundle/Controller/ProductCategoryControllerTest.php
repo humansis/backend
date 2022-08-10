@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller;
 
-use CommonBundle\DataFixtures\VendorFixtures;
+use NewApiBundle\DataFixtures\VendorFixtures;
 use Exception;
 use NewApiBundle\Entity\ProductCategory;
 use NewApiBundle\Enum\ProductCategoryType;

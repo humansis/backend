@@ -6,7 +6,7 @@ services:
         public: true
         tags: [ 'app.controller' ]
 
-    CommonBundle\Command\AdmXML2DBCommand:
+    NewApiBundle\Command\AdmXML2DBCommand:
         public: true
         tags:
             - { name: 'console.command' }
@@ -14,12 +14,12 @@ services:
             - '@doctrine.orm.default_entity_manager'
             - '@CommonBundle\Repository\LocationRepository'
 
-    CommonBundle\Command\AdmCSV2XMLCommand:
+    NewApiBundle\Command\AdmCSV2XMLCommand:
         public: true
         tags:
             - { name: 'console.command' }
 
-    CommonBundle\Command\ClearCacheImportCommand:
+    NewApiBundle\Command\ClearCacheImportCommand:
         public: true
         tags:
             - { name: 'console.command' }
@@ -121,15 +121,15 @@ services:
 ##                                      FIXTURE                                      ##
 #######################################################################################
 
-    CommonBundle\DataFixtures\CountrySpecificFixtures:
+    NewApiBundle\DataFixtures\CountrySpecificFixtures:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\DonorFixtures:
+    NewApiBundle\DataFixtures\DonorFixtures:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\LocationFixtures:
+    NewApiBundle\DataFixtures\LocationFixtures:
         public: true
         arguments:
             - '@CommonBundle\Repository\LocationRepository'
@@ -137,7 +137,7 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\Beneficiaries\BeneficiaryFixtures:
+    NewApiBundle\DataFixtures\Beneficiaries\BeneficiaryFixtures:
         public: true
         arguments:
             - "@kernel"
@@ -145,18 +145,18 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\ModalityFixtures:
+    NewApiBundle\DataFixtures\ModalityFixtures:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\ProjectFixtures:
+    NewApiBundle\DataFixtures\ProjectFixtures:
         public: true
         arguments:
             - "@kernel"
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\UserFixtures:
+    NewApiBundle\DataFixtures\UserFixtures:
         public: true
         arguments:
             - "@fos_user.user_manager"
@@ -166,11 +166,11 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\VulnerabilityCriterionFixtures:
+    NewApiBundle\DataFixtures\VulnerabilityCriterionFixtures:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\BookletFixtures:
+    NewApiBundle\DataFixtures\BookletFixtures:
         public: true
         arguments:
             - "@kernel"
@@ -181,7 +181,7 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\Beneficiaries\BeneficiaryBookletFixtures:
+    NewApiBundle\DataFixtures\Beneficiaries\BeneficiaryBookletFixtures:
         public: true
         arguments:
             - "@kernel"
@@ -189,7 +189,7 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\BeneficiaryTestFixtures:
+    NewApiBundle\DataFixtures\BeneficiaryTestFixtures:
         public: true
         arguments:
             - "@kernel"
@@ -197,7 +197,7 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\Beneficiaries\InstitutionFixture:
+    NewApiBundle\DataFixtures\Beneficiaries\InstitutionFixture:
         public: true
         arguments:
             - "@=service('kernel').getEnvironment()"
@@ -207,7 +207,7 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\Beneficiaries\CommunityFixture:
+    NewApiBundle\DataFixtures\Beneficiaries\CommunityFixture:
         public: true
         arguments:
             - "@=service('kernel').getEnvironment()"
@@ -217,7 +217,7 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\AssistanceFixtures:
+    NewApiBundle\DataFixtures\AssistanceFixtures:
         public: true
         arguments:
             - "@kernel"
@@ -226,7 +226,7 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\AssistanceValidationFixtures:
+    NewApiBundle\DataFixtures\AssistanceValidationFixtures:
         public: true
         arguments:
             - "@kernel"
@@ -235,12 +235,12 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\ImportFixtures:
+    NewApiBundle\DataFixtures\ImportFixtures:
         public: true
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\Beneficiaries\AssistanceBeneficiaryFixtures:
+    NewApiBundle\DataFixtures\Beneficiaries\AssistanceBeneficiaryFixtures:
         public: true
         arguments:
             - "@kernel"
@@ -248,7 +248,7 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\VoucherPurchaseFixtures:
+    NewApiBundle\DataFixtures\VoucherPurchaseFixtures:
         public: true
         arguments:
             - "@=service('kernel').getEnvironment()"
@@ -256,7 +256,7 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\SmartcardInvoiceFixtures:
+    NewApiBundle\DataFixtures\SmartcardInvoiceFixtures:
         public: true
         arguments:
             - "@=service('kernel').getEnvironment()"
@@ -264,7 +264,7 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\VoucherRedemptionFixtures:
+    NewApiBundle\DataFixtures\VoucherRedemptionFixtures:
         public: true
         arguments:
             - "@=service('kernel').getEnvironment()"
@@ -272,14 +272,14 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
     
-    CommonBundle\DataFixtures\OrganizationFixtures:
+    NewApiBundle\DataFixtures\OrganizationFixtures:
         public: true
         arguments:
             - "@kernel"
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\ServiceFixtures:
+    NewApiBundle\DataFixtures\ServiceFixtures:
         public: true
         arguments:
         - "@fos_user.user_manager"
@@ -287,7 +287,7 @@ services:
         tags:
         - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\SmartcardFixtures:
+    NewApiBundle\DataFixtures\SmartcardFixtures:
         public: true
         autowire: true
         arguments:
@@ -297,7 +297,7 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\SynchronizationBatchFixtures:
+    NewApiBundle\DataFixtures\SynchronizationBatchFixtures:
         public: true
         arguments:
             - "@=service('kernel').getEnvironment()"
@@ -305,7 +305,7 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\TransactionFixtures:
+    NewApiBundle\DataFixtures\TransactionFixtures:
         public: true
         arguments:
             - "@=service('kernel').getEnvironment()"
@@ -313,14 +313,14 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\ProductFixtures:
+    NewApiBundle\DataFixtures\ProductFixtures:
         public: true
         arguments:
             - '@NewApiBundle\Component\Country\Countries'
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\VendorFixtures:
+    NewApiBundle\DataFixtures\VendorFixtures:
         public: true
         arguments:
             - "@kernel"
@@ -328,11 +328,11 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\RoleFixtures:
+    NewApiBundle\DataFixtures\RoleFixtures:
         tags:
             - { name: doctrine.fixture.orm }
 
-    CommonBundle\DataFixtures\ProductCategoryFixtures:
+    NewApiBundle\DataFixtures\ProductCategoryFixtures:
         tags:
             - { name: doctrine.fixture.orm }
 

@@ -3,7 +3,7 @@
 namespace VoucherBundle\Tests\Controller;
 
 use NewApiBundle\Entity\Beneficiary;
-use CommonBundle\DataFixtures\VendorFixtures;
+use NewApiBundle\DataFixtures\VendorFixtures;
 use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Component\Smartcard\SmartcardDepositService;
