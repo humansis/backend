@@ -4,13 +4,9 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-use NewApiBundle\Entity\NationalId;
 use NewApiBundle\Entity\Referral;
 use NewApiBundle\Entity\VulnerabilityCriterion;
 use NewApiBundle\Enum\ResidencyStatus;
-use BeneficiaryBundle\Entity\Referral;
-use BeneficiaryBundle\Entity\VulnerabilityCriterion;
-use BeneficiaryBundle\Enum\ResidencyStatus;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Enum\BeneficiaryType;

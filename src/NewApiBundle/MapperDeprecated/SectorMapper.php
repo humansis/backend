@@ -6,8 +6,6 @@ namespace NewApiBundle\MapperDeprecated;
 
 use NewApiBundle\Entity\ProjectSector;
 use NewApiBundle\Enum\Domain;
-use ProjectBundle\DTO\Sector;
-use ProjectBundle\Entity\ProjectSector;
 use Symfony\Component\Translation\TranslatorInterface;
 
 /**

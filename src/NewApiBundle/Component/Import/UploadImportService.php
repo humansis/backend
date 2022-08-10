@@ -6,17 +6,14 @@ use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use NewApiBundle\Component\Import\DBAL\InsertQueryCollection;
 use NewApiBundle\Component\Import\Integrity;
-use NewApiBundle\Component\Import\Messaging\Message\ImportCheck;
 use NewApiBundle\Component\Import\Messaging\Message\UploadFile;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
-use NewApiBundle\Repository\ImportFileRepository;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use NewApiBundle\Entity\User;
 use Symfony\Component\Messenger\MessageBusInterface;
-use UserBundle\Entity\User;
 
 class UploadImportService
 {

@@ -2,7 +2,6 @@
 
 namespace Tests\NewApiBundle\Controller;
 
-use NewApiBundle\Entity\NationalId;
 use NewApiBundle\Entity\Referral;
 use NewApiBundle\Entity\VulnerabilityCriterion;
 use NewApiBundle\Enum\ResidencyStatus;

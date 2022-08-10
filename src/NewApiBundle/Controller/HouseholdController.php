@@ -14,6 +14,7 @@ use NewApiBundle\InputType\HouseholdOrderInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
 use NewApiBundle\Request\Pagination;
 use NewApiBundle\Entity\Project;
+use NewApiBundle\Utils\HouseholdService;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

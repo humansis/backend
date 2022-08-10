@@ -17,8 +17,6 @@ use NewApiBundle\Entity\Phone;
 use NewApiBundle\Entity\Profile;
 use NewApiBundle\Form\HouseholdConstraints;
 use NewApiBundle\Repository\BeneficiaryRepository;
-use CommonBundle\Entity\Location;
-use CommonBundle\Repository\LocationRepository;
 use CommonBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;

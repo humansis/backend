@@ -4,6 +4,7 @@ namespace NewApiBundle\Repository;
 
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use InvalidArgumentException;
+use NewApiBundle\Entity\User;
 use NewApiBundle\InputType\UserFilterInputType;
 use NewApiBundle\InputType\UserOrderInputType;
 use NewApiBundle\Request\Pagination;

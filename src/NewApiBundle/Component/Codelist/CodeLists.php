@@ -7,10 +7,7 @@ namespace NewApiBundle\Component\Codelist;
 use NewApiBundle\Entity\VulnerabilityCriterion;
 use NewApiBundle\DBAL\SubSectorEnum;
 use NewApiBundle\DTO\Sector;
-use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use NewApiBundle\Enum\Domain;
-use ProjectBundle\DBAL\SubSectorEnum;
-use ProjectBundle\DTO\Sector;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /** @deprecated use CodeListService instead */

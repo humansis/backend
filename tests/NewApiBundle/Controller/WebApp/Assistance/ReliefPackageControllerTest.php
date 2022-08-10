@@ -7,7 +7,6 @@ use NewApiBundle\Entity\Assistance;
 use Exception;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use Tests\BMSServiceTestCase;
-use VoucherBundle\Entity\Vendor;
 
 class ReliefPackageControllerTest extends BMSServiceTestCase
 {

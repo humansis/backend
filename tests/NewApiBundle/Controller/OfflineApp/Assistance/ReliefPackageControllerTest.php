@@ -3,12 +3,10 @@ declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Controller\OfflineApp\Assistance;
 
-use NewApiBundle\Entity\Assistance;
 use Exception;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ReliefPackageState;
 use Tests\BMSServiceTestCase;
-use VoucherBundle\Entity\Vendor;
 
 class ReliefPackageControllerTest extends BMSServiceTestCase
 {

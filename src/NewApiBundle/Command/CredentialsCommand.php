@@ -6,14 +6,14 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use NewApiBundle\Component\Country\Countries;
+use NewApiBundle\Entity\User;
+use NewApiBundle\Entity\UserCountry;
 use NewApiBundle\Enum\RoleType;
+use NewApiBundle\Repository\UserCountryRepository;
+use NewApiBundle\Repository\UserRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use UserBundle\Entity\User;
-use UserBundle\Entity\UserCountry;
-use UserBundle\Repository\UserCountryRepository;
-use UserBundle\Repository\UserRepository;
 
 class CredentialsCommand extends Command
 {

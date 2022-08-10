@@ -3,10 +3,8 @@ declare(strict_types=1);
 
 namespace Tests\NewApiBundle\Component\Assistance\Scoring;
 
+use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Household;
-use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRulesEnum;
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
 use DateTime;
 use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleCalculationOptionsEnum;
 use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRulesCalculationsEnum;

@@ -6,13 +6,10 @@ namespace NewApiBundle\Controller;
 
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Component\Codelist\CodeLists;
 use NewApiBundle\DBAL\SectorEnum;
 use NewApiBundle\Entity\Project;
 use NewApiBundle\Enum\Domain;
 use NewApiBundle\Services\CodeListService;
-use ProjectBundle\DBAL\SectorEnum;
-use ProjectBundle\Entity\Project;
 use NewApiBundle\Utils\SectorService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;

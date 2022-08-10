@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller\OfflineApp;
 
-use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -13,6 +12,7 @@ use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\InputType\Smartcard\DepositInputType;
 use NewApiBundle\InputType\SmartcardDepositFilterInputType;
 use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
+use NewApiBundle\Repository\AssistanceBeneficiaryRepository;
 use Psr\Cache\InvalidArgumentException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;

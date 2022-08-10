@@ -4,14 +4,10 @@ declare(strict_types=1);
 namespace NewApiBundle\Component\Assistance\Scoring;
 
 use NewApiBundle\Entity\CountrySpecific;
+use NewApiBundle\Entity\CountrySpecificAnswer;
 use NewApiBundle\Entity\Household;
 use NewApiBundle\Repository\CountrySpecificAnswerRepository;
 use NewApiBundle\Repository\CountrySpecificRepository;
-use BeneficiaryBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Entity\CountrySpecificAnswer;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Repository\CountrySpecificAnswerRepository;
-use BeneficiaryBundle\Repository\CountrySpecificRepository;
 use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringRuleType;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringProtocol;
 use NewApiBundle\Component\Assistance\Scoring\Model\Scoring;

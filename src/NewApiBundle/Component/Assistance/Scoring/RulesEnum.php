@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Assistance\Scoring;
 
-use BeneficiaryBundle\Entity\Household;
 use NewApiBundle\Component\Assistance\Scoring\Enum\ScoringSupportedEnumsEnum;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRule;
+use NewApiBundle\Entity\Household;
 
 class RulesEnum
 {

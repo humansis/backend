@@ -10,7 +10,6 @@ use CommonBundle\Entity\Adm3;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use CommonBundle\Repository\LocationRepository;
-use DistributionBundle\Repository\AbstractCriteriaRepository;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
