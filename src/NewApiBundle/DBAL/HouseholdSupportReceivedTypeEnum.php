@@ -3,10 +3,9 @@ declare(strict_types=1);
 
 namespace NewApiBundle\DBAL;
 
-use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
 
-class HouseholdSupportReceivedTypeEnum extends \CommonBundle\DBAL\AbstractEnum
+class HouseholdSupportReceivedTypeEnum extends \NewApiBundle\DBAL\AbstractEnum
 {
     use EnumTrait;
 

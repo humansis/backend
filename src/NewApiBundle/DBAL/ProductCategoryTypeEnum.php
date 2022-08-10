@@ -5,7 +5,7 @@ namespace NewApiBundle\DBAL;
 
 use NewApiBundle\Enum\ProductCategoryType;
 
-class ProductCategoryTypeEnum extends \CommonBundle\DBAL\AbstractEnum
+class ProductCategoryTypeEnum extends \NewApiBundle\DBAL\AbstractEnum
 {
     public static function all()
     {

@@ -5,7 +5,7 @@ namespace NewApiBundle\DBAL;
 
 use NewApiBundle\Enum\ReliefPackageState;
 
-class ReliefPackageStateEnum extends \CommonBundle\DBAL\AbstractEnum
+class ReliefPackageStateEnum extends \NewApiBundle\DBAL\AbstractEnum
 {
     public function getName(): string
     {

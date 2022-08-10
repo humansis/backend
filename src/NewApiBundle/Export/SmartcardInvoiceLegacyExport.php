@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Export;
 
-use CommonBundle\Entity\Organization;
+use NewApiBundle\Entity\Organization;
 use CommonBundle\Mapper\LocationMapper;
 use NewApiBundle\Enum\Domain;
 use PhpOffice\PhpSpreadsheet\IOFactory;

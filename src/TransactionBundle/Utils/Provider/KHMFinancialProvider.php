@@ -2,7 +2,7 @@
 
 namespace TransactionBundle\Utils\Provider;
 
-use CommonBundle\Entity\OrganizationServices;
+use NewApiBundle\Entity\OrganizationServices;
 use NewApiBundle\Entity\AssistanceBeneficiary;
 
 use NewApiBundle\Entity\Assistance;

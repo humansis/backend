@@ -7,7 +7,7 @@ use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Community;
 use NewApiBundle\Entity\Institution;
 use NewApiBundle\Exception\CsvParserException;
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use CommonBundle\Pagination\Paginator;
 use CommonBundle\Utils\LocationService;
 use DateTime;

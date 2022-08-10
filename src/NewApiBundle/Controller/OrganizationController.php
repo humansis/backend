@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-use CommonBundle\Entity\Organization;
-use CommonBundle\Entity\OrganizationServices;
+use NewApiBundle\Entity\Organization;
+use NewApiBundle\Entity\OrganizationServices;
 use CommonBundle\Repository\OrganizationRepository;
 use CommonBundle\Repository\OrganizationServicesRepository;
 use CommonBundle\Utils\OrganizationService;

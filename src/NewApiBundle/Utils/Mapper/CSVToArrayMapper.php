@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Utils\Mapper;
 
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Enum\EnumTrait;
 use NewApiBundle\Enum\Livelihood;

@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Component\Import\Finishing;
 
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\Utils\ImportDateConverter;

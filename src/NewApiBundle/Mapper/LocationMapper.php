@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Mapper;
 
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use NewApiBundle\Serializer\MapperInterface;
 
 class LocationMapper implements MapperInterface

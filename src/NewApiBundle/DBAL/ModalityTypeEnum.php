@@ -5,7 +5,7 @@ namespace NewApiBundle\DBAL;
 
 use NewApiBundle\Enum\ModalityType;
 
-class ModalityTypeEnum extends \CommonBundle\DBAL\AbstractEnum
+class ModalityTypeEnum extends \NewApiBundle\DBAL\AbstractEnum
 {
     public function getName(): string
     {

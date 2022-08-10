@@ -73,7 +73,7 @@ class SelectionCriteriaFactory
                 return $criterium;
             }
             if (SelectionCriteriaField::CURRENT_LOCATION === $input->getField()) {
-                /** @var \CommonBundle\Entity\Location $location */
+                /** @var \NewApiBundle\Entity\Location $location */
                 $location = $this->locationRepository->find($input->getValue());
                 if (!$location) {
                     throw new EntityNotFoundException();

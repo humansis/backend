@@ -7,7 +7,7 @@ use NewApiBundle\Entity\Community;
 use NewApiBundle\Entity\NationalId;
 use NewApiBundle\Entity\Phone;
 use NewApiBundle\InputType\Deprecated;
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use CommonBundle\InputType as GeneralInputType;
 use CommonBundle\Mapper\LocationMapper;
 use CommonBundle\Utils\LocationService;

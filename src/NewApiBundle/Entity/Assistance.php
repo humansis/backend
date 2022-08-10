@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Entity;
 
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use CommonBundle\Utils\ExportableInterface;
 use NewApiBundle\Enum\AssistanceTargetType;
 use NewApiBundle\Enum\AssistanceType;
@@ -84,7 +84,7 @@ class Assistance implements ExportableInterface
     /**
      * @var Location
      *
-     * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Location")
      */
     private $location;
 
@@ -472,11 +472,11 @@ class Assistance implements ExportableInterface
     /**
      * Set location.
      *
-     * @param \CommonBundle\Entity\Location|null $location
+     * @param \NewApiBundle\Entity\Location|null $location
      *
      * @return Assistance
      */
-    public function setLocation(\CommonBundle\Entity\Location $location = null)
+    public function setLocation(\NewApiBundle\Entity\Location $location = null)
     {
         $this->location = $location;
 
@@ -486,7 +486,7 @@ class Assistance implements ExportableInterface
     /**
      * Get location.
      *
-     * @return \CommonBundle\Entity\Location|null
+     * @return \NewApiBundle\Entity\Location|null
      */
     public function getLocation()
     {

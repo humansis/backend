@@ -1,7 +1,7 @@
 <?php
 namespace CommonBundle\Mapper;
 
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 
 class LocationMapper
 {

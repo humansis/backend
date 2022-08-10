@@ -6,7 +6,7 @@ namespace CommonBundle\Utils;
 use Doctrine\ORM\EntityManagerInterface;
 use RA\RequestValidatorBundle\RequestValidator\RequestValidator;
 use RA\RequestValidatorBundle\RequestValidator\ValidationException;
-use CommonBundle\Entity\Logs;
+use NewApiBundle\Entity\Logs;
 
 /**
  * Class LocationService

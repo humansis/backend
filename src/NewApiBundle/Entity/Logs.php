@@ -1,6 +1,6 @@
 <?php
 
-namespace CommonBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;

@@ -2,7 +2,6 @@
 
 namespace NewApiBundle\DBAL;
 
-use CommonBundle\DBAL\AbstractEnum;
 use NewApiBundle\Enum\AssistanceType;
 
 class AssistanceTypeEnum extends AbstractEnum

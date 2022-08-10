@@ -1,7 +1,7 @@
 <?php
 
 namespace NewApiBundle\Repository;
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use NewApiBundle\InputType\CampFilterInputType;
 
 /**

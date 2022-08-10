@@ -2,7 +2,7 @@
 
 namespace VoucherBundle\Repository;
 
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Enum\VendorInvoicingState;

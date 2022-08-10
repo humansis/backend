@@ -5,7 +5,7 @@ namespace NewApiBundle\DBAL;
 
 use NewApiBundle\Enum\SourceType;
 
-class SourceEnum extends \CommonBundle\DBAL\AbstractEnum
+class SourceEnum extends \NewApiBundle\DBAL\AbstractEnum
 {
     public function getName(): string
     {

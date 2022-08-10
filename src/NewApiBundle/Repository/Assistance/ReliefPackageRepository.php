@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Repository\Assistance;
 
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Entity\AssistanceBeneficiary;

@@ -2,7 +2,6 @@
 
 namespace NewApiBundle\DBAL;
 
-use CommonBundle\DBAL\AbstractEnum;
 use NewApiBundle\Enum\Livelihood;
 
 class LivelihoodEnum extends AbstractEnum

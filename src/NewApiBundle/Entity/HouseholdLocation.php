@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Entity;
 
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
 
 

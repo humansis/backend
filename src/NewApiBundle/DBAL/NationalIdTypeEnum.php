@@ -5,7 +5,7 @@ namespace NewApiBundle\DBAL;
 
 use NewApiBundle\Enum\NationalIdType;
 
-class NationalIdTypeEnum extends \CommonBundle\DBAL\AbstractEnum
+class NationalIdTypeEnum extends \NewApiBundle\DBAL\AbstractEnum
 {
     use EnumTrait;
 

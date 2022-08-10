@@ -10,7 +10,7 @@ use NewApiBundle\Entity\Household;
 use NewApiBundle\Entity\Institution;
 use NewApiBundle\Entity\NationalId;
 use NewApiBundle\Entity\Person;
-use CommonBundle\Entity\Organization;
+use NewApiBundle\Entity\Organization;
 use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Entity\Commodity;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CommonBundle\Utils;
 
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;

@@ -5,7 +5,7 @@ namespace NewApiBundle\DBAL;
 
 use NewApiBundle\Enum\HouseholdAssets;
 
-class HouseholdAssetsEnum extends \CommonBundle\DBAL\AbstractEnum
+class HouseholdAssetsEnum extends \NewApiBundle\DBAL\AbstractEnum
 {
     use EnumTrait;
 

@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Repository;
 
-use UserBundle\Entity\UserCountry;
+use NewApiBundle\Entity\UserCountry;
 
 /**
  * UserCountryRepository

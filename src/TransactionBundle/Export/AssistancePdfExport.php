@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace TransactionBundle\Export;
 
-use CommonBundle\Entity\Organization;
+use NewApiBundle\Entity\Organization;
 use CommonBundle\Utils\PdfService;
 use NewApiBundle\Entity\Assistance;
 use Symfony\Contracts\Translation\TranslatorInterface;

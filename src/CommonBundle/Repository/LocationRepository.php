@@ -2,7 +2,7 @@
 
 namespace CommonBundle\Repository;
 
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;

@@ -2,7 +2,7 @@
 
 namespace CommonBundle\Listener;
 
-use CommonBundle\Entity\Logs;
+use NewApiBundle\Entity\Logs;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;

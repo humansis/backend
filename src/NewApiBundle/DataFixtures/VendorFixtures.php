@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\DataFixtures;
 
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;

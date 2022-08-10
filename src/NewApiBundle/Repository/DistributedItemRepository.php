@@ -6,6 +6,7 @@ namespace NewApiBundle\Repository;
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Household;
 use NewApiBundle\Entity\NationalId;
+use NewApiBundle\Entity\Location;
 use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Entity\Location;

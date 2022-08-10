@@ -29,7 +29,7 @@ class Camp
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="CommonBundle\Entity\Location")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Location")
      */
     private $location;
 
@@ -72,11 +72,11 @@ class Camp
      /**
      * Set location.
      *
-     * @param \CommonBundle\Entity\Location|null $location
+     * @param \NewApiBundle\Entity\Location|null $location
      *
      * @return Camp
      */
-    public function setLocation(\CommonBundle\Entity\Location $location = null)
+    public function setLocation(\NewApiBundle\Entity\Location $location = null)
     {
         $this->location = $location;
 
@@ -86,7 +86,7 @@ class Camp
     /**
      * Get location.
      *
-     * @return \CommonBundle\Entity\Location|null
+     * @return \NewApiBundle\Entity\Location|null
      */
     public function getLocation()
     {

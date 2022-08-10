@@ -2,7 +2,7 @@
 
 namespace Tests\NewApiBundle\Controller;
 
-use CommonBundle\Entity\Location;
+use NewApiBundle\Entity\Location;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Exception;
