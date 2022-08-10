@@ -610,6 +610,8 @@ services:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - NewApiBundle\Entity\Household
+        calls:
+            - injectLocationRepository: [ '@CommonBundle\Repository\LocationRepository' ]
 
     NewApiBundle\Repository\BeneficiaryRepository:
         factory: ['@doctrine.orm.default_entity_manager', getRepository]
@@ -891,3 +893,15 @@ services:
             - '@translator'
             - '@CommonBundle\Mapper\LocationMapper'
             - '@smartcard_purchase.repository'
+
+    NewApiBundle\Utils\HouseholdService: '@beneficiary.household_service'
+
+    NewApiBundle\Repository\UserRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - UserBundle\Entity\User
+
+    NewApiBundle\Repository\UserCountryRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - UserBundle\Entity\UserCountry

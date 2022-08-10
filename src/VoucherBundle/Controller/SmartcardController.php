@@ -2,13 +2,9 @@
 
 namespace VoucherBundle\Controller;
 
-use NewApiBundle\Entity\Beneficiary;
 use CommonBundle\Entity\Organization;
 use CommonBundle\Repository\OrganizationRepository;
-use NewApiBundle\Entity\Assistance;
-use NewApiBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Export\SmartcardInvoiceExport;
-use DistributionBundle\Export\SmartcardInvoiceExport;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -27,7 +23,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use NewApiBundle\Entity\User;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\Invoice;

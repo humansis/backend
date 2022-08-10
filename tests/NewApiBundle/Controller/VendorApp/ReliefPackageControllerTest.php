@@ -4,14 +4,11 @@ declare(strict_types=1);
 namespace Tests\NewApiBundle\Controller\VendorApp;
 
 use NewApiBundle\Entity\Assistance;
-use BeneficiaryBundle\Entity\Beneficiary;
-use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\Query\Expr\Join;
 use Exception;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
-use NewApiBundle\Enum\ModalityType;
+use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Enum\ReliefPackageState;
-use NewApiBundle\Request\Pagination;
 use Tests\BMSServiceTestCase;
 use NewApiBundle\Entity\User;
 use VoucherBundle\Entity\Vendor;

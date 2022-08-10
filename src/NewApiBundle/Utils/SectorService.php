@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Utils;
 
+use Doctrine\ORM\EntityManagerInterface;
+use FOS\RestBundle\Serializer\Serializer;
+use NewApiBundle\Entity\Project;
 use NewApiBundle\Enum\AssistanceTargetType;
 use NewApiBundle\Enum\AssistanceType;
 use InvalidArgumentException;
 use NewApiBundle\Component\Codelist\CodeItem;
-use NewApiBundle\Component\Codelist\CodeLists;
-use NewApiBundle\Entity\Project;
 use NewApiBundle\Entity\ProjectSector;
 use NewApiBundle\Services\CodeListService;
-use ProjectBundle\Entity\Project;
-use ProjectBundle\Entity\ProjectSector;
 use NewApiBundle\DBAL\SectorEnum;
 use NewApiBundle\DBAL\SubSectorEnum;
 use NewApiBundle\DTO\Sector;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Class SectorService
@@ -24,36 +24,17 @@ use NewApiBundle\DTO\Sector;
  */
 class SectorService
 {
-
-    /** @var EntityManagerInterface $em */
-    private $em;
-
-    /** @var Serializer $serializer */
-    private $serializer;
-
-    /** @var ValidatorInterface $validator */
-    private $validator;
-
     /** @var CodeListService */
     private $codeListService;
 
     /**
      * SectorService constructor.
-     * @param EntityManagerInterface $entityManager
-     * @param Serializer $serializer
-     * @param ValidatorInterface $validator
      * @param CodeListService $codeListService
      */
     public function __construct(
-        EntityManagerInterface $entityManager,
-        Serializer $serializer,
-        ValidatorInterface $validator,
         CodeListService $codeListService
     )
     {
-        $this->em = $entityManager;
-        $this->serializer = $serializer;
-        $this->validator = $validator;
         $this->codeListService = $codeListService;
     }
 

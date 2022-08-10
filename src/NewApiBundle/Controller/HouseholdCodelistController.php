@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-use NewApiBundle\Entity\Household;
 use NewApiBundle\Entity\HouseholdLocation;
 use NewApiBundle\Entity\Referral;
-use BeneficiaryBundle\Entity\HouseholdLocation;
-use BeneficiaryBundle\Entity\Referral;
 use CommonBundle\Pagination\Paginator;
 use NewApiBundle\Enum\Domain;
 use NewApiBundle\Enum\HouseholdAssets;
@@ -16,7 +13,6 @@ use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use NewApiBundle\Enum\Livelihood;
 use NewApiBundle\Services\CodeListService;
-use ProjectBundle\Enum\Livelihood;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;

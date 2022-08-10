@@ -2,6 +2,7 @@
 
 namespace NewApiBundle\Repository;
 
+use NewApiBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Community;
 use NewApiBundle\Entity\CountrySpecific;

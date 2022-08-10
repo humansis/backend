@@ -2,20 +2,8 @@
 
 namespace NewApiBundle\Component\Import;
 
-use BadMethodCallException;
-use NewApiBundle\Entity\AbstractBeneficiary;
-use NewApiBundle\Entity\Address;
 use NewApiBundle\Entity\Household;
-use NewApiBundle\Entity\HouseholdActivity;
-use NewApiBundle\Entity\HouseholdLocation;
-use NewApiBundle\Entity\NationalId;
-use NewApiBundle\Entity\Person;
-use NewApiBundle\Entity\Phone;
-use NewApiBundle\Entity\Profile;
-use NewApiBundle\Entity\VulnerabilityCriterion;
-use NewApiBundle\Utils\HouseholdService;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Utils\HouseholdService;
+use NewApiBundle\Utils\HouseholdService;;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\Persistence\ManagerRegistry;
@@ -29,9 +17,6 @@ use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportQueueTransitions;
-use ProjectBundle\Entity\Project;
-use NewApiBundle\Workflow\ImportTransitions;
-use NewApiBundle\Workflow\WorkflowTool;
 use NewApiBundle\Entity\Project;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;

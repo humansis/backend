@@ -3,17 +3,11 @@ declare(strict_types=1);
 
 namespace CommonBundle\DataFixtures;
 
-use NewApiBundle\Entity\Beneficiary;
-use NewApiBundle\Entity\Assistance;
-use NewApiBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Component\Smartcard\SmartcardDepositService;
 use NewApiBundle\Entity\SynchronizationBatch\Deposits;
-use TransactionBundle\Entity\Transaction;
-use TransactionBundle\Utils\Provider\KHMFinancialProvider;
-use NewApiBundle\Entity\User;
 
 class SynchronizationBatchFixtures extends Fixture implements DependentFixtureInterface
 {

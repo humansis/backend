@@ -3,8 +3,6 @@
 namespace NewApiBundle\Controller;
 
 use NewApiBundle\Entity\Household;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Utils\HouseholdService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\AddHouseholdsToProjectInputType;
 use NewApiBundle\InputType\HouseholdCreateInputType;
@@ -13,6 +11,7 @@ use NewApiBundle\InputType\HouseholdOrderInputType;
 use NewApiBundle\InputType\HouseholdUpdateInputType;
 use NewApiBundle\Request\Pagination;
 use NewApiBundle\Entity\Project;
+use NewApiBundle\Utils\HouseholdService;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

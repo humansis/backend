@@ -6,10 +6,7 @@ namespace NewApiBundle\Controller;
 
 use NewApiBundle\Entity\Household;
 use CommonBundle\Pagination\Paginator;
-use CommonBundle\Utils\ExportService;
 use NewApiBundle\Repository\AssistanceRepository;
-use DistributionBundle\Repository\AssistanceRepository;
-use NewApiBundle\Utils\AssistanceService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Services\TranslationExportService;

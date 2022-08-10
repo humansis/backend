@@ -3,8 +3,6 @@
 namespace NewApiBundle\Repository;
 
 use NewApiBundle\Entity\Modality;
-use DistributionBundle\Entity\Modality;
-use Doctrine\ORM\AbstractQuery;
 
 /**
  * @method Modality|null findOneByName(string $name)

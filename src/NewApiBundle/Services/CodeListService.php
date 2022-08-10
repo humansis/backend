@@ -2,11 +2,10 @@
 
 namespace NewApiBundle\Services;
 
-use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use NewApiBundle\Component\Codelist\CodeItem;
+use NewApiBundle\DTO\Sector;
+use NewApiBundle\Entity\VulnerabilityCriterion;
 use NewApiBundle\Enum\Domain;
-use ProjectBundle\DBAL\SubSectorEnum;
-use ProjectBundle\DTO\Sector;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CodeListService
