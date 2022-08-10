@@ -598,8 +598,7 @@
         <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after
           importing.
         </source>
-        <target>"""នាំចូលឯកសារចែកដែលបានកែប្រែរួច។ ទិន្នន័យមូលដ្ឋាននឹងត្រូវបានធ្វើបច្ចុប្បន្នភាពជាមួយបញ្ជីអ្នកទទួលផលថ្មីសម្រាប់ការចែកនេះ នៅពេលអ្នកចុចលើ """"ធ្វើបច្ចុប្បន្នភាព"""" បន្ទាប់ពីនាំចូល។"""
-        </target>
+        <target>"នាំចូលឯកសារចែកដែលបានកែប្រែរួច។ ទិន្នន័យមូលដ្ឋាននឹងត្រូវបានធ្វើបច្ចុប្បន្នភាពជាមួយបញ្ជីអ្នកទទួលផលថ្មីសម្រាប់ការចែកនេះ នៅពេលអ្នកចុចលើ ""ធ្វើបច្ចុប្បន្នភាព"" បន្ទាប់ពីនាំចូល។"</target>
       </trans-unit>
       <trans-unit id="27t7txq" resname="Income Level">
         <source>Income Level</source>

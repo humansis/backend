@@ -586,8 +586,7 @@
         <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after
           importing.
         </source>
-        <target>"""Ներմուծեք ֆայլ, որը պարունակում է փոփոխված տրամադրում։ Տվյալների բազան կթարմացվի այս տրամադրման շահառուների նոր ցուցակով, երբ ներմուծումից հետո սեղմեք """"update""""
-          /""""թարմացում"""""""
+        <target>"Ներմուծեք ֆայլ, որը պարունակում է փոփոխված տրամադրում։ Տվյալների բազան կթարմացվի այս տրամադրման շահառուների նոր ցուցակով, երբ ներմուծումից հետո սեղմեք ""update"" /""թարմացում"""
         </target>
       </trans-unit>
       <trans-unit id="27t7txq" resname="Income Level">

@@ -3757,69 +3757,426 @@
         <source>Nº FAMILIES</source>
         <target>№ СІМЕЙ</target>
       </trans-unit>
-      <trans-unit id="I2phZLM" resname="&quot;FEMALE Head of Family gender&quot;">
-        <source>"FEMALE Head of Family gender"</source>
+      <trans-unit id="I2phZLM" resname="FEMALE&#10;Head of Family gender">
+        <source>FEMALE
+          Head of Family gender
+        </source>
         <target>Жінка Голова сім'ї стать</target>
       </trans-unit>
-      <trans-unit id="0ZQdz2Y" resname="&quot;MALE Head of Family gender&quot;">
-        <source>"MALE Head of Family gender"</source>
+      <trans-unit id="0ZQdz2Y" resname="MALE&#10;Head of Family gender">
+        <source>MALE
+          Head of Family gender
+        </source>
         <target>Чоловік Голова сім'ї стать</target>
       </trans-unit>
-      <trans-unit id="x8lsEdk" resname="&quot;Children 0-23 months Male&quot;">
-        <source>"Children 0-23 months Male"</source>
+      <trans-unit id="x8lsEdk" resname="Children&#10;0-23 months&#10;Male">
+        <source>Children
+          0-23 months
+          Male
+        </source>
         <target>Дитина 0-23 місяців Чоловік</target>
       </trans-unit>
-      <trans-unit id="08NcV1g" resname="&quot;Children 0-23 months Female&quot;">
-        <source>"Children 0-23 months Female"</source>
+      <trans-unit id="08NcV1g" resname="Children&#10;0-23 months&#10;Female">
+        <source>Children
+          0-23 months
+          Female
+        </source>
         <target>Дитина 0-23 місяців Жінка</target>
       </trans-unit>
-      <trans-unit id="w4CzqbR" resname="&quot;Children 2-5 Male&quot;">
-        <source>"Children 2-5 Male"</source>
+      <trans-unit id="w4CzqbR" resname="Children&#10;2-5&#10;Male">
+        <source>Children
+          2-5
+          Male
+        </source>
         <target>Дитина 2-5 Чоловік</target>
       </trans-unit>
-      <trans-unit id=".pPwDj0" resname="&quot;Children 2-5 Female&quot;">
-        <source>"Children 2-5 Female"</source>
+      <trans-unit id=".pPwDj0" resname="Children&#10;2-5&#10;Female">
+        <source>Children
+          2-5
+          Female
+        </source>
         <target>Дитина 2-5 Жінка</target>
       </trans-unit>
-      <trans-unit id="hwVztzw" resname="&quot;Males 6-17&quot;">
-        <source>"Males 6-17"</source>
+      <trans-unit id="hwVztzw" resname="Males&#10;6-17">
+        <source>Males
+          6-17
+        </source>
         <target>Чоловіки 6-17</target>
       </trans-unit>
-      <trans-unit id="nWwdF_h" resname="&quot;Females 6-17&quot;">
-        <source>"Females 6-17"</source>
+      <trans-unit id="nWwdF_h" resname="Females&#10;6-17">
+        <source>Females
+          6-17
+        </source>
         <target>Жінки 6-17</target>
       </trans-unit>
-      <trans-unit id="47LfDJD" resname="&quot;Males 18-59&quot;">
-        <source>"Males 18-59"</source>
+      <trans-unit id="47LfDJD" resname="Males&#10;18-59">
+        <source>Males
+          18-59
+        </source>
         <target>Чоловіки 18-59</target>
       </trans-unit>
-      <trans-unit id="prA38io" resname="&quot;Females 18-59&quot;">
-        <source>"Females 18-59"</source>
+      <trans-unit id="prA38io" resname="Females&#10;18-59">
+        <source>Females
+          18-59
+        </source>
         <target>Жінки 18-59</target>
       </trans-unit>
-      <trans-unit id="8jrgDm." resname="&quot;Males 60+&quot;">
-        <source>"Males 60+"</source>
+      <trans-unit id="8jrgDm." resname="Males&#10;60+">
+        <source>Males
+          60+
+        </source>
         <target>Чоловіки 60+</target>
       </trans-unit>
-      <trans-unit id="YuI1MEa" resname="&quot;Females 60+&quot;">
-        <source>"Females 60+"</source>
+      <trans-unit id="YuI1MEa" resname="Females&#10;60+">
+        <source>Females
+          60+
+        </source>
         <target>Жінки 60+</target>
       </trans-unit>
-      <trans-unit id="wmaf7RR" resname="&quot;Total Males&quot;">
-        <source>"Total Males"</source>
+      <trans-unit id="wmaf7RR" resname="Total&#10;Males">
+        <source>Total
+          Males
+        </source>
         <target>Всього Чоловіки</target>
       </trans-unit>
-      <trans-unit id="DPt6PBc" resname="&quot;Total Females&quot;">
-        <source>"Total Females"</source>
+      <trans-unit id="DPt6PBc" resname="Total&#10;Females">
+        <source>Total
+          Females
+        </source>
         <target>Всього Жінки</target>
       </trans-unit>
-      <trans-unit id="Rg7M6UB" resname="&quot;Individ. Benef. Served&quot;">
-        <source>"Individ. Benef. Served"</source>
+      <trans-unit id="Rg7M6UB" resname="Individ. Benef.&#10;Served">
+        <source>Individ. Benef.
+          Served
+        </source>
         <target>Обслуговано бенефіціарів</target>
       </trans-unit>
-      <trans-unit id="jVaZB9b" resname="&quot;Family Size&quot;">
-        <source>"Family Size"</source>
+      <trans-unit id="jVaZB9b" resname="Family&#10;Size">
+        <source>Family
+          Size
+        </source>
         <target>Сім'я Розмір</target>
+      </trans-unit>
+      <trans-unit id="lIszQE2" resname="Accommodation">
+        <source>Accommodation</source>
+        <target>Розміщення</target>
+      </trans-unit>
+      <trans-unit id="wK.yXuL" resname="addressNumber">
+        <source>addressNumber</source>
+        <target>адресаНомер</target>
+      </trans-unit>
+      <trans-unit id="1587rH1" resname="addressPostcode">
+        <source>addressPostcode</source>
+        <target>адресаІндекс</target>
+      </trans-unit>
+      <trans-unit id="LUtTl.j" resname="addressStreet">
+        <source>addressStreet</source>
+        <target>адресаВулиця</target>
+      </trans-unit>
+      <trans-unit id="qASeTOU" resname="adm1">
+        <source>adm1</source>
+        <target>adm1</target>
+      </trans-unit>
+      <trans-unit id="rg6iYkL" resname="adm2">
+        <source>adm2</source>
+        <target>adm2</target>
+      </trans-unit>
+      <trans-unit id="XOBgUUg" resname="adm3">
+        <source>adm3</source>
+        <target>adm3</target>
+      </trans-unit>
+      <trans-unit id="w8._UNg" resname="adm4">
+        <source>adm4</source>
+        <target>adm4</target>
+      </trans-unit>
+      <trans-unit id="Sv5uoVD" resname="April">
+        <source>April</source>
+        <target>Квітень</target>
+      </trans-unit>
+      <trans-unit id="AkhNdoc" resname="Assistance Name">
+        <source>Assistance Name</source>
+        <target>Назва допомоги</target>
+      </trans-unit>
+      <trans-unit id="pm2JcOV" resname="August">
+        <source>August</source>
+        <target>Серпень</target>
+      </trans-unit>
+      <trans-unit id="W5DpNdX" resname="Cashback (ProductCategoryFixtures)">
+        <source>Cashback (ProductCategoryFixtures)</source>
+        <target>Повернення коштів (ProductCategoryFixtures)</target>
+      </trans-unit>
+      <trans-unit id="7LFgLFR" resname="Cashback Limit">
+        <source>Cashback Limit</source>
+        <target>Ліміт повернення коштів</target>
+      </trans-unit>
+      <trans-unit id="034M0A8" resname="Consent">
+        <source>Consent</source>
+        <target>Згода</target>
+      </trans-unit>
+      <trans-unit id="YVliPZ." resname="Contract No.">
+        <source>Contract No.</source>
+        <target>Договір №</target>
+      </trans-unit>
+      <trans-unit id="87Zxrzo" resname="copingStrategiesIndex">
+        <source>copingStrategiesIndex</source>
+        <target>Індекс стратегій подолання</target>
+      </trans-unit>
+      <trans-unit id="gicg5Oq" resname="Correct Records">
+        <source>Correct Records</source>
+        <target>Виправити записи</target>
+      </trans-unit>
+      <trans-unit id="PUQzcBC" resname="Created At">
+        <source>Created At</source>
+        <target>Створено (коли)</target>
+      </trans-unit>
+      <trans-unit id="39YLmqX" resname="Created By">
+        <source>Created By</source>
+        <target>Створено (ким)</target>
+      </trans-unit>
+      <trans-unit id="BKNN4R8" resname="dateOfBirth">
+        <source>dateOfBirth</source>
+        <target>дата народження</target>
+      </trans-unit>
+      <trans-unit id="HO9Mvli" resname="Deceased Family Member">
+        <source>Deceased Family Member</source>
+        <target>Покійний член сім'ї</target>
+      </trans-unit>
+      <trans-unit id="j7IEykY" resname="December">
+        <source>December</source>
+        <target>Грудень</target>
+      </trans-unit>
+      <trans-unit id="KVt4PV." resname="Disabeled">
+        <source>Disabeled</source>
+        <target>З обмеженими можливостями</target>
+      </trans-unit>
+      <trans-unit id="Eg5W7Ob" resname="Disabeled - to be specified">
+        <source>Disabeled - to be specified</source>
+        <target>З обмеженими можливостями – необхідно уточнити</target>
+      </trans-unit>
+      <trans-unit id="DxncBtV" resname="Do not repair your original file. Repair only the file with Affected Records.">
+        <source>Do not repair your original file. Repair only the file with Affected Records.</source>
+        <target>Не відновлюйте вихідний файл. Відновіть лише файл із пошкодженими записами.</target>
+      </trans-unit>
+      <trans-unit id="chSxm2B" resname="Driver`s Licence">
+        <source>Driver`s Licence</source>
+        <target>Водійське посвідчення</target>
+      </trans-unit>
+      <trans-unit id="DGtntrn" resname="Elderly">
+        <source>Elderly</source>
+        <target>Люди похилого віку</target>
+      </trans-unit>
+      <trans-unit id="Y4nnlg." resname="enFamilyName">
+        <source>enFamilyName</source>
+        <target>Прізвище (англійською)</target>
+      </trans-unit>
+      <trans-unit id="rdYiTcy" resname="enGivenName">
+        <source>enGivenName</source>
+        <target>Ім'я (англійською)</target>
+      </trans-unit>
+      <trans-unit id="Krr2jDe" resname="Enumerator name">
+        <source>Enumerator name</source>
+        <target>Ім'я енумератора</target>
+      </trans-unit>
+      <trans-unit id="yHfG.0B" resname="February">
+        <source>February</source>
+        <target>Лютий</target>
+      </trans-unit>
+      <trans-unit id="joQ1Y_w" resname="Food (ProductCategoryFixtures)">
+        <source>Food (ProductCategoryFixtures)</source>
+        <target>Продукти харчування (ProductCategoryFixtures)</target>
+      </trans-unit>
+      <trans-unit id=".kRDmfo" resname="Food Security Assistance">
+        <source>Food Security Assistance</source>
+        <target>Забезпечення продовольчої безпеки</target>
+      </trans-unit>
+      <trans-unit id="PyNPthh" resname="foodConsumptionScore">
+        <source>foodConsumptionScore</source>
+        <target>показник споживання продовольства</target>
+      </trans-unit>
+      <trans-unit id="16DmiF9" resname="IDP Score">
+        <source>IDP Score</source>
+        <target>Бал ВПО</target>
+      </trans-unit>
+      <trans-unit id="AWMfq1R" resname="Import&amp;Compare">
+        <source>Import&amp;Compare</source>
+        <target>Імпортувати та порівняти</target>
+      </trans-unit>
+      <trans-unit id="0SdtRVL" resname="incomeLevel">
+        <source>incomeLevel</source>
+        <target>Рівень прибутку</target>
+      </trans-unit>
+      <trans-unit id="z3GY6_H" resname="Injured Family Member">
+        <source>Injured Family Member</source>
+        <target>Постраждалий член сім'ї</target>
+      </trans-unit>
+      <trans-unit id="CAzCgJx" resname="is archived">
+        <source>is archived</source>
+        <target>заархівовано</target>
+      </trans-unit>
+      <trans-unit id="NwguaN_" resname="January">
+        <source>January</source>
+        <target>Січень</target>
+      </trans-unit>
+      <trans-unit id="6c96HKS" resname="July">
+        <source>July</source>
+        <target>Липня</target>
+      </trans-unit>
+      <trans-unit id="1YCMDgp" resname="June">
+        <source>June</source>
+        <target>Червень</target>
+      </trans-unit>
+      <trans-unit id="lQ2DGoL" resname="KoBo Interview ID">
+        <source>KoBo Interview ID</source>
+        <target>ID інтерв'ю KoBo</target>
+      </trans-unit>
+      <trans-unit id="umHuoka" resname="List is empty">
+        <source>List is empty</source>
+        <target>Список порожній</target>
+      </trans-unit>
+      <trans-unit id="3RVYpPl" resname="localFamilyName">
+        <source>localFamilyName</source>
+        <target>Прізвище (мовою оригіналу)</target>
+      </trans-unit>
+      <trans-unit id="v.zyKnl" resname="localGivenName">
+        <source>localGivenName</source>
+        <target>Ім'я (мовою оригіналу)</target>
+      </trans-unit>
+      <trans-unit id="5p6QcYX" resname="Main Income">
+        <source>Main Income</source>
+        <target>Основний прибуток</target>
+      </trans-unit>
+      <trans-unit id="nZWizw1" resname="March">
+        <source>March</source>
+        <target>Березень</target>
+      </trans-unit>
+      <trans-unit id="jHj_W5k" resname="May">
+        <source>May</source>
+        <target>Травень</target>
+      </trans-unit>
+      <trans-unit id="Hix4wbU" resname="Minority">
+        <source>Minority</source>
+        <target>Меншини</target>
+      </trans-unit>
+      <trans-unit id="dlcG0Aw" resname="No Of Chronically Ill">
+        <source>No Of Chronically Ill</source>
+        <target>Число хронічно хворих</target>
+      </trans-unit>
+      <trans-unit id="QLCrIV2" resname="No of chronically ill">
+        <source>No of chronically ill</source>
+        <target>Число хронічно хворих</target>
+      </trans-unit>
+      <trans-unit id="8CpNtPj" resname="Non-food (ProductCategoryFixtures)">
+        <source>Non-food (ProductCategoryFixtures)</source>
+        <target>Непродовольчі товари (ProductCategoryFixtures)</target>
+      </trans-unit>
+      <trans-unit id="neb_HXJ" resname="November">
+        <source>November</source>
+        <target>Листопад</target>
+      </trans-unit>
+      <trans-unit id=".deReHt" resname="October">
+        <source>October</source>
+        <target>Жовтень</target>
+      </trans-unit>
+      <trans-unit id=".ReVfnA" resname="phone 1">
+        <source>phone 1</source>
+        <target>телефон 1</target>
+      </trans-unit>
+      <trans-unit id="ncBRkH4" resname="phone 2">
+        <source>phone 2</source>
+        <target>телефон 2</target>
+      </trans-unit>
+      <trans-unit id="mZNbkH_" resname="prefix phone 1">
+        <source>prefix phone 1</source>
+        <target>код телефон 1</target>
+      </trans-unit>
+      <trans-unit id="qus_oAz" resname="prefix phone 2">
+        <source>prefix phone 2</source>
+        <target>код телефон 2</target>
+      </trans-unit>
+      <trans-unit id="udyDgMB" resname="Protection Assistance">
+        <source>Protection Assistance</source>
+        <target>Допомога в індивідуальному захисті</target>
+      </trans-unit>
+      <trans-unit id="EyHCZW_" resname="proxy phone 1">
+        <source>proxy phone 1</source>
+        <target>проксі телефон 1</target>
+      </trans-unit>
+      <trans-unit id="K3xmWFT" resname="proxy phone 2">
+        <source>proxy phone 2</source>
+        <target>проксі телефон 2</target>
+      </trans-unit>
+      <trans-unit id="RS_27Q5" resname="residencyStatus">
+        <source>residencyStatus</source>
+        <target>Статус резидента</target>
+      </trans-unit>
+      <trans-unit id="oTDo_Bf" resname="Score Community">
+        <source>Score Community</source>
+        <target>Бал громади</target>
+      </trans-unit>
+      <trans-unit id="pj9DqJr" resname="Score IDP">
+        <source>Score IDP</source>
+        <target>Бал ВПО</target>
+      </trans-unit>
+      <trans-unit id="CSeFKOo" resname="Separated Family Member">
+        <source>Separated Family Member</source>
+        <target>Відділений член сім'ї</target>
+      </trans-unit>
+      <trans-unit id="zVWeoKv" resname="September">
+        <source>September</source>
+        <target>Вересень</target>
+      </trans-unit>
+      <trans-unit id="xnQ4LVJ" resname="Shelter Status">
+        <source>Shelter Status</source>
+        <target>Статус житла</target>
+      </trans-unit>
+      <trans-unit id="QLYBoQy" resname="SMS">
+        <source>SMS</source>
+        <target>SMS</target>
+      </trans-unit>
+      <trans-unit id="dewDWjB" resname="Star Identity Check">
+        <source>Star Identity Check</source>
+        <target>Розпочати перевірку ідентичності</target>
+      </trans-unit>
+      <trans-unit id="QGeLTml" resname="Temporary Settlement">
+        <source>Temporary Settlement</source>
+        <target>Тимчасове поселення</target>
+      </trans-unit>
+      <trans-unit id="lcuNWo8"
+                  resname="This page is a form to add a new assistance to a project . You will use selection criteria to determine the households or beneficiaries who will take part in it and add a specific&#10;          amount of commodities to be distributed.&#10;        ">
+        <source>This page is a form to add a new assistance to a project . You will use selection criteria to determine the households or beneficiaries who will take part in it and add a specific
+          amount of commodities to be distributed.
+        </source>
+        <target>Ця сторінка є формою для додавання нової допомоги в проект. Ви використовуватимете критерії відбору, щоб визначити домогосподарства або бенефіціарів, які візьмуть у ньому участь, і
+          додати певну кількість товарів для дистрибуції.
+        </target>
+      </trans-unit>
+      <trans-unit id="vdTq5Mb" resname="type phone 1">
+        <source>type phone 1</source>
+        <target>тип телефону 1</target>
+      </trans-unit>
+      <trans-unit id="FkHc0Np" resname="type phone 2">
+        <source>type phone 2</source>
+        <target>тип телефону 2</target>
+      </trans-unit>
+      <trans-unit id="rArhFm_" resname="Upload date">
+        <source>Upload date</source>
+        <target>Дата завантаження</target>
+      </trans-unit>
+      <trans-unit id="Bo4EbP6" resname="Upload Date">
+        <source>Upload Date</source>
+        <target>Дата завантаження</target>
+      </trans-unit>
+      <trans-unit id="PDLFy5d" resname="vulnerabilityCriteria">
+        <source>vulnerabilityCriteria</source>
+        <target>Критерій уразливості</target>
+      </trans-unit>
+      <trans-unit id="CtZcLtL" resname="Washing Mashine">
+        <source>Washing Mashine</source>
+        <target>Правльна машина</target>
+      </trans-unit>
+      <trans-unit id="fKfeqQa" resname="Water">
+        <source>Water</source>
+        <target>Вода</target>
       </trans-unit>
     </body>
   </file>
