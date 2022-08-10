@@ -536,8 +536,8 @@ class AssistanceSpreadsheetExport
     private function applyDistributionTime(Worksheet $worksheet, AssistanceBeneficiary $distributionBeneficiary, int $rowNumber): void
     {
         $dbId = $distributionBeneficiary->getId();
-        $qb = $this->batchRepository->createQueryBuilder('b');
-        $qb = $qb->where('b.requestData LIKE :distributionId')
+        $qb = $this->batchRepository->createQueryBuilder('b')
+            ->where('b.requestData LIKE :distributionId')
             ->andWhere('b.state = :state')
             ->setParameter('distributionId', "%$dbId%")
             ->setParameter('state', SynchronizationBatchState::CORRECT);
