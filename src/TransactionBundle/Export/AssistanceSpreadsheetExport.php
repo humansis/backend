@@ -15,10 +15,17 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Entity\GeneralReliefItem;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\Entity\SynchronizationBatch;
+use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\ReliefPackageState;
+use NewApiBundle\Enum\SynchronizationBatchState;
+use NewApiBundle\Repository\SynchronizationBatchRepository;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -34,9 +41,20 @@ class AssistanceSpreadsheetExport
     /** @var TranslatorInterface */
     private $translator;
 
-    public function __construct(TranslatorInterface $translator)
+    /**
+     * @var SynchronizationBatchRepository
+     */
+    private $batchRepository;
+
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
+    public function __construct(TranslatorInterface $translator, EntityManagerInterface $entityManager)
     {
         $this->translator = $translator;
+        $this->batchRepository = $entityManager->getRepository(SynchronizationBatch\Deposits::class);
     }
 
     public function export(Assistance $assistance, Organization $organization, string $filetype)
@@ -341,21 +359,26 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('H22')->setValue('Proxy Second Name');
         $worksheet->getCell('I22')->setValue('Proxy ID No.');
         $worksheet->getCell('J22')->setValue('Distributed Item(s), Unit, Amount per beneficiary');
-        $worksheet->getCell('K22')->setValue('Signature');
         $worksheet->getStyle('B22:K22')->applyFromArray($rowStyle);
         $worksheet->getStyle('B22:K22')->getFont()->setBold(true);
         $worksheet->getRowDimension(22)->setRowHeight(42.00);
 
+        if ($this->shouldDistributionContainDate($assistance)) {
+            $worksheet->getCell('K22')->setValue('Distributed');
+            $worksheet->setCellValue('K23', $this->translator->trans('Distributed'));
+        } else {
+            $worksheet->getCell('K22')->setValue('Signature');
+            $worksheet->setCellValue('K23', $this->translator->trans('Signature'));
+        }
         $worksheet->setCellValue('B23', $this->translator->trans('No.'));
         $worksheet->setCellValue('C23', $this->translator->trans('First Name'));
         $worksheet->setCellValue('D23', $this->translator->trans('Second Name'));
         $worksheet->setCellValue('E23', $this->translator->trans('ID No.'));
         $worksheet->setCellValue('F23', $this->translator->trans('Phone No.'));
-        $worksheet->setCellValue('G23', $this->translator->trans('Proxy First Name'));
         $worksheet->setCellValue('H23', $this->translator->trans('Proxy Second Name'));
+        $worksheet->setCellValue('G23', $this->translator->trans('Proxy First Name'));
         $worksheet->setCellValue('I23', $this->translator->trans('Proxy ID No.'));
         $worksheet->setCellValue('J23', $this->translator->trans('Distributed Item(s), Unit, Amount per beneficiary'));
-        $worksheet->setCellValue('K23', $this->translator->trans('Signature'));
         $worksheet->getStyle('B23:K23')->applyFromArray($rowStyle);
         $worksheet->getStyle('B23:K23')->getFont()->setItalic(true);
         $worksheet->getRowDimension(23)->setRowHeight(42.00);
@@ -375,11 +398,12 @@ class AssistanceSpreadsheetExport
 
         $rowNumber = 24;
         foreach ($assistance->getDistributionBeneficiaries() as  $id => $distributionBeneficiary) {
-            $rowNumber = $this->createBeneficiaryRow($worksheet, $distributionBeneficiary, $rowNumber, $id+1, $rowStyle);
+            $rowNumber = $this->createBeneficiaryRow($worksheet, $distributionBeneficiary, $rowNumber, $id+1, $rowStyle, $this->shouldDistributionContainDate($assistance));
         }
+        //die();
     }
 
-    private function createBeneficiaryRow(Worksheet $worksheet, AssistanceBeneficiary $distributionBeneficiary, $rowNumber, $id, $rowStyle) {
+    private function createBeneficiaryRow(Worksheet $worksheet, AssistanceBeneficiary $distributionBeneficiary, $rowNumber, $id, $rowStyle, bool $shouldContainDate) {
         $bnf = $distributionBeneficiary->getBeneficiary();
         if ($bnf instanceof Household) {
             $person = $bnf->getHouseholdHead()->getPerson();
@@ -408,6 +432,10 @@ class AssistanceSpreadsheetExport
         $worksheet->setCellValue('J'.$rowNumber, $distributionBeneficiary->getRemoved() ? '' : self::getDistributedItems($distributionBeneficiary));
         $worksheet->getStyle('B'.$rowNumber.':K'.$rowNumber)->applyFromArray($rowStyle);
         $worksheet->getRowDimension($rowNumber)->setRowHeight(42.00);
+
+        if ($shouldContainDate) {
+            $this->applyDistributionTime($worksheet, $distributionBeneficiary, $rowNumber);
+        }
 
         $nextRowNumber = $rowNumber + 1;
 
@@ -497,6 +525,27 @@ class AssistanceSpreadsheetExport
                 return imagecreatefrompng($filename);
             default:
                 throw new \LogicException('Unsupported filetype '.strtolower(pathinfo($filename, PATHINFO_EXTENSION)));
+        }
+    }
+
+    private function shouldDistributionContainDate(Assistance $assistance): bool
+    {
+        return $assistance->hasModalityTypeCommodity(ModalityType::SMART_CARD);
+    }
+
+    private function applyDistributionTime(Worksheet $worksheet, AssistanceBeneficiary $distributionBeneficiary, int $rowNumber): void
+    {
+        $dbId = $distributionBeneficiary->getId();
+        $qb = $this->batchRepository->createQueryBuilder('b');
+        $qb = $qb->where('b.requestData LIKE :distributionId')
+            ->andWhere('b.state = :state')
+            ->setParameter('distributionId', "%$dbId%")
+            ->setParameter('state', SynchronizationBatchState::CORRECT);
+        /** @var SynchronizationBatch\Deposits[] $result */
+        $result = $qb->getQuery()->getResult();
+
+        if (sizeof($result) > 0) {
+            $worksheet->setCellValue('K'.$rowNumber, $result[0]->getRequestDataObjectified()[$dbId]->getCreatedAt()->format('d. m. Y H:i'));
         }
     }
 }

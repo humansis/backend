@@ -54,7 +54,7 @@ services:
 
     export.spreadsheet:
         class: TransactionBundle\Export\AssistanceSpreadsheetExport
-        arguments: [ '@translator' ]
+        arguments: [ '@translator', '@doctrine.orm.entity_manager' ]
         public: true
 
     TransactionBundle\Export\AssistanceSpreadsheetExport: '@export.spreadsheet'

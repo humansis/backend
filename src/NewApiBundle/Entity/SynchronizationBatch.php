@@ -10,6 +10,7 @@ use NewApiBundle\Entity\Helper\Source;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\SynchronizationBatchState;
 use NewApiBundle\Enum\SynchronizationBatchValidationType;
+use NewApiBundle\Utils\Synchronization\RequestDataRecord;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
@@ -141,6 +142,29 @@ abstract class SynchronizationBatch
     public function getValidatedAt(): ?\DateTimeInterface
     {
         return $this->validatedAt;
+    }
+
+    /**
+     * @return RequestDataRecord[]
+     */
+    public function getRequestDataObjectified(): array
+    {
+        if ($this->state !== SynchronizationBatchState::CORRECT) {
+            return [];
+        }
+        $requestDataArray = [];
+
+        foreach ($this->getRequestData() as $requestDatum) {
+            $requestDatumObjectified = json_decode($requestDatum, true);
+            $requestDataArray[$requestDatumObjectified['reliefPackageId']] = new RequestDataRecord(
+                $requestDatumObjectified['createdAt'],
+                $requestDatumObjectified['balanceAfter'],
+                $requestDatumObjectified['balanceBefore'],
+                $requestDatumObjectified['reliefPackageId'],
+                $requestDatumObjectified['smartcardSerialNumber']);
+        }
+
+        return $requestDataArray;
     }
 
 }

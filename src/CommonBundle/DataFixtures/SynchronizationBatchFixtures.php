@@ -18,8 +18,8 @@ class SynchronizationBatchFixtures extends Fixture implements DependentFixtureIn
     private $smartcardDepositService;
 
     const DEPOSIT_SYNC_DATA = [
-        ['{"reliefPackageId":1024, "createdAt": "2000-01-01", "smartcardSerialNumber": "AAABBB123", "balanceBefore": null, "balanceAfter": 10.99}'],
-        ['{"reliefPackageId":1, "createdAt": "2000-01-01", "smartcardSerialNumber": "AAABBB123", "balanceBefore": 1000000.99, "balanceAfter": 10.99}'],
+        ['{"reliefPackageId":1024, "createdAt": "2000-01-01T00:00:00+0200", "smartcardSerialNumber": "AAABBB123", "balanceBefore": null, "balanceAfter": 10.99}'],
+        ['{"reliefPackageId":1, "createdAt": "2000-01-01T00:00:00+0200", "smartcardSerialNumber": "AAABBB123", "balanceBefore": 1000000.99, "balanceAfter": 10.99}'],
         ['{"reliefPackageId":null, "createdAt": "garbage", "smartcardSerialNumber": null, "balanceBefore": null, "balanceAfter": null}'],
         ['{"reliefPackageId":null}, {"somethingElse": "Dont know"}'],
     ];
