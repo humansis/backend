@@ -24,10 +24,9 @@ docker-compose exec php bash -c 'bin/console translation:update --force en'
    BE Web App sheet, make sure no columns are hidden, sort by column A (row#)
 2. copy values to your source file from Export 5. (when using desktop excel, copying straight from browser might be problematic - download translated source and copy after opening the file in desktop excel)
 3. check in last row values in B (resname) and D (source) are matching
-4. save as *CSV UTF-8 (Comma delimited) (\*.csv)* to `app/Resources/translations` as `translations.csv` (delimiter will be semicolon but that is desired)
-5. make sure each translation is on one line
-6. run
+4. move file to `app/Resources/translations` as `translations.xlsx`
+4. run
 ```bash
 docker-compose exec php bash -c 'bin/console translation:update:generate'
 ```
-7. run cleanup code
+5. run cleanup code
