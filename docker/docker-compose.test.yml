@@ -35,6 +35,10 @@ services:
         restart: always
         environment:
             ENVIRONMENT: test
+        logging:
+            driver: "syslog"
+            options:
+                tag: docker-consumer
 
     phpmyadmin:
         image: phpmyadmin/phpmyadmin

@@ -18,3 +18,7 @@ services:
         restart: always
         environment:
             ENVIRONMENT: prod
+        logging:
+            driver: "syslog"
+            options:
+                tag: docker-consumer
