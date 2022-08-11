@@ -585,9 +585,14 @@
         <source>Import from File</source>
         <target>Файлаас импортлох</target>
       </trans-unit>
-      <trans-unit id="BdazhEU" resname="Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.">
-        <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.</source>
-        <target>Өөрчилсөн түгээлтийг агуулсан файлыг импортлох. Импорт хийсний дараа "шинэчлэх" дээр дарахад мэдээллийн баазыг энэхүү түгээлтийн тусламж хүртэгчдийн шинэ жагсаалтаар шинэчлэгдэх болно.</target>
+      <trans-unit id="BdazhEU"
+                  resname="Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.">
+        <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after
+          importing.
+        </source>
+        <target>"Өөрчилсөн түгээлтийг агуулсан файлыг импортлох. Импорт хийсний дараа ""шинэчлэх"" дээр дарахад мэдээллийн баазыг энэхүү түгээлтийн тусламж хүртэгчдийн шинэ жагсаалтаар шинэчлэгдэх
+          болно."
+        </target>
       </trans-unit>
       <trans-unit id="27t7txq" resname="Income Level">
         <source>Income Level</source>
@@ -1062,7 +1067,7 @@
         <target>Шилжилтийн байр</target>
       </trans-unit>
       <trans-unit id="PLyHx2g" resname="True">
-        <source>TRUE</source>
+        <source>True</source>
         <target>Үнэн</target>
       </trans-unit>
       <trans-unit id="rj1rhbS" resname="Two-factor authentication adds an additional layer of security to your account by requiring more than a password to log in">

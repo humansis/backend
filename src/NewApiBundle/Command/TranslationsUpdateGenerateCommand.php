@@ -2,11 +2,13 @@
 
 namespace NewApiBundle\Command;
 
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use SimpleXMLElement;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\HttpFoundation\File\File;
 
 /**
  * Generate translations .xlf files from source .csv (with ";" as divider).
@@ -50,36 +52,33 @@ class TranslationsUpdateGenerateCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
-        $finder = new Finder();
-        $finder->files()->in($this->translationsDir)->name('translations.csv');
-
-        $iterator = $finder->getIterator();
-        $iterator->rewind();
-        $file = $iterator->current();
-
-        $lines = preg_split("/\r?\n/", $file->getContents());
-
+        
+        $file = new File($this->translationsDir.'/translations.xlsx');
+        $reader = IOFactory::createReaderForFile($file->getRealPath());
+        $worksheet = $reader->load($file->getRealPath())->getActiveSheet();
+        $lines = $worksheet->toArray();
+        
         array_shift($lines); // remove first line
 
         //get languages and remove second line
-        $headers = explode(';', array_shift($lines));
+        $headers = array_shift($lines);
+        
         $this->languages = array_slice($headers, 4);
+        
+        foreach ($lines as $index => $cells) {
 
-        foreach ($lines as $index => $line) {
-            $cells = explode(';', $line);
-
-            if ($cells[0] === '') { // skip empty row
+            if (empty($cells[0])) { // skip empty row
                 continue;
             }
 
             if (count($cells) !== 4 + count($this->languages)) {
                 throw new \Exception(
                     'Invalid number of cells (check source csv for multiline translations near line #'
-                    .($index + 3).',  "'.$line.'"'
+                    .($index + 3).',  "'.$cells.'"'
                 );
             }
-
-            if ($cells[1] === $cells[3] && $cells[3] === '') {
+            
+            if ($cells[1] === $cells[3] && empty($cells[3])) {
                 $this->storeFiles();
                 $this->initFiles($cells[0]);
             } else {
@@ -95,8 +94,12 @@ class TranslationsUpdateGenerateCommand extends Command
     private function addRow($cells): void
     {
         foreach ($this->languages as $index => $language) {
-            
-            if ($cells[4 + $index] === '') {
+
+            // skip empty translation
+            if (
+                $cells[4 + $index] === null
+                || $cells[4 + $index] === ''
+            ) { 
                 continue;
             }
             

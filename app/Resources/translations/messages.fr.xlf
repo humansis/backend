@@ -445,10 +445,6 @@
         <source>Household Size</source>
         <target>Taille du foyer</target>
       </trans-unit>
-      <trans-unit id="i9HzhQO" resname="Households Targeted">
-        <source>Households Targeted</source>
-        <target>គ្រួសារគោលដៅ</target>
-      </trans-unit>
       <trans-unit id="UzRheu5" resname="Hygiene Kit">
         <source>Hygiene Kit</source>
         <target>Hygiene kit</target>
@@ -485,9 +481,14 @@
         <source>Import from File</source>
         <target>Import depuis un fichier</target>
       </trans-unit>
-      <trans-unit id="BdazhEU" resname="Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.">
-        <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.</source>
-        <target>Importez le fichier contenant la distribution après modifications. La base de donnée sera mise à jour lorsque vous cliquerez sur "upload" après validation de l'import. Les bénéficiaires inconnus seront ignorés.</target>
+      <trans-unit id="BdazhEU"
+                  resname="Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.">
+        <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after
+          importing.
+        </source>
+        <target>"Importez le fichier contenant la distribution après modifications. La base de donnée sera mise à jour lorsque vous cliquerez sur ""upload"" après validation de l'import. Les
+          bénéficiaires inconnus seront ignorés."
+        </target>
       </trans-unit>
       <trans-unit id="27t7txq" resname="Income Level">
         <source>Income Level</source>
@@ -846,7 +847,7 @@
         <target>Valeur totale de la brochure</target>
       </trans-unit>
       <trans-unit id="PLyHx2g" resname="True">
-        <source>TRUE</source>
+        <source>True</source>
         <target>Vrai</target>
       </trans-unit>
       <trans-unit id="rj1rhbS" resname="Two-factor authentication adds an additional layer of security to your account by requiring more than a password to log in">
@@ -937,13 +938,17 @@
         <source>Vulnerabilities</source>
         <target>Vulnérabilités</target>
       </trans-unit>
-      <trans-unit id="o_20tzp" resname="Woreda">
-        <source>Woreda</source>
-        <target>Woreda</target>
-      </trans-unit>
       <trans-unit id="oCQ66J1" resname="You can select only one country">
         <source>You can select only one country</source>
         <target>Vous ne pouvez sélectionner qu'un pays</target>
+      </trans-unit>
+      <trans-unit id="i9HzhQO" resname="Households Targeted">
+        <source>Households Targeted</source>
+        <target>គ្រួសារគោលដៅ</target>
+      </trans-unit>
+      <trans-unit id="o_20tzp" resname="Woreda">
+        <source>Woreda</source>
+        <target>Woreda</target>
       </trans-unit>
     </body>
   </file>

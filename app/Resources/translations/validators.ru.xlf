@@ -11,7 +11,7 @@
       </trans-unit>
       <trans-unit id="NN2_iru" resname="This value should be true.">
         <source>This value should be true.</source>
-        <target>Это значение должно быть истинным.</target>
+        <target>Это значение должно быть правильным.</target>
       </trans-unit>
       <trans-unit id="OjM_kpf" resname="This value should be of type {{ type }}.">
         <source>This value should be of type {{ type }}.</source>
@@ -31,7 +31,7 @@
       </trans-unit>
       <trans-unit id="nIvOQ_o" resname="You must select at most {{ limit }} choice.|You must select at most {{ limit }} choices.">
         <source>You must select at most {{ limit }} choice.|You must select at most {{ limit }} choices.</source>
-        <target>Вы должны выбрать как минимум {{ limit }} вариантов.|Вы должны выбрать как минимум {{ limit }} вариантов.</target>
+        <target>Вы должны выбрать максимум {{ limit }} вариантов.|Вы должны выбрать максимум {{ limit }} вариантов.</target>
       </trans-unit>
       <trans-unit id="87zjiHi" resname="One or more of the given values is invalid.">
         <source>One or more of the given values is invalid.</source>
@@ -55,7 +55,7 @@
       </trans-unit>
       <trans-unit id="PSvNXdi" resname="This value is not a valid email address.">
         <source>This value is not a valid email address.</source>
-        <target>Это значение не является действительным адресом электронной почты.</target>
+        <target>Это значение не является действующим адресом электронной почты.</target>
       </trans-unit>
       <trans-unit id="3KeHbZy" resname="The file could not be found.">
         <source>The file could not be found.</source>
@@ -91,7 +91,7 @@
       </trans-unit>
       <trans-unit id="1KV4L.t" resname="This value should not be blank.">
         <source>This value should not be blank.</source>
-        <target>Это значение не должно быть пустым.</target>
+        <target>Это значение должно быть пустым.</target>
       </trans-unit>
       <trans-unit id="2G4Vepm" resname="This value should not be null.">
         <source>This value should not be null.</source>
@@ -219,7 +219,7 @@
       </trans-unit>
       <trans-unit id="MAzmID7" resname="Invalid card number.">
         <source>Invalid card number.</source>
-        <target>Не верный номер карты.</target>
+        <target>Неверный номер карты.</target>
       </trans-unit>
       <trans-unit id="c3REGK3" resname="Unsupported card type or invalid card number.">
         <source>Unsupported card type or invalid card number.</source>
