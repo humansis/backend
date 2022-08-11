@@ -58,12 +58,12 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
         return $q;
     }
 
-    public function countUnarchivedByCountryProjects(string $iso3): int
+    public function countUnarchivedByCountry(string $iso3): int
     {
         $qb = $this->createQueryBuilder("hh");
         $qb
             ->select("COUNT(DISTINCT hh)")
-            ->where("hh.countryIso3 = :country")
+            ->where("hh.iso3 = :country")
             ->setParameter("country", $iso3)
             ->andWhere("hh.archived = 0")
         ;
@@ -196,7 +196,7 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
             ->leftJoin('hh.beneficiaries', 'head', Join::WITH, 'head.status = 1')
             ->leftJoin('head.person', 'headper')
             ->andWhere('hh.archived = 0')
-            ->andWhere('l.countryIso3 = :iso3')
+            ->andWhere('hh.iso3 = :iso3')
             ->setParameter('iso3', $iso3);
 
         if ($pagination) {
