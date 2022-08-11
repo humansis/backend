@@ -1,6 +1,6 @@
 <?php
 
-namespace CommonBundle\Hydration;
+namespace NewApiBundle\Hydration;
 
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 
