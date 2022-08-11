@@ -3,9 +3,9 @@
 namespace VoucherBundle\Utils;
 
 use NewApiBundle\Controller\ExportController;
-use CommonBundle\InputType\Country;
-use CommonBundle\InputType\DataTableType;
-use CommonBundle\InputType\RequestConverter;
+use NewApiBundle\InputType\Country;
+use NewApiBundle\InputType\DataTableType;
+use NewApiBundle\InputType\RequestConverter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;

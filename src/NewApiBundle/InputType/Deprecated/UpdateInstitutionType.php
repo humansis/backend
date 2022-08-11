@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\InputType\Deprecated;
 
-use CommonBundle\InputType\InputTypeInterface;
+use NewApiBundle\InputType\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 

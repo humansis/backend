@@ -1,5 +1,5 @@
 <?php
-namespace CommonBundle\InputType;
+namespace NewApiBundle\InputType;
 
 use Symfony\Component\Validator\Constraints as Assert;
 

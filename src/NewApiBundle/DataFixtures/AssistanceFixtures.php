@@ -6,7 +6,7 @@ use NewApiBundle\Entity\Community;
 use NewApiBundle\Entity\Institution;
 use NewApiBundle\DataFixtures\Beneficiaries\BeneficiaryFixtures;
 use NewApiBundle\Entity\Location;
-use CommonBundle\Mapper\LocationMapper;
+use NewApiBundle\MapperDeprecated\LocationMapper;
 use NewApiBundle\Entity\Modality;
 use NewApiBundle\Enum\AssistanceTargetType;
 use NewApiBundle\Enum\AssistanceType;

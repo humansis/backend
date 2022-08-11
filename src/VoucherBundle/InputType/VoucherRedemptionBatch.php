@@ -2,7 +2,7 @@
 
 namespace VoucherBundle\InputType;
 
-use CommonBundle\InputType\InputTypeInterface;
+use NewApiBundle\InputType\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class VoucherRedemptionBatch implements InputTypeInterface

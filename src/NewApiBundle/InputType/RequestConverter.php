@@ -1,6 +1,6 @@
 <?php
 
-namespace CommonBundle\InputType;
+namespace NewApiBundle\InputType;
 
 use NewApiBundle\Exception\BadRequestDataException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;

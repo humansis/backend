@@ -14,7 +14,7 @@ use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\InputType\InstitutionCreateInputType;
 use NewApiBundle\InputType\InstitutionUpdateInputType;
 use NewApiBundle\Entity\Project;
-use CommonBundle\InputType as GlobalInputType;
+use NewApiBundle\InputType as GlobalInputType;
 use NewApiBundle\InputType\Deprecated;
 
 /**
