@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Twig\Environment;
 use VoucherBundle\Entity\Booklet;
 use VoucherBundle\Entity\Voucher;
-use CommonBundle\InputType;
+use NewApiBundle\InputType;
 
 class BookletService
 {

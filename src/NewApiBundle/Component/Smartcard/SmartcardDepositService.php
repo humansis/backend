@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\Smartcard;
 
-use CommonBundle\InputType\RequestConverter;
+use NewApiBundle\InputType\RequestConverter;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;

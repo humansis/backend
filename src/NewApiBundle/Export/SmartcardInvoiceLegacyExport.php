@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Export;
 
 use NewApiBundle\Entity\Organization;
-use CommonBundle\Mapper\LocationMapper;
+use NewApiBundle\MapperDeprecated\LocationMapper;
 use NewApiBundle\Enum\Domain;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\RichText\RichText;

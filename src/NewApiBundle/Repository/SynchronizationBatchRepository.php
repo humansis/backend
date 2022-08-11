@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Repository;
 
-use CommonBundle\InputType\Country;
+use NewApiBundle\InputType\Country;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Entity\SynchronizationBatch\Deposits;

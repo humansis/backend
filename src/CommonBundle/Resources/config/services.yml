@@ -77,7 +77,7 @@ services:
             - "@doctrine.orm.entity_manager"
             - "@request_validator"
 
-    CommonBundle\Mapper\LocationMapper:
+    NewApiBundle\MapperDeprecated\LocationMapper:
         public: true
 
 #######################################################################################
@@ -100,7 +100,7 @@ services:
         tags:
         - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
 
-    CommonBundle\InputType\RequestConverter:
+    NewApiBundle\InputType\RequestConverter:
         public: true
         arguments:
             - '@validator'

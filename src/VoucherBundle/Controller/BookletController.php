@@ -3,7 +3,7 @@
 namespace VoucherBundle\Controller;
 
 use NewApiBundle\Entity\Beneficiary;
-use CommonBundle\InputType;
+use NewApiBundle\InputType;
 use NewApiBundle\Entity\Assistance;
 use Doctrine\Common\Collections\Collection;
 use FOS\RestBundle\Controller\Annotations as Rest;

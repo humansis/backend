@@ -578,7 +578,7 @@ services:
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@location_service"
-            - "@CommonBundle\\Mapper\\LocationMapper"
+            - "@NewApiBundle\\MapperDeprecated\\LocationMapper"
         public: true
 
     beneficiary.repository:
@@ -881,7 +881,7 @@ services:
         class: NewApiBundle\Export\SmartcardInvoiceLegacyExport
         arguments:
             - '@translator'
-            - '@CommonBundle\Mapper\LocationMapper'
+            - '@NewApiBundle\MapperDeprecated\LocationMapper'
         public: true
 
     distribution.export.smartcard_invoice:
@@ -891,7 +891,7 @@ services:
     NewApiBundle\Export\SmartcardInvoiceExport:
         arguments:
             - '@translator'
-            - '@CommonBundle\Mapper\LocationMapper'
+            - '@NewApiBundle\MapperDeprecated\LocationMapper'
             - '@smartcard_purchase.repository'
 
     NewApiBundle\Utils\HouseholdService: '@beneficiary.household_service'

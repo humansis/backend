@@ -2,7 +2,7 @@
 namespace VoucherBundle\Mapper;
 
 use NewApiBundle\Entity\Community;
-use CommonBundle\Mapper\LocationMapper;
+use NewApiBundle\MapperDeprecated\LocationMapper;
 use VoucherBundle\Entity\Smartcard;
 
 class SmartcardMapper

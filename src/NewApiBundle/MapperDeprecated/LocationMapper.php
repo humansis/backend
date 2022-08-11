@@ -1,5 +1,5 @@
 <?php
-namespace CommonBundle\Mapper;
+namespace NewApiBundle\MapperDeprecated;
 
 use NewApiBundle\Entity\Location;
 

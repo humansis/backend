@@ -1,7 +1,7 @@
 <?php
 namespace NewApiBundle\InputType\Deprecated;
 
-use CommonBundle\InputType\InputTypeInterface;
+use NewApiBundle\InputType\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class UpdateCommunityType implements InputTypeInterface
