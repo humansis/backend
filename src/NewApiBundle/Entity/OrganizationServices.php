@@ -9,7 +9,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * OrganizationServices
  *
  * @ORM\Table(name="organization_service")
- * @ORM\Entity(repositoryClass="CommonBundle\Repository\OrganizationServicesRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\OrganizationServicesRepository")
  */
 class OrganizationServices implements \JsonSerializable
 {

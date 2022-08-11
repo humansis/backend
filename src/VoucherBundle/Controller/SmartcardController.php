@@ -3,7 +3,7 @@
 namespace VoucherBundle\Controller;
 
 use NewApiBundle\Entity\Organization;
-use CommonBundle\Repository\OrganizationRepository;
+use NewApiBundle\Repository\OrganizationRepository;
 use NewApiBundle\Export\SmartcardInvoiceExport;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;

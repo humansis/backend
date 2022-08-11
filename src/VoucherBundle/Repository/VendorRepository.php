@@ -3,7 +3,7 @@
 namespace VoucherBundle\Repository;
 
 use NewApiBundle\Entity\Location;
-use CommonBundle\Repository\LocationRepository;
+use NewApiBundle\Repository\LocationRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Enum\VendorInvoicingState;
 use NewApiBundle\InputType\VendorFilterInputType;

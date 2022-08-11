@@ -1,6 +1,6 @@
 <?php
 
-namespace CommonBundle\Repository;
+namespace NewApiBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;

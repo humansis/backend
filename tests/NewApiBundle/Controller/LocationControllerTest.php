@@ -3,7 +3,7 @@
 namespace Tests\NewApiBundle\Controller;
 
 use NewApiBundle\Entity\Location;
-use CommonBundle\Repository\LocationRepository;
+use NewApiBundle\Repository\LocationRepository;
 use Exception;
 use NewApiBundle\Component\Country\Countries;
 use Tests\BMSServiceTestCase;

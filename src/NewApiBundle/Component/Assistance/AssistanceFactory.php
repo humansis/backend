@@ -8,7 +8,7 @@ use NewApiBundle\Repository\BeneficiaryRepository;
 use NewApiBundle\Repository\CommunityRepository;
 use NewApiBundle\Repository\InstitutionRepository;
 use NewApiBundle\Entity\Location;
-use CommonBundle\Repository\LocationRepository;
+use NewApiBundle\Repository\LocationRepository;
 use DateTimeInterface;
 use NewApiBundle\Entity;
 use NewApiBundle\Enum\AssistanceTargetType;

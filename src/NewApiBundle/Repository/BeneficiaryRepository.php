@@ -5,7 +5,7 @@ namespace NewApiBundle\Repository;
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\CountrySpecific;
 use NewApiBundle\Entity\Household;
-use CommonBundle\Repository\LocationRepository;
+use NewApiBundle\Repository\LocationRepository;
 use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Entity\Location;
 use NewApiBundle\Enum\AssistanceTargetType;

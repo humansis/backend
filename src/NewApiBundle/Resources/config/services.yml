@@ -611,14 +611,14 @@ services:
         arguments:
             - NewApiBundle\Entity\Household
         calls:
-            - injectLocationRepository: [ '@CommonBundle\Repository\LocationRepository' ]
+            - injectLocationRepository: [ '@NewApiBundle\Repository\LocationRepository' ]
 
     NewApiBundle\Repository\BeneficiaryRepository:
         factory: ['@doctrine.orm.default_entity_manager', getRepository]
         arguments:
             - NewApiBundle\Entity\Beneficiary
         calls:
-            - injectLocationRepository: ['@CommonBundle\Repository\LocationRepository']
+            - injectLocationRepository: ['@NewApiBundle\Repository\LocationRepository']
 
     NewApiBundle\Repository\CountrySpecificRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]

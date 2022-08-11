@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace CommonBundle\Utils;
 
 use NewApiBundle\Entity\Location;
-use CommonBundle\Repository\LocationRepository;
+use NewApiBundle\Repository\LocationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;

@@ -9,14 +9,14 @@ services:
     VoucherBundle\Controller\SmartcardController:
         arguments:
             - '@NewApiBundle\Export\SmartcardInvoiceExport'
-            - '@CommonBundle\Repository\OrganizationRepository'
+            - '@NewApiBundle\Repository\OrganizationRepository'
             - '@NewApiBundle\Component\Country\Countries'
         public: true
 
     VoucherBundle\Repository\VendorRepository:
         class: Doctrine\ORM\EntityRepository
         calls:
-            - setLocationRepository: ['@CommonBundle\Repository\LocationRepository']
+            - setLocationRepository: ['@NewApiBundle\Repository\LocationRepository']
             - setPreliminaryInvoiceRepository: ['@NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository']
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
