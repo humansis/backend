@@ -18,7 +18,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *      @ORM\Index(name="search_superpath", columns={"nested_tree_level", "nested_tree_left", "nested_tree_right"}),
  *      @ORM\Index(name="search_level", columns={"countryISO3", "nested_tree_level"}),
  *     })
- * @ORM\Entity(repositoryClass="CommonBundle\Repository\LocationRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\LocationRepository")
  */
 class Location implements TreeInterface
 {

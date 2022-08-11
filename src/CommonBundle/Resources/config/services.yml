@@ -12,7 +12,7 @@ services:
             - { name: 'console.command' }
         arguments:
             - '@doctrine.orm.default_entity_manager'
-            - '@CommonBundle\Repository\LocationRepository'
+            - '@NewApiBundle\Repository\LocationRepository'
 
     NewApiBundle\Command\AdmCSV2XMLCommand:
         public: true
@@ -28,13 +28,13 @@ services:
         alias: monolog.logger
         public: true
 
-    CommonBundle\Repository\LocationRepository:
+    NewApiBundle\Repository\LocationRepository:
         class: Doctrine\ORM\EntityRepository
         factory: ['@doctrine.orm.default_entity_manager', getRepository]
         arguments:
             - NewApiBundle\Entity\Location
 
-    CommonBundle\Repository\OrganizationRepository:
+    NewApiBundle\Repository\OrganizationRepository:
         class: Doctrine\ORM\EntityRepository
         factory: ['@doctrine.orm.default_entity_manager', getRepository]
         arguments:
@@ -55,7 +55,7 @@ services:
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@CommonBundle\Repository\LocationRepository'
+            - '@NewApiBundle\Repository\LocationRepository'
             - "@request_validator"
 
     organization_service:
@@ -132,7 +132,7 @@ services:
     NewApiBundle\DataFixtures\LocationFixtures:
         public: true
         arguments:
-            - '@CommonBundle\Repository\LocationRepository'
+            - '@NewApiBundle\Repository\LocationRepository'
             - '@NewApiBundle\Component\Country\Countries'
         tags:
             - { name: doctrine.fixture.orm }

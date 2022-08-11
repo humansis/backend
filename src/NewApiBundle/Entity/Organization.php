@@ -9,7 +9,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * Organization
  *
  * @ORM\Table(name="organization")
- * @ORM\Entity(repositoryClass="CommonBundle\Repository\OrganizationRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\OrganizationRepository")
  */
 class Organization
 {

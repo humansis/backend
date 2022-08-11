@@ -7,6 +7,8 @@ use NewApiBundle\Entity\Location;
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Entity\AssistanceBeneficiary;
+use NewApiBundle\Enum\AssistanceTargetType;
+use NewApiBundle\Repository\LocationRepository;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;

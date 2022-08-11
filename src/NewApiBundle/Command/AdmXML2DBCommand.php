@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Command;
 
-use CommonBundle\Repository\LocationRepository;
+use NewApiBundle\Repository\LocationRepository;
 use CommonBundle\Utils\LocationImporter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;

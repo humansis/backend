@@ -6,7 +6,7 @@ namespace NewApiBundle\Controller;
 
 use NewApiBundle\Entity\Location;
 use NewApiBundle\Pagination\Paginator;
-use CommonBundle\Repository\LocationRepository;
+use NewApiBundle\Repository\LocationRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator as OrmPaginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Country\Countries;

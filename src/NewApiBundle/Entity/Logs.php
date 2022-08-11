@@ -10,7 +10,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * Logs
  *
  * @ORM\Table(name="logs")
- * @ORM\Entity(repositoryClass="CommonBundle\Repository\LogsRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\LogsRepository")
  */
 class Logs
 {

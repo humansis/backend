@@ -1,6 +1,6 @@
 <?php
 
-namespace CommonBundle\Repository;
+namespace NewApiBundle\Repository;
 
 use CommonBundle\Entity\Organization;
 use Doctrine\ORM\EntityRepository;

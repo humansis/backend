@@ -4,6 +4,7 @@ namespace NewApiBundle\Repository;
 
 use NewApiBundle\Entity\Household;
 use NewApiBundle\Entity\HouseholdLocation;
+use NewApiBundle\Repository\LocationRepository;
 use CommonBundle\Entity\Adm1;
 use CommonBundle\Entity\Adm2;
 use CommonBundle\Entity\Adm3;

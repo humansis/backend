@@ -1,6 +1,6 @@
 <?php
 
-namespace CommonBundle\Repository;
+namespace NewApiBundle\Repository;
 
 use NewApiBundle\Entity\Location;
 use Doctrine\ORM\QueryBuilder;

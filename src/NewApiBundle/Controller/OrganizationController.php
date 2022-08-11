@@ -6,8 +6,8 @@ namespace NewApiBundle\Controller;
 
 use NewApiBundle\Entity\Organization;
 use NewApiBundle\Entity\OrganizationServices;
-use CommonBundle\Repository\OrganizationRepository;
-use CommonBundle\Repository\OrganizationServicesRepository;
+use NewApiBundle\Repository\OrganizationRepository;
+use NewApiBundle\Repository\OrganizationServicesRepository;
 use CommonBundle\Utils\OrganizationService;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
