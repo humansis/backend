@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use NewApiBundle\Entity\Household;
-use CommonBundle\Pagination\Paginator;
+use NewApiBundle\Pagination\Paginator;
 use NewApiBundle\Repository\AssistanceRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Country\Countries;

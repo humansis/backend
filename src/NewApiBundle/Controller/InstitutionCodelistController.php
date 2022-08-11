@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use NewApiBundle\Entity\Institution;
-use CommonBundle\Pagination\Paginator;
+use NewApiBundle\Pagination\Paginator;
 use NewApiBundle\Services\CodeListService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;

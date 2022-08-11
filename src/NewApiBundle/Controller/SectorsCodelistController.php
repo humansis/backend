@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-use CommonBundle\Pagination\Paginator;
+use NewApiBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\DBAL\SectorEnum;
 use NewApiBundle\Entity\Project;

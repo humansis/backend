@@ -3,7 +3,7 @@
 namespace NewApiBundle\Controller\WebApp\Smartcard;
 
 use NewApiBundle\Entity\Beneficiary;
-use CommonBundle\Pagination\Paginator;
+use NewApiBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Smartcard\Analytics\EventService;
 use NewApiBundle\Controller\WebApp\AbstractWebAppController;

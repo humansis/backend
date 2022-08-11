@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use NewApiBundle\Controller\ExportController;
-use CommonBundle\Pagination\Paginator;
+use NewApiBundle\Pagination\Paginator;
 use DateTimeInterface;
 use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Enum\AssistanceType;

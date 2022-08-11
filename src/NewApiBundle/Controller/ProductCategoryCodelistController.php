@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
-use CommonBundle\Pagination\Paginator;
+use NewApiBundle\Pagination\Paginator;
 use NewApiBundle\Enum\Domain;
 use NewApiBundle\Enum\ProductCategoryType;
 use NewApiBundle\Services\CodeListService;

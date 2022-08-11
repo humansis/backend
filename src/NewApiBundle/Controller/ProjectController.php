@@ -6,7 +6,7 @@ namespace NewApiBundle\Controller;
 
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Controller\ExportController;
-use CommonBundle\Pagination\Paginator;
+use NewApiBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\ProjectCreateInputType;
 use NewApiBundle\InputType\ProjectFilterInputType;

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-use CommonBundle\Pagination\Paginator;
+use NewApiBundle\Pagination\Paginator;
 use NewApiBundle\Enum\AssistanceTargetType;
 use NewApiBundle\Enum\AssistanceType;
 use FOS\RestBundle\Controller\Annotations as Rest;
