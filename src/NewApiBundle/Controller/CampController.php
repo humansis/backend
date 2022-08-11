@@ -4,7 +4,7 @@ namespace NewApiBundle\Controller;
 
 use NewApiBundle\Entity\Camp;
 use NewApiBundle\Entity\Location;
-use CommonBundle\Pagination\Paginator;
+use NewApiBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\CampFilterInputType;
 use Symfony\Component\HttpFoundation\JsonResponse;

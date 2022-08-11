@@ -10,7 +10,7 @@ use NewApiBundle\Repository\BeneficiaryRepository;
 use NewApiBundle\Utils\BeneficiaryService;
 use NewApiBundle\Controller\ExportController;
 use NewApiBundle\Entity\Organization;
-use CommonBundle\Pagination\Paginator;
+use NewApiBundle\Pagination\Paginator;
 use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Enum\AssistanceTargetType;
 use NewApiBundle\Repository\AssistanceRepository;

@@ -6,7 +6,7 @@ namespace NewApiBundle\Controller;
 
 use NewApiBundle\Entity\HouseholdLocation;
 use NewApiBundle\Entity\Referral;
-use CommonBundle\Pagination\Paginator;
+use NewApiBundle\Pagination\Paginator;
 use NewApiBundle\Enum\Domain;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-use CommonBundle\Pagination\Paginator;
+use NewApiBundle\Pagination\Paginator;
 use NewApiBundle\Component\Product\ProductCategoryService;
 use NewApiBundle\Entity\ProductCategory;
 use NewApiBundle\InputType\ProductCategoryFilterInputType;

@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Controller;
 
-use CommonBundle\Pagination\Paginator;
+use NewApiBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Entity\Role;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;

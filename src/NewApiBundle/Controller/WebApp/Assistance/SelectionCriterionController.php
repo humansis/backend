@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Controller\WebApp\Assistance;
 
-use CommonBundle\Pagination\Paginator;
+use NewApiBundle\Pagination\Paginator;
 use NewApiBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\SelectionCriteria\SelectionCriterionService;

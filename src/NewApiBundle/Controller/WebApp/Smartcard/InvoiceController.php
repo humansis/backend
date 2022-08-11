@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Controller\WebApp\Smartcard;
 
-use CommonBundle\Pagination\Paginator;
+use NewApiBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Controller\WebApp\AbstractWebAppController;
 use NewApiBundle\Enum\VendorInvoicingState;

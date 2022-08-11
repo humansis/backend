@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Controller;
 
-use CommonBundle\Pagination\Paginator;
+use NewApiBundle\Pagination\Paginator;
 use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Entity\Commodity;
 use NewApiBundle\Repository\AssistanceRepository;
