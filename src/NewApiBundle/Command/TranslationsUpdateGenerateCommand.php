@@ -67,7 +67,7 @@ class TranslationsUpdateGenerateCommand extends Command
         
         foreach ($lines as $index => $cells) {
 
-            if ($cells[0] === null || $cells[0] === '') { // skip empty row
+            if (empty($cells[0])) { // skip empty row
                 continue;
             }
 
@@ -78,7 +78,7 @@ class TranslationsUpdateGenerateCommand extends Command
                 );
             }
             
-            if ($cells[1] === $cells[3] && ($cells[3] === null || $cells[3] === '')) {
+            if ($cells[1] === $cells[3] && empty($cells[3])) {
                 $this->storeFiles();
                 $this->initFiles($cells[0]);
             } else {
