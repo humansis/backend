@@ -81,59 +81,7 @@ class ImportCheckHandler implements MessageHandlerInterface
         }
     }
 
-    private function checkUpload(Import $import)
-    {
-        $this->tryTransitions($import, [
-            ImportTransitions::CHECK_INTEGRITY,
-            ImportTransitions::FAIL_UPLOAD
-        ]);
-    }
 
-    private function checkIntegrity(Import $import)
-    {
-        if ($this->isBlockedByNotCompleted($import, ImportTransitions::COMPLETE_INTEGRITY, IntegritySubscriber::GUARD_CODE_NOT_COMPLETE)) {
-            $this->messageBus->dispatch(ImportCheck::checkIntegrityComplete($import), [new DelayStamp(5000)]);
-        } else {
-            $this->tryTransitions($import, [
-                ImportTransitions::FAIL_INTEGRITY,
-                ImportTransitions::COMPLETE_INTEGRITY
-            ]);
-        }
-    }
-
-    private function checkIdentity(Import $import) {
-        if ($this->isBlockedByNotCompleted($import, ImportTransitions::COMPLETE_IDENTITY, IdentitySubscriber::GUARD_CODE_NOT_COMPLETE)) {
-            $this->messageBus->dispatch(ImportCheck::checkIdentityComplete($import), [new DelayStamp(5000)]);
-        } else {
-            $this->tryTransitions($import, [
-                ImportTransitions::FAIL_IDENTITY,
-                ImportTransitions::COMPLETE_IDENTITY
-            ]);
-        }
-
-    }
-
-    private function checkSimilarity(Import $import) {
-        if ($this->isBlockedByNotCompleted($import, ImportTransitions::COMPLETE_SIMILARITY, SimilaritySubscriber::GUARD_CODE_NOT_COMPLETE)) {
-            $this->messageBus->dispatch(ImportCheck::checkSimilarityComplete($import), [new DelayStamp(5000)]);
-        } else {
-            $this->tryTransitions($import, [
-                ImportTransitions::FAIL_SIMILARITY,
-                ImportTransitions::COMPLETE_SIMILARITY
-            ]);
-        }
-    }
-
-    private function checkImport(Import $import) {
-        if ($this->isBlockedByNotCompleted($import, ImportTransitions::FINISH, FinishSubscriber::GUARD_CODE_NOT_COMPLETE)) {
-            $this->messageBus->dispatch(ImportCheck::checkImportingComplete($import), [new DelayStamp(5000)]);
-        } else {
-            $this->tryTransitions($import, [
-                ImportTransitions::FINISH,
-            ]);
-        }
-
-    }
 
     protected function tryTransitions(Import $import, array $transitions): void
     {
@@ -151,7 +99,93 @@ class ImportCheckHandler implements MessageHandlerInterface
         }
     }
 
-    private function isBlockedByNotCompleted($import, $transition, $code) {
+    /**
+     * @param Import $import
+     *
+     * @return void
+     */
+    private function checkUpload(Import $import)
+    {
+        $this->tryTransitions($import, [
+            ImportTransitions::CHECK_INTEGRITY,
+            ImportTransitions::FAIL_UPLOAD
+        ]);
+    }
+
+    /**
+     * @param Import $import
+     *
+     * @return void
+     */
+    private function checkIntegrity(Import $import)
+    {
+        if ($this->isBlockedByNotCompleted($import, ImportTransitions::COMPLETE_INTEGRITY, IntegritySubscriber::GUARD_CODE_NOT_COMPLETE)) {
+            $this->messageBus->dispatch(ImportCheck::checkIntegrityComplete($import), [new DelayStamp(5000)]);
+        } else {
+            $this->tryTransitions($import, [
+                ImportTransitions::FAIL_INTEGRITY,
+                ImportTransitions::COMPLETE_INTEGRITY
+            ]);
+        }
+    }
+
+    /**
+     * @param Import $import
+     *
+     * @return void
+     */
+    private function checkIdentity(Import $import) {
+        if ($this->isBlockedByNotCompleted($import, ImportTransitions::COMPLETE_IDENTITY, IdentitySubscriber::GUARD_CODE_NOT_COMPLETE)) {
+            $this->messageBus->dispatch(ImportCheck::checkIdentityComplete($import), [new DelayStamp(5000)]);
+        } else {
+            $this->tryTransitions($import, [
+                ImportTransitions::FAIL_IDENTITY,
+                ImportTransitions::COMPLETE_IDENTITY
+            ]);
+        }
+
+    }
+
+    /**
+     * @param Import $import
+     *
+     * @return void
+     */
+    private function checkSimilarity(Import $import) {
+        if ($this->isBlockedByNotCompleted($import, ImportTransitions::COMPLETE_SIMILARITY, SimilaritySubscriber::GUARD_CODE_NOT_COMPLETE)) {
+            $this->messageBus->dispatch(ImportCheck::checkSimilarityComplete($import), [new DelayStamp(5000)]);
+        } else {
+            $this->tryTransitions($import, [
+                ImportTransitions::FAIL_SIMILARITY,
+                ImportTransitions::COMPLETE_SIMILARITY
+            ]);
+        }
+    }
+
+    /**
+     * @param Import $import
+     *
+     * @return void
+     */
+    private function checkImport(Import $import) {
+        if ($this->isBlockedByNotCompleted($import, ImportTransitions::FINISH, FinishSubscriber::GUARD_CODE_NOT_COMPLETE)) {
+            $this->messageBus->dispatch(ImportCheck::checkImportingComplete($import), [new DelayStamp(5000)]);
+        } else {
+            $this->tryTransitions($import, [
+                ImportTransitions::FINISH,
+            ]);
+        }
+
+    }
+
+    /**
+     * @param Import $import
+     * @param string $transition
+     * @param string $code
+     *
+     * @return bool
+     */
+    private function isBlockedByNotCompleted(Import $import,string $transition,string $code): bool {
         foreach ($this->importStateMachine->buildTransitionBlockerList($import, $transition) as $block) {
             if ($block->getCode() === $code) {
                 return true;
