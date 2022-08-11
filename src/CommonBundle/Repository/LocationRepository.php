@@ -103,17 +103,6 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
         $qb->select("l.countryISO3 as country");
     }
 
-    public static function joinPathToRoot(QueryBuilder $qb, string $locationCurrentAlias, string $pathAlias)
-    {
-        $qb->leftJoin(
-            Location::class,
-            $pathAlias,
-            Join::WITH,
-            "($pathAlias.rgt >= $locationCurrentAlias.rgt 
-                AND $pathAlias.lft <= $locationCurrentAlias.lft 
-                AND $pathAlias.lvl <= $locationCurrentAlias.lvl)");
-    }
-
     /**
      * @param Location $location
      *
