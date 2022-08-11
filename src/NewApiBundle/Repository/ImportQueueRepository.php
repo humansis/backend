@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace NewApiBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
@@ -86,16 +88,32 @@ class ImportQueueRepository extends EntityRepository
         return array_values(array_map(function($item) { return $item['id']; }, $results));
     }
 
-    public function getTotalByImportAndStatus(Import $import, string $state): int
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getTotalByImportAndStatuses(Import $import, array $states): int
     {
         return (int) $this->createQueryBuilder('iq')
             ->select('COUNT(iq)')
             ->andWhere('iq.import = :import')
-            ->andWhere('iq.state = :state')
+            ->andWhere('iq.state IN(:states)')
             ->setParameter('import', $import)
-            ->setParameter('state', $state)
+            ->setParameter('states', $states)
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    /**
+     * @param Import $import
+     * @param string $state
+     * @return int
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
+    public function getTotalByImportAndStatus(Import $import, string $state): int
+    {
+        return $this->getTotalByImportAndStatuses($import, [$state]);
     }
 
     public function getTotalReadyForSave(Import $import): int

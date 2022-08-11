@@ -4,6 +4,8 @@ namespace NewApiBundle\Component\Import;
 
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use InvalidArgumentException;
 use NewApiBundle\Component\Import\Integrity;
 use NewApiBundle\Component\Import\ValueObject\ImportStatisticsValueObject;
@@ -169,6 +171,10 @@ class ImportService
         $this->logImportInfo($importFile->getImport(), "Removed file '{$importFile->getFilename()}'");
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     public function getStatistics(Entity\Import $import): ImportStatisticsValueObject
     {
         $statistics = new ImportStatisticsValueObject();
@@ -181,7 +187,7 @@ class ImportService
 
         $statistics->setTotalEntries($importQueueRepository->count(['import'=>$import]));
         $statistics->setAmountIntegrityCorrect($importQueueRepository->getTotalByImportAndStatus($import, ImportQueueState::VALID));
-        $statistics->setAmountIntegrityFailed($importQueueRepository->getTotalByImportAndStatus($import, ImportQueueState::INVALID));
+        $statistics->setAmountIntegrityFailed($importQueueRepository->getTotalByImportAndStatuses($import, [ImportQueueState::INVALID, ImportQueueState::INVALID_EXPORTED]));
         $statistics->setAmountIdentityDuplicities($importBeneficiaryDuplicityRepository->getTotalByImport($import));
         $statistics->setAmountIdentityDuplicitiesResolved($importQueueRepository->getTotalResolvedDuplicities($import));
         $statistics->setAmountEntriesToImport($importQueueRepository->getTotalReadyForSave($import));
