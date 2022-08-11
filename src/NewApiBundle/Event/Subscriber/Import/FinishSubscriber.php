@@ -21,6 +21,9 @@ use Symfony\Component\Workflow\TransitionBlocker;
 
 class FinishSubscriber implements EventSubscriberInterface
 {
+
+    public const GUARD_CODE_NOT_COMPLETE = '810bf93b-7e86-45a8-a694-ba15428b4703';
+
     /** @var ImportQueueRepository */
     private $queueRepository;
 
@@ -102,7 +105,7 @@ class FinishSubscriber implements EventSubscriberInterface
 
         $entriesReadyForImport = $this->queueRepository->getTotalReadyForSave($import);
         if ($entriesReadyForImport > 0) {
-            $event->addTransitionBlocker(new TransitionBlocker('Import can\'t be finished because there are still ' . $entriesReadyForImport . ' entries ready for import', '0'));
+            $event->addTransitionBlocker(new TransitionBlocker('Import can\'t be finished because there are still ' . $entriesReadyForImport . ' entries ready for import', self::GUARD_CODE_NOT_COMPLETE));
         }
     }
 

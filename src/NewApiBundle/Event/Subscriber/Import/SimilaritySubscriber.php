@@ -22,6 +22,10 @@ use Symfony\Component\Workflow\TransitionBlocker;
 
 class SimilaritySubscriber implements EventSubscriberInterface
 {
+
+    public const GUARD_CODE_NOT_COMPLETE = '7135e866-fb87-4e4f-bfa6-c42f48cfebc9';
+
+
     /**
      * @var SimilarityChecker
      */
@@ -80,7 +84,7 @@ class SimilaritySubscriber implements EventSubscriberInterface
         $isComplete = (0 === $this->queueRepository->countItemsToSimilarityCheck($import));
 
         if (!$isComplete) {
-            $guardEvent->addTransitionBlocker(new TransitionBlocker('Similarity check was not completed', '0'));
+            $guardEvent->addTransitionBlocker(new TransitionBlocker('Similarity check was not completed', static::GUARD_CODE_NOT_COMPLETE));
         }
     }
 

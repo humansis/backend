@@ -22,6 +22,9 @@ use Symfony\Component\Workflow\TransitionBlocker;
 class IdentitySubscriber implements EventSubscriberInterface
 {
 
+    public const GUARD_CODE_NOT_COMPLETE = '99a555c7-6ab3-4fa8-9c42-705b4c70931c';
+
+
     /**
      * @var EntityManagerInterface
      */
@@ -57,10 +60,12 @@ class IdentitySubscriber implements EventSubscriberInterface
         return [
             'workflow.import.entered.'.ImportState::IDENTITY_CHECKING => ['fillQueue'],
             'workflow.import.guard.'.ImportTransitions::COMPLETE_IDENTITY => [
+                ['guardNothingLeft', -20],
                 ['guardNoSuspiciousItem', -10],
                 ['guardAllItemsChecked', 0],
             ],
             'workflow.import.guard.'.ImportTransitions::FAIL_IDENTITY => [
+                ['guardNothingLeft', -10],
                 ['guardAllItemsChecked', 0],
                 ['guardAnySuspiciousItem', 10],
             ],
@@ -123,6 +128,18 @@ class IdentitySubscriber implements EventSubscriberInterface
         $suspicious = $this->identityChecker->getSuspiciousItems($import);
         foreach ($suspicious as $susp) {
             $guardEvent->addTransitionBlocker(new TransitionBlocker('Import has duplicity suspicious item #'.$susp->getId(), '0'));
+        }
+    }
+
+    public function guardNothingLeft(GuardEvent $guardEvent): void
+    {
+        /** @var Import $import */
+        $import = $guardEvent->getSubject();
+
+        $isComplete = (0 === $this->queueRepository->countItemsToIdentityCheck($import));
+
+        if (!$isComplete) {
+            $guardEvent->addTransitionBlocker(new TransitionBlocker('Identity check was not completed', static::GUARD_CODE_NOT_COMPLETE));
         }
     }
 

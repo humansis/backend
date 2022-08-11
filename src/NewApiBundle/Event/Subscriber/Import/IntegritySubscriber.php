@@ -25,6 +25,8 @@ use Symfony\Component\Workflow\TransitionBlocker;
 class IntegritySubscriber implements EventSubscriberInterface
 {
 
+    public const GUARD_CODE_NOT_COMPLETE = '93226f1a-1b68-4ed4-bd78-1129d16d3333';
+
     /**
      * @var IntegrityChecker
      */
@@ -152,7 +154,7 @@ class IntegritySubscriber implements EventSubscriberInterface
         $isComplete = (0 === $this->queueRepository->countItemsToIntegrityCheck($import));
 
         if (!$isComplete) {
-            $guardEvent->addTransitionBlocker(new TransitionBlocker('Integrity check was not completed', '0'));
+            $guardEvent->addTransitionBlocker(new TransitionBlocker('Integrity check was not completed', static::GUARD_CODE_NOT_COMPLETE));
         }
     }
 
