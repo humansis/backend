@@ -32,6 +32,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="household")
  * @ORM\Entity(repositoryClass="Repository\HouseholdRepository")
+ * @method Household setCountryIso3(string $countryIso3)
  */
 class Household extends AbstractBeneficiary
 {
