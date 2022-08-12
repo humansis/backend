@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace CommonBundle\Utils\Test\Contraint;
+namespace NewApiBundle\Utils\Test\Contraint;
 
 use PHPUnit\Framework\Constraint\Constraint;
 
