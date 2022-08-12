@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CommonBundle\Utils\Exception;
+namespace NewApiBundle\Exception;
 
 
 class ExportNoDataException extends \Exception
