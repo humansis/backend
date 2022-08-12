@@ -17,7 +17,7 @@ use NewApiBundle\Repository\PhoneRepository;
 use NewApiBundle\Repository\ProfileRepository;
 use NewApiBundle\Repository\VulnerabilityCriterionRepository;
 use NewApiBundle\Controller\ExportController;
-use CommonBundle\Utils\Exception\ExportNoDataException;
+use NewApiBundle\Exception\ExportNoDataException;
 use CommonBundle\Utils\ExportService;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
