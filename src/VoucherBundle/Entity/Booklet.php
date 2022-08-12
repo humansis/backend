@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
-use CommonBundle\Utils\ExportableInterface;
+use NewApiBundle\Utils\ExportableInterface;
 use NewApiBundle\Entity\Project;
 
 /**

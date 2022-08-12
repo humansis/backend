@@ -3,7 +3,7 @@
 namespace Tests\NewApiBundle\Controller;
 
 use NewApiBundle\Entity\Beneficiary;
-use CommonBundle\Utils\ExportService;
+use NewApiBundle\Utils\ExportService;
 use Tests\BMSServiceTestCase;
 
 /**

@@ -9,7 +9,7 @@ use NewApiBundle\Entity\Institution;
 use NewApiBundle\Exception\CsvParserException;
 use NewApiBundle\Entity\Location;
 use NewApiBundle\Pagination\Paginator;
-use CommonBundle\Utils\LocationService;
+use NewApiBundle\Utils\LocationService;
 use DateTime;
 use DateTimeInterface;
 use NewApiBundle\DTO\VulnerabilityScore;

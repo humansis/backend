@@ -4,7 +4,7 @@ namespace VoucherBundle\Utils;
 
 use NewApiBundle\Entity\Location;
 use NewApiBundle\Entity\Logs;
-use CommonBundle\Utils\LocationService;
+use NewApiBundle\Utils\LocationService;
 use Couchbase\DocumentNotFoundException;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;

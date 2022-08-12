@@ -3,7 +3,7 @@
 namespace NewApiBundle\Command;
 
 use NewApiBundle\Repository\LocationRepository;
-use CommonBundle\Utils\LocationImporter;
+use NewApiBundle\Utils\LocationImporter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\ProgressBar;

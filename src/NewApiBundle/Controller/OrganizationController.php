@@ -8,7 +8,7 @@ use NewApiBundle\Entity\Organization;
 use NewApiBundle\Entity\OrganizationServices;
 use NewApiBundle\Repository\OrganizationRepository;
 use NewApiBundle\Repository\OrganizationServicesRepository;
-use CommonBundle\Utils\OrganizationService;
+use NewApiBundle\Utils\OrganizationService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\File\UploadService;
 use NewApiBundle\InputType\OrganizationUpdateInputType;

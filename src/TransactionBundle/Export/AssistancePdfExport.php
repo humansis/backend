@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace TransactionBundle\Export;
 
 use NewApiBundle\Entity\Organization;
-use CommonBundle\Utils\PdfService;
+use NewApiBundle\Utils\PdfService;
 use NewApiBundle\Entity\Assistance;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;

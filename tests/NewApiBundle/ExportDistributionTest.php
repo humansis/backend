@@ -2,7 +2,7 @@
 
 namespace Tests\NewApiBundle;
 
-use CommonBundle\Utils\ExportService;
+use NewApiBundle\Utils\ExportService;
 use NewApiBundle\Entity\Assistance;
 use Tests\BMSServiceTestCase;
 

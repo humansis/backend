@@ -1,6 +1,6 @@
 <?php
 
-namespace CommonBundle\Utils;
+namespace NewApiBundle\Utils;
 
 use NewApiBundle\Entity\Organization;
 use NewApiBundle\Entity\OrganizationServices;

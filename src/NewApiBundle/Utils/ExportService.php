@@ -1,6 +1,6 @@
 <?php
 
-namespace CommonBundle\Utils;
+namespace NewApiBundle\Utils;
 
 use NewApiBundle\Utils\ExcelColumnsGenerator;
 use NewApiBundle\Exception\ExportNoDataException;

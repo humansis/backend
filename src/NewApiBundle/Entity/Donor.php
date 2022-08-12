@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\LastModifiedAt;
-use CommonBundle\Utils\ExportableInterface;
+use NewApiBundle\Utils\ExportableInterface;
 
 /**
  * Donor

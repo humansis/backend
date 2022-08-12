@@ -10,7 +10,7 @@ use NewApiBundle\InputType\Deprecated;
 use NewApiBundle\Entity\Location;
 use NewApiBundle\InputType as GeneralInputType;
 use NewApiBundle\MapperDeprecated\LocationMapper;
-use CommonBundle\Utils\LocationService;
+use NewApiBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use InvalidArgumentException;

@@ -3,7 +3,7 @@
 namespace NewApiBundle\Entity;
 
 use NewApiBundle\Entity\Location;
-use CommonBundle\Utils\ExportableInterface;
+use NewApiBundle\Utils\ExportableInterface;
 use NewApiBundle\Enum\AssistanceTargetType;
 use NewApiBundle\Enum\AssistanceType;
 use Doctrine\Common\Collections\ArrayCollection;

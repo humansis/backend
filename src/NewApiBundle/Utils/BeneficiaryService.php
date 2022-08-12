@@ -18,7 +18,7 @@ use NewApiBundle\Repository\ProfileRepository;
 use NewApiBundle\Repository\VulnerabilityCriterionRepository;
 use NewApiBundle\Controller\ExportController;
 use NewApiBundle\Exception\ExportNoDataException;
-use CommonBundle\Utils\ExportService;
+use NewApiBundle\Utils\ExportService;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Enum\PersonGender;
