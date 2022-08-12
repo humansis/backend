@@ -919,3 +919,353 @@ services:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - NewApiBundle\Entity\UserCountry
+
+#From CommonBundle:
+    NewApiBundle\Command\AdmXML2DBCommand:
+        public: true
+        tags:
+            - { name: 'console.command' }
+        arguments:
+            - '@doctrine.orm.default_entity_manager'
+            - '@NewApiBundle\Repository\LocationRepository'
+
+    NewApiBundle\Command\AdmCSV2XMLCommand:
+        public: true
+        tags:
+            - { name: 'console.command' }
+
+    NewApiBundle\Command\ClearCacheImportCommand:
+        public: true
+        tags:
+            - { name: 'console.command' }
+
+    logger:
+        alias: monolog.logger
+        public: true
+
+    NewApiBundle\Repository\LocationRepository:
+        class: Doctrine\ORM\EntityRepository
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        arguments:
+            - NewApiBundle\Entity\Location
+
+    NewApiBundle\Repository\OrganizationRepository:
+        class: Doctrine\ORM\EntityRepository
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        arguments:
+            - NewApiBundle\Entity\Organization
+
+    #######################################################################################
+    ##                                       CRUD                                        ##
+    #######################################################################################
+
+    location_service:
+        class: NewApiBundle\Utils\LocationService
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@NewApiBundle\Repository\LocationRepository'
+            - "@request_validator"
+
+    organization_service:
+        class: NewApiBundle\Utils\OrganizationService
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - "@service_container"
+            - '@Twig\Environment'
+
+    export_csv_service:
+        alias: NewApiBundle\Utils\ExportService
+        public: true
+
+    pdf_service:
+        class: NewApiBundle\Utils\PdfService
+        public: true
+        arguments:
+            - "@doctrine.orm.entity_manager"
+
+    NewApiBundle\MapperDeprecated\LocationMapper:
+        public: true
+
+    #######################################################################################
+    ##                                     LISTENER                                      ##
+    #######################################################################################
+    NewApiBundle\Listener\RequestListener:
+        public: true
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@service_container"
+            - "@logger"
+        tags:
+            - { name: kernel.event_listener, event: kernel.request }
+
+    NewApiBundle\Listener\ResponseListener:
+        public: true
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@service_container"
+        tags:
+            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
+
+    NewApiBundle\InputType\RequestConverter:
+        public: true
+        arguments:
+            - '@validator'
+        tags:
+            - { name: request.param_converter, converter: input_types_converter }
+
+
+    #######################################################################################
+    ##                                      FIXTURE                                      ##
+    #######################################################################################
+
+    NewApiBundle\DataFixtures\CountrySpecificFixtures:
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\DonorFixtures:
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\LocationFixtures:
+        public: true
+        arguments:
+            - '@NewApiBundle\Repository\LocationRepository'
+            - '@NewApiBundle\Component\Country\Countries'
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\Beneficiaries\BeneficiaryFixtures:
+        public: true
+        arguments:
+            - "@kernel"
+            - "@beneficiary.household_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\ModalityFixtures:
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\ProjectFixtures:
+        public: true
+        arguments:
+            - "@kernel"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\UserFixtures:
+        public: true
+        arguments:
+            - "@fos_user.user_manager"
+            - "@security.encoder_factory"
+            - "@kernel"
+            - "@user.user_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\VulnerabilityCriterionFixtures:
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\BookletFixtures:
+        public: true
+        arguments:
+            - "@kernel"
+            - '@NewApiBundle\Component\Country\Countries'
+            - "@voucher.booklet_service"
+            - '@NewApiBundle\Repository\ProjectRepository'
+            - '@beneficiary.repository'
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\Beneficiaries\BeneficiaryBookletFixtures:
+        public: true
+        arguments:
+            - "@kernel"
+            - "@voucher.booklet_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\BeneficiaryTestFixtures:
+        public: true
+        arguments:
+            - "@kernel"
+            - "@beneficiary.household_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\Beneficiaries\InstitutionFixture:
+        public: true
+        arguments:
+            - "@=service('kernel').getEnvironment()"
+            - '@NewApiBundle\Component\Country\Countries'
+            - "@beneficiary.institution_service"
+            - '@NewApiBundle\Repository\ProjectRepository'
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\Beneficiaries\CommunityFixture:
+        public: true
+        arguments:
+            - "@=service('kernel').getEnvironment()"
+            - '@NewApiBundle\Component\Country\Countries'
+            - "@beneficiary.community_service"
+            - '@NewApiBundle\Repository\ProjectRepository'
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\AssistanceFixtures:
+        public: true
+        arguments:
+            - "@kernel"
+            - '@NewApiBundle\Component\Country\Countries'
+            - "@distribution.assistance_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\AssistanceValidationFixtures:
+        public: true
+        arguments:
+            - "@kernel"
+            - '@NewApiBundle\Component\Country\Countries'
+            - "@distribution.assistance_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\ImportFixtures:
+        public: true
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\Beneficiaries\AssistanceBeneficiaryFixtures:
+        public: true
+        arguments:
+            - "@kernel"
+            - "@distribution.assistance_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\VoucherPurchaseFixtures:
+        public: true
+        arguments:
+            - "@=service('kernel').getEnvironment()"
+            - "@voucher.purchase_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\SmartcardInvoiceFixtures:
+        public: true
+        arguments:
+            - "@=service('kernel').getEnvironment()"
+            - "@smartcard_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\VoucherRedemptionFixtures:
+        public: true
+        arguments:
+            - "@=service('kernel').getEnvironment()"
+            - "@voucher.voucher_service"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\OrganizationFixtures:
+        public: true
+        arguments:
+            - "@kernel"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\ServiceFixtures:
+        public: true
+        arguments:
+            - "@fos_user.user_manager"
+            - "@security.encoder_factory"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\SmartcardFixtures:
+        public: true
+        autowire: true
+        arguments:
+            - "@=service('kernel').getEnvironment()"
+            - '@smartcard_service'
+            - '@voucher.purchase_service'
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\SynchronizationBatchFixtures:
+        public: true
+        arguments:
+            - "@=service('kernel').getEnvironment()"
+            - "@NewApiBundle\\Component\\Smartcard\\SmartcardDepositService"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\TransactionFixtures:
+        public: true
+        arguments:
+            - "@=service('kernel').getEnvironment()"
+            - "@transaction.khm_financial_provider"
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\ProductFixtures:
+        public: true
+        arguments:
+            - '@NewApiBundle\Component\Country\Countries'
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\VendorFixtures:
+        public: true
+        arguments:
+            - "@kernel"
+            - '@NewApiBundle\Component\Country\Countries'
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\RoleFixtures:
+        tags:
+            - { name: doctrine.fixture.orm }
+
+    NewApiBundle\DataFixtures\ProductCategoryFixtures:
+        tags:
+            - { name: doctrine.fixture.orm }
+
+
+
+    #######################################################################################
+    ##                                       VOTER                                       ##
+    #######################################################################################
+
+    voter_default:
+        class: NewApiBundle\Voter\DefaultVoter
+        public: true
+        arguments:
+            - "@security.role_hierarchy"
+            - "@doctrine.orm.entity_manager"
+            - "@request_stack"
+            - "@logger"
+        tags:
+            - { name: security.voter }
+
+    voter_project:
+        class: NewApiBundle\Voter\ProjectVoter
+        public: true
+        arguments:
+            - "@security.role_hierarchy"
+            - "@doctrine.orm.entity_manager"
+            - "@logger"
+        tags:
+            - { name: security.voter }
+
+    #######################################################################################
+    ##                                       EXPORT                                      ##
+    #######################################################################################
+
+    NewApiBundle\Utils\ExportService:
+        class: NewApiBundle\Utils\ExportService
+        public: true

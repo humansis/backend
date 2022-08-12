@@ -1,4 +1,0 @@
-location:
-    type:     annotation
-    defaults: { _format: 'json' }
-    resource: '@CommonBundle/Controller'

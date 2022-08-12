@@ -1,5 +1,4 @@
 imports:
-    - { resource: ../../src/CommonBundle/Resources/config/services.yml }
     - { resource: ../../src/TransactionBundle/Resources/config/services.yml }
     - { resource: ../../src/VoucherBundle/Resources/config/services.yml }
     - { resource: ../../src/NewApiBundle/Resources/config/services.yml }
@@ -34,7 +33,6 @@ services:
         public: false
         calls:
             - addPath: ['%kernel.project_dir%/src/VoucherBundle/Resources/views/', "Voucher"]
-            - addPath: ['%kernel.project_dir%/src/CommonBundle/Resources/views/', "Common"]
             - addPath: ['%kernel.project_dir%/src/TransactionBundle/Resources/views/', "Transaction"]
             - addPath: ['%kernel.project_dir%/app/Resources/views/']
 
