@@ -1,7 +1,7 @@
 <?php
 
 
-namespace CommonBundle\Listener;
+namespace NewApiBundle\Listener;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;

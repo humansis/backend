@@ -1,6 +1,6 @@
 <?php
 
-namespace CommonBundle\Listener;
+namespace NewApiBundle\Listener;
 
 use NewApiBundle\Entity\Logs;
 use DateTime;

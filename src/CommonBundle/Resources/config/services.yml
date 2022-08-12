@@ -85,7 +85,7 @@ services:
 #######################################################################################
 ##                                     LISTENER                                      ##
 #######################################################################################
-    CommonBundle\Listener\RequestListener:
+    NewApiBundle\Listener\RequestListener:
         public: true
         arguments:
         - "@doctrine.orm.entity_manager"
@@ -94,7 +94,7 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.request }
 
-    CommonBundle\Listener\ResponseListener:
+    NewApiBundle\Listener\ResponseListener:
         public: true
         arguments:
         - "@doctrine.orm.entity_manager"
