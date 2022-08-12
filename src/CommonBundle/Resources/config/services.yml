@@ -334,7 +334,7 @@ services:
 #######################################################################################
 
     voter_default:
-        class: CommonBundle\Voter\DefaultVoter
+        class: NewApiBundle\Voter\DefaultVoter
         public: true
         arguments:
             - "@security.role_hierarchy"
@@ -345,7 +345,7 @@ services:
             - { name: security.voter }
 
     voter_project:
-        class: CommonBundle\Voter\ProjectVoter
+        class: NewApiBundle\Voter\ProjectVoter
         public: true
         arguments:
             - "@security.role_hierarchy"
