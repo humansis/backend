@@ -295,4 +295,9 @@ class HouseholdMapper implements MapperInterface
 
         return $this->object->getProxy()->getPhones()->current()->getId();
     }
+
+    public function getIso3(): string
+    {
+        return $this->object->getCountryIso3();
+    }
 }
