@@ -204,7 +204,7 @@ doctrine:
         query_cache_driver:
             type: array
         hydrators:
-            plain_values_hydrator: CommonBundle\Hydration\PlainValuesHydrator
+            plain_values_hydrator: NewApiBundle\Hydration\PlainValuesHydrator
 
 # Swiftmailer Configuration
 swiftmailer:

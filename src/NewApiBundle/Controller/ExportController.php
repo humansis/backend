@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 
 /**
  * Class ExportController
- * @package CommonBundle\Controller
+ * @package NewApiBundle\Controller
  *
  * @SWG\Parameter(
  *      name="country",

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\CommonBundle\Controller;
+namespace Tests\NewApiBundle\Controller;
 
 use NewApiBundle\Entity\Project;
 use Symfony\Component\BrowserKit\Client;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\CommonBundle\Utils\Test\Contraint;
+namespace Tests\NewApiBundle\Utils\Test\Contraint;
 
 use NewApiBundle\Utils\Test\Contraint\MatchArrayFragment;
 use PHPUnit\Framework\TestCase;
