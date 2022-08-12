@@ -1,7 +1,7 @@
 <?php
 
 
-namespace CommonBundle\Voter;
+namespace NewApiBundle\Voter;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -16,7 +16,7 @@ use VoucherBundle\Entity\Vendor;
  * Class DefaultVoter
  * Check if the user is connected, if he/she has the route needed role and if he/she is assigned to the country
  *
- * @package CommonBundle\Voter
+ * @package NewApiBundle\Voter
  */
 class DefaultVoter extends BMSVoter
 {

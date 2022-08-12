@@ -1,15 +1,15 @@
 <?php
 
 
-namespace CommonBundle\Voter;
+namespace NewApiBundle\Voter;
 
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Role\Role;
 use Symfony\Component\Security\Core\Role\RoleHierarchy;
 
 /**
- * Class BMSVoter
- * @package CommonBundle\Voter
+ * Class BMSVoter+q
+ * @package NewApiBundle\Voter
  */
 abstract class BMSVoter extends Voter
 {

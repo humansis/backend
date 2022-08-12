@@ -1,7 +1,7 @@
 <?php
 
 
-namespace CommonBundle\Voter;
+namespace NewApiBundle\Voter;
 
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Entity\Project;
@@ -12,7 +12,7 @@ use NewApiBundle\Entity\UserProject;
 
 /**
  * Class ProjectVoter
- * @package CommonBundle\Voter
+ * @package NewApiBundle\Voter
  */
 class ProjectVoter extends BMSVoter
 {
