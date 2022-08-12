@@ -63,7 +63,7 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
         $qb = $this->createQueryBuilder("hh");
         $qb
             ->select("COUNT(DISTINCT hh)")
-            ->where("hh.iso3 = :country")
+            ->where("hh.countryIso3 = :country")
             ->setParameter("country", $iso3)
             ->andWhere("hh.archived = 0")
         ;
@@ -196,7 +196,7 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
             ->leftJoin('hh.beneficiaries', 'head', Join::WITH, 'head.status = 1')
             ->leftJoin('head.person', 'headper')
             ->andWhere('hh.archived = 0')
-            ->andWhere('hh.iso3 = :iso3')
+            ->andWhere('hh.countryIso3 = :iso3')
             ->setParameter('iso3', $iso3);
 
         if ($pagination) {
