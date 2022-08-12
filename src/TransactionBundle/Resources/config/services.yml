@@ -54,7 +54,7 @@ services:
 
     export.spreadsheet:
         class: TransactionBundle\Export\AssistanceSpreadsheetExport
-        arguments: [ '@translator', '@doctrine.orm.entity_manager' ]
+        arguments: [ '@translator', '@NewApiBundle\Component\Smartcard\SmartcardDepositService' ]
         public: true
 
     TransactionBundle\Export\AssistanceSpreadsheetExport: '@export.spreadsheet'

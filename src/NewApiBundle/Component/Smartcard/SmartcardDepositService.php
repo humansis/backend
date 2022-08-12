@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Component\Smartcard;
 
 use CommonBundle\InputType\RequestConverter;
+use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -11,6 +12,7 @@ use NewApiBundle\Component\Smartcard\Deposit\DepositFactory;
 use NewApiBundle\Component\Smartcard\Deposit\Exception\DoubledDepositException;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\SynchronizationBatch\Deposits;
+use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\InputType\Smartcard\DepositInputType;
 use NewApiBundle\InputType\SynchronizationBatch\CreateDepositInputType;
 use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
@@ -23,6 +25,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\TransitionBlocker;
 use UserBundle\Entity\User;
+use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Repository\SmartcardDepositRepository;
 
 class SmartcardDepositService
@@ -208,6 +211,24 @@ class SmartcardDepositService
         } catch (DoubledDepositException $e) {
             $this->logger->info("Creation of deposit with hash {$e->getDeposit()->getHash()} was omitted. It's already set in Deposit #{$e->getDeposit()->getId()}");
         }
+    }
+
+    /**
+     * @param AssistanceBeneficiary $distributionBeneficiary
+     *
+     * @return SmartcardDeposit[]
+     */
+    public function getDepositsForDistributionBeneficiary(AssistanceBeneficiary $distributionBeneficiary): array
+    {
+        $qb = $this->smartcardDepositRepository->createQueryBuilder('scd')
+            ->innerJoin('scd.reliefPackage', 'rp')
+            ->innerJoin('rp.assistanceBeneficiary', 'ab')
+            ->where('rp.state = :state')
+            ->andWhere('ab.id = :abstractBeneficiaryId')
+            ->setParameter('state', ReliefPackageState::DISTRIBUTED)
+            ->setParameter('abstractBeneficiaryId', $distributionBeneficiary->getId());
+        /** @var SmartcardDeposit[] $result */
+        return $qb->getQuery()->getResult();
     }
 
 }

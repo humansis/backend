@@ -19,13 +19,13 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
+use NewApiBundle\Component\Smartcard\SmartcardDepositService;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\SynchronizationBatch;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\Enum\SynchronizationBatchState;
-use NewApiBundle\Repository\SynchronizationBatchRepository;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -35,26 +35,20 @@ use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use ProjectBundle\Entity\Donor;
 use Symfony\Component\Translation\TranslatorInterface;
+use VoucherBundle\Entity\SmartcardDeposit;
+use VoucherBundle\Repository\SmartcardDepositRepository;
 
 class AssistanceSpreadsheetExport
 {
     /** @var TranslatorInterface */
     private $translator;
 
-    /**
-     * @var SynchronizationBatchRepository
-     */
-    private $batchRepository;
+    private $smartcardDepositService;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    public function __construct(TranslatorInterface $translator, EntityManagerInterface $entityManager)
+    public function __construct(TranslatorInterface $translator, SmartcardDepositService $smartcardDepositService)
     {
         $this->translator = $translator;
-        $this->batchRepository = $entityManager->getRepository(SynchronizationBatch\Deposits::class);
+        $this->smartcardDepositService = $smartcardDepositService;
     }
 
     public function export(Assistance $assistance, Organization $organization, string $filetype)
@@ -530,22 +524,18 @@ class AssistanceSpreadsheetExport
 
     private function shouldDistributionContainDate(Assistance $assistance): bool
     {
-        return $assistance->hasModalityTypeCommodity(ModalityType::SMART_CARD);
+        return $assistance->isRemoteDistributionAllowed() === true;
     }
 
     private function applyDistributionTime(Worksheet $worksheet, AssistanceBeneficiary $distributionBeneficiary, int $rowNumber): void
     {
-        $dbId = $distributionBeneficiary->getId();
-        $qb = $this->batchRepository->createQueryBuilder('b')
-            ->where('b.requestData LIKE :distributionId')
-            ->andWhere('b.state = :state')
-            ->setParameter('distributionId', "%$dbId%")
-            ->setParameter('state', SynchronizationBatchState::CORRECT);
-        /** @var SynchronizationBatch\Deposits[] $result */
-        $result = $qb->getQuery()->getResult();
+        $deposits = $this->smartcardDepositService->getDepositsForDistributionBeneficiary($distributionBeneficiary);
 
-        if (sizeof($result) > 0) {
-            $worksheet->setCellValue('K'.$rowNumber, $result[0]->getRequestDataObjectified()[$dbId]->getCreatedAt()->format('d. m. Y H:i'));
+        if (sizeof($deposits) > 0) {
+            $cellValue = implode("\n", array_map(function($deposit) {
+                return $deposit->getDistributedAt()->format('d. m. Y H:i');
+            }, $deposits));
+            $worksheet->setCellValue('K'.$rowNumber, $cellValue);
         }
     }
 }

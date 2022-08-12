@@ -144,27 +144,4 @@ abstract class SynchronizationBatch
         return $this->validatedAt;
     }
 
-    /**
-     * @return RequestDataRecord[]
-     */
-    public function getRequestDataObjectified(): array
-    {
-        if ($this->state !== SynchronizationBatchState::CORRECT) {
-            return [];
-        }
-        $requestDataArray = [];
-
-        foreach ($this->getRequestData() as $requestDatum) {
-            $requestDatumObjectified = json_decode($requestDatum, true);
-            $requestDataArray[$requestDatumObjectified['reliefPackageId']] = new RequestDataRecord(
-                $requestDatumObjectified['createdAt'],
-                $requestDatumObjectified['balanceAfter'],
-                $requestDatumObjectified['balanceBefore'],
-                $requestDatumObjectified['reliefPackageId'],
-                $requestDatumObjectified['smartcardSerialNumber']);
-        }
-
-        return $requestDataArray;
-    }
-
 }
