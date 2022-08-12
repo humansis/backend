@@ -5,13 +5,17 @@ declare(strict_types=1);
 namespace NewApiBundle\Controller\OfflineApp;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
+use NewApiBundle\Entity\Assistance;
+use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\InputType\BookletFilterInputType;
 use NewApiBundle\InputType\BookletOrderInputType;
 use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use VoucherBundle\Entity\Booklet;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class BookletController extends AbstractOfflineAppController
 {
@@ -41,6 +45,34 @@ class BookletController extends AbstractOfflineAppController
         $response->isNotModified($request);
 
         return $response;
+    }
+
+    /**
+     * Assign the booklet to a specific beneficiary.
+     *
+     * @Rest\Post("/offline-app/v1/booklets/assign/{distributionId}/{beneficiaryId}")
+     *
+     * @ParamConverter("booklet", options={"mapping": {"bookletId": "code"}})
+     * @ParamConverter("assistance", options={"mapping": {"distributionId": "id"}})
+     * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId": "id"}})
+     *
+     * @param Request          $request
+     * @param Assistance $assistance
+     * @param Beneficiary      $beneficiary
+     * @return Response
+     */
+    public function offlineAssignAction(Request $request, Assistance $assistance, Beneficiary $beneficiary)
+    {
+        $code = $request->request->get('code');
+        $booklet = $this->get('voucher.booklet_service')->getOne($code);
+        try {
+            $return = $this->get('voucher.booklet_service')->assign($booklet, $assistance, $beneficiary);
+        } catch (\Exception $exception) {
+            $this->container->get('logger')->error('exception', [$exception->getMessage()]);
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        return new Response(json_encode($return));
     }
 
 }

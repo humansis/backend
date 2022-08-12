@@ -296,23 +296,6 @@ class BookletService
         $this->em->persist($voucher);
     }
 
-
-    /**
-     * Deactivate a booklet
-     *
-     * @param Booklet $booklet
-     * @return string
-     */
-    public function deactivate(Booklet $booklet)
-    {
-        $booklet->setStatus(Booklet::DEACTIVATED);
-
-        $this->em->persist($booklet);
-        $this->em->flush();
-
-        return "Booklet has been deactivated";
-    }
-
     /**
      * Deactivate many booklet
      *
