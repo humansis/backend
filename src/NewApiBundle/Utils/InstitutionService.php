@@ -8,7 +8,7 @@ use NewApiBundle\Entity\Institution;
 use NewApiBundle\Entity\NationalId;
 use NewApiBundle\Entity\Phone;
 use NewApiBundle\Entity\Location;
-use CommonBundle\Utils\LocationService;
+use NewApiBundle\Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use NewApiBundle\InputType\InstitutionCreateInputType;

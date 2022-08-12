@@ -1,6 +1,6 @@
 <?php
 
-namespace CommonBundle\Utils;
+namespace NewApiBundle\Utils;
 
 use Symfony\Component\HttpFoundation\Response;
 use Dompdf\Dompdf;

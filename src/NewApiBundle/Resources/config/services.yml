@@ -548,7 +548,7 @@ services:
 
     NewApiBundle\Services\TranslationExportService:
         arguments:
-            - '@CommonBundle\Utils\ExportService'
+            - '@NewApiBundle\Utils\ExportService'
             - '%app.translations_dir%'
             - '%app.locales%'
 
@@ -668,7 +668,7 @@ services:
             - "@doctrine.orm.entity_manager"
             - "@request_validator"
             - "@validator"
-            - '@CommonBundle\Utils\ExportService'
+            - '@NewApiBundle\Utils\ExportService'
             - '@NewApiBundle\Repository\BeneficiaryRepository'
             - '@NewApiBundle\Repository\HouseholdRepository'
             - '@NewApiBundle\Repository\VulnerabilityCriterionRepository'

@@ -3,7 +3,7 @@
 namespace NewApiBundle\Utils;
 
 use NewApiBundle\Entity\CountrySpecific;
-use CommonBundle\Utils\ExportService;
+use NewApiBundle\Utils\ExportService;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\ImportTemplate;
 use NewApiBundle\Enum\NationalIdType;

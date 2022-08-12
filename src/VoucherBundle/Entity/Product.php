@@ -7,7 +7,7 @@ use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\LastModifiedAt;
 use NewApiBundle\Entity\ProductCategory;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
-use CommonBundle\Utils\ExportableInterface;
+use NewApiBundle\Utils\ExportableInterface;
 
 /**
  * Product

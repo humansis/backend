@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CommonBundle\Utils;
+namespace NewApiBundle\Utils;
 
 use NewApiBundle\Entity\Location;
 use NewApiBundle\Repository\LocationRepository;

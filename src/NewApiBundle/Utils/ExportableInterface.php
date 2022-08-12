@@ -1,10 +1,10 @@
 <?php
 
-namespace CommonBundle\Utils;
+namespace NewApiBundle\Utils;
 
 /**
  * Interface ExportableInterface
- * @package CommonBundle\Utils
+ * @package NewApiBundle\Utils
  */
 interface ExportableInterface
 {

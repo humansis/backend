@@ -10,7 +10,7 @@ use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\LastModifiedAt;
 use NewApiBundle\Enum\ProductCategoryType;
 use NewApiBundle\DTO\Sector;
-use CommonBundle\Utils\ExportableInterface;
+use NewApiBundle\Utils\ExportableInterface;
 use NewApiBundle\Entity\Household;
 
 /**

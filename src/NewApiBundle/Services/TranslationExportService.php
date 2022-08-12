@@ -3,7 +3,7 @@
 namespace NewApiBundle\Services;
 
 use NewApiBundle\Exception\ExportNoDataException;
-use CommonBundle\Utils\ExportService;
+use NewApiBundle\Utils\ExportService;
 use PhpOffice\PhpSpreadsheet\Exception as SpreadsheetException;
 use PhpOffice\PhpSpreadsheet\Writer\Exception;
 use SimpleXMLElement;

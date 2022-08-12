@@ -1,6 +1,6 @@
 <?php
 
-namespace CommonBundle\Utils;
+namespace NewApiBundle\Utils;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 

@@ -3,7 +3,7 @@
 namespace NewApiBundle\DataFixtures;
 
 use NewApiBundle\Repository\LocationRepository;
-use CommonBundle\Utils\LocationImporter;
+use NewApiBundle\Utils\LocationImporter;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;

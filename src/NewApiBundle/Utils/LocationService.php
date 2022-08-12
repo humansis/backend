@@ -1,7 +1,7 @@
 <?php
 
 
-namespace CommonBundle\Utils;
+namespace NewApiBundle\Utils;
 
 use NewApiBundle\Form\HouseholdConstraints;
 use NewApiBundle\InputType\Deprecated\LocationType;
@@ -14,7 +14,7 @@ use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 
 /**
  * Class LocationService
- * @package CommonBundle\Utils
+ * @package NewApiBundle\Utils
  */
 class LocationService
 {

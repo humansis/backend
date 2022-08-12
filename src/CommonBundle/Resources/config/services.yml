@@ -51,7 +51,7 @@ services:
 #######################################################################################
 
     location_service:
-        class: CommonBundle\Utils\LocationService
+        class: NewApiBundle\Utils\LocationService
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'
@@ -70,11 +70,11 @@ services:
             - '@Twig\Environment'
 
     export_csv_service:
-        alias: CommonBundle\Utils\ExportService
+        alias: NewApiBundle\Utils\ExportService
         public: true
 
     pdf_service:
-        class: CommonBundle\Utils\PdfService
+        class: NewApiBundle\Utils\PdfService
         public: true
         arguments:
             - "@doctrine.orm.entity_manager"
@@ -360,6 +360,6 @@ services:
 ##                                       EXPORT                                      ##
 #######################################################################################
 
-    CommonBundle\Utils\ExportService:
-        class: CommonBundle\Utils\ExportService
+    NewApiBundle\Utils\ExportService:
+        class: NewApiBundle\Utils\ExportService
         public: true

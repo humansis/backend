@@ -2,7 +2,7 @@
 
 namespace VoucherBundle\Entity;
 
-use CommonBundle\Utils\ExportableInterface;
+use NewApiBundle\Utils\ExportableInterface;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
