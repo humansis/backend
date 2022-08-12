@@ -705,7 +705,8 @@ class HouseholdService
             ->setIncomeSpentOnFood($inputType->getIncomeSpentOnFood())
             ->setHouseholdIncome($inputType->getHouseIncome())
             ->setEnumeratorName($inputType->getEnumeratorName())
-            ->setSupportDateReceived($inputType->getSupportDateReceived());
+            ->setSupportDateReceived($inputType->getSupportDateReceived())
+            ->setCountryIso3($countryCode);
 
         $this->em->persist($household);
 
