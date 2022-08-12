@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\CommonBundle\Utils\Test\Contraint;
 
-use CommonBundle\Utils\Test\Contraint\MatchArrayFragment;
+use NewApiBundle\Utils\Test\Contraint\MatchArrayFragment;
 use PHPUnit\Framework\TestCase;
 
 class MatchArrayFragmentTest extends TestCase

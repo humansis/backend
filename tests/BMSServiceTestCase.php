@@ -484,7 +484,7 @@ class BMSServiceTestCase extends KernelTestCase
      */
     public static function assertArrayFragment($expected, $actual, $message = '')
     {
-        $constraint = new \CommonBundle\Utils\Test\Contraint\MatchArrayFragment($expected);
+        $constraint = new \NewApiBundle\Utils\Test\Contraint\MatchArrayFragment($expected);
 
         static::assertThat($actual, $constraint, $message);
     }
