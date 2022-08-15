@@ -1,6 +1,6 @@
 <?php
 
-namespace TransactionBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use NewApiBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
@@ -15,7 +15,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * @deprecated Mobile money transaction needs to be completely rewrite
  *
  * @ORM\Table(name="transaction")
- * @ORM\Entity(repositoryClass="TransactionBundle\Repository\TransactionRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\TransactionRepository")
  */
 class Transaction
 {

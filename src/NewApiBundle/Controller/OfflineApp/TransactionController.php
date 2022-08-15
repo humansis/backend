@@ -9,8 +9,8 @@ use NewApiBundle\Controller\AbstractController;
 use NewApiBundle\InputType\TransactionFilterInputType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use TransactionBundle\Entity\Transaction;
-use TransactionBundle\Repository\TransactionRepository;
+use NewApiBundle\Entity\Transaction;
+use NewApiBundle\Repository\TransactionRepository;
 
 class TransactionController extends AbstractController
 {

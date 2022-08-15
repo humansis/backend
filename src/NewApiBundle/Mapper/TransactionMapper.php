@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Mapper;
 
 use NewApiBundle\Serializer\MapperInterface;
-use TransactionBundle\Entity\Transaction;
+use NewApiBundle\Entity\Transaction;
 
 class TransactionMapper implements MapperInterface
 {

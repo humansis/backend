@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Mapper\Assistance;
 
 use NewApiBundle\Entity\Community;
-use TransactionBundle\Entity\Transaction;
+use NewApiBundle\Entity\Transaction;
 use NewApiBundle\Entity\SmartcardDeposit;
 
 class TargetCommunityMapper extends AbstractTargetMapper

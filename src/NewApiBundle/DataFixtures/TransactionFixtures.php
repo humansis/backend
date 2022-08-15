@@ -8,7 +8,7 @@ use NewApiBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use TransactionBundle\Entity\Transaction;
+use NewApiBundle\Entity\Transaction;
 use TransactionBundle\Utils\Provider\KHMFinancialProvider;
 
 class TransactionFixtures extends Fixture implements DependentFixtureInterface
