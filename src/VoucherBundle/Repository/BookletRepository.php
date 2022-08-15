@@ -10,7 +10,7 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\InputType\BookletFilterInputType;
 use NewApiBundle\InputType\BookletOrderInputType;
 use NewApiBundle\Request\Pagination;
-use VoucherBundle\Entity\Booklet;
+use NewApiBundle\Entity\Booklet;
 
 /**
  * BookletRepository

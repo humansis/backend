@@ -1,6 +1,6 @@
 <?php
 
-namespace VoucherBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use NewApiBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -84,7 +84,7 @@ class Booklet implements ExportableInterface
     public $password;
 
     /**
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="booklet", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\Voucher", mappedBy="booklet", cascade={"persist"}, orphanRemoval=true)
      * @SymfonyGroups({"FullBooklet", "ValidatedAssistance"})
      */
     private $vouchers;

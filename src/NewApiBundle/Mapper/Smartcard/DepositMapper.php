@@ -4,7 +4,7 @@ namespace NewApiBundle\Mapper\Smartcard;
 
 use NewApiBundle\Component\Smartcard\EmptySmartcardDeposit;
 use NewApiBundle\Serializer\MapperInterface;
-use VoucherBundle\Entity\SmartcardDeposit;
+use NewApiBundle\Entity\SmartcardDeposit;
 
 class DepositMapper implements MapperInterface
 {

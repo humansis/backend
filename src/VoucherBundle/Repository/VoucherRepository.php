@@ -5,8 +5,8 @@ namespace VoucherBundle\Repository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query\Expr\Join;
-use VoucherBundle\Entity\Booklet;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Booklet;
+use NewApiBundle\Entity\Vendor;
 
 /**
  * VoucherRepository

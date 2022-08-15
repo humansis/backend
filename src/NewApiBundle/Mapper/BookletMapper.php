@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Mapper;
 
 use NewApiBundle\Serializer\MapperInterface;
-use VoucherBundle\Entity\Booklet;
+use NewApiBundle\Entity\Booklet;
 
 class BookletMapper implements MapperInterface
 {
@@ -62,7 +62,7 @@ class BookletMapper implements MapperInterface
 
     public function getIndividualValues(): array
     {
-        $fn = function (\VoucherBundle\Entity\Voucher $item) {
+        $fn = function (\NewApiBundle\Entity\Voucher $item) {
             return $item->getValue();
         };
 
@@ -76,7 +76,7 @@ class BookletMapper implements MapperInterface
 
     public function getQuantityOfUsedVouchers(): int
     {
-        $fn = function ($ax, \VoucherBundle\Entity\Voucher $dx) {
+        $fn = function ($ax, \NewApiBundle\Entity\Voucher $dx) {
             return $ax + ($dx->getUsedAt() ? 1 : 0);
         };
 

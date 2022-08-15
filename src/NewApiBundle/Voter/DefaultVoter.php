@@ -10,7 +10,7 @@ use Symfony\Component\Security\Core\Role\RoleHierarchy;
 use NewApiBundle\Entity\User;
 use NewApiBundle\Entity\UserCountry;
 use NewApiBundle\Entity\UserProject;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Vendor;
 
 /**
  * Class DefaultVoter

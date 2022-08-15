@@ -4,7 +4,7 @@ namespace VoucherBundle\Repository;
 
 use NewApiBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityRepository;
-use VoucherBundle\Entity\Voucher;
+use NewApiBundle\Entity\Voucher;
 
 class VoucherPurchaseRecordRepository extends EntityRepository
 {

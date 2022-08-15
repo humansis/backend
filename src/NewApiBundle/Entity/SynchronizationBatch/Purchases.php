@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\SynchronizationBatch;
 use NewApiBundle\Enum\SynchronizationBatchValidationType;
-use VoucherBundle\Entity\SmartcardPurchase;
+use NewApiBundle\Entity\SmartcardPurchase;
 
 /**
  * @ORM\Entity

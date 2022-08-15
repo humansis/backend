@@ -9,7 +9,7 @@ use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Entity\ProductCategory;
 use NewApiBundle\Enum\ProductCategoryType;
-use VoucherBundle\Entity\Product;
+use NewApiBundle\Entity\Product;
 
 class ProductFixtures extends Fixture implements DependentFixtureInterface
 {

@@ -9,7 +9,7 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use InvalidArgumentException;
 use NewApiBundle\Enum\VendorInvoicingState;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Vendor;
 
 class PreliminaryInvoiceRepository extends EntityRepository
 {

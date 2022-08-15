@@ -9,7 +9,7 @@ use Doctrine\ORM\NoResultException;
 use Exception;
 use NewApiBundle\Entity\Project;
 use Tests\BMSServiceTestCase;
-use VoucherBundle\Entity\Booklet;
+use NewApiBundle\Entity\Booklet;
 
 class BookletControllerTest extends BMSServiceTestCase
 {

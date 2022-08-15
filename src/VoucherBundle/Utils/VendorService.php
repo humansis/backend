@@ -28,8 +28,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Twig\Environment;
 use NewApiBundle\Entity\User;
-use VoucherBundle\Entity\Vendor;
-use VoucherBundle\Entity\VoucherPurchase;
+use NewApiBundle\Entity\Vendor;
+use NewApiBundle\Entity\VoucherPurchase;
 
 class VendorService
 {

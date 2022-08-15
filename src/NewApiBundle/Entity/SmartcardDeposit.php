@@ -1,6 +1,6 @@
 <?php
 
-namespace VoucherBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use DateTime;
 use DateTimeInterface;
@@ -36,7 +36,7 @@ class SmartcardDeposit
     /**
      * @var Smartcard
      *
-     * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\Smartcard", inversedBy="deposites")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Smartcard", inversedBy="deposites")
      * @ORM\JoinColumn(nullable=false)
      *
      * @SymfonyGroups({"FullSmartcard"})

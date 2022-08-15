@@ -82,7 +82,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     private $transactions;
 
     /**
-     * @ORM\OneToOne(targetEntity="\VoucherBundle\Entity\Vendor", mappedBy="user", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="\NewApiBundle\Entity\Vendor", mappedBy="user", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
      */
     private $vendor;
@@ -304,11 +304,11 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     /**
     * Set vendor.
     *
-    * @param \VoucherBundle\Entity\Vendor|null $vendor
+    * @param \NewApiBundle\Entity\Vendor|null $vendor
     *
     * @return User
     */
-    public function setVendor(\VoucherBundle\Entity\Vendor $vendor = null)
+    public function setVendor(\NewApiBundle\Entity\Vendor $vendor = null)
     {
         $this->vendor = $vendor;
         return $this;
@@ -316,7 +316,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     /**
     * Get vendor.
     *
-    * @return \VoucherBundle\Entity\Vendor|null
+    * @return \NewApiBundle\Entity\Vendor|null
     */
     public function getVendor()
     {

@@ -9,7 +9,7 @@ use NewApiBundle\Enum\ProductCategoryType;
 use NewApiBundle\InputType\ProductCategoryFilterInputType;
 use NewApiBundle\InputType\ProductCategoryOrderInputType;
 use NewApiBundle\Request\Pagination;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Vendor;
 
 class ProductCategoryRepository extends EntityRepository
 {

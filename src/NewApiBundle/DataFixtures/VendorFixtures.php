@@ -9,7 +9,7 @@ use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Component\Country\Countries;
 use Symfony\Component\HttpKernel\Kernel;
 use NewApiBundle\Entity\User;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Vendor;
 
 class VendorFixtures extends Fixture implements DependentFixtureInterface
 {

@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\DBAL\SynchronizationBatchValidationTypeEnum;
 use NewApiBundle\Entity\SynchronizationBatch;
 use NewApiBundle\Enum\SynchronizationBatchValidationType;
-use VoucherBundle\Entity\SmartcardDeposit;
+use NewApiBundle\Entity\SmartcardDeposit;
 
 /**
  * @ORM\Entity

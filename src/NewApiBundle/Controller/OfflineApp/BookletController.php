@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use VoucherBundle\Entity\Booklet;
+use NewApiBundle\Entity\Booklet;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class BookletController extends AbstractOfflineAppController

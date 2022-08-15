@@ -13,9 +13,9 @@ use NewApiBundle\Entity\Project;
 use NewApiBundle\DTO\PurchaseDetail;
 use NewApiBundle\DTO\PreliminaryInvoice;
 use NewApiBundle\DTO\PurchaseSummary;
-use VoucherBundle\Entity\SmartcardPurchase;
-use VoucherBundle\Entity\Invoice;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\SmartcardPurchase;
+use NewApiBundle\Entity\Invoice;
+use NewApiBundle\Entity\Vendor;
 
 /**
  * Class SmartcardPurchaseRepository.

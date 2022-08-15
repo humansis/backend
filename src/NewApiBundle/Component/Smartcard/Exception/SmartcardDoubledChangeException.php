@@ -3,7 +3,7 @@
 namespace NewApiBundle\Component\Smartcard\Exception;
 
 use Throwable;
-use VoucherBundle\Entity\Smartcard;
+use NewApiBundle\Entity\Smartcard;
 
 class SmartcardDoubledChangeException extends SmartcardException
 {

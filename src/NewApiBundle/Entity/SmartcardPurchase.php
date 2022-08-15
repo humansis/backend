@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace VoucherBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use NewApiBundle\Entity\Beneficiary;
 use DateTime;
@@ -26,7 +26,7 @@ class SmartcardPurchase
     /**
      * @var Smartcard
      *
-     * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\Smartcard", inversedBy="purchases")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Smartcard", inversedBy="purchases")
      * @ORM\JoinColumn(nullable=false)
      *
      * @SymfonyGroups({"FullSmartcard"})
@@ -36,7 +36,7 @@ class SmartcardPurchase
     /**
      * @var Vendor
      *
-     * @ORM\ManyToOne(targetEntity="\VoucherBundle\Entity\Vendor")
+     * @ORM\ManyToOne(targetEntity="\NewApiBundle\Entity\Vendor")
      * @ORM\JoinColumn(nullable=false)
      *
      * @SymfonyGroups({"FullSmartcard"})
@@ -46,7 +46,7 @@ class SmartcardPurchase
     /**
      * @var Collection|SmartcardPurchaseRecord[]
      *
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardPurchaseRecord", mappedBy="smartcardPurchase", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\SmartcardPurchaseRecord", mappedBy="smartcardPurchase", cascade={"persist"}, orphanRemoval=true)
      *
      * @SymfonyGroups({"FullSmartcard"})
      */

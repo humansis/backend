@@ -5,7 +5,7 @@ namespace VoucherBundle\Utils;
 
 use Doctrine\ORM\EntityManager;
 use NewApiBundle\Entity\Project;
-use VoucherBundle\Entity\Booklet;
+use NewApiBundle\Entity\Booklet;
 
 class BookletGenerator
 {

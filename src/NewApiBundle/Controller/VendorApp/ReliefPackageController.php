@@ -7,7 +7,7 @@ use NewApiBundle\Entity\Assistance\ReliefPackage;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Vendor;
 
 class ReliefPackageController extends AbstractVendorAppController
 {

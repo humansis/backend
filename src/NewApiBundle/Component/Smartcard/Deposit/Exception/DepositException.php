@@ -3,7 +3,7 @@
 namespace NewApiBundle\Component\Smartcard\Deposit\Exception;
 
 use Exception;
-use VoucherBundle\Entity\SmartcardDeposit;
+use NewApiBundle\Entity\SmartcardDeposit;
 
 class DepositException extends Exception
 {

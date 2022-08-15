@@ -5,7 +5,7 @@ namespace VoucherBundle\Tests\Utils;
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use VoucherBundle\Entity\Booklet;
+use NewApiBundle\Entity\Booklet;
 
 class BookletGeneratorTest extends KernelTestCase
 {

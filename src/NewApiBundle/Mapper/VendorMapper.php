@@ -4,7 +4,7 @@ namespace NewApiBundle\Mapper;
 
 use InvalidArgumentException;
 use NewApiBundle\Serializer\MapperInterface;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Vendor;
 
 class VendorMapper implements MapperInterface
 {

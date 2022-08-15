@@ -4,8 +4,8 @@ namespace VoucherBundle\Mapper;
 
 use InvalidArgumentException;
 use NewApiBundle\Serializer\MapperInterface;
-use VoucherBundle\Entity\Voucher;
-use VoucherBundle\Entity\VoucherRedemptionBatch;
+use NewApiBundle\Entity\Voucher;
+use NewApiBundle\Entity\VoucherRedemptionBatch;
 
 class VoucherRedemptionBatchMapper implements MapperInterface
 {

@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use VoucherBundle\Entity\Invoice;
+use NewApiBundle\Entity\Invoice;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
 class SmartcardController extends AbstractController

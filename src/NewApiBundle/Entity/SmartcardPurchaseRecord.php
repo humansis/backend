@@ -1,6 +1,6 @@
 <?php
 
-namespace VoucherBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
@@ -28,7 +28,7 @@ class SmartcardPurchaseRecord
     /**
      * @var SmartcardPurchase
      *
-     * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\SmartcardPurchase", inversedBy="records")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\SmartcardPurchase", inversedBy="records")
      * @ORM\JoinColumn(nullable=false)
      */
     private $smartcardPurchase;
@@ -36,7 +36,7 @@ class SmartcardPurchaseRecord
     /**
      * @var Product
      *
-     * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\Product")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Product")
      * @ORM\JoinColumn(nullable=false)
      *
      * @SymfonyGroups({"FullSmartcard"})

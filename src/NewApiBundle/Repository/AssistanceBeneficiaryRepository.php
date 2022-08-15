@@ -21,8 +21,8 @@ use NewApiBundle\InputType\CommunityOrderInputType;
 use NewApiBundle\InputType\InstitutionFilterInputType;
 use NewApiBundle\InputType\InstitutionOrderInputType;
 use NewApiBundle\Request\Pagination;
-use VoucherBundle\Entity\Booklet;
-use VoucherBundle\Entity\SmartcardDeposit;
+use NewApiBundle\Entity\Booklet;
+use NewApiBundle\Entity\SmartcardDeposit;
 
 /**
  * AssistanceBeneficiaryRepository

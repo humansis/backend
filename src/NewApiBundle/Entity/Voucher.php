@@ -1,6 +1,6 @@
 <?php
 
-namespace VoucherBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use NewApiBundle\Utils\ExportableInterface;
 use DateTimeInterface;
@@ -42,14 +42,14 @@ class Voucher implements ExportableInterface
     private $value;
 
     /**
-     * @ORM\ManyToOne(targetEntity="\VoucherBundle\Entity\Booklet", inversedBy="vouchers")
+     * @ORM\ManyToOne(targetEntity="\NewApiBundle\Entity\Booklet", inversedBy="vouchers")
      * @ORM\JoinColumn(nullable=false)
      * @SymfonyGroups({"FullVoucher"})
      */
     private $booklet;
 
     /**
-     * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\VoucherPurchase", inversedBy="vouchers")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\VoucherPurchase", inversedBy="vouchers")
      * @ORM\JoinColumn(nullable=true)
      * @SymfonyGroups({"FullVoucher"})
      */
@@ -58,7 +58,7 @@ class Voucher implements ExportableInterface
     /**
      * @var VoucherRedemptionBatch|null
      *
-     * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\VoucherRedemptionBatch", inversedBy="vouchers", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\VoucherRedemptionBatch", inversedBy="vouchers", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
      */
     private $redemptionBatch;

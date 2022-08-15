@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Enum\ProductCategoryType;
-use VoucherBundle\Entity\Product;
+use NewApiBundle\Entity\Product;
 
 /**
  * Product
@@ -58,7 +58,7 @@ class ProductCategory
     /**
      * @var Collection|Product[]
      *
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Product", mappedBy="productCategory")
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\Product", mappedBy="productCategory")
      */
     private $products;
 

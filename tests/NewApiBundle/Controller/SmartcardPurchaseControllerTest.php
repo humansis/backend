@@ -4,8 +4,8 @@ namespace Tests\NewApiBundle\Controller;
 
 use Exception;
 use Tests\BMSServiceTestCase;
-use VoucherBundle\Entity\SmartcardPurchase;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\SmartcardPurchase;
+use NewApiBundle\Entity\Vendor;
 
 class SmartcardPurchaseControllerTest extends BMSServiceTestCase
 {

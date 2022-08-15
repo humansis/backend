@@ -8,8 +8,8 @@ use NewApiBundle\Entity\DistributedItem;
 use NewApiBundle\Entity\SmartcardPurchasedItem;
 use NewApiBundle\Enum\ModalityType;
 use Tests\BMSServiceTestCase;
-use VoucherBundle\Entity\SmartcardPurchase;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\SmartcardPurchase;
+use NewApiBundle\Entity\Vendor;
 
 class DistributedItemControllerTest extends BMSServiceTestCase
 {

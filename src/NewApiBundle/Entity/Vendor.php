@@ -1,6 +1,6 @@
 <?php
 
-namespace VoucherBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use NewApiBundle\Entity\Location;
 use Doctrine\Common\Collections\ArrayCollection;

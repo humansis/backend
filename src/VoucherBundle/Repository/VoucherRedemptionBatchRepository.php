@@ -3,7 +3,7 @@
 namespace VoucherBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Vendor;
 
 class VoucherRedemptionBatchRepository extends EntityRepository
 {

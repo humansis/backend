@@ -7,10 +7,10 @@ use NewApiBundle\Entity\Assistance;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use VoucherBundle\Entity\Booklet;
-use VoucherBundle\Entity\Product;
-use VoucherBundle\Entity\Vendor;
-use VoucherBundle\Entity\VoucherPurchase;
+use NewApiBundle\Entity\Booklet;
+use NewApiBundle\Entity\Product;
+use NewApiBundle\Entity\Vendor;
+use NewApiBundle\Entity\VoucherPurchase;
 use VoucherBundle\Model\PurchaseService;
 
 class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterface

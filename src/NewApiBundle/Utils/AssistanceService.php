@@ -45,7 +45,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
-use VoucherBundle\Entity\Voucher;
+use NewApiBundle\Entity\Voucher;
 
 /**
  * Class AssistanceService

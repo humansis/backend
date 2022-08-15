@@ -6,8 +6,8 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Entity\User;
-use VoucherBundle\Entity\Vendor;
-use VoucherBundle\Entity\Voucher;
+use NewApiBundle\Entity\Vendor;
+use NewApiBundle\Entity\Voucher;
 use VoucherBundle\InputType\VoucherRedemptionBatch;
 use VoucherBundle\Utils\VoucherService;
 

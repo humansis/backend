@@ -9,7 +9,7 @@ use Exception;
 use NewApiBundle\Enum\VendorInvoicingState;
 use Tests\BMSServiceTestCase;
 use NewApiBundle\Entity\User;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Vendor;
 
 class VendorControllerTest extends BMSServiceTestCase
 {

@@ -5,7 +5,7 @@ namespace NewApiBundle\Mapper\Assistance;
 
 use NewApiBundle\Entity\Institution;
 use TransactionBundle\Entity\Transaction;
-use VoucherBundle\Entity\SmartcardDeposit;
+use NewApiBundle\Entity\SmartcardDeposit;
 
 class TargetInstitutionMapper extends AbstractTargetMapper
 {

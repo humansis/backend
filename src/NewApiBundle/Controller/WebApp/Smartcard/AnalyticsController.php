@@ -8,8 +8,8 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Smartcard\Analytics\EventService;
 use NewApiBundle\Controller\WebApp\AbstractWebAppController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use VoucherBundle\Entity\Smartcard;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Smartcard;
+use NewApiBundle\Entity\Vendor;
 
 /**
  * properties *Name are there only for reason of nonexistent frontend

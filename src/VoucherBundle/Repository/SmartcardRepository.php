@@ -5,7 +5,7 @@ namespace VoucherBundle\Repository;
 use NewApiBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
-use VoucherBundle\Entity\Smartcard;
+use NewApiBundle\Entity\Smartcard;
 use VoucherBundle\Enum\SmartcardStates;
 
 /**

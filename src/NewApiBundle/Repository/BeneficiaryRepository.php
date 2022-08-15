@@ -30,7 +30,7 @@ use NewApiBundle\Request\Pagination;
 use NewApiBundle\DBAL\LivelihoodEnum;
 use NewApiBundle\Entity\Project;
 use Doctrine\ORM\Query\Expr\Join;
-use VoucherBundle\Entity\Smartcard;
+use NewApiBundle\Entity\Smartcard;
 use VoucherBundle\Enum\SmartcardStates;
 
 /**

@@ -3,7 +3,7 @@ namespace VoucherBundle\Mapper;
 
 use NewApiBundle\Entity\Community;
 use NewApiBundle\MapperDeprecated\LocationMapper;
-use VoucherBundle\Entity\Smartcard;
+use NewApiBundle\Entity\Smartcard;
 
 class SmartcardMapper
 {

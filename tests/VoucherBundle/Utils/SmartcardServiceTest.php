@@ -18,10 +18,10 @@ use NewApiBundle\InputType\Smartcard\DepositInputType;
 use NewApiBundle\InputType\Smartcard\SmartcardRegisterInputType;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use NewApiBundle\Entity\User;
-use VoucherBundle\Entity\Product;
-use VoucherBundle\Entity\Smartcard;
-use VoucherBundle\Entity\SmartcardDeposit;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Product;
+use NewApiBundle\Entity\Smartcard;
+use NewApiBundle\Entity\SmartcardDeposit;
+use NewApiBundle\Entity\Vendor;
 use VoucherBundle\InputType\SmartcardPurchase;
 use VoucherBundle\InputType\SmartcardInvoice;
 use VoucherBundle\Utils\SmartcardService;
@@ -265,7 +265,7 @@ class SmartcardServiceTest extends KernelTestCase
 
             foreach ($preliminaryInvoice->getPurchaseIds() as $purchaseId) {
                 /** @var SmartcardPurchase $purchase */
-                $purchase = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->find($purchaseId);
+                $purchase = $this->em->getRepository(\NewApiBundle\Entity\SmartcardPurchase::class)->find($purchaseId);
                 $this->assertNotNull($purchase, "Purchase must exists");
                 $this->assertEquals(2000, $purchase->getCreatedAt()->format('Y'), "Wrong purchase year");
             }
@@ -483,11 +483,11 @@ class SmartcardServiceTest extends KernelTestCase
             $this->em->remove($deposit);
         }
         $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['beneficiary'=>$allTestingBeneficiaries], ['id' => 'asc']);
-        $purchases = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->findBy(['smartcard'=>$smartcards], ['id' => 'asc']);
+        $purchases = $this->em->getRepository(\NewApiBundle\Entity\SmartcardPurchase::class)->findBy(['smartcard'=>$smartcards], ['id' => 'asc']);
         foreach ($purchases as $purchase) {
             $this->em->remove($purchase);
         }
-        $purchases = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->findBy(['vendor'=>$allTestingVendors], ['id' => 'asc']);
+        $purchases = $this->em->getRepository(\NewApiBundle\Entity\SmartcardPurchase::class)->findBy(['vendor'=>$allTestingVendors], ['id' => 'asc']);
         foreach ($purchases as $purchase) {
             $this->em->remove($purchase);
         }
@@ -582,7 +582,7 @@ class SmartcardServiceTest extends KernelTestCase
             $this->assertEquals($values['distributed'], $distributed, "Wrong distributed amount");
 
             $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['beneficiary'=>$beneficiaryId], ['id' => 'asc']);
-            $purchases = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->findBy(['smartcard'=>$smartcards], ['id' => 'asc']);
+            $purchases = $this->em->getRepository(\NewApiBundle\Entity\SmartcardPurchase::class)->findBy(['smartcard'=>$smartcards], ['id' => 'asc']);
             $purchased = 0;
             foreach ($purchases as $purchase) {
                 $purchased += $purchase->getRecordsValue();

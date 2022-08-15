@@ -8,7 +8,7 @@ use NewApiBundle\Component\LogsStorage\LogsStorageService;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Vendor;
 
 class LogController extends AbstractVendorAppController
 {

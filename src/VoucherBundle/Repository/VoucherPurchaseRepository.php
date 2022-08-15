@@ -3,8 +3,8 @@
 namespace VoucherBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use VoucherBundle\Entity\Vendor;
-use VoucherBundle\Entity\VoucherPurchase;
+use NewApiBundle\Entity\Vendor;
+use NewApiBundle\Entity\VoucherPurchase;
 
 class VoucherPurchaseRepository extends EntityRepository
 {

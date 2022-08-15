@@ -15,7 +15,7 @@ use NewApiBundle\Enum\HouseholdSupportReceivedType;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Enum\Livelihood;
 use Symfony\Component\Validator\Constraints as Assert;
-use VoucherBundle\Entity\Smartcard;
+use NewApiBundle\Entity\Smartcard;
 
 /**
  * Beneficiary
@@ -68,7 +68,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     private $vulnerabilityCriteria;
 
     /**
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Smartcard", mappedBy="beneficiary")
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\Smartcard", mappedBy="beneficiary")
      *
      * @var Collection|Smartcard[]
      */

@@ -8,7 +8,7 @@ use NewApiBundle\InputType\SmartcardPurchaseInputType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use VoucherBundle\Entity\Smartcard;
+use NewApiBundle\Entity\Smartcard;
 
 class SmartcardController extends AbstractVendorAppController
 {
