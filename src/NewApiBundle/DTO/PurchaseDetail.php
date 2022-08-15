@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace VoucherBundle\DTO;
+namespace NewApiBundle\DTO;
 
 class PurchaseDetail implements \JsonSerializable
 {
