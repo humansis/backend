@@ -17,7 +17,7 @@ use Swift_Message;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
-use TransactionBundle\Entity\Transaction;
+use NewApiBundle\Entity\Transaction;
 use TransactionBundle\Utils\Provider\DefaultFinancialProvider;
 use Twig\Environment;
 use NewApiBundle\Entity\User;

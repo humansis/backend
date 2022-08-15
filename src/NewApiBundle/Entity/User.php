@@ -12,7 +12,7 @@ use FOS\UserBundle\Model\User as BaseUser;
 use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Component\Validator\Constraints as Assert;
-use TransactionBundle\Entity\Transaction;
+use NewApiBundle\Entity\Transaction;
 use Doctrine\Common\Persistence\ObjectManagerAware;
 
 /**
@@ -77,7 +77,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     /**
      * @var Transaction
      *
-     * @ORM\OneToMany(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="sentBy")
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\Transaction", mappedBy="sentBy")
      */
     private $transactions;
 

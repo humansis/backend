@@ -10,8 +10,8 @@ use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\WingMoney\ValueObject\ReportEntry;
-use TransactionBundle\Entity\Transaction;
-use TransactionBundle\Repository\TransactionRepository;
+use NewApiBundle\Entity\Transaction;
+use NewApiBundle\Repository\TransactionRepository;
 use NewApiBundle\Entity\User;
 
 class ImportService

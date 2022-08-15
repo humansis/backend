@@ -8,7 +8,7 @@ use NewApiBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use TransactionBundle\Entity\Transaction;
+use NewApiBundle\Entity\Transaction;
 use TransactionBundle\TransactionBundle;
 
 /**

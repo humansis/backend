@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace TransactionBundle\Mapper;
 
 use Symfony\Component\Serializer\Serializer;
-use TransactionBundle\Entity\Transaction;
+use NewApiBundle\Entity\Transaction;
 
 class TransactionMapper
 {

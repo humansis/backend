@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace NewApiBundle\MapperDeprecated;
 
 use NewApiBundle\Entity\AssistanceBeneficiary;
-use TransactionBundle\Entity\Transaction;
+use NewApiBundle\Entity\Transaction;
 
 class AssistanceBeneficiaryMapper
 {

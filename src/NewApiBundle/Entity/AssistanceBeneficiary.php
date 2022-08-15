@@ -15,7 +15,7 @@ use NewApiBundle\Enum\ReliefPackageState;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Serializer\Annotation\MaxDepth as SymfonyMaxDepth;
 
-use TransactionBundle\Entity\Transaction;
+use NewApiBundle\Entity\Transaction;
 use NewApiBundle\Entity\Booklet;
 use NewApiBundle\Entity\SmartcardDeposit;
 
@@ -52,7 +52,7 @@ class AssistanceBeneficiary
      * @var Collection|Transaction[]
      * @deprecated you shouldn't know about transaction here
      *
-     * @ORM\OneToMany(targetEntity="TransactionBundle\Entity\Transaction", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\Transaction", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      * @SymfonyMaxDepth(1)
      */

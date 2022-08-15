@@ -4,7 +4,7 @@ namespace Tests\NewApiBundle\Controller;
 
 use Exception;
 use Tests\BMSServiceTestCase;
-use TransactionBundle\Entity\Transaction;
+use NewApiBundle\Entity\Transaction;
 
 class TransactionControllerTest extends BMSServiceTestCase
 {
