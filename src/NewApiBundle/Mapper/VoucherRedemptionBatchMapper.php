@@ -1,6 +1,6 @@
 <?php
 
-namespace VoucherBundle\Mapper;
+namespace NewApiBundle\Mapper;
 
 use InvalidArgumentException;
 use NewApiBundle\Serializer\MapperInterface;

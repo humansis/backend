@@ -87,15 +87,7 @@ services:
             - '@smartcard_purchase.repository'
         public: true
 
-    VoucherBundle\Mapper\SmartcardMapper:
-        public: true
-
-    VoucherBundle\Mapper\BookletMapper:
-        arguments:
-            - "@serializer"
-        public: true
-
-    VoucherBundle\Mapper\VoucherRedemptionBatchMapper:
+    NewApiBundle\Mapper\VoucherRedemptionBatchMapper:
         tags: [ 'app.mapper' ]
 
     NewApiBundle\Utils\BookletGenerator:
