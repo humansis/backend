@@ -13,7 +13,7 @@ use Exception;
 use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Repository\ProjectRepository;
 use Symfony\Component\HttpKernel\Kernel;
-use VoucherBundle\Utils\BookletService;
+use NewApiBundle\Utils\BookletService;
 
 class BookletFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
 {

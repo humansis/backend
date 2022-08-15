@@ -19,7 +19,7 @@ use NewApiBundle\Entity\SmartcardPurchase;
 use NewApiBundle\Entity\Vendor;
 use NewApiBundle\Enum\SmartcardStates;
 use NewApiBundle\Repository\SmartcardRepository;
-use VoucherBundle\Utils\SmartcardService;
+use NewApiBundle\Utils\SmartcardService;
 
 class SmartcardControllerTest extends BMSServiceTestCase
 {

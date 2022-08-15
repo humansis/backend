@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use NewApiBundle\Controller\VendorApp\SmartcardController;
 use NewApiBundle\Entity\Invoice;
 use NewApiBundle\Entity\Vendor;
-use VoucherBundle\Utils\SmartcardService;
+use NewApiBundle\Utils\SmartcardService;
 
 class InvoiceController extends AbstractWebAppController
 {

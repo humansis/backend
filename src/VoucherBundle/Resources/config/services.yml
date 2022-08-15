@@ -39,28 +39,28 @@ services:
         alias: smartcard_purchase.repository
 
     voucher.vendor_service:
-        class: VoucherBundle\Utils\VendorService
+        class: NewApiBundle\Utils\VendorService
         arguments: ['@doctrine.orm.entity_manager', '@service_container', '@Twig\Environment']
         public: true
 
-    VoucherBundle\Utils\VendorService: '@voucher.vendor_service'
+    NewApiBundle\Utils\VendorService: '@voucher.vendor_service'
 
     voucher.booklet_service:
-        class: VoucherBundle\Utils\BookletService
+        class: NewApiBundle\Utils\BookletService
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@service_container'
-            - '@VoucherBundle\Utils\BookletGenerator'
+            - '@NewApiBundle\Utils\BookletGenerator'
             - '@Twig\Environment'
         public: true
 
     voucher.voucher_service:
-        class: VoucherBundle\Utils\VoucherService
+        class: NewApiBundle\Utils\VoucherService
         arguments: ['@doctrine.orm.entity_manager', '@service_container', '@Twig\Environment']
         public: true
 
     voucher.product_service:
-        class: VoucherBundle\Utils\ProductService
+        class: NewApiBundle\Utils\ProductService
         arguments: ['@doctrine.orm.entity_manager', '@service_container']
         public: true
 
@@ -70,15 +70,15 @@ services:
         public: true
 
     voucher.purchase_service:
-        class: VoucherBundle\Model\PurchaseService
+        class: NewApiBundle\Model\PurchaseService
         public: true
         arguments: [ '@doctrine.orm.entity_manager', '@logger' ]
 
-    VoucherBundle\Utils\SmartcardService:
+    NewApiBundle\Utils\SmartcardService:
         alias: smartcard_service
 
     smartcard_service:
-        class: VoucherBundle\Utils\SmartcardService
+        class: NewApiBundle\Utils\SmartcardService
         autowire: true
         arguments:
             - '@doctrine.orm.entity_manager'
@@ -98,7 +98,7 @@ services:
     VoucherBundle\Mapper\VoucherRedemptionBatchMapper:
         tags: [ 'app.mapper' ]
 
-    VoucherBundle\Utils\BookletGenerator:
+    NewApiBundle\Utils\BookletGenerator:
         public: true
         arguments: [ '@doctrine.orm.entity_manager' ]
 

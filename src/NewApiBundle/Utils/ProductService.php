@@ -1,6 +1,6 @@
 <?php
 
-namespace VoucherBundle\Utils;
+namespace NewApiBundle\Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;

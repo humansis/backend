@@ -18,7 +18,7 @@ use Symfony\Contracts\Cache\CacheInterface;
 use NewApiBundle\Entity\Smartcard;
 use NewApiBundle\Entity\SmartcardDeposit;
 use NewApiBundle\Repository\SmartcardDepositRepository;
-use VoucherBundle\Utils\SmartcardService;
+use NewApiBundle\Utils\SmartcardService;
 
 class DepositFactory
 {

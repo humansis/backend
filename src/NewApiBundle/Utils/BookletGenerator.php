@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace VoucherBundle\Utils;
+namespace NewApiBundle\Utils;
 
 use Doctrine\ORM\EntityManager;
 use NewApiBundle\Entity\Project;
